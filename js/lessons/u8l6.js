@@ -27,6 +27,7 @@
     return s || '0';
   }
   function eqT(a, b, c, vs) { return lin([a, b], vs || ['x', 'y']) + '=' + num(c); }
+  function stack(e1, e2) { return '<div style="margin:4px 0">' + t('\\displaystyle ' + e1) + '</div><div style="margin:4px 0">' + t('\\displaystyle ' + e2) + '</div>'; }
   function both(e1, e2) { return t(e1) + '&ensp;and&ensp;' + t(e2); }
   function L(a, b, c) { return [a, b, -c]; }                // a·x + b·y = c  ->  [A, B, C] with Ax + By + C = 0
   function ptT(p) { return '(' + fx(p[0]) + ',\\ ' + fx(p[1]) + ')'; }
@@ -1448,9 +1449,9 @@
           var det = A1 * B2 - A2 * B1;
           var w = function (c1, c2) { var xx = (c1 * B2 - B1 * c2) / det, yy = (A1 * c2 - A2 * c1) / det; return [xx, yy]; };   // RHS not scaled
           var wp = w(R1, R2n / L2);
-          var E1 = '\\dfrac{' + lin([s.al, -1], ['x', 'y']) + '}{' + s.d1 + '}+\\dfrac{' + lin([1, s.be], ['x', 'y']) + '}{' + s.d2 + '}=' + R1, E2 = '\\dfrac{x}{' + s.d3 + '}-\\dfrac{y}{' + s.d4 + '}=' + frT(R2[0], R2[1]);
+          var E1 = '\\dfrac{' + lin([s.al, -1], ['x', 'y']) + '}{' + s.d1 + '}+\\dfrac{' + lin([1, s.be], ['x', 'y']) + '}{' + s.d2 + '}=' + R1, E2 = '\\dfrac{x}{' + s.d3 + '}-\\dfrac{y}{' + s.d4 + '}=' + frT(R2[0], R2[1]).replace('\\frac', '\\dfrac');
           var W = []; if (isFinite(wp[0]) && !(near(wp[0], s.x0) && near(wp[1], s.y0))) W.push({ is: wp, code: 'l6-clear-one-side', hint: 'It looks like the fractions were cleared on the left side only. Multiply <b>both</b> sides of each equation by its LCD.' });
-          return ptPart(both(E1, E2), [s.x0, s.y0], [[A1, B1, -C1], [A2, B2, -R2n]], { wrong: W },
+          return ptPart(stack(E1, E2), [s.x0, s.y0], [[A1, B1, -C1], [A2, B2, -R2n]], { wrong: W },
             'First equation, LCD ' + t(L1) + ': ' + t(s.d2 + '(' + lin([s.al, -1], ['x', 'y']) + ')+' + s.d1 + '(' + lin([1, s.be], ['x', 'y']) + ')=' + C1 + '\\Rightarrow ' + eqT(A1, B1, C1)) + '<br>Second equation, LCD ' + t(L2) + ': ' + t(eqT(A2, B2, R2n)) + '<br>Solve (substitution or elimination): ' + t(ptT([s.x0, s.y0])) + '.<br>Check in the originals: ' + t(ck('\\frac{' + (s.al * s.x0 - s.y0) + '}{' + s.d1 + '}+\\frac{' + (s.x0 + s.be * s.y0) + '}{' + s.d2 + '}=' + R1)) + ' and ' + t(ck('\\frac{' + s.x0 + '}{' + s.d3 + '}-\\frac{' + s.y0 + '}{' + s.d4 + '}=' + frT(R2[0], R2[1]))) + '.',
             ['Multiply every term of each equation (both sides) by its lowest common denominator, then collect like terms.'], 'EP14a fractions system');
         } },
@@ -1474,7 +1475,7 @@
           var bad = s.e.map(function (e) { return [e[0] * e[1] - e[4] * e[5], e[2] - e[6], e[7] - e[3]]; });   // bracket multiplied into the first term only
           var d0 = simp[0][0] * simp[1][1] - simp[1][0] * simp[0][1], db = bad[0][0] * bad[1][1] - bad[1][0] * bad[0][1], W = [];
           if (db !== 0) { var bx = (bad[0][2] * bad[1][1] - bad[0][1] * bad[1][2]) / db, by2 = (bad[0][0] * bad[1][2] - bad[1][0] * bad[0][2]) / db; if (!(near(bx, s.x0) && near(by2, s.y0))) W.push({ is: [bx, by2], code: 'l6-distribute', hint: 'Check the brackets: the number in front multiplies <b>every</b> term inside, e.g. ' + t(s.e[0][0] + '(' + lin([s.e[0][1], s.e[0][2]], ['x', 'y']) + ')=' + lin([s.e[0][0] * s.e[0][1], s.e[0][0] * s.e[0][2]], ['x', 'y'])) + '.' }); }
-          return ptPart(both(Ts[0], Ts[1]), [s.x0, s.y0], simp.map(function (q) { return [q[0], q[1], -q[2]]; }), { wrong: W },
+          return ptPart(stack(Ts[0], Ts[1]), [s.x0, s.y0], simp.map(function (q) { return [q[0], q[1], -q[2]]; }), { wrong: W },
             'Expand and collect each equation:<br>' + t(Ts[0] + '\\Rightarrow ' + eqT(simp[0][0], simp[0][1], simp[0][2])) + '<br>' + t(Ts[1] + '\\Rightarrow ' + eqT(simp[1][0], simp[1][1], simp[1][2])) + '<br>Solving gives ' + t(ptT([s.x0, s.y0])) + '.<br>Check in the originals: both sides of the first equal ' + t(s.e[0][0] * (s.e[0][1] * s.x0 + s.e[0][2] * s.y0) + s.e[0][3]) + ', both sides of the second equal ' + t(s.e[1][0] * (s.e[1][1] * s.x0 + s.e[1][2] * s.y0) + s.e[1][3]) + ' ✓.',
             ['Expand every bracket, then move the variable terms to the left and the constants to the right.'], 'EP14b brackets system');
         } }] },

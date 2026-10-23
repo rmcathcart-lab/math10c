@@ -158,13 +158,28 @@
     return '<svg class="fig-svg" viewBox="0 0 300 ' + Ht + '" width="100%" style="max-width:300px" role="img" aria-label="two right triangles with hypotenuse 1">' + s + '</svg>';
   }
   function triFig(r, opt) { opt.rot = opt.rot == null ? r.int(0, 3) : opt.rot; opt.flip = opt.flip == null ? r.chance(0.5) : opt.flip; return HW.tri(opt); }
-  function flexFigs(list) { return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-end">' + list.join('') + '</div>'; }
   /* one or more rows of a ratio table, as a small HTML table */
   function rowTable(rows, S) {
-    var cell = 'style="border:1px solid #c9d1dc;padding:2px 4px;text-align:center"';
-    var h = '<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:12.5px;margin:4px 0"><tr><th ' + cell + '>' + t('\\theta') + '</th>' + S.map(function (a) { return '<td ' + cell + '>' + t(D(a)) + '</td>'; }).join('') + '</tr>';
-    rows.forEach(function (fn) { h += '<tr><th ' + cell + '>' + t('\\' + fn + '\\theta') + '</th>' + S.map(function (a) { return '<td ' + cell + '>' + (fn === 'tan' && a === 90 ? 'undef.' : t(fxT(FN[fn](a), 4))) + '</td>'; }).join('') + '</tr>'; });
-    return h + '</table></div>';
+    var cell = 'style="border:1px solid #c9d1dc;padding:1px 8px;text-align:center"';
+    var h = '<table style="border-collapse:collapse;font-size:13px;margin:6px 0"><tr><th ' + cell + '>' + t('\\theta') + '</th>' + rows.map(function (fn) { return '<th ' + cell + '>' + t('\\' + fn + '\\theta') + '</th>'; }).join('') + '</tr>';
+    S.forEach(function (a) { h += '<tr><td ' + cell + '>' + t(D(a)) + '</td>' + rows.map(function (fn) { return '<td ' + cell + '>' + (fn === 'tan' && a === 90 ? 'undefined' : t(fxT(FN[fn](a), 4))) + '</td>'; }).join('') + '</tr>'; });
+    return h + '</table>';
+  }
+  /* three right triangles on one baseline with the same adjacent side (EP 9d) */
+  function threeTri(A, base) {
+    var s = '', adj = 74, x0 = 14, gap = 34, yb = 0, Hs = A.map(function (a) { return adj * T.tan(a); }), Hmax = Math.max.apply(null, Hs), top = 22;
+    yb = top + Hmax;
+    A.forEach(function (a, i) {
+      var xl = x0 + i * (adj + gap + 26), xr = xl + adj, h = Hs[i], P = [xl, yb], Q = [xr, yb], Rr = [xr, yb - h], c = i === 1 ? C2 : C1;
+      s += '<polygon points="' + P.join(',') + ' ' + Q.join(',') + ' ' + Rr[0] + ',' + Rr[1].toFixed(1) + '" fill="#f4faf9" stroke="' + INK + '" stroke-width="2"/>';
+      s += '<polyline points="' + (xr - 8) + ',' + yb + ' ' + (xr - 8) + ',' + (yb - 8) + ' ' + xr + ',' + (yb - 8) + '" fill="none" stroke="' + INK + '" stroke-width="1.2"/>';
+      var rr = 20, e = [xl + rr * Math.cos(a * Math.PI / 180), yb - rr * Math.sin(a * Math.PI / 180)];
+      s += '<path d="M' + (xl + rr) + ' ' + yb + ' A' + rr + ' ' + rr + ' 0 0 0 ' + e[0].toFixed(1) + ' ' + e[1].toFixed(1) + '" fill="none" stroke="' + c + '" stroke-width="1.6"/>';
+      s += sT(xl + 26, yb - 9 - (a > 30 ? 6 : 0), a + '°', { anchor: 'start', color: c, size: 11 });
+      s += sT((xl + xr) / 2, yb + 11, String(base), { size: 12 }) + sT(xr + 4, yb - h / 2, String(+(base * T.tan(a)).toFixed(2)), { anchor: 'start', size: 12 });
+    });
+    var W = x0 + 3 * adj + 2 * (gap + 26) + 34;
+    return '<svg class="fig-svg" viewBox="0 0 ' + W + ' ' + (yb + 22).toFixed(0) + '" width="100%" style="max-width:' + W + 'px" role="img" aria-label="three right triangles with the same adjacent side">' + s + '</svg>';
   }
   var SETS = [[0, 5, 25, 45, 65, 85, 90], [0, 10, 30, 45, 60, 80, 90], [0, 15, 35, 45, 55, 75, 90], [0, 5, 20, 45, 70, 85, 90]];
 
@@ -293,7 +308,7 @@
               : 'Since ' + t(D(x) + '>45^\\circ') + ', opp ' + t('>') + ' adj, so ' + t(TX('tan', x) + '>1') + ', while the sine and cosine are less than ' + t('1') + '. Order: ' + t(TX('cos', x) + '<' + TX('sin', x) + '<' + TX('tan', x)) + ' (' + t(fx(T.cos(x), 4) + '<' + fx(T.sin(x), 4) + '<' + fx(T.tan(x), 4)) + ').',
             ['Use the ' + t(D(45)) + ' benchmark: sine and cosine are always less than ' + t('1') + '; the tangent passes ' + t('1') + ' at ' + t(D(45)) + '.'], 'greatest of sin/cos/tan ' + x);
         } }] },
-      { num: '6', section: 'Part D — The pattern from 0° to 90°', stem: function (sh) { return 'Complete the table of values for the angles ' + t(sh.S.map(D).join(',\\ ')) + ', rounding to two decimal places.'; },
+      { num: '6', section: 'Part D — The pattern from 0° to 90°', stem: function (sh) { return 'Complete the table of values for the angles ' + sh.S.map(function (a) { return t(D(a)); }).join(', ') + ', rounding to two decimal places.'; },
         shared: function (r) { return { S: r.pick([range(0, 90, 10), range(0, 90, 10), range(0, 90, 15), [0, 12, 24, 36, 48, 60, 72, 84, 90]]) }; },
         parts: [
           { id: '6a', sub: 'a(i)', level: 'BEG', make: function (r, sh) {
@@ -432,7 +447,7 @@
               return wrong('value', null);
             };
             return B.math('Write an expression for the measure of ' + t('\\angle ' + sh.th) + ' in terms of ' + t('x') + ' (in degrees).', chk, '90-x', 'The three angles sum to ' + t(D(180)) + ' and ' + t('\\angle ' + sh.rt + '=90^\\circ') + ', so ' + t('\\angle ' + sh.th + '=180^\\circ-90^\\circ-x^\\circ=(90-x)^\\circ') + '.',
-              ['The angles of a triangle add to ' + t(D(180)) + '. How much is left after the right angle?'], 'angle in terms of x', { keys: 'var', before: t('\\angle ' + sh.th + '=') });
+              ['The angles of a triangle add to ' + t(D(180)) + '. How much is left after the right angle?'], 'angle in terms of x', { keys: 'expo', vars: ['x'], before: t('\\angle ' + sh.th + '=') });
           } },
           { id: '11c', sub: 'c', level: 'EMG', make: function (r, sh) {
             var adj = [sh.xv, sh.rt].sort().join(''), hyp = [sh.xv, sh.th].sort().join(''), opp = [sh.rt, sh.th].sort().join('');
@@ -699,7 +714,7 @@
             'Near ' + t(D(0)) + ' and ' + t(D(90)) + ' the sine and cosine rows barely move: ' + t('\\sin 85^\\circ=0.9962') + ' and ' + t('\\sin 90^\\circ=1.0000') + ' — five degrees buy only ' + t('0.0038') + '. So an error of a few thousandths in the ratio corresponds to several degrees of angle. In the middle of the range the ratios change quickly per degree, so the same rounding error moves the angle only a fraction of a degree.', ['Compare ' + t('\\sin 85^\\circ') + ' with ' + t('\\sin 90^\\circ') + ', and ' + t('\\tan 60^\\circ') + ' with ' + t('\\tan 61^\\circ') + '.'], 'why rounding costs at the ends');
         } }] },
       /* ---------- Part C ---------- */
-      { num: '7', section: 'Extra practice C — The pattern from 0° to 90°', stem: function (sh) { return 'Build the table for the angles ' + t(sh.S.map(D).join(',\\ ')) + ', giving each value to four decimal places.'; },
+      { num: '7', section: 'Extra practice C — The pattern from 0° to 90°', stem: function (sh) { return 'Build the table for the angles ' + sh.S.map(function (a) { return t(D(a)); }).join(', ') + ', giving each value to four decimal places.'; },
         shared: function (r) { return { S: r.chance(0.4) ? SETS[0] : r.pick(SETS) }; },
         parts: [
           { id: 'e7a', sub: 'a(i)', level: 'BEG', make: function (r, sh) { return boxes('The ' + t('\\sin\\theta') + ' row:', sh.S.map(function (a) { return vBox('sin', a, 4); }), 'In degree mode: ' + sh.S.map(function (a) { return t('\\sin ' + D(a) + '\\approx ' + fx(T.sin(a), 4)); }).join(', ') + '.', ['Degree mode; four decimal places.'], 'sin row'); } },
@@ -813,9 +828,8 @@
               t('\\sin\\theta=1') + ' needs ' + t('\\frac{\\text{opp}}{\\text{hyp}}=1') + ', i.e. opp ' + t('=') + ' hyp. Then ' + t('\\text{adj}^2=\\text{hyp}^2-\\text{opp}^2=0') + ', so the adjacent side has length ' + t('0') + ' and the triangle flattens onto a single segment. No actual triangle can do it; the ' + t(D(90)) + ' column holds ' + t('\\sin 90^\\circ=1') + ' as the limit the pattern approaches.', ['When does a fraction equal ' + t('1') + '? What does Pythagoras then say about the third side?'], 'sin = 1 impossible');
           } },
           { id: 'e9d', sub: 'd', level: 'PRG', make: function (r) {
-            var A = r.pick([[15, 45, 61], [15, 45, 61], [20, 45, 65], [10, 45, 70]]), base = r.pick([4, 4, 5, 3]);
-            var figs = A.map(function (a) { var h = base * T.tan(a); return HW.tri({ w: base, h: h, names: ['A', 'B', 'C'], hideNames: true, sides: { a: String(+h.toFixed(2)), b: String(base) }, angles: { A: a + '°' }, width: 120 }); });
-            return mc(r, 'The three triangles all have the same adjacent side.' + flexFigs(figs) + 'Why can ' + t('\\tan\\theta') + ' be smaller than ' + t('1') + ', exactly ' + t('1') + ', or as large as anyone names — while the sine cannot pass ' + t('1') + '?', [
+            var A = r.pick([[15, 45, 61], [15, 45, 61], [20, 45, 62], [10, 45, 60]]), base = r.pick([4, 4, 5, 3]);
+            return mc(r, 'The three triangles all have the same adjacent side.' + threeTri(A, base) + 'Why can ' + t('\\tan\\theta') + ' be smaller than ' + t('1') + ', exactly ' + t('1') + ', or as large as anyone names — while the sine cannot pass ' + t('1') + '?', [
               { html: 'The tangent ' + t('\\frac{\\text{opp}}{\\text{adj}}') + ' compares the two <b>legs</b>, and neither leg is forced to be the longer one; the sine divides by the hypotenuse, which always beats its numerator.', right: true },
               { html: 'The tangent uses the hypotenuse on the bottom, and the hypotenuse can be very short.', why: 'The tangent doesn’t use the hypotenuse at all: ' + t('\\tan\\theta=\\frac{\\text{opp}}{\\text{adj}}') + '.' },
               { html: 'The tangent is the sine multiplied by the angle, so it grows with the angle.', why: 'The tangent is a ratio of two sides. Look at the legs in the three triangles.' },
@@ -825,7 +839,7 @@
       { num: '10', stem: '<b>A symmetry hiding in the table.</b>', parts: [
         { id: 'e10a', sub: 'a', level: 'BEG', make: function (r) {
           var S = r.chance(0.4) ? SETS[0] : r.pick(SETS), a1 = S[1], a2 = S[2];
-          return boxes('In the table for ' + t(S.map(D).join(',\\ ')) + ', the sine row read left to right is the cosine row read right to left. Fill in the three equal pairs.', [
+          return boxes('In the table for ' + S.map(function (a) { return t(D(a)); }).join(', ') + ', the sine row read left to right is the cosine row read right to left. Fill in the three equal pairs.', [
             intBox(t('\\sin ' + D(a1) + '=\\cos'), 90 - a1, cofDiag(a1), '°'), intBox(t('\\sin ' + D(a2) + '=\\cos'), 90 - a2, cofDiag(a2), '°'), intBox(t('\\sin 45^\\circ=\\cos'), 45, cofDiag(45), '°')],
             t('\\sin ' + D(a1) + '=\\cos ' + D(90 - a1)) + ' (both ' + t(fx(T.sin(a1), 4)) + '), ' + t('\\sin ' + D(a2) + '=\\cos ' + D(90 - a2)) + ' (both ' + t(fx(T.sin(a2), 4)) + '), ' + t('\\sin 45^\\circ=\\cos 45^\\circ') + ' (both ' + t('0.7071') + ').', ['Match each sine value with the same number in the cosine row.'], 'three cofunction pairs');
         } },
@@ -1061,7 +1075,7 @@
               'The true angle is ' + t(x.toFixed(4) + '\\ldots^\\circ') + ', and the part after the decimal was thrown away when the answer was rounded. Taking the tangent of ' + t(D(n)) + ' returns the tangent of a slightly different angle. (Indeed ' + t('\\tan(' + x.toFixed(4) + '^\\circ)\\approx ' + (+v.toFixed(4))) + '.) The gap is small and in the direction the rounding predicts, so it confirms the answer.', ['What exactly did you take the tangent of?'], 'why round trip not exact');
           } }] },
       /* ---------- Part F ---------- */
-      { num: '16', section: 'Extra practice F — Stretch: ordering ratios before touching a calculator', stem: function (sh) { return 'The five quantities ' + t(['\\sin', '\\cos', '\\tan'].map(function (f) { return f + ' ' + D(sh.a); }).concat(['\\sin ' + D(sh.b), '\\tan ' + D(sh.b)]).join(',\\quad ')) + ' are to be put in order <b>without a calculator</b>.'; },
+      { num: '16', section: 'Extra practice F — Stretch: ordering ratios before touching a calculator', stem: function (sh) { return 'The five quantities ' + ['\\sin', '\\cos', '\\tan'].map(function (f) { return t(f + ' ' + D(sh.a)); }).concat([t('\\sin ' + D(sh.b)), t('\\tan ' + D(sh.b))]).join(', ') + ' are to be put in order <b>without a calculator</b>.'; },
         shared: function (r) { var a = r.chance(0.35) ? 25 : r.int(10, 29); return { a: a, b: 90 - a }; },
         parts: [
           { id: 'e16a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -1120,7 +1134,7 @@
             return boxes('<b>Now</b> evaluate all five to four decimal places and confirm the ordering.', [vBox('sin', a, 4), vBox('tan', a, 4), vBox('cos', a, 4), vBox('sin', b, 4), vBox('tan', b, 4)],
               t(fx(T.sin(a), 4) + '<' + fx(T.tan(a), 4) + '<' + fx(T.cos(a), 4) + '=' + fx(T.sin(b), 4) + '<' + fx(T.tan(b), 4)) + ' ✓ — including the exact tie between ' + t(TX('cos', a)) + ' and ' + t(TX('sin', b)) + '.', ['Degree mode; four decimal places.'], 'five values ' + a);
           } }] },
-      { num: '17', stem: function (sh) { return '<b>The crossover.</b> In the table for ' + t(sh.S.map(D).join(',\\ ')) + ', the cosine starts out ahead of the sine and ends up behind it.' + rowTable(['sin', 'cos'], sh.S); },
+      { num: '17', stem: function (sh) { return '<b>The crossover.</b> In the table for ' + sh.S.map(function (a) { return t(D(a)); }).join(', ') + ', the cosine starts out ahead of the sine and ends up behind it.' + rowTable(['sin', 'cos'], sh.S); },
         shared: function (r) { return { S: r.chance(0.4) ? SETS[0] : r.pick(SETS) }; },
         parts: [
           { id: 'e17a', sub: 'a(i)', level: 'BEG', make: function (r, sh) {

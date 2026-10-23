@@ -113,7 +113,7 @@
     var show = function (v) { return opt.money ? mon(v) : N(v); };
     return { prompt: prompt, input: { type: 'fields', fields: fields.map(function (f) { return { label: f.label, before: f.before, after: f.after }; }) },
       check: numsCheck(want, opt), key: want.map(function (v) { return opt.money && !Number.isInteger(v) ? m2(v) : plain(v); }),
-      answer: fields.map(function (f, i) { return f.label + (f.before === '=' ? ' ' : ': ') + (f.before ? f.before : '') + t(show(want[i])) + (f.after ? ' ' + f.after : ''); }).join('<br>'),
+      answer: fields.map(function (f, i) { return f.label + (f.before === '=' ? ' = ' : ': ' + (f.before ? f.before : '')) + t(show(want[i])) + (f.after ? ' ' + f.after : ''); }).join('<br>'),
       solution: sol, hints: hints || [], text: text, bad: (opt.bad || []).concat(want.length === 2 && !near(want[0], want[1]) ? [[plain(want[1]), plain(want[0])]] : []) };
   }
   function money(f) { return { label: f, before: '$' }; }
@@ -883,7 +883,7 @@
           } },
           { id: 'e9b', sub: 'b', level: 'EMG', make: function (r, o) {
             return numsP('Solve the system.', [{ label: 'Minutes, ' + t('m') }, { label: 'Cost, ' + t('C'), before: '$' }], [o.m, o.C],
-              { names: ['number of minutes', 'cost'], sys: [[-o.rA * 100, 100, -100 * o.FA], [-o.rB * 100, 100, -100 * o.FB]], sysNames: ['Plan A', 'Plan B'] },
+              { names: ['number of minutes', 'cost'], money: true, sys: [[-o.rA * 100, 100, -100 * o.FA], [-o.rB * 100, 100, -100 * o.FB]], sysNames: ['Plan A', 'Plan B'] },
               'Set the costs equal: ' + t(o.FA + '+' + m2(o.rA) + 'm=' + o.FB + '+' + m2(o.rB) + 'm') + ' ⟹ ' + t((o.FA - o.FB) + '=' + m2(o.rB - o.rA) + 'm') + ' ⟹ ' + t('m=' + o.m) + '. ' + t('C=' + o.FA + '+' + m2(o.rA) + '(' + o.m + ')=' + m2(o.C)) + '.<br>' + chk('Check in B: ' + t(o.FB + '+' + m2(o.rB) + '(' + o.m + ')=' + m2(o.C))),
               ['Both equations are solved for ' + t('C') + ': set them equal.'], 'phone plan solve');
           } },
@@ -1262,7 +1262,7 @@
             return mc(r, 'Solving the new system (' + t('a+b=' + o.H) + ', ' + t(o.ra + 'a+' + o.rb + 'b=' + o.A2) + ') gives ' + t('a=' + frT(aF[0], aF[1])) + ' and ' + t('b=' + frT(bF[0], bF[1])) + '. What must be wrong with the log?', [
               { html: o.nm[1] + '’s time is negative, and the most ' + o.H + ' hours can cover is ' + (o.ra * o.H) + ' m². Since ' + o.A2 + ' > ' + (o.ra * o.H) + ', no non-negative hours fit: the log must be wrong.', right: true },
               { html: 'Nothing — ' + o.nm[0] + ' just worked overtime.', why: 'The log says ' + o.H + ' hours <b>between them</b>; ' + o.nm[0] + ' alone would need more than that.' },
-              { html: 'The algebra is wrong, because times can’t be fractions.', why: 'Times can be fractions of an hour. The algebra is right — the negative time shows the <b>log</b> is impossible.' },
+              { html: 'The algebra must be wrong, because a time can’t come out negative.', why: 'The pair satisfies both equations — the algebra is right. The negative time shows that the <b>log</b> is impossible.' },
               { html: 'Round ' + o.nm[1] + '’s time to 0 h and the log is fine.', why: 'With ' + t('b=0') + ', ' + o.nm[0] + ' covers at most ' + (o.ra * o.H) + ' m² in ' + o.H + ' h — still short of ' + o.A2 + '.' }],
             t('b=' + frT(bF[0], bF[1])) + ' is negative — impossible — and ' + o.nm[0] + '’s ' + t(frT(aF[0], aF[1])) + ' h alone exceeds the ' + o.H + ' h logged. The most ' + o.H + ' hours can cover is ' + t(o.H + '\\times ' + o.ra + '=' + o.ra * o.H) + ' m²; since ' + t(o.A2 + '>' + o.ra * o.H) + ', <b>the log must be wrong</b>.', ['Compare the claimed area with the largest possible area.'], 'impossible log');
           } }] }

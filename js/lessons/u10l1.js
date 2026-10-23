@@ -63,7 +63,7 @@
     return { prompt: prompt, input: { type: 'number', after: unit || undefined }, check: ck, key: key, answer: t(F(key)) + (unit ? ' ' + esc(unit) : ''), solution: sol, hints: hints || [], text: text };
   }
   function exactPart(prompt, x, unit, alts, sol, hints, text, opt) { opt = opt || {}; var p = numPart(prompt, x, exactCk(x, alts, opt), unit, sol, hints, text, opt.dp); p.bad = (alts || []).map(function (a) { return String(rnd(a.v, 6)); }); return p; }
-  function nearPart(prompt, x, dp, unit, alts, sol, hints, text) { var p = numPart(prompt, x, nearCk(x, dp, alts), unit, sol, hints, text, dp); p.bad = (alts || []).filter(function (a) { return Math.abs(rnd(a.v, dp) - rnd(x, dp)) > 1e-9; }).map(function (a) { return fx(a.v, dp); }); return p; }
+  function nearPart(prompt, x, dp, unit, alts, sol, hints, text) { var p = numPart(prompt, x, nearCk(x, dp, alts), unit, sol, hints, text, dp); p.bad = (alts || []).map(function (a) { return fx(a.v, dp); }).filter(function (b) { return p.check(b).v !== 'correct'; }); return p; }
   /* several number boxes: specs [{ label, after, x, dp, alts, exact }] */
   function fieldsPart(prompt, specs, sol, hints, text) {
     var fields = specs.map(function (s) { return { label: s.label, name: s.name || s.label, after: s.after }; });
@@ -73,11 +73,12 @@
     var p = K.P.fields(prompt, fields, checks, keys, ans, sol, hints, text);
     var bad = [];
     specs.forEach(function (s, i) { (s.alts || []).slice(0, 2).forEach(function (a) { if (s.check) return; var dp = s.exact ? 6 : s.dp; if (Math.abs(rnd(a.v, dp) - rnd(s.x, dp)) < 1e-9) return; var b = keys.slice(); b[i] = s.exact ? String(rnd(a.v, 6)) : fx(a.v, s.dp); bad.push(b); }); });
-    p.bad = bad;
+    p.bad = bad.filter(function (b) { return p.check(b).v !== 'correct'; });
     return p;
   }
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return P.mc(r, prompt, opts, sol, hints, text, keepOrder); }
   function mc2(r, prompt, opts, sol, hints, text) { var p = P.mc(r, prompt, opts, sol, hints, text); p.tries = 1; p.input.columns = 2; return p; }
+  function named(p, rows, cols) { var nm = {}; cols.forEach(function (c) { nm[c.id] = c.name || c.html; }); p.answer = rows.map(function (rw) { return rw.html + ': <b>' + nm[p.key[rw.id]] + '</b>'; }).join('<br>'); return p; }
   function pickOther(r, arr, not) { return r.pick(arr.filter(function (x) { return not.indexOf(x) < 0; })); }
 
   /* ---------------- SVG drawing primitives ---------------- */
@@ -965,9 +966,9 @@
         picks = r.shuffle(picks);
         var rows = picks.map(function (p, i) { return { id: 'r' + i, html: '(' + 'abcdef'.charAt(i) + ') ' + p[1][0] }; }), want = {};
         picks.forEach(function (p, i) { want['r' + i] = p[0]; });
-        var cols = [{ id: 'R', html: 'Referent is good enough' }, { id: 'T', html: 'Tape or ruler (to 1 mm)' }, { id: 'M', html: 'Micrometer (to 0.01 mm)' }];
-        return P.grid('Choose for each task.', rows, cols, want, { why: function (row) { var i = Number(row.slice(1)); return { code: 'row', hint: 'Check ' + rows[i].html.slice(4) + ': how far out could you be before the task fails?' }; } },
-          picks.map(function (p, i) { return rows[i].html + ': <b>' + cols.filter(function (c) { return c.id === p[0]; })[0].html + '</b> (tolerance: ' + p[1][1] + ')'; }).join('<br>'), ['If the job has a margin built in, a referent will do. If something is cut, machined or set to the number, measure it.'], 'referent or instrument');
+        var cols = [{ id: 'R', html: 'Referent<br><small>is enough</small>', name: 'Referent is good enough' }, { id: 'T', html: 'Tape or<br>ruler <small>(1 mm)</small>', name: 'Tape or ruler (to 1 mm)' }, { id: 'M', html: 'Micro-<br>meter <small>(0.01 mm)</small>', name: 'Micrometer (to 0.01 mm)' }];
+        return named(P.grid('Choose for each task.', rows, cols, want, { why: function (row) { var i = Number(row.slice(1)); return { code: 'row', hint: 'Check ' + rows[i].html.slice(4) + ': how far out could you be before the task fails?' }; } },
+          picks.map(function (p, i) { return rows[i].html + ': <b>' + cols.filter(function (c) { return c.id === p[0]; })[0].name + '</b> (tolerance: ' + p[1][1] + ')'; }).join('<br>'), ['If the job has a margin built in, a referent will do. If something is cut, machined or set to the number, measure it.'], 'referent or instrument'), rows, cols);
       } },
       { id: 'e14g', sub: 'g', level: 'EMG', make: function (r) {
         return mc(r, 'Complete the sentence: “A referent is good enough exactly when…”', [
@@ -1264,9 +1265,9 @@
         picks = r.shuffle(picks);
         var rows = picks.map(function (p, i) { return { id: 'r' + i, html: '(' + 'abcdef'.charAt(i) + ') ' + p[1][0] }; }), want = {};
         picks.forEach(function (p, i) { want['r' + i] = p[0]; });
-        var cols = [{ id: 'W', html: 'Trundle wheel' }, { id: 'T', html: 'Tape measure' }, { id: 'R', html: 'Ruler' }, { id: 'V', html: 'Vernier caliper' }, { id: 'M', html: 'Micrometer' }];
-        return P.grid('Choose the best instrument for each job.', rows, cols, want, { why: function (row) { var i = Number(row.slice(1)); return { code: 'row', hint: 'Check ' + rows[i].html.slice(4) + ': how big is it, and how precisely must it be known?' }; } },
-          picks.map(function (p, i) { return rows[i].html + ': <b>' + cols.filter(function (c) { return c.id === p[0]; })[0].html + '</b> — ' + p[1][1] + '.'; }).join('<br>'), ['Trundle wheel: long distances on the ground. Tape: rooms. Ruler: desk-sized, to 1 mm. Caliper: small objects, inside sizes and depths, to 0.05 mm. Micrometer: thicknesses of tiny objects, to 0.01 mm.'], 'best instrument for each job');
+        var cols = [{ id: 'W', html: 'W', name: 'Trundle wheel' }, { id: 'T', html: 'T', name: 'Tape measure' }, { id: 'R', html: 'R', name: 'Ruler' }, { id: 'V', html: 'C', name: 'Vernier caliper' }, { id: 'M', html: 'M', name: 'Micrometer' }];
+        return named(P.grid('Choose the best instrument for each job.<br><small><b>W</b> trundle wheel · <b>T</b> tape measure · <b>R</b> ruler · <b>C</b> vernier caliper · <b>M</b> micrometer</small>', rows, cols, want, { why: function (row) { var i = Number(row.slice(1)); return { code: 'row', hint: 'Check ' + rows[i].html.slice(4) + ': how big is it, and how precisely must it be known?' }; } },
+          picks.map(function (p, i) { return rows[i].html + ': <b>' + cols.filter(function (c) { return c.id === p[0]; })[0].name + '</b> — ' + p[1][1] + '.'; }).join('<br>'), ['Trundle wheel: long distances on the ground. Tape: rooms. Ruler: desk-sized, to 1 mm. Caliper: small objects, inside sizes and depths, to 0.05 mm. Micrometer: thicknesses of tiny objects, to 0.01 mm.'], 'best instrument for each job'), rows, cols);
       } }] }
   ];
 

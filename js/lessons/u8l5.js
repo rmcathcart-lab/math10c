@@ -157,32 +157,54 @@
   function amountConds(M, unit, what) { return { f: function (u, v) { return u + v; }, v: M, code: 'amt-total', hint: function (got) { return 'Check the amounts: yours add to ' + t(n(got)) + ' ' + unit + ', but ' + what + ' is ' + t(n(M)) + ' ' + unit + '. The two amounts must add to the total.'; } }; }
   function contentConds(r1, r2, r1t, r2t, C, unitTxt, what) { return { f: function (u, v) { return r1 * u + r2 * v; }, v: C, code: 'amt-value', hint: function (got, u, v) { return 'Your amounts add to the right total, but check the ' + what + ': ' + t(r1t + '(' + n(u) + ')+' + r2t + '(' + n(v) + ')=' + n2(got)) + unitTxt + ', not ' + t(n2(C)) + unitTxt + '.'; } }; }
 
-  /* ---------------- generators ---------------- */
+  /* ---------------- generators (case lists are built on first use, so the site loads fast) ---------------- */
+  function lazy(fn) { var v = null; return function () { return v || (v = fn()); }; }
   var ITEMS1 = ['granola bars', 'trail-mix bars', 'protein bars'];
   function q1Shared(r) {
     var p2 = r.pick([2.5, 3, 3.5, 4, 4.5]), p1 = p2 + r.pick([1, 1.5, 2, 2.5, 3]), x, y;
     do { x = r.int(20, 75); y = r.int(20, 75); } while (Math.abs(x - y) < 3);
     return { p1: p1, p2: p2, x: x, y: y, M: x + y, V: rnd(p1 * x + p2 * y), item: r.pick(ITEMS1) };
   }
+  var Q2 = lazy(function () {
   var Q2 = []; [2, 3].forEach(function (k) { for (var A = 200; A <= 800; A += 100) for (var Bm = 200; Bm <= 800; Bm += 100) for (var y = 4; y <= 15; y++) {
     if (A === Bm || k * y > 45) continue; var pct = (k * A + Bm) * y / (A + Bm); if (!isInt(pct) || pct === y || pct === k * y) continue;
     Q2.push({ k: k, A: A, Bm: Bm, y: y, x: k * y, pct: pct, nuts: rnd(pct * (A + Bm) / 100) }); } });
+    return Q2;
+  });
+  var Q3 = lazy(function () {
   var Q3 = []; [20, 25, 30, 35, 40, 45, 50].forEach(function (a) { for (var b = a + 20; b <= 95; b += 5) for (var c = a + 4; c <= b - 4; c++) [400, 500, 600, 750, 800, 900].forEach(function (V) {
     if (2 * c === a + b) return; var x = V * (b - c) / (b - a), y = V * (c - a) / (b - a); if (!isInt(x) || !isInt(y)) return;
     var vmax = 1000 * (b - a) / Math.max(b - c, c - a), vother = 1000 * (b - a) / Math.min(b - c, c - a);
     Q3.push({ a: a, b: b, c: c, V: V, x: x, y: y, vmaxRaw: vmax, vmax: Math.floor(vmax + 1e-9), vother: Math.floor(vother + 1e-9), lowRunsOut: b - c > c - a }); }); });
+    return Q3;
+  });
+  var Q4 = lazy(function () {
   var Q4 = []; [6, 9, 12].forEach(function (L) { [15, 18, 21].forEach(function (H) { var Lp = L / 24 * 100, Hp = H / 24 * 100; for (var P = Math.ceil(Lp + 5); P <= Hp - 5; P++) [60, 80, 90, 100, 120, 150, 180, 200, 240].forEach(function (M) {
     var x = M * (Hp - P) / (Hp - Lp), y = M - x; if (!isInt(x) || x <= 0 || y <= 0) return; Q4.push({ L: L, H: H, Lp: Lp, Hp: Hp, P: P, M: M, x: x, y: y }); }); }); });
+    return Q4;
+  });
+  var Q5 = lazy(function () {
   var Q5 = []; [2, 2.5, 3, 3.5, 4].forEach(function (tt) { for (var v = 60; v <= 100; v++) for (var k = 15; k <= 45; k++) { if (v + k > 150 || !isInt(v * tt) || !isInt((v + k) * tt)) continue; Q5.push({ t: tt, v: v, k: k, D2: v * tt, D1: (v + k) * tt }); } });
+    return Q5;
+  });
   var CITY = [['Lethbridge', 'Edmonton', 450], ['Calgary', 'Saskatoon', 600], ['Edmonton', 'Saskatoon', 500], ['Calgary', 'Regina', 700], ['Grande Prairie', 'Edmonton', 400], ['Fort McMurray', 'Calgary', 650], ['Edmonton', 'Winnipeg', 1200], ['Calgary', 'Vancouver', 700]];
   var TIMES = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3, 3.5, 4];
+  var Q6 = lazy(function () {
   var Q6 = []; CITY.forEach(function (cp) { for (var D = Math.round(cp[2] * 0.9 / 10) * 10; D <= cp[2] * 1.1; D += 10) TIMES.forEach(function (t1) { TIMES.forEach(function (t2) {
     if (t2 >= t1 || t1 / t2 > 1.5) return; var gh = D / t1, gt = D / t2; if (!isInt(gh) || !isInt(gt)) return; var w = (gt - gh) / 2, p = (gt + gh) / 2;
     if (!isInt(w) || w % 5 || w < 15 || w > 75 || p < 180 || p > 500 || !isInt(p)) return; Q6.push({ A: cp[0], Bc: cp[1], D: D, t1: t1, t2: t2, gh: gh, gt: gt, w: w, p: p }); }); }); });
+    return Q6;
+  });
+  var Q7 = lazy(function () {
   var Q7 = []; [10, 12, 15, 16, 18, 20].forEach(function (vr) { [3, 4, 5, 6].forEach(function (vw) { if (vw * 2.5 > vr) return; [0.5, 1, 1.5, 2, 2.5, 3].forEach(function (k) { for (var d = 2; d <= 16; d++) {
     var tr = d * 60 / vr, tw = k * 60 / vw; if (!isInt(tr) || !isInt(tw)) continue; var T = tr + tw; if (T < 25 || T > 90 || T % 5 || !isInt(d + k)) continue; Q7.push({ vr: vr, vw: vw, k: k, d: d, D: d + k, T: T, tr: tr, tw: tw }); } }); }); });
+    return Q7;
+  });
+  var Q8 = lazy(function () {
   var Q8 = []; for (var p1 = 6; p1 <= 12; p1++) for (var dd = 2; dd <= 6; dd++) [40, 50, 60, 80, 100, 120].forEach(function (M) { for (var x = 5; x <= M - 5; x++) {
     var y = M - x, pm = (p1 * x + (p1 + dd) * y) / M; if (!isInt(pm * 100) || isInt(pm) || x === y) continue; Q8.push({ p1: p1, p2: p1 + dd, M: M, x: x, y: y, pm: rnd(pm) }); } });
+    return Q8;
+  });
 
   /* extra-practice case lists */
   function mixList(los, his, Ms, opt) {   // two-ingredient percent (or price) mixtures with whole-number amounts
@@ -192,40 +214,103 @@
       out.push({ lo: lo, hi: hi, c: c, M: M, x: x, y: y }); }); }); });
     return out;
   }
+  var E1 = lazy(function () {
   var E1 = mixList([25, 30, 35, 40], [70, 75, 80, 85, 90], [120, 150, 160, 180, 200, 240]);
+    return E1;
+  });
+  var E2 = lazy(function () {
   var E2 = mixList([5, 6, 8, 10, 12], [18, 20, 22, 24, 26, 28, 30], [200, 240, 300, 360, 400, 500], { gap: 8 });
+    return E2;
+  });
+  var E3 = lazy(function () {
   var E3 = mixList([5, 6, 7, 8, 9, 10], [18, 20, 22, 24, 26, 28, 30], [30, 36, 40, 45, 50, 54, 60]);
+    return E3;
+  });
+  var E4 = lazy(function () {
   var E4 = []; [20, 25, 30, 35, 40].forEach(function (c1) { for (var tt = c1 + 10; tt <= 70; tt += 5) for (var V = 10; V <= 40; V++) { var x = V * (100 - tt) / (100 - c1); if (!isInt(x * 2) || x <= 0 || x >= V || 2 * tt === c1 + 100) continue; E4.push({ c1: c1, t: tt, V: V, x: rnd(x), y: rnd(V - x) }); } });
+    return E4;
+  });
+  var E5 = lazy(function () {
   var E5 = []; [20, 24, 25, 30, 32, 40].forEach(function (st) { for (var tt = 5; tt < st - 3; tt++) [20, 30, 40, 50, 60, 80].forEach(function (V) { var x = tt * V / st; if (!isInt(x) || x >= V) return; E5.push({ s: st, t: tt, V: V, x: x, w: V - x }); }); });
+    return E5;
+  });
+  var E6 = lazy(function () {
   var E6 = []; [10, 15, 20, 25].forEach(function (lo) { for (var hi = lo + 15; hi <= lo + 35; hi += 5) [40, 50, 60, 80, 100].forEach(function (V) {
     for (var c = lo + 3; c <= hi - 3; c++) { if (2 * c === lo + hi) continue; var x = V * (hi - c) / (hi - lo); if (!isInt(x)) continue;
       for (var c2 = hi + 5; c2 <= hi + 25; c2 += 5) { var x2 = V * (hi - c2) / (hi - lo); if (!isInt(x2)) continue; E6.push({ lo: lo, hi: hi, V: V, c: c, x: x, y: V - x, c2: c2, x2: x2, y2: V - x2 }); } } }); });
+    return E6;
+  });
+  var E7 = lazy(function () {
   var E7 = []; [8, 10, 12, 15].forEach(function (lo) { [25, 30, 35, 40].forEach(function (hi) { for (var a = lo + 3; a <= hi - 3; a++) { var r1 = (a - lo) / (hi - a); if (!(isInt(r1) && r1 >= 2 && r1 <= 4) && !(isInt(1 / r1) && 1 / r1 >= 2 && 1 / r1 <= 4)) continue;
     [300, 450, 600, 900, 1200].forEach(function (V) { var x = V * (hi - a) / (hi - lo); if (!isInt(x)) return; E7.push({ lo: lo, hi: hi, a: a, V: V, x: x, y: V - x }); }); } }); });
+    return E7;
+  });
   function streamList(bs, cs, ts, Dmin, Dmax) { var out = []; bs.forEach(function (b) { cs.forEach(function (c) { if (b <= 2.5 * c) return; ts.forEach(function (td) { ts.forEach(function (tu) {
     if (tu <= td) return; var D = (b + c) * td; if (!isInt(D) || !near(D, (b - c) * tu) || D < Dmin || D > Dmax) return; out.push({ b: b, c: c, td: td, tu: tu, D: D, S1: b + c, S2: b - c }); }); }); }); }); return out; }
   var range = function (a, b, st) { var o = []; for (var i = a; i <= b; i += (st || 1)) o.push(i); return o; };
+  var E8 = lazy(function () {
   var E8 = streamList(range(12, 40), range(2, 10), [1.5, 2, 2.5, 3, 4, 5, 6], 40, 200);
+    return E8;
+  });
+  var E14 = lazy(function () {
   var E14 = streamList(range(15, 45), range(3, 12), [1, 1.5, 2, 2.5, 3, 4], 30, 150);
+    return E14;
+  });
+  var E9 = lazy(function () {
   var E9 = []; range(300, 700, 10).forEach(function (p) { range(20, 100, 10).forEach(function (w) { [2, 2.5, 3, 3.5, 4].forEach(function (tw) { [2.5, 3, 3.5, 4, 4.5, 5].forEach(function (ta) {
     if (ta <= tw) return; var D = (p + w) * tw; if (!near(D, (p - w) * ta) || D < 800 || D > 2400 || D % 50) return; E9.push({ p: p, w: w, tw: tw, ta: ta, D: D, S1: p + w, S2: p - w }); }); }); }); });
+    return E9;
+  });
+  var E10 = lazy(function () {
   var E10 = []; [1200, 1500, 1800, 2000, 2400].forEach(function (D) { range(8, 20).forEach(function (bk) { range(1, 6).forEach(function (ck) { if (ck * 2.5 > bk) return;
     var td = 0.06 * D / (bk + ck), tu = 0.06 * D / (bk - ck); if (!isInt(td) || !isInt(tu) || td < 3 || tu > 20) return; E10.push({ D: D, bk: bk, ck: ck, td: td, tu: tu }); }); }); });
+    return E10;
+  });
+  var E10B = lazy(function () {
   var E10B = mixList([5, 6, 8, 10, 12], [30, 35, 40], [600, 750, 800, 900, 1000], { test: function (lo, hi, c, M, x) { return x % 50 === 0; } });
+    return E10B;
+  });
+  var E11 = lazy(function () {
   var E11 = []; [30, 40, 50].forEach(function (sg) { [80, 90, 100, 110].forEach(function (sp) { range(3, 15).forEach(function (g10) { range(15, 40).forEach(function (p10) {
     var g = g10 / 10, p = p10 / 10, D = sg * g + sp * p; if (!isInt(D) || D % 10 || !isInt((g + p) * 2)) return; E11.push({ sg: sg, sp: sp, g: g, p: p, D: D, T: rnd(g + p) }); }); }); }); });
+    return E11;
+  });
+  var E12 = lazy(function () {
   var E12 = []; [12, 15, 16, 18, 20, 24].forEach(function (v1) { [45, 48, 50, 54, 60, 72].forEach(function (v2) { if (v2 < 2 * v1) return; [0.5, 1, 1.5, 2].forEach(function (h) {
     var tt = v2 * h / (v2 - v1), d = v1 * tt; if (!isInt(tt * 100) || !isInt(tt * 60) || !isInt(d * 10) || tt > 3.5) return; E12.push({ v1: v1, v2: v2, h: h, t: rnd(tt), d: rnd(d) }); }); }); });
+    return E12;
+  });
+  var E13 = lazy(function () {
   var E13 = mixList([10, 15, 20], [35, 40, 45, 50], [100, 150, 200, 250, 300, 400]);
+    return E13;
+  });
+  var E15 = lazy(function () {
   var E15 = [];
   for (var lo15 = 12; lo15 <= 20; lo15 += 2) for (var hi15 = 24; hi15 <= 36; hi15 += 2) [40, 50, 60, 80].forEach(function (M) { for (var x = 5; x <= M - 5; x++) { var y = M - x, pm = (hi15 * x + lo15 * y) / M; if (!isInt(pm * 100) || isInt(pm) || x === y) continue; E15.push({ hi: hi15, lo: lo15, M: M, x: x, y: y, pm: rnd(pm), V: hi15 * x + lo15 * y }); } });
+    return E15;
+  });
+  var E16 = lazy(function () {
   var E16 = []; range(18, 26).forEach(function (pa) { range(5, 9).forEach(function (pr) { range(3, 6).forEach(function (pz) { if (pz >= pr) return; range(8, 30).forEach(function (a) { range(5, 20).forEach(function (r) {
     var M = a + 2 * r, V = pa * a + (pr + pz) * r, pm = V / M; if (M % 5 || M > 60 || !isInt(pm * 100) || isInt(pm)) return; E16.push({ pa: pa, pr: pr, pz: pz, a: a, r: r, M: M, V: V, pm: rnd(pm) }); }); }); }); }); });
+    return E16;
+  });
+  var E17 = lazy(function () {
   var E17 = []; range(15, 30).forEach(function (b) { range(2, 6).forEach(function (c) { [2, 3, 4, 5, 6].forEach(function (k) { [2, 2.5, 3].forEach(function (td) { [2, 2.5, 3].forEach(function (tu) {
     var D1 = (b + c) * td, D2 = (b - k - c) * tu, T2 = D2 / (b - k + c); if (!isInt(D1) || !isInt(D2) || D2 < 20 || !isInt(T2 * 10)) return; E17.push({ b: b, c: c, k: k, td: td, tu: tu, D1: D1, D2: D2, T2: rnd(T2) }); }); }); }); }); });
+    return E17;
+  });
+  var E18 = lazy(function () {
   var E18 = []; [30, 40, 50, 60].forEach(function (j) { [10, 12, 15, 18, 20, 24, 30].forEach(function (V) { for (var tt = 10; tt < j - 5; tt += 5) { var w = V * (j / tt - 1); if (!isInt(w) || w < 2) continue; E18.push({ j: j, V: V, t: tt, w: w, juice: rnd(j * V / 100), fin: rnd(V * j / tt) }); } }); });
+    return E18;
+  });
+  var E19 = lazy(function () {
   var E19 = []; [20, 24, 30, 36, 40, 45, 50].forEach(function (td) { [30, 36, 40, 45, 50, 60, 75, 80, 90].forEach(function (tu) { if (tu <= td) return; var k = (tu + td) / (tu - td); if (!isInt(k) || k < 2 || k > 9) return; E19.push({ td: td, tu: tu, k: k }); }); });
+    return E19;
+  });
+  var E20 = lazy(function () {
   var E20 = mixList([12, 14, 15, 16, 18], [22, 24, 25, 27, 28, 30], [24, 30, 36, 40, 45, 48, 60], { gap: 6 });
+    return E20;
+  });
 
   /* ---------------- shared hints ---------------- */
   var H_MIX = ['Make the organizer: <b>Amount × Rate = Value</b> for each ingredient. The Amount column adds to the total amount; the Value column adds to the total value. Rates are never added.', 'Solve by substitution: from the amount equation, write one variable in terms of the other.'];
@@ -285,7 +370,7 @@
         } }] },
 
       /* ---------- 2. nuts: unknown rates ---------- */
-      { num: '2', shared: function (r) { return r.pick(Q2); },
+      { num: '2', shared: function (r) { return r.pick(Q2()); },
         stem: function (sh) { return t(n(sh.A)) + ' g of Type X granola is mixed with ' + t(n(sh.Bm)) + ' g of Type Y granola to produce a mixture that is ' + t(pc(sh.pct)) + ' nuts by mass. Type X granola has ' + (sh.k === 2 ? 'twice' : 'three times') + ' as many grams of nuts per gram as Type Y granola.'; },
         parts: [
           { id: '2sys', sub: 'system', level: 'PRG', make: function (r, sh) {
@@ -314,7 +399,7 @@
           } }] },
 
       /* ---------- 3. pharmacist ---------- */
-      { num: '3', shared: function (r) { return r.pick(Q3); }, stem: q3Stem, parts: [
+      { num: '3', shared: function (r) { return r.pick(Q3()); }, stem: q3Stem, parts: [
         { id: '3asys', sub: 'a system', level: 'EMG', make: function (r, sh) {
           var C = rnd(sh.c * sh.V / 100), eq2 = dp(sh.a) + 'x+' + dp(sh.b) + 'y=' + n(C);
           return sysP({ prompt: 'Let ' + t('x') + ' be the mL of ' + t(pc(sh.a)) + ' solution and ' + t('y') + ' the mL of ' + t(pc(sh.b)) + ' solution. Write a system of two equations: one for the total volume, one for the amount of alcohol.', vars: ['x', 'y'],
@@ -345,7 +430,7 @@
         } }] },
 
       /* ---------- 4. carat gold ---------- */
-      { num: '4', shared: function (r) { return r.pick(Q4); },
+      { num: '4', shared: function (r) { return r.pick(Q4()); },
         stem: function (sh) { return 'A jeweller has some ' + sh.L + ' carat gold and some ' + sh.H + ' carat gold, and wants to produce ' + t(n(sh.M)) + ' g of gold that is ' + t(pc(sh.P)) + ' pure by mass. Pure gold is 24 carat.'; },
         parts: [
           { id: '4a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -366,7 +451,7 @@
           } }] },
 
       /* ---------- 5. train and car ---------- */
-      { num: '5', shared: function (r) { return r.pick(Q5); }, parts: [
+      { num: '5', shared: function (r) { return r.pick(Q5()); }, parts: [
         { id: '5', level: 'ADV', make: function (r, sh) {
           var sol = 'Let ' + t('t') + ' = common time (h). Car: ' + t('\\frac{' + n(sh.D2) + '}{t}') + ' km/h; train: ' + t('\\frac{' + n(sh.D1) + '}{t}') + ' km/h.<br>The train is ' + sh.k + ' km/h faster: ' + t('\\frac{' + n(sh.D1) + '}{t}=\\frac{' + n(sh.D2) + '}{t}+' + sh.k) +
             '<br>Multiply every term by ' + t('t') + ': ' + t(n(sh.D1) + '=' + n(sh.D2) + '+' + sh.k + 't\\Rightarrow ' + sh.k + 't=' + n(sh.D1 - sh.D2) + '\\Rightarrow t=' + n(sh.t)) +
@@ -384,7 +469,7 @@
         } }] },
 
       /* ---------- 6. headwind / tailwind ---------- */
-      { num: '6', shared: function (r) { return r.pick(Q6); },
+      { num: '6', shared: function (r) { return r.pick(Q6()); },
         stem: function (sh) { return 'A small plane flying into a headwind takes ' + hrs(sh.t1) + ' to travel the ' + t(n(sh.D)) + ' km from ' + sh.A + ' to ' + sh.Bc + '. At the same time, a similar plane leaves ' + sh.Bc + ' and reaches ' + sh.A + ' in ' + hrs(sh.t2) + '. The planes have the same cruising speed in windless conditions.'; },
         parts: [
           { id: '6sys', sub: 'system', level: 'PRG', make: function (r, sh) {
@@ -407,7 +492,7 @@
           } }] },
 
       /* ---------- 7. cyclist with a flat ---------- */
-      { num: '7', shared: function (r) { var c = r.pick(Q7); return Object.assign({}, c, { start: 6 * 60 + 30 + 5 * r.int(0, 18), place: r.pick(['library', 'school', 'pool', 'rink']) }); }, stem: q7Stem, parts: [
+      { num: '7', shared: function (r) { var c = r.pick(Q7()); return Object.assign({}, c, { start: 6 * 60 + 30 + 5 * r.int(0, 18), place: r.pick(['library', 'school', 'pool', 'rink']) }); }, stem: q7Stem, parts: [
         { id: '7sys', sub: 'system', level: 'PRG', make: function (r, sh) {
           var T = frac60(sh.T);
           return sysP({ prompt: 'Let ' + t('d') + ' be the distance she rode and ' + t('k') + ' the distance she walked, in km. Write a system of two equations: one for the distance, one for the time (in hours).', vars: ['d', 'k'],
@@ -431,7 +516,7 @@
         } }] },
 
       /* ---------- 8. MC coffee ---------- */
-      { num: '8', shared: function (r) { return r.pick(Q8); }, parts: [
+      { num: '8', shared: function (r) { return r.pick(Q8()); }, parts: [
         { id: '8', level: 'EMG', make: function (r, sh) {
           var V = rnd(sh.pm * sh.M), q = Math.round(sh.M / 4), cands = [q, sh.M - q, Math.round(sh.M / 5), sh.M - Math.round(sh.M / 5), Math.round(sh.M / 2) + 4, Math.round(sh.M / 3)];
           var dis = cands.filter(function (v, i, a) { return v > 0 && v < sh.M && v !== sh.x && v !== sh.y && a.indexOf(v) === i; }).slice(0, 2);
@@ -470,7 +555,7 @@
 
     extra: [
       /* ---------------- Part A — the mixture table ---------------- */
-      { num: '1', section: 'Extra practice A — The mixture table', shared: function (r) { return r.pick(E1); },
+      { num: '1', section: 'Extra practice A — The mixture table', shared: function (r) { return r.pick(E1()); },
         stem: function (sh) { return 'A metal shop stocks an alloy that is ' + t(pc(sh.lo)) + ' copper and an alloy that is ' + t(pc(sh.hi)) + ' copper. It needs ' + t(n(sh.M)) + ' kg of an alloy that is ' + t(pc(sh.c)) + ' copper. Let ' + t('x') + ' be the kilograms of the ' + t(pc(sh.lo)) + ' alloy and ' + t('y') + ' the kilograms of the ' + t(pc(sh.hi)) + ' alloy.'; },
         parts: [
           { id: 'e1a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -505,7 +590,7 @@
               t(dp(sh.lo) + '(' + n(sh.x) + ')+' + dp(sh.hi) + '(' + n(sh.y) + ')=' + n(rnd(sh.lo * sh.x / 100)) + '+' + n(rnd(sh.hi * sh.y / 100)) + '=' + n(C)) + ' kg, and ' + t(dp(sh.c) + '(' + n(sh.M) + ')=' + n(C)) + ' ✓. Also ' + t(n(sh.x) + '+' + n(sh.y) + '=' + n(sh.M)) + ' ✓<br>In context: ' + sh.c + '% is nearer ' + (sh.x > sh.y ? sh.lo : sh.hi) + '%, so there should be more of the ' + (sh.x > sh.y ? sh.lo : sh.hi) + '% alloy — and there is.',
               ['Copper = mass × concentration (as a decimal), for each alloy.'], 'copper check', { after: 'kg' });
           } }] },
-      { num: '2', shared: function (r) { return r.pick(E2); },
+      { num: '2', shared: function (r) { return r.pick(E2()); },
         stem: function (sh) { return 'A supplier blends a fertilizer that is ' + t(pc(sh.hi)) + ' nitrogen with one that is ' + t(pc(sh.lo)) + ' nitrogen to produce ' + t(n(sh.M)) + ' kg of a blend that is ' + t(pc(sh.c)) + ' nitrogen. Let ' + t('m') + ' be the kilograms of the ' + t(pc(sh.hi)) + ' fertilizer and ' + t('n') + ' the kilograms of the ' + t(pc(sh.lo)) + ' fertilizer. <b>Do not solve this system.</b>'; },
         parts: [
           { id: 'e2a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -549,7 +634,7 @@
               { html: 'Nothing — ' + t(sh.c) + ' is the percent of the blend, so it is correct.', why: 'The left side adds up amounts of nitrogen, so the right side must be an amount too, not a percent.' }],
               'The left side adds up amounts of nitrogen (kg × percent), so the right side must be the nitrogen in the blend: ' + t(dp(sh.c) + '(' + n(sh.M) + ')=' + n(C)) + ' kg. With whole-number percents throughout: ' + t(sh.hi + 'm+' + sh.lo + 'n=' + n(C * 100)) + '.', [], 'error: percent on the right side');
           } }] },
-      { num: '3', shared: function (r) { return r.pick(E3); },
+      { num: '3', shared: function (r) { return r.pick(E3()); },
         stem: function (sh) { return 'A shop blends cashews worth $' + sh.hi + '/kg with peanuts worth $' + sh.lo + '/kg to make ' + t(n(sh.M)) + ' kg of a mixture worth $' + sh.c + '/kg.'; },
         parts: [
           { id: 'e3a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -580,7 +665,7 @@
           } }] },
 
       /* ---------------- Part B — one ingredient is pure ---------------- */
-      { num: '4', section: 'Extra practice B — When one ingredient is pure', shared: function (r) { return r.pick(E4); },
+      { num: '4', section: 'Extra practice B — When one ingredient is pure', shared: function (r) { return r.pick(E4()); },
         stem: function (sh) { return 'A mechanic has a premixed coolant that is ' + t(pc(sh.c1)) + ' antifreeze and a drum of pure (' + t('100\\%') + ') antifreeze concentrate. He needs ' + t(n(sh.V)) + ' L of coolant that is ' + t(pc(sh.t)) + ' antifreeze.'; },
         parts: [
           { id: 'e4a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -607,7 +692,7 @@
               { html: 'The amounts should be equal because both ingredients contain antifreeze.', why: 'Equal amounts would give halfway, ' + t(pc((sh.c1 + 100) / 2)) + '.' }],
               'Against the context: both amounts are positive and smaller than ' + n(sh.V) + ' L; ' + sh.t + '% is ' + (sh.t - sh.c1) + ' points from ' + sh.c1 + '% and ' + (100 - sh.t) + ' points from 100%, so most of the batch should be the ' + (moreLo ? 'weaker coolant' : 'pure antifreeze') + ' — and it is.', [], 'context check');
           } }] },
-      { num: '5', shared: function (r) { return r.pick(E5); },
+      { num: '5', shared: function (r) { return r.pick(E5()); },
         stem: function (sh) { return 'A greenhouse has a fertilizer solution that is ' + t(pc(sh.s)) + ' concentrate. It must be diluted with <b>pure water</b> to produce ' + t(n(sh.V)) + ' L of a solution that is ' + t(pc(sh.t)) + ' concentrate.'; },
         parts: [
           { id: 'e5a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -633,7 +718,7 @@
           } }] },
 
       /* ---------------- Part C — possible? ---------------- */
-      { num: '6', section: 'Extra practice C — Is the answer even possible?', shared: function (r) { return r.pick(E6); },
+      { num: '6', section: 'Extra practice C — Is the answer even possible?', shared: function (r) { return r.pick(E6()); },
         stem: function (sh) { return 'A chemistry technician has a ' + t(pc(sh.lo)) + ' solution and a ' + t(pc(sh.hi)) + ' solution of the same salt. Let ' + t('x') + ' and ' + t('y') + ' be the litres of the ' + t(pc(sh.lo)) + ' and ' + t(pc(sh.hi)) + ' solutions.'; },
         parts: [
           { id: 'e6a', sub: 'a', level: 'PRG', make: function (r, sh) {
@@ -662,7 +747,7 @@
               swapHint: 'List the lower end first.', diag: function (u, v) { if (u > sh.lo && v < sh.hi) return { code: 'amt-cond', hint: 'You can go all the way to the ends: use only one of the solutions.' }; if (u < sh.lo || v > sh.hi) return { code: 'amt-cond', hint: 'A mixture can’t be weaker than its weakest ingredient or stronger than its strongest.' }; return null; },
               sol: 'The result is a weighted average of ' + sh.lo + '% and ' + sh.hi + '%, so it must land between them: <b>every concentration from ' + sh.lo + '% to ' + sh.hi + '% inclusive</b>. The ends use one solution only (' + sh.V + ' L of the ' + sh.lo + '% or ' + sh.V + ' L of the ' + sh.hi + '%). Since ' + sh.c2 + '% > ' + sh.hi + '%, it is out of reach.', hints: ['A mixture always lands between its two ingredients.'], text: 'possible range' });
           } }] },
-      { num: '7', shared: function (r) { var c = r.pick(E7); var targets = r.shuffle(['in', 'under', 'edge']); return Object.assign({}, c, { order: targets, under: c.lo - r.pick([2, 3]) }); },
+      { num: '7', shared: function (r) { var c = r.pick(E7()); var targets = r.shuffle(['in', 'under', 'edge']); return Object.assign({}, c, { order: targets, under: c.lo - r.pick([2, 3]) }); },
         stem: function (sh) { return 'A fish hatchery has brine at ' + t(pc(sh.lo)) + ' and brine at ' + t(pc(sh.hi)) + '.'; },
         parts: [
           { id: 'e7a', sub: 'a–c', level: 'EMG', make: function (r, sh) {
@@ -690,7 +775,7 @@
           } }] },
 
       /* ---------------- Part D — current ---------------- */
-      { num: '8', section: 'Extra practice D — Moving with and against a current', shared: function (r) { return r.pick(E8); },
+      { num: '8', section: 'Extra practice D — Moving with and against a current', shared: function (r) { return r.pick(E8()); },
         stem: function (sh) { return 'A freight barge travels ' + t(n(sh.D)) + ' km downstream in ' + hrs(sh.td) + ' and the same ' + t(n(sh.D)) + ' km back upstream in ' + hrs(sh.tu) + '. Let ' + t('b') + ' be its speed in still water and ' + t('c') + ' the speed of the current, in km/h.'; },
         parts: [
           { id: 'e8a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -719,7 +804,7 @@
               if (near(v, sh.b / sh.D) || near(v, sh.b * sh.D)) return { code: 'mot-dst', hint: 'Time = distance ÷ speed.' }; return null; },
               t(n(sh.D) + '\\div ' + n(sh.b) + (isInt(x * 100) ? '=' + n(rnd(x)) : '\\approx ' + K.roundTo(x, 2).toFixed(2))) + ' h — between the ' + hrs(sh.td) + ' downstream and the ' + hrs(sh.tu) + ' upstream, where it must fall.', ['Time = distance ÷ speed.'], 'still-water time');
           } }] },
-      { num: '9', shared: function (r) { return r.pick(E9); },
+      { num: '9', shared: function (r) { return r.pick(E9()); },
         stem: function (sh) { return 'A cargo plane flies ' + t(n(sh.D)) + ' km with a steady tailwind in ' + hrs(sh.tw) + '. It returns the same ' + t(n(sh.D)) + ' km against that same wind in ' + hrs(sh.ta) + '. Let ' + t('p') + ' be the plane’s speed in still air and ' + t('w') + ' the wind speed, both in km/h.'; },
         parts: [
           { id: 'e9a', sub: 'a', level: 'PRG', make: function (r, sh) {
@@ -744,7 +829,7 @@
               { html: 'Because the wind speed is subtracted twice.', why: 'It is added on one leg and subtracted on the other — the speeds average out, but the <b>times</b> don’t.' }],
               'With no wind: ' + t('2\\times ' + n(sh.D) + '\\div ' + n(sh.p) + '\\approx ' + K.roundTo(nw, 2).toFixed(2)) + ' h; with the wind: ' + t(n(sh.tw) + '+' + n(sh.ta) + '=' + n(sh.tw + sh.ta)) + ' h. The plane spends <b>longer</b> on the slow leg than on the fast one, so the time lost fighting the wind is more than the time gained riding it.', [], 'why the round trip is longer');
           } }] },
-      { num: '10', shared: function (r) { return { a: r.pick(E10), b: r.pick(E10B), shelf: r.pick([0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2]) }; },
+      { num: '10', shared: function (r) { return { a: r.pick(E10()), b: r.pick(E10B()), shelf: r.pick([0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2]) }; },
         stem: 'In each part the numbers arrive in mismatched units. Reconcile the units <b>first</b>, then build and solve the system.',
         parts: [
           { id: 'e10a', sub: 'a i', level: 'ADV', make: function (r, sh) {
@@ -784,7 +869,7 @@
           } }] },
 
       /* ---------------- Part E — two-leg journeys ---------------- */
-      { num: '11', section: 'Extra practice E — Two-leg journeys', shared: function (r) { var c = r.pick(E11); return Object.assign({}, c, { stop: r.pick([10, 15, 20, 30]) }); },
+      { num: '11', section: 'Extra practice E — Two-leg journeys', shared: function (r) { var c = r.pick(E11()); return Object.assign({}, c, { stop: r.pick([10, 15, 20, 30]) }); },
         stem: function (sh) { return 'A driver covers ' + t(n(sh.D)) + ' km between two towns, part of it on gravel at ' + t(sh.sg) + ' km/h and the rest on pavement at ' + t(sh.sp) + ' km/h. The trip takes ' + hm(Math.round(sh.T * 60) + sh.stop) + ' in total, including one ' + sh.stop + '-minute stop.'; },
         parts: [
           { id: 'e11a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -812,7 +897,7 @@
               conds: [{ f: function (u, v) { return u + v; }, v: sh.D, code: 'amt-total', hint: function (g) { return 'The distances must add to ' + t(n(sh.D)) + ' km; yours add to ' + t(n(rnd(g))) + '.'; } }],
               sol: t(sh.sg + '(' + n(sh.g) + ')=' + n(rnd(sh.sg * sh.g))) + ' km and ' + t(sh.sp + '(' + n(sh.p) + ')=' + n(rnd(sh.sp * sh.p))) + ' km — they add to ' + t(n(sh.D)) + ' km ✓<br><b>' + n(rnd(sh.sg * sh.g)) + ' km on gravel and ' + n(rnd(sh.sp * sh.p)) + ' km on pavement.</b>', hints: ['Distance = speed × time.'], text: 'surface distances' });
           } }] },
-      { num: '12', shared: function (r) { var c = r.pick(E12); return Object.assign({}, c, { start: r.pick([6 * 60, 6 * 60 + 30, 7 * 60, 7 * 60 + 30, 8 * 60]) }); },
+      { num: '12', shared: function (r) { var c = r.pick(E12()); return Object.assign({}, c, { start: r.pick([6 * 60, 6 * 60 + 30, 7 * 60, 7 * 60 + 30, 8 * 60]) }); },
         stem: function (sh) { return 'A cyclist leaves a trailhead at ' + clock(sh.start) + ' riding at a steady ' + t(sh.v1) + ' km/h. A support car leaves the same trailhead along the same route at ' + clock(sh.start + Math.round(sh.h * 60)) + ' travelling at ' + t(sh.v2) + ' km/h. Let ' + t('t') + ' be the hours since ' + clock(sh.start) + ' and ' + t('d') + ' the distance from the trailhead in km.'; },
         parts: [
           { id: 'e12a', sub: 'a', level: 'PRG', make: function (r, sh) {
@@ -847,7 +932,7 @@
           } }] },
 
       /* ---------------- Part F — error analysis ---------------- */
-      { num: '13', section: 'Extra practice F — Error analysis', shared: function (r) { return r.pick(E13); },
+      { num: '13', section: 'Extra practice F — Error analysis', shared: function (r) { return r.pick(E13()); },
         stem: function (sh) { return 'Asked to mix a ' + t(pc(sh.lo)) + ' and a ' + t(pc(sh.hi)) + ' solution to make ' + t(n(sh.M)) + ' mL of a ' + t(pc(sh.c)) + ' solution, a student wrote ' + t('x+y=' + n(sh.M)) + ' and ' + t(dp(sh.lo) + 'x+' + sh.hi + 'y=' + sh.c + '(' + n(sh.M) + ')') + '.'; },
         parts: [
           { id: 'e13a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -883,7 +968,7 @@
               conds: [amountConds(sh.M, 'mL', 'the batch'), contentConds(sh.lo / 100, sh.hi / 100, dp(sh.lo), dp(sh.hi), C, '\\text{ mL}', 'solute')],
               sol: mixSol({ X: 'x', Y: 'y', M: sh.M, r1: sh.lo / 100, r2: sh.hi / 100, r1t: dp(sh.lo), r2t: dp(sh.hi), C: C, A: sh.x, Bv: sh.y, letTxt: 'Correct content equation: ' + t(dp(sh.lo) + 'x+' + dp(sh.hi) + 'y=' + n(C)) + '.', amtName: 'Amount', conName: 'Solute', end: n(sh.x) + ' mL of the ' + sh.lo + '% solution and ' + n(sh.y) + ' mL of the ' + sh.hi + '% solution.' }), hints: H_PCT, text: 'corrected mix' });
           } }] },
-      { num: '14', shared: function (r) { return r.pick(E14); },
+      { num: '14', shared: function (r) { return r.pick(E14()); },
         stem: function (sh) { return 'A jet boat covers ' + t(n(sh.D)) + ' km downstream in ' + hrs(sh.td) + ' and ' + t(n(sh.D)) + ' km upstream in ' + hrs(sh.tu) + '. A student wrote ' + t(n(sh.td) + '(b+c)=' + n(sh.D)) + ' and ' + t(n(sh.tu) + '(b+c)=' + n(sh.D)) + '.'; },
         parts: [
           { id: 'e14a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -904,7 +989,7 @@
               conds: [{ f: function (u, v) { return u + v; }, v: sh.S1, code: 'amt-cond', hint: function () { return 'Check: ' + t('b+c') + ' should be ' + t(n(sh.S1)) + ' km/h.'; } }, { f: function (u, v) { return u - v; }, v: sh.S2, code: 'amt-cond', hint: function () { return 'Check: ' + t('b-c') + ' should be ' + t(n(sh.S2)) + ' km/h.'; } }],
               sol: bcSol({ b: 'b', c: 'c', S1: sh.S1, S2: sh.S2, l1: t(n(sh.td) + '(b+c)=' + n(sh.D) + '\\Rightarrow b+c=' + n(sh.S1)), l2: t(n(sh.tu) + '(b-c)=' + n(sh.D) + '\\Rightarrow b-c=' + n(sh.S2)), end: 'The jet boat travels at ' + sh.b + ' km/h in still water and the current runs at ' + sh.c + ' km/h.' }), hints: H_STREAM, text: 'jet boat speeds' });
           } }] },
-      { num: '15', shared: function (r) { return draw(r, function (r) { var c = r.pick(E15), a = r.int(6, 14), d = r.pick([-6, -5, -4, -3, 3, 4, 5, 6]); return Object.assign({}, c, { sx: c.x + a, sy: c.y - (a - d) }); }, function (c) { return c.sy >= 3 && c.sx !== c.sy && c.sx <= c.M - 5; }, { hi: 30, lo: 18, M: 50, x: 20, y: 30, pm: 22.8, V: 1140, sx: 32, sy: 22 }); },
+      { num: '15', shared: function (r) { return draw(r, function (r) { var c = r.pick(E15()), a = r.int(6, 14), d = r.pick([-6, -5, -4, -3, 3, 4, 5, 6]); return Object.assign({}, c, { sx: c.x + a, sy: c.y - (a - d) }); }, function (c) { return c.sy >= 3 && c.sx !== c.sy && c.sx <= c.M - 5; }, { hi: 30, lo: 18, M: 50, x: 20, y: 30, pm: 22.8, V: 1140, sx: 32, sy: 22 }); },
         stem: function (sh) { return 'A shop blends tea worth $' + sh.hi + '/kg with tea worth $' + sh.lo + '/kg to make ' + t(n(sh.M)) + ' kg of a blend worth ' + money(sh.pm) + '/kg. A student reports “' + sh.sx + ' kg of the $' + sh.hi + ' tea and ' + sh.sy + ' kg of the $' + sh.lo + ' tea.”'; },
         parts: [
           { id: 'e15a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -930,7 +1015,7 @@
           } }] },
 
       /* ---------------- Part G — stretch ---------------- */
-      { num: '16', section: 'Extra practice G — Stretch', shared: function (r) { return r.pick(E16); },
+      { num: '16', section: 'Extra practice G — Stretch', shared: function (r) { return r.pick(E16()); },
         stem: function (sh) { return 'A trail mix is made from almonds worth $' + sh.pa + '/kg, raisins worth $' + sh.pr + '/kg, and pretzels worth $' + sh.pz + '/kg. The finished mix weighs ' + t(n(sh.M)) + ' kg and is worth ' + money(sh.pm) + '/kg. The mix contains <b>equal masses</b> of raisins and pretzels.'; },
         parts: [
           { id: 'e16a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -955,7 +1040,7 @@
               sol: 'From the amount equation, ' + t('a=' + n(sh.M) + '-2r') + ':<br>' + t(sh.pa + '(' + n(sh.M) + '-2r)+' + (sh.pr + sh.pz) + 'r=' + n(sh.V) + '\\Rightarrow ' + n(k) + coef(cr).replace(/^(\d)/, '+$1') + 'r=' + n(sh.V) + '\\Rightarrow r=' + n(sh.r)) + ', ' + t('a=' + n(sh.M) + '-2(' + n(sh.r) + ')=' + n(sh.a)) +
                 '<br>Check: ' + t(n(sh.a) + '+' + n(sh.r) + '+' + n(sh.r) + '=' + n(sh.M)) + ' ✓ &nbsp; ' + t(sh.pa + '(' + n(sh.a) + ')+' + sh.pr + '(' + n(sh.r) + ')+' + sh.pz + '(' + n(sh.r) + ')=' + n(sh.V)) + ' ✓<br><b>' + n(sh.a) + ' kg of almonds, ' + n(sh.r) + ' kg of raisins and ' + n(sh.r) + ' kg of pretzels.</b>', hints: ['Amount: ' + t('a+2r=' + n(sh.M)) + '. Value: ' + t(sh.pa + 'a+' + (sh.pr + sh.pz) + 'r=' + n(sh.V)) + '.'], text: 'trail mix masses' });
           } }] },
-      { num: '17', shared: function (r) { return r.pick(E17); },
+      { num: '17', shared: function (r) { return r.pick(E17()); },
         stem: function (sh) { return 'Two boats work the same stretch of river, which has one steady current. A motorboat travels ' + t(n(sh.D1)) + ' km downstream in ' + hrs(sh.td) + '. A second boat, whose speed in still water is ' + t(sh.k) + ' km/h <b>less</b> than the motorboat’s, travels ' + t(n(sh.D2)) + ' km upstream in ' + hrs(sh.tu) + '. Let ' + t('b') + ' be the motorboat’s still-water speed and ' + t('c') + ' the current, both in km/h.'; },
         parts: [
           { id: 'e17a', sub: 'a', level: 'ADV', make: function (r, sh) {
@@ -981,7 +1066,7 @@
           } }] },
 
       /* ---------------- Part H — MC and NR ---------------- */
-      { num: '18', section: 'Extra practice H — Multiple choice and numerical response', shared: function (r) { return r.pick(E18); }, parts: [
+      { num: '18', section: 'Extra practice H — Multiple choice and numerical response', shared: function (r) { return r.pick(E18()); }, parts: [
         { id: 'e18', level: 'EMG', make: function (r, sh) {
           var cands = [sh.juice, sh.fin, sh.V - sh.w, Math.round(sh.V * (sh.j - sh.t) / 100), sh.w + Math.round(sh.V / 5), sh.w - 2, sh.w + 3].filter(function (v, i, a) { return v > 0 && v !== sh.w && isInt(v) && a.indexOf(v) === i; }).slice(0, 3);
           var why = function (v) { return near(v, sh.juice) ? 'That is the litres of <b>juice</b> in the drink — it stays the same when water is added.' : near(v, sh.fin) ? 'That is the <b>final</b> volume of the drink. Subtract the ' + sh.V + ' L you started with.' : 'Check: ' + sh.V + ' L + ' + v + ' L of water = ' + (sh.V + v) + ' L, and ' + n(sh.juice) + ' L of juice in it is ' + n(rnd(sh.juice / (sh.V + v) * 100)) + '%, not ' + sh.t + '%.'; };
@@ -989,7 +1074,7 @@
           return mcP(r, '<i>(Multiple choice)</i> A juice drink is ' + t(pc(sh.j)) + ' juice. Pure water is added to ' + t(n(sh.V)) + ' L of it to bring it down to ' + t(pc(sh.t)) + ' juice. The number of litres of water added is', opts.map(function (o) { return { html: t(n(o.v)), right: !!o.right, why: o.why }; }),
             'Adding water changes the volume but not the juice: ' + t(dp(sh.j) + '(' + n(sh.V) + ')=' + n(sh.juice)) + ' L of juice.<br>' + t(dp(sh.t) + '(' + n(sh.V) + '+w)=' + n(sh.juice) + '\\Rightarrow ' + n(sh.V) + '+w=' + n(sh.fin) + '\\Rightarrow w=' + n(sh.w)) + '<br>Check: ' + t(n(sh.juice) + '\\div ' + n(sh.fin) + '=' + pc(sh.t)) + ' ✓', ['The amount of juice doesn’t change when water is added.'], 'MC dilution');
         } }] },
-      { num: '19', shared: function (r) { return r.pick(E19); }, parts: [
+      { num: '19', shared: function (r) { return r.pick(E19()); }, parts: [
         { id: 'e19', level: 'PRG', make: function (r, sh) {
           var g = gcd(sh.tu, sh.td), tr = (sh.tu / g) + ':' + (sh.td / g), right = sh.k + ':1';
           var cands = [tr, (sh.k + 1) + ':1', (sh.k - 1) + ':1', (2 * sh.k) + ':1', (sh.k + 2) + ':1'].filter(function (v, i, a) { return v !== right && v !== '1:1' && a.indexOf(v) === i; }).slice(0, 3);
@@ -1000,7 +1085,7 @@
           return mcP(r, '<i>(Multiple choice)</i> A canoeist paddles at a steady speed in still water. On a river she covers a stretch in ' + sh.td + ' minutes going downstream and the same stretch in ' + sh.tu + ' minutes going upstream. The ratio of her still-water speed to the speed of the current is', opts.map(function (o) { return { html: t(o.s), right: !!o.right, why: o.why }; }),
             'Speed is distance ÷ time, so for the same stretch the speeds are in the ratio of the <b>inverse</b> times: ' + t('(b+c):(b-c)=' + sh.tu + ':' + sh.td + '=' + a1 + ':' + b1) + '.<br>Take ' + t('b+c=' + a1 + 'u') + ' and ' + t('b-c=' + b1 + 'u') + ': adding, ' + t('2b=' + (a1 + b1) + 'u') + '; subtracting, ' + t('2c=' + (a1 - b1) + 'u') + '.<br>' + t('b:c=' + (a1 + b1) + ':' + (a1 - b1) + '=' + right) + '. <b>Her still-water speed is ' + sh.k + ' times the current.</b>', ['Let the stretch be ' + t('D') + ' km and write ' + t('b+c') + ' and ' + t('b-c') + ' in terms of ' + t('D') + '.'], 'MC canoe ratio');
         } }] },
-      { num: '20', shared: function (r) { return r.pick(E20); }, parts: [
+      { num: '20', shared: function (r) { return r.pick(E20()); }, parts: [
         { id: 'e20', level: 'PRG', make: function (r, sh) {
           var V = sh.c * sh.M;
           var sol = mixSol({ X: 'x', Y: 'y', M: sh.M, r1: sh.lo, r2: sh.hi, r1t: String(sh.lo), r2t: String(sh.hi), C: V, A: sh.y, Bv: sh.x, letTxt: 'Let ' + t('x') + ', ' + t('y') + ' = kg of the $' + sh.lo + '/kg and $' + sh.hi + '/kg beans. Value: ' + t(sh.c + '(' + n(sh.M) + ')=' + n(V)) + '.', amtName: 'Amount', conName: 'Value', end: 'The blend contains ' + n(sh.y) + ' kg of the $' + sh.hi + '/kg beans' + (sh.y < 100 ? ' (recorded as ' + ('00' + sh.y).slice(-3) + ')' : '') + '.' });

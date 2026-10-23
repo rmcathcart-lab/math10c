@@ -1089,7 +1089,7 @@
         stem: function (sh) {
           var AB = sh.v * sh.tm / 60, l1 = 90 - sh.b1, l2 = sh.b2 - 270, h = AB / (1 / Tg.tan(l1) + 1 / Tg.tan(l2)), AF = h / Tg.tan(l1);
           var fig = HW.fig({ pts: { A: [0, 0], B: [AB, 0], F: [AF, 0], L: [AF, h], An: [0, h * 0.8], Bn: [AB, h * 0.8] }, names: { A: 'A', B: 'B', F: 'F', L: 'L', An: 'N', Bn: 'N' },
-            segs: [['A', 'B'], ['A', 'L'], ['B', 'L'], ['L', 'F', { dash: 1, width: 1.4 }], ['A', 'An', { width: 1.4, color: GREY }], ['B', 'Bn', { width: 1.4, color: GREY }]], right: [['F', 'B', 'L']], extra: [{ type: 'text', at: [AB / 2, -h * 0.18], text: 'ship’s track (due east) →' }], width: 300 });
+            segs: [['A', 'B'], ['A', 'L'], ['B', 'L'], ['L', 'F', { dash: 1, width: 1.4 }], ['A', 'An', { width: 1.4, color: GREY }], ['B', 'Bn', { width: 1.4, color: GREY }]], right: [['F', 'B', 'L']], extra: [{ type: 'text', at: [AB / 2, -h * 0.34], text: 'ship’s track (due east) →' }], width: 300 });
           return '<b>A lighthouse on two bearings from a moving ship.</b> A ship sails due east at a steady ' + t(sh.v) + ' km/h. At 09:00 the ship is at ' + t('A') + ' and a lighthouse ' + t('L') + ' is sighted on a bearing of ' + t(dg(b3(sh.b1))) + '. At 09:' + (sh.tm < 10 ? '0' : '') + sh.tm + ' the ship is at ' + t('B') + ' and the lighthouse is on a bearing of ' + t(dg(sh.b2)) + '. ' + t('F') + ' is the foot of the perpendicular from ' + t('L') + ' to the ship’s track.<br>' + fig;
         },
         parts: [

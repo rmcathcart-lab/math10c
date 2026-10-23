@@ -253,9 +253,9 @@
     return p;
   }
   function valFields(prompt, labels, vals, sol, hints, text) {   // exact values (fractions allowed), typed in plain boxes
-    var fields = labels.map(function (l) { return { label: l }; });
+    var fields = labels.map(function (l) { return { label: l, mode: 'math', keys: 'fraction', placeholder: ' ' }; });
     var checkers = vals.map(function (v) { var T0 = fv(v), base = K.value(T0); return function (resp) { var r0 = base(resp); if (r0.v === 'wrong') { var a = K.read(resp); if (a.val != null && isFinite(a.val) && Math.abs(a.val - T0) < 0.01 && Math.abs(a.val - T0) > 1e-9) return form('decimal-rounded', 'Close — give the exact value (a fraction), not a rounded decimal.'); } return r0; }; });
-    return K.P.fields(prompt, fields, checkers, vals.map(function (v) { return Array.isArray(v) ? (v[1] === 1 ? String(v[0]) : v[0] + '/' + v[1]) : String(v); }), labels.map(function (l, i) { return l + ' ' + t(nT(vals[i])); }).join('<br>'), sol, hints, text);
+    return K.P.fields(prompt, fields, checkers, vals.map(function (v) { return nT(v); }), labels.map(function (l, i) { return l + ' ' + t(nT(vals[i])); }).join('<br>'), sol, hints, text);
   }
 
   function rawG(R) { return T([[R[0], 'x'], [R[1], 'y'], [R[2], '']]) + '=0'; }
@@ -693,7 +693,7 @@
           s.n = [s.R1, s.R2, s.R3, s.R4].map(rawG);
           return s;
         },
-        stem: function (sh) { return 'Four lines are given in general form:<br>' + sh.n.map(function (n, i) { return t('\\ell_' + (i + 1) + ':\\ ' + n); }).join(' \\(\\quad\\) '); },
+        stem: function (sh) { return 'Four lines are given in general form:<br>' + sh.n.map(function (n, i) { return t('\\ell_' + (i + 1) + ':\\ ' + n); }).join('<br>'); },
         parts: [
           { id: 'e4a', sub: 'a i', level: 'BEG', make: function (r, sh) {
             return mc(r, 'Two of these four equations look different but describe the <b>same line</b>. Which two?', [
@@ -1061,7 +1061,7 @@
           s.win = [[-4, 6], [-4, 8]];
           return s;
         },
-        stem: function (sh) { return 'Three lines are <b>concurrent</b> when all three pass through one common point. Three lines are given in general form:<br>' + sh.n.map(function (n, i) { return t('\\ell_' + (i + 1) + ':\\ ' + n); }).join(' \\(\\quad\\) '); },
+        stem: function (sh) { return 'Three lines are <b>concurrent</b> when all three pass through one common point. Three lines are given in general form:<br>' + sh.n.map(function (n, i) { return t('\\ell_' + (i + 1) + ':\\ ' + n); }).join('<br>'); },
         parts: [
           { id: 'e13a', sub: 'a i', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
             var p = K.P.line('Write ' + t('\\ell_3') + ' in slope–intercept form.', sh.L[2], { form: 'slope-intercept', wrong: [{ is: mbL(1, sh.k * sh.b3), code: 'u8-nodiv', hint: 'Divide <b>every</b> term by ' + t(sh.k) + '.' }] },
