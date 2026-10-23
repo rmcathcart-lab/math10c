@@ -234,8 +234,7 @@ const swap = {
  * ============================================================================================================ */
 const MC = {
   ex2: { label: 'Example 2 check', name: 'f', rule: '×2, then −3', f: (x) => 2 * x - 3, xs: [-2, -1, 0, 1, 2, 3], sub: (x) => `2(${x})-3`, linear: true },
-  sq: { label: T('g(x)=x^2-4'), name: 'g', rule: 'square, then −4', f: (x) => x * x - 4, xs: [-3, -2, -1, 0, 1, 2, 3], sub: (x) => `(${x})^2-4`, linear: false },
-  calc: { label: 'graphing calculator', calc: true }
+  sq: { label: T('g(x)=x^2-4'), name: 'g', rule: 'square, then −4', f: (x) => x * x - 4, xs: [-3, -2, -1, 0, 1, 2, 3], sub: (x) => `(${x})^2-4`, linear: false }
 };
 const subT = (d, x) => `${d.name}(${x})=${d.sub(x)}=${d.f(x)}`;
 const machine = {
@@ -243,11 +242,9 @@ const machine = {
   height: 450,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
-  intro: (k) => (MC[k].calc ? 'The same function on a <b>graphing calculator</b> (TI-83/84). These keys are for the graphing calculator, not the TI-30XIIS. Press <b>Next</b>.'
-    : `Feed inputs into ${T(MC[k].name + '(x)=' + (k === 'sq' ? 'x^2-4' : '2x-3'))}, record the outputs, plot, join. Press <b>Next</b>.`),
+  intro: (k) => `Feed inputs into ${T(MC[k].name + '(x)=' + (k === 'sq' ? 'x^2-4' : '2x-3'))}, record the outputs, plot, join. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const d = MC[k];
-    if (d.calc) return calcSteps(stage, ex);
     const G = new LG(stage, { x: ex.W - 416, y: 10, width: 404, height: 430, xmin: -4, xmax: 4, ymin: -8, ymax: 5, xtitle: 'x', ytitle: `${d.name}(x)` });
     // the machine
     const body = add(stage, box(h('div', 'u5l7-mach', `<div class="u5l7-mname">${T(d.name)}</div><div class="u5l7-mrule">${d.rule}</div>`), 190, 96), 150, 26);
@@ -282,26 +279,6 @@ const machine = {
     ];
   }
 };
-function calcSteps(stage, ex) {
-  const f = (x) => 2 * x - 3;
-  const G = new Graph(stage, { x: 20, y: 24, width: 520, height: 350, theme: 'calc', xmin: -10, xmax: 10, ymin: -10, ymax: 10 });
-  const P = panel(stage, 562, 14, ex.W - 576, 420, 'Graphing calculator');
-  let tr, tb;
-  return [
-    { cap: `Press <kbd>Y=</kbd> and type the rule with ${T('X')} for the input: ${T('Y_1=2X-3')}. (${T('Y_1')} plays the role of ${T('f(x)')}.)`,
-      run: async (c) => { await lineIn(c, P, `<kbd>Y=</kbd> ${T('Y_1=2X-3')}`); } },
-    { cap: `<kbd>GRAPH</kbd> draws it in the standard window, ${T('-10\\le X\\le 10')}.`,
-      run: async (c) => { await lineIn(c, P, '<kbd>GRAPH</kbd>'); await G.drawIn(G.fn(f), 900, c); } },
-    { cap: `<kbd>2nd</kbd> <kbd>GRAPH</kbd> (TABLE) lists the same ordered pairs as our table of values (scroll up past 0 for the negative inputs).`,
-      run: async (c) => {
-        await lineIn(c, P, '<kbd>2nd</kbd> <kbd>GRAPH</kbd> &nbsp;TABLE');
-        tb = new ValueTable(P, { headers: ['X', 'Y_1'], rows: [-2, -1, 0, 1, 2, 3].map((x) => [x, f(x)]), cellW: 92, cellH: 36, tap: false, cls: 'u5l7-calctbl' });
-        await fadeIn(c, tb.el);
-      } },
-    { cap: `<kbd>TRACE</kbd>, then type <b>3</b> and <kbd>ENTER</kbd>: the cursor jumps to ${T('X=3,\\ Y=3')}. So ${T('f(3)=3')}.`,
-      run: async (c) => { tr = G.traceMarker(f, 0, { title: 'Y1=2X−3' }); await pop(c, tr.el); await tr.move(c, 3, 1100); tb.highlight(5, true); } }
-  ];
-}
 
 /* ============================================================================================================
  * 3. fwdBack — forwards and backwards on the Celsius → Fahrenheit graph

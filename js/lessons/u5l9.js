@@ -8,7 +8,8 @@
  * numbers are among the possible values. Plotting and sketching (11b, 13a, Extra 6a–c) use the graph pad (js/draw.js):
  * exact plots via K.graphExact, the cyclist's speed story via K.graphStory (stages and times checked, any steady-speed
  * height), the open "sketch a relation with this domain/range" tasks via K.graphRules plus a local intercept count;
- * "explain" items become multiple choice with misconception hints; calculator items ask for the values the calculator finds.
+ * "explain" items become multiple choice with misconception hints. Nothing needs a graphing calculator: the quadratic
+ * models (10, 12) are read from a table of values and its symmetry.
  * js/draw2.js: graphs whose domain and range are asked (15, Extra 1b, 2a, 4a, 4b, 8a, 12b) get a domrange part first (shade
  * them on number lines under the graph, same graph via shared numbers), then the typed set notation; intercepts read off a
  * given graph (Extra 1f, 4a–c iii, 8c, 12f) are tapped on the graph (K.P.points, see tapPart()).
@@ -21,7 +22,6 @@
     'xint-yint': 'Gave the y-intercept for the x-intercept', 'int-swap': 'x- and y-intercepts mixed up', 'pt-said-none': 'Said “none” (there is one)', 'pt-not-none': 'Gave a point that doesn’t exist',
     'pt-missing': 'Missed an intercept', 'pt-extra': 'Extra point', 'no-divide': 'Didn’t divide by the coefficient', 'ev-instead': 'Evaluated instead of solving', 'solve-instead': 'Solved instead of evaluating',
     'sq-neg': 'Squared a negative as negative', 'ev-sign': 'Sign error with a negative input', 'mn-swap': 'm and n swapped', 'mn-sign': 'Sign error solving for m',
-    'win-cut': 'Window cuts off part of the graph', 'win-huge': 'Window far too large', 'win-order': 'Min not less than max', 'win-scl': 'Unusable scale', 'win-nan': 'Window value not a number',
     'max-swap': 'Height and time swapped', 'neg-root': 'Kept the root before the throw', 'no-platform': 'Ignored the starting height', 'rate-flip': 'Rate as time ÷ distance',
     'rate-sign': 'Rate of a return trip with the wrong sign', 'rate-point': 'Divided a coordinate instead of a change', 'same-time': 'Gave the same time again', 'end-time': 'Gave the end of the dive',
     'start-h': 'Gave the starting height', 'nr-unsimp': 'Fraction not simplified before reading p', 'nr-denom': 'Gave the denominator', 'shift-add': 'Added the shift instead of substituting',
@@ -255,35 +255,6 @@
     return { pts: pts, ints: ints };
   }
 
-  /* ---------------- graphing-calculator window (six boxes, as in the booklet) ---------------- */
-  var WL = ['Xmin', 'Xmax', 'Xscl', 'Ymin', 'Ymax', 'Yscl'];
-  function wT(n) { return t(n.charAt(0) + '_{\\text{' + n.slice(1) + '}}'); }
-  /* feat: [{ x, y, name }] — every feature must be on the screen (an edge counts) */
-  function winChk(feat) {
-    var fx = feat.map(function (p) { return p.x; }), fy = feat.map(function (p) { return p.y; });
-    var needX = Math.max(1, Math.max.apply(null, fx) - Math.min.apply(null, fx)), needY = Math.max(1, Math.max.apply(null, fy) - Math.min.apply(null, fy));
-    return function (resp) {
-      resp = resp || []; var v = [];
-      for (var i = 0; i < 6; i++) {
-        var s = String(resp[i] == null ? '' : resp[i]).trim();
-        if (!s) return form('empty', 'Fill in all six window values.');
-        var n = num(s); if (n == null) return form('win-nan', '<b>' + wT(WL[i]) + ':</b> type a single number, like ' + t('0') + ' or ' + t('25') + '.');
-        v.push(n);
-      }
-      if (v[0] >= v[1]) return form('win-order', wT('Xmin') + ' has to be smaller than ' + wT('Xmax') + ' (otherwise the calculator shows ERR:WINDOW RANGE).');
-      if (v[3] >= v[4]) return form('win-order', wT('Ymin') + ' has to be smaller than ' + wT('Ymax') + ' (otherwise the calculator shows ERR:WINDOW RANGE).');
-      if (v[2] <= 0 || v[5] <= 0) return form('win-scl', wT('Xscl') + ' and ' + wT('Yscl') + ' are the distances between tick marks, so they must be positive.');
-      for (var j = 0; j < feat.length; j++) {
-        var p = feat[j], ox = p.x < v[0] - 1e-9 ? 'to the left of ' + wT('Xmin') : p.x > v[1] + 1e-9 ? 'to the right of ' + wT('Xmax') : '', oy = p.y < v[3] - 1e-9 ? 'below ' + wT('Ymin') : p.y > v[4] + 1e-9 ? 'above ' + wT('Ymax') : '';
-        if (ox || oy) return wrong('win-cut', 'Your window cuts off ' + p.name + ' (at about ' + t(ptT([K.roundTo(p.x, 2), K.roundTo(p.y, 2)])) + '): it is ' + ox + (ox && oy ? ' and ' : '') + oy + '.');
-      }
-      if (v[1] - v[0] > 10 * needX + 1e-9) return form('win-huge', 'Everything is on the screen, but your window is far wider than the flight needs, so the graph is squashed. Bring ' + wT('Xmin') + ' and ' + wT('Xmax') + ' closer in.');
-      if (v[4] - v[3] > 10 * needY + 1e-9) return form('win-huge', 'Everything is on the screen, but your window is far taller than the flight needs, so the graph is squashed flat. Bring ' + wT('Ymin') + ' and ' + wT('Ymax') + ' closer in.');
-      if ((v[1] - v[0]) / v[2] > 60 || (v[4] - v[3]) / v[5] > 60) return form('win-scl', 'That scale draws more than 60 tick marks on an axis, so they blur together. Choose a bigger ' + wT('Xscl') + ' or ' + wT('Yscl') + '.');
-      return ok();
-    };
-  }
-
   /* ---------------- shared hints ---------------- */
   var HINT_DR = 'The <b>domain</b> is every input (' + t('x') + '-value, read left to right); the <b>range</b> is every output (' + t('y') + '-value, read bottom to top).';
   var HINT_DOTS = 'Solid dot → that value is included (' + t('\\le') + '). Hollow dot → excluded (' + t('<') + '). Arrow → no end on that side.';
@@ -431,8 +402,11 @@
     var p = r.pick([2, 2, 2, 1, 3]), h0 = r.pick([1, 1, 2, 3, 5]);
     if (p === 1 && h0 < 2) h0 = 2;
     var v = 10 * p, M = 5 * p * p + h0, T = (v + Math.sqrt(v * v + 20 * h0)) / 10, Tn = (v - Math.sqrt(v * v + 20 * h0)) / 10;
-    return { p: p, h0: h0, v: v, M: M, T: T, T2: K.roundTo(T, 2), Tn: K.roundTo(Tn, 2), rule: lin([[-5, 't^{2}'], [v, 't'], [h0, '']]), f: function (x) { return -5 * x * x + v * x + h0; } };
+    var f = function (x) { return cl(-5 * x * x + v * x + h0); }, a = Math.floor(T * 10 + 1e-9) / 10, b = cl(a + 0.1);
+    return { p: p, h0: h0, v: v, M: M, T: T, T2: K.roundTo(T, 2), Tn: K.roundTo(Tn, 2), a: a, b: b, ha: f(a), hb: f(b), ts: rng(0, 2 * p), rule: lin([[-5, 't^{2}'], [v, 't'], [h0, '']]), f: f };
   }
+  /* Q10: the dive's table of values, t = 0 … 2p (back at the starting height) */
+  function tbl10(sh) { var ts = rng(0, 2 * sh.p); return HW.valueTable([['t'].concat(ts), ['h'].concat(ts.map(function (x) { return x * x - 2 * sh.p * x + sh.c; }))]); }
 
   /* Q14: Amira's walk */
   function q14Shared(r) {
@@ -858,7 +832,7 @@
           var q = r.int(1, p - 1); if (p === 4 && r.chance(0.5)) q = 2;
           return { p: p, c: c, q: q, min: c - p * p, hq: q * q - 2 * p * q + c, rule: lin([[1, 't^{2}'], [-2 * p, 't'], [c, '']]) };
         },
-        stem: function (sh) { return 'During an air show, the flight path of a stunt dive by a small plane can be modelled by ' + t('h=' + sh.rule) + ', where ' + t('h') + ' is the height in metres after ' + t('t') + ' seconds. The dive ends when the plane returns to its starting height. (You may use a graphing calculator.)'; }, parts: [
+        stem: function (sh) { return 'During an air show, the flight path of a stunt dive by a small plane can be modelled by ' + t('h=' + sh.rule) + ', where ' + t('h') + ' is the height in metres after ' + t('t') + ' seconds. The dive ends when the plane returns to its starting height. Make a table of values for whole-number times ' + t('t=0,\\ 1,\\ 2,\\ \\ldots') + ' until the plane is back at its starting height, and use it to answer the questions.'; }, parts: [
         { id: '10a', level: 'BEG', make: function (r, sh) {
           return B.number('(a) What is the plane’s height at the start of the dive?', sh.c, function (u) {
             if (same(u, sh.min)) return { code: 'diag', hint: 'That is the lowest height. The <b>start</b> of the dive is at ' + t('t=0') + '.' };
@@ -870,15 +844,15 @@
             if (same(u, sh.p)) return { code: 'max-swap', hint: t(sh.p) + ' is the <b>time</b> of the lowest point. The question asks for the height there.' };
             if (same(u, sh.c)) return { code: 'start-h', hint: 'That is the starting height. The plane dives below it — find the minimum of the graph.' };
             return null;
-          }, 'Graph ' + t('Y_1=X^{2}-' + 2 * sh.p + 'X+' + sh.c) + ' and use <b>3:minimum</b>: ' + t('t=' + sh.p) + ', ' + t('h=' + sh.min) + '.<br>Check: ' + t('h(' + sh.p + ')=' + sh.p * sh.p + '-' + 2 * sh.p * sh.p + '+' + sh.c + '=' + sh.min) + ' m.',
-            ['Graph the model and use <b>CALC 3:minimum</b>.', 'The lowest point of a parabola that opens up is its vertex.'], 'minimum height', { after: 'm' });
+          }, 'Table of values for whole-number times:' + tbl10(sh) + 'The heights fall to ' + t(sh.min) + ' at ' + t('t=' + sh.p) + ', then rise again by the same steps (the table is symmetric about ' + t('t=' + sh.p) + '), so the lowest height is ' + t(sh.min) + ' m.<br>Check: ' + t('h(' + sh.p + ')=' + sh.p * sh.p + '-' + 2 * sh.p * sh.p + '+' + sh.c + '=' + sh.min) + ' m.',
+            ['Make a table of values: ' + t('t=0,\\ 1,\\ 2,\\ \\ldots') + ' until the height is back to the start.', 'The heights go down and then back up by the same steps. The smallest one, in the middle, is the lowest point.'], 'minimum height', { after: 'm' });
         } },
         { id: '10c', level: 'BEG', make: function (r, sh) {
           return B.number('(c) At what time does the plane reach this lowest point?', sh.p, function (u) {
             if (same(u, sh.min)) return { code: 'max-swap', hint: 'That is the lowest <b>height</b>. The question asks for the time (the ' + t('t') + '-value).' };
             if (same(u, 2 * sh.p)) return { code: 'end-time', hint: t(2 * sh.p) + ' s is when the dive ends (back at ' + t(sh.c) + ' m). The lowest point is halfway through.' };
             return null;
-          }, 'From the minimum screen in (b): ' + t('t=' + sh.p) + ' s. (Check: ' + t('h(' + (sh.p - 1) + ')=h(' + (sh.p + 1) + ')=' + (sh.min + 1)) + ', both higher.)', ['Read the ' + t('x') + '-value (time) of the minimum.'], 'time of minimum', { after: 's' });
+          }, 'From the table in (b), the smallest height is in the middle, at ' + t('t=' + sh.p) + ' s. (Check: ' + t('h(' + (sh.p - 1) + ')=h(' + (sh.p + 1) + ')=' + (sh.min + 1)) + ', both higher.)', ['Read the time (the ' + t('t') + '-value) next to the smallest height in your table.'], 'time of minimum', { after: 's' });
         } },
         { id: '10d', level: 'BEG', make: function (r, sh) {
           return B.number('(d) What is the plane’s height ' + t(sh.q) + ' second' + (sh.q === 1 ? '' : 's') + ' into the dive?', sh.hq, function (u) {
@@ -894,7 +868,7 @@
             if (same(u, sh.p + sh.q) && sh.p + sh.q !== o) return { code: 'diag', hint: 'Count from the vertex: ' + t('t=' + sh.q) + ' is ' + t(sh.p - sh.q) + ' s <b>before</b> ' + t('t=' + sh.p) + ', so the same height comes ' + t(sh.p - sh.q) + ' s after it.' };
             return null;
           }, 'The parabola is symmetric about ' + t('t=' + sh.p) + '. ' + t('t=' + sh.q) + ' is ' + t(sh.p - sh.q) + ' s before the vertex, so the same height occurs ' + t(sh.p - sh.q) + ' s after it: ' + t('t=' + sh.p + '+' + (sh.p - sh.q) + '=' + o) + ' s.<br>Check: ' + t('h(' + o + ')=' + o * o + '-' + 2 * sh.p * o + '+' + sh.c + '=' + sh.hq) + ' m ✓',
-            ['The graph is symmetric about the time of the lowest point.', 'Or solve ' + t(sh.rule + '=' + sh.hq) + ' (graph ' + t('Y_2=' + sh.hq) + ' and use <b>intersect</b>).'], 'symmetric time', { after: 's' });
+            ['The graph is symmetric about the time of the lowest point.', 'Or look in your table of values for the other time with the same height.'], 'symmetric time', { after: 's' });
         } }] },
       /* ---------------- Q11 ---------------- */
       { num: '11', shared: q11Shared,
@@ -964,47 +938,55 @@
         } }] },
       /* ---------------- Q12 ---------------- */
       { num: '12', shared: q12Shared, outcome: 'RF1',
-        stem: function (sh) { return 'A ball is thrown upward from a ' + t(sh.h0) + ' m platform. Its height is ' + t('h(t)=' + sh.rule) + ', where ' + t('h') + ' is in metres and ' + t('t') + ' is in seconds. You will use a graphing calculator.'; }, parts: [
-        { id: '12a', level: 'EMG', make: function (r, sh) {
-          var feat = [{ x: 0, y: sh.h0, name: 'the throw' }, { x: sh.p, y: sh.M, name: 'the highest point' }, { x: sh.T, y: 0, name: 'the landing' }], chk = winChk(feat);
-          var xmax = Math.ceil(sh.T + 0.5), ymax = Math.ceil((sh.M + 3) / 5) * 5, key = ['0', String(xmax), '1', '0', String(ymax), '5'];
-          var good = [['-1', String(xmax + 1), '1', '-5', String(ymax + 5), '5']];
-          return { prompt: '(a) State window settings that show the whole flight, from the throw until the ball lands.', input: { type: 'fields', fields: WL.map(function (n) { return { label: wT(n), name: n }; }) }, check: chk, key: key,
-            answer: 'One good window: ' + t('X_{\\text{min}}=0,\\ X_{\\text{max}}=' + xmax + ',\\ X_{\\text{scl}}=1,\\ Y_{\\text{min}}=0,\\ Y_{\\text{max}}=' + ymax + ',\\ Y_{\\text{scl}}=5') + ' (many others work).',
-            solution: 'The ball starts at ' + t(ptT([0, sh.h0])) + ', peaks at ' + t(ptT([sh.p, sh.M])) + ' and lands a little after ' + t('t=' + Math.floor(sh.T)) + ' (about ' + t(sh.T2) + ' s), so e.g. ' + t('x:[0,\\ ' + xmax + ',\\ 1],\\ y:[0,\\ ' + ymax + ',\\ 5]') + '. Any window that shows ' + t('0\\le t\\le ' + sh.T2) + ' and the highest point works.' +
-              fig(G({ x: [0, xmax], y: [0, ymax], unitX: 260 / xmax, unitY: 180 / ymax, grid: 1, gridY: 5, labels: 1, labelsY: 5, firstQuadrant: true, xName: 't', yName: 'h', fns: [{ f: sh.f, from: 0, to: sh.T }], max: 300, aria: 'calculator screen' })),
-            hints: ['Estimate the features first: the start ' + t('(0,\\ ' + sh.h0 + ')') + ', the highest point, and where ' + t('h=0') + '.', 'Make ' + wT('Xmax') + ' a little past the landing time and ' + wT('Ymax') + ' a little above the greatest height.'],
-            text: 'window for the ball', good: good, bad: [['-10', '10', '1', '-10', '10', '1'], ['0', '2', '1', '0', String(ymax), '5'], ['0', String(xmax), '1', '0', '10', '1'], ['0', String(xmax), '0', '0', String(ymax), '5']].filter(function (b) { return chk(b).v !== 'correct'; }) };
+        stem: function (sh) { return 'A ball is thrown upward from a ' + t(sh.h0) + ' m platform. Its height is ' + t('h(t)=' + sh.rule) + ', where ' + t('h') + ' is in metres and ' + t('t') + ' is in seconds.'; }, parts: [
+        { id: '12a', level: 'BEG', outcome: 'RF8', make: function (r, sh) {
+          var items = sh.ts.map(function (x) {
+            return numF(t('h(' + x + ')='), sh.f(x), function (u) {
+              if (x > 0 && same(u, 5 * x * x + sh.v * x + sh.h0)) return { code: 'sign', hint: 'In ' + t('-5t^{2}') + ' only ' + t('t') + ' is squared, then multiplied by ' + t('-5') + ': ' + t('-5(' + x + ')^{2}=' + (-5 * x * x)) + '.' };
+              if (x > 0 && same(u, -5 * x * x + sh.v * x)) return { code: 'no-platform', hint: 'Don’t forget the ' + t('+' + sh.h0) + ' at the end of the rule.' };
+              return null;
+            }, 'm');
+          });
+          var p = fieldsOf('(a) Complete the table of values: the height of the ball at ' + t('t=' + sh.ts.join(',\\ ')) + ' s.', items, sh.ts.map(function (x) { return t('h(' + x + ')=' + nf(sh.f(x))); }).join(', '),
+            'Substitute each time into the rule, e.g. ' + t('h(1)=-5(1)^{2}+' + sh.v + '(1)+' + sh.h0 + '=' + nf(sh.f(1))) + ':' + HW.valueTable([['t'].concat(sh.ts), ['h(t)'].concat(sh.ts.map(sh.f))]),
+            [HINT_EVAL.replace(t('x'), t('t')), 'Square ' + t('t') + ' first, then multiply by ' + t('-5') + '.'], 'table for the ball');
+          return p;
         } },
         { id: '12b', level: 'EMG', make: function (r, sh) {
           var items = [numF('greatest height ' + t('='), sh.M, function (u) {
-            if (same(u, sh.p)) return { code: 'max-swap', hint: 'That is the time. The height is the ' + t('y') + '-value of the maximum.' };
+            if (same(u, sh.p)) return { code: 'max-swap', hint: 'That is the time. The height is the ' + t('h') + '-value in the table.' };
             if (same(u, sh.M - sh.h0)) return { code: 'no-platform', hint: 'Include the platform: the rule has ' + t('+' + sh.h0) + '.' };
             return null;
-          }, 'm'), numF('at time ' + t('t='), sh.p, function (u) { if (same(u, sh.M)) return { code: 'max-swap', hint: 'That is the height. The time is the ' + t('x') + '-value of the maximum.' }; return null; }, 's')];
-          var p = fieldsOf('(b) Use <b>CALC 4:maximum</b> to find the greatest height reached and the time it occurs.', items, t(sh.M) + ' m at ' + t('t=' + sh.p) + ' s',
-            'The maximum screen shows ' + t('X=' + sh.p) + ', ' + t('Y=' + sh.M) + ': the greatest height is ' + t(sh.M) + ' m at ' + t('t=' + sh.p) + ' s.<br><i>Check:</i> ' + t('h(' + sh.p + ')=-5(' + sh.p * sh.p + ')+' + sh.v * sh.p + '+' + sh.h0 + '=' + sh.M) + '.',
-            ['Use <b>CALC 4:maximum</b>: set a left bound, a right bound and a guess around the top of the graph.'], 'maximum of the ball');
+          }, 'm'), numF('at time ' + t('t='), sh.p, function (u) { if (same(u, sh.M)) return { code: 'max-swap', hint: 'That is the height. The time is the ' + t('t') + '-value next to it.' }; return null; }, 's')];
+          var p = fieldsOf('(b) Use your table to find the greatest height reached and the time it occurs.', items, t(sh.M) + ' m at ' + t('t=' + sh.p) + ' s',
+            'The heights rise to ' + t(sh.M) + ' at ' + t('t=' + sh.p) + ', then fall again by the same steps (the table is symmetric about ' + t('t=' + sh.p) + '). The greatest height is ' + t(sh.M) + ' m at ' + t('t=' + sh.p) + ' s.<br><i>Check:</i> ' + t('h(' + sh.p + ')=-5(' + sh.p * sh.p + ')+' + sh.v * sh.p + '+' + sh.h0 + '=' + sh.M) + '.',
+            ['The heights go up and then back down by the same amounts. The largest one, in the middle, is the highest point.'], 'maximum of the ball');
           p.bad = [[String(sh.p), String(sh.M)]];
           return p;
         } },
         { id: '12c', level: 'EMG', make: function (r, sh) {
-          return B.approx('(c) Use <b>CALC 2:zero</b> to find when the ball lands, to the nearest hundredth of a second.', sh.T, 2, { after: 's', diag: function (u) {
-            if (same(u, sh.Tn)) return { code: 'neg-root', hint: 'That zero is at a negative time, before the throw. The ball lands at the <b>positive</b> zero.' };
-            if (same(u, 2 * sh.p)) return { code: 'no-platform', hint: 'At ' + t('t=' + 2 * sh.p) + ' the ball is back at platform height (' + t(sh.h0) + ' m), not on the ground. Find where ' + t('h=0') + '.' };
+          var dg = function (x) { return function (u) {
+            if (same(u, cl(5 * x * x + sh.v * x + sh.h0))) return { code: 'sign', hint: 'Only ' + t('t') + ' is squared: ' + t('-5(' + nf(x) + ')^{2}=-5(' + nf(cl(x * x)) + ')=' + nf(cl(-5 * x * x))) + '.' };
             return null;
-          } }, 'Use <b>2:zero</b> with bounds around the right-hand crossing: ' + t('t\\doteq ' + sh.T2) + ' s. (The other zero, ' + t('t\\doteq ' + sh.Tn) + ', is before the throw and is rejected.)',
-            ['The ball lands when ' + t('h=0') + ': that is an ' + t('x') + '-intercept of the graph.'], 'landing time');
+          }; };
+          var items = [numF(t('h(' + nf(sh.a) + ')='), sh.ha, dg(sh.a), 'm'), numF(t('h(' + nf(sh.b) + ')='), sh.hb, dg(sh.b), 'm')];
+          var p = fieldsOf('(c) The ball lands when ' + t('h=0') + '. Evaluate ' + t('h(' + nf(sh.a) + ')') + ' and ' + t('h(' + nf(sh.b) + ')') + '. (Together they show that the ball lands between ' + t('t=' + nf(sh.a)) + ' s and ' + t('t=' + nf(sh.b)) + ' s.)', items,
+            t('h(' + nf(sh.a) + ')=' + nf(sh.ha)) + ', ' + t('h(' + nf(sh.b) + ')=' + nf(sh.hb)),
+            t('h(' + nf(sh.a) + ')=-5(' + nf(sh.a) + ')^{2}+' + sh.v + '(' + nf(sh.a) + ')+' + sh.h0 + '=' + nf(sh.ha)) + ' (still above the ground)<br>' + t('h(' + nf(sh.b) + ')=-5(' + nf(sh.b) + ')^{2}+' + sh.v + '(' + nf(sh.b) + ')+' + sh.h0 + '=' + nf(sh.hb)) + ' (a negative height: below the ground)<br>The height changes from positive to negative, so ' + t('h=0') + ' somewhere in between: the ball lands between ' + t(nf(sh.a)) + ' s and ' + t(nf(sh.b)) + ' s.',
+            [HINT_EVAL.replace(t('x'), t('t')), 'Bracket the decimal before squaring it on the calculator.'], 'landing between two times');
+          p.bad = [[nf(sh.hb), nf(sh.ha)]];
+          return p;
         } },
         { id: '12d', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
           var D = bld('t', 0, sh.T2);
-          return setPart('(d) State the domain of the function in this context.', D, { v: 't', wrong: [
+          return setPart('(d) The ball lands at about ' + t('t=' + sh.T2) + ' s. State the domain of the function in this context.', D, { v: 't', wrong: [
             { is: all('t'), code: 'dr-context', hint: 'The equation works for any ' + t('t') + ', but the flight only lasts from the throw (' + t('t=0') + ') until the ball lands.' },
             { is: bld('t', 0, null), code: 'dr-context', hint: 'Time starts at ' + t('0') + ', but the flight also ends — when the ball lands.' },
             { is: bld('t', 0, sh.p), code: 'dr-context', hint: 'The ball keeps moving after the highest point — the flight ends when it lands.' },
+            { is: bld('t', 0, 2 * sh.p), code: 'no-platform', hint: 'At ' + t('t=' + 2 * sh.p) + ' the ball is back at platform height (' + t(sh.h0) + ' m), not on the ground. The flight ends when it lands.' },
             { is: bld('t', sh.Tn, sh.T2), code: 'neg-root', hint: 'A negative time is before the throw. Start the domain at ' + t('t=0') + '.' }] },
             'Time runs from the throw until the ball lands:<br>' + t('D=' + D) + '<br>Time is continuous, so this is set-builder form, not a list.',
-            ['When does the flight start? When does it end (part (c))?'], 'domain of the flight');
+            ['When does the flight start? When does it end?'], 'domain of the flight');
         } }] },
       /* ---------------- Q13 ---------------- */
       { num: '13', outcome: 'RF1',

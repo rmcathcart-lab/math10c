@@ -94,7 +94,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u5l7-marr::after { content: ""; position: absolute; right: -2px; top: -9px; border: 7.5px solid transparent; border-left: 11px solid #1c2230; border-right: 0; }
 .u5l7-mchip { background: #fff; border: 2.5px solid currentColor; border-radius: 12px; padding: 1px 10px; font-size: 24px; min-width: 30px; text-align: center; }
 .u5l7-msub { font-size: 24px; }
-.u5l7-calctbl .bk-th, .u5l7-calctbl .bk-td { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 
 /* candle */
 .u5l7-wax { background: linear-gradient(90deg, #f3e2bf, #fff9ea 45%, #e8d2a4); border: 2px solid #c9a86a; border-bottom: 0; border-radius: 6px 6px 0 0; box-sizing: border-box; }

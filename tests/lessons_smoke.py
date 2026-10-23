@@ -5,15 +5,13 @@ prints the same numbers for the old site."""
 import asyncio, os, re
 from playwright.async_api import async_playwright
 BASE = 'http://localhost:8811/'
-IDS = ['u1/l1', 'u1/l2', 'u1/l4', 'u1/l5', 'u1/l6', 'u1/l7', 'u1/l8', 'u1/l9',
-       'u2/l1', 'u2/l2', 'u2/l3', 'u2/l4', 'u2/l4', 'u2/l5', 'u2/l6', 'u3/l1', 'u3/l2', 'u3/l3', 'u3/l4', 'u3/l5', 'u3/l6',
-       'u4/l1', 'u4/l2', 'u4/l3', 'u4/l4', 'u4/l5', 'u4/l6', 'u4/l7', 'u4/l7', 'u4/l8',
-       'u5/l1', 'u5/l2', 'u5/l3', 'u5/l4', 'u5/l5', 'u5/l6', 'u5/l5', 'u5/l6', 'u5/l7', 'u5/l8', 'u5/l9',
-       'u6/l1', 'u6/l1', 'u6/l2', 'u6/l3', 'u6/l4', 'u6/l5',
-       'u7/l1', 'u7/l2', 'u7/l3', 'u7/l4', 'u7/l5', 'u7/l6', 'u7/l7',
-       'u8/l1', 'u8/l1', 'u8/l2', 'u8/l3', 'u8/l4', 'u8/l5', 'u8/l6',
-       'u9/l1', 'u9/l2', 'u9/l3', 'u9/l4', 'u9/l5', 'u9/l6', 'u9/l7', 'u9/l8',
-       'u10/l1', 'u10/l1', 'u10/l3', 'u10/l2', 'u10/l2', 'u10/l5', 'u10/l3', 'u10/l4', 'u10/l5', 'u10/l6']
+IDS = ['u1/l1', 'u1/l2', 'u1/l3', 'u1/l4', 'u1/l5', 'u1/l6', 'u1/l7', 'u1/l8', 'u1/l9', 'u2/l1',
+       'u2/l2', 'u2/l3', 'u2/l4', 'u2/l5', 'u2/l6', 'u3/l1', 'u3/l2', 'u3/l3', 'u3/l4', 'u3/l5',
+       'u3/l6', 'u4/l1', 'u4/l2', 'u4/l3', 'u4/l4', 'u4/l5', 'u4/l6', 'u4/l7', 'u4/l8', 'u5/l1',
+       'u5/l2', 'u5/l3', 'u5/l4', 'u5/l5', 'u5/l6', 'u5/l7', 'u5/l8', 'u5/l9', 'u6/l1', 'u6/l2',
+       'u6/l3', 'u6/l4', 'u6/l5', 'u7/l1', 'u7/l2', 'u7/l3', 'u7/l4', 'u7/l5', 'u7/l6', 'u7/l7',
+       'u8/l1', 'u8/l2', 'u8/l3', 'u8/l4', 'u8/l5', 'u8/l6', 'u9/l1', 'u9/l2', 'u9/l3', 'u9/l4',
+       'u9/l5', 'u9/l6', 'u9/l7', 'u9/l8', 'u10/l1', 'u10/l2', 'u10/l3', 'u10/l4', 'u10/l5', 'u10/l6']
 async def probe(ctx, url):
     page = await ctx.new_page(); errs, bad = [], []
     page.on('pageerror', lambda e: errs.append(str(e)))
