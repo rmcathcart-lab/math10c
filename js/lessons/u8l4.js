@@ -90,7 +90,9 @@
       for (var i = 0; i < want.length; i++) {
         var s = String(resp[i] == null ? '' : resp[i]).replace(/\\\$|\$/g, '').trim();
         if (!s) return form('empty', want.length > 1 ? 'Fill in every box.' : 'Type your answer first.');
-        var p = HW.parse.number(s); if (!p.ok) return form('notnumber', 'Enter a single number for the ' + names[i] + (opt.money ? ' (no $ sign needed).' : '.'));
+        var p = HW.parse.number(s), fm = !p.ok && s.replace(/\s/g, '').match(/^(-?)(?:\\d?frac\{(-?\d+)\}\{(\d+)\}|(-?\d+)\/(\d+))$/);   // also accept a fraction p/q or \frac{p}{q}
+        if (fm && Number(fm[3] || fm[5])) p = { ok: true, value: (fm[1] ? -1 : 1) * Number(fm[2] || fm[4]) / Number(fm[3] || fm[5]) };
+        if (!p.ok) return form('notnumber', 'Enter a single number for the ' + names[i] + (opt.money ? ' (no $ sign needed).' : '.'));
         vals.push(p.value);
       }
       if (vals.every(function (v, j) { return near(v, want[j]); })) return ok();
@@ -330,9 +332,10 @@
             return sysP('Let ' + t('l') + ' be the original length and ' + t('w') + ' the original width, in centimetres. Write a system of two equations.', [[2, 2, -o.P], [4, 1, -NP]],
               { vars: ['l', 'w'], keyTex: ['2l+2w=' + o.P, '2\\left(2l+\\frac{w}{2}\\right)=' + NP], names: ['the original perimeter', 'the new perimeter'],
                 factHints: ['the original perimeter is ' + t('2l+2w') + '.', 'the new rectangle is ' + t('2l') + ' by ' + t('\\frac{w}{2}') + ', and its perimeter is ' + t(o.P + '+' + o.I + '=' + NP) + '.'],
+                alts: [[], [[2, -1, -o.I]]],   // “increased by I”: new − old = I, i.e. 2(2l + w/2) − (2l + 2w) = I ⟹ 2l − w = I
                 wrong: [{ eq: [2, 0.5, -NP], code: 'perim-half', hint: 'The new perimeter is <b>twice</b> (length + width): ' + t('2\\left(2l+\\frac{w}{2}\\right)') + '.' }, { eq: [4, 1, -o.I], code: 'increase-total', hint: 'The perimeter is <b>increased by</b> ' + t(o.I) + ', so the new perimeter is ' + t(o.P + '+' + o.I + '=' + NP) + '.' },
                   { eq: [1, 4, -NP], code: 'swap-change', hint: 'The <b>length</b> is doubled (' + t('2l') + ') and the <b>width</b> halved (' + t('\\frac{w}{2}') + ').' }, { eq: [1, 1, -o.P], code: 'perim-half', hint: 'The perimeter adds all four sides: ' + t('2l+2w=' + o.P) + '.' }],
-                good: [['l+w=' + o.P / 2, '4l+w=' + NP]], bad: [['2l+2w=' + o.P, '4l+w=' + o.I], ['2l+2w=' + o.P, 'l+4w=' + NP]] },
+                good: [['l+w=' + o.P / 2, '4l+w=' + NP], ['2l+2w=' + o.P, '2l-w=' + o.I]], bad: [['2l+2w=' + o.P, '4l+w=' + o.I], ['2l+2w=' + o.P, 'l+4w=' + NP]] },
               '<b>Original:</b> ' + t('2l+2w=' + o.P) + '.<br><b>New</b> (' + t('2l') + ' by ' + t('\\frac{w}{2}') + '): ' + t('2\\left(2l+\\frac{w}{2}\\right)=' + o.P + '+' + o.I) + ', i.e. ' + t('4l+w=' + NP) + '.',
               ['Write the new length and width first: ' + t('2l') + ' and ' + t('\\frac{w}{2}') + '. The new perimeter is ' + t(o.P + '+' + o.I) + '.'], 'doubled/halved rectangle system');
           } },
@@ -402,6 +405,7 @@
             return sysP('Let ' + t('I') + ' be her income and ' + t('E') + ' her expenditure in the first year, in dollars. Write a system of two equations.', [[1, -1, -o.S1], [100 + o.p, -(100 - o.q), -100 * o.S2]],
               { vars: ['I', 'E'], keyTex: ['I-E=' + o.S1, ci + 'I-' + ce + 'E=' + o.S2], showTex: ['I-E=' + N(o.S1), ci + 'I-' + ce + 'E=' + N(o.S2)], names: ['the first year', 'the second year'],
                 factHints: ['savings = income − expenditure: ' + t('I-E=' + N(o.S1)) + '.', 'the new income is ' + t(ci + 'I') + ' (up ' + o.p + '%) and the new expenditure ' + t(ce + 'E') + ' (down ' + o.q + '%).'],
+                alts: [[], [[o.p, o.q, -100 * (o.S2 - o.S1)]]],   // the rise in savings: 0.10I + 0.15E = S2 − S1
                 wrong: [{ eq: [o.p, -o.q, -100 * o.S2], code: 'pct-change-only', hint: 'An increase of ' + o.p + '% makes the income ' + t('I+' + pd(o.p) + 'I=' + ci + 'I') + ', not ' + t(pd(o.p) + 'I') + '. The same goes for the expenditure.' },
                   { eq: [100 + o.p, -(100 + o.q), -100 * o.S2], code: 'pct-direction', hint: 'The expenditure <b>decreased</b> by ' + o.q + '%, so it becomes ' + t(ce + 'E') + '.' },
                   { eq: [100 - o.p, -(100 - o.q), -100 * o.S2], code: 'pct-direction', hint: 'The income <b>increased</b> by ' + o.p + '%, so it becomes ' + t(ci + 'I') + '.' }],
@@ -616,7 +620,8 @@
             'Let ' + t('m') + ' = number of muffins and ' + t('s') + ' = number of scones (counts of items). The question asks for ' + t('s') + ' alone — not the pair, and not ' + t('m') + '.', ['What is unknown: the prices or the numbers sold? Then reread the question.'], 'define variables: bakery');
         } },
         { id: 'e1b', sub: 'b', level: 'BEG', make: function (r) {
-          var pa = r.pick([12, 14, 15, 16]), py = r.pick([6, 7, 8, 9]), a = r.int(60, 110), y = r.int(50, 100);
+          var g0 = gen(function () { var pa = r.pick([12, 14, 15, 16]), py = r.pick([6, 7, 8, 9]), a = r.int(60, 110), y = r.int(50, 100); return pa * a > py * y ? { pa: pa, py: py, a: a, y: y } : null; }, { pa: 14, py: 8, a: 100, y: 74 });   // adults must bring in more money
+          var pa = g0.pa, py = g0.py, a = g0.a, y = g0.y;
           return mc(r, 'A drama club sold adult tickets at ' + Dh(pa) + ' and student tickets at ' + Dh(py) + '. It sold ' + t(a + y) + ' tickets and took in ' + Dh(pa * a + py * y) + '. How much <b>more money</b> came from adults than from students?', [
             { html: 'Let ' + t('a') + ' and ' + t('y') + ' be the numbers of adult and student tickets (counts). Report ' + t(pa + 'a-' + py + 'y') + ', in dollars.', right: true },
             { html: 'Let ' + t('a') + ' and ' + t('y') + ' be the numbers of adult and student tickets. Report ' + t('a-y') + '.', why: t('a-y') + ' is how many more <b>tickets</b> adults bought, not how much more <b>money</b>.' },
@@ -701,7 +706,7 @@
           { id: 'e3a', sub: 'a', level: 'LIM', make: function (r, o) {
             return mc(r, 'One student writes ' + t('e=' + o.k + 't') + '; another writes ' + t(o.k + 'e=t') + '. Decide which is correct by testing ' + t('t=' + o.test) + '.', [
               { html: t('e=' + o.k + 't') + ': with ' + t('t=' + o.test) + ' it gives ' + t('e=' + o.k * o.test) + ', which is ' + ASMANY[o.k] + ' as many Grade 11 reps.', right: true },
-              { html: t(o.k + 'e=t') + ': with ' + t('t=' + o.test) + ' it gives ' + t('e=' + N(o.test / o.k)) + '.', why: 'That gives <b>fewer</b> Grade 11 reps than Grade 10 reps — the opposite of the sentence. (And ' + t(N(o.test / o.k)) + ' people isn’t even possible' + (o.test % o.k ? '' : ' in general') + '.)' },
+              { html: t(o.k + 'e=t') + ': with ' + t('t=' + o.test) + ' it gives ' + t('e=' + N(o.test / o.k)) + '.', why: 'That gives <b>fewer</b> Grade 11 reps than Grade 10 reps — the opposite of the sentence.' + (o.test % o.k ? ' (And ' + t(N(o.test / o.k)) + ' people isn’t even possible.)' : '') },
               { html: 'Both — they are the same equation rearranged.', why: 'Test both with ' + t('t=' + o.test) + ': they give different values of ' + t('e') + '.' },
               { html: 'Neither — it should be ' + t('e=t+' + o.k) + '.', why: '“' + cap(ASMANY[o.k]) + ' as many” multiplies; “' + o.k + ' more” would add.' }],
             'Test ' + t('t=' + o.test) + ': ' + t('e=' + o.k + '(' + o.test + ')=' + o.k * o.test) + ' ✓ — ' + ASMANY[o.k] + ' as many Grade 11 reps. The other version gives ' + t('e=' + N(o.test / o.k)) + ', fewer Grade 11 reps. The ' + t(o.k) + ' belongs beside the <b>smaller</b> group.', ['Substitute ' + t('t=' + o.test) + ' into each and see which gives more Grade 11 reps.'], 'test twice as many');

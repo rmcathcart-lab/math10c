@@ -1139,12 +1139,13 @@
         } }] },
       { num: '15', parts: [
         { id: 'e15', level: 'PRG', make: function (r) {
-          var s = pick2(r, function (r) { var pq = r.pick([[3, 4], [3, 4], [4, 3], [2, 3], [3, 2], [2, 5], [5, 2], [3, 5], [5, 3]]); return { p: pq[0], q: pq[1], rr: r.pick([9, 9, 5, 7, 2, -3]), s: r.pick([-5, -5, 4, 7, -1]) }; }, function (s) { return s.s !== -s.p * s.rr; });
-          var k = -s.p * s.p, e1 = T([[1, 'kx'], [s.p * s.q, 'y'], [s.s, '']]) + '=0', e2 = rawG([s.p, -s.q, s.rr]);
-          var vals = [-s.q * s.q, k, s.p * s.p, s.q * s.q].sort(function (a, b) { return a - b; });
-          var why = function (v) { return v === -k ? 'Check the sign: ' + t('-\\frac{k}{' + s.p * s.q + '}=\\frac{' + s.p + '}{' + s.q + '}') + ' gives a <b>negative</b> ' + t('k') + '.' : 'The slope is ' + t('-\\frac{A}{B}') + ': set ' + t('-\\frac{k}{' + s.p * s.q + '}=\\frac{' + s.p + '}{' + s.q + '}') + ' — the ratio is upside down here.'; };
+          /* sg: sign of the y-term of the second line (the booklet's 3x − 4y + 9 = 0 has sg = −1); it sets the sign of k, so the key letter varies */
+          var s = pick2(r, function (r) { var pq = r.pick([[3, 4], [3, 4], [4, 3], [2, 3], [3, 2], [2, 5], [5, 2], [3, 5], [5, 3]]); return { p: pq[0], q: pq[1], sg: r.pick([-1, -1, 1]), rr: r.pick([9, 9, 5, 7, 2, -3]), s: r.pick([-5, -5, 4, 7, -1]) }; }, function (s) { return s.s !== s.sg * s.p * s.rr; });
+          var k = s.sg * s.p * s.p, m2 = fT(fr(-s.sg * s.p, s.q)), e1 = T([[1, 'kx'], [s.p * s.q, 'y'], [s.s, '']]) + '=0', e2 = rawG([s.p, s.sg * s.q, s.rr]);
+          var vals = [-s.q * s.q, -s.p * s.p, s.p * s.p, s.q * s.q].sort(function (a, b) { return a - b; });
+          var why = function (v) { return v === -k ? 'Check the sign: ' + t('-\\frac{k}{' + s.p * s.q + '}=' + m2) + ' gives a <b>' + (k < 0 ? 'negative' : 'positive') + '</b> ' + t('k') + '.' : 'The slope is ' + t('-\\frac{A}{B}') + ': set ' + t('-\\frac{k}{' + s.p * s.q + '}=' + m2) + ' — the ratio is upside down here.'; };
           return mc(r, 'The value of ' + t('k') + ' for which the lines ' + t(e1) + ' and ' + t(e2) + ' have no point in common is', vals.map(function (v) { return { html: t(v), right: v === k, why: v === k ? null : why(v), code: 'v' + v }; }),
-            t(e2) + ': ' + t('m=-\\frac{' + s.p + '}{' + (-s.q) + '}=' + fT(fr(s.p, s.q))) + '. ' + t(e1) + ': ' + t('m=-\\frac{k}{' + s.p * s.q + '}') + '.<br>No point in common → equal slopes: ' + t('-\\frac{k}{' + s.p * s.q + '}=' + fT(fr(s.p, s.q))) + ', so ' + t('k=' + k) + '.<br>The ' + t('y') + '-intercepts ' + t(fT(fr(-s.s, s.p * s.q))) + ' and ' + t(fT(fr(s.rr, s.q))) + ' differ, so the lines are parallel and distinct ✓',
+            t(e2) + ': ' + t('m=-\\frac{' + s.p + '}{' + (s.sg * s.q) + '}=' + m2) + '. ' + t(e1) + ': ' + t('m=-\\frac{k}{' + s.p * s.q + '}') + '.<br>No point in common → equal slopes: ' + t('-\\frac{k}{' + s.p * s.q + '}=' + m2) + ', so ' + t('k=' + k) + '.<br>The ' + t('y') + '-intercepts ' + t(fT(fr(-s.s, s.p * s.q))) + ' and ' + t(fT(fr(-s.rr, s.sg * s.q))) + ' differ, so the lines are parallel and distinct ✓',
             ['No point in common means parallel lines: equal slopes.'], 'MC k for parallel', true);
         } }] },
       { num: '16', parts: [

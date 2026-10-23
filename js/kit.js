@@ -90,6 +90,7 @@
     opt = opt || {};
     return function (resp) {
       var p = HW.parse.number(resp);
+      if (!p.ok && p.code !== 'empty') { var ru = String(resp).replace(/\\(text|mathrm)\{\s*([^{}]*)\}/g, '$2').replace(/\^\{?\\circ\}?|\\degree/g, '°').replace(/\\[,;: ]|~/g, ' ').replace(/\s*(°|degrees?|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?|\\?%)\s*\.?\s*$/, ''); if (ru !== String(resp) && HW.parse.number(ru).ok) return form('units', 'Leave the unit out — just type the number.'); }
       if (!p.ok) return form(p.code === 'empty' ? 'empty' : 'notnumber', p.code === 'empty' ? 'Type your answer first.' : 'Enter a single number' + (opt.nr ? ' (numerical response: digits only).' : '.'));
       if (opt.nr && String(resp).replace(/\s/g, '').length > 4) return form('nr-long', 'Numerical response answers fit in 4 boxes (digits and a decimal point only).');
       if (Math.abs(p.value - ans) < 1e-9 * Math.max(1e-6, Math.abs(ans)) || p.value === ans) return ok();
