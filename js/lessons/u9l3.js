@@ -326,8 +326,8 @@
           } },
           { id: '4c', level: 'EMG', make: function (r, sh) {
             var Ls = sh.L.toFixed(1), hs = sh.hR.toFixed(1), d2 = sh.L * sh.L - sh.hR * sh.hR;
-            var p = nearPart('From (a), the height rounded to the nearest tenth is ' + t('h=' + hs + '\\text{ m}') + '. Use this rounded value and the Pythagorean theorem to determine ' + t('d') + ' again, to the nearest tenth of a metre.', sh.dP, 1,
-              { unit: 'm', alts: [{ v: sh.d, code: 'skip-given', first: true, hint: 'That is the trigonometry answer from (b). This part starts from the <b>rounded</b> height ' + t(hs + '\\text{ m}') + ' and uses the Pythagorean theorem.' },
+            var p = nearPart('The height up the pole, found with trigonometry and rounded to the nearest tenth, is ' + t('h=' + hs + '\\text{ m}') + '. Use this rounded value and the Pythagorean theorem to determine ' + t('d') + ' again, to the nearest tenth of a metre.', sh.dP, 1,
+              { unit: 'm', alts: [{ v: sh.d, code: 'skip-given', first: true, hint: 'That is the trigonometry answer, ' + t('d=' + Ls + '\\cos ' + dg(sh.deg)) + '. This part starts from the <b>rounded</b> height ' + t(hs + '\\text{ m}') + ' and uses the Pythagorean theorem.' },
                 { v: Math.sqrt(sh.L * sh.L + sh.hR * sh.hR), code: 'pyth-add', hint: t('d') + ' is a leg; the wire (' + t(Ls) + ') is the hypotenuse. Subtract the squares: ' + t('d^2=' + Ls + '^2-' + hs + '^2') + '.' },
                 { v: sh.L - sh.hR, code: 'pyth-nosq', hint: 'Square the sides first, subtract the squares, then take the square root.' },
                 { v: d2, code: 'no-root', hint: 'That is ' + t('d^2') + '. Take the square root.' }],
@@ -517,7 +517,7 @@
           } },
           { id: 'e4d', level: 'EMG', make: function (r, sh) {
             var H = sideOf(sh.n, 'hyp');
-            return mc(r, 'Which route is fewer steps, and what is the second, separate reason a marker would prefer it?', [
+            return mc(r, 'Two routes reach ' + t(sideOf(sh.n, 'opp')) + ': the one-step tangent route, and the route through the hypotenuse ' + t(H) + ' (cosine first, then sine). Which route is fewer steps, and what is the second, separate reason a marker would prefer it?', [
               { html: 'The one-step tangent route: it never creates an in-between value (like ' + t(H) + ') that could be written down rounded and re-entered.', right: true },
               { html: 'The route through ' + t(H) + ': finding the hypotenuse first is always more accurate.', why: 'It takes two equations instead of one, and the extra in-between value is a chance to round too early.' },
               { html: 'The one-step tangent route: tangent is more accurate than sine or cosine.', why: 'All three ratios are equally accurate on a calculator. The real risk is an in-between value that gets rounded.' },
@@ -550,7 +550,7 @@
             return mc(r, 'The correct answer is ' + t(O + '\\approx ' + c + '\\text{ m}') + '; the student’s is ' + t(w + '\\text{ m}') + '. Both are plausible sizes. Which check on the diagram rejects the wrong one?', [
               { html: 'The ' + t(dg(sh.deg)) + ' is the smaller acute angle, so the side opposite it, ' + t(O) + ', must be the shorter leg — shorter than ' + t(A + '=' + sh.k.toFixed(1) + '\\text{ m}') + '.', right: true },
               { html: 'The hypotenuse must be the longest side, so it must be longer than both answers.', why: 'True, but the hypotenuse is not known, so this cannot separate the two answers. Compare the two <b>legs</b>.' },
-              { html: 'An answer bigger than ' + t('30\\text{ m}') + ' is impossible for a triangle drawn this small.', why: 'Diagrams are not to scale. Use the angles: the leg opposite the smaller angle is the shorter leg.' },
+              { html: 'An answer as big as ' + t(w + '\\text{ m}') + ' is impossible for a triangle drawn this small.', why: 'Diagrams are not to scale. Use the angles: the leg opposite the smaller angle is the shorter leg.' },
               { html: 'The side opposite an angle is always longer than the side adjacent to it.', why: 'Only when the angle is more than ' + t('45^\\circ') + '. Here it is ' + t(dg(sh.deg)) + '.' }],
               'The ' + t(dg(sh.deg)) + ' angle is less than ' + t('45^\\circ') + ', so it is the <b>smaller</b> acute angle and the side opposite it, ' + t(O) + ', is the <b>shorter</b> leg. ' + t(c) + ' m is shorter than ' + t(sh.k.toFixed(1)) + ' m ✓; ' + t(w) + ' m is longer ✗.', ['Compare the two acute angles. Which leg is opposite the smaller one?'], 'leg check');
           } }] },
@@ -862,7 +862,7 @@
             return { prompt: 'Write ' + t('\\' + fn + ' A') + ' as a ratio in terms of ' + t('x') + ' and simplify it. Without using an inverse function, what is ' + t('\\angle A') + '?', input: { type: 'number', after: '°' }, key: String(A), answer: t(dg(A)), text: 'angle with hyp = 2 × leg',
               check: unitWrap(K.number(A, function (v) {
                 if (v === 90 - A) return { code: 'other-angle', hint: 'That is ' + t('\\angle B') + '. ' + t(sh.short) + ' is ' + (fn === 'sin' ? 'opposite' : 'adjacent to') + ' ' + t('\\angle A') + ', so ' + t('\\' + fn + ' A=\\frac{x}{2x}') + '. Which angle has that ratio?' };
-                if (Math.abs(v - 0.5) < 1e-9) return { code: 'ratio-not-angle', hint: t('\\frac12') + ' is the value of ' + t('\\' + fn + ' A') + '. Which acute angle has ' + fn + 'ine equal to ' + t('\\frac12') + '?' };
+                if (Math.abs(v - 0.5) < 1e-9) return { code: 'ratio-not-angle', hint: t('\\frac12') + ' is the value of ' + t('\\' + fn + ' A') + '. Which acute angle has ' + (fn === 'sin' ? 'sine' : 'cosine') + ' equal to ' + t('\\frac12') + '?' };
                 if (Math.abs(v - 2) < 1e-9) return { code: 'flip', hint: 'The ratio is ' + t(sh.short) + ' over the hypotenuse: ' + t('\\frac{x}{2x}') + ', not ' + t('\\frac{2x}{x}') + '. Then find the angle.' };
                 return null;
               })),

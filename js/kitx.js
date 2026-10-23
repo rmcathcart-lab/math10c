@@ -220,7 +220,7 @@
       var p = HW.parse.number(raw);
       if (!p.ok) { var a = K.read(raw); if (a.res) return a.res; return form('decimal', 'Give your answer as a decimal, rounded to the nearest ' + place + '.'); }
       var v = p.value, s = HW.parse.plain(raw).replace(/\s/g, ''), dec = (s.split('.')[1] || '').length;
-      if (opt.nr && s.length > 4) return form('nr-long', 'Numerical response answers fit in 4 boxes (digits and a decimal point only).');
+      if (opt.nr && s.length > 4) { var hl = opt.diag && Math.abs(K.roundTo(v, dp) - want) > 1e-9 ? opt.diag(v) : null; if (hl) return wrong(hl.code || 'diag', hl.hint); return form('nr-long', 'Numerical response answers fit in 4 boxes (digits and a decimal point only).'); }
       if (Math.abs(v - want) < 1e-9) return ok();
       if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', 'Right — now round it to the nearest ' + place + '.');
       if (dec < dp && Math.abs(v - K.roundTo(x, dec)) < 1e-9) return form('places', 'Round to the nearest ' + place + ' (' + dp + ' decimal place' + (dp === 1 ? '' : 's') + ').');

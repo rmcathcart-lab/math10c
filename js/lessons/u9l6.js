@@ -382,7 +382,7 @@
 
       /* ---------- Q8: clinometer NR ---------- */
       { num: '8', shared: function (r) { return { e: r.pick([1.4, 1.5, 1.6, 1.7, 1.8]), d: r.int(20, 45), th: r.int(15, 40) }; },
-        stem: function (sh) { return '<i>(Numerical Response)</i> Using a clinometer held at eye level, ' + t(f1(sh.e)) + ' m above the ground, a student standing ' + t(sh.d) + ' m from the base of a flagpole reads an angle of elevation of ' + t(dg(sh.th)) + ' to the top of the pole.'; },
+        stem: function (sh) { return '<i>(Numerical Response)</i> Using a clinometer held at eye level, ' + t(f1(sh.e)) + ' m above the ground, a student standing ' + t(sh.d) + ' m from the base of a flagpole reads an angle of elevation of ' + t(dg(sh.th)) + ' to the top of the pole.<br>' + eyeScene({ th: sh.th, eyeLab: f1(sh.e) + ' m', runLab: sh.d + ' m', obj: 'pole', aria: 'clinometer and flagpole' }); },
         parts: [
           { id: '8', level: 'PRG', make: function (r, sh) {
             var e = sh.e, d = sh.d, th = sh.th, rise = d * Tg.tan(th), H = rise + e;
@@ -1066,7 +1066,7 @@
       { num: '16', stem: '<b>Three bearings, three slips.</b> A student’s fieldwork sheet is reproduced below. Give the correct three-figure bearing for each entry.', parts: [
         { id: 'e16a', level: 'LIM', make: function (r) {
           var b = r.int(11, 89);
-          return bearingP('“The trail leaves the gate on a bearing of ' + t(dg(b)) + '.” Write the correct entry.', b, [A(360 - b, 'bearing-ccw', 'The size of the turn is right — only the <b>notation</b> needs fixing.')],
+          return bearingP('“The trail leaves the gate on a bearing of ' + t(dg(b)) + '.” Write the correct entry.', b, [A(360 - b, 'bearing-ccw', 'Don’t change the direction: the student’s turn of ' + t(dg(b)) + ' clockwise from north is right. Only the <b>notation</b> needs fixing.')],
             'The size is right; the <b>notation</b> is wrong. A bearing is always written with three digits, so keep the leading zero: ' + t(dg(b3(b))) + '.', ['What do all bearings have in common in how they are written?'], 'three-digit notation', { strict: true });
         } },
         { id: 'e16b', level: 'BEG', make: function (r) {

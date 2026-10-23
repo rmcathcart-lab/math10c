@@ -68,10 +68,10 @@
   function Q(x, u) { return t(q(x, u)); }
   function uH(u) { return t(uT(u)); }
   /* a unit-analysis chain: fs = [[num, numUnit, den, denUnit], …]; units that appear on top and bottom are cancelled */
-  function chainT(fs) {
+  function chainT(fs, noCancel) {
     var top = {}, bot = {}, ct = {}, cb = {};
     fs.forEach(function (f) { if (f[1]) top[f[1]] = (top[f[1]] || 0) + 1; if (f[3]) bot[f[3]] = (bot[f[3]] || 0) + 1; });
-    Object.keys(top).forEach(function (u) { ct[u] = cb[u] = Math.min(top[u], bot[u] || 0); });
+    if (!noCancel) Object.keys(top).forEach(function (u) { ct[u] = cb[u] = Math.min(top[u], bot[u] || 0); });
     function side(n, u, cnt) {
       var ut = u ? uT(u) : ''; if (u && cnt[u] > 0) { cnt[u]--; ut = '\\cancel{' + ut + '}'; }
       var nt = n == null ? '' : (typeof n === 'string' ? n : dT(n));
@@ -184,18 +184,18 @@
   function core(u) { return Math.abs(pe(u)) <= 3; }
   function p10(e) { e = Math.abs(e); return e <= 6 ? dT(Math.pow(10, e)) : '10^{' + e + '}'; }
   function metricLine(full) {
-    var labs = full ? ['G', 'M', 'k', 'h', 'da', 'unit', 'd', 'c', 'm', 'µ', 'n'] : ['k', 'h', 'da', 'unit', 'd', 'c', 'm'];
-    var pos = full ? [-9, -6, -3, -2, -1, 0, 1, 2, 3, 6, 9] : [-3, -2, -1, 0, 1, 2, 3];
+    var labs = full ? ['G', 'M', 'k', 'unit', 'm', 'µ', 'n'] : ['k', 'h', 'da', 'unit', 'd', 'c', 'm'], st = full ? '1000' : '10';
+    var pos = [-3, -2, -1, 0, 1, 2, 3];
     var W = 520, x0 = 30, sc = (W - 60) / (pos[pos.length - 1] - pos[0]), s = '';
     s += '<line x1="12" y1="34" x2="' + (W - 12) + '" y2="34" stroke="#2b3340" stroke-width="2"/><polygon points="' + (W - 6) + ',34 ' + (W - 16) + ',29 ' + (W - 16) + ',39" fill="#2b3340"/>';
     pos.forEach(function (p, i) {
       var x = x0 + (p - pos[0]) * sc, lab = labs[i];
       s += '<line x1="' + x.toFixed(1) + '" y1="' + (lab === 'unit' ? 26 : 29) + '" x2="' + x.toFixed(1) + '" y2="' + (lab === 'unit' ? 42 : 39) + '" stroke="#2b3340" stroke-width="' + (lab === 'unit' ? 2.6 : 1.6) + '"/>';
-      s += '<text x="' + x.toFixed(1) + '" y="58" font-size="15" text-anchor="middle" fill="#2b3340"' + (lab === 'unit' ? ' font-weight="600"' : '') + '>' + lab + '</text>';
+      s += '<text x="' + x.toFixed(1) + '" y="62" font-size="19" text-anchor="middle" fill="#2b3340"' + (lab === 'unit' ? ' font-weight="600"' : '') + '>' + lab + '</text>';
     });
-    s += '<text x="' + (W - 14) + '" y="16" font-size="13" text-anchor="end" fill="#13807a">smaller units → × 10 per step</text>';
-    s += '<text x="14" y="16" font-size="13" text-anchor="start" fill="#13807a">← bigger units: ÷ 10 per step</text>';
-    return '<div class="fig"><svg viewBox="0 0 ' + W + ' 66" width="100%" style="max-width:520px" role="img" aria-label="metric number line">' + s + '</svg></div>';
+    s += '<text x="' + (W - 10) + '" y="16" font-size="17" text-anchor="end" fill="#13807a">smaller: × ' + st + ' per step →</text>';
+    s += '<text x="10" y="16" font-size="17" text-anchor="start" fill="#13807a">← bigger: ÷ ' + st + ' per step</text>';
+    return '<div class="fig"><svg viewBox="0 0 ' + W + ' 72" width="100%" style="max-width:520px" role="img" aria-label="metric number line">' + s + '</svg></div>';
   }
   function stepsTxt(from, to) {
     var d = pe(from) - pe(to), a = Math.abs(d);
@@ -223,7 +223,7 @@
     var d = pe(from) - pe(to), ans = cl(v * Math.pow(10, d));
     var dir = d > 0 ? 'Check the direction: ' + uH(to) + ' is a <b>smaller</b> unit than ' + uH(from) + ', so there are more of them and the number must get <b>bigger</b>. Multiply by ' + t(p10(d)) + ' instead of dividing.'
       : 'Check the direction: ' + uH(to) + ' is a <b>bigger</b> unit than ' + uH(from) + ', so there are fewer of them and the number must get <b>smaller</b>. Divide by ' + t(p10(d)) + ' instead of multiplying.';
-    return numPart({ prompt: o.prompt || 'Convert ' + Q(v, from) + ' to ' + (UNAME[to] || to) + '.', before: t(q(v, from) + '='), unit: to, ans: ans,
+    return numPart({ prompt: o.prompt || 'Convert to ' + (UNAME[to] || to) + '.', before: t(q(v, from) + '='), unit: to, ans: ans,
       alts: [alt(cl(v * Math.pow(10, -d)), 'conv-direction', dir)],
       placesHint: function (j) { var a = Math.abs(j); return 'Right direction, but the decimal point is ' + a + ' place' + (a > 1 ? 's' : '') + ' off. ' + stepsTxt(from, to) + ', so the decimal point moves ' + Math.abs(d) + ' places.' + (core(from) && core(to) ? '' : ' (Past milli and kilo, each named prefix is a step of ' + t('1000') + ', not ' + t('10') + '.)'); },
       sol: metricSol(v, from, to, ans, mode), text: dS(v) + ' ' + from + ' to ' + to,
@@ -232,7 +232,7 @@
   /* scientific-notation answer, with the multiply/divide slip diagnosed before the kit's power-of-ten check */
   function sciPart(prompt, x, wrongDir, before, unit, sol, hints, text, dirHint) {
     var p = K.P.sci(prompt, x, { before: before }, sol, hints, text), base = p.check;
-    p.input.after = unit; p.answer = t(K.sciTex(x)) + ' ' + unit;
+    p.answer = t(K.sciTex(x)) + ' ' + unit;
     p.check = function (resp) { var a = K.read(resp); if (!a.res && isFinite(a.val) && near(a.val, wrongDir, 1e-6)) return wrong('conv-direction', dirHint); return base(resp); };
     return p;
   }
@@ -631,7 +631,7 @@
             { html: t('\\text{mm}'), why: 'There is no mm anywhere in this product yet.' }],
             'km is on top in both fractions, so they multiply instead of cancelling, and m is left on the bottom: ' + t('\\dfrac{\\text{km}\\times\\text{km}}{\\text{m}}=\\dfrac{\\text{km}^2}{\\text{m}}') + '. Spotting a nonsense unit warns you <b>before</b> doing any arithmetic.', ['Write out where each unit sits — top or bottom.'], 'unit of an upside-down chain');
         } }] },
-      { num: '2', stem: 'Convert each measurement. Each crosses more than one prefix, so route every one through the base unit (the metre).' + metricLine(true), parts: [
+      { num: '2', stem: 'Convert each measurement. Each crosses more than one prefix, so route every one through the base unit (the metre).' + metricLine(true) + '<div>Prefix values: ' + t('\\text{G}=10^{9},\\ \\text{M}=10^{6},\\ \\text{k}=10^{3},\\ \\text{c}=10^{-2},\\ \\text{m}=10^{-3},\\ \\mu=10^{-6},\\ \\text{n}=10^{-9}') + '</div>', parts: [
         { id: 'e2a', sub: 'a', level: 'EMG', make: function (r) { var v; do { v = r.int(11, 99); } while (v % 10 === 0); return metricPart(v * 100, 'mm', 'km', 'chain'); } },
         { id: 'e2b', sub: 'b', level: 'EMG', outcome: 'EXT', make: function (r) { var v; do { v = r.int(11, 99); } while (v % 10 === 0); return metricPart(v * 10, 'µm', 'cm', 'chain'); } },
         { id: 'e2c', sub: 'c', level: 'EMG', outcome: 'EXT', make: function (r) { var v; do { v = r.int(11, 99); } while (v % 10 === 0); return metricPart(cl(v / 100), 'Gm', 'km', 'chain'); } },
@@ -830,7 +830,7 @@
       { num: '11', stem: function (sh) { return 'Trim moulding is advertised at ' + t('\\$' + sh.A.toFixed(2)) + ' per foot at Store A, and at ' + t('\\$' + sh.B.toFixed(2)) + ' per metre at Store B. (' + t('1\\text{ ft}=0.3048\\text{ m}') + ')'; },
         shared: function (r) { var A, per, B, g = 0; do { A = r.int(250, 500) / 100; per = A / 0.3048; B = rnd(per + r.pick([-1, 1]) * r.int(20, 120) / 100, 2); g++; } while ((rnd(per, 2) !== rnd(A * 3.2808, 2) || bord(per, 2) || bord(Math.abs(per - B), 2)) && g < 400); return { A: A, B: B, per: per }; }, parts: [
         { id: 'e11a', sub: 'a', level: 'EMG', make: function (r, sh) {
-          return nearPart({ prompt: 'Convert Store A’s price to dollars per metre, to the nearest cent.', before: t('\\$'), x: sh.per, dp: 2, unit: 'per metre', pre: t('\\$'), text: '$' + sh.A + '/ft to $/m',
+          return nearPart({ prompt: 'Convert Store A’s price to dollars per metre, to the nearest cent.', before: t('\\$'), x: sh.per, dp: 2, unit: 'per m', pre: t('\\$'), text: '$' + sh.A + '/ft to $/m',
             alts: [alt(sh.A * 0.3048, 'conv-direction', 'The foot is on the <b>bottom</b> of the price, so the factor needs ft on <b>top</b>: ' + t('\\dfrac{1\\text{ ft}}{0.3048\\text{ m}}') + '. (A metre is longer, so it must cost more.)')],
             sol: disp('\\dfrac{\\$' + sh.A.toFixed(2) + '}{1\\ \\cancel{\\text{ft}}}\\times\\dfrac{1\\ \\cancel{\\text{ft}}}{0.3048\\text{ m}}=\\dfrac{' + sh.A.toFixed(2) + '}{0.3048}\\ \\$/\\text{m}\\approx\\$' + fx(sh.per, 2) + '\\text{ per metre}'), hints: ['The foot is in the denominator, so the factor must have ft on top.'] });
         } },
@@ -1041,7 +1041,7 @@
             sol: t(dS(rnd(sh.h, 2)) + '\\div 24') + ' gives ' + t(w[0]) + ' whole days, leaving ' + t(dS(rnd(sh.h - 24 * w[0], 2)) + '\\text{ h}\\approx ' + w[1] + '\\text{ h}') + '.<br>So about ' + t(w[0] + '\\text{ days }' + w[1] + '\\text{ h}') + '.', hints: ['Take out the whole days (' + t('24\\text{ h}') + ' each); the leftover is hours.'] });
         } },
         { id: 'e19d', sub: 'd', level: 'PRG', make: function (r, sh) {
-          var L = sh.L, R = sh.R, c = function (fs) { return t(chainT(fs)); };
+          var L = sh.L, R = sh.R, c = function (fs) { return '<span style="line-height:2.7">' + t(chainT(fs, true)) + '</span>'; };
           return mcPart(r, 'Which single unit-factor chain, starting from ' + Q(L, 'km') + ', gives the time in hours?', [
             { html: c([[L, 'km', null, null], [1000, 'm', 1, 'km'], [1, 'ft', 0.3048, 'm'], [1, 'h', R, 'ft']]), right: true },
             { html: c([[L, 'km', null, null], [1000, 'm', 1, 'km'], [1, 'ft', 0.3048, 'm'], [R, 'ft', 1, 'h']]), why: 'The rate is the wrong way up: ft is already on top, so the rate must have ft on the bottom — and that puts h on top.' },

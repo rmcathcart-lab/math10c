@@ -219,8 +219,7 @@
       segs: [{ pts: [[0, o.T], [o.T, 0]], color: '#2b62b8' }, { pts: [[0, o.B / o.r2], [o.B / o.r1, 0]], color: '#c4532a', dash: true }],
       points: [{ x: o.o, y: o.n, color: '#2b3340', label: '(' + o.o + ', ' + o.n + ')' }, { x: o.o2, y: o.n2, color: '#2b3340', label: '(' + o.o2 + ', ' + o.n2 + ')' }], aria: 'two lines: P (time) and Q (output)' });
     var G = HW.graph.last, lab = function (x, y, s, c) { return '<text x="' + G.X(x).toFixed(1) + '" y="' + G.Y(y).toFixed(1) + '" font-size="12.5" font-weight="600" fill="' + c + '" paint-order="stroke" stroke="#fff" stroke-width="3">' + s + '</text>'; };
-    var qx = o.B / o.r1 * 0.78, qy = (o.B - o.r1 * qx) / o.r2;
-    return svg.replace('</svg>', lab(0.6, o.T + 0.6, 'line P', '#2b62b8') + lab(qx, qy + 1.2, 'line Q', '#c4532a') + '</svg>');
+    return svg.replace('</svg>', lab(0.6, o.T + 0.6, 'line P', '#2b62b8') + lab(0.6, o.B / o.r2 - 2.2, 'line Q', '#c4532a') + '</svg>');
   }
   function angleFig(e1, e2) {
     return HW.fig({ pts: { A: [-3, 2], B: [3, 2], C: [-3, -1], Dd: [3, -1], U: [1.5, 3], W: [-1.5, -2], T: [0.9, 2], S: [-0.9, -1] },
@@ -337,11 +336,11 @@
               ['Write the new length and width first: ' + t('2l') + ' and ' + t('\\frac{w}{2}') + '. The new perimeter is ' + t(o.P + '+' + o.I) + '.'], 'doubled/halved rectangle system');
           } },
           { id: '4b', sub: 'ii', level: 'ADV', make: function (r, o) {
-            var NP = o.P + o.I, ws = (NP - o.P / 2) / 3, li = (o.I - o.P / 2) / 3;
+            var NP = o.P + o.I, li = (o.I - o.P / 2) / 3;
             return numsP('Find the dimensions of the original rectangle.', [{ label: 'Length', after: 'cm' }, { label: 'Width', after: 'cm' }], [o.l, o.w],
               { names: ['length', 'width'], sys: [[1, 1, -o.P / 2], [4, 1, -NP]], sysNames: ['the original perimeter', 'the new perimeter'],
-                wrong: [{ v: [o.P / 2 - ws, ws], code: 'swap-change', hint: 'Check the new rectangle: the <b>length</b> is doubled and the <b>width</b> halved, so its perimeter is ' + t('2\\left(2l+\\frac{w}{2}\\right)=4l+w') + '.' },
-                  { v: [li, o.P / 2 - li], code: 'increase-total', hint: 'The new perimeter is ' + t(o.P + '+' + o.I + '=' + NP) + ', not ' + t(o.I) + '.' }] },
+                swapHint: 'Your two numbers are swapped — that is what you get if the width is doubled and the length halved. The <b>length</b> is doubled (' + t('2l') + ') and the <b>width</b> halved (' + t('\\frac{w}{2}') + '), so the new perimeter is ' + t('4l+w') + '.',
+                wrong: [{ v: [li, o.P / 2 - li], code: 'increase-total', hint: 'The new perimeter is ' + t(o.P + '+' + o.I + '=' + NP) + ', not ' + t(o.I) + '.' }] },
               t('2l+2w=' + o.P) + ' ⟹ ' + t('l+w=' + o.P / 2) + '. New rectangle ' + t('2l') + ' by ' + t('\\frac{w}{2}') + ': ' + t('2\\left(2l+\\frac{w}{2}\\right)=' + NP) + ' ⟹ ' + t('4l+w=' + NP) + '.<br>Subtract: ' + t('3l=' + (NP - o.P / 2)) + ' ⟹ ' + t('l=' + o.l) + ', ' + t('w=' + o.P / 2 + '-' + o.l + '=' + o.w) + '.<br>' +
               chk('Check: ' + t('2(' + o.l + '+' + o.w + ')=' + o.P)) + '; new rectangle ' + t(2 * o.l + '\\times ' + o.w / 2) + ', ' + chk(t('P=2(' + (2 * o.l + o.w / 2) + ')=' + NP + '=' + o.P + '+' + o.I)) + '<br><b>The original rectangle is ' + o.l + ' cm by ' + o.w + ' cm.</b>',
               ['Original: ' + t('l+w=' + o.P / 2) + '. New: length ' + t('2l') + ', width ' + t('\\frac{w}{2}') + ', perimeter ' + t(o.P + '+' + o.I) + '.'], 'doubled/halved rectangle dimensions');
@@ -1189,7 +1188,7 @@
           } }] },
       /* ---------- Part I ---------- */
       { num: '18', section: 'Extra practice I — Stretch',
-        shared: function (r) { return gen(function () { var ps = r.int(25, 35), pm = ps + r.int(3, 8), pl = pm + r.int(4, 9), k = r.chance(0.75) ? 2 : 3, s = r.int(5, 15), m = r.int(10, 35); return { ps: ps, pm: pm, pl: pl, k: k, s: s, m: m, l: k * s, N: s + m + k * s, T: ps * s + pm * m + pl * k * s }; }, { ps: 32, pm: 38, pl: 45, k: 2, s: 9, m: 27, l: 18, N: 54, T: 2124 }); },
+        shared: function (r) { return gen(function () { var ps = r.int(25, 35), pm = ps + r.int(3, 8), pl = pm + r.int(4, 9), k = r.chance(0.75) ? 2 : 3, s = r.int(5, 15), m = r.int(10, 35); if (Math.abs((k + 1) * pm - (ps + k * pl)) < 3) return null; return { ps: ps, pm: pm, pl: pl, k: k, s: s, m: m, l: k * s, N: s + m + k * s, T: ps * s + pm * m + pl * k * s }; }, { ps: 32, pm: 38, pl: 45, k: 2, s: 9, m: 27, l: 18, N: 54, T: 2124 }); },
         stem: function (o) { return 'A school store sells hoodies in three sizes: small at ' + Dh(o.ps) + ', medium at ' + Dh(o.pm) + ' and large at ' + Dh(o.pl) + '. On one day it sold ' + t(o.N) + ' hoodies for ' + Dh(o.T) + ', and the number of large hoodies sold was exactly <b>' + TIMES[o.k] + '</b> the number of small hoodies sold. Let ' + t('s') + ', ' + t('m') + ' and ' + t('l') + ' be the numbers of small, medium and large hoodies sold.'; },
         parts: [
           { id: 'e18a', sub: 'a', level: 'EMG', make: function (r, o) {

@@ -24,7 +24,10 @@
     'nr-partial': 'Gave x or y instead of the requested expression',
     'nr-swap': 'Evaluated the expression with x and y swapped',
     'pt-exact': 'Rounded decimals instead of exact fractions',
-    'sub-dist': 'Substitution: bracket not multiplied out'
+    'sub-dist': 'Substitution: bracket not multiplied out',
+    'sub-divide': 'Isolating x: did not divide every term',
+    'addsub': 'Chose add vs subtract wrongly',
+    'eq-other': 'Did a different combination than the one asked'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -572,7 +575,7 @@
           { id: '7b', sub: 'b i', level: 'EMG', make: function (r, sh) {
             var S = sh.S, tex = '\\frac{' + lin([S[0][2], -S[0][1]], ['', 'y']) + '}{' + S[0][0] + '}';
             var p = K.P.poly('<b>Substitution, step 1.</b> Solve the first equation for ' + t('x') + '.', PL.parse(tex), { before: t('x='), expanded: false, keyTex: tex,
-              wrong: [{ is: PL.parse('\\frac{' + lin([-S[0][2], -S[0][1]], ['', 'y']) + '}{' + S[0][0] + '}'), code: 'rearr-sign', hint: 'Moving the constant across the equals sign changes its sign.' }, { is: PL.parse(lin([S[0][2], -S[0][1]], ['', 'y'])), code: 'divide', hint: 'Then divide <b>both</b> terms by ' + t(S[0][0]) + ' to get ' + t('x') + ' alone.' }] },
+              wrong: [{ is: PL.parse('\\frac{' + lin([-S[0][2], -S[0][1]], ['', 'y']) + '}{' + S[0][0] + '}'), code: 'rearr-sign', hint: 'Moving the constant across the equals sign changes its sign.' }, { is: PL.parse(lin([S[0][2], -S[0][1]], ['', 'y'])), code: 'sub-divide', hint: 'Then divide <b>both</b> terms by ' + t(S[0][0]) + ' to get ' + t('x') + ' alone.' }] },
               t(genT(S[0], ['x', 'y']) + '\\ \\Rightarrow\\ ' + S[0][0] + 'x=' + lin([S[0][2], -S[0][1]], ['', 'y']) + '\\ \\Rightarrow\\ x=' + tex) + '. The fraction can’t be avoided: ' + t(S[0][0]) + ' doesn’t divide ' + t(S[0][1]) + '.',
               ['Move the ' + t('y') + '-term and the constant to the right, then divide everything by ' + t(S[0][0]) + '.'], 'isolate x: ' + genT(S[0], ['x', 'y']));
             p.good = ['\\frac{' + S[0][2] + '}{' + S[0][0] + '}' + sgnAdd(-S[0][1]).replace(/\d+$/, function (m) { return '\\frac{' + m + '}{' + S[0][0] + '}'; }) + 'y'];
@@ -915,7 +918,7 @@
             return stepPart('Carry out Eq. 1 − Eq. 2 correctly. What equation do you get?', T,
               { wrong: [{ is: [1, 0, S[0][2] - S[1][2]], code: 'elim-sub-sign', hint: 'Subtracting ' + t('-' + sh.b + 'y') + ' <b>adds</b> ' + t(sh.b + 'y') + ': ' + t(sh.b + 'y-(-' + sh.b + 'y)=' + 2 * sh.b + 'y') + '. So ' + t('y') + ' is not eliminated.' },
                 { is: [1, 2 * sh.b, S[0][2] + S[1][2]], code: 'elim-rhs', hint: 'Subtract the right sides too: ' + t(S[0][2] + '-' + NP(S[1][2]) + '=' + (S[0][2] - S[1][2])) + '.' },
-                { is: [S[0][0] + S[1][0], 0, S[0][2] + S[1][2]], code: 'eq', hint: 'That is Eq. 1 <b>+</b> Eq. 2 — the right move here! But first carry out the student’s Eq. 1 − Eq. 2 to see what goes wrong.' }], placeholder: '2x + 3y = 7', stepHint: 'Give the equation exactly as the subtraction produces it.' },
+                { is: [S[0][0] + S[1][0], 0, S[0][2] + S[1][2]], code: 'eq-other', hint: 'That is Eq. 1 <b>+</b> Eq. 2 — the right move here! But first carry out the student’s Eq. 1 − Eq. 2 to see what goes wrong.' }], placeholder: '2x + 3y = 7', stepHint: 'Give the equation exactly as the subtraction produces it.' },
               t('(' + lin([S[0][0], S[0][1]], ['x', 'y']) + ')-(' + lin([S[1][0], S[1][1]], ['x', 'y']) + ')=' + S[0][2] + '-' + NP(S[1][2]) + '\\ \\Rightarrow\\ ' + eqT(T, ['x', 'y'])) + '.<br>' + t('y') + ' is <b>not</b> eliminated: subtracting ' + t('-' + sh.b + 'y') + ' added ' + t(sh.b + 'y') + '. The coefficients ' + t('+' + sh.b) + ' and ' + t('-' + sh.b) + ' are <b>opposite</b>, so the equations must be <b>added</b>.',
               ['Write it as a bracketed difference and change the sign of every term in the second bracket.'], 'carry out Eq.1 − Eq.2');
           } },

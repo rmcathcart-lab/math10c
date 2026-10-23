@@ -117,7 +117,7 @@
   /* ---------------- micrometer (booklet \microScale{h}{f}: reading 0.5h + 0.01f mm) ---------------- */
   function micSvg(h, f, opt) {
     opt = opt || {};
-    var k = 58, R0 = 0.5 * h + 0.01 * f, mlo = Math.max(0, Math.floor(R0 + 1e-9) - 6), mE = (R0 - mlo) * 0.55;
+    var k = 50, R0 = 0.5 * h + 0.01 * f, mlo = Math.max(0, Math.floor(R0 + 1e-9) - 6), mE = (R0 - mlo) * 0.55;
     var X = function (x) { return (x + 0.55) * k; }, Y = function (y) { return (1.45 - y) * k; };
     var W = X(mE + 3.05) + 4, H = Y(-1.35) + (opt.noCaption ? 8 : 52), s = '';
     s += R(X(-0.45), Y(0.86), X(mE) - X(-0.45), 1.48 * k, '#f2f3f5', { stroke: '#b9bec6' });
@@ -171,7 +171,6 @@
     s += objShape(X(o.a), X(o.b), oy, oh, o.obj);
     s += R(X(from) - 10, ry, (to - from) * px + 20, 44, '#fff8dc', { stroke: '#b8a46a', sw: 1.3, rx: 3 });
     s += cmTicks(X(from), ry, px, from, to, !o.zoom, o.zoom ? 5 : 1);
-    s += TX(X(to) + 6, ry + 38, 'cm', { size: 11, c: GREY, anchor: 'end' });
     [o.a, o.b].forEach(function (c) { if (c > from + 1e-9 || !o.zoom) s += L(X(c), oy - 4, X(c), ry + 22, { c: RED, w: 1.3, dash: '4 3' }); });
     var H = ry + 50;
     if (o.zoom) {
@@ -200,7 +199,6 @@
       s += L(x, ry, x, ry + (whole ? 22 : half ? 15 : 9), { w: whole ? 1.5 : 1 });
       if (whole) s += TX(x, ry + 34, String(i / 4), { size: 13, weight: (i / 4) % 12 === 0 ? 700 : null, c: (i / 4) % 12 === 0 ? RED : INK });
     }
-    s += TX(W - 8, ry + 42, 'in', { size: 11, c: GREY, anchor: 'end' });
     s += L(X(o.end), oy - 4, X(o.end), ry + 24, { c: RED, w: 1.3, dash: '4 3' });
     return svgFit(W, ry + 52, s, 'inch tape measure', W * 1.35);
   }

@@ -78,7 +78,7 @@
     opt = opt || {};
     var p = B.near(prompt, x, dp, { unit: unit, alts: alts || [], nr: opt.nr, before: opt.before }, sol, hints, text);
     if (opt.before) p.answer = opt.before + t(fx(x, dp)) + (unit ? ' ' + unit : '');
-    if (opt.exact) p.check = nearX(x, dp, { alts: alts || [], nr: opt.nr });
+    if (opt.exact) { p.check = nearX(x, dp, { alts: alts || [], nr: opt.nr }); if (Math.abs(x * Math.pow(10, dp) - Math.round(x * Math.pow(10, dp))) < 1e-9) p.answer = (opt.before || '') + t(num(x)) + (unit ? ' ' + unit : ''); }
     if (opt.pre) p.check = pre(p.check, opt.pre);
     p.bad = badOf(x, dp, alts);
     if (opt.nr) p.bad = p.bad.filter(function (s) { return s.length <= 4; });
