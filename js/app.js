@@ -212,8 +212,9 @@
     outs.forEach(function (o) {
       var lv = best[o], i = lv ? LV.indexOf(lv) : -1, dots = '';
       for (var k = 0; k < LV.length; k++) dots += '<i class="' + (k <= i ? 'on lvbg-' + lv : '') + '"></i>';
-      wrap.appendChild(el('span', 'ulv' + (lv ? '' : ' none'), '<b>' + esc(o) + '</b><span class="ulv-dots" aria-hidden="true">' + dots + '</span>' +
-        (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="ulv-none">No level yet</span>')));
+      var pill = el('button', 'ulv' + (lv ? '' : ' none'), '<b>' + esc(o) + '</b><span class="ulv-dots" aria-hidden="true">' + dots + '</span>' +
+        (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="ulv-none">No level yet</span>'));
+      pill.type = 'button'; pill.dataset.outcome = o; pill.title = 'What is ' + o + '?'; wrap.appendChild(pill);   // tap: the outcome's wording (js/outcomes.js)
     });
     return wrap;
   }
@@ -349,7 +350,11 @@
     var em = el('a', 'btn home-about-btn', 'Email the Teacher');
     em.href = 'mailto:' + TEACHER_EMAIL + '?subject=' + encodeURIComponent('Math 10C' + (session && session.name ? ' question from ' + session.name : ' question'));
     em.title = 'Email Mr. Cathcart (' + TEACHER_EMAIL + ')';
-    foot.appendChild(em); view.appendChild(foot);
+    foot.appendChild(em);
+    // Lorebound, the class's math adventure game, in its own style; opens in a new tab
+    var lb = el('a', 'home-lore', '<span class="hl-k">Play</span><span class="hl-t">Lorebound</span>');
+    lb.href = LOREBOUND_URL; lb.target = '_blank'; lb.rel = 'noopener'; lb.title = 'Lorebound: the Math 10C adventure game (opens in a new tab)';
+    foot.appendChild(lb); view.appendChild(foot);
     L.setStatus({ view: 'home' }, false);
   }
   /* ---------------- outcome medals (js/medals.js) ----------------
@@ -595,6 +600,7 @@
     return m ? m[1].toUpperCase() : '';
   }
   var TEACHER_EMAIL = 'rcathcart@rvschools.ab.ca';
+  var LOREBOUND_URL = 'https://rmcathcart-lab.github.io/lorebound/';
   function teachingUrl(lesson) {
     var T = HW.TEACHING; if (!T || T.lessons.indexOf(lesson.id) < 0) return '';
     var m = /^u(\d+)l(\w+)$/.exec(lesson.id), b = studentBlock();
@@ -633,7 +639,7 @@
     view.innerHTML = '';
     var wrap = el('div', 'lesson-wrap');
     var head = el('div', 'lesson-head');
-    head.innerHTML = '<div class="lh-eyebrow">Unit ' + lesson.unit + ' · Lesson ' + esc(lesson.num) + ' · ' + esc(lesson.outcome) + '</div><h1>' + HW.tex(esc(lesson.title)) + '</h1>';
+    head.innerHTML = '<div class="lh-eyebrow">Unit ' + lesson.unit + ' · Lesson ' + esc(lesson.num) + ' · <button type="button" class="oc-link" data-outcome="' + esc(lesson.outcome) + '" title="What is ' + esc(lesson.outcome) + '?">' + esc(lesson.outcome) + '</button></div><h1>' + HW.tex(esc(lesson.title)) + '</h1>';
     var hb = el('div', 'lh-bar'); head.appendChild(hb);
     wrap.appendChild(head);
     var body = el('div', 'lesson-body');
