@@ -161,7 +161,20 @@
     var box = el('div', 'calv');
     var head = el('div', 'calv-head'), trow = el('div', 'calv-trow'), title = el('div', 'calv-title'), tb = el('button', 'calv-today', 'Today');
     tb.type = 'button'; tb.title = 'Back to today'; tb.addEventListener('click', function () { box.scrollToDate(today, true); });
-    trow.appendChild(title); trow.appendChild(tb); head.appendChild(trow);
+    // ‹ Today ›: jump a month back or forward, to the week of the 1st
+    var nav = el('div', 'calv-nav');
+    var aim = null;   // the month a jump is scrolling to (quick repeated taps keep counting from it)
+    function jump(dm) {
+      var ym = aim && Date.now() - aim.at < 900 ? aim.ym : box.dataset.month || today.slice(0, 7), t = new Date(+ym.slice(0, 4), +ym.slice(5, 7) - 1 + dm, 1, 12), k = C.key(t);
+      if (k.slice(0, 7) < from) k = from + '-01'; if (k.slice(0, 7) > to) return;
+      if (!grid.querySelector('.calm-day[data-date="' + k + '"]')) { var c = grid.querySelector('.calm-day[data-ym="' + k.slice(0, 7) + '"]'); if (!c) return; k = c.dataset.date; }
+      aim = { ym: k.slice(0, 7), at: Date.now() }; box.scrollToDate(k, true);
+    }
+    var pv = el('button', 'calv-mon', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>'), nx = el('button', 'calv-mon', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>');
+    pv.type = nx.type = 'button'; pv.title = 'Previous month'; nx.title = 'Next month'; pv.setAttribute('aria-label', 'Previous month'); nx.setAttribute('aria-label', 'Next month');
+    pv.addEventListener('click', function () { jump(-1); }); nx.addEventListener('click', function () { jump(1); });
+    nav.appendChild(pv); nav.appendChild(tb); nav.appendChild(nx);
+    trow.appendChild(title); trow.appendChild(nav); head.appendChild(trow);
     var hd = el('div', 'calm-hd'); ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(function (d, i) { hd.appendChild(el('div', i === 0 || i === 6 ? 'calm-we' : '', d)); });
     head.appendChild(hd); box.appendChild(head);
     var grid = el('div', 'calm-grid'); box.appendChild(grid);

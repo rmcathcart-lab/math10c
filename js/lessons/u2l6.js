@@ -748,7 +748,7 @@
   }
 
   HW.defineLesson({
-    id: 'u2l6', unit: 2, num: '6', title: 'Exponent Laws in Review', outcome: 'AN3',
+    id: 'u2l6', unit: 2, num: '6', title: 'Exponents Unit Review', outcome: 'AN3',
     blurb: 'Every law from the unit in one place — vocabulary, the product and quotient laws, zero and negative exponents, scientific notation, rational exponents, and an error-analysis written response.',
     questions: [
       { num: '1', section: 'Part A — Vocabulary and Repeated Multiplication', stem: '<i>(Multiple Choice)</i>', parts: [{ id: '1', level: 'BEG', make: q1 }] },

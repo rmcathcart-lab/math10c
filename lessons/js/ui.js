@@ -31,7 +31,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
   tb.innerHTML = `
     <a class="tbtn home" href="${sh.role === 'teacher' ? homeHref + '../teacher/' : homeHref + '../'}" title="${sh.role === 'teacher' ? 'Teacher Ledger' : 'Your assignments'}" aria-label="${sh.role === 'teacher' ? 'Teacher Ledger' : 'Back to your assignments'}"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
-    <div class="tb-title">${title}</div>
+    <button type="button" class="tb-title" title="All the lessons" aria-haspopup="dialog" aria-expanded="false"><span class="tbt-txt">${title}</span><svg class="tbt-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
     <div class="share-badge"></div>
     <div class="tb-group tools">
       <button class="tbtn" data-tool="pen" title="Pen (P)" aria-label="Pen">${icon('pen')}</button>
@@ -95,6 +95,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   $('[data-act=board]').addEventListener('click', () => toggleBoard());
   $('[data-act=calc]').addEventListener('click', () => calc().toggle());
   $('[data-act=menu]').addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+  const lessons = lessonList(hud, $('.tb-title'), key, homeHref, () => { toggleMenu(false); closePicker(); });
 
   /* ---------- eraser dot ----------
    * A round eraser button that floats on the left side of the screen (in the HUD, so it stays put and the same size when
@@ -167,11 +168,12 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   function toggleMenu(force) {
     const show = force == null ? menu.classList.contains('hidden') : force;
     if (!show) { menu.classList.add('hidden'); return; }
+    if (lessons) lessons.hide();
     const s = Ink.state(), shareMenu = Share.menuSection(sh);
     const secs = [...document.querySelectorAll('[data-section]')];
     menu.innerHTML = `${shareMenu.bottom ? '' : shareMenu.html}
       <div class="mp-h">Jump to</div>
-      <div class="mp-secs">${secs.map((el, i) => `<button class="mp-item" data-i="${i}">${el.dataset.section}</button>`).join('')}</div>
+      <div class="mp-toc">${tocHTML(tocModel(secs.map((el) => el.dataset.section)))}</div>
       <div class="mp-sep"></div>
       ${sh.readonly ? '' : `<label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
       <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>`}
@@ -183,7 +185,14 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       ${shareMenu.bottom ? shareMenu.html : ''}
       ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo · hold a colour to change it.<br>Tap a button with the Pencil to press it.</div>'}`;
     menu.classList.remove('hidden');
-    menu.querySelectorAll('[data-i]').forEach((b) => b.onclick = () => { toggleMenu(false); toggleBoard(false); secs[b.dataset.i].scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    menu.querySelectorAll('[data-i]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); toggleMenu(false); toggleBoard(false); secs[b.dataset.i].scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    // where the class is now: that row lit up (the chip or row itself rather than a "Review" heading that shares its
+    // card), its section marked, and scrolled into view in the list
+    const toc = menu.querySelector('.mp-toc'), ci = String(currentSection(secs));
+    const hits = [...toc.querySelectorAll('[data-i="' + ci + '"]')], best = hits.filter((b) => !b.classList.contains('toc-h'));
+    (best.length ? best : hits).forEach((b) => { b.classList.add('cur'); b.closest('.toc-g').classList.add('in'); });
+    const curB = toc.querySelector('.cur');
+    if (curB) toc.scrollTop = Math.max(0, curB.offsetTop - toc.clientHeight / 2 + curB.offsetHeight / 2);
     const tf = menu.querySelector('[data-t=finger]'), th = menu.querySelector('[data-t=hover]');
     if (tf) tf.onchange = (e) => Ink.setFinger(e.target.checked);
     if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
@@ -217,7 +226,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) Ink.redo(); else Ink.undo(); return; }
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const k = { p: 'pen', h: 'highlighter', e: 'eraser', l: 'laser', v: 'hand' }[e.key.toLowerCase()];
-    if (k) Ink.setTool(k); else if (e.key === 'b') toggleBoard(); else if (e.key === 'c') calc().toggle(); else if (e.key === 'Escape') { toggleBoard(false); toggleMenu(false); }
+    if (k) Ink.setTool(k); else if (e.key === 'b') toggleBoard(); else if (e.key === 'c') calc().toggle(); else if (e.key === 'Escape') { toggleBoard(false); toggleMenu(false); lessons.hide(); }
     else if (e.key === '-') setPageZoom(getPageZoom() - 0.1); else if (e.key === '=' || e.key === '+') setPageZoom(getPageZoom() + 0.1);
   });
 
@@ -225,19 +234,182 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   document.querySelectorAll('.part').forEach((p) => {
     const b = p.querySelector('.reveal'); if (b) b.addEventListener('click', () => p.classList.toggle('shown'));
   });
-  document.querySelectorAll('[data-more]').forEach((b) => {
-    const target = document.getElementById(b.dataset.more);
-    b.addEventListener('click', () => { const cur = parseFloat(getComputedStyle(target).minHeight) || target.offsetHeight; target.style.minHeight = (cur + 260) + 'px'; saveSpace(); Ink.emitOp({ a: 'space', id: target.id, h: target.style.minHeight }); });
-  });
-  const spaceKey = 'space:' + sh.inkKey;
-  function saveSpace() { const o = {}; document.querySelectorAll('[data-more]').forEach((b) => { const t = document.getElementById(b.dataset.more); if (t.style.minHeight) o[t.id] = t.style.minHeight; }); try { localStorage.setItem(spaceKey, JSON.stringify(o)); } catch (e) { /* ignore */ } }
-  if (!sh.readonly) try { const o = JSON.parse(localStorage.getItem(spaceKey) || '{}'); for (const id in o) { const t = document.getElementById(id); if (t) t.style.minHeight = o[id]; } } catch (e) { /* ignore */ }
+  moreSpace();
 
   /* ---------- calculator demos ---------- */
   document.querySelectorAll('[data-keys]').forEach((b) => b.addEventListener('click', () => calcDemo(b.dataset.keys)));
 
   Ink.init(sh.inkKey, { readonly: sh.readonly });
   Share.start(sh, $('.share-badge'));
+}
+
+/* "+ More space" under an example adds 260 px of room to write in (the .space div it names grows). "− Less space"
+ * beside it takes one step back off, and shows only while there's extra space AND nothing is written in the part that
+ * would go (or below it), so the ink always stays where it was written. The heights live in ink.js with the notes
+ * (saved with them, sent to the class with them, reset by "Clear all ink"). */
+const SPACE_STEP = 260;
+function moreSpace() {
+  const areas = [];
+  document.querySelectorAll('[data-more]').forEach((more) => {
+    const t = document.getElementById(more.dataset.more); if (!t) return;
+    t.dataset.h0 = t.style.minHeight || ''; // its own height (a page can give a work area some room to start with)
+    const row = h('div', 'more-row'); more.parentNode.insertBefore(row, more); row.appendChild(more);
+    const less = h('button', 'more less', '− Less space'); less.type = 'button'; less.hidden = true;
+    less.title = 'Take away the last bit of extra space (only when nothing is written there)';
+    row.appendChild(less);
+    areas.push({ t, more, less });
+    more.addEventListener('click', () => { Ink.setSpace(t.id, (cur(t) + SPACE_STEP) + 'px'); });
+    less.addEventListener('click', () => {
+      const c = cur(t), base = h0(t);
+      if (c <= base || !free(t)) { refresh(); Ink.toast('There’s writing in that space'); return; }
+      const n = c - SPACE_STEP; Ink.setSpace(t.id, n > base + 0.5 ? n + 'px' : '');
+    });
+  });
+  if (!areas.length) return;
+  const cur = (t) => parseFloat(getComputedStyle(t).minHeight) || 0;
+  const h0 = (t) => parseFloat(t.dataset.h0) || 0;
+  /* nothing written in the last step of extra space, or anywhere below it on the card */
+  function free(t) {
+    const c = cur(t), base = h0(t); if (c <= base) return false;
+    const r = t.getBoundingClientRect(), k = t.offsetHeight ? r.height / t.offsetHeight : 1;
+    const cut = r.top + (c - Math.min(SPACE_STEP, c - base)) * k;
+    return Ink.inkBottom(t) <= cut;
+  }
+  function refresh() { raf = 0; areas.forEach((a) => { a.less.hidden = !free(a.t); }); }
+  let raf = 0; const later = () => { if (!raf) raf = requestAnimationFrame(refresh); };
+  Ink.onSpace((id, ht) => { const t = document.getElementById(id); if (t) t.style.minHeight = ht || t.dataset.h0 || ''; later(); });
+  Ink.onChange(later);
+}
+
+/* ---------- lesson list (tap the lesson title in the toolbar) ----------
+ * Every lesson in the course, by unit, from the practice site's catalog (js/catalog.js — loaded here if the page
+ * didn't load it), so renamed lessons show their new titles. Tapping one opens that lesson page with the same
+ * ?class=…, so the class's notes stay attached. */
+function loadCatalog(homeHref) {
+  if (window.HW && window.HW.CATALOG) return Promise.resolve(window.HW);
+  if (!loadCatalog.p) loadCatalog.p = new Promise((res, rej) => { const s = document.createElement('script'); s.src = homeHref + '../js/catalog.js'; s.onload = () => (window.HW && window.HW.CATALOG ? res(window.HW) : rej(new Error('no catalog'))); s.onerror = rej; document.head.appendChild(s); });
+  return loadCatalog.p;
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function lessonList(hud, btn, key, homeHref, onOpen) {
+  const pop = h('div', 'lp-pop no-ink hidden'); pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Lessons');
+  hud.appendChild(pop);
+  const isOpen = () => !pop.classList.contains('hidden');
+  const hrefFor = (id) => { const m = /^u(\d+)l(\d+)$/.exec(id); return m ? homeHref + 'u' + m[1] + '/l' + m[2] + '/' + location.search : null; };
+  function render(HW) {
+    const open = new Set((HW.TEACHING && HW.TEACHING.lessons) || []), color = (u) => (HW.unitColor ? HW.unitColor(u).c : 'var(--brand2)');
+    const row = (L, u, intro) => {
+      const href = open.has(L.id) ? hrefFor(L.id) : null, cur = L.id === key ? ' cur' : '';
+      const n = intro ? '' : `<span class="lp-n">${u}.${esc(L.num)}</span>`;
+      const inner = `${n}<span class="lp-t">${esc(L.title)}</span>`;
+      return href ? `<a class="lp-row${intro ? ' intro' : ''}${cur}" href="${esc(href)}"${cur ? ' aria-current="page"' : ''}>${inner}</a>` : `<span class="lp-row soon${cur}">${inner}</span>`;
+    };
+    let html = '';
+    HW.CATALOG.forEach((U) => { U.lessons.filter((L) => L.intro).forEach((L) => { html += row(L, U.unit, true); }); });
+    HW.CATALOG.forEach((U) => {
+      const ls = U.lessons.filter((L) => !L.intro); if (!ls.length) return;
+      html += `<div class="lp-unit" style="--uc:${color(U.unit)}"><span class="lp-ub">${U.unit}</span><span>Unit ${U.unit} · ${esc(U.title)}</span></div>` + ls.map((L) => row(L, U.unit)).join('');
+    });
+    pop.innerHTML = `<div class="lp-scroll">${html}</div>`;
+  }
+  function place() {
+    const tb = btn.closest('.tb'), x = btn.getBoundingClientRect().left - tb.getBoundingClientRect().left;
+    pop.style.left = Math.max(8, Math.min(x - 6, (hud.clientWidth || innerWidth) - pop.offsetWidth - 8)) + 'px';
+  }
+  function show() {
+    onOpen(); pop.classList.remove('hidden'); btn.classList.add('on'); btn.setAttribute('aria-expanded', 'true');
+    if (!pop.firstChild) pop.innerHTML = '<div class="lp-scroll"><div class="lp-msg">Loading the lessons…</div></div>';
+    place();
+    loadCatalog(homeHref).then((HW) => {
+      if (!isOpen()) return;
+      render(HW); place();
+      const sc = pop.querySelector('.lp-scroll'), c = pop.querySelector('.lp-row.cur');
+      if (c) sc.scrollTop = Math.max(0, c.offsetTop - sc.clientHeight / 2 + c.offsetHeight / 2);
+    }).catch(() => { if (isOpen()) pop.innerHTML = '<div class="lp-scroll"><div class="lp-msg">Couldn’t load the lesson list.</div></div>'; });
+  }
+  function hide() { pop.classList.add('hidden'); btn.classList.remove('on'); btn.setAttribute('aria-expanded', 'false'); }
+  btn.addEventListener('click', (e) => { e.stopPropagation(); if (isOpen()) hide(); else show(); });
+  // a tap (finger or Pencil) anywhere else closes it — and doesn't also write on the page
+  document.addEventListener('pointerdown', (e) => { if (isOpen() && !pop.contains(e.target) && !btn.contains(e.target)) { hide(); e.stopPropagation(); } }, true);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) hide(); });
+  addEventListener('resize', () => { if (isOpen()) place(); });
+  loadCatalog(homeHref).catch(() => {}); // ready before the first tap
+  return { hide, isOpen };
+}
+
+/* ---------- table of contents (••• menu → Jump to) ----------
+ * Built from the cards' data-section labels, grouped by section number:
+ *   "1. Factors" → a heading row; "1. Factor rainbow" (the same number again) → an indented row under it;
+ *   "Example 1", "Example 1 check", "Example 6 (Extension)" → small chips under the section they follow;
+ *   "Review: Questions 1–4" … → chips under one "Review" heading ("BEG · Questions 1–2" under "AN5 — Beginning (BEG)");
+ *   "Math History: Euclid" → a brown row inside the section it sits in;
+ *   "Warm-up: …" "Starter: …" "Summary" "Unit 7 at a Glance" … → their own rows (a second "Warm-up: …" goes under the
+ *   first); a sentence-case label inside a section ("Naming the sides") → a row under that section. */
+const SMALL_WORDS = new Set(['a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'on', 'at', 'for', 'vs', 'vs.', 'with', 'by', 'from', 'is', 'as', 'into', '&']);
+function titleCase(s) {
+  return s.split(/\s+/).slice(1).every((w) => { if (SMALL_WORDS.has(w.toLowerCase())) return true; const m = /\p{L}/u.exec(w); return !m || m[0] !== m[0].toLowerCase(); });
+}
+const QABBR = (s) => s.replace(/^Questions?\s+/i, 'Q').replace(/^Written Response\s*/i, 'WR ').replace(/^Extension\s*/i, 'Ext ').trim() || s;
+function tocModel(labels) {
+  const top = []; let g = null, maxNum = 0;
+  const group = (o) => { g = Object.assign({ kids: [] }, o); top.push(g); return g; };
+  const row = (i, text, cls) => g.kids.push({ k: 'row', i, text, cls: cls || '' });
+  const chip = (i, text, cls) => g.kids.push({ k: 'chip', i, text, cls: cls || '' });
+  labels.forEach((raw, i) => {
+    const L = String(raw).trim(); let m;
+    if ((m = /^(\d+)\.\s+(.+)$/.exec(L))) {
+      const n = +m[1];
+      if (g && g.num === n) row(i, m[2]);
+      else if (g && n <= maxNum) row(i, L);
+      else { maxNum = Math.max(maxNum, n); group({ i, num: n, text: m[2], kind: 'sec' }); }
+    } else if ((m = /^Example\s+(\d+)(\([a-z]\))?\s*(.*)$/i.exec(L))) {
+      const rest = m[3].trim(), ext = /^(\(Extension\)|:\s*Extension)$/i.test(rest), chk = /^check$/i.test(rest);
+      if (!g) group({ i, text: L, kind: 'plain' });
+      else if (chk) chip(i, '✓ check' + (m[2] ? ' ' + m[2] : ''), 'chk');
+      else if (!rest || ext) chip(i, 'Example ' + m[1] + (m[2] || '') + (ext ? ' · ext.' : ''), 'ex');
+      else row(i, 'Example ' + m[1] + (m[2] || '') + ' · ' + rest.replace(/^[:\-–—]\s*/, ''));
+    } else if ((m = /^Review:\s*(.*)$/i.exec(L))) {
+      if (!g || g.kind !== 'review') group({ i, text: 'Review', kind: 'review' });
+      chip(i, QABBR(m[1]), 'q');
+    } else if ((m = /^([A-Z]{2,5})\s+·\s+(.+)$/.exec(L)) && g && g.tag === m[1]) {
+      chip(i, QABBR(m[2]), 'q');
+    } else if ((m = /^Math History:\s*(.*)$/i.exec(L))) {
+      if (g && g.kind === 'sec') row(i, 'Math History · ' + m[1], 'hist');
+      else group({ i, text: 'Math History · ' + m[1], kind: 'hist' });
+    } else if ((m = /^([^:]{2,24}):\s+(.+)$/.exec(L))) {
+      if (g && g.prefix === m[1]) row(i, m[2]);
+      else group({ i, text: m[1] + ' · ' + m[2], prefix: m[1], kind: /^(warm-up|starter)$/i.test(m[1]) ? 'warm' : 'plain' });
+    } else if (g && g.kind === 'sec' && !titleCase(L)) {
+      row(i, L);
+    } else {
+      const tag = /\(([A-Z]{2,5})\)\s*$/.exec(L);
+      group({ i, text: L, kind: /^start$/i.test(L) ? 'start' : /^summary|key ideas/i.test(L) ? 'sum' : 'plain', tag: tag ? tag[1] : '' });
+    }
+  });
+  return top;
+}
+function tocHTML(top) {
+  const chip = (k) => `<button type="button" class="toc-c${k.cls ? ' k-' + k.cls : ''}" data-i="${k.i}">${esc(k.text)}</button>`;
+  return top.map((G) => {
+    // chips straight after the heading ride on the heading's line ("1 Factors  [Example 1]"); later ones get a line of their own
+    let lead = '', k0 = 0; while (k0 < G.kids.length && G.kids[k0].k === 'chip') lead += chip(G.kids[k0++]);
+    let kids = '', chips = '';
+    const endChips = () => { if (chips) { kids += `<div class="toc-chips">${chips}</div>`; chips = ''; } };
+    G.kids.slice(k0).forEach((k) => {
+      if (k.k === 'chip') chips += chip(k);
+      else { endChips(); kids += `<button type="button" class="toc-s${k.cls ? ' k-' + k.cls : ''}" data-i="${k.i}">${esc(k.text)}</button>`; }
+    });
+    endChips();
+    const n = G.kind === 'sec' ? `<span class="toc-n">${G.num}</span>` : `<span class="toc-n dot k-${G.kind}"></span>`;
+    return `<div class="toc-g k-${G.kind}"><div class="toc-h" role="button" tabindex="0" data-i="${G.i}">${n}<span class="toc-tw"><span class="toc-t">${esc(G.text)}</span>${lead}</span></div>${kids}</div>`;
+  }).join('');
+}
+/* the card at the top of the screen (the one the class is looking at) */
+function currentSection(secs) {
+  const line = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tbh')) || 62) + Math.min(160, innerHeight * 0.22);
+  let ci = 0;
+  secs.forEach((el, i) => { if (el.getBoundingClientRect().top <= line) ci = i; });
+  return ci;
 }
 
 /* A signed-in student on a lesson page shows up in the Teacher Ledger's Live tab ("On the lesson page"): load the practice

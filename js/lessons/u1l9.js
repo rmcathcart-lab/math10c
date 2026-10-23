@@ -370,7 +370,7 @@
   }
 
   HW.defineLesson({
-    id: 'u1l9', unit: 1, num: '9', title: 'Cumulative Number Sense Check-Up', outcome: 'AN2',
+    id: 'u1l9', unit: 1, num: '9', title: 'Number Unit Review', outcome: 'AN2',
     blurb: 'One pass through the whole unit, diploma-exam style: radical vocabulary and forms, entire and mixed radicals, perfect powers, and the real number system.',
     questions: [
       { num: '1', section: 'Part A — Multiple Choice', stem: '<i>(Multiple Choice)</i>', parts: [

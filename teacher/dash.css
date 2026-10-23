@@ -206,7 +206,7 @@ tr.detail td { background: #fcfbf8 !important; }
 .oc-dot.on { background: #2f9e62; box-shadow: 0 0 0 3px rgba(47, 158, 98, .18); }
 .tt-unit { margin-bottom: 8px; }
 .tt-unit-h { font-size: 17px; margin: 6px 0 10px; display: flex; align-items: baseline; gap: 8px; }
-.tt-unit-h .unit-num { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand2); }
+.tt-unit-h .tt-unum { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand2); }
 .tt-live-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 12px; margin-bottom: 14px; background: #fff3c4; border: 2px solid #e9cf6b; }
 .tt-live-banner.tt-live-test { background: #ffe2c6; border-color: #f0ad6e; }
 .tt-live-banner .btn { margin-left: auto; }
@@ -273,7 +273,7 @@ body.kc-dragging, body.kc-dragging * { cursor: grabbing !important; }
 .tbl.prog th.u-col { box-shadow: inset 0 3px 0 var(--uc); color: var(--ucd); }
 .panel.su[style] { border-left: 5px solid var(--uc); }
 .panel.su[style] .su-t b { color: var(--ucd); }
-.tt-unit[style] .tt-unit-h .unit-num { color: var(--uc); }
+.tt-unit[style] .tt-unit-h .tt-unum { color: var(--uc); }
 .dot.teach { background: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .18); }
 .lchip.teach b { color: #2563eb; }
 /* header: Lessons + Launch Today's Lesson (calendar.js) */

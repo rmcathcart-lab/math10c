@@ -85,3 +85,7 @@ a.calm-chip.calm-u:hover { border-color: var(--uc); }
 .calm-mbig { position: absolute; left: 4px; top: 2px; z-index: 2; pointer-events: none; padding: 2px 12px 4px; border-radius: 12px; background: var(--card, #fff); color: var(--brand, #0f5f5a); font: 800 30px/1.1 var(--font, system-ui); letter-spacing: -.01em; white-space: nowrap; box-shadow: 0 6px 22px rgba(20, 24, 33, .18); opacity: 0; transform: scale(.45); transform-origin: left top; transition: opacity .2s ease, transform .25s ease; }
 .calv-scrolling .calm-mbig { opacity: 1; transform: scale(1); }
 @media (max-width: 640px) { .calm-mbig { font-size: 22px; } }
+.calv-nav { display: flex; align-items: center; gap: 6px; }
+.calv-mon { width: 32px; height: 30px; display: grid; place-items: center; border: 1px solid var(--line, #e2ddd1); background: #fff; color: var(--ink, #1c2230); border-radius: 999px; padding: 0; cursor: pointer; }
+.calv-mon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.calv-mon:hover { border-color: var(--brand, #0f5f5a); color: var(--brand, #0f5f5a); }

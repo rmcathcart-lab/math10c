@@ -25,7 +25,7 @@ const HL = { c: '#ffd60a', a: 0.38, size: 22 };
 const rid = () => Math.random().toString(36).slice(2, 10);
 const S = {
   key: 'ink:default', readonly: false, opHook: null, tool: 'pen', color: 'ink', size: 1, finger: false, hover: true,
-  surfaces: new Map(), undo: [], redo: [], active: null, penDownAt: 0, listeners: new Set()
+  surfaces: new Map(), undo: [], redo: [], active: null, penDownAt: 0, listeners: new Set(), space: {}
 };
 
 function ls(k, v) {
@@ -123,7 +123,8 @@ function flush() {
   if (!S.key) return;
   const out = {};
   S.surfaces.forEach((sf, id) => { if (sf.strokes.length) out[id] = sf.strokes.map(pack); });
-  ls(S.key, { v: 1, s: out });
+  const o = { v: 1, s: out }; if (Object.keys(S.space).length) o.sp = Object.assign({}, S.space);
+  ls(S.key, o);
 }
 function loadInto(sf) {
   const data = S.saved && S.saved.s && S.saved.s[sf.id]; if (!data) return;
@@ -142,18 +143,59 @@ export function onOp(f) { S.opHook = f; }
 export function emitOp(op) { if (S.opHook) S.opHook(op); }
 export function applyOp(op) {
   if (op.a === 'reset') { wipe(); return; }
-  if (op.a === 'space') { const el = document.getElementById(op.id); if (el) el.style.minHeight = op.h; return; }
+  if (op.a === 'space') { putSpace(op.id, op.h); save(); emit(); return; }
   const sf = S.surfaces.get(op.s); if (!sf) return;
   if (op.a === 'add') { if (!sf.strokes.some((x) => x.id === op.id)) sf.add(unpack(op)); }
   else if (op.a === 'del') { const ids = new Set(op.ids); sf.strokes.filter((x) => ids.has(x.id)).forEach((x) => sf.remove(x)); }
-  save();
+  save(); emit();
 }
-export function wipe() { S.surfaces.forEach((sf) => sf.clear()); S.undo = []; S.redo = []; emit(); save(); }
+/* wipe: the page with no notes — no ink and every work area back to its own height (the class's notes are then
+ * replayed from the server, "space" ops included, so the extra space always matches the notes it was made for) */
+export function wipe() { S.surfaces.forEach((sf) => sf.clear()); resetSpace(); S.undo = []; S.redo = []; emit(); save(); }
+
+/* ---------------- extra space ("+ More space" / "− Less space", ui.js) ----------------
+ * S.space = { <work area id>: '780px' } for the work areas given extra room. Saved with this page's ink (so whatever
+ * clears the ink clears it too), and sent to the class as { a: 'space', id, h } ops (h '' = back to its own height).
+ * ui.js puts the heights on the page (onSpace). */
+let spaceHook = null;
+export function onSpace(f) { spaceHook = f; }
+function putSpace(id, h) {
+  if (!id) return;
+  if (h) S.space[id] = h; else delete S.space[id];
+  if (spaceHook) spaceHook(id, h || '');
+}
+function resetSpace() { Object.keys(S.space).forEach((id) => putSpace(id, '')); }
+export function setSpace(id, h) { putSpace(id, h); emitOp({ a: 'space', id, h: h || '' }); save(); emit(); }
+export function getSpace() { return Object.assign({}, S.space); }
+/* How far down the ink on the surface holding `el` reaches, in client (screen) pixels: -Infinity when it has none.
+ * ui.js only takes space away from a work area when nothing is written in the part that would go. */
+export function inkBottom(el) {
+  const host = el && el.closest && el.closest('[data-ink]'), sf = host && S.surfaces.get(host.dataset.ink);
+  if (!sf) return -Infinity;
+  const list = sf.strokes.slice();
+  if (pending && pending.A.sf === sf && pending.A.s) list.push(pending.A.s);
+  if (S.active && S.active.sf === sf && S.active.s) list.push(S.active.s);
+  let y = -Infinity;
+  for (const s of list) {
+    if (s.t === 'laser') continue;
+    const live = s === (S.active && S.active.s) || (pending && s === pending.A.s); // still growing: don't cache its box
+    const bb = live ? bbox(s.p) : (s.bb || (s.bb = bbox(s.p)));
+    y = Math.max(y, bb[3] + (s.t === 'hl' ? HL.size / 2 : 6));
+  }
+  if (y === -Infinity) return y;
+  const r = sf.svg.getBoundingClientRect();
+  return r.top + y * r.width / VBW;
+}
 export function allOps() { const out = []; S.surfaces.forEach((sf, id) => sf.strokes.forEach((s) => out.push(Object.assign({ a: 'add', s: id }, pack(s))))); return out; }
 
 /* ---------------- history ---------------- */
 function push(act) { S.undo.push(act); if (S.undo.length > 300) S.undo.shift(); S.redo = []; sync(act.type === 'add', act.surf, act.strokes); emit(); save(); }
 function apply(act, inverse) {
+  if (act.type === 'clear') { // "Clear all ink": undo brings back every stroke and the extra space they were written in
+    act.parts.forEach((pt) => apply({ type: 'erase', surf: pt.surf, strokes: pt.strokes }, inverse));
+    Object.keys(act.space).forEach((id) => setSpace(id, inverse ? act.space[id] : ''));
+    return;
+  }
   const sf = S.surfaces.get(act.surf); if (!sf) return;
   const addIt = (act.type === 'add') !== inverse;
   act.strokes.forEach((s) => { if (addIt) sf.add(s); else sf.remove(s); });
@@ -390,9 +432,14 @@ export function clearSurface(id) {
   const sf = S.surfaces.get(id); if (!sf || !sf.strokes.length) return;
   push({ type: 'erase', surf: id, strokes: sf.clear() });
 }
+/* "Clear all ink on this lesson": every stroke goes, and every work area goes back to its own height. One undo step
+ * brings it all back. */
 export function clearAll() {
   commitPending();
-  S.surfaces.forEach((sf, id) => { if (sf.strokes.length) S.undo.push({ type: 'erase', surf: id, strokes: sf.clear() }); });
+  const parts = [];
+  S.surfaces.forEach((sf, id) => { if (sf.strokes.length) parts.push({ surf: id, strokes: sf.clear() }); });
+  const space = getSpace(); resetSpace();
+  if (parts.length || Object.keys(space).length) { S.undo.push({ type: 'clear', parts, space }); if (S.undo.length > 300) S.undo.shift(); }
   if (S.opHook) S.opHook({ a: 'reset' });
   S.redo = []; emit(); flush();
 }
@@ -404,6 +451,12 @@ export function init(key, opts = {}) {
   if (S.readonly) document.body.classList.add('viewer');
   const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; }
   document.querySelectorAll('[data-ink]').forEach(register);
+  if (!S.readonly) { // extra space: saved with the ink (it used to have its own key, space:<lesson>; moved in here)
+    let sp = S.saved && S.saved.sp; const old = ls('space:' + key);
+    if (old) { if (!sp && S.saved) sp = old; ls('space:' + key, null); } // no saved ink = the notes were cleared since
+    if (sp && typeof sp === 'object') Object.keys(sp).forEach((id) => putSpace(id, sp[id]));
+    if (old) save();
+  }
   document.addEventListener('pointerdown', onDown, { passive: false });
   document.addEventListener('pointermove', onMove, { passive: false });
   document.addEventListener('pointerup', onUp); document.addEventListener('pointercancel', onUp);

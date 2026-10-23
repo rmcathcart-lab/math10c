@@ -1518,7 +1518,7 @@
   }
 
   HW.defineLesson({
-    id: 'u6l5', unit: 6, num: '5', title: 'Coordinate Geometry Review: Slope, Linear Graphs, Distance and Midpoint', outcome: 'RF3',
+    id: 'u6l5', unit: 6, num: '5', title: 'Characteristics of Linear Relations Unit Review', outcome: 'RF3',
     blurb: 'Choosing the right tool — slope, intercepts, domain and range, length and midpoint — and combining them to analyse lines, triangles, quadrilaterals and sets of points.',
     questions: QUESTIONS, extra: EXTRAS
   });

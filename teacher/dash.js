@@ -41,7 +41,7 @@
   function tabs() {
     var t = el('nav', 'tabs');
     var nrt = HW.Dash && HW.Dash.retestCount;
-    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests' + (nrt ? ' <span class="tab-badge" title="Retest requests waiting">' + nrt + '</span>' : '')], ['calendar', 'Calendar'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['powerschool', 'PowerSchool'], ['settings', 'Settings']].forEach(function (x) {
+    [['live', 'Live'], ['progress', 'Progress'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests' + (nrt ? ' <span class="tab-badge" title="Retest requests waiting">' + nrt + '</span>' : '')], ['calendar', 'Calendar'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['powerschool', 'PowerSchool'], ['settings', 'Settings']].forEach(function (x) {
       var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
       b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
       t.appendChild(b);
@@ -324,7 +324,7 @@
     bar.appendChild(seg); body.appendChild(bar);
     outs.forEach(function (o) {
       var sec = el('section', 'panel');
-      sec.appendChild(el('h3', '', esc(o) + ' <span class="muted small">' + esc(HW.OUTCOMES[o] || '') + '</span>'));
+      sec.appendChild(el('h3', '', '<button type="button" class="oc-link" data-outcome="' + esc(o) + '">' + esc(o) + '</button> <span class="muted small">' + esc(HW.OUTCOMES[o] || '') + '</span>'));
       // distribution
       var dist = {}; LV.forEach(function (l) { dist[l] = []; }); dist.NONE = [];
       ss.forEach(function (s) { var lv = s.outcomes[o]; (dist[lv] || dist.NONE).push(s.name); });

@@ -105,7 +105,7 @@
     units.forEach(function (u) {
       var cat = HW.CATALOG.filter(function (c) { return c.unit === u; })[0];
       var sec = el('section', 'tt-unit'); if (cat && HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u));
-      sec.appendChild(el('h3', 'tt-unit-h', cat ? '<span class="unit-num">Unit ' + u + '</span> ' + esc(cat.title) + ' <span class="muted small">' + byUnit[u].length + ' ' + kindWord(K, byUnit[u].length !== 1) + '</span>' : 'Other'));
+      sec.appendChild(el('h3', 'tt-unit-h', cat ? '<span class="tt-unum">Unit ' + u + '</span> ' + esc(cat.title) + ' <span class="muted small">' + byUnit[u].length + ' ' + kindWord(K, byUnit[u].length !== 1) + '</span>' : 'Other'));
       var list = el('div', 'tt-list');
       byUnit[u].sort(K === 'exit' ? function (a, b) { return lessonRank(a.def) - lessonRank(b.def) || String(a.def.title).localeCompare(String(b.def.title), undefined, { numeric: true }); } : function (a, b) { return b.updated - a.updated; })
         .forEach(function (t) { list.appendChild(testCard(t)); });
