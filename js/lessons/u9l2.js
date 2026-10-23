@@ -323,7 +323,7 @@
               'In degree mode: ' + S.map(function (a) { return t('\\tan ' + D(a) + '\\approx ' + fx(T.tan(a), 2)); }).join(', ') + '. The tangent rises slowly at first, passes ' + t('1') + ' at ' + t(D(45)) + ', then faster and faster.',
               ['Check that the calculator is in degree mode.', 'Round to two decimal places: look at the third decimal digit.'], 'tan row ' + S.join(','));
           } },
-          { id: '6a3', sub: 'a(iii)', level: 'BEG', make: function (r) {
+          { id: '6a3', sub: 'a(iii)', level: 'LIM', make: function (r) {
             return mc(r, 'What goes in the ' + t('\\tan 90^\\circ') + ' box of the table?', [
               { html: 'undefined (the calculator gives an error)', right: true },
               { html: t('0.00'), why: 'That is ' + t('\\cos 90^\\circ') + '. For the tangent, the adjacent side shrinks to ' + t('0') + ' — and you can’t divide by ' + t('0') + '.' },

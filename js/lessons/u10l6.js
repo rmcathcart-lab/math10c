@@ -780,7 +780,7 @@
               '<b>Plinth:</b> ' + t('V=' + s.W.toFixed(2) + '\\times ' + s.D.toFixed(2) + '\\times ' + s.H.toFixed(2) + '=' + num(s.Vp)) + ' m³.<br><b>Chamber:</b> ' + t('A_{\\text{Base}}=\\tfrac12\\pi(' + s.r.toFixed(3) + ')^{2}=' + dots(s.Ab, 6)) + ' m², ' + t('V=' + dots(s.Ab, 6) + '\\times ' + s.D.toFixed(2) + '=' + dots(s.Vc, 6)) + ' m³.<br>Total ' + t('=' + dots(s.V, 6)) + ' ≈ ' + t(fx(s.V, 2) + '\\text{ m}^{3}') + '.',
               ['Plinth: length × width × height. Chamber: a prism whose base is a semicircle, ' + t('\\tfrac12\\pi r^{2}') + ', times its length.'], 'oven total volume');
           } },
-          { id: 'e1c', level: 'EMG', outcome: 'M2', make: function (r, s) {
+          { id: 'e1c', level: 'EMG', make: function (r, s) {
             var L = s.Vc * 1000;
             return near('Determine the <b>capacity of the baking chamber alone</b>, in litres, to the nearest litre. (' + t('1\\text{ m}^{3}=1000\\text{ L}') + ')', L, 0, 'L', [
               { v: 2 * L, code: 'formula', hint: 'The chamber is half a cylinder.' },
@@ -956,7 +956,7 @@
               { v: 4 * s.Sc, code: 'diam-radius', hint: 'Use the radius.' }],
               'The wording selects the curved surface only, ' + t('2\\pi r^{2}') + ': ' + t('2\\pi(' + num(s.r) + ')^{2}=' + dots(s.Sc, 4)) + ' ≈ ' + t(fx(s.Sc, 2) + '\\text{ mm}^{2}') + '.', ['Which surfaces are plated? The flat face isn’t.'], 'knob plated area');
           } },
-          { id: 'e4d', level: 'ADV', outcome: 'M2', make: function (r, s) {
+          { id: 'e4d', level: 'PRG', outcome: 'M2', make: function (r, s) {
             return near('Each knob has ' + t(dots(s.Sc, 4) + '\\text{ mm}^{2}') + ' of plated surface. Plating costs $' + s.p.toFixed(2) + ' per square metre. Find the cost of plating a batch of ' + t(s.n) + ' knobs, to the nearest cent.', s.cost, 2, '', [
               { v: s.cost * 1000, code: 'lin-factor', hint: 'Area needs the squared factor: ' + t('1\\text{ m}^{2}=1000^{2}\\text{ mm}^{2}=10^{6}\\text{ mm}^{2}') + '.' },
               { v: s.cost * 100, code: 'conv-step', hint: 'Check the factor: ' + t('1\\text{ m}^{2}=10^{6}\\text{ mm}^{2}') + '.' },
@@ -996,7 +996,7 @@
               { label: 'From the tape:', after: 'L', x: s.Vt, dp: 1, alts: [{ v: 4 * s.Vt, code: 'diam-radius', hint: 'Halve the diameter.' }, { v: s.Vt * 10, code: 'conv-step', hint: t('1\\text{ L}=1000\\text{ cm}^{3}') + '.' }] }],
               'Estimate: ' + t('\\pi(' + num(s.est / 2) + ')^{2}(' + s.dep + ')=' + dots(s.Ve * 1000, 2) + '\\text{ cm}^{3}') + ' ≈ ' + t(fx(s.Ve, 1) + '\\text{ L}') + '.<br>Tape: ' + t('r=' + dots(s.dt / 2, 4)) + ', ' + t('\\pi r^{2}(' + s.dep + ')=' + dots(s.Vt * 1000, 2) + '\\text{ cm}^{3}') + ' ≈ ' + t(fx(s.Vt, 1) + '\\text{ L}') + '.', ['Cylinder: ' + t('V=\\pi r^{2}h') + ' in cm³, then ÷ 1000 for litres.'], 'barrel capacities');
           } },
-          { id: 'e5d', level: 'ADV', make: function (r, s) {
+          { id: 'e5d', level: 'PRG', make: function (r, s) {
             return near('From Kavi’s estimate the barrel holds ' + t(dots(s.Ve, 3) + '\\text{ L}') + '; from the tape it holds ' + t(dots(s.Vt, 3) + '\\text{ L}') + '. The diameter estimate was ' + t(fx(s.pe, 1) + '\\%') + ' too big. Find the percent error of the estimated <i>capacity</i>, to the nearest tenth of a percent.', s.pv, 1, '%', [
               { v: 2 * s.pe, code: 'double-err', hint: 'Close, but not exactly double: capacity depends on ' + t('r^{2}') + ', so the error <b>factor</b> is squared: ' + t('(1+e)^{2}') + ', not ' + t('1+2e') + '.' },
               { v: s.pe, code: 'scale-k', hint: 'Capacity depends on ' + t('r^{2}') + ', so its error is bigger than the diameter’s.' },
@@ -1154,7 +1154,7 @@
             { v: (SA - 2 * PI * rc * rc) / (PI * rc), code: 'formula', hint: 'The curved surface is ' + t('2\\pi r h') + '.' }],
             t('h=\\dfrac{SA-2\\pi r^{2}}{2\\pi r}=\\dfrac{' + SA + '-2\\pi(' + rc + ')^{2}}{2\\pi(' + rc + ')}=' + dots(h, 4)) + ' ≈ ' + t(fx(h, 1) + '\\text{ cm}') + '.', ['Write ' + t('SA=2\\pi r^{2}+2\\pi r h') + ' and isolate ' + t('h') + '.'], 'cylinder height from SA');
         } },
-        { id: 'e9d', level: 'EMG', outcome: 'M2', make: function (r) {
+        { id: 'e9d', level: 'EMG', make: function (r) {
           var cap, a, b, d; do { cap = r.pick([360, 450, 540, 600, 720]); a = r.pick([1.20, 1.00, 1.50, 0.90]); b = r.pick([0.75, 0.60, 0.80, 0.50]); d = cap / 1000 / (a * b) * 100; } while (Math.abs(d - Math.round(d)) > 1e-9 || d < 30 || d > 120);
           if (r.chance(0.25)) { cap = 450; a = 1.20; b = 0.75; d = 50; }
           return near('<span style="font-variant:small-caps">Prism from capacity.</span> A rectangular tank holds ' + t(cap + '\\text{ L}') + '. Its base is ' + t(a.toFixed(2) + '\\text{ m}') + ' by ' + t(b.toFixed(2) + '\\text{ m}') + '. Find its depth, to the nearest centimetre.', d, 0, 'cm', [
@@ -1181,7 +1181,7 @@
               { v: s.A / (3 * PI), code: 'no-root', hint: 'That’s ' + t('r^{2}') + '. Take the square root.' }],
               'The wording counts the shell <b>and</b> the floor: ' + t('SA=3\\pi r^{2}') + '. ' + t('3\\pi r^{2}=' + s.A + '\\Rightarrow r^{2}=\\dfrac{' + s.A + '}{3\\pi}') + ', ' + t('r=' + dots(s.rf, 5)) + ' ≈ ' + t(fx(s.rf, 2) + '\\text{ m}') + '.', ['Which hemisphere formula does “with a concrete floor” select?'], 'dome radius');
           } },
-          { id: 'e11b', level: 'PRG', outcome: 'M2', make: function (r, s) {
+          { id: 'e11b', level: 'PRG', make: function (r, s) {
             return near('The dome’s radius is ' + t('r=\\sqrt{\\tfrac{' + s.A + '}{3\\pi}}\\approx ' + dots(s.rf, 6)) + ' m. Find its capacity in litres, to the nearest litre, carrying the unrounded radius.', s.V * 1000, 0, 'L', [
               { v: 2 / 3 * PI * Math.pow(rnd(s.rf, 2), 3) * 1000, code: 'early-round', hint: 'Use the unrounded radius — the rounded one is many litres out.' },
               { v: 2 * s.V * 1000, code: 'sphere-for-hemi', hint: 'A hemisphere: ' + t('\\tfrac23\\pi r^{3}') + '.' },
@@ -1352,7 +1352,7 @@
               { label: 'C: ' + t('r='), after: 'cm', x: s.rC, dp: 2, alts: [{ v: Math.cbrt(3 * s.V / (2 * PI)), code: 'formula', hint: 'Sphere: ' + t('\\tfrac43\\pi r^{3}') + '.' }] }],
               'A: ' + t('2\\pi r^{3}=' + s.V + '\\Rightarrow r=\\sqrt[3]{\\tfrac{' + s.V + '}{2\\pi}}=' + dots(s.rA, 5)) + ', ' + t('h=' + dots(s.hA, 4)) + '.<br>B: ' + t('a=\\sqrt[3]{' + s.V + '}=' + dots(s.a, 5)) + '.<br>C: ' + t('r=\\sqrt[3]{\\tfrac{3(' + s.V + ')}{4\\pi}}=' + dots(s.rC, 5)) + '.', ['Write each volume formula, substitute ' + t('h=2r') + ' for A, and solve for the length.'], 'container dimensions');
           } },
-          { id: 'e17b', level: 'ADV', make: function (r, s) {
+          { id: 'e17b', level: 'EMG', make: function (r, s) {
             return fields('Using the unrounded dimensions (A: ' + t('r\\approx ' + dots(s.rA, 6)) + ', ' + t('h=2r') + '; B: edge ' + t(dots(s.a, 6)) + '; C: ' + t('r\\approx ' + dots(s.rC, 6)) + '), find each surface area, to the nearest hundredth of a square centimetre.', [
               { label: 'A:', after: 'cm²', x: s.SA, dp: 2, also: [6 * PI * Math.pow(rnd(s.rA, 6), 2)], alts: [{ v: 2 * PI * s.rA * s.hA, code: 'missing-face', hint: 'Closed: include both ends, ' + t('2\\pi r^{2}') + '.' }, { v: 4 * PI * s.rA * s.rA, code: 'formula', hint: t('2\\pi r^{2}+2\\pi r(2r)=6\\pi r^{2}') + '.' }] },
               { label: 'B:', after: 'cm²', x: s.SB, dp: 2, also: [6 * Math.pow(rnd(s.a, 6), 2)], alts: [{ v: 4 * s.a * s.a, code: 'missing-face', hint: 'A cube has 6 faces.' }] },
@@ -1363,7 +1363,7 @@
             return B.order(r, 'The surface areas are A (cylinder) ' + t(fx(s.SA, 2)) + ', B (cube) ' + t(fx(s.SB, 2)) + ', C (sphere) ' + t(fx(s.SC, 2)) + ' cm². Rank the containers from least material to most.', [{ id: 'C', html: 'C (sphere)', tex: 'C' }, { id: 'A', html: 'A (cylinder)', tex: 'A' }, { id: 'B', html: 'B (cube)', tex: 'B' }], { first: 'least material', last: 'most material' },
               'C ' + t('<') + ' A ' + t('<') + ' B: the sphere uses least material, the cube most.', ['Compare the three surface areas.'], 'rank by material');
           } },
-          { id: 'e17c', level: 'ADV', make: function (r, s) {
+          { id: 'e17c', level: 'EMG', make: function (r, s) {
             var cs = [s.SA * s.c, s.SB * s.c, s.SC * s.c], save = (s.SB - s.SC) / s.SB * 100;
             return fields('Sheet material costs $' + String(s.c) + ' per square centimetre. With the surface areas A ' + t(dots(s.SA, 3)) + ', B ' + t(dots(s.SB, 3)) + ', C ' + t(dots(s.SC, 3)) + ' cm², give the three costs to the nearest cent, and the percentage saved by the best over the worst, to the nearest tenth.', [
               { label: 'A: $', x: cs[0], dp: 2, alts: [] }, { label: 'B: $', x: cs[1], dp: 2, alts: [] }, { label: 'C: $', x: cs[2], dp: 2, alts: [] },
@@ -1463,7 +1463,9 @@
 
       /* ======================= Part G — Estimating and converting in the field ======================= */
       { num: '20', section: 'Extra practice G — Estimating and converting in the field', shared: function (r) {
-          var o = r.chance(0.25) ? { nL: 7, nW: 3, nH: 3, p: 0.90, pt: 0.86, sp: 0.80, st: 0.76, beam: 6.00 } : (function () { var p = r.pick([0.90, 0.85, 1.00]), sp = r.pick([0.80, 0.75]); return { nL: r.int(6, 9), nW: r.pick([3, 4]), nH: 3, p: p, pt: +(p - r.pick([0.03, 0.04, 0.05])).toFixed(2), sp: sp, st: +(sp - r.pick([0.03, 0.04])).toFixed(2) }; })();
+          var o = r.chance(0.25) ? { nL: 7, nW: 3, nH: 3, p: 0.90, pt: 0.86, sp: 0.80, st: 0.76, beam: 6.00 } : (function () {   // the pace and span error factors must differ (1.00/0.96 = 0.75/0.72 would make the volume a clean k³, and (c) would have two right answers)
+              var o; do { var p = r.pick([0.90, 0.85, 1.00]), sp = r.pick([0.80, 0.75]); o = { nL: r.int(6, 9), nW: r.pick([3, 4]), nH: 3, p: p, pt: +(p - r.pick([0.03, 0.04, 0.05])).toFixed(2), sp: sp, st: +(sp - r.pick([0.03, 0.04])).toFixed(2) }; } while (Math.abs(o.p / o.pt - o.sp / o.st) < 0.002);
+              return o; })();
           o.eL = o.nL * o.p; o.eW = o.nW * o.p; o.eH = o.nH * o.sp; o.tL = o.nL * o.pt; o.tW = o.nW * o.pt; o.tH = o.nH * o.st;
           o.peP = (o.p - o.pt) / o.pt * 100; o.peS = (o.sp - o.st) / o.st * 100; o.Ve = o.eL * o.eW * o.eH; o.Vt = o.tL * o.tW * o.tH; o.pv = (o.Ve - o.Vt) / o.Vt * 100;
           if (!o.beam) o.beam = +(o.tL - r.pick([0.02, 0.03, 0.05])).toFixed(2);

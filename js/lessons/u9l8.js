@@ -413,7 +413,7 @@
             var al = [{ v: pr / T.cos(Pp), code: 'trig-half', hint: t('S') + ' is the midpoint, so ' + t('PS') + ' is <b>half</b> of ' + t('PR') + ': ' + t(ps) + ' m.' }].concat(sideAlts(ps, Pp, 'adj', 'hyp')).concat([{ v: ps / T.cos(Math.round(Pp)), code: 'trig-early', hint: 'Use ' + t('\\angle QPR') + ' at full accuracy (or ' + t('\\cos(\\angle QPR)=\\frac{' + s.pq + '}{' + pr + '}') + ' exactly), not the rounded angle.' }]);
             return near('Use ' + t('\\triangle PST') + ' (with ' + t('PS=SR') + ') to calculate the length of ' + t('PT') + ', to the nearest tenth of a metre.', pt, 1, 'm', al,
               t('PS=\\tfrac{' + pr + '}{2}=' + ps) + '. In right ' + t('\\triangle PST') + ', ' + t('\\angle TPS=' + fx(Pp, 2) + '^\\circ') + ' and ' + t('PS') + ' is adjacent ' + t('\\Rightarrow') + ' CAH.<br>' + t('\\cos ' + fx(Pp, 2) + '^\\circ=\\dfrac{' + ps + '}{PT}\\Rightarrow PT=\\dfrac{' + ps + '}{\\cos ' + fx(Pp, 2) + '^\\circ}=' + fx(pt, 4) + '\\approx ' + fx(pt, 1)) + ' m',
-              ['In ' + t('\\triangle PST') + ', ' + t('PT') + ' is the hypotenuse and ' + t('PS') + ' is adjacent to ' + t('\\angle P') + '.', t('\\angle TPS=\\angle QPR') + ' (from the previous bullet).'], 'PT via PST');
+              ['In ' + t('\\triangle PST') + ', ' + t('PT') + ' is the hypotenuse and ' + t('PS') + ' is adjacent to ' + t('\\angle P') + '.', t('\\angle TPS=\\angle QPR') + ', and ' + t('\\tan(\\angle QPR)=\\frac{QR}{PQ}') + '.'], 'PT via PST');
           } }] },
       /* ---------- 14 ---------- */
       { num: '14', section: 'Calculator values and complete solutions', stem: 'Evaluate (a)–(c) to four decimal places, and determine the acute angle in (d)–(f) to the nearest degree.', parts: ['sin', 'cos', 'tan'].map(function (fn, i) {
@@ -659,9 +659,9 @@
             '(a) Pythagorean theorem; (b) ' + t('90^\\circ') + ' complement; (c) a ratio (sine); (d) an inverse ratio (' + t('\\tan^{-1}') + '); (e) a ratio (cosine).', ['Sides only → Pythagoras. Angle → angle: complement. Angle + side → side: ratio. Two sides → angle: inverse ratio.'], 'tool for each');
         } },
         { id: 'e3f', level: 'EMG', make: function (r) {
-          return mcWhy(r, 'Which statement about the five triangles (a)–(e) is correct?', '(a) and (b) used no ratio (Pythagoras and the complement); (c) put the unknown in the numerator (multiply), (e) put it in the denominator (divide), and (d) needed an inverse ratio.',
-            [['(a) and (d) used no ratio; (c) and (e) both put the unknown in the numerator.', '(d) used ' + t('\\tan^{-1}') + ', and in (e) ' + t('\\cos 32^\\circ=\\frac{21.0}{JL}') + ' has ' + t('JL') + ' on the bottom.'],
-              ['(a) and (b) used no ratio; (c) put the unknown in the denominator and (e) in the numerator.', 'In (c), ' + t('\\sin 52^\\circ=\\frac{YZ}{18.4}') + ' — ' + t('YZ') + ' is on top, so you multiply. (e) is the one with the unknown underneath.'],
+          return mcWhy(r, 'Five triangles: (a) find the hypotenuse ' + t('PQ') + ' from the two legs; (b) find ' + t('\\angle P') + ' from ' + t('\\angle M') + '; (c) find the opposite side ' + t('YZ') + ' from ' + t('\\angle X') + ' and the hypotenuse; (d) find ' + t('\\angle D') + ' from the two legs; (e) find the hypotenuse ' + t('JL') + ' from ' + t('\\angle J') + ' and the adjacent leg. Which statement is correct?','(a) and (b) used no ratio (Pythagoras and the complement); (c) put the unknown in the numerator (multiply), (e) put it in the denominator (divide), and (d) needed an inverse ratio.',
+            [['(a) and (d) used no ratio; (c) and (e) both put the unknown in the numerator.', '(d) used ' + t('\\tan^{-1}') + ', and in (e) ' + t('\\cos J=\\frac{\\text{adj}}{JL}') + ' has ' + t('JL') + ' on the bottom.'],
+              ['(a) and (b) used no ratio; (c) put the unknown in the denominator and (e) in the numerator.', 'In (c), ' + t('\\sin X=\\frac{YZ}{\\text{hyp}}') + ' — ' + t('YZ') + ' is on top, so you multiply. (e) is the one with the unknown underneath.'],
               ['Only (a) used no ratio; (b) needed ' + t('\\sin^{-1}') + '.', 'In (b) the other acute angle is simply ' + t('90^\\circ') + ' minus the given one — no ratio at all.']],
             'No ratio: (a) the Pythagorean theorem and (b) the ' + t('90^\\circ') + ' complement. Unknown in the numerator: (c), last step multiply. Unknown in the denominator: (e), last step divide. (d) wanted an angle, so its last step was an inverse ratio.', ['Write the equation for (c) and (e): where does the unknown sit?'], 'numerator vs denominator');
         } }] },
@@ -676,9 +676,9 @@
           { id: 'e4a', level: 'EMG', make: function (r, s) {
             return mcWhy(r, 'Before calculating: which two of the four can be found <b>straight from the given data</b>?', t('ST') + ' (Pythagorean theorem) and ' + t('\\angle S') + ' (inverse sine: ' + t('TU') + ' is opposite ' + t('S') + ', ' + t('SU') + ' is the hypotenuse).',
               [[t('ST') + ' and the area.', 'The area needs ' + t('ST') + ' first (the legs are the base and height), so it isn’t straight from the givens.'],
-                [t('\\angle S') + ' and ' + t('\\angle U') + '.', 'Either angle can come from the givens, but the quick route to the second one is ' + t('90^\\circ') + ' minus the first — so ' + t('\\angle U') + ' is best done after ' + t('\\angle S') + '. ' + t('ST') + ' is the other one that needs only the givens.'],
+                ['None of them — each one needs another of the four first.', t('ST') + ' comes straight from the Pythagorean theorem (' + t('SU') + ' and ' + t('TU') + ' are given), and ' + t('\\angle S') + ' straight from ' + t('\\sin^{-1}\\!\\left(\\frac{TU}{SU}\\right)') + '.'],
                 [t('\\angle U') + ' and the area.', 'Both of these are easiest <b>after</b> something else: ' + t('\\angle U=90^\\circ-\\angle S') + ', and the area needs ' + t('ST') + '.']],
-              'From the givens: 1. ' + t('ST') + ' by the Pythagorean theorem; 2. ' + t('\\angle S') + ' by ' + t('\\sin^{-1}\\!\\left(\\frac{' + s1(s.l) + '}{' + s1(s.h) + '}\\right)') + '. Then: 3. ' + t('\\angle U=90^\\circ-\\angle S') + ' (unrounded); 4. area ' + t('=\\tfrac12(ST)(TU)') + '.', ['Which quantities need another answer first?'], 'plan order');
+              'From the givens: 1. ' + t('ST') + ' by the Pythagorean theorem; 2. ' + t('\\angle S') + ' by ' + t('\\sin^{-1}\\!\\left(\\frac{' + s1(s.l) + '}{' + s1(s.h) + '}\\right)') + '. Then: 3. ' + t('\\angle U=90^\\circ-\\angle S') + ' (unrounded — ' + t('\\cos^{-1}\\!\\left(\\frac{TU}{SU}\\right)') + ' would also work, but the complement is quicker); 4. area ' + t('=\\tfrac12(ST)(TU)') + '.', ['Which quantities need another answer first?'], 'plan order');
           } },
           { id: 'e4b', level: 'PRG', make: function (r, s) {
             var st = Math.sqrt(s.h * s.h - s.l * s.l), S = T.asin(s.l / s.h), U = 90 - S, ar = 0.5 * st * s.l;
@@ -850,10 +850,10 @@
               t('\\tan\\theta=\\dfrac{' + fx(R, 4) + '}{' + fx(H, 4) + '}\\Rightarrow\\theta=' + fx(A, 2) + '^\\circ\\approx ' + dg(fx(A, 0))) + '<br>' + t('BS=\\sqrt{' + fx(R, 4) + '^2+' + fx(H, 4) + '^2}=' + fx(BS, 4) + '\\approx ' + fx(BS, 1)) + ' m (shorter than ' + t(s.s1 + s.s2) + ' m along the cable, as it should be).', ['Use the total rise and total horizontal as the legs of one big right triangle.'], 'gondola overall');
           } },
           { id: 'e8d', level: 'EMG', make: function (r, s) {
-            return mcWhy(r, 'The overall angle is not the average of ' + t(dg(s.a1)) + ' and ' + t(dg(s.a2)) + '. Why not?', 'The overall slope is total rise ' + t('\\div') + ' total advance, so each run counts by how much ground it covers. The ' + t(dg(s.a1)) + ' run is ' + (s.s1 > s.s2 ? 'longer <b>and</b> gentler' : 'gentler and covers a lot of ground') + ', so it pulls the overall angle toward ' + t(dg(s.a1)) + '.',
+            return mcWhy(r, 'The overall angle is not the average of ' + t(dg(s.a1)) + ' and ' + t(dg(s.a2)) + '. Why not?', 'The overall slope is total rise ' + t('\\div') + ' total advance, so each run is weighted by the horizontal ground it covers (and the slopes combine as tangents, not as angles) — the two angles don’t simply count equally.',
               [['Angles can never be averaged because they are in degrees.', 'Averaging degrees is fine in itself; the problem is that the two runs don’t count equally.'],
                 ['The average would be right if the calculator were in radian mode.', 'The mode has nothing to do with it; the overall angle depends on the total rise and total advance.'],
-                ['The overall angle is always the larger of the two angles.', 'It lies between the two, pulled toward the run that covers more horizontal ground.']],
+                ['The overall angle is always the larger of the two angles.', 'It lies between the two; where exactly depends on the total rise and the total advance.']],
               'The overall angle comes from ' + t('\\frac{\\text{total rise}}{\\text{total advance}}') + ', so each run is weighted by its horizontal advance. A plain average would be right only if the two runs advanced the same horizontal distance.', ['What does each run contribute to the total rise and the total advance?'], 'not the average');
           } }] },
       /* ---------- EP 9 ---------- */
@@ -930,7 +930,7 @@
           } }] },
       /* ---------- EP 11 ---------- */
       { num: '11', section: 'Extra practice D — Bearings and direction',
-        shared: function (r) { return gen(r, function (r) { return { b1: r.int(120, 160), d1: d1(r, 1.2, 3.0), b2: r.int(50, 80), d2: d1(r, 2.0, 3.5) }; }, function (s) { var g = bearGeom(s); return g.S - g.N >= 0.25 && safe(g.E, 1) && safe(g.S - g.N, 1) && safe(g.AC, 1) && safe(g.br, 0); }); },
+        shared: function (r) { return gen(r, function (r) { return { b1: r.int(120, 160), d1: d1(r, 1.2, 3.0), b2: r.int(50, 80), d2: d1(r, 2.0, 3.5) }; }, function (s) { var g = bearGeom(s); return s.b1 !== 135 && g.S - g.N >= 0.25 && safe(g.E, 1) && safe(g.S - g.N, 1) && safe(g.AC, 1) && safe(g.br, 0); }); },
         stem: function (s) {
           var g = bearGeom(s), A = [0, 0], B = [g.e1, -g.s1], C = [g.E, -(g.S - g.N)], L = Math.max(s.d1, s.d2) * 0.45;
           var fig = HW.fig({ pts: { A: A, B: B, C: C, Na: [0, L], Mb: [B[0], B[1] + L] }, segs: [['A', 'Na', { width: 1.4 }], ['B', 'Mb', { width: 1.4 }], ['A', 'B', s1(s.d1) + ' km', { width: 2.6 }], ['B', 'C', s1(s.d2) + ' km', { width: 2.6 }]], names: { A: 'A', B: 'B', C: 'C', Na: 'N', Mb: 'M' }, width: 300, aria: 'two-leg bearing route' });
@@ -963,7 +963,7 @@
               nf('AC=', g.AC, 1, 'km', [{ v: s.d1 + s.d2, code: 'trig-sum-diff', hint: 'That is the distance she ran. ' + t('AC') + ' is the straight line: Pythagoras on the east and south totals.' }]),
               nf('\\text{bearing}=', g.br, 0, '°', [{ v: as, code: 'trig-bearing-angle', hint: 'That is the angle east of due <b>south</b>. The bearing is measured clockwise from north: ' + t('180^\\circ-') + ' that angle.' }, { v: 90 - as, code: 'trig-bearing-angle', hint: 'That is the angle below due east. Add it to ' + t('090^\\circ') + '.' }])],
               t('AC=\\sqrt{' + fx(g.E, 4) + '^2+' + fx(g.S - g.N, 4) + '^2}=' + fx(g.AC, 4) + '\\approx ' + fx(g.AC, 1)) + ' km<br>' + t('C') + ' is east and south of ' + t('A') + ': ' + t('\\tan(\\text{angle east of south})=\\dfrac{' + fx(g.E, 4) + '}{' + fx(g.S - g.N, 4) + '}\\Rightarrow ' + fx(as, 2) + '^\\circ') + '<br>bearing ' + t('=180^\\circ-' + fx(as, 2) + '^\\circ=' + fx(g.br, 2) + '^\\circ\\approx ' + dg(('00' + fx(g.br, 0)).slice(-3))),
-              ['Use the totals from the previous part as the legs of one right triangle.', 'A point east and south of ' + t('A') + ' has a bearing between ' + t('090^\\circ') + ' and ' + t('180^\\circ') + '.'], 'AC and bearing');
+              ['Find how far east and how far south of ' + t('A') + ' control ' + t('C') + ' is, and use them as the legs of one right triangle.', 'A point east and south of ' + t('A') + ' has a bearing between ' + t('090^\\circ') + ' and ' + t('180^\\circ') + '.'], 'AC and bearing');
           } },
           { id: 'e11d', level: 'PRG', make: function (r, s) { var g = bearGeom(s), back = rnd(g.br, 0) + 180;
             var p = fieldsPart('At ' + t('C') + ' the runner takes the straight line back to ' + t('A') + '. The bearing of ' + t('C') + ' from ' + t('A') + ' is ' + t(dg(('00' + fx(g.br, 0)).slice(-3))) + ' and ' + t('AC\\approx ' + fx(g.AC, 1)) + ' km. State the bearing she must follow and the distance.', [
@@ -1108,7 +1108,9 @@
           } }] },
       /* ---------- EP 16 ---------- */
       { num: '16',
-        shared: function (r) { var c = r.pick(EP16); return { x: c[0], a: c[1], w: c[2] }; },
+        shared: function (r) { // skip versions whose angles would show as x.50 to the hundredth (or sit on a hundredth edge)
+          return gen(r, function (r) { var c = r.pick(EP16); return { x: c[0], a: c[1], w: c[2] }; }, function (s) {
+            var h = s.x * T.tan(s.a), D = s.x + s.w; return [T.atan(h / D), T.atan(rnd(h, 1) / D)].every(function (v) { return safe(v, 2) && Math.abs(v - Math.floor(v) - 0.5) > 0.005; }); }); },
         stem: function (s) {
           var h = s.x * T.tan(s.a), D = s.x + s.w, her = T.atan(rnd(h, 1) / D), cor = T.atan(h / D);
           var fig = HW.fig({ pts: { Bs: [0, 0], Tp: [0, h], X: [s.x, 0], Y: [D, 0] }, segs: [['Bs', 'Tp', 'h', { width: 2.6 }], ['Tp', 'X', { dash: 1 }], ['Tp', 'Y', { dash: 1 }], ['Bs', 'X', s1(s.x) + ' m'], ['X', 'Y', s1(s.w) + ' m']], right: [['Bs', 'X', 'Tp']], angles: [['X', 'Bs', 'Tp', s.a + '°', { r: 20 }], ['Y', 'Bs', 'Tp', 'θ', { r: 40 }]], names: false, extra: [{ type: 'text', at: [s.x + D * 0.035, h * 0.07], text: 'X' }, { type: 'text', at: [D * 1.04, h * 0.07], text: 'Y' }, { type: 'ground', y: 0, x0: -D * 0.04, x1: D * 1.06 }], width: 320, aria: 'tower sighted from two points' });
