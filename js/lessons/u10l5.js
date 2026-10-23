@@ -408,7 +408,7 @@
       /* ---------- Q3 ---------- */
       { num: '3', stem: function (sh) { return sh.hemi ? 'A hemisphere of radius ' + t('r') + ' has volume ' + t('V=\\frac{2}{3}\\pi r^3') + '.' : 'A sphere of radius ' + t('r') + ' has volume ' + t('V=\\frac{4}{3}\\pi r^3') + '.'; },
         shared: function (r) { return { hemi: r.chance(0.3) }; }, parts: [
-        { id: '3a', sub: 'a i', level: 'PRG', make: function (r, sh) { return solveR(sh.hemi, 'radical'); } },
+        { id: '3a', sub: 'a i', level: 'EMG', make: function (r, sh) { return solveR(sh.hemi, 'radical'); } },
         { id: '3a2', sub: 'a ii', level: 'EMG', make: function (r, sh) { return solveR(sh.hemi, 'power'); } },
         { id: '3b', sub: 'b', level: 'PRG', make: function (r) {
           var V = r.pick([65000, 50000, 40000, 72000, 30000, 85000, 58000]);
@@ -496,7 +496,7 @@
         } }] },
       /* ---------- Q9, Q10 (multiple choice) ---------- */
       { num: '9', section: 'Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '9', level: 'PRG', make: function (r) {
+        { id: '9', level: 'EMG', make: function (r) {
           var V = r.pick([90, 120, 150, 65, 180]), rr = Math.cbrt(3 * V / (4 * PI)), d = 2 * rr, right = Math.round(d * 2) / 2, rad = Math.round(rr * 2) / 2;
           var pool = [-1.5, -1, 1, 1.5, 2.5].map(function (k) { return right + k; }).filter(function (v) { return v > rad + 0.4 && Math.abs(v - right) > 0.1; });
           var two = r.sample(pool, 2), vals = [rad, right].concat(two).sort(function (a, b) { return a - b; });
@@ -855,7 +855,7 @@
             t('r=' + D(rr)) + ' mm, ' + t('h=' + D(h)) + ' mm<br>' + t('V=\\pi r^2h+\\frac{4}{3}\\pi r^3=\\pi(' + D(rr) + ')^2(' + D(h) + ')+\\frac{4}{3}\\pi(' + D(rr) + ')^3') + '<br>' + t('=' + piT(rr * rr * h) + '+' + piT(4 / 3 * rr * rr * rr) + '=' + piT(c) + '\\approx ' + D(RT(c * PI, 1), 1)) + ' mm³',
             ['Cylinder ' + t('\\pi r^2h') + ' plus one whole sphere ' + t('\\frac{4}{3}\\pi r^3') + '.'], 'capsule volume');
         } },
-        { id: 'e12c', sub: 'c', level: 'PRG', make: function (r, sh) {
+        { id: 'e12c', sub: 'c', level: 'ADV', make: function (r, sh) {
           var rr = sh.d / 2, h = sh.L - sh.d, c = 2 * rr * h + 4 * rr * rr;
           return exactNearP('Determine the capsule’s <b>surface area</b>, exactly in terms of ' + t('\\pi') + ' and to the nearest tenth.', 0, c, 1, 'mm²', [
             A(PI * (c + 2 * rr * rr), 'joint-counted', 'The cylinder’s circular ends are sealed against the caps — leave them out.'), A(PI * (c + rr * rr), 'joint-counted', 'No flat circle is part of the outside.'),
@@ -870,7 +870,7 @@
         } }] },
       { num: '13', stem: function (sh) { return 'A grain silo is a cylinder of diameter ' + t(D(sh.d, 1)) + ' m and height ' + t(D(sh.h, 1)) + ' m, capped by a hemispherical roof of the same diameter. The silo stands on a concrete pad.' + FIG.silo({ dLab: 'd = ' + D(sh.d, 1) + ' m', hLab: D(sh.h, 1) + ' m' }); },
         shared: function (r) { return { d: r.pick([8.4, 6, 7.2, 9, 10, 6.4]), h: r.pick([12.5, 10, 15, 11, 14]) }; }, parts: [
-        { id: 'e13a', sub: 'a', level: 'PRG', make: function (r, sh) {
+        { id: 'e13a', sub: 'a', level: 'ADV', make: function (r, sh) {
           var rr = sh.d / 2, c = rr * rr * sh.h + 2 / 3 * rr * rr * rr;
           return exactNearP('Determine the silo’s total interior volume, exactly in terms of ' + t('\\pi') + ' and to the nearest tenth.', 0, c, 1, 'm³', [
             A(PI * (rr * rr * sh.h + 4 / 3 * rr * rr * rr), 'hemi-whole', 'The roof is a <b>hemisphere</b>: ' + t('\\frac{2}{3}\\pi r^3') + '.'), A(PI * rr * rr * sh.h, 'part-missing', 'Add the roof’s volume too.'), A(PI * 4 * rr * rr * sh.h + PI * 16 / 3 * rr * rr * rr, 'd-as-r', H.dr), A(PI * rr * rr * (sh.h - rr) + PI * 2 / 3 * rr * rr * rr, 'full-length', 'The ' + t(D(sh.h, 1)) + ' m is the cylinder’s own height — the roof sits on top of it.')],

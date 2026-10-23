@@ -216,16 +216,16 @@
     var want = K.roundTo(x, dp), place = dp === -1 ? 'ten' : dp === -2 ? 'hundred' : dp === -3 ? 'thousand' : dp === 0 ? 'whole number' : dp === 1 ? 'tenth' : dp === 2 ? 'hundredth' : dp === 3 ? 'thousandth' : dp + ' decimal places';
     var trunc = Math.trunc(x * Math.pow(10, dp)) / Math.pow(10, dp);
     return function (resp) {
-      var raw = String(resp == null ? '' : resp);
+      var raw = String(resp == null ? '' : resp).replace(/^\s*\\?\$\s*/, '').replace(/\s*\\?%\s*$/, '');
       var p = HW.parse.number(raw);
       if (!p.ok) { var a = K.read(raw); if (a.res) return a.res; return form('decimal', 'Give your answer as a decimal, rounded to the nearest ' + place + '.'); }
       var v = p.value, s = HW.parse.plain(raw).replace(/\s/g, ''), dec = (s.split('.')[1] || '').length;
-      if (opt.nr && s.length > 4) { var hl = opt.diag && Math.abs(K.roundTo(v, dp) - want) > 1e-9 ? opt.diag(v) : null; if (hl) return wrong(hl.code || 'diag', hl.hint); if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', 'Right — now round it to the nearest ' + place + '.'); return form('nr-long', 'Numerical response answers fit in 4 boxes (digits and a decimal point only).'); }
+      if (opt.nr && s.length > 4) { var hl = opt.diag && Math.abs(K.roundTo(v, dp) - want) > 1e-9 ? opt.diag(v) : null; if (hl) return wrong(hl.code || 'diag', hl.hint); if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', (dp > 3 ? 'Right — now round it to ' + dp + ' decimal places.' : 'Right — now round it to the nearest ' + place + '.')); return form('nr-long', 'Numerical response answers fit in 4 boxes (digits and a decimal point only).'); }
       if (Math.abs(v - want) < 1e-9) return ok();
       var sc = Math.pow(10, dp), fl = Math.floor(x * sc + 1e-9);
       if (Math.abs(x * sc - fl - 0.5) < 1e-7 && Math.abs(v - fl / sc) < 1e-9) return ok(); // exactly halfway: either rounding
-      if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', 'Right — now round it to the nearest ' + place + '.');
-      if (dec < dp && Math.abs(v - K.roundTo(x, dec)) < 1e-9) return form('places', 'Round to the nearest ' + place + ' (' + dp + ' decimal place' + (dp === 1 ? '' : 's') + ').');
+      if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', (dp > 3 ? 'Right — now round it to ' + dp + ' decimal places.' : 'Right — now round it to the nearest ' + place + '.'));
+      if (dec < dp && Math.abs(v - K.roundTo(x, dec)) < 1e-9) return form('places', dp > 3 ? 'Round to ' + dp + ' decimal places.' : 'Round to the nearest ' + place + ' (' + dp + ' decimal place' + (dp === 1 ? '' : 's') + ').');
       if (opt.diagFirst && opt.diag) { var h0 = opt.diag(v); if (h0) return wrong(h0.code || 'diag', h0.hint); }
       if (Math.abs(v - trunc) < 1e-9 && trunc !== want) return wrong('truncate', 'Round, don’t chop: look at the next digit. If it is 5 or more, round up.');
       var h = opt.diag ? opt.diag(v) : null;

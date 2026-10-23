@@ -667,7 +667,7 @@
         } }] },
       /* ---------- EP 4 ---------- */
       { num: '4',
-        shared: function (r) { return gen(r, function (r) { var h = r.int(25, 50); return { h: h, l: r.int(8, h - 8) }; }, function (s) { var st = Math.sqrt(s.h * s.h - s.l * s.l), a = 0.5 * st * s.l, b = 0.5 * rnd(st, 1) * s.l; return fx(a, 1) !== fx(b, 1) && safe(st, 1) && safe(a, 1) && safe(T.asin(s.l / s.h), 0) && Math.abs(st - Math.round(st)) > 1e-6; }); },
+        shared: function (r) { return gen(r, function (r) { var h = r.int(25, 50); return { h: h, l: r.int(8, h - 8) }; }, function (s) { var st = Math.sqrt(s.h * s.h - s.l * s.l), a = 0.5 * st * s.l, b = 0.5 * rnd(st, 1) * s.l; return s.l % 2 === 0 && fx(a, 1) !== fx(b, 1) && safe(st, 1) && safe(a, 1) && safe(T.asin(s.l / s.h), 0) && Math.abs(st - Math.round(st)) > 1e-6; }); },
         stem: function (s) {
           var st = Math.sqrt(s.h * s.h - s.l * s.l);
           return 'In ' + t('\\triangle STU') + ' the right angle is at ' + t('T') + ', the hypotenuse ' + t('SU=' + s1(s.h)) + ' and the leg ' + t('TU=' + s1(s.l)) + '. Four quantities are wanted: ' + t('ST') + ', ' + t('\\angle S') + ', ' + t('\\angle U') + ' and the area of the triangle.' + figWrap(HW.tri({ w: s.l, h: st, names: ['U', 'S', 'T'], sides: { a: '?', b: s1(s.l), c: s1(s.h) }, width: 200 }));
