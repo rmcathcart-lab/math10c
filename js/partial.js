@@ -27,6 +27,12 @@
       'abc-sum': 1, // Added instead of a − b − c
       'abs-minus-out': 1, // Dropped the minus sign outside the bars
       'ad-wrong-mom': 1, // Arrow diagram: paired a child with the wrong mother
+      'af-not-x': 1, // Gave the whole run instead of the unknown part x
+      'amt-one': 1, // One of the two values wrong
+      'amt-swap': 1, // Answers in each other’s boxes
+      'answered-other': 1, // Gave the other quantity, not the one asked for
+      'area-part': 1, // Left out part of a composite area
+      'area-units': 1, // Area not computed in metres
       'ax-gcf-dropped': 1, // Dropped the common factor
       'ax-gcf-sign': 1, // Common factor with the wrong sign
       'ax-lost-negative': 1, // Lost the negative common factor
@@ -34,20 +40,37 @@
       'ax-pair-product-sign': 1, // Pair product has the wrong sign
       'ax-pair-signs': 1, // Pair with both signs wrong
       'ax-sign': 1, // Sign slip solving (x − h)² = …
+      'back-over': 1, // Added 180° to a bearing that was already 180° or more
+      'bearing-360': 1, // Bearing of 360° or more
+      'bearing-3digit': 1, // Bearing not written with three digits
+      'borrow': 1, // Subtracted a mixed measure without regrouping
       'calc-dec': 1, // Decimal slip
       'calc-no-b': 1, // Left out the constant term
       'calc-noise': 1, // Copied the calculator’s approximation error
       'calc-sign': 1, // Sign of rise/run
+      'cents-dollars': 1, // Cents and dollars mixed up
+      'ch-early': 1, // Rounded the shared side (or a piece) before using it
+      'ch-eye': 1, // Forgot to add the eye height
+      'ch-no-half': 1, // Forgot the ½ in the area formula
+      'ch-speed': 1, // Used the other runner’s speed
+      'ch-who': 1, // Wrong runner (times compared wrongly)
       'chop': 1, // Chopped instead of rounding
+      'circles-count': 1, // Wrong number of circular ends
+      'clear-bracket': 1, // Bracket not multiplied out correctly when clearing
       'cnt-extra': 1, // Counted one too many
       'cnt-zero': 1, // Forgot n = 0
       'const-lost': 1, // Dropped the constant factor
       'const-sign': 1, // Wrong sign on the constant
+      'conv-flip': 1, // Conversion factor used the wrong way
+      'conv-gallon': 1, // Used the wrong gallon (US vs UK)
+      'conv-missing': 1, // Left out a unit conversion
       'conv-name': 1, // Wrong function name
       'conv-still-fn': 1, // Kept function notation (asked for y = …)
       'conv-still-y': 1, // Kept y (asked for function notation)
+      'copied-error': 1, // Repeated the student’s error
       'corner-missing': 1, // Left out the corner square
       'count-minus': 1, // Missed an irrational number
+      'count-missing': 1, // Forgot to multiply by the number of items
       'count-plus': 1, // Counted a rational number as irrational
       'count-zero': 1, // Counted b = 0
       'cs-sign': 1, // Sign of p wrong
@@ -67,12 +90,15 @@
       'ctx-short': 1, // Line too short
       'ctx-year-round': 1, // Rounded the year up
       'cube-sign': 1, // Sign of the cube root
+      'cyl-wall': 1, // Cylinder wall not 2πrh
       'd-metres': 1, // Gave metres instead of kilometres
       'd-round-early': 1, // Rounded each segment before adding
       'd-sign': 1, // Distance: sign slip subtracting a negative coordinate
       'dec-place': 1, // Decimal-place slip in a root
       'decimal': 1, // Gave a decimal instead of exact form
       'decimal-place': 1, // Decimal point in the wrong place
+      'digits-pair': 1, // Gave the digits, not the number
+      'digits-reversed': 1, // Gave the reversed number
       'dom-n': 1, // Natural numbers leave out 0
       'dom-real': 1, // Used ∈ R for a count
       'dos-sign': 1, // Sign error in the difference of squares
@@ -85,18 +111,36 @@
       'drop-one': 1, // Dropped the 1 left by a term equal to the GCF
       'drop-var': 1, // Left the second variable out of the brackets
       'dup': 1, // Listed a value twice
+      'early-round': 1, // Rounded an intermediate value too early
+      'elim-backsub': 1, // Back-substituted into a scaled left side with the old constant
+      'elim-const': 1, // Scaled an equation but not its constant
+      'elim-rhs': 1, // Combined the right sides the other way (added vs subtracted)
+      'elim-sign': 1, // Sign slip when solving the two-triangle equation
+      'elim-sub-sign': 1, // Subtracting: sign of a term not changed
       'end-sign': 1, // Rise/run sign in the endpoint
       'err-missed': 1, // Missed one of the errors
       'ev-sign': 1, // Sign error with a negative input
       'ex-order': 1, // Example: not in descending order
+      'extra-base': 1, // Counted a base the object doesn’t have
+      'extra-circle': 1, // Counted a hidden or ground face of a composite solid
       'extra-term': 1, // Extra term that should cancel
+      'eye-added': 1, // Added the eye height when only the rise above eye level was asked
+      'eye-sub': 1, // Subtracted the eye height instead of adding it
+      'feet': 1, // Feet wrong
       'fn-const': 1, // Left out the constant term
       'fn-const-sign': 1, // Wrong sign on the constant
       'fn-neg-sub': 1, // Sign slip substituting a negative
       'fn-sign': 1, // Sign slip
       'fn-solve-sign': 1, // Sign slip solving
       'forgot-1': 1, // Left out the pair 1 × c
+      'forgot-part': 1, // Left out part of a mixed measurement
+      'ft-decimal': 1, // Read decimal feet as inches
       'gap-sign': 1, // Gap with the wrong sign
+      'gave-d': 1, // Gave the diameter instead of the radius
+      'gave-diameter': 1, // Gave the diameter, not the radius
+      'gave-other-unit': 1, // Answer in the wrong unit
+      'gave-r': 1, // Gave the radius (or r²) instead of what was asked
+      'gave-radius': 1, // Gave the radius, not the diameter
       'gcf-dropped': 1, // Dropped the common factor
       'gcf-lost': 1, // Lost the common factor taken out first
       'gcf-missing': 1, // Dropped the common factor
@@ -114,12 +158,20 @@
       'graph-noarrow': 1, // Arrows where the graph stops
       'graph-points': 1, // Point misplaced
       'graph-xk': 1, // Graph: wrong x-value
+      'half-only': 1, // Stopped at half the distance
+      'half-pace': 1, // Used a half-pace (45 cm) as the largest error
+      'half-perimeter': 1, // Added only two sides of the rectangle
       'halfway': 1, // Rounded the estimate the wrong way
+      'hands-added': 1, // Added the hand widths instead of subtracting
       'has-var': 1, // Put a variable on a constant term
       'height-sign': 1, // Height across the axis (subtracting a negative)
+      'hole-depth': 1, // Left out the part of the pole in the hole
+      'hole-sub': 1, // Subtracted the hole depth instead of adding it
+      'inches': 1, // Inches wrong
       'int-sign': 1, // Intercept with the wrong sign
       'inv-neg': 1, // Lost the negative coefficient
       'k-sign': 1, // Sign slip solving for the unknown
+      'km-not-m': 1, // Didn’t change km to m
       'l5-gr-bsign': 1, // Wrong sign on the y-intercept
       'l5-rise': 1, // Slope sign (cooling = negative)
       'l5-tab-sign': 1, // Sign slip in a table value
@@ -131,11 +183,34 @@
       'lost-gcf': 1, // Dropped the common factor
       'lost-half': 1, // Dropped the ½
       'lost-one': 1, // Dropped the hidden 1
+      'mic-coarse': 1, // Micrometer: whole millimetres miscounted
+      'mic-half': 1, // Micrometer: half-millimetre mark missed or added
+      'mic-hidden': 1, // Micrometer: read a sleeve mark still under the thimble
+      'mic-label': 1, // Micrometer: read the nearest numbered thimble mark
+      'mic-neighbour': 1, // Micrometer: thimble mark beside the index line
+      'mic-turn-half': 1, // Micrometer: stopped at the half-millimetre mark
       'mid-sign': 1, // Sign slip in a midpoint
       'min-not-h': 1, // Gave minutes where hours were asked
       'missing-term': 1, // Left out one group of terms
+      'mix-masses-swapped': 1, // Masses paired with the wrong variables
+      'mix-other': 1, // Gave the other ingredient’s amount
+      'mix-pct-whole': 1, // Percent not changed to a decimal
+      'mix-rates-swapped': 1, // Rates paired with the wrong variables
+      'mix-swap': 1, // Mixture: amounts swapped
       'months': 1, // Wrong number of payments
+      'mot-clock': 1, // Elapsed time not added to the start time
+      'mot-convert': 1, // Unit conversion the wrong way
+      'mot-delay-sign': 1, // Later start added instead of subtracted
+      'mot-hm': 1, // Decimal hours read as minutes
+      'mot-hours': 1, // Answer in hours, not minutes
+      'mot-other': 1, // Gave the other speed/distance/time
+      'mot-speeds-swapped': 1, // Speeds paired with the wrong legs
+      'mot-stop-added': 1, // Rest time included in driving time
+      'mot-time-decimal': 1, // Minutes written as a decimal of an hour
+      'mot-units': 1, // Units not converted
+      'moved-away': 1, // Added the distance moved instead of subtracting
       'n-not-n-1': 1, // Counted n remainders instead of n − 1
+      'n-offset': 1, // Used the wrong term number
       'neg-a': 1, // Gave a negative value
       'neg-gcf': 1, // Took out a negative GCF
       'neg-length': 1, // Gave a negative length
@@ -148,40 +223,91 @@
       'nl-dot': 1, // Open vs solid dot
       'no-corner': 1, // Left out the corner square
       'no-var': 1, // Left the variable off the term
+      'no-waste': 1, // Left out the 10% waste allowance
+      'no-zipper': 1, // Left out the zipper cost
+      'not-diff': 1, // Gave a distance instead of the difference
       'not-subst': 1, // Substitution slip
       'np-place': 1, // Number placed too far off
+      'nr-one': 1, // Gave one unknown instead of the combination
       'nr-one-sign': 1, // Used a positive value for a negative intercept
+      'nr-partial': 1, // Gave x or y instead of the requested expression
       'nr-repeat': 1, // Counted a repeated value twice
       'nr-round-early': 1, // Rounded before the last step
       'nr-sign': 1, // Sign error
+      'nr-swap': 1, // Evaluated the expression with x and y swapped
+      'nr-x-only': 1, // Gave one variable, not the combination asked for
+      'ns-dir': 1, // North–south part added when it should be subtracted (or the reverse)
       'odd-neg': 1, // Dropped the negative sign under an odd power
       'odd-sign': 1, // Sign of a root of a negative base
       'off-by-one': 1, // Figure numbers off by one
       'off-one': 1, // One factor too many or too few
+      'one-circle': 1, // Counted only one of the two circles
+      'one-value': 1, // One value right, the other wrong
       'order': 1, // Terms in the wrong order
       'pair-sign': 1, // Sign of a coordinate wrong
       'pair-signs': 1, // Pair with the wrong signs
       'pct-dec': 1, // Grade as a decimal, not a percent
+      'pct-diff': 1, // Gave the difference instead of the percentage
+      'pct-double': 1, // Took the area error as exactly double
+      'pct-flip': 1, // Used the other percentage
+      'pct-no100': 1, // Percent error not multiplied by 100
+      'pct-triple': 1, // Took the volume error as exactly triple
+      'pen-price': 1, // Gave the other unknown’s value
+      'per-missing': 1, // Missed edges of the perimeter
+      'perim-part': 1, // Left a side out of the perimeter / total
+      'pi-coef': 1, // Rounded the coefficient of π
+      'pi-decimal': 1, // Gave a decimal for an exact answer
+      'pi-symbol': 1, // Exact answer: π not kept as a symbol
       'plot-value': 1, // Point plotted at the wrong value
+      'pq-swap': 1, // Values of the two unknowns swapped
+      'prefix-places': 1, // Decimal point moved the wrong number of places (prefix power off)
+      'product-sum': 1, // Added instead of multiplying
       'ps-sign-x': 1, // Slope–point form: sign of x₁
       'ps-sign-y': 1, // Slope–point form: sign of y₁
       'pt-sign-x': 1, // Point: x sign
       'pt-sign-y': 1, // Point: y sign
       'pt-x': 1, // Point: x-coordinate wrong
       'pt-y': 1, // Point: y-coordinate wrong
+      'pyth-noroot': 1, // Forgot the square root (Pythagorean theorem)
+      'quotient-off': 1, // Mixed measure: number of whole larger units wrong
+      'r-h-swap': 1, // Swapped the radius and the height
+      'radius-diam': 1, // Gave the radius instead of the diameter
       'rate-sign': 1, // Rate of change sign
+      'ratio-not-angle': 1, // Gave the ratio instead of the angle
+      'read-coarse': 1, // Misread the coarse (main / sleeve) scale
+      'read-fine': 1, // Misread the fine (vernier / thimble) scale
+      'read-half': 1, // Missed (or invented) the half-millimetre mark
+      'read-hundredths': 1, // Read vernier divisions as 0.01 mm
+      'rearr-sign': 1, // Sign not changed when moving a term across =
+      'remainder': 1, // Gave the amount not invested
+      'remainder-off': 1, // Mixed measure: leftover wrong
+      'rise-only': 1, // Gave the rise instead of the new depth
       'round': 1, // Not rounded
+      'round-direction': 1, // Rounded the wrong way for a limit
+      'round-down': 1, // Rounded up instead of down
+      'round-early': 1, // Rounded an intermediate value too early
       'round-first': 1, // Rounded before adding
+      'round-off': 1, // Rounding slip in the last unit
       'round-up': 1, // Rounded up a count of whole items
       'rounded-early': 1, // Rounded too early
+      'rounded-factor': 1, // Used a rounded factor instead of the exact one
       'rr-rise': 1, // Miscounted the rise
       'rr-run': 1, // Miscounted the run
       'rr-sign': 1, // Rise or run with the wrong sign
+      'ruler-mm': 1, // Ruler: millimetres miscounted
+      'sa-extra-face': 1, // Counted a face that isn’t there (lid, hidden or buried face)
+      'sa-missing-face': 1, // Left out a face
+      'sa-no-base': 1, // Left the base out of a surface area
+      'sa-one-base': 1, // Only one base counted
+      'same-angle': 1, // Copied the given acute angle as the other one
+      'same-claim': 1, // Repeated the student’s (wrong) value
       'scale-m': 1, // Answer in metres, not kilometres
       'set-endpoint': 1, // Endpoint included/excluded wrong
       'set-repeat': 1, // Wrote a value twice in a list
       'sets-zero-N': 1, // Called 0 a natural number
+      'side-dup': 1, // Gave one side two names
       'sign': 1, // Wrong sign
+      'sign-count': 1, // Sign of a negative count
       'sign-exp': 1, // Sign slip when combining exponents
       'sk-after': 1, // Sketch: continued after landing
       'sk-arrow': 1, // Sketch: arrow where the model stops
@@ -190,29 +316,123 @@
       'sk-point': 1, // Sketch: a plotted point is off the curve
       'sk-segment': 1, // Sketch: segment instead of a line (no arrows)
       'sk-start': 1, // Sketch: release point missing
+      'slant-swap': 1, // Paired each slant height with the wrong edge
       'sol-sign-one': 1, // One solution has the wrong sign
       'speed-sign': 1, // Gave a speed as a negative number
+      'speed-units': 1, // Speed not converted (or converted the wrong way) between m/s and km/h
       'sq-decimal': 1, // Squared a decimal wrongly
       'sq-middle-sign': 1, // Wrong sign on the middle term of a square
       'stmt-name': 1, // Wrong function name in statement
       'story-end': 1, // Wrong ending value
       'story-start': 1, // Wrong starting value
+      'sub-dist': 1, // Substitution: bracket not multiplied out
+      'sub-divide': 1, // Isolating x: did not divide every term
       'sub-value': 1, // Substitution error
       'sub-wrong': 1, // Substitution arithmetic slip
+      'swap-answer': 1, // Right numbers in the wrong boxes
+      'swap-legs': 1, // Shorter and longer sides swapped
       'swap-signs': 1, // Factor pair with both signs switched
+      'swapped': 1, // Swapped which estimate is assumed correct
+      'sys-graph-extra': 1, // Graph of a system: extra line
+      'tape-neighbour': 1, // Tape: read the neighbouring mark
       'term': 1, // One group of like terms wrong
+      'thick-once': 1, // Took the wall thickness off one side only
+      'third': 1, // Used the leftover third instead of two thirds
       'tile-away-zero': 1, // Took away an extra zero pair
       'tile-neg-corner': 1, // Rectangle: corner sign wrong
       'tile-sign': 1, // Misread the sign of a tile
       'time-ampm': 1, // Wrong a.m./p.m.
+      'time-units': 1, // Did not convert minutes to hours
       'tree-box': 1, // Factor tree: a box doesn’t multiply out
+      'trig-area-half': 1, // Forgot the ½ in the area
+      'trig-complement': 1, // Used 180° instead of 90° for the other acute angle
+      'trig-early': 1, // Rounded an intermediate value too early
+      'trig-eye': 1, // Eye height left out or used wrongly
+      'trig-neg-root': 1, // Kept the negative root
       'truncate': 1, // Chopped instead of rounding
+      'tv-bracket-nearest': 1, // Gave a bracket end instead of the nearest degree
+      'tv-brackets': 1, // Missing brackets / order of operations
+      'tv-early-round': 1, // Rounded an intermediate value too early
+      'tv-gave-ratio': 1, // Gave a ratio where an angle was asked
+      'tv-out-by': 1, // Wrong “out by” difference
+      'tv-tie': 1, // Tie in an ordering
+      'tv-trip': 1, // Round-trip value wrong
+      'u8-c-sign': 1, // Sign of the constant
+      'u8-collect': 1, // Sign slip collecting x-terms
+      'u8-const': 1, // Sign slip moving the constants
+      'u8-const-miss': 1, // Missed some valid constants
+      'u8-count-swap': 1, // Ticket counts swapped
+      'u8-eq-swap': 1, // Equations in the wrong boxes
+      'u8-gr-flip': 1, // Graph: run over rise
+      'u8-gr-shift': 1, // Graph: right slope, wrong place
+      'u8-gr-sign': 1, // Graph: slope sign wrong
+      'u8-k-sign': 1, // Sign of k
+      'u8-line-extra': 1, // Extra line drawn
+      'u8-line-missing': 1, // A line of the system missing
+      'u8-mult-flip': 1, // Multiplier upside down
+      'u8-neg': 1, // Sign slip dividing by −1 (or a negative)
+      'u8-nodiv': 1, // Didn’t divide every term
+      'u8-pq-diff': 1, // Subtracted the coordinates
+      'u8-pq-one': 1, // Gave one coordinate, not p + q
+      'u8-profit-sign': 1, // Profit/loss sign reversed
+      'u8-tab-sign': 1, // Table: sign slip solving for y
+      'u8l6-a-sign': 1, // Sign of a (a = −slope)
+      'u8l6-as-fraction': 1, // Gave a decimal instead of the fraction
+      'u8l6-cond-sign': 1, // More than / less than sign
+      'u8l6-divide': 1, // Didn’t divide by the coefficient
+      'u8l6-early-round': 1, // Rounded an intermediate value too early
+      'u8l6-elim-rhs': 1, // Eliminated equation: right side wrong
+      'u8l6-eq-boxes': 1, // Right equations in the wrong boxes
+      'u8l6-estimate': 1, // Graph estimate too far off
+      'u8l6-gave-cost': 1, // Gave the common value instead of the input (or one cost instead of the difference)
+      'u8l6-gave-h': 1, // Gave the height instead of the time
+      'u8l6-gave-x': 1, // Gave x instead of y
+      'u8l6-gr-int-sign': 1, // Graph: y-intercept sign after rearranging
+      'u8l6-gr-slope-sign': 1, // Graph: slope sign
+      'u8l6-half': 1, // Estimate not to the nearest half
+      'u8l6-k-missing': 1, // Some k values missing
+      'u8l6-k-none': 1, // Included the no-solution k
+      'u8l6-k-solve': 1, // Didn’t finish solving for k
+      'u8l6-line-extra': 1, // Graph: an extra line
+      'u8l6-line-missing': 1, // Graph: a line missing
+      'u8l6-list': 1, // List unreadable
+      'u8l6-mult-swap': 1, // Multipliers swapped
+      'u8l6-not-isolated': 1, // Variable not isolated
+      'u8l6-not-lowest': 1, // Common multiple, not the lowest
+      'u8l6-one-value': 1, // Stopped after finding one value
+      'u8l6-order': 1, // List not in order
+      'u8l6-rate-sign': 1, // Burn/decrease rate given a positive slope
+      'u8l6-rhs-unscaled': 1, // Right side not scaled
+      'u8l6-scale': 1, // Read squares instead of units on an axis
+      'u8l6-single-frac': 1, // Not written as a single fraction
+      'u8l6-sum': 1, // Gave the sum instead of the asked combination
+      'u8l6-swap': 1, // Two answers in each other’s boxes
+      'u8l6-swapxy': 1, // x and y swapped
+      'unit-slip': 1, // Unit slip (cm / m / mm)
+      'unit-yd': 1, // Used the wrong number of inches/feet in a yard
+      'units': 1, // Typed units in the box
+      'units-cents': 1, // Answer in cents instead of dollars
       'units-cm': 1, // Answer in cm, not m
+      'used-unrounded': 1, // Used the unrounded angle where the question said to use the rounded one
+      'vern-backwards': 1, // Vernier: distance past the mark instead of to the next mark
+      'vern-coarse': 1, // Vernier: coarse (main-scale) reading off by 1 mm
+      'vern-neighbour': 1, // Vernier: picked a neighbouring mark (best line-up misread)
+      'vern-zero': 1, // Vernier: wrong division at a whole millimetre
       'vx-sign': 1, // Turning point x with the wrong sign
+      'whole-count': 1, // Rounded the count instead of giving the whole repetitions
+      'whole-down': 1, // Rounded a count up when it must go down
+      'whole-up': 1, // Rounded a count down when it must go up
       'win-neg-x': 1, // Negative Xmin for an input that can’t be negative
       'win-neg-y': 1, // Most of the window below zero for a quantity that can’t be negative
+      'wire-anchor': 1, // Sketch: wire anchored at the wrong place
+      'wire-count': 1, // Sketch: wrong number of wires
+      'wire-side': 1, // Sketch: both wires on the same side
+      'wrong-face': 1, // Took off the wrong face
+      'wrong-h': 1, // Used the wrong height for the small cone
       'xint-sign': 1, // x-intercept sign error
-      'zero-natural': 1 // Put 0 in N
+      'xy-right-z': 1, // Three unknowns: x and y right, z wrong
+      'zero-natural': 1, // Put 0 in N
+      'zipper-once': 1 // Counted the zipper only once
     },
     big: {
       'a-b': 1, // Found a − b
@@ -221,6 +441,7 @@
       'ab-frac': 1, // Area box: fraction in a row/column term
       'ab-gcf': 1, // Area box: row/column term not the GCF
       'ab-side': 1, // Area box: wrong side term (working backwards)
+      'ab-swap': 1, // Swapped a and b
       'ab-zeros': 1, // Area box: dropped the zeros of tens
       'abs-added': 1, // Added instead of subtracting
       'abs-one-side': 1, // Graphed only one side of an absolute value inequality
@@ -230,19 +451,31 @@
       'ac-wrong': 1, // Wrong value of ac
       'add-coef': 1, // Added coefficients instead of multiplying
       'add-den': 1, // Added numerators and denominators of the exponents
+      'add-errors': 1, // Added error factors that multiply
       'add-exp': 1, // Added the exponents when adding like terms
       'add-index': 1, // Added the indices of a root of a root
       'add-not-sub': 1, // Added instead of subtracting when solving
       'add-power': 1, // Added the outside exponent instead of multiplying
+      'added': 1, // Added a part that should be subtracted
+      'added-bills': 1, // Added the two given totals
+      'added-eqs': 1, // Added the equations instead of subtracting
       'added-index': 1, // Added the indices instead of multiplying
       'added-middle': 1, // Added the outer and inner products wrongly
       'added-prod': 1, // Added instead of subtracting
+      'addsub': 1, // Chose add vs subtract wrongly
       'adjust-direction': 1, // Adjusted the exponent the wrong way when renormalizing
       'all-cancel': 1, // Thought everything cancels
       'alt-extra': 1, // Extra line in the drawing
+      'amount-not-interest': 1, // Compared amounts instead of interest
+      'amt-value': 1, // Amounts right total, wrong value/content
+      'angle-180': 1, // Took the acute angles to add to 180° (ignored the right angle)
+      'area': 1, // Gave the area for a perimeter
       'area-full': 1, // Used the whole base as the run
       'area-no-half': 1, // Forgot the ½ in the area
       'area-noh': 1, // Gave the height, not the area
+      'area-overlap': 1, // Counted an overlap twice
+      'area-rect': 1, // Used the whole bounding rectangle
+      'area-trap-full': 1, // Used the full depth for the trapezoid part
       'arrows-extra': 1, // Extra arrow
       'arrows-missing': 1, // Arrow missing
       'ax-ac-wrong': 1, // Wrong value of ac
@@ -267,9 +500,16 @@
       'backwards': 1, // Subtracted the exponents in the wrong order
       'bar-all': 1, // Repeated the digits before the bar too
       'bar-block': 1, // Bar over the wrong digits
+      'base-angle': 1, // Gave a base angle instead of the apex angle
+      'base-ten': 1, // Used 10 instead of 12 (or 3) for the smaller unit
       'bcf-sign': 1, // Wrong sign in the leftover bracket
+      'bearing-back': 1, // Gave the outbound bearing instead of the return bearing (or the reverse)
+      'bearing-ccw': 1, // Measured the bearing anticlockwise or from the wrong line
+      'bearing-ref': 1, // Used the bearing instead of the reference angle (or the reverse)
       'bin-twice': 1, // Took the common bracket out twice
       'block-back': 1, // Put the wrong block back after substituting
+      'boat-dist': 1, // Used the distance as a speed
+      'boat-swap': 1, // Current: downstream and upstream swapped
       'bottom-only': 1, // Took the root of the denominator only
       'bounce-count': 1, // Miscounted the bounces
       'bounding-box': 1, // Used the bounding rectangle
@@ -280,6 +520,23 @@
       'calc-flip': 1, // Used run over rise
       'calc-sq-neg': 1, // Squared a negative input as a negative
       'cancel-missed': 1, // Missed terms that cancel
+      'cap-length': 1, // Wrong cylinder length for the capsule
+      'cars-sum': 1, // Added the two runs when both cars are on the same side
+      'cbrt-for-sqrt': 1, // Solving for r: cube root instead of square root
+      'ch-add-angles': 1, // Added angles that should be subtracted (or the reverse)
+      'ch-angle-sum': 1, // Didn’t add the angles at the shared vertex
+      'ch-complement': 1, // Gave the other acute angle
+      'ch-finish': 1, // Forgot the 15 m behind the finish line
+      'ch-full-distance': 1, // Used the whole distance instead of half
+      'ch-half-diag': 1, // Used half a diagonal in the area
+      'ch-inverted': 1, // Multiplied instead of divided (or the reverse)
+      'ch-midpoint': 1, // Used the whole side instead of half (midpoint)
+      'ch-one-piece': 1, // Gave only one piece of the total
+      'ch-other-piece': 1, // Solved for the other piece of the base
+      'ch-pyth': 1, // Pythagorean theorem set up the wrong way
+      'ch-radian': 1, // Calculator in radian mode
+      'ch-ratio': 1, // Wrong trig ratio for the sides used
+      'circ-area': 1, // Mixed up circumference and area of a circle
       'circ-noSq': 1, // Didn’t square the radius
       'circ-radius': 1, // Used the diameter as the radius
       'clear-one-side': 1, // Cleared the fraction on one side only
@@ -303,25 +560,38 @@
       'coef-sign': 1, // Dropped the negative sign
       'coef-sub': 1, // Subtracted coefficients instead of dividing
       'coef-sum': 1, // Added the coefficients instead of multiplying
+      'coef-swap': 1, // Coefficients attached to the wrong variables
       'coef-times': 1, // Multiplied the coefficient by the exponent
       'coef-times-n': 1, // Multiplied the coefficient by the exponent
       'coef-zeroed': 1, // Applied the zero exponent to the coefficient too
       'composite': 1, // Composite number left in a prime factorization
+      'composite-overlap': 1, // Counted the hidden (joined) faces
+      'composite-sub': 1, // Subtracted a part that should be added
+      'cone-no-third': 1, // Forgot the 1/3 in the cone volume
       'conj-sign': 1, // Sum × difference written with +
       'const-add': 1, // Added constants instead of multiplying
       'const-both': 1, // Multiplied the constant factor into both brackets
       'const-zero': 1, // Treated a constant factor as giving a solution
       'conv-arg': 1, // Wrong variable in the brackets
+      'conv-cube': 1, // Used the cubic factor for square units
+      'conv-dir': 1, // Converted in the wrong direction
+      'conv-direction': 1, // Conversion done backwards (× instead of ÷)
+      'conv-factor': 1, // Wrong metric conversion factor
+      'conv-linear': 1, // Converted a volume with the length factor (not cubed)
       'conv-move-sign': 1, // Sign error moving terms across
       'conv-no-divide': 1, // Did not divide every term by the coefficient of y
       'conv-part-divide': 1, // Divided only some terms
+      'conv-square': 1, // Converted a volume with the squared factor
+      'conv-step': 1, // A unit conversion step missing or wrong
       'conv-var': 1, // Changed the input variable
       'corner-twice': 1, // Counted the corner square twice
+      'cost-rate': 1, // Fabric rate not per 100 cm²
       'count': 1, // Run/rise off by one (counted lines, not spaces)
       'count-const': 1, // Counted a constant factor as giving a solution
       'count-pos': 1, // Counted only the positive values
       'count-repeat': 1, // Counted a repeated factor twice
       'count-tens': 1, // Wrong number of 10s in product form
+      'count-value': 1, // Count and value mixed up
       'counted-digits': 1, // Counted digits instead of places moved
       'cross': 1, // Counted cross terms wrongly
       'cross-not-doubled': 1, // Cross term not doubled
@@ -380,12 +650,16 @@
       'ctx-used-left': 1, // Used vs remaining mixed up
       'cube-in': 1, // Put the coefficient inside the root
       'cube-itself': 1, // Used the perfect cube instead of its cube root
+      'currency': 1, // Currency conversion missing or reversed
+      'cyl-third': 1, // Put a ⅓ in a cylinder volume
+      'd-as-r': 1, // Used the diameter as the radius
       'd-half': 1, // Gave half the distance
       'd-no-neg': 1, // Treated west/south as positive
       'd-no-root': 1, // Distance: forgot the square root (gave d²)
       'd-not-squared': 1, // Didn’t square the distance from the middle number
       'd-scale-div': 1, // Divided by the scale instead of multiplying
       'd-units': 1, // Distance in grid units, not converted with the scale
+      'dec-remainder': 1, // Read the decimal part as the smaller unit (5.77 ft as 5 ft 77 in)
       'dec-root': 1, // Wrong root of a decimal
       'decimal-cut': 1, // Converted the decimal as if it ended
       'decimal-hours': 1, // Read decimal hours as minutes
@@ -396,19 +670,25 @@
       'den-power': 1, // Raised only part of a fraction coefficient
       'den-root': 1, // Didn’t take the square root of the denominator
       'den-square': 1, // Didn’t square the coefficient’s denominator
+      'depr-vertical': 1, // Angle of depression measured from the vertical (put in the wrong place in the triangle)
+      'depression-angle': 1, // Put the angle of depression at the wrong vertex
       'diag-perim': 1, // Perimeter: not 4 sides
       'diam': 1, // Used the diameter as the radius
+      'diam-radius': 1, // Gave the diameter instead of the radius
       'diameter': 1, // Used the diameter as the radius
       'diff-order': 1, // Subtracted in the other order
       'diff-rev': 1, // Subtracted in the wrong order
+      'digits-diff': 1, // Reversal changes the number by 9 × (difference), not the difference
       'direction': 1, // Moved the decimal point the wrong way
       'dist-first': 1, // Multiplied only the first term in the bracket
       'div-exp': 1, // Divided exponents instead of subtracting (quotient law)
       'div-neg': 1, // Divided by a negative power instead of multiplying by the positive power
       'divided': 1, // Divided by a bracket and lost a root
+      'divided-pi': 1, // Divided by π an extra time
       'divided-x': 1, // Divided by x and lost the root 0
       'dom-missing': 1, // Left a domain element without an output
       'dos-again': 1, // Didn’t split a difference of squares again
+      'double-err': 1, // Doubled an error that should be squared
       'double-root': 1, // Repeated root not repeated in the equation
       'dr-centre': 1, // Ignored the centre of the circle
       'dr-context': 1, // Domain/range does not fit the situation
@@ -435,10 +715,12 @@
       'draw-slope-sign': 1, // Drew the slope with the wrong sign
       'drop-term': 1, // Dropped one partial product
       'drop-x': 1, // Dropped a variable from a product
+      'dropped-bracket': 1, // Dropped the bracket when substituting
       'dropped-rem': 1, // Dropped the leftover under the radical
       'dsq-sign': 1, // Sum × difference: wrong sign on the last term
       'dy-only': 1, // Used the change in y only (ignored the x-step)
       'each-prime-once': 1, // Root: used each prime once (didn’t divide the exponents)
+      'elim-not': 1, // Combination still has both variables
       'end-double': 1, // Missing endpoint: doubled the midpoint but didn’t subtract
       'end-nostart': 1, // Forgot to start from the given point
       'end-swap': 1, // Added rise to x and run to y
@@ -470,17 +752,24 @@
       'ext-half': 1, // Stopped at a^(1/2)
       'ext-sign': 1, // Sign error solving for a
       'extra-costs': 1, // Left out extra costs
+      'extra-face': 1, // Counted a face that isn’t there (open end / hidden / joined)
+      'eye-floor': 1, // Used the floor height instead of the eye height
+      'eye-height': 1, // Forgot to add the eye height
+      'factor-2': 1, // Thought doubling r doubles the volume/area
       'factor-const': 1, // Missing factor has the wrong constant
       'factor-degree': 1, // Missing factor has the wrong degree
       'factor-middle': 1, // Missing factor has a wrong middle term
+      'factor-sq': 1, // Squared instead of cubed (or vice versa) for the scale factor
       'factor-swap': 1, // Factors swapped (top/side)
       'fc-product': 1, // Multiplied the exponents (no +1)
       'fee-first': 1, // Used the 1-day charge as the fee
+      'first-diff-const': 1, // Assumed constant first differences
       'first-only': 1, // Multiplied only the first term in the bracket
       'first-term': 1, // Used the first value as the constant
       'fix-step2': 1, // Fixed only Step 3 (coefficient still wrong)
       'fix-step3': 1, // Fixed only Step 2 (exponent of a still wrong)
       'fl-total': 1, // Added only two of the four partial products
+      'flat-missing': 1, // Forgot the flat part of a pledge
       'flat-time': 1, // Total time on flat segments wrong
       'flip': 1, // Fraction upside down
       'flip-99': 1, // Used 100 instead of 99 for the repeating block
@@ -524,10 +813,15 @@
       'frac-add': 1, // Added numerators and denominators
       'frac-den': 1, // Forgot to divide by the coefficient’s denominator
       'frac-div': 1, // Divided by a fraction incorrectly
+      'frac-linear': 1, // Volume fraction from the length ratio (not cubed)
       'frac-num': 1, // Forgot to multiply by the coefficient’s numerator
+      'from-horizontal': 1, // Measured from the horizontal instead of the vertical
+      'ft-in-decimal': 1, // Wrote feet and inches as a decimal of a foot (5 ft 8 in as 5.8 ft)
       'ft-sign': 1, // Sign error substituting −t
       'ft-zero': 1, // Cancelled everything
+      'full-base': 1, // Used the whole base instead of half
       'full-diag': 1, // Used the whole diagonal
+      'full-length': 1, // Used the total length as the cylinder’s length
       'full-square': 1, // Squared the whole middle coefficient
       'game-I': 1, // Scored only the integer category
       'game-W': 1, // Scored a negative card as whole
@@ -561,6 +855,7 @@
       'gr-sign': 1, // Graph: slope sign wrong
       'gr-slope': 1, // Graph: right y-intercept, wrong slope
       'gr-xint': 1, // Graph: wrong x-intercept
+      'grade-angle': 1, // Took the % grade as the angle
       'grade-whole': 1, // Used the percent as a whole number
       'graph-b-x': 1, // Graph: b plotted on the x-axis
       'graph-extra': 1, // Extra point
@@ -576,22 +871,48 @@
       'grid-alt': 1, // Wrong method in the table
       'ground-h': 1, // Solved with the wrong value of h
       'group-sign': 1, // Wrong sign on a group’s common factor
+      'h-for-s': 1, // Used the height instead of the slant height
+      'h-for-slant': 1, // Used the perpendicular height where the slant height belongs
+      'h-r': 1, // Used h = r for the cylinder that holds the sphere
       'half': 1, // Left out the ½ of the triangle area formula
+      'half-angle': 1, // Gave the half-angle (forgot to double)
+      'half-edge': 1, // Used the full base edge (not half) in the slant-height triangle
+      'half-flip': 1, // “Half of” applied to the wrong side
       'half-k': 1, // Gave n instead of 2n
+      'half-lateral': 1, // Used πrh for the curved surface
+      'half-missing': 1, // Forgot the ½ (triangle or trapezoid area)
+      'half-not-third': 1, // Used ½ instead of ⅓ for the volume
       'half-perim': 1, // Gave half the perimeter
       'half-root': 1, // Square-rooted only part of the fraction
       'half-wrong': 1, // Halved instead of doubling to clear the ½
+      'halved-r': 1, // Halved a radius (treated it as a diameter)
+      'hand-1in': 1, // Used 1 in for a hand width (it is 4 in)
       'height-minus': 1, // Wrote the height as base minus the difference
+      'hemi-base': 1, // Counted the hemisphere’s flat base when it doesn’t belong
+      'hemi-half-r': 1, // Hemisphere: halved the radius instead of the volume
+      'hemi-no-base': 1, // Hemisphere: left out the flat base
+      'hemi-nobase': 1, // Left out the hemisphere’s flat base
+      'hemi-whole': 1, // Hemisphere: used the whole sphere (or mixed up the halves)
       'hidden-1': 1, // Missed the hidden coefficient 1 (or −1)
       'hidden-higher': 1, // Missed a higher-degree term written later
       'hidden-one': 1, // Forgot a hidden exponent of 1
+      'hole-circles': 1, // Didn’t remove the circles drilled out
+      'hole-kept': 1, // Didn’t remove the circle cut out of the face
+      'hole-wall': 1, // Left out the inside wall of the hole
       'hyp-added': 1, // Added the squares when the hypotenuse was given
+      'hyp-base': 1, // Used the hypotenuse as the base or height of the area
+      'hyp-leg': 1, // Used the hypotenuse as a leg (base or height)
+      'hyp-only': 1, // Gave only the return leg, not the total
+      'hyp-wrong': 1, // Hypotenuse misidentified (a leg used as the hypotenuse)
       'ic-pt': 1, // Intercept point not on the axis
       'icpt-axis': 1, // Intercept written as a point on the wrong axis
       'ignored-power': 1, // Ignored the power of 10 already there
       'incomplete': 1, // Unfinished
+      'incomplete-trip': 1, // Left out the return leg
+      'increase-total': 1, // Used the increase as the new perimeter
       'index': 1, // Wrong index
       'index-power': 1, // Swapped the index and the power
+      'inner-dims': 1, // Used inside dimensions for an outside surface
       'inner-root': 1, // Didn’t apply the outer root to everything inside
       'inner-roots': 1, // Skipped the inner roots of a nested radical
       'inner-sign': 1, // Sign error with nested brackets
@@ -610,6 +931,8 @@
       'inv-sign': 1, // Moved the constant with the wrong sign
       'io-extra': 1, // Extra value in the list
       'io-missing': 1, // Missed a value in the list
+      'jar-d': 1, // Used the jar’s diameter as its radius
+      'joint-counted': 1, // Counted a hidden joining circle (or a base that isn’t there)
       'k-all': 1, // Multiplied by every prime
       'k-both': 1, // Number in front multiplied into both brackets
       'k-first': 1, // Number in front multiplied into only one term
@@ -655,6 +978,7 @@
       'l5-window-big': 1, // Window far too large
       'l5-window-x': 1, // Window misses an x-intercept
       'l5-window-y': 1, // Window misses a y-intercept
+      'lat-total': 1, // Lateral area and total surface area mixed up
       'law-added': 1, // Added exponents where the law multiplies or subtracts
       'law-divided': 1, // Divided the exponents instead of subtracting
       'lcm-low-power': 1, // LCM: used a lower power of a prime
@@ -672,16 +996,21 @@
       'leftover-sign': 1, // Sign error in the leftover bracket
       'leftover-var': 1, // Kept a variable that cancels (x ÷ x = 1)
       'len-no-root': 1, // Forgot the square root
+      'less-than': 1, // “Less than” translated in the wrong order
+      'lin-factor': 1, // Used a linear unit factor for area or volume
       'line-intercept': 1, // Wrong y-intercept
       'line-point': 1, // Misses the given point
       'line-slope': 1, // Wrong slope
       'line-slope-flip': 1, // Run over rise
       'line-slope-sign': 1, // Slope sign
       'line-x': 1, // Vertical line: wrong x
+      'loss-sign': 1, // A loss added instead of subtracted
       'lost-2ab': 1, // Lost the middle term 2ab
       'lost-zero': 1, // Lost the solution 0 (divided by the variable)
       'max-block': 1, // Gave the maximum block length, not the actual
       'max-exp': 1, // GCF: used the highest power instead of the lowest
+      'mic-tenths': 1, // Micrometer: used 0.1 mm per thimble division
+      'mic-turn-back': 1, // Micrometer: gave the turn already made, not the turn left
       'mid-area': 1, // Used the wrong height
       'mid-coef': 1, // Gave the middle coefficient 2AB
       'mid-half': 1, // Didn’t halve the sums (midpoint)
@@ -702,12 +1031,37 @@
       'missed-q': 1, // Forgot that integers are rational
       'missed-qbar': 1, // Left out Q̄
       'missing-b': 1, // Missed some values of b
+      'missing-face': 1, // Left out a face
+      'missing-part': 1, // Left out part of the referent count
       'missing-r': 1, // Left out R
       'missing-var': 1, // GCF: included a letter missing from a term
+      'mix-content-rhs': 1, // Content equation equal to the percent, not the content
+      'mix-max-other': 1, // Max batch: limited by the wrong bottle
+      'mix-pct': 1, // Mixture: percent not used correctly
+      'mix-pct-scale': 1, // Decimals and whole-number percents mixed
+      'mix-pure-zero': 1, // Pure concentrate given rate 0
+      'mix-ratio-backwards': 1, // Ratio relationship written backwards
+      'mix-three-two': 1, // Third ingredient not counted
+      'mix-total': 1, // Mixture: total not used
+      'mix-value-rhs': 1, // Value equation equal to the total amount
+      'mix-water-dropped': 1, // Water left out of the amount equation
+      'mix-water-one': 1, // Water given rate 1
+      'mixed-referents': 1, // Added counts of different referents
       'mm-cm': 1, // Unit conversion (mm³ to cm³)
+      'more-than-flip': 1, // “More than” put on the wrong quantity
+      'more-than-side': 1, // “More than / less than” added to the wrong side
+      'more-times': 1, // “More than” written as times
+      'mot-ground': 1, // Gave a ground speed, not the wind/current
+      'mot-head-start': 1, // Later start not taken into account
+      'mot-legs-swapped': 1, // With/against paired with the wrong time
+      'mot-minutes': 1, // Minutes not changed to hours
+      'mot-not-halved': 1, // Wind/current not halved
+      'mot-offset': 1, // Speed difference between the boats missed
+      'mot-stops': 1, // Stops not removed from the driving time
       'move-sign': 1, // Sign error moving a term across
       'mult': 1, // Multiplied exponents instead of adding
       'mult-coef': 1, // Multiplied the coefficients when dividing
+      'mult-div': 1, // Multiplied instead of dividing (or divided instead of multiplying)
       'mult-exp': 1, // Multiplied exponents (should add)
       'mult-index': 1, // Multiplied the index into the exponent
       'multi-var-deg': 1, // Missed the degree of a two-variable term
@@ -735,7 +1089,9 @@
       'no-back-sub': 1, // Left the substitution letter in the answer
       'no-bar': 1, // Didn’t show the repeating block
       'no-brackets': 1, // Calculator: exponent not in brackets
+      'no-cbrt': 1, // Solving for r: forgot the cube root
       'no-change': 1, // Added instead of subtracting (no signs changed)
+      'no-coarse': 1, // Gave only the fine reading
       'no-coef': 1, // Forgot to multiply by the coefficient
       'no-const': 1, // Left out the constant
       'no-constant': 1, // Equation missing the constant term
@@ -745,17 +1101,21 @@
       'no-double': 1, // Middle term not doubled
       'no-ends': 1, // Left out the ends of the cylinder
       'no-fee': 1, // Left out the starting value
+      'no-fine': 1, // Gave only the coarse reading
       'no-fixed': 1, // Left out the fixed fee
       'no-flip': 1, // Didn’t take the reciprocal (negative exponent)
       'no-group-middle': 1, // Squared the grouped binomial without its middle term
       'no-half': 1, // Forgot the ½ in the triangle area
+      'no-half-area': 1, // Forgot the ½ in the area of a triangle
       'no-halve': 1, // Didn’t halve the exponent when taking it out
       'no-height': 1, // Forgot the height of the box
+      'no-inverse': 1, // Gave the ratio, not the angle (no inverse)
       'no-lead-subtract': 1, // Forgot to subtract the lead
       'no-middle': 1, // Squared a binomial without the middle term
       'no-mult': 1, // Multiplied only one term
       'no-negatives': 1, // Forgot the negative values
       'no-one': 1, // Forgot the invisible exponent 1
+      'no-pct': 1, // Didn’t apply the percentage
       'no-pi': 1, // Left out π
       'no-platform': 1, // Ignored the starting height
       'no-power': 1, // Flipped the fraction but didn’t raise it to the power
@@ -764,11 +1124,14 @@
       'no-recip': 1, // Forgot the reciprocal (negative exponent)
       'no-renorm': 1, // Did not renormalize the coefficient
       'no-root': 1, // Gave the squared distance (no square root)
+      'no-sq': 1, // Divided an area by a length (tile not squared)
       'no-sq-first': 1, // Rounded/compared before squaring
+      'no-sqrt': 1, // Solving for r: forgot the square root
       'no-square': 1, // Didn’t square the legs
       'no-square-d': 1, // Did not square d
       'no-sub32': 1, // Did not subtract 32
       'no-subtract': 1, // Didn’t subtract the constant
+      'no-third': 1, // Forgot the ⅓ (pyramid/cone volume)
       'no-whole': 1, // Lost the whole-number part
       'no-x': 1, // Left out the height factor x
       'no-zero-pairs': 1, // Did not cancel zero pairs
@@ -787,6 +1150,7 @@
       'not-largest': 1, // Gave a valid b that isn’t the largest
       'not-raised': 1, // Didn’t raise the coefficient to the power
       'not-reduced': 1, // Applied the denominator test before reducing
+      'not-right': 1, // Used the Pythagorean theorem on a triangle with no right angle
       'not-simplest': 1, // Radical not in simplest form
       'not-smallest': 1, // Correct kind, but not the smallest
       'not-sq': 1, // Did not square
@@ -830,15 +1194,21 @@
       'one-piece': 1, // Found only one of the pieces
       'one-root': 1, // Gave only one of two answers
       'one-root-dos': 1, // Only one root of a difference of squares
+      'one-side': 1, // Counted one side face instead of four
+      'one-slant': 1, // Used one slant height for every face of a rectangular pyramid
       'one-sol': 1, // Found only one of the two answers
       'one-solution': 1, // Found only one solution
       'one-stop': 1, // Counted only one of the stops
       'one-strip': 1, // Counted only one strip
+      'one-tri': 1, // Used a side that is not in the triangle
       'only-a': 1, // Gave a (or b) instead of a + b
       'only-last': 1, // Multiplied the monomial into only one term
       'only-one-root': 1, // Took only one root
       'only-positive': 1, // Missed the negative solution
+      'opp-adj-swap': 1, // Opposite and adjacent swapped (worked from the other acute angle)
       'order-ops': 1, // Order of operations
+      'other-T': 1, // Gave the other angle at the diagonals’ intersection
+      'other-angle': 1, // Found the other acute angle
       'other-gcf': 1, // Other number has the wrong GCF
       'other-lcm': 1, // Other number has the wrong LCM
       'other-ratio': 1, // Divided the LCM by the given number (forgot the GCF)
@@ -850,23 +1220,37 @@
       'outside-in': 1, // Multiplied a term that is outside the bracket
       'outside-lost': 1, // Dropped the factor in front of the radical
       'overlap': 1, // Composite area: pieces overlap
+      'pace-ft': 1, // Used 1 pace = 1 ft (it is 1 yd = 3 ft)
       'pair-gcf': 1, // A pair with the wrong GCF
       'pair-lcm': 1, // A pair with the wrong LCM
       'pair-missing': 1, // Missed a pair
       'pair-place': 1, // Numbers in the wrong brackets (middle term off)
       'pairs-missing': 1, // Missing ordered pairs
       'par-one-d': 1, // Found only one fourth vertex
+      'part-angle': 1, // Found only part of the angle
       'part-div': 1, // Divided only some terms
+      'part-missing': 1, // Left a piece of the composite solid out
       'partial': 1, // A partial product wrong
       'partial-miss': 1, // Missed a partial product
+      'pct-abs': 1, // Gave the absolute error, not the percent
       'pct-as-coef': 1, // Percent used as the coefficient
+      'pct-ball': 1, // Took the percentage of the wrong volume
+      'pct-base': 1, // Percent error divided by the wrong value
+      'pct-change-only': 1, // Used only the percent change (0.10I, not 1.10I)
+      'pct-decimal': 1, // Percent written as a decimal
+      'pct-direction': 1, // Percent increase/decrease direction
       'pct-original': 1, // Took the percent of the original height every time
+      'pct-same': 1, // Took the area error as the length error
+      'pct-square': 1, // Squared instead of cubed for a volume
       'per-min': 1, // Rate per minute instead of per hour
+      'per-rate': 1, // Rate applied wrongly (per 10 L, per truck, …)
       'per-side': 1, // Perimeter missing a side
       'per-two': 1, // Rate per 2 units instead of per 1
+      'percent-base': 1, // Percent of the wrong whole
       'perim-half': 1, // Used L + W for the perimeter instead of 2(L + W)
       'perim-s': 1, // Added the two unknown sides only once
       'perim-side': 1, // Left a side out of the perimeter
+      'perimeter': 1, // Gave the perimeter for an area
       'perp-nosign': 1, // Took the reciprocal but didn’t change the sign
       'perp-recip-only': 1, // Perpendicular: took only the reciprocal
       'pf-coef': 1, // Prime factors multiply to the wrong number
@@ -889,6 +1273,7 @@
       'power-not-root': 1, // Gave the perfect power instead of its root
       'power-off': 1, // Power of 10 off
       'profit-one': 1, // Left out one of the extra costs
+      'proportion-flip': 1, // Proportion set up with one ratio upside down
       'ps-distribute': 1, // Didn’t multiply the slope into the bracket
       'ps-sign': 1, // Slope–point form: signs of the point not flipped
       'ps-signs': 1, // Slope–point form: added instead of subtracted
@@ -906,22 +1291,35 @@
       'pyr-base': 1, // Used the whole base as the run
       'pyr-diag': 1, // Used the whole diagonal
       'pyr-half': 1, // Used half the side instead of half the diagonal
+      'pyth-add': 1, // Added the squares when finding a leg
+      'pyth-nosq': 1, // Pythagoras: added/subtracted the sides without squaring
+      'pyth-op': 1, // Pythagoras: added the squares instead of subtracting (or the reverse)
+      'pyth-sub': 1, // Subtracted the sides, not their squares
       'q-and-qbar': 1, // Checked both Q and Q̄
       'q-not-mult': 1, // Second term not multiplied through the trinomial
+      'quot-flip': 1, // Divided the ratios the wrong way round
+      'radian': 1, // Calculator in radian mode
       'rate-dy': 1, // Used the change in the output only
       'rate-first': 1, // Used the first charge as the rate
+      'rate-fixed': 1, // Fixed fee and rate mixed up
       'rate-flip': 1, // Rate upside down
       'rate-no-run': 1, // Forgot to divide by the change in distance
       'rate-not-div': 1, // Rate: did not divide by the step in n
       'rate-point': 1, // Divided a coordinate instead of a change
       'rate-step': 1, // Didn’t divide by the step in x
+      'rate-time': 1, // Rate: time factor upside down or wrong
       'rate-total': 1, // Used the change over several days as the daily rate
       'rate-unit': 1, // Rate in the wrong units
       'rate-units': 1, // Rate units upside down
+      'ratio-flip': 1, // Trig ratio upside down
+      'ratio-inverted': 1, // Right ratio, rearranged wrong (multiplied instead of divided, or the reverse)
+      'ratio-swap': 1, // Ratio statement written the wrong way round
       'read-scale': 1, // Ignored the axis scale
       'recip': 1, // Missed the reciprocal (negative exponent)
+      'reciprocal': 1, // Read sin⁻¹ as 1 ÷ sin
       'renorm-dir': 1, // Renormalized in the wrong direction
       'repeated': 1, // Counted a repeated solution twice
+      'rev-direction': 1, // “More / less” reversed in the digit equation
       'rev-order': 1, // Brackets give B² − A² (squares taken in the wrong order)
       'revenue': 1, // Gave the revenue, not the profit
       'reverse': 1, // Subtracted in the wrong order
@@ -929,6 +1327,7 @@
       'right-side': 1, // Right side wrong
       'road-half': 1, // Gave the road to one town only
       'root-extra': 1, // Equation has an extra root
+      'root-index': 1, // Square root instead of cube root
       'root-missing': 1, // Did not take the square root
       'root-of-k': 1, // Gave pk instead of its root
       'root-only': 1, // Took the root but not the power
@@ -943,11 +1342,25 @@
       'rule-through': 1, // Misses a required point
       'rule-xint': 1, // Sketch: wrong number of x-intercepts
       'rule-yint': 1, // Sketch: wrong number of y-intercepts
+      'runs-diff': 1, // Subtracted the two runs when they should be added
+      'sa-backwards-bases': 1, // Working backwards: didn’t take off the bases
+      'sa-circle': 1, // Used πr² (one circle) for a sphere’s surface
       'sa-face': 1, // Left out a pair of faces
       'sa-half': 1, // Surface area without the factor 2
+      'sa-height': 1, // Used the perpendicular height in a surface area (slant height not found)
+      'sa-lateral': 1, // Lateral / curved surface only (bases left out)
+      'sa-no-4': 1, // Solving for r: divided by π instead of 4π
+      'sa-r3': 1, // Cubed r in the surface-area formula
       'scale': 1, // Ignored the grid scale
+      'scale-cube': 1, // Volume factor not cubed
+      'scale-direction': 1, // Map scale used the wrong way
+      'scale-flip': 1, // Scale factor upside down
+      'scale-k': 1, // Used k instead of k² or k³ when scaling
+      'scale-linear': 1, // Scaled a volume by the length factor instead of its square
       'scale-none': 1, // Forgot the map scale
+      'scale-sq': 1, // Area factor not squared
       'scale-squares': 1, // Counted squares instead of units
+      'scale-wrong': 1, // Wrong scale factor
       'sd-middle': 1, // Stray middle term in sum × difference
       'sd-plus': 1, // Sum × difference gave a² + b²
       'second-added': 1, // Added the second bracket instead of subtracting it
@@ -982,6 +1395,8 @@
       'sign-k': 1, // Wrong sign in the model equation
       'sign-rate': 1, // Wrong sign on the rate
       'sign-swap': 1, // Signs in the wrong brackets (pair by product only)
+      'sin-cos-swap': 1, // Sine and cosine swapped
+      'sin-tan-swap': 1, // Sine and tangent swapped
       'six-faces': 1, // Forgot the cube has 6 faces
       'six-power': 1, // Raised a root to the 6th power wrongly
       'sk-endx': 1, // Sketch: domain ends at the wrong value
@@ -1002,8 +1417,10 @@
       'sk-swap': 1, // Sketch: domain and range swapped
       'skip-root': 1, // Skipped the root inside the bracket
       'skipped': 1, // Skipped the next allowed value
+      'slant-for-h': 1, // Used the slant height where the perpendicular height belongs
       'slope-flip': 1, // Run over rise
       'slope-sign': 1, // Slope sign
+      'smaller-angle': 1, // Gave the smaller acute angle
       'smallest-sum': 1, // Used the smallest pair sum, not the largest
       'sol-extra': 1, // Extra solution
       'sol-flip': 1, // Solved ax + b = 0 upside down
@@ -1017,7 +1434,11 @@
       'sort-irr': 1, // Missed an irrational number
       'sort-nr': 1, // Missed a non-real number
       'sort-rat': 1, // Missed a rational number
+      'speed-mult': 1, // Multiplied by the speed instead of dividing
+      'sphere-for-hemi': 1, // Used the whole sphere for a hemisphere
       'sq-coef': 1, // Squared the coefficient too
+      'sq-diam': 1, // Used the diameter as the square’s edge
+      'sq-factor': 1, // Used the squared factor for a volume
       'sq-full': 1, // Other diagonal twice too long
       'sq-last-neg': 1, // Made the last square negative
       'sq-neg': 1, // Squared a negative as negative
@@ -1025,6 +1446,7 @@
       'sq-not-doubled': 1, // Middle term of a square not doubled
       'sq-recip': 1, // Used the reciprocal slope (no sign change) for the other diagonal
       'sq-split': 1, // Squared a binomial without the middle term
+      'sqrt-for-cbrt': 1, // Solving for r: square root instead of cube root
       'square-middle': 1, // Squared a binomial without the middle term
       'square-only': 1, // Squared but did not multiply by the third factor
       'squared': 1, // Took two of each prime instead of one
@@ -1039,6 +1461,7 @@
       'step-wrong': 1, // Wrong amount added per figure
       'stepback': 1, // Stepped back a whole column instead of to x = 0
       'stmt-scale': 1, // Counted grid squares instead of using the scale
+      'stopped-early': 1, // Stopped part-way through the conversion chain
       'story-bend': 1, // Stage drawn with the wrong bend (straight vs curved, steeper vs flatter)
       'story-count': 1, // Wrong number of stages
       'story-cycles': 1, // Cycles not identical
@@ -1054,25 +1477,36 @@
       'story-when': 1, // A stage at the wrong time
       'story-zero': 1, // Graph reaches zero when it shouldn’t (or not when it should)
       'stretch-b': 1, // Wrong set of heights
+      'student-error': 1, // Repeated the student’s error
       'sub-coef': 1, // Subtracted the coefficients instead of dividing
       'sub-exp': 1, // Subtracted exponents when multiplying
       'sub-first': 1, // Subtracted a bracket but changed only its first sign
       'sub-sign': 1, // Sign error solving for the constant
+      'sub-sphere': 1, // Subtracted a whole sphere instead of a hemisphere
+      'sub-swap': 1, // Substituted the point’s coordinates into the wrong letters
       'subtract-first': 1, // Subtracted before multiplying (order of operations)
       'sum-bracket': 1, // Wrong plus bracket in a repeated difference of squares
+      'sum-diff': 1, // Sum written as a difference
       'sum-own': 1, // Didn’t add own estimates
       'sum-sq': 1, // Added instead of squaring
+      'swap-change': 1, // Doubled/halved the wrong dimension
       'swap-const': 1, // Constants in the wrong brackets
+      'swap-roll': 1, // Mixed up which side becomes the circumference
       'swapped-bounds': 1, // Smaller and larger swapped
+      'sys-graph-missing': 1, // Graph of a system: only one line drawn
+      'sys-graph-one': 1, // Graph of a system: one line wrong
       'tab-no-fee': 1, // Left out the flat fee
       'tab-rate': 1, // Multiplied the fee too
       'table-x': 1, // Plotted against 0, 1, 2, … instead of the table’s values
       'tails': 1, // Repeating tails don’t cancel
+      'tan-hyp': 1, // Used tan with the hypotenuse
       'tap-off-graph': 1, // Tapped a point that is not on the graph
       'tb-gap': 1, // Did not split a gap of several steps
       'tb-sign': 1, // Table completed in the wrong direction
       'tb-step': 1, // Treated a step of 2 in x as a step of 1
       'terms-count': 1, // Wrong number of terms left in the bracket
+      'thick-none': 1, // Ignored the wall thickness (outer dimensions)
+      'third-flip': 1, // Used ⅓ the wrong way (divided instead of multiplying, or vice versa)
       'third-partial': 1, // Third bracket only partly distributed
       'tile-all-pos': 1, // Rectangle: no negative tiles used
       'tile-away': 1, // Took away the wrong tiles
@@ -1086,12 +1520,48 @@
       'tile-signs': 1, // Rectangle: signs switched on both sides
       'tile-x': 1, // Rectangle: wrong x-tiles
       'times-itself': 1, // Multiplied by the number itself (not smallest)
+      'times-more': 1, // “Times” written as more than
+      'tin-as-sphere': 1, // Used the sphere formula for the cylinder
       'took-root-not': 1, // Didn’t take the root
       'top-only': 1, // Applied the outside exponent to only part of the bracket
       'tri-ab': 1, // Rise–run triangle for AB missing
       'tri-ad': 1, // Rise–run triangle for AD missing
       'tri-half': 1, // Triangle area: forgot the ½
       'tri-hyp': 1, // Perimeter: left out the hypotenuse
+      'trig-base-angle': 1, // Gave a base angle instead of the apex angle
+      'trig-bearing-angle': 1, // Gave an angle in the triangle, not the bearing
+      'trig-bearing-swap': 1, // North/south and east/west parts swapped
+      'trig-cofunction': 1, // Cofunction mix-up (gave the same-angle ratio)
+      'trig-half': 1, // Didn’t halve (or didn’t double) at an isosceles/symmetric figure
+      'trig-inv': 1, // Multiplied instead of dividing by the ratio (or the reverse)
+      'trig-inverted': 1, // Multiplied instead of dividing (or the reverse) when solving the ratio
+      'trig-no-inv': 1, // Gave the ratio, not the angle (no inverse key)
+      'trig-one-piece': 1, // Gave only one piece of a combined angle
+      'trig-other-angle': 1, // Gave the other acute angle
+      'trig-pyth': 1, // Pythagorean theorem: added instead of subtracted (or the reverse)
+      'trig-rad': 1, // Calculator in radian mode
+      'trig-ratio': 1, // Used the wrong trig ratio
+      'trig-sum-diff': 1, // Added two distances instead of subtracting (or the reverse)
+      'trig-wrong-side': 1, // Used the wrong side (an edge instead of the diagonal)
+      'tv-angle-div': 1, // Divided the angle instead of the ratio
+      'tv-bracket-back': 1, // Cosine hunt run the wrong way
+      'tv-bracket-off': 1, // Bracketing degrees on the wrong side
+      'tv-cof-180': 1, // Cofunction: used 180° − x instead of 90° − x
+      'tv-cof-equal': 1, // Set the two angles equal instead of complementary
+      'tv-cof-plus': 1, // Cofunction: used 90° + x
+      'tv-cof-same': 1, // Cofunction: kept the same angle instead of 90° − x
+      'tv-hyp': 1, // Used the hypotenuse in the tangent
+      'tv-inverse': 1, // Used the inverse key instead of the ratio
+      'tv-negative': 1, // Negative ratio for an acute angle
+      'tv-other-angle': 1, // Used the ratio of the other acute angle
+      'tv-over-1': 1, // Sine or cosine of an acute angle above 1
+      'tv-radian': 1, // Calculator in radian mode
+      'tv-ratio-for-angle': 1, // Used the ratio key instead of the inverse (sin instead of sin⁻¹)
+      'tv-ratio-swap': 1, // Opposite and adjacent swapped
+      'tv-reciprocal': 1, // Read ⁻¹ as “one over” (reciprocal)
+      'tv-sum': 1, // Added the given angles (missed the cofunction)
+      'tv-wrong-dir': 1, // Increasing and decreasing mixed up
+      'tv-wrong-fn': 1, // Used the wrong ratio key (sin / cos / tan)
       'two-dims': 1, // Multiplied only two of the three dimensions
       'u72-b-given': 1, // Took b from the wrong line
       'u72-b-solve': 1, // Sign slip solving for b
@@ -1110,16 +1580,85 @@
       'u72-perp-nosign': 1, // Perpendicular: flipped but kept the sign
       'u72-pt-solve': 1, // Error solving for the coordinate
       'u72-range-all': 1, // Range of a horizontal line as all reals
+      'u8-c-mult': 1, // Multiplied the constant instead of dividing
+      'u8-clear-frac': 1, // Cleared fractions in only some terms
+      'u8-cost-only': 1, // Profit: used cost only
+      'u8-est-far': 1, // Estimate too far from the crossing
+      'u8-fee-rate': 1, // Fixed fee and rate swapped
+      'u8-gr-line': 1, // Graph: a line wrong
+      'u8-gr-slope': 1, // Graph: right intercept, wrong slope
+      'u8-k-div': 1, // Divided by the multiplier instead of multiplying
+      'u8-k-flip': 1, // Ratio of coefficients upside down
+      'u8-k-xcoef': 1, // Used the x-coefficient for k
+      'u8-k-ycoef': 1, // Matched only the y-coefficients
+      'u8-mult': 1, // Wrong multiplier
+      'u8-no-fee': 1, // Fixed fee left out
+      'u8-price-swap': 1, // Prices matched to the wrong tickets
+      'u8-rev-only': 1, // Profit: used revenue only
+      'u8-sys-notpt': 1, // Line misses the required point
+      'u8-sys-sign': 1, // Slope sign from the given equation
+      'u8-total-n': 1, // Used the number of tickets as the money total
+      'u8l6-add-both': 1, // Forgot the number added to both
+      'u8l6-backwards': 1, // Relationship written backwards
+      'u8l6-clear-frac': 1, // Fraction not cleared
+      'u8l6-clear-one-side': 1, // Fractions cleared on one side only
+      'u8l6-coef-swap': 1, // Model: mass multiplied the wrong constant
+      'u8l6-const': 1, // Constant condition missed (infinitely many)
+      'u8l6-cross': 1, // Cross-multiplied the wrong way
+      'u8l6-distribute': 1, // Bracket multiplied into the first term only
+      'u8l6-elim': 1, // Elimination step wrong
+      'u8l6-elim-scale': 1, // Didn’t scale before eliminating
+      'u8l6-elim-sign': 1, // Subtracted instead of added (or vice versa)
+      'u8l6-equiv-frac': 1, // Gave an equivalent fraction (not the actual one)
+      'u8l6-flat-sum': 1, // Added the flat charges instead of subtracting
+      'u8l6-isolate': 1, // Isolating a variable changed the line
+      'u8l6-k-bad': 1, // Included a k that gives a non-whole x
+      'u8l6-k-int': 1, // k not an integer
+      'u8l6-k-negx': 1, // Included a k that gives negative x
+      'u8l6-k-x1': 1, // k for x = 1 given for “no solution”
+      'u8l6-line-wrong': 1, // Graph: one line wrong
+      'u8l6-mix-decimal': 1, // Percent not written as a decimal
+      'u8l6-mix-percent': 1, // Mixture: percent used as the amount
+      'u8l6-mix-total': 1, // Wrong total in the volume/amount equation
+      'u8l6-perimeter': 1, // Perimeter: sides not all counted
+      'u8l6-price-swap': 1, // Prices on the wrong variables
+      'u8l6-rate-flat': 1, // Flat charge and rate swapped in the equation
+      'u8l6-rate-sum': 1, // Added the rates instead of subtracting
+      'u8l6-rate-swap': 1, // Rates matched to the wrong item
+      'u8l6-rhs-swap': 1, // Right-hand sides swapped (count vs money)
+      'u8l6-sub-swap': 1, // Model: L and m substituted in the wrong places
+      'u8l6-time-speed': 1, // Used a time where a speed is needed
+      'u8l6-weights': 1, // Final mark not a weighted sum
+      'u8l6-weights-swap': 1, // Weights swapped
+      'u8l6-with-against': 1, // With/against: speeds added or subtracted the wrong way
       'unit-conv': 1, // Unit conversion slip
       'units-km': 1, // Did not convert km to m
+      'units-mix': 1, // Mixed cents and dollars in one equation
+      'units-mixed': 1, // Multiplied lengths in different units
       'unreduced': 1, // Didn’t reduce before b − a
+      'used-assumed': 1, // Used the assumed referent where the true one belongs
       'used-endpoint': 1, // Used an endpoint instead of the midpoint
+      'used-sin': 1, // Used sin with a horizontal run
+      'used-true': 1, // Used the true referent where the assumed one belongs
+      'used-whole': 1, // Used the whole amount instead of the part invested
+      'v-43-flip': 1, // Used 3/4 instead of 4/3
+      'v-base-only': 1, // Base area only — didn’t multiply by the height
+      'v-no-3': 1, // Multiplied by 4 (or 2) but didn’t divide by 3
+      'v-no-43': 1, // Forgot the 4/3 (or 2/3) in the volume
+      'v-r2': 1, // Squared r instead of cubing it (volume)
+      'v-used-sa': 1, // Mixed up surface area and volume
+      'value-swap': 1, // Values attached to the wrong items
       'var-exp': 1, // Didn’t divide the variable exponent by the index
       'var-first': 1, // Variable of the monomial only on the first term
       'var-no-power': 1, // Didn’t multiply the variable exponent by the index
+      'vern-aligned': 1, // Vernier: coarse reading taken where the lines meet, not at the index
+      'vern-tenths': 1, // Vernier: used 0.1 or 0.01 mm per division instead of 0.05
+      'vol-slant': 1, // Used the slant height in a volume
       'white-pos': 1, // Counted white (negative) tiles as positive
       'white-skip': 1, // Ignored the white (negative) tiles
+      'whole-base': 1, // Used the whole side instead of the difference
       'whole-only': 1, // Used the whole rectangle (no piece removed)
+      'whole-peak': 1, // Gave the whole peak angle, not the half
       'width-circle': 1, // Treated the ring as a circle of radius t
       'win-big': 1, // Window far too large
       'win-cut': 1, // Window cuts off a feature that must show
@@ -1130,7 +1669,13 @@
       'win-edge': 1, // Feature exactly on the edge of the window
       'win-huge': 1, // Window far too large
       'win-miss': 1, // Window misses an intercept
+      'wire-top': 1, // Sketch: wire not attached to the top of the pole
+      'wording-base': 1, // Counted a base the wording excludes
+      'wrong-height': 1, // Used the wrong dimension as the height
       'wrong-power': 1, // Took out a perfect square (or wrong power) instead of the index’s power
+      'wrong-ratio': 1, // Used the wrong trig ratio
+      'wrong-root': 1, // Square root / cube root mix-up
+      'wrong-triangle': 1, // Used the wrong triangle
       'x-one': 1, // Forgot the factor x = x¹
       'xint-flip': 1, // x-intercept: divided the wrong way
       'xint-recip': 1, // x-intercept: multiplied by the slope instead of its reciprocal
