@@ -99,8 +99,10 @@
       if (!rw.also) return c;   // rw.also: other values whose rounding is also right (e.g. from a value the prompt shows rounded)
       return function (resp) { var p = HW.parse.number(resp); if (p.ok && rw.also.some(function (a) { return Math.abs(p.value - rnd(a, rw.dp)) < 1e-9; })) return ok(); return c(resp); };
     });
-    var keys = rows.map(function (rw) { return rw.key != null ? String(rw.key) : rw.exact ? plain(rw.x) : kx(rw.x, rw.dp); });
-    var ans = rows.map(function (rw, i) { return rw.label + ' ' + (rw.show || t(rw.key != null ? F(String(rw.key)) : rw.exact ? num(rw.x) : fx(rw.x, rw.dp))) + (rw.after ? ' ' + rw.after : ''); }).join('<br>');
+    // an 'exact' row shows its exact value only when that value ends within dp decimals (else the rounded one: 4.03, not 4.03333333333)
+    var ends = function (rw) { return rw.exact && Math.abs(rw.x * Math.pow(10, rw.dp) - Math.round(rw.x * Math.pow(10, rw.dp))) < 1e-7; };
+    var keys = rows.map(function (rw) { return rw.key != null ? String(rw.key) : ends(rw) ? plain(rw.x) : kx(rw.x, rw.dp); });
+    var ans = rows.map(function (rw, i) { return rw.label + ' ' + (rw.show || t(rw.key != null ? F(String(rw.key)) : ends(rw) ? num(rw.x) : fx(rw.x, rw.dp))) + (rw.after ? ' ' + rw.after : ''); }).join('<br>');
     var p = B.fields(prompt, fl, checks, keys, ans, sol, hints, text);
     // wrong versions for the tests: each row's first alternative in turn
     var bad = [];
@@ -849,7 +851,7 @@
               'Every later part uses ' + t('r') + ' (the volume squares it), so an early rounding error is magnified and copied forward. Carry full precision; round once at the end.', ['What happens to a small error in ' + t('r') + ' when ' + t('r') + ' is squared?'], 'why not round r');
           } },
           { id: 'e2b', level: 'PRG', make: function (r, s) {
-            return near('Determine the volume of salt in the pile, to the nearest tenth of a cubic metre. (The radius is ' + t('r=\\dfrac{' + dec(s.C) + '}{2\\pi}\\approx ' + dots(s.r, 4)) + ' m.)', s.V, 1, 'm³', [
+            return near('Determine the volume of salt in the pile, to the nearest tenth of a cubic metre. (The radius is ' + t('r=\\dfrac{' + dec(s.C) + '}{2\\pi}\\approx ' + dots(s.r, 6)) + ' m.)', s.V, 1, 'm³', [
               { v: 3 * s.V, code: 'no-third', hint: 'A cone holds ' + t('\\tfrac13') + ' of the cylinder: ' + t('V=\\tfrac13\\pi r^{2}h') + '.' },
               { v: 4 * s.V, code: 'diam-radius', hint: 'You used the diameter. ' + t('r=C\\div 2\\pi') + '.' },
               { v: PI * rnd(s.r, 1) * rnd(s.r, 1) * s.h / 3, code: 'early-round', hint: 'Use the unrounded radius — rounding it early has changed the answer.' },
@@ -865,9 +867,9 @@
               t('1\\text{ ft}^{3}=(0.3048)^{3}\\text{ m}^{3}=0.028\\,316\\,846\\ldots\\text{ m}^{3}') + ', so ' + t('1\\text{ m}^{3}=35.314\\,666\\ldots\\text{ ft}^{3}') + '.<br>' + t(dots(s.V, 4) + '\\times 35.314\\,666\\ldots=' + dots(ft, 3)) + ' ≈ ' + t(fx(ft, 0) + '\\text{ ft}^{3}') + '.', ['Cube the length factor: ' + t('1\\text{ m}=\\tfrac{1}{0.3048}\\text{ ft}') + '.'], 'm³ to ft³');
           } },
           { id: 'e2d', level: 'PRG', make: function (r, s) {
-            return fields('The pile (radius ' + t('r\\approx ' + dots(s.r, 4)) + ' m, perpendicular height ' + t(dec(s.h)) + ' m) is to be covered with tarpaulin. Find the slant height ' + t('s') + ' (nearest hundredth), then the <b>lateral</b> (curved) area of the cone (nearest tenth). Tarps come in ' + t('6.0\\text{ m}\\times 8.0\\text{ m}') + ' sheets; how many are needed?', [
-              { label: t('s='), after: 'm', x: s.s, dp: 2, alts: [{ v: Math.sqrt(Math.abs(s.h * s.h - s.r * s.r)), code: 'formula', hint: 'The slant height is the hypotenuse: ' + t('s^{2}=h^{2}+r^{2}') + '.' }, { v: s.h + s.r, code: 'formula', hint: 'Use Pythagoras.' }] },
-              { label: 'Lateral area:', after: 'm²', x: s.Lat, dp: 1, alts: [{ v: PI * s.r * s.h, code: 'h-for-slant', hint: 'The curved surface uses the slant height: ' + t('\\pi r s') + '.' }, { v: s.Lat + PI * s.r * s.r, code: 'extra-face', hint: 'Only the curved surface is covered — the ground is the base.' }] },
+            return fields('The pile (radius ' + t('r\\approx ' + dots(s.r, 6)) + ' m, perpendicular height ' + t(dec(s.h)) + ' m) is to be covered with tarpaulin. Find the slant height ' + t('s') + ' (nearest hundredth), then the <b>lateral</b> (curved) area of the cone (nearest tenth). Tarps come in ' + t('6.0\\text{ m}\\times 8.0\\text{ m}') + ' sheets; how many are needed?', [
+              { label: t('s='), after: 'm', x: s.s, dp: 2, also: [Math.hypot(rnd(s.r, 6), s.h)], alts: [{ v: Math.sqrt(Math.abs(s.h * s.h - s.r * s.r)), code: 'formula', hint: 'The slant height is the hypotenuse: ' + t('s^{2}=h^{2}+r^{2}') + '.' }, { v: s.h + s.r, code: 'formula', hint: 'Use Pythagoras.' }] },
+              { label: 'Lateral area:', after: 'm²', x: s.Lat, dp: 1, also: [PI * s.r * rnd(s.s, 2), PI * rnd(s.r, 6) * rnd(s.s, 2)], alts: [{ v: PI * s.r * s.h, code: 'h-for-slant', hint: 'The curved surface uses the slant height: ' + t('\\pi r s') + '.' }, { v: s.Lat + PI * s.r * s.r, code: 'extra-face', hint: 'Only the curved surface is covered — the ground is the base.' }] },
               { label: 'Tarps:', after: '', key: s.n, check: countCheck(s.n, s.q, 'up') }],
               t('s=\\sqrt{h^{2}+r^{2}}=\\sqrt{' + dec(s.h) + '^{2}+' + dots(s.r, 4) + '^{2}}=' + dots(s.s, 4)) + ' m.<br>Lateral area ' + t('=\\pi r s=' + dots(s.Lat, 4)) + ' ≈ ' + t(fx(s.Lat, 1) + '\\text{ m}^{2}') + '.<br>One tarp is ' + t('48\\text{ m}^{2}') + '; ' + t(dots(s.Lat, 3) + '\\div 48=' + dots(s.q, 3)) + ', so <b>' + s.n + ' tarps</b>.', ['Surface area takes the slant height; volume took the perpendicular height.', 'Round the number of tarps <b>up</b>.'], 'salt pile tarp');
           } },
@@ -983,13 +985,13 @@
               'Estimate: ' + t(s.k + '\\times ' + s.S + '=' + s.est + '\\text{ cm}') + '.<br>Tape: ' + t('C=' + s.C.toFixed(2) + '\\text{ m}=' + num(s.C * 100) + '\\text{ cm}') + ', ' + t('d=\\dfrac{C}{\\pi}=' + dots(s.dt, 4)) + ' ≈ ' + t(fx(s.dt, 2) + '\\text{ cm}') + '.', ['Change the circumference to cm, then ' + t('d=C\\div\\pi') + '.'], 'barrel diameters');
           } },
           { id: 'e5b', level: 'PRG', outcome: 'M1', make: function (r, s) {
-            return near('Kavi’s estimated diameter is ' + t(s.est + '\\text{ cm}') + '; the tape gives ' + t(dots(s.dt, 4) + '\\text{ cm}') + '. Find the <b>percent error</b> of the estimate, to the nearest tenth of a percent, taking the tape’s value as the true one.', s.pe, 1, '%', [
+            return near('Kavi’s estimated diameter is ' + t(s.est + '\\text{ cm}') + '; the tape gives ' + t(dots(s.dt, 6) + '\\text{ cm}') + '. Find the <b>percent error</b> of the estimate, to the nearest tenth of a percent, taking the tape’s value as the true one.', s.pe, 1, '%', [
               { v: (s.est - s.dt) / s.est * 100, code: 'pct-base', hint: 'Divide by the <b>true</b> value (the tape’s), not the estimate.' }],
               t('\\dfrac{|' + s.est + '-' + dots(s.dt, 4) + '|}{' + dots(s.dt, 4) + '}\\times 100=' + dots(s.pe, 4)) + ' ≈ ' + t(fx(s.pe, 1) + '\\%') + ' (an over-estimate).', ['Percent error = |estimate − true| ÷ true × 100.'], 'percent error diameter',
               { pre: function (v) { return Math.abs(v - s.pe / 100) < 0.0006 ? form('not-pct', 'Multiply by 100 to give a percent.') : null; } });
           } },
           { id: 'e5c', level: 'PRG', make: function (r, s) {
-            return fields('The barrel’s inside depth is ' + t(s.dep + '.0\\text{ cm}') + '. Find its capacity in litres, to the nearest tenth, from Kavi’s estimated diameter (' + t(s.est) + ' cm) and then from the tape’s diameter (' + t(dots(s.dt, 4)) + ' cm).', [
+            return fields('The barrel’s inside depth is ' + t(s.dep + '.0\\text{ cm}') + '. Find its capacity in litres, to the nearest tenth, from Kavi’s estimated diameter (' + t(s.est) + ' cm) and then from the tape’s diameter (' + t(dots(s.dt, 6)) + ' cm).', [
               { label: 'From the estimate:', after: 'L', x: s.Ve, dp: 1, alts: [{ v: 4 * s.Ve, code: 'diam-radius', hint: 'Halve the diameter: ' + t('r=' + num(s.est / 2)) + ' cm.' }, { v: s.Ve * 10, code: 'conv-step', hint: t('1\\text{ L}=1000\\text{ cm}^{3}') + '.' }] },
               { label: 'From the tape:', after: 'L', x: s.Vt, dp: 1, alts: [{ v: 4 * s.Vt, code: 'diam-radius', hint: 'Halve the diameter.' }, { v: s.Vt * 10, code: 'conv-step', hint: t('1\\text{ L}=1000\\text{ cm}^{3}') + '.' }] }],
               'Estimate: ' + t('\\pi(' + num(s.est / 2) + ')^{2}(' + s.dep + ')=' + dots(s.Ve * 1000, 2) + '\\text{ cm}^{3}') + ' ≈ ' + t(fx(s.Ve, 1) + '\\text{ L}') + '.<br>Tape: ' + t('r=' + dots(s.dt / 2, 4)) + ', ' + t('\\pi r^{2}(' + s.dep + ')=' + dots(s.Vt * 1000, 2) + '\\text{ cm}^{3}') + ' ≈ ' + t(fx(s.Vt, 1) + '\\text{ L}') + '.', ['Cylinder: ' + t('V=\\pi r^{2}h') + ' in cm³, then ÷ 1000 for litres.'], 'barrel capacities');
@@ -1121,7 +1123,7 @@
             var lean = (s.Bs - s.T) / 2;
             return fields('Plywood formwork lines the four sloping sides only. Find the slant height of one trapezoidal face (to the nearest thousandth of a metre) and then the formwork area, to the nearest hundredth of a square metre.', [
               { label: 'Slant height:', after: 'm', x: s.sl, dp: 3, alts: [{ v: s.h, code: 'h-for-slant', hint: 'The face leans out by ' + t(num(lean)) + ' m, so its slant height is longer than ' + t(s.h.toFixed(2)) + ' m: Pythagoras.' }, { v: Math.hypot(s.h, s.Bs - s.T), code: 'formula', hint: 'Each side leans out by half the difference: ' + t('\\tfrac{' + s.Bs.toFixed(2) + '-' + s.T.toFixed(2) + '}{2}=' + num(lean)) + '.' }] },
-              { label: 'Formwork:', after: 'm²', x: s.form, dp: 2, alts: [{ v: 2 * (s.Bs + s.T) * s.h, code: 'h-for-slant', hint: 'Use the slant height of the face, not the vertical height.' }, { v: 4 * (s.Bs + s.T) * s.sl, code: 'no-half', hint: 'A trapezoid is ' + t('\\tfrac12(a+b)h') + '.' }, { v: (s.Bs + s.T) / 2 * s.sl, code: 'missing-face', hint: 'There are <b>four</b> sloping faces.' }] }],
+              { label: 'Formwork:', after: 'm²', x: s.form, dp: 2, also: [2 * (s.Bs + s.T) * rnd(s.sl, 3)], alts: [{ v: 2 * (s.Bs + s.T) * s.h, code: 'h-for-slant', hint: 'Use the slant height of the face, not the vertical height.' }, { v: 4 * (s.Bs + s.T) * s.sl, code: 'no-half', hint: 'A trapezoid is ' + t('\\tfrac12(a+b)h') + '.' }, { v: (s.Bs + s.T) / 2 * s.sl, code: 'missing-face', hint: 'There are <b>four</b> sloping faces.' }] }],
               'Each face leans out ' + t('\\tfrac{' + s.Bs.toFixed(2) + '-' + s.T.toFixed(2) + '}{2}=' + num(lean)) + ' m: ' + t('s=\\sqrt{' + num(lean) + '^{2}+' + s.h.toFixed(2) + '^{2}}=' + dots(s.sl, 5)) + ' m.<br>One trapezoid ' + t('\\tfrac12(' + s.Bs.toFixed(2) + '+' + s.T.toFixed(2) + ')(' + dots(s.sl, 5) + ')') + '; four of them ' + t('=' + dots(s.form, 4)) + ' ≈ ' + t(fx(s.form, 2) + '\\text{ m}^{2}') + '.', ['The slant height of a face is the hypotenuse of a right triangle: the vertical height and how far the face leans out.'], 'frustum formwork');
           } }] },
       /* ======================= Part D — Working backwards ======================= */
@@ -1140,7 +1142,7 @@
           var Acm = A * 10000, sl = Acm / (PI * rc), h = Math.sqrt(sl * sl - rc * rc);
           return fields('<span style="font-variant:small-caps">Cone from lateral area.</span> A cone’s curved surface is ' + t(A.toFixed(2) + '\\text{ m}^{2}') + ' and its base radius is ' + t(rc + '.0\\text{ cm}') + '. Find the slant height, then the perpendicular height, each to the nearest tenth of a centimetre.', [
             { label: 'Slant height ' + t('s='), after: 'cm', x: sl, dp: 1, alts: [{ v: A * 100 / (PI * rc), code: 'lin-factor', hint: 'Area needs the squared factor: ' + t('1\\text{ m}^{2}=100^{2}\\text{ cm}^{2}') + '.' }, { v: Acm / (2 * PI * rc), code: 'formula', hint: 'The cone’s curved surface is ' + t('\\pi r s') + ' (no 2).' }, { v: (Acm - PI * rc * rc) / (PI * rc), code: 'formula', hint: 'Only the curved surface is given — no base.' }] },
-            { label: 'Height ' + t('h='), after: 'cm', x: h, dp: 1, alts: [{ v: Math.hypot(sl, rc), code: 'formula', hint: 'The slant height is the hypotenuse: ' + t('h=\\sqrt{s^{2}-r^{2}}') + '.' }] }],
+            { label: 'Height ' + t('h='), after: 'cm', x: h, dp: 1, also: [Math.sqrt(rnd(sl, 1) * rnd(sl, 1) - rc * rc)], alts: [{ v: Math.hypot(sl, rc), code: 'formula', hint: 'The slant height is the hypotenuse: ' + t('h=\\sqrt{s^{2}-r^{2}}') + '.' }] }],
             t(A.toFixed(2) + '\\text{ m}^{2}=' + A.toFixed(2) + '\\times 100^{2}=' + F(Acm) + '\\text{ cm}^{2}') + '.<br>' + t('s=\\dfrac{' + F(Acm) + '}{\\pi(' + rc + ')}=' + dots(sl, 4)) + ' cm (slant); ' + t('h=\\sqrt{s^{2}-r^{2}}=' + dots(h, 4)) + ' cm (perpendicular).', ['Change m² to cm² (×100²). Then ' + t('\\pi r s=A') + ' gives ' + t('s') + ', and Pythagoras gives ' + t('h') + '.'], 'cone from lateral area');
         } },
         { id: 'e9c', level: 'PRG', make: function (r) {
@@ -1309,13 +1311,13 @@
             var f = s.stu / s.SAm;
             return fields('Redo it entirely in centimetres (' + t('r=' + s.rc) + ' cm, ' + t('h=' + num(s.h * 100)) + ' cm), giving the area in cm² to the nearest hundredth. Then state the factor by which the student’s answer (' + t(fx(s.stu, 1) + '\\text{ m}^{2}') + ') is too large, to the nearest hundredth.', [
               { label: t('SA='), after: 'cm²', x: s.SAc, dp: 2, alts: [{ v: s.SAm * 100, code: 'lin-factor', hint: 'Work in cm from the start: ' + t('h=' + num(s.h * 100)) + ' cm.' }] },
-              { label: 'Factor:', after: '', x: f, dp: 2, alts: [{ v: 1 / f, code: 'ratio-flip', hint: 'Student’s answer ÷ correct answer.' }] }],
+              { label: 'Factor:', after: '', x: f, dp: 2, also: [rnd(s.stu, 1) / s.SAm], alts: [{ v: 1 / f, code: 'ratio-flip', hint: 'Student’s answer ÷ correct answer.' }] }],
               t('SA=2\\pi(' + s.rc + ')^{2}+2\\pi(' + s.rc + ')(' + num(s.h * 100) + ')=' + num(2 * s.rc * s.rc + 2 * s.rc * s.h * 100) + '\\pi=' + dots(s.SAc, 4)) + ' cm²; ' + t('\\div 100^{2}=' + dots(s.SAm, 5)) + ' m² — the same. Student ÷ correct ' + t('=\\dfrac{' + dots(s.stu, 3) + '}{' + dots(s.SAm, 4) + '}=' + dots(f, 4)) + ' ≈ ' + fx(f, 2) + ' times too large.', ['Every length in cm; then divide by ' + t('100^{2}') + ' to compare.'], 'cylinder SA in cm');
           } }] },
       { num: '16', stem: '<b>Two heights, and one flat circle.</b> Find the mistake in each report and correct it.', parts: [
         { id: 'e16a', level: 'PRG', make: function (r) {
           var tr = r.chance(0.25) ? [9, 12, 15] : r.pick([[9, 12, 15], [6, 8, 10], [5, 12, 13], [8, 15, 17], [12, 9, 15], [7, 24, 25]]), rr = tr[0], h = tr[1], sl = tr[2], V = PI * rr * rr * h / 3, W = PI * rr * rr * sl / 3;
-          return fields('A cone has base radius ' + t(rr + '.0\\text{ cm}') + ' and slant height ' + t(sl + '.0\\text{ cm}') + '. A student writes ' + t('V=\\tfrac13\\pi(' + rr + '.0)^{2}(' + sl + '.0)=' + fx(W, 1) + '\\text{ cm}^{3}') + '. Give the correct volume to the nearest tenth, and the exact factor (student ÷ correct) by which the student is out, as a decimal.', [
+          return fields('A cone has base radius ' + t(rr + '.0\\text{ cm}') + ' and slant height ' + t(sl + '.0\\text{ cm}') + '. A student writes ' + t('V=\\tfrac13\\pi(' + rr + '.0)^{2}(' + sl + '.0)=' + fx(W, 1) + '\\text{ cm}^{3}') + '. Give the correct volume to the nearest tenth, and the exact factor (student ÷ correct) by which the student is out, as a decimal (to four decimal places if it does not terminate).', [
             { label: t('V='), after: 'cm³', x: V, dp: 1, alts: [{ v: W, code: 'slant-for-h', hint: 'That’s the student’s value: it uses the slant height. Find the perpendicular height first: ' + t('h=\\sqrt{s^{2}-r^{2}}') + '.' }] },
             { label: 'Factor:', after: '', x: sl / h, dp: 4, exact: true, alts: [{ v: h / sl, code: 'ratio-flip', hint: 'Student ÷ correct — it is more than 1.' }] }],
             'The volume needs the <b>perpendicular</b> height: ' + t('h=\\sqrt{' + sl + '^{2}-' + rr + '^{2}}=' + h) + ' cm. ' + t('V=\\tfrac13\\pi(' + rr + ')^{2}(' + h + ')=' + num(rr * rr * h / 3) + '\\pi=' + dots(V, 3)) + ' ≈ ' + t(fx(V, 1)) + ' cm³.<br>Factor ' + t('=\\dfrac{' + sl + '}{' + h + '}=' + dec(sl / h)) + ' (V is proportional to the height substituted).', ['Which height does a cone’s volume use?'], 'cone volume slant error');
@@ -1351,10 +1353,10 @@
               'A: ' + t('2\\pi r^{3}=' + s.V + '\\Rightarrow r=\\sqrt[3]{\\tfrac{' + s.V + '}{2\\pi}}=' + dots(s.rA, 5)) + ', ' + t('h=' + dots(s.hA, 4)) + '.<br>B: ' + t('a=\\sqrt[3]{' + s.V + '}=' + dots(s.a, 5)) + '.<br>C: ' + t('r=\\sqrt[3]{\\tfrac{3(' + s.V + ')}{4\\pi}}=' + dots(s.rC, 5)) + '.', ['Write each volume formula, substitute ' + t('h=2r') + ' for A, and solve for the length.'], 'container dimensions');
           } },
           { id: 'e17b', level: 'ADV', make: function (r, s) {
-            return fields('Using the unrounded dimensions (A: ' + t('r\\approx ' + dots(s.rA, 4)) + ', ' + t('h=2r') + '; B: edge ' + t(dots(s.a, 4)) + '; C: ' + t('r\\approx ' + dots(s.rC, 4)) + '), find each surface area, to the nearest hundredth of a square centimetre.', [
-              { label: 'A:', after: 'cm²', x: s.SA, dp: 2, alts: [{ v: 2 * PI * s.rA * s.hA, code: 'missing-face', hint: 'Closed: include both ends, ' + t('2\\pi r^{2}') + '.' }, { v: 4 * PI * s.rA * s.rA, code: 'formula', hint: t('2\\pi r^{2}+2\\pi r(2r)=6\\pi r^{2}') + '.' }] },
-              { label: 'B:', after: 'cm²', x: s.SB, dp: 2, alts: [{ v: 4 * s.a * s.a, code: 'missing-face', hint: 'A cube has 6 faces.' }] },
-              { label: 'C:', after: 'cm²', x: s.SC, dp: 2, alts: [{ v: 2 * PI * s.rC * s.rC, code: 'formula', hint: 'Sphere: ' + t('4\\pi r^{2}') + '.' }] }],
+            return fields('Using the unrounded dimensions (A: ' + t('r\\approx ' + dots(s.rA, 6)) + ', ' + t('h=2r') + '; B: edge ' + t(dots(s.a, 6)) + '; C: ' + t('r\\approx ' + dots(s.rC, 6)) + '), find each surface area, to the nearest hundredth of a square centimetre.', [
+              { label: 'A:', after: 'cm²', x: s.SA, dp: 2, also: [6 * PI * Math.pow(rnd(s.rA, 6), 2)], alts: [{ v: 2 * PI * s.rA * s.hA, code: 'missing-face', hint: 'Closed: include both ends, ' + t('2\\pi r^{2}') + '.' }, { v: 4 * PI * s.rA * s.rA, code: 'formula', hint: t('2\\pi r^{2}+2\\pi r(2r)=6\\pi r^{2}') + '.' }] },
+              { label: 'B:', after: 'cm²', x: s.SB, dp: 2, also: [6 * Math.pow(rnd(s.a, 6), 2)], alts: [{ v: 4 * s.a * s.a, code: 'missing-face', hint: 'A cube has 6 faces.' }] },
+              { label: 'C:', after: 'cm²', x: s.SC, dp: 2, also: [4 * PI * Math.pow(rnd(s.rC, 6), 2)], alts: [{ v: 2 * PI * s.rC * s.rC, code: 'formula', hint: 'Sphere: ' + t('4\\pi r^{2}') + '.' }] }],
               'A: ' + t('6\\pi r^{2}=' + dots(s.SA, 3)) + '. B: ' + t('6a^{2}=' + dots(s.SB, 3)) + '. C: ' + t('4\\pi r^{2}=' + dots(s.SC, 3)) + '.', ['A closed cylinder with ' + t('h=2r') + ' has ' + t('SA=6\\pi r^{2}') + '.'], 'container surface areas');
           } },
           { id: 'e17b2', sub: 'b-ii', level: 'EMG', make: function (r, s) {

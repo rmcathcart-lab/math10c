@@ -363,7 +363,7 @@
             return { prompt: 'Solve the system by substitution to determine the values of ' + t('p') + ' and ' + t('q') + '.', input: { type: 'fields', fields: [{ label: t('p=') }, { label: t('q=') }] }, check: chk, key: [String(sh.p), String(sh.q)],
               answer: t('p=' + sh.p + ',\\ q=' + sh.q), solution: res.html, hints: ['First write one equation for each point: replace ' + t('x') + ' and ' + t('y') + ' by its coordinates.', 'Then isolate ' + t('p') + ' (or ' + t('q') + ') in one equation and substitute into the other.'], text: 'p and q', bad: [[String(sh.q), String(sh.p)]] };
           } },
-          { id: '4c', sub: 'b ii', level: 'PRG', make: function (r, sh) {
+          { id: '4c', sub: 'b ii', level: 'ADV', make: function (r, sh) {
             var T = { A: sh.p, B: sh.q, C: sh.K };
             var p = LN && K.P.line('Write the equation of the line.', T, { wrong: [{ is: { A: sh.q, B: sh.p, C: sh.K }, code: 'pq-swap', hint: 'You have ' + t('p') + ' and ' + t('q') + ' the wrong way round: ' + t('p') + ' is the coefficient of ' + t('x') + '.' }] },
               'Solving the system gives ' + t('p=' + sh.p) + ' and ' + t('q=' + sh.q) + ', so the line is ' + t(pol([[sh.p, 'x'], [sh.q, 'y'], [sh.K, '']]) + '=0') + (gcd(gcd(sh.p, sh.q), sh.K) > 1 ? ' (or, dividing by ' + t(gcd(gcd(sh.p, sh.q), sh.K)) + ', ' + t(LN.tex(T, 'general')) + ')' : '') + '.<br>Check: ' + t(pol([[sh.p, ''], [0, '']]) + '(' + sh.P1[0] + ')' + (sh.q < 0 ? '-' : '+') + Math.abs(sh.q) + '(' + sh.P1[1] + ')+' + sh.K + '=0') + ' ✓',
@@ -560,7 +560,7 @@
       { num: '4', section: 'Extra practice C — Clear the Fractions and Decimals First', stem: 'Clear the fractions or decimals from each equation first, then solve by substitution. Check in the original equations.', parts: [
         { id: 'e4a', level: 'PRG', make: function (r) { return solvePart('Solve:', ep4a(r), ['Multiply each equation by the lowest common denominator of its fractions.', 'Then isolate a variable with coefficient ' + t('\\pm1') + ' if there is one.']); } },
         { id: 'e4b', level: 'PRG', make: function (r) { return solvePart('Solve:', ep4b(r), ['Multiply both equations by ' + t('10') + ' to clear the decimals.']); } },
-        { id: 'e4c', level: 'ADV', make: function (r) { return solvePart('Solve. Give exact values.', ep4c(r), ['Multiply the decimal equation by ' + t('4') + ' and the fraction equation by ' + t('3') + '.', 'The answer has fractions — keep them exact.'], null, { exact: true }); } },
+        { id: 'e4c', level: 'PRG', make: function (r) { return solvePart('Solve. Give exact values.', ep4c(r), ['Multiply the decimal equation by ' + t('4') + ' and the fraction equation by ' + t('3') + '.', 'The answer has fractions — keep them exact.'], null, { exact: true }); } },
         { id: 'e4d', level: 'EMG', make: function (r) {
           return mc(r, 'A classmate says decimal systems are easier on a calculator, working in decimals throughout. Why is clearing to whole numbers safer?', [
             { html: 'Whole-number work stays exact, so the check either works or it doesn’t. A rounded decimal like ' + t('1.36') + ' for ' + t('\\frac{19}{14}') + ' can look right in a check when it isn’t.', right: true },
@@ -846,7 +846,7 @@
               hints: ['Isolate ' + t('y') + ' in ' + t(pol([[sh.b, 'x'], [-1, 'y']]) + '=' + sh.c) + ' — it has no ' + t('k') + ' in it.', 'After substituting, factor ' + t('x') + ' out of the ' + t('x') + '-terms: ' + t('x(1+' + sh.b + 'k)') + '.'], text: 'x, y in terms of k',
               bad: [['\\frac{' + pol([[sh.c, 'k'], [sh.a, '']]) + '}{' + pol([[sh.b, 'k'], [-1, '']]) + '}', ysT], [xsT, '\\frac{' + (sh.a * sh.b + sh.c) + '}{' + pol([[sh.b, 'k'], [1, '']]) + '}']] };
           } },
-          { id: 'e13c', sub: 'c i', level: 'ADV', make: function (r, sh) {
+          { id: 'e13c', sub: 'c i', level: 'EMG', make: function (r, sh) {
             var kc = Q(-1, sh.b);
             return B.fraction('Every answer in (a) has the denominator ' + t(pol([[sh.b, 'k'], [1, '']])) + '. For what value of ' + t('k') + ' does that denominator become ' + t('0') + '?', kc, { before: t('k=') },
               t(pol([[sh.b, 'k'], [1, '']]) + '=0') + ', so ' + t(sh.b + 'k=-1') + ' and ' + t('k=' + qT(kc)) + '.', ['Set the denominator equal to ' + t('0') + ' and solve for ' + t('k') + '.'], 'k making the denominator 0');

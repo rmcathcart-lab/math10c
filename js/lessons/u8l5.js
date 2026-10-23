@@ -835,7 +835,7 @@
               'With no wind: ' + t('2\\times ' + n(sh.D) + '\\div ' + n(sh.p) + '\\approx ' + K.roundTo(nw, 2).toFixed(2)) + ' h; with the wind: ' + t(n(sh.tw) + '+' + n(sh.ta) + '=' + n(sh.tw + sh.ta)) + ' h. The plane spends <b>longer</b> on the slow leg than on the fast one, so the time lost fighting the wind is more than the time gained riding it.', [], 'why the round trip is longer');
           } }] },
       { num: '10', shared: function (r) {
-          var a = r.pick(E10()), b = r.pick(E10B()), yes = r.int(0, 1) === 1, all = [0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2];
+          var a = r.pick(E10()), b = r.pick(E10B()), yes = r.int(0, 1) === 1, all = [0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2];
           var opts = all.filter(function (s) { return yes ? s * 1000 >= b.x : s * 1000 < b.x; });   // (b ii): “yes” and “no” about equally often
           return { a: a, b: b, shelf: r.pick(opts.length ? opts : all) }; },
         stem: 'In each part the numbers arrive in mismatched units. Reconcile the units <b>first</b>, then build and solve the system.',
@@ -1092,7 +1092,7 @@
       { num: '19', shared: function (r) { return r.pick(E19()); }, parts: [
         { id: 'e19', level: 'PRG', make: function (r, sh) {
           var g = gcd(sh.tu, sh.td), tr = (sh.tu / g) + ':' + (sh.td / g), right = sh.k + ':1';
-          var cands = [tr, (sh.k + 1) + ':1', (sh.k - 1) + ':1', (2 * sh.k) + ':1', (sh.k + 2) + ':1'].filter(function (v, i, a) { return v !== right && v !== '1:1' && a.indexOf(v) === i; }).slice(0, 3);
+          var cands = [tr, (sh.k + 1) + ':1', (sh.k - 1) + ':1', (2 * sh.k) + ':1', (sh.k + 2) + ':1', (sh.k + 3) + ':1', (3 * sh.k) + ':1'].filter(function (v, i, a) { return v !== right && v !== '1:1' && a.indexOf(v) === i; }).slice(0, 3);
           var why = function (v) { return v === tr ? 'That is the ratio of the <b>times</b>, upstream to downstream. Find the speeds: ' + t('b+c') + ' and ' + t('b-c') + ' are distance ÷ each time.' : 'Check with a stretch of ' + t('D') + ' km: ' + t('b+c=\\frac{D}{' + frac60(sh.td) + '}') + ' and ' + t('b-c=\\frac{D}{' + frac60(sh.tu) + '}') + '. Add and subtract to compare ' + t('b') + ' with ' + t('c') + '.'; };
           var opts = [{ s: right, right: true }].concat(cands.map(function (v) { return { s: v, why: why(v) }; })).sort(function (a, b) { return eval0(a.s) - eval0(b.s); });
           function eval0(x) { var p = x.split(':'); return p[0] / p[1]; }

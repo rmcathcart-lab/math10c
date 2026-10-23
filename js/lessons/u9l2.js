@@ -694,7 +694,7 @@
         } },
         { id: 'e6c', sub: 'c', level: 'EMG', make: function (r) {
           var a = r.pick([87, 87, 85, 86, 88]), v2 = R(T.sin(a), 2), back = Math.round(T.asin(v2));
-          return boxes('Repeat both steps for ' + t(TX('sin', a)) + ': four decimal places, then two.', tripFields('sin', a).concat([
+          return boxes('Round ' + t(TX('sin', a)) + ' to four decimal places and take ' + t('\\sin^{-1}') + ' of that (nearest degree). Then do the same with ' + t(TX('sin', a)) + ' rounded to <b>two</b> decimal places. By how many degrees is the two-decimal trip out?', tripFields('sin', a).concat([
             Object.assign(vBox('sin', a, 2, t(TX('sin', a)) + ' (2 d.p.)'), { label: t(TX('sin', a)) + ' to 2 d.p. ' + t('=') }),
             { label: t('\\sin^{-1}') + ' of that ' + t('='), name: t('\\sin^{-1}(' + v2.toFixed(2) + ')'), x: T.asin(v2), dp: 0, after: '°', tex: D(back), alts: [{ v: a, code: 'tv-early-round', hint: 'Use the <b>two-decimal</b> value ' + t(v2.toFixed(2)) + ' in the inverse key.' }] },
             intBox('out by', Math.abs(back - a), function (v) { return v === 0 ? { code: 'tv-out-by', hint: 'Compare the two-decimal trip’s angle with ' + t(D(a)) + '.' } : null; }, '°')]),
@@ -704,7 +704,7 @@
           var a = pickWhere(function () { return r.int(50, 70); }, function (a) { return Math.round(T.atan(R(T.tan(a), 2))) === a && Math.round(T.atan(R(T.tan(a), 4))) === a; });
           if (r.chance(0.3)) a = 61;
           var v2 = R(T.tan(a), 2);
-          return boxes('Repeat both steps for ' + t(TX('tan', a)) + ': four decimal places, then two.', tripFields('tan', a).concat([Object.assign(vBox('tan', a, 2, t(TX('tan', a)) + ' (2 d.p.)'), { label: t(TX('tan', a)) + ' to 2 d.p. ' + t('=') }),
+          return boxes('Round ' + t(TX('tan', a)) + ' to four decimal places and take ' + t('\\tan^{-1}') + ' of that (nearest degree). Then do the same with ' + t(TX('tan', a)) + ' rounded to <b>two</b> decimal places.', tripFields('tan', a).concat([Object.assign(vBox('tan', a, 2, t(TX('tan', a)) + ' (2 d.p.)'), { label: t(TX('tan', a)) + ' to 2 d.p. ' + t('=') }),
             { label: t('\\tan^{-1}') + ' of that ' + t('='), name: t('\\tan^{-1}(' + v2.toFixed(2) + ')'), x: T.atan(v2), dp: 0, after: '°', tex: D(a), alts: angAlts('tan', v2) }]),
             t(TX('tan', a) + '\\approx ' + fx(T.tan(a), 4)) + ' and ' + t(TXI('tan', fx(T.tan(a), 4)) + '\\approx ' + D(a)) + '. To two decimals, ' + t(v2.toFixed(2)) + ', and ' + t('\\tan^{-1}(' + v2.toFixed(2) + ')=' + T.atan(v2).toFixed(4) + '\\ldots^\\circ\\approx ' + D(a)) + ' — the trip survives.', ['First two boxes: the four-decimal trip. Last two: the two-decimal trip.'], 'tan trips ' + a);
         } },
