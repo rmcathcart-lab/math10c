@@ -421,7 +421,7 @@
           return 'Standing at point ' + t('X') + ' directly across a river from a tall tree, Jenny measures the angle of elevation to the top of the tree as ' + t(dg(s.a)) + '. She then walks ' + t(s.d) + ' m straight back from the river to point ' + t('Y') + ' and measures the angle of elevation to the same treetop as ' + t(dg(s.b)) + '.' + F;
         },
         parts: [
-          { id: '8', level: 'MAS', make: function (r, s) {
+          { id: '8', level: 'ADV', make: function (r, s) {
             var eh = s.d / (rd(s.kb, 2) - rd(s.ka, 2)), et = s.d / (1 / rd(Tg.tan(s.b), 2) - 1 / rd(Tg.tan(s.a), 2));
             return near('Determine the height of the tree to the nearest metre. <i>(Neither triangle can be solved alone: write both horizontal distances in terms of the height ' + t('h') + ', then subtract.)</i>', s.h, 0, 'm', [
               { v: eh, code: 'ch-early', hint: earlyH(t(fr('1', TAN(s.b)))) + ' (and ' + t(fr('1', TAN(s.a))) + ')' }, { v: et, code: 'ch-early', hint: earlyH(t(TAN(s.a)) + ' and ' + t(TAN(s.b))) },
@@ -560,7 +560,7 @@
             t('\\triangle ABC') + ' can be solved first: right angle at ' + t('C') + ', ' + t('AC=' + g1(s.ac)) + ' cm and ' + t('\\angle A=' + dg(s.A)) + '.<br>Shared side: ' + t('AB') + ' — the <b>hypotenuse</b> of ' + t('\\triangle ABC') + ' and a <b>leg</b> of ' + t('\\triangle ABD') + '.<br>It is handed to ' + t('\\triangle ABD') + ' (right angle at ' + t('A') + '), where ' + t('AB') + ' and ' + t('\\angle ABD=' + dg(s.abd)) + ' give ' + t('AD') + '.',
             ['Which triangle has a side and an angle besides its right angle?', 'Which segment is a side of both triangles?'], 'which triangle first: hypotenuse to leg');
         } },
-        { id: 'e1c', level: 'PRG', make: function (r, S) {
+        { id: 'e1c', level: 'EMG', make: function (r, S) {
           var s = S.C;
           return mc(r, 'The right angles are at ' + t('G') + ' and at ' + t('H') + '. The length ' + t('FJ') + ' is required.' + e1cFig(s), [
             { html: 'Solve ' + t('\\triangle FGH') + ' first with the Pythagorean theorem (two sides known — no angle needed); hand ' + t('FH') + ' to ' + t('\\triangle FHJ') + '.', right: true },
