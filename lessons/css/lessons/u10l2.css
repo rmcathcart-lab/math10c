@@ -135,7 +135,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf-one .u10l2-road svg { max-width: 600px; margin: 0 auto; }
 .wf-one .u10l2-roadbtns { margin: 2px 0 0; }
 .wf-one .u10l2-roadbtns .pill { padding: 6px 14px; font-size: 15px; }
-.wf-one .u10l2-roadout { min-height: 74px; font-size: 17px; }
+.wf-one .u10l2-roadout { min-height: 60px; font-size: 17px; }
 .wf-one .u10l2-roadout .u10l2-fr, .wf-one .u10l2-roadout .u10l2-op, .wf-one .u10l2-roadout .u10l2-res { font-size: 24px; }
 .wf-one .u10l2-wtop { gap: 20px; }
 .wf-one .u10l2-wqs .q-line, .wf-one .u10l2-early .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
@@ -371,8 +371,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l2bh-wing { fill: #7a6450; }
 .u10l2bh-win { fill: #cfe0e8; }
 @media (prefers-reduced-motion: reduce) { .u10l2bh-fill { transition: none; } }
-.u10l2-pcol { display: flex; flex-direction: column; gap: 8px; }
-.u10l2-pcol .u10l2-early { margin-top: 0; }
 /* merged lesson: the warm-up fits one screen — Answer pill beside each question, the answer opens under it */
 .wf-one .u10l2-wqs .bk-wq, .wf-one .u10l2-early { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; align-items: start; }
 .wf-one .u10l2-wqs .bk-wq .u10l2-wa, .wf-one .u10l2-early .u10l2-wa { display: contents; }
