@@ -1080,7 +1080,7 @@
               'The ' + t('y') + '-coefficients are ' + t(-s.b) + ' and ' + t(s.m * s.b) + '; multiply Eq. 1 by ' + t(s.m) + ':<br>' + t(eqT(s.ma, -s.m * s.b, s.m * s.c)) + '<br>Add ' + t(s.E2) + ': ' + t(s.ma + 'x+kx=' + (s.m * s.c) + sg(s.d)) + ', so ' + t('(k+' + s.ma + ')x=' + s.N) + '.',
               ['Make the ' + t('y') + '-terms opposites (multiply the first equation), then add.'], 'EP5a reduce', { bad: [[String(s.a), String(s.N)]] });
           } },
-          { id: 'e5b', sub: 'b', level: 'ADV', make: function (r, s) {
+          { id: 'e5b', sub: 'b', level: 'PRG', make: function (r, s) {
             return K.P.number('(b) The system reduces to ' + t('(k+' + s.ma + ')x=' + s.N) + '. Determine the value of ' + t('k') + ' for which the system has <b>no solution</b>.', -s.ma, function (v) {
               if (near(v, s.ma)) return { code: 'sign', hint: 'You need ' + t('k+' + s.ma + '=0') + '. Solve that for ' + t('k') + ' — watch the sign.' };
               if (near(v, s.k1)) return { code: 'u8l6-k-x1', hint: 'That value makes ' + t('x=1') + ' — there is a solution. No solution needs the left side to vanish: ' + t('k+' + s.ma + '=0') + '.' };
@@ -1097,7 +1097,7 @@
               'Infinitely many solutions would need ' + t('(k+' + s.ma + ')x=' + s.N) + ' to collapse to ' + t('0=0') + ', i.e. ' + t('k+' + s.ma + '=0') + ' and ' + t(s.N + '=0') + '. The constant ' + t(s.N) + ' never changes, so that can’t happen: ' + t('k') + ' can make the coefficients proportional, but nothing can make the constants proportional too.',
               ['What would the reduced equation have to look like for infinitely many solutions?'], 'EP5c no k for infinite');
           } },
-          { id: 'e5d', sub: 'd i', level: 'ADV', make: function (r, s) {
+          { id: 'e5d', sub: 'd i', level: 'PRG', make: function (r, s) {
             return K.P.number('(d) The system reduces to ' + t('(k+' + s.ma + ')x=' + s.N) + '. Determine the value of ' + t('k') + ' for which the ' + t('x') + '-coordinate of the solution is ' + t(1) + '.', s.k1, function (v) {
               if (near(v, s.N)) return { code: 'u8l6-k-solve', hint: 'With ' + t('x=1') + ': ' + t('k+' + s.ma + '=' + s.N) + '. Now subtract ' + t(s.ma) + '.' };
               if (near(v, s.N + s.ma)) return { code: 'sign', hint: t('k+' + s.ma + '=' + s.N) + ': subtract ' + t(s.ma) + ' from both sides.' };
@@ -1423,7 +1423,7 @@
               solution: 'From ' + t(s.E1) + ': ' + t('y=k-' + (s.a === 1 ? '' : s.a) + 'x') + '. Substitute into ' + t(s.E2) + ':<br>' + t(s.p + 'x-' + s.q + '(k-' + (s.a === 1 ? '' : s.a) + 'x)=' + s.rr + '\\Rightarrow ' + s.D + 'x=' + s.q + 'k+' + s.rr + '\\Rightarrow x=' + s.xT) + '<br>' + t('y=k-' + (s.a === 1 ? '' : s.a) + '\\left(' + s.xT + '\\right)=\\frac{' + s.D + 'k-' + (s.a * s.q) + 'k-' + (s.a * s.rr) + '}{' + s.D + '}=' + s.yT),
               hints: ['Solve the first equation for ' + t('y') + ' (keep ' + t('k') + ' as a letter) and substitute.'], text: 'EP12a in terms of k', bad: [[xs, s.yT]] };
           } },
-          { id: 'e12b', sub: 'b i', level: 'ADV', make: function (r, s) {
+          { id: 'e12b', sub: 'b i', level: 'PRG', make: function (r, s) {
             return K.P.number('(b) The solution of the system is ' + t('x=' + s.xT) + ', ' + t('y=' + s.yT) + '. Determine the value of ' + t('k') + ' for which the solution also lies on the line ' + t(s.E3) + '.', s.k, function (v) { return near(v, -s.k) ? { code: 'sign', hint: 'Check the sign when you collect the ' + t('k') + '-terms.' } : null; },
               'Require ' + t(s.E3) + ': ' + t(s.yT + '=' + s.xT + sg(s.sh)) + '<br>Multiply by ' + t(s.D) + ': ' + t(lin([s.p], ['k']) + '-' + (s.a * s.rr) + '=' + lin([s.q], ['k']) + '+' + s.rr + sg(s.sh * s.D)) + '<br>' + t(s.p - s.q === 1 ? 'k=' + s.k : (s.p - s.q) + 'k=' + (s.rr + s.a * s.rr + s.sh * s.D) + '\\Rightarrow k=' + s.k) + '.',
               ['Substitute both coordinates into ' + t(s.E3) + ' and clear the denominator ' + t(s.D) + '.'], 'EP12b k on line');
