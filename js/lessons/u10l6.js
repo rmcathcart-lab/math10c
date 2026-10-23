@@ -244,7 +244,7 @@
   }
   /* a block (L long, W wide, H high) with a semicircular groove of diameter d along the top */
   function grooveSVG(L, W, H, d, labs) {
-    var sc = 13, x0 = 60, yb = 170, w = W * sc, h = H * sc, dx = L * sc * 0.42, dy = -L * sc * 0.3, r = d / 2 * sc, cx = x0 + w / 2, top = yb - h, s = '';
+    var sc = 13, x0 = 60, yb = Math.max(170, Math.round(H * sc + L * sc * 0.3 + 30)), w = W * sc, h = H * sc, dx = L * sc * 0.42, dy = -L * sc * 0.3, r = d / 2 * sc, cx = x0 + w / 2, top = yb - h, s = '';
     var FL = [x0, yb], FR = [x0 + w, yb], TR = [x0 + w, top], TL = [x0, top];
     s += pg([FR, [FR[0] + dx, FR[1] + dy], [TR[0] + dx, TR[1] + dy], TR], { fill: '#e2e6eb' });
     s += pg([TL, [cx - r, top], [cx - r + dx, top + dy], [TL[0] + dx, TL[1] + dy]], { fill: '#f4f6f8' }) + pg([[cx + r, top], TR, [TR[0] + dx, TR[1] + dy], [cx + r + dx, top + dy]], { fill: '#f4f6f8' });
@@ -1320,7 +1320,7 @@
           return fields('A cone has base radius ' + t(rr + '.0\\text{ cm}') + ' and slant height ' + t(sl + '.0\\text{ cm}') + '. A student writes ' + t('V=\\tfrac13\\pi(' + rr + '.0)^{2}(' + sl + '.0)=' + fx(W, 1) + '\\text{ cm}^{3}') + '. Give the correct volume to the nearest tenth, and the exact factor (student ÷ correct) by which the student is out, as a decimal (to four decimal places if it does not terminate).', [
             { label: t('V='), after: 'cm³', x: V, dp: 1, alts: [{ v: W, code: 'slant-for-h', hint: 'That’s the student’s value: it uses the slant height. Find the perpendicular height first: ' + t('h=\\sqrt{s^{2}-r^{2}}') + '.' }] },
             { label: 'Factor:', after: '', x: sl / h, dp: 4, exact: true, alts: [{ v: h / sl, code: 'ratio-flip', hint: 'Student ÷ correct — it is more than 1.' }] }],
-            'The volume needs the <b>perpendicular</b> height: ' + t('h=\\sqrt{' + sl + '^{2}-' + rr + '^{2}}=' + h) + ' cm. ' + t('V=\\tfrac13\\pi(' + rr + ')^{2}(' + h + ')=' + num(rr * rr * h / 3) + '\\pi=' + dots(V, 3)) + ' ≈ ' + t(fx(V, 1)) + ' cm³.<br>Factor ' + t('=\\dfrac{' + sl + '}{' + h + '}=' + dec(sl / h)) + ' (V is proportional to the height substituted).', ['Which height does a cone’s volume use?'], 'cone volume slant error');
+            'The volume needs the <b>perpendicular</b> height: ' + t('h=\\sqrt{' + sl + '^{2}-' + rr + '^{2}}=' + h) + ' cm. ' + t('V=\\tfrac13\\pi(' + rr + ')^{2}(' + h + ')=' + num(rr * rr * h / 3) + '\\pi=' + dots(V, 3)) + ' ≈ ' + t(fx(V, 1)) + ' cm³.<br>Factor ' + t('=\\dfrac{' + sl + '}{' + h + '}=' + (Math.abs(sl / h * 1e4 - Math.round(sl / h * 1e4)) < 1e-9 ? dec(sl / h) : dots(sl / h, 6) + '\\approx ' + fx(sl / h, 4))) + ' (V is proportional to the height substituted).', ['Which height does a cone’s volume use?'], 'cone volume slant error');
         } },
         { id: 'e16b', level: 'EMG', make: function (r) {
           var rr = r.chance(0.25) ? 5 : r.pick([4, 6, 7.5, 8]), A = 2 * PI * rr * rr;

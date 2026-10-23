@@ -445,7 +445,7 @@
               '<b>Principal:</b> ' + t('g+b=' + N(o.T)) + ' (' + t('\\frac{' + o.a + '}{' + o.b + '}') + ' of ' + Dh(o.H) + ').<br><b>Change in value:</b> ' + t(pd(o.g) + 'g-' + pd(o.l) + 'b=' + N(o.net)) + ' (a gain on ' + t('g') + ', a loss on ' + t('b') + ').',
               ['First find how much she invested: ' + t('\\frac{' + o.a + '}{' + o.b + '}') + ' of ' + Dh(o.H) + '.', 'A gain adds and a loss subtracts.'], 'mutual funds system');
           } },
-          { id: '8c', sub: 'iii', level: 'ADV', make: function (r, o) {
+          { id: '8c', sub: 'iii', level: 'PRG', make: function (r, o) {
             var Ts = [[1, 1, -o.T], [o.g, -o.l, -100 * o.net]], w1 = solve2([1, 1, -o.T], [o.g, o.l, -100 * o.net]), w2 = solve2([1, 1, -o.H], [o.g, -o.l, -100 * o.net]);
             return numsP('Determine the amount invested in each fund.', [money('Growth Fund'), money('Bond Fund')], [o.G, o.B],
               { names: ['Growth Fund amount', 'Bond Fund amount'], money: true, sys: Ts, sysNames: ['the total invested', 'the change in value'],
@@ -470,7 +470,7 @@
               '<b>Principal:</b> ' + t('a+b=' + N(o.T)) + '.<br><b>Interest:</b> ' + t(B + 'b=\\frac{1}{2}(' + A + 'a)') + ', i.e. ' + t(B + 'b=' + pd(o.r1 / 2) + 'a') + '.',
               ['Interest = rate × amount. Which interest is the smaller one (the “half”)?'], 'interest half system');
           } },
-          { id: '9b', sub: 'ii', level: 'ADV', make: function (r, o) {
+          { id: '9b', sub: 'ii', level: 'PRG', make: function (r, o) {
             var A = pd(o.r1), B = pd(o.r2), w1 = solve2([1, 1, -o.T], [-2 * o.r1, o.r2, 0]), w2 = [2 * o.T / 3, o.T / 3], kk = o.r1 / (2 * o.r2);
             return numsP('How much was invested at each rate?', [{ label: 'At ' + o.r1 + '%', before: '$' }, { label: 'At ' + o.r2 + '%', before: '$' }], [o.a, o.b],
               { names: ['amount at ' + o.r1 + '%', 'amount at ' + o.r2 + '%'], money: true, sys: [[1, 1, -o.T], [-o.r1, 2 * o.r2, 0]], sysNames: ['the total', 'the interest relationship'],
@@ -1215,7 +1215,7 @@
               'Substitute ' + t('l=' + o.k + 's') + ': ' + t('s+m+' + o.k + 's=' + o.N) + ' ⟹ ' + t(c1 + 's+m=' + o.N) + ', and ' + t(o.ps + 's+' + o.pm + 'm+' + o.pl + '(' + o.k + 's)=' + N(o.T)) + ' ⟹ ' + t(c2 + 's+' + o.pm + 'm=' + N(o.T)) + '.',
               ['Replace every ' + t('l') + ' with ' + t(o.k + 's') + ' and collect the ' + t('s') + '-terms.'], 'reduce three to two');
           } },
-          { id: 'e18b2', sub: 'b ii', level: 'ADV', make: function (r, o) {
+          { id: 'e18b2', sub: 'b ii', level: 'PRG', make: function (r, o) {
             var c1 = o.k + 1, c2 = o.ps + o.k * o.pl;
             return numsP('Solve the reduced system ' + t(c1 + 's+m=' + o.N) + ', ' + t(c2 + 's+' + o.pm + 'm=' + N(o.T)) + '.', [{ label: 'Small, ' + t('s') }, { label: 'Medium, ' + t('m') }], [o.s, o.m],
               { names: ['number of small hoodies', 'number of medium hoodies'], sys: [[c1, 1, -o.N], [c2, o.pm, -o.T]], sysNames: ['the count equation', 'the money equation'] },

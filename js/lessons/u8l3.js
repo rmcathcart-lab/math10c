@@ -275,13 +275,13 @@
       { html: '<b>Substitution</b>: ' + y1 + ' is already isolated.', why: 'Neither equation is solved for a variable.' }]; }
     var right = opts[0].html.replace(/<[^>]+>/g, '');
     return mcP(r, 'Which method would you use for ' + t(sysT(eqs[0], eqs[1])) + ', and why? (Don’t solve it.)', opts,
-      'Look before solving: an isolated variable (or a coefficient of ' + t('1') + ' / ' + t('-1') + ') points to substitution; equal or opposite coefficients — or no coefficient of ' + t('\\pm1') + ' at all — point to elimination.<br>Best choice: ' + opts[0].html + '.',
+      'Look before solving: an isolated variable (or a coefficient of ' + t('1') + ' / ' + t('-1') + ') points to substitution; equal or opposite coefficients — or no coefficient of ' + t('\\pm1') + ' at all — point to elimination.<br>Best choice: ' + opts[0].html,
       ['Is a variable already isolated, or does one have coefficient ' + t('1') + ' or ' + t('-1') + '? Are any coefficients already equal or opposite?'], 'method choice (' + kind + ')');
   }
   function methodSys(r, kind) {
     var S, a = {}, eqs;
     if (kind === 'iso') {
-      var d = find(r, function (r) { var m = r.int(2, 5), A = r.int(2, 5), B = r.int(2, 4), x0 = r.int(1, 5), b = pickNZ(r, -9, 9), y0 = m * x0 + b; if (Math.abs(y0) > 12) return null; return { m: m, A: A, B: B, b: b, x0: x0, y0: y0 }; }, { m: 4, A: 3, B: 2, b: -9, x0: 3, y0: 3 });
+      var d = find(r, function (r) { var m = r.int(2, 5), A = r.int(2, 5), B = r.int(2, 4), x0 = r.int(1, 5), b = pickNZ(r, -9, 9), y0 = m * x0 + b; if (Math.abs(y0) > 12 || A === m) return null; return { m: m, A: A, B: B, b: b, x0: x0, y0: y0 }; }, { m: 4, A: 3, B: 2, b: -9, x0: 3, y0: 3 });
       a = d; S = [[-d.m, 1, d.b], mk(d.A, d.B, [d.x0, d.y0])]; eqs = ['y=' + lin([d.m, d.b], ['x', '']), eqT(S[1], ['x', 'y'])];
     } else if (kind === 'match') {
       S = find(r, function (r) { var A = r.int(3, 9), b1 = r.int(2, 6), b2 = -r.int(2, 5), Q = [r.int(1, 5), r.int(1, 6)]; if (b1 === -b2 || A % b1 === 0) return null; return [mk(A, b1, Q), mk(A, b2, Q)]; }, [[7, 5, 41], [7, -3, 9]]);
@@ -342,9 +342,9 @@
   function ep1shared(r) {
     var make = {
       addY: function (r) { return find(r, function (r) { var a1 = r.int(3, 8), a2 = r.int(2, 7), b = r.int(2, 6); if (a1 === a2) return null; var P = [r.int(1, 6), -r.int(1, 5)], S = [mk(a1, b, P), mk(a2, -b, P)]; return nz(S) ? { S: S, V: ['x', 'y'], e: 1, op: 'add' } : null; }); },
-      subX: function (r) { return find(r, function (r) { var A = r.int(2, 7), b1 = -r.int(2, 6), b2 = r.int(1, 5), P = [-r.int(1, 5), r.int(1, 6)], S = [mk(A, b1, P), mk(A, b2, P)]; return nz(S) ? { S: S, V: ['x', 'y'], e: 0, op: 'sub' } : null; }); },
+      subX: function (r) { return find(r, function (r) { var A = r.int(2, 7), b1 = -r.int(2, 6), b2 = r.int(1, 5); if (b1 === -b2) return null; var P = [-r.int(1, 5), r.int(1, 6)], S = [mk(A, b1, P), mk(A, b2, P)]; return nz(S) ? { S: S, V: ['x', 'y'], e: 0, op: 'sub' } : null; }); },
       addA: function (r) { return find(r, function (r) { var A = r.int(3, 9), b1 = r.int(1, 4), b2 = r.int(3, 8); if (b1 === b2) return null; var P = [r.int(1, 5), -r.int(1, 5)], S = [mk(-A, b1, P), mk(A, b2, P)]; return nz(S) ? { S: S, V: ['a', 'b'], e: 0, op: 'add' } : null; }); },
-      subN: function (r) { return find(r, function (r) { var a1 = r.int(5, 12), a2 = -r.int(2, 6), B = -r.int(2, 7), P = [r.int(1, 5), -r.int(1, 4)], S = [mk(a1, B, P), mk(a2, B, P)]; return nz(S) ? { S: S, V: ['m', 'n'], e: 1, op: 'sub' } : null; }); }
+      subN: function (r) { return find(r, function (r) { var a1 = r.int(5, 12), a2 = -r.int(2, 6), B = -r.int(2, 7); if (a1 === -a2) return null; var P = [r.int(1, 5), -r.int(1, 4)], S = [mk(a1, B, P), mk(a2, B, P)]; return nz(S) ? { S: S, V: ['m', 'n'], e: 1, op: 'sub' } : null; }); }
     };
     return { sys: r.shuffle(['addY', 'subX', 'addA', 'subN']).map(function (k) { return make[k](r); }) };
   }
@@ -441,7 +441,7 @@
         { id: '2b', sub: 'b', level: 'EMG', make: function (r) {
           var V = ['m', 'n'], d = find(r, function (r) { var m0 = r.int(1, 6), n0 = r.int(2, 6); if (gcd(m0, n0) !== 1 || m0 === n0) return null; var b1 = r.int(2, 6); var S = [mk(n0, b1, [m0, n0]), [n0, -m0, 0]]; return S; });
           var e = [eqT(d[0], V), eqT(d[1], V)];
-          return solveP({ only: true, prompt: t(sysT(e[0], e[1])) + '<br>' + ptPrompt(V), S: d, V: V, e: 0, eqs: e, text: 'subtract: ' + e.join(', '), hints: ['The ' + t('m') + '-coefficients match. Subtract: ' + t('(\\ldots)-(\\ldots)') + ' — and ' + t('-(-' + Math.abs(d[1][1]) + 'n)') + ' becomes ' + t('+' + Math.abs(d[1][1]) + 'n') + '.', H_ELIM[1]] });
+          return solveP({ only: true, prompt: t(sysT(e[0], e[1])) + '<br>' + ptPrompt(V), S: d, V: V, e: 0, eqs: e, text: 'subtract: ' + e.join(', '), hints: ['The ' + t('m') + '-coefficients match. Subtract: ' + t('(\\ldots)-(\\ldots)') + ' — and ' + t('-(' + lin([d[1][1]], ['n']) + ')') + ' becomes ' + t('+' + lin([-d[1][1]], ['n'])) + '.', H_ELIM[1]] });
         } },
         { id: '2c', sub: 'c', level: 'EMG', make: function (r) {
           var S = find(r, function (r) { var b1 = -r.int(3, 7), b2 = r.int(1, 4), P = [-r.int(1, 7), r.int(1, 5)]; var S = [mk(-1, b1, P), mk(-1, b2, P)]; return S[0][2] && S[1][2] ? S : null; });
@@ -676,10 +676,16 @@
       /* ---------------- 10–14: MC and NR ---------------- */
       { num: '10', section: 'Part G — Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '10', level: 'EMG', make: function (r) {
-          var d = find(r, function (r) { var a1 = r.int(2, 5), b = r.int(1, 3), a2 = r.int(2, 7), c1 = r.int(2, 15), c2 = r.int(2, 15); if (2 * a1 === a2 || a1 === a2) return null; var ok1 = [a1 + a2, 2 * a1 + a2, 2 * a1 - a2]; if (ok1[2] === 0) return null; return { a1: a1, b: b, a2: a2, c1: c1, c2: c2 }; }, { a1: 3, b: 2, a2: 5, c1: 11, c2: 9 });
-          var R = [2 * d.a1 + d.a2, 2 * d.c1 + d.c2], A = [d.a1 + d.a2, d.c1 + d.c2], B = [2 * d.a1 + d.a2, d.c1 + d.c2], C = [2 * d.a1 - d.a2, 2 * d.c1 - d.c2];
+          var d = find(r, function (r) {
+            var a1 = r.int(2, 5), b = r.int(1, 3), a2 = r.int(2, 7), c1 = r.int(2, 15), c2 = r.int(2, 15); if (2 * a1 === a2 || a1 === a2) return null;
+            var R = [2 * a1 + a2, 2 * c1 + c2], A = [a1 + a2, c1 + c2], B = [2 * a1 + a2, c1 + c2], C = [2 * a1 - a2, 2 * c1 - c2];
+            var seen = {}; [R, A, B, C].forEach(function (p) { seen[p.join()] = 1; }); if (Object.keys(seen).length < 4) C = [2 * a1 + a2, 2 * c1 - c2];
+            // every distractor must give a different x than the right equation (e.g. not 5x = 15 next to 7x = 21)
+            if ([A, B, C].some(function (p) { return p[1] * R[0] === R[1] * p[0]; }) || B.join() === C.join()) return null;
+            return { a1: a1, b: b, a2: a2, c1: c1, c2: c2, R: R, A: A, B: B, C: C };
+          }, { a1: 3, b: 2, a2: 5, c1: 11, c2: 9, R: [11, 31], A: [8, 20], B: [11, 20], C: [1, 13] });
+          var R = d.R, A = d.A, B = d.B, C = d.C;
           var tx = function (p) { return t(lin([p[0]], ['x']) + '=' + N(p[1])); };
-          var seen = {}; [R, A, B, C].forEach(function (p) { seen[p.join()] = 1; }); if (Object.keys(seen).length < 4) { C = [2 * d.a1 + d.a2, 2 * d.c1 - d.c2]; }
           var e1 = eqT([d.a1, d.b, d.c1], ['x', 'y']), e2 = eqT([d.a2, -2 * d.b, d.c2], ['x', 'y']);
           return mcP(r, 'When ' + t('y') + ' is eliminated from the equations ' + t(e1) + ' and ' + t(e2) + ', we obtain', [
             { html: tx(R), right: true },
@@ -973,7 +979,7 @@
               { vars: V, keyTex: [eqT(T1, V), eqT(T2, V)], labels: ['From Eq. 1', 'From Eq. 2'], diag: function (resp) {
                 var bad = [sh.q, sh.p, sh.c2]; for (var i = 0; i < 2; i++) { var rr = Ln.read(resp[i], V); if (rr.ok && near(rr.a * bad[1] - rr.b * bad[0], 0) && near(rr.a * -bad[2] - rr.c * bad[0], 0)) return { code: 'rearr-sign', hint: 'Careful with ' + t('-Ay') + ': with ' + t('y=' + sh.q) + ' it becomes ' + t('-A' + PB(sh.q) + '=' + lin([-sh.q], ['A'])) + '.' }; }
                 return null; } },
-              'Into ' + t('Ax+By=' + sh.c1) + ': ' + t(eqT(T1, V)) + '.<br>Into ' + t('Bx-Ay=' + sh.c2) + ': ' + t(sh.p + 'B-A' + PB(sh.q) + '=' + sh.c2) + ', i.e. ' + t(eqT(T2, V)) + '.',
+              'Into ' + t('Ax+By=' + sh.c1) + ': ' + t(eqT(T1, V)) + '.<br>Into ' + t('Bx-Ay=' + sh.c2) + ': ' + t((sh.p === 1 ? '' : sh.p) + 'B-A' + PB(sh.q) + '=' + sh.c2) + ', i.e. ' + t(eqT(T2, V)) + '.',
               ['Here ' + t('x') + ' and ' + t('y') + ' are known numbers and ' + t('A') + ', ' + t('B') + ' are the unknowns.'], 'form system in A, B');
             p.bad = [[eqT(T1, V), eqT([sh.q, sh.p, sh.c2], V)]];
             return p;
@@ -1001,7 +1007,7 @@
           { id: 'e16b', sub: 'b', level: 'ADV', make: function (r, sh) {
             var A2 = 2 * sh.a, R = sh.c1 - 2 * sh.c2;
             var p = K.P.number('For what value of ' + t('k') + ' does the system have <b>no solution</b>? (Eliminating ' + t('y') + ' gives ' + t('(k-' + A2 + ')x=' + R) + '.)', A2, function (v) { return v === sh.a ? { code: 'elim-const', hint: 'Use the eliminated equation: ' + t('(k-' + A2 + ')x=' + R) + '. Which ' + t('k') + ' makes the left side ' + t('0') + '?' } : null; },
-              'With ' + t('k=' + A2) + ' the equation becomes ' + t('0x=' + R) + ', i.e. ' + t('0=' + R) + ' — false for every ' + t('x') + ', so <b>no solution</b>.<br>By slopes: ' + t('y=-\\frac{k}{' + 2 * sh.b + '}x+' + N(sh.c1 / (2 * sh.b), true)) + ' and ' + t('y=-\\frac{' + A2 + '}{' + 2 * sh.b + '}x+' + N(sh.c2 / sh.b, true)) + ': equal slopes exactly when ' + t('k=' + A2) + ', and the intercepts differ — parallel, distinct lines.',
+              'With ' + t('k=' + A2) + ' the equation becomes ' + t('0x=' + R) + ', i.e. ' + t('0=' + R) + ' — false for every ' + t('x') + ', so <b>no solution</b>.<br>By slopes: ' + t('y=-\\frac{k}{' + 2 * sh.b + '}x' + sgnAdd(sh.c1 / (2 * sh.b), true)) + ' and ' + t('y=' + lin([-sh.a / sh.b, sh.c2 / sh.b], ['x', ''], true)) + ': equal slopes exactly when ' + t('k=' + A2) + ', and the intercepts differ — parallel, distinct lines.',
               ['When is the coefficient ' + t('k-' + A2) + ' zero? What statement is left then?'], 'k for no solution');
             p.input.before = t('k='); return p;
           } },
