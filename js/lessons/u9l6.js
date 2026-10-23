@@ -59,7 +59,7 @@
 
   /* a three-figure bearing (b = whole number of degrees). opt.strict: a missing leading zero is a mistake, not a nudge */
   function bearingCheck(b, alts, opt) {
-    opt = opt || {}; b = ((Math.round(b) % 360) + 360) % 360;
+    opt = opt || {}; var bx = ((b % 360) + 360) % 360; b = ((Math.round(b) % 360) + 360) % 360;
     return function (resp) {
       var raw = String(resp == null ? '' : resp).replace(/\\circ|\^|\{|\}|°|º|\s/g, '');
       if (!raw) return form('empty', 'Type your answer first.');
@@ -70,6 +70,7 @@
         if (whole.length < 3) return (opt.strict ? wrong : form)('bearing-3digit', opt.strict ? 'The size is right, but this is a notation question: a bearing is <b>always</b> written with three digits, so keep the leading zero(s).' : 'Right direction! Now write it as a <b>three-figure</b> bearing: put zero(s) in front so it has three digits (e.g. ' + t('45^\\circ\\to 045^\\circ') + ').');
         return ok();
       }
+      if (raw.indexOf('.') >= 0 && Math.round(v) !== b && Math.abs(v - bx) < 0.051) return form('round', 'Close — now round your <b>full calculator value</b> (not this rounded one) to the nearest degree.');
       if (raw.indexOf('.') >= 0 && Math.round(v) === b) return form('round', 'Right — now round it to the nearest degree.');
       for (var i = 0; i < (alts || []).length; i++) { var a = alts[i]; if (isFinite(a.v) && Math.abs(v - a.v) < 0.6 && Math.round(a.v) !== b) return wrong(a.code, a.hint); }
       if (v >= 360) return wrong('bearing-360', 'A bearing is always less than ' + t('360^\\circ') + ' (one full turn). If your value passed ' + t('360^\\circ') + ', subtract ' + t('360^\\circ') + ' — or check whether you should have subtracted ' + t('180^\\circ') + ' instead of adding it.');
@@ -798,7 +799,7 @@
           } },
           { id: 'e8b', level: 'PRG', make: function (r) {
             var v = until(r, function (r) { var a1 = r.int(25, 40), a2 = r.int(a1 + 12, Math.min(a1 + 26, 62)); return { a1: a1, a2: a2, d: r.int(30, 80) }; }, { a1: 34, a2: 52, d: 45 });
-            return formulaPart('Use the formula with the data of question 6: ' + t('\\theta_1=' + dg(v.a1)) + ', ' + t('\\theta_2=' + dg(v.a2)) + ', ' + t('d=' + v.d + '.0') + ' m. Find ' + t('h') + ' to the nearest tenth of a metre.', v.a1, v.a2, v.d, 'formula with Q6 data');
+            return formulaPart('Use the formula on a two-sighting set-up like question 6, with ' + t('\\theta_1=' + dg(v.a1)) + ', ' + t('\\theta_2=' + dg(v.a2)) + ', ' + t('d=' + v.d + '.0') + ' m. Find ' + t('h') + ' to the nearest tenth of a metre.', v.a1, v.a2, v.d, 'formula with Q6 data');
           } },
           { id: 'e8c', level: 'PRG', make: function (r) {
             var a1 = r.int(15, 30), a2 = r.int(a1 + 10, a1 + 25), d = r.int(40, 100);
@@ -856,7 +857,7 @@
               t('AN\\parallel BM') + ' (all north lines are parallel) and ' + t('AB') + ' is a transversal. At ' + t('A') + ' the clockwise turn from ' + t('AN') + ' to ' + t('AB') + ' is ' + t(dg(b)) + '. At ' + t('B') + ' the ray ' + t('BA') + ' points the opposite way, so from ' + t('BM') + ' the clockwise turn to ' + t('BA') + ' is a straight angle further round: ' + t(dg(b) + '+180^\\circ=' + dg(b3(back))) + '.', ['Draw the ray from ' + t('B') + ' back to ' + t('A') + '. How does its direction compare with ' + t('AB') + '?'], 'why return bearing +180');
           } },
           { id: 'e10b', level: 'BEG', make: function (r) {
-            var f = r.int(200, 340), bk = f - 180;
+            var f; do { f = r.int(200, 340); } while (f === 270); var bk = f - 180;
             return bearingP('The bearing of a lodge ' + t('L') + ' from a dock ' + t('D') + ' is ' + t(dg(f)) + '. Determine the bearing of ' + t('D') + ' from ' + t('L') + '.', bk, [
               A(f + 180, 'back-over', t(f + '^\\circ') + ' is already more than ' + t('180^\\circ') + ', so adding ' + t('180^\\circ') + ' passes a full turn. Subtract ' + t('180^\\circ') + ' instead.'),
               A(360 - f, 'bearing-ccw', 'That reflects the direction across the north line. The return direction is the <b>opposite</b> direction: differ by ' + t('180^\\circ') + '.'),
@@ -865,7 +866,7 @@
               ['The return bearing differs by ' + t('180^\\circ') + '. Should you add or subtract to stay between ' + t('000^\\circ') + ' and ' + t('360^\\circ') + '?'], 'return bearing of ' + f);
           } },
           { id: 'e10c', level: 'EMG', make: function (r) {
-            var ex = r.int(190, 330);
+            var ex; do { ex = r.int(190, 330); } while (ex === 270);
             return K.P.mc(r, 'A student writes the rule “for the return bearing, always add ' + t('180^\\circ') + '.” When does this rule fail, and what rule always works?', [
               { html: 'It fails when the bearing is ' + t('180^\\circ') + ' or more (e.g. ' + t(dg(ex)) + ' gives ' + t(dg(ex + 180)) + '). Rule: add ' + t('180^\\circ') + ' if the bearing is less than ' + t('180^\\circ') + '; subtract ' + t('180^\\circ') + ' if it is ' + t('180^\\circ') + ' or more.', right: true },
               { html: 'It fails for bearings less than ' + t('180^\\circ') + '. Rule: always subtract ' + t('180^\\circ') + '.', why: 'Try ' + t('060^\\circ') + ': subtracting gives a negative number, which isn’t a bearing. Adding works there.' },
@@ -919,7 +920,7 @@
               A(sh.b1 + k, 'other-angle', 'At ' + t('C') + ' the angle in the triangle is ' + t('\\angle MCK=90^\\circ-\\angle MKC') + ', not ' + t('\\angle MKC') + '.'),
               A(fwd + 180, 'bearing-back', 'That is the bearing of ' + t('C') + ' from ' + t('K') + ' (the way back).'),
               A(sh.b1 - c, 'bearing-ccw', t('K') + ' is <b>clockwise</b> from ' + t('CM') + ' (the turn at ' + t('M') + ' is to the right), so add ' + t('\\angle MCK') + ' to ' + t(dg(sh.b1)) + '.')],
-              t('\\angle MCK=90^\\circ-' + fx(k, 2) + '^\\circ=' + fx(c, 2) + '^\\circ') + ', and ' + t('CM') + ' has bearing ' + t(dg(b3(sh.b1))) + ', so the bearing of ' + t('K') + ' from ' + t('C') + ' is ' + t(sh.b1 + '^\\circ+' + fx(c, 2) + '^\\circ=' + fx(fwd, 2) + '^\\circ\\approx ' + dg(b3(fwd))) + '.<br>Check with the return rule: ' + t(fx(fwd, 2) + '^\\circ+180^\\circ\\approx ' + dg(b3(fwd + 180))) + ' — the answer to (d) ✓',
+              t('\\angle MCK=90^\\circ-' + fx(k, 2) + '^\\circ=' + fx(c, 2) + '^\\circ') + ', and ' + t('CM') + ' has bearing ' + t(dg(b3(sh.b1))) + ', so the bearing of ' + t('K') + ' from ' + t('C') + ' is ' + t(sh.b1 + '^\\circ+' + fx(c, 2) + '^\\circ=' + fx(fwd, 2) + '^\\circ\\approx ' + dg(b3(fwd))) + '.<br>Check with the return rule: ' + t(fx(fwd, 2) + '^\\circ+180^\\circ\\approx ' + dg(b3(fwd + 180))) + ' — the bearing back from ' + t('K') + ' to ' + t('C') + ' ✓',
               ['Find ' + t('\\angle MCK') + ' (the angles of the triangle add to ' + t('180^\\circ') + ').', 'Add it to the bearing of the first leg.'], 'bearing K from C');
           } }] },
       { num: '12', shared: function (r) { var be; do { be = r.int(300, 340); } while (be === 315); return { d: tenth(r, 4, 12), be: be }; },
@@ -1143,7 +1144,7 @@
             'The ' + t(dg(th)) + ' equals the angle of elevation at the buoy; relative to it the cliff (' + t(H) + ' m) is <b>opposite</b> and the horizontal distance is <b>adjacent</b>: ' + t('\\tan ' + dg(th) + '=\\frac{' + H + '}{\\text{distance}}') + ', so distance ' + t('=\\dfrac{' + H + '}{\\tan ' + dg(th) + '}\\approx ' + fx(H / Tg.tan(th), 1)) + ' m.', ['Move the angle to the buoy. Which side is the cliff from there?'], 'MC distance from depression');
         } },
         { id: 'e18b', level: 'BEG', make: function (r) {
-          var b = r.int(181, 279);
+          var b; do { b = r.int(181, 279); } while (b === 270);
           return bearingP('<i>(Numerical Response)</i> The bearing of ' + t('A') + ' from ' + t('B') + ' is ' + t(dg(b)) + '. The bearing of ' + t('B') + ' from ' + t('A') + ', written with three digits, is ________.', b - 180, [A(b + 180, 'back-over', t(dg(b)) + ' is ' + t('180^\\circ') + ' or more, so subtract ' + t('180^\\circ') + '.'), A(360 - b, 'bearing-ccw', 'The return direction is the opposite direction: it differs by ' + t('180^\\circ') + '.'), A(b, 'bearing-back', 'That is the bearing of ' + t('A') + ' from ' + t('B') + '. Reverse it.')],
             t(dg(b)) + ' is ' + t('180^\\circ') + ' or more, so subtract: ' + t(b + '^\\circ-180^\\circ=' + (b - 180) + '^\\circ') + ', written with three digits as ' + t(b3(b - 180)) + '. Check: ' + t('A') + ' is ' + (b < 270 ? 'south-west' : 'north-west') + ' of ' + t('B') + ', so ' + t('B') + ' is ' + (b < 270 ? 'north-east' : 'south-east') + ' of ' + t('A') + ' ✓',
             ['Return bearing: ±' + t('180^\\circ') + ', staying between ' + t('000^\\circ') + ' and ' + t('360^\\circ') + '.'], 'NR return bearing', { nr: true });

@@ -326,7 +326,12 @@
   function setTex(ks) { return 'metric sizes ' + ks.met.map(function (m) { return t(m + '\\text{ mm}'); }).join(', ') + ' and imperial sizes ' + ks.imp.map(function (f) { return t(frT(f) + '\\text{ in}'); }).join(', '); }
   function nameP(r) { return r.pick(['Dov', 'Zara', 'Mia', 'Kai', 'Priya', 'Devon', 'Lena', 'Omar']); }
 
-  HW.defineLesson({
+  /* booklet letters come from the part id (e2b -> b), so the inserted 'a-ii' style parts don't shift later letters */
+  function fixSubs(def) {
+    [def.questions, def.extra].forEach(function (qs) { qs.forEach(function (q) { if (q.parts.length < 2) return; q.parts.forEach(function (p) { var m = /^e?\d+([a-z])\d?$/.exec(p.id); if (!p.sub && m) p.sub = m[1]; }); }); });
+    return def;
+  }
+  HW.defineLesson(fixSubs({
     id: 'u10l6', unit: 10, num: '6', title: 'Measurement — A Cumulative Review', outcome: 'M3',
     blurb: 'Every skill of the unit together: referents and instruments, SI and imperial conversions, map scales, and surface area and volume of every solid.',
     questions: [
@@ -1497,5 +1502,5 @@
               '(i) <b>Fit for a ballpark</b>: the count is only a rough number. (ii) <b>Not fit</b>: the true clearance is ' + t(fx(s.tL - s.beam, 2)) + ' m but the estimate is wrong by ' + t(fx(s.eL - s.tL, 2)) + ' m. Use a steel tape (or laser measure), reading to the nearest millimetre.', ['Compare each job’s margin with the size of the estimate’s error.'], 'paced estimate fit for purpose');
           } }] }
     ]
-  });
+  }));
 })(window);

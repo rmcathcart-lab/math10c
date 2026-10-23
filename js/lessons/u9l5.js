@@ -787,7 +787,7 @@
               'Each half-truss has a horizontal leg of ' + t(sh.span.toFixed(1) + '\\div 2=' + rd(h, 1).toFixed(1) + '\\text{ m}') + ', a vertical king post of ' + t(ri.toFixed(1) + '\\text{ m}') + ', and the rafter as hypotenuse, with the right angle where the king post meets the span.',
               ['Where does the king post meet the span? What length is left on each side?'], 'half-truss sketch');
           } },
-          { id: 'e11b', sub: 'b', level: 'ADV', make: function (r, sh) {
+          { id: 'e11b', sub: 'b', level: 'PRG', make: function (r, sh) {
             var h = sh.span / 2, ri = sh.rise, raf = Math.hypot(h, ri), W = T.atan(ri / h), hS = rd(h, 1).toFixed(1), rS = ri.toFixed(1);
             var ac = angleCalc('opp', ri, rS, 'adj', h, hS, 'W', '\\angle W', 0);
             return fieldsPart('Solve the half-truss completely: the rafter length (nearest tenth of a metre), the pitch angle at the wall, and the angle at the peak (nearest degree).', [
@@ -1060,7 +1060,7 @@
               'Check (iii) compares ' + t(sh.hyp) + ' with ' + t(Number((sh.p * sh.k).toFixed(2))) + ' and ' + t(Number((sh.q * sh.k).toFixed(2))) + ' — three exact lengths, no angle, no rounding. (Check (ii) can also be done exactly: ' + t('\\tan A=\\tfrac{' + sh.p + '}{' + sh.q + '}') + (sh.p < sh.q ? t('<1') + ' forces ' + t('\\angle A<45^\\circ<\\angle B') : t('>1') + ' forces ' + t('\\angle A>45^\\circ>\\angle B')) + '.)',
               ['Which check uses only side lengths?'], 'exact self-check');
           } },
-          { id: 'e18e', sub: 'e', level: 'ADV', make: function (r, sh) {
+          { id: 'e18e', sub: 'e', level: 'PRG', make: function (r, sh) {
             var h2 = sh.c * sh.k2, BC = sh.p * sh.k2, AC = sh.q * sh.k2, A = T.atan(sh.p / sh.q);
             var ex = function (want, other, nm) { return function (resp) { var p = HW.parse.number(clean(resp)); if (!p.ok) return K.approx(want, 1)(clean(resp)); if (Math.abs(p.value - want) < 1e-9) return ok(); if (Math.abs(p.value - other) < 1e-9) return wrong('opp-adj-swap', nm + ' and the other leg are swapped — match opposite with ' + t(sh.p) + ' and adjacent with ' + t(sh.q) + '.'); if (Math.abs(p.value - want / sh.k2 * sh.k) < 1e-6) return wrong('scale-wrong', 'That is the old value. Use the new scale factor ' + t(h2 + '\\div ' + sh.c) + '.'); return wrong('value', null); }; };
             var fs = [{ tex: 'BC', name: 'BC', check: ex(BC, AC, 'BC'), key: String(BC) }, { tex: 'AC', name: 'AC', check: ex(AC, BC, 'AC'), key: String(AC) },

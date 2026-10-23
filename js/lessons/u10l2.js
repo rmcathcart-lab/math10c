@@ -293,7 +293,7 @@
   }
   /* race comparison (Questions 16, 17) */
   var RACES16 = [{ yd: 880, imp: 'the half-mile (880 yards)', m: 800 }, { yd: 440, imp: 'the quarter-mile (440 yards)', m: 400 }, { yd: 1760, imp: 'the mile (1760 yards)', m: 1500 }, { yd: 1760, imp: 'the mile (1760 yards)', m: 1600 }, { yd: 10560, imp: 'the 6-mile race (10 560 yards)', m: 10000 }];
-  var RACES17 = [{ yd: 220, imp: 'the 220-yard dash', m: 200 }, { yd: 110, imp: 'the 110-yard race', m: 100 }, { yd: 100, imp: 'the 100-yard dash', m: 100 }, { yd: 5280, imp: 'the 3-mile race (5280 yards)', m: 5000 }];
+  var RACES17 = [{ yd: 220, imp: 'the 220-yard dash', m: 200 }, { yd: 100, imp: 'the 100-yard dash', m: 100 }, { yd: 5280, imp: 'the 3-mile race (5280 yards)', m: 5000 }];
   function raceStem(R, k) { var tail = ' Which distance is longer, and by how much? (Use ' + t('1\\text{ yd}=0.9144\\text{ m}') + '.)'; return (k === 16 ? 'Some track meets historically ran ' + R.imp + ', now replaced by the ' + F0(R.m) + ' metre race.' : R.imp.charAt(0).toUpperCase() + R.imp.slice(1) + ', a historical race distance, has been replaced by the ' + F0(R.m) + ' metre race.') + tail; }
   function F0(n) { return n >= 10000 ? HW.fmt(n, true) : String(n); }
   function raceLonger(r, R) {
@@ -492,7 +492,7 @@
         { id: '13a', level: 'PRG', make: function (r) {
           var F, I, inch, x; do { F = r.int(5, 6); I = r.int(1, 11); inch = 12 * F + I; x = inch * 0.0254; } while (bord(x, 2));
           var al = [alt(inch / 254, 'conv-direction', 'Centimetres are smaller than inches, so multiply by ' + t('2.54') + '.'), alt(inch * 0.3048, 'conv-factor', t('0.3048') + ' is metres per <b>foot</b>; you have inches.')]; if (I <= 9) al.push(alt((F + I / 10) * 0.3048, 'ft-in-decimal', decAsInch(F, I)));
-          return estPart(ftinH(F, I) + ' to metres (two decimal places)', 'm', x, 2, inch * 2.5 / 100, inch / 2.5 / 100, t(inch + '\\text{ in}\\times 2.5\\approx ' + dS(inch * 2.5) + '\\text{ cm}') + ', a little under ' + t('2\\text{ m}') + '.', al,
+          return estPart(ftinH(F, I) + ' to metres (two decimal places)', 'm', x, 2, inch * 2.5 / 100, inch / 2.5 / 100, t(inch + '\\text{ in}\\times 2.5\\approx ' + dS(inch * 2.5) + '\\text{ cm}\\approx ' + dS(inch * 2.5 / 100) + '\\text{ m}') + '.', al,
             '<i>Estimate:</i> ' + t(ftin(F, I) + '=' + inch + '\\text{ in}') + ', and ' + t(inch + '\\times 2.5\\approx ' + dS(inch * 2.5) + '\\text{ cm}\\approx ' + dS(inch * 2.5 / 100) + '\\text{ m}') + '.<br><i>Exact:</i> ' + t(inch + '\\times 2.54=' + dS(cl(inch * 2.54)) + '\\text{ cm}\\approx ' + q(fx(x, 2), 'm')) + '. Reasonable ✓', F + ' ft ' + I + ' in to m (estimate)');
         } },
         { id: '13b', level: 'EMG', make: function (r) {
@@ -534,7 +534,7 @@
         { id: '14a', level: 'PRG', make: function (r) { var h = r.pick([['Connor McDavid’s height', 6, 1], ['Sidney Crosby’s height', 5, 11], ['Nathan MacKinnon’s height', 6, 0], ['a hockey goalie’s height', 6, 4]]); return ftinToM(h[0] + ', ' + primes(h[1], h[2]), h[1], h[2], 2, t(primes(h[1], h[2]).replace('′', "'").replace('″', "''") + '\\approx'), h[1] + "'" + h[2] + '" to m'); } },
         { id: '14b', level: 'PRG', make: function (r) { var h = r.pick([['Yao Ming’s height', 7, 6], ['Shaquille O’Neal’s height', 7, 1], ['Manute Bol’s height', 7, 7], ['Zdeno Chara’s height', 6, 9]]); return ftinToM(h[0] + ', ' + primes(h[1], h[2]), h[1], h[2], 2, t(primes(h[1], h[2]).replace('′', "'").replace('″', "''") + '\\approx'), h[1] + "'" + h[2] + '" to m'); } },
         { id: '14c', level: 'PRG', make: function (r) { var h = r.pick([['Serena Williams’s height', 5, 9], ['Simone Biles’s height', 4, 8], ['Stephen Curry’s height', 6, 2], ['Michael Jordan’s height', 6, 6]]); return ftinToM(h[0] + ', ' + primes(h[1], h[2]), h[1], h[2], 2, t(primes(h[1], h[2]).replace('′', "'").replace('″', "''") + '\\approx'), h[1] + "'" + h[2] + '" to m'); } },
-        { id: '14d', level: 'EMG', make: function (r) { var a = r.pick([['A bull bison', 2000], ['A polar bear', 1300], ['A draft horse', 1800], ['A bull elk', 700]]); return lbToKg(a[0], a[1]); } },
+        { id: '14d', level: 'EMG', make: function (r) { var a = r.pick([['A bull bison', 2000], ['A male polar bear', 1300], ['A draft horse', 1800], ['A bull elk', 700]]); return lbToKg(a[0], a[1]); } },
         { id: '14e', level: 'BEG', make: function (r) { var a = r.pick([['A large beaver', 44], ['A wolf', 88], ['A coyote', 33], ['A lynx', 22]]); return lbToKg(a[0], a[1]); } },
         { id: '14f', level: 'EMG', make: function (r) { var a = r.pick([['A bowling ball', 16], ['A turkey', 12], ['A bag of dog food', 20], ['A small bowling ball', 8]]); return lbToKg(a[0], a[1]); } }] },
       { num: '15', stem: 'Convert each height to feet and inches to the nearest inch, and each mass to the nearest pound. (' + t('1\\text{ in}=2.54\\text{ cm}') + ', ' + t('1\\text{ kg}\\approx 2.2\\text{ lb}') + ')', parts: [
@@ -594,7 +594,7 @@
         } }] },
       { num: '23', stem: '<i>(Extension; Multiple Choice)</i> ' + t('c=299\\,792\\,458\\text{ m/s}') + '.', parts: [
         { id: '23', level: 'PRG', outcome: 'EXT', make: function (r) {
-          var G = r.pick([{ y: 70000, c: 'cross the Andromeda galaxy' }, { y: 70000, c: 'cross the Andromeda galaxy' }, { y: 100000, c: 'cross the Milky Way galaxy' }, { y: 26000, c: 'reach Earth from the centre of the Milky Way' }, { y: 2500000, c: 'reach Earth from the Andromeda galaxy' }]);
+          var G = r.pick([{ y: 150000, c: 'cross the Andromeda galaxy' }, { y: 150000, c: 'cross the Andromeda galaxy' }, { y: 100000, c: 'cross the Milky Way galaxy' }, { y: 26000, c: 'reach Earth from the centre of the Milky Way' }, { y: 2500000, c: 'reach Earth from the Andromeda galaxy' }]);
           var m = G.y * YEAR_S * C, km = m / 1000, mi = km / 1.6093;
           return mcPart(r, 'It takes light approximately ' + t(HW.fmt(G.y)) + ' years to ' + G.c + '. Assuming an average of ' + t('365.25') + ' days per year, the approximate distance in miles is', [
             { html: t(sci2(mi)), right: true },
@@ -935,7 +935,7 @@
         } }] },
       /* ---------- Part F: error analysis ---------- */
       { num: '16', section: 'Extra practice F — Error analysis', stem: function (sh) { return 'Asked to convert ' + Q(sh.v, 'mm') + ' to kilometres, a student wrote' + disp('\\dfrac{' + dT(sh.v) + '\\text{ mm}}{1}\\times\\dfrac{1000\\text{ mm}}{1\\text{ m}}\\times\\dfrac{1000\\text{ m}}{1\\text{ km}}=' + q(cl(sh.v * 1e6), 'km')); },
-        shared: function (r) { var v; do { v = r.int(11, 99) * 100; } while (v % 1000 === 0); return { v: v }; }, parts: [
+        shared: function (r) { var P = r.pick([{ p: 'Saturn', v: [1300, 1400, 1500] }, { p: 'Uranus', v: [2700, 2800, 2900, 3100] }, { p: 'Neptune', v: [4300, 4400, 4500, 4600, 4700] }, { p: 'Neptune', v: [4300, 4400, 4500, 4600, 4700] }]); return { v: r.pick(P.v), planet: P.p }; }, parts: [
         { id: 'e16a', sub: 'a', level: 'EMG', make: function (r, sh) {
           return mcPart(r, 'Both factors are upside down. What unit does the student’s product actually carry?', [
             { html: t('\\dfrac{\\text{mm}^2}{\\text{km}}') + ' — not a length at all', right: true },
@@ -946,7 +946,7 @@
         } },
         { id: 'e16b', sub: 'b', level: 'EMG', make: function (r, sh) { var p = metricPart(sh.v, 'mm', 'km', 'chain'); p.prompt = 'Give the correct answer.'; return p; } },
         { id: 'e16c', sub: 'c', level: 'EMG', make: function (r, sh) {
-          return mcPart(r, 'The student’s answer, ' + t(K.sciTex(cl(sh.v * 1e6)) + '\\text{ km}') + ', is about the distance from the Sun to Neptune. Which reasonableness check rules it out instantly?', [
+          return mcPart(r, 'The student’s answer, ' + t(K.sciTex(cl(sh.v * 1e6)) + '\\text{ km}') + ', is about the distance from the Sun to ' + sh.planet + '. Which reasonableness check rules it out instantly?', [
             { html: 'A kilometre is a million times longer than a millimetre, so the number of km must be far <b>smaller</b> than ' + t(dT(sh.v)) + ' — not bigger.', right: true },
             { html: 'Re-do the multiplication ' + t(dT(sh.v) + '\\times 1000\\times 1000') + ' to check it.', why: 'The multiplication is actually correct! Re-checking the arithmetic only confirms the wrong quantity. Compare the sizes of the units.' },
             { html: 'Answers in km should always be less than ' + t('1') + '.', why: 'Not true in general: a road trip can be hundreds of km. The check is about the <b>relative size</b> of the two units.' },

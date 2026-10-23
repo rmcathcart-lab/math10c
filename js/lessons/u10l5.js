@@ -47,7 +47,7 @@
       var s = String(resp == null ? '' : resp), npi = (s.match(/\\pi|π|pi/g) || []).length, sh = ex.shape(a.ast);
       if (ex.eq(a.val, T, 1e-9)) {
         if (!sh.pi) return form('pi-symbol', 'For the exact answer, leave ' + t('\\pi') + ' as a symbol.');
-        if (npi > 1 || sh.pow || sh.roots || (!k && sh.ops)) return form('simplify', 'Right value — now simplify it to ' + (k ? 'one number and one multiple of ' + t('\\pi') : 'a single number times ' + t('\\pi')) + '.');
+        if (npi > 1 || sh.pow || sh.roots || sh.muls > 1 || (!k && sh.ops)) return form('simplify', 'Right value — now simplify it to ' + (k ? 'one number and one multiple of ' + t('\\pi') : 'a single number times ' + t('\\pi')) + '.');
         return ok();
       }
       if (!sh.pi && Math.abs(a.val - T) <= 0.005 * Math.abs(T)) return form('pi-decimal', 'That’s the decimal value. The <b>exact</b> answer keeps ' + t('\\pi') + ' as a symbol, like ' + t('24.5\\pi') + '.');
@@ -647,7 +647,7 @@
             ['The tin is a cylinder of radius ' + t('r') + ' and height ' + t('2r') + ': ' + t('V=2\\pi r^3') + '.'], 'tin radius');
         } },
         { id: 'e2c', sub: 'c', level: 'EMG', make: function (r) {
-          return mcP(r, 'The two-thirds shortcut needed no calculator. What must be true of a cylinder before the shortcut can be used?', [
+          return mcP(r, 'The shortcut “a sphere fills ' + t('\\frac{2}{3}') + ' of the cylinder that just contains it” needs no calculator. What must be true of a cylinder before the shortcut can be used?', [
             { html: 'It must <b>just contain</b> the sphere: same radius as the sphere and height equal to the sphere’s diameter.', right: true },
             { html: 'It must hold more than the sphere’s volume.', why: 'Any bigger cylinder holds more — but then the sphere fills less than two thirds of it.' },
             { html: 'Its height must equal the sphere’s radius.', why: 'The sphere touches the top and the bottom, so the height is the <b>diameter</b>, ' + t('2r') + '.' },
@@ -818,12 +818,12 @@
             t('r\\approx ' + D(rr, 1)) + ' m, ' + t('V=\\frac{4}{3}\\pi(' + D(rr, 1) + ')^3\\approx ' + D(RT(x, 1), 1)) + ' m³ — off by ' + t(D(RT(Math.abs(RT(good, 1) - RT(x, 1)), 1), 1)) + ' m³ from ' + t(D(RT(good, 1), 1)) + ' m³.', ['Round ' + t('r') + ' to one decimal place, then use ' + t('V=\\frac{4}{3}\\pi r^3') + '.'], 'rounded-r volume');
         } },
         { id: 'e11b2', sub: 'b ii', level: 'BEG', make: function (r) {
-          return mcP(r, 'Which volume should be reported?', [
-            { html: 'The one from (a): the radius was only a stepping stone, so it must be carried at full precision.', right: true },
-            { html: 'The one from (b): rounded numbers are easier to check.', why: 'Rounding the radius first throws away accuracy, and cubing magnifies the error.' },
+          return mcP(r, 'One student finds the tank’s volume by carrying the <b>unrounded</b> radius into ' + t('V=\\frac{4}{3}\\pi r^3') + '; another first rounds the radius to the nearest tenth. Their volumes differ in the tenths place. Which volume should be reported?', [
+            { html: 'The one from the unrounded radius: the radius was only a stepping stone, so it must be carried at full precision.', right: true },
+            { html: 'The one from the rounded radius: rounded numbers are easier to check.', why: 'Rounding the radius first throws away accuracy, and cubing magnifies the error.' },
             { html: 'Either — they are both correct.', why: 'They disagree in the tenths place, and only one used full precision.' },
             { html: 'Their average.', why: 'The accurate answer is the one with no early rounding.' }],
-            'Report the volume from (a). Round only the final answer; cubing a rounded radius magnifies its error about three times.', ['Which calculation rounded too early?'], 'which to report');
+            'Report the volume found with the unrounded radius. Round only the final answer; cubing a rounded radius magnifies its error about three times.', ['Which calculation rounded too early?'], 'which to report');
         } },
         { id: 'e11c', sub: 'c', level: 'EMG', make: function (r) {
           return mcP(r, 'Which line shows that ' + t('V=\\frac{1}{3}\\,SA\\cdot r') + ' for every sphere?', [
@@ -886,7 +886,7 @@
             ['List the surfaces you can see and paint: the cylinder wall and the dome.'], 'silo paint');
         } },
         { id: 'e13c', sub: 'c', level: 'EMG', make: function () {
-          return K.P.grid('Two circles of area ' + t('\\pi r^2') + ' are missing from your answer to (b). Why is each one left out?', [{ id: 'j', html: 'the circle at the top of the cylinder, where the roof is fixed on' }, { id: 'p', html: 'the circular base resting on the pad' }],
+          return K.P.grid('The whole exterior is painted <b>except</b> the circular base resting on the pad, so the painted area is only the curved wall and the curved roof, ' + t('2\\pi rh+2\\pi r^2') + '. Two circles of area ' + t('\\pi r^2') + ' are left out of it. Why is each one left out?', [{ id: 'j', html: 'the circle at the top of the cylinder, where the roof is fixed on' }, { id: 'p', html: 'the circular base resting on the pad' }],
             [{ id: 'g', html: 'geometry: it’s inside the silo' }, { id: 'w', html: 'the wording of the question' }], { j: 'g', p: 'w' },
             { why: function (row) { return row === 'j' ? 'The joint under the roof is inside the finished silo — it isn’t a surface at all.' : 'The base is a real surface; it is left out only because the question says so.'; } },
             'The joining circle is internal (geometry). The base is a genuine surface, excluded only by the wording “except the circular base”.', ['Could each circle ever be painted?'], 'why circles excluded');
@@ -1014,7 +1014,7 @@
         } },
         { id: 'e19b', sub: 'b', level: 'ADV', make: function (r, sh) {
           var num = 2 * sh.d * sh.d * sh.d, den = 3 * sh.D * sh.D, g = HW.ex.gcd(num, den);
-          return K.P.fraction('The ' + t('\\pi') + ' cancels before any arithmetic happens. State the <b>exact</b> rise as a fraction (in cm).', [num / g, den / g], {},
+          return K.P.fraction('The ' + t('\\pi') + ' cancels before any arithmetic happens. State the <b>exact</b> rise ' + (den / g === 1 ? '(in cm).' : 'as a fraction (in cm).'), [num / g, den / g], {},
             t('\\Delta h=\\frac{\\frac{4}{3}\\pi r^3}{\\pi R^2}=\\frac{4r^3}{3R^2}=\\frac{4(' + D(sh.d / 2) + ')^3}{3(' + D(sh.D / 2) + ')^2}=\\frac{' + num / g + '}{' + den / g + '}') + ' cm',
             ['Write ' + t('\\Delta h=\\frac{\\frac{4}{3}\\pi r^3}{\\pi R^2}') + ', cancel ' + t('\\pi') + ', then simplify the fraction.', 'Clear the decimals: multiply the top and bottom by a power of 10 (or 8 and 4).'], 'exact rise');
         } },
@@ -1061,15 +1061,15 @@
         } },
         { id: 'e20d', sub: 'd i', level: 'BEG', make: function (r, sh) {
           var rr = sh.d / 2;
-          return mcP(r, '<b>Idris</b> was asked for the area of a hemispherical dome of diameter ' + t(D(sh.d, 1)) + ' cm built <b>with no floor</b>, and answered ' + t('3\\pi r^2=' + D(RT(3 * PI * rr * rr, 1), 1)) + ' cm². What is his error?', [
+          return mcP(r, idris(sh) + ' What is his error?', [
             { html: 'He counted the flat circular base, which the wording excludes.', right: true }, { html: 'He used the diameter as the radius.', why: 'Check: ' + t('3\\pi(' + D(rr) + ')^2=' + D(RT(3 * PI * rr * rr, 1), 1)) + ' — he used the radius.' },
             { html: '' + t('3\\pi r^2') + ' is never a correct formula.', why: 'It is right for a hemisphere <i>with</i> its base — just not for this question.' }, { html: 'He should have used ' + t('4\\pi r^2') + '.', why: 'That’s a whole sphere. A dome is half a sphere.' }],
             '“No floor” leaves only the curved surface, ' + t('2\\pi r^2') + '. ' + t('3\\pi r^2') + ' answers a different question. Only rereading the wording catches this one.', ['What does “with no floor” remove?'], 'Idris’s error');
         } },
-        { id: 'e20d2', sub: 'd ii', level: 'EMG', make: function (r, sh) { return hemiSA('Give the correct area of Idris’s dome to the nearest tenth.', sh.d / 2, 'd', U('cm'), 1, false, 'No floor: curved surface only.', 'dome correct SA'); } },
+        { id: 'e20d2', sub: 'd ii', level: 'EMG', make: function (r, sh) { return hemiSA(idris(sh) + ' Give the correct area of the dome to the nearest tenth.', sh.d / 2, 'd', U('cm'), 1, false, 'No floor: curved surface only.', 'dome correct SA'); } },
         { id: 'e20d3', sub: 'd iii', level: 'EMG', make: function (r, sh) {
           var rr = sh.d / 2, x = PI * rr * rr;
-          return nearP('Exactly how much area did Idris wrongly include? (Nearest tenth.)', x, 1, 'cm²', [A(2 * x, 'hemi-base', 'He included only the flat base, ' + t('\\pi r^2') + '.'), A(4 * x, 'd-as-r', H.dr)],
+          return nearP(idris(sh) + ' Exactly how much area did Idris wrongly include? (Nearest tenth.)', x, 1, 'cm²', [A(2 * x, 'hemi-base', 'He included only the flat base, ' + t('\\pi r^2') + '.'), A(4 * x, 'd-as-r', H.dr)],
             'The base: ' + t('\\pi r^2=\\pi(' + D(rr) + ')^2=' + piT(rr * rr) + '\\approx ' + D(RT(x, 1), 1)) + ' cm²', ['The extra piece is the flat circle.'], 'wrongly included');
         } }] },
       /* ---------- Part I ---------- */
@@ -1097,7 +1097,7 @@
             ['The sphere can’t grow past the cylinder’s diameter.', 'Divide the two volumes; ' + t('\\pi') + ' cancels.'], 'sphere in tall cylinder');
         } },
         { id: 'e21d', sub: 'd', level: 'ADV', make: function () {
-          return symP('Show that for a cube of <b>any</b> edge ' + t('s') + ' the fraction in (a) is always the same. Write that exact fraction.', '\\frac{\\pi}{6}', ['s'], { maxNums: 2, good: ['\\frac{1}{6}\\pi'], diags: [{ tex: '\\frac{2}{3}', code: 'third', hint: 'Two thirds is the snug <b>cylinder</b>. For the cube, use ' + t('r=\\frac{s}{2}') + ' in ' + t('\\frac{\\frac{4}{3}\\pi r^3}{s^3}') + '.' }, { tex: '\\frac{4\\pi}{3}', code: 'd-as-r', hint: 'The radius is ' + t('\\frac{s}{2}') + ', not ' + t('s') + '.' }, { tex: '\\frac{\\pi}{8}', code: 'v-no-43', hint: 'Keep the ' + t('\\frac{4}{3}') + ': ' + t('\\frac{4}{3}\\cdot\\frac{1}{8}=\\frac{1}{6}') + '.' }] },
+          return symP('Show that for a cube of <b>any</b> edge ' + t('s') + ', the fraction of the cube filled by the largest sphere that fits (as in (a)) is always the same. Write that exact fraction.', '\\frac{\\pi}{6}', ['s'], { maxNums: 2, good: ['\\frac{1}{6}\\pi'], diags: [{ tex: '\\frac{2}{3}', code: 'third', hint: 'Two thirds is the snug <b>cylinder</b>. For the cube, use ' + t('r=\\frac{s}{2}') + ' in ' + t('\\frac{\\frac{4}{3}\\pi r^3}{s^3}') + '.' }, { tex: '\\frac{4\\pi}{3}', code: 'd-as-r', hint: 'The radius is ' + t('\\frac{s}{2}') + ', not ' + t('s') + '.' }, { tex: '\\frac{\\pi}{8}', code: 'v-no-43', hint: 'Keep the ' + t('\\frac{4}{3}') + ': ' + t('\\frac{4}{3}\\cdot\\frac{1}{8}=\\frac{1}{6}') + '.' }] },
             t('r=\\frac{s}{2}') + ': ' + t('V_{\\text{sphere}}=\\frac{4}{3}\\pi\\frac{s^3}{8}=\\frac{\\pi s^3}{6}') + ', so ' + t('\\frac{V_{\\text{sphere}}}{V_{\\text{cube}}}=\\frac{\\pi s^3/6}{s^3}=\\frac{\\pi}{6}') + ' — the ' + t('s^3') + ' cancels.', ['Use ' + t('r=\\frac{s}{2}') + ' and divide by ' + t('s^3') + '.'], 'π/6 for any cube');
         } },
         { id: 'e21e', sub: 'e', level: 'EMG', make: function (r, sh) {
@@ -1121,6 +1121,10 @@
     var seen = {}; seen[K.sciTex(x, 2)] = 1;
     p.bad = alts.map(function (a) { return K.sciTex(a.v, 2); }).filter(function (s) { if (seen[s]) return false; seen[s] = 1; return true; });
     return p;
+  }
+  function idris(sh) {   // Part H (d): restated on every card that needs it
+    var rr = sh.d / 2;
+    return '<b>Idris</b> was asked for the area of a hemispherical dome of diameter ' + t(D(sh.d, 1)) + ' cm built <b>with no floor</b>, and answered ' + t('3\\pi r^2=' + D(RT(3 * PI * rr * rr, 1), 1)) + ' cm².';
   }
   function solveR(hemi, mode) {
     var k = hemi ? 2 : 4, fr = '\\frac{3V}{' + k + '\\pi}', rad = '\\sqrt[3]{' + fr + '}', pow = '\\left(' + fr + '\\right)^{\\frac{1}{3}}';

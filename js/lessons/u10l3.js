@@ -65,7 +65,7 @@
     return { prompt: prompt, input: { type: 'number', nr: !!o.nr, before: o.before, after: unit || undefined }, check: nearK(x, dp, alts, o.nr), key: key,
       answer: t((o.before ? '\\$' : '') + F(key) + U(unit)), solution: sol, hints: hints || [], text: text, bad: badOf(x, dp, alts) };
   }
-  function exactPart(prompt, x, unit, alts, sol, hints, text, o) { return nearPart(prompt, x, Math.min(4, decs(x)), unit, alts, sol, hints, text, o); }
+  function exactPart(prompt, x, unit, alts, sol, hints, text, o) { return nearPart(prompt, x, Math.min(6, decs(x)), unit, alts, sol, hints, text, o); }
   /* specs: [{ label, x, dp (omit = exact), unit, alts }] */
   function fieldsPart(prompt, specs, sol, hints, text) {
     var checks = [], keys = [], fields = [], ans = [], dps = [];
@@ -236,7 +236,7 @@
   }
   function lFig(s) {
     var W = s.W, Hh = s.H, tb = s.tb, wv = s.wv;
-    return prism3d([[0, 0], [W, 0], [W, tb], [wv, tb], [wv, Hh], [0, Hh]], { dd: s.D * 0.55, labels: [[0, p1(W)], [5, p1(Hh)], [4, p1(wv), 'in'], [2, p1(W - wv)], [3, p1(Hh - tb)], [1, p1(tb)]], depthLabel: p1(s.D), depthAt: 1, aria: 'L-shaped prism' });
+    return prism3d([[0, 0], [W, 0], [W, tb], [wv, tb], [wv, Hh], [0, Hh]], { dd: s.D * 0.55, labels: [[0, p1(W)], [5, p1(Hh)], [4, p1(wv), 'in'], [2, p1(W - wv), 'in'], [3, p1(Hh - tb)], [1, p1(tb)]], depthLabel: p1(s.D), depthAt: 1, aria: 'L-shaped prism' });
   }
   function plateFig(s) {
     var k = 4 / s.s, w = 4, T = s.T * k, rr = s.d / 2 * k;
@@ -278,7 +278,8 @@
     return { len: 120, dd: 25, a: 40, b: 70, Ab: 1375, cap: 165 };
   }
   function ep9Shared(r) { var rr = r.pick([6, 7, 8, 9, 10, 11, 12, 14]), h = r.int(15, 40), cs = rd(2 * PI * rr * h, 1); return { r: rr, h: h, cs: cs }; }
-  function ep10Shared(r) { var s = r.pick([10, 12, 14, 15, 16]), d, T; do { d = r.pick([4, 5, 6, 7, 8]); T = r.int(3, 7); } while (d > s - 4 || T <= d / 2 + 0.5); return { s: s, d: d, T: T }; }
+  /* T ≠ d: when the thickness equals the diameter, the net change 2πr(T − r) equals the two circles 2πr², and two (c) options read the same */
+  function ep10Shared(r) { var s = r.pick([10, 12, 14, 15, 16]), d, T; do { d = r.pick([4, 5, 6, 7, 8]); T = r.int(3, 7); } while (d > s - 4 || T <= d / 2 + 0.5 || T === d); return { s: s, d: d, T: T }; }
   function ep11Shared(r) { var W = r.int(8, 12), H = r.int(7, 10), tb = r.int(3, 5), wv = r.int(3, 5); while (H - tb < 3) tb--; while (W - wv < 4) wv--; return { W: W, H: H, tb: tb, wv: wv, D: r.int(5, 9) }; }
   function lArea(s) { return s.W * s.H - (s.W - s.wv) * (s.H - s.tb); }
   function ep12Shared(r) { var s = r.pick([24, 30, 36]), rr; do { rr = r.int(5, 10); } while (rr > s / 2 - 4); return { s: s, t: r.pick([8, 10, 12]), r: rr, h: r.int(15, 25) }; }
@@ -321,7 +322,7 @@
           var g = r.int(2, 19) * 5, x = g * USG;
           return nearPart('(e) ' + t(g) + ' US gallons to litres', x, 3, 'L',
             [A(g / USG, 'conv-direction', SMALLER + ' (' + t('1\\text{ US gal}=3.7854\\text{ L}') + ').'), A(g * UKG, 'conv-gallon', 'That’s the <b>imperial (UK)</b> gallon. A US gallon is ' + t('3.7854\\text{ L}') + '.')],
-            t('1\\text{ US gal}=3.7854\\text{ L}') + '.<br>' + t(g + '\\times 3.7854=' + n(x) + (decs(x) > 3 ? bold(x, 3, 'L') : '\\;\\mathbf{L}')),
+            t('1\\text{ US gal}=3.7854\\text{ L}') + '.<br>' + t(g + '\\times 3.7854' + (decs(x) > 3 ? '=' + n(x) + bold(x, 3, 'L') : boldEx(x, 'L'))),
             [t('1\\text{ US gallon}=3.7854\\text{ L}') + ' and ' + t('1\\text{ imperial (UK) gallon}=4.5461\\text{ L}') + '.', CONV_HINTS[1]], 'US gal → L: ' + g);
         } },
         { id: '1f', level: 'EMG', outcome: 'M2', make: function (r) {
@@ -809,7 +810,7 @@
             ['A cube has six congruent square faces: ' + t('SA=6s^{2}') + '.'], 'cube from SA');
         } },
         { id: 'e7d', level: 'EMG', make: function (r) {
-          return mc(r, '(d) In (a) a right prism, (b) a cylinder and (c) a cube, exactly one unknown can be found by a single division. Which one, and why?', [
+          return mc(r, '(d) Three unknowns: (a) the height of a right prism, given its volume and base area; (b) the radius of a cylinder, given its volume and height; (c) the edge of a cube, given its surface area. Exactly one can be found by a single division. Which one, and why?', [
             { html: '(a) — the height appears to the first power, multiplied by a known number.', right: true },
             { html: '(b) — ' + t('\\pi') + ' is just a number, so divide by ' + t('\\pi h') + '.', why: 'Dividing by ' + t('\\pi h') + ' only isolates ' + t('r^{2}') + ' — a square root is still needed.', code: 'b' },
             { html: '(c) — divide the surface area by ' + t('6') + '.', why: 'That gives ' + t('s^{2}') + ', not ' + t('s') + '. A square root is still needed.', code: 'c' },
@@ -931,7 +932,7 @@
             ['Which surfaces can you touch once it’s on the ground?', 'The circle the cylinder stands on is hidden, but the cylinder’s own top is exposed.'], 'ornament sealed area');
         } },
         { id: 'e12c', level: 'EMG', make: function (r, s) {
-          return mc(r, '(c) Two circles of the same size appear in the work for (b): one is subtracted and one is added. What is their combined effect?', [
+          return mc(r, '(c) When you total the area to be sealed, two circles of radius ' + t(d1(s.r) + '\\text{ cm}') + ' appear in the work: one is subtracted and one is added. What is their combined effect?', [
             { html: 'They cancel exactly: the patch of prism top under the cylinder is removed, and the cylinder’s own top is added.', right: true },
             { html: 'They double the circle’s area, because both are counted.', why: 'One is subtracted and one is added — what is ' + t('-\\pi r^{2}+\\pi r^{2}') + '?', code: 'double' },
             { html: 'They remove two circles, because the cylinder covers both.', why: 'The cylinder only covers one patch (on the prism). Its own top is exposed.', code: 'remove2' },
@@ -981,7 +982,7 @@
         } },
         { id: 'e14b', level: 'BEG', make: function (r, s) {
           var c = PI * s.r * s.r;
-          return nearPart('(b) The three answers differ only by whole circles. State the area of one circle, to the nearest tenth.', c, 1, 'cm²',
+          return nearPart('(b) The surface areas of the three objects differ only by whole circular ends. State the area of one circle, to the nearest tenth.', c, 1, 'cm²',
             [A(2 * PI * s.r, 'circ-area', 'That’s the circumference. Area is ' + t('\\pi r^{2}') + '.'), A(2 * c, 'sa-half', 'One circle, not two.')],
             t('\\pi r^{2}=\\pi(' + d1(s.r) + ')^{2}=' + n(s.r * s.r) + '\\pi' + bold(c, 1, 'cm²')) + '. I − II is exactly one circle and I − III exactly two — a quick check for any open-container answer.', [t('A=\\pi r^{2}') + '.'], 'one circle');
         } },
@@ -1051,7 +1052,7 @@
             [H.diam, t('1\\text{ m}^{3}=1000\\text{ L}') + ' — use the unrounded m³.'], 'tank capacity');
         } },
         { id: 'e16d', level: 'PRG', make: function (r, s) {
-          var R = s.d / 2, SA = PI * R * R + 2 * PI * R * s.h, C = SA * s.pr, Lt = PI * R * R * s.h * 1000, c = C / Lt * 100;
+          var R = s.d / 2, SA = PI * R * R + 2 * PI * R * s.h, C = rd(SA * s.pr, 2), Lt = rd(PI * R * R * s.h * 1000, 1), c = C / Lt * 100; // the card shows only the rounded cost and litres, so the key uses them
           return nearPart('(d) The steel costs ' + t('\\$' + fx(C, 2)) + ' and the tank holds ' + t(F((Lt).toFixed(1)) + '\\text{ L}') + '. Find the cost of the steel per litre of capacity, in <b>cents</b>, to the nearest tenth of a cent.', c, 1, 'cents per litre',
             [A(C / Lt, 'cents-dollars', 'That’s in <b>dollars</b> per litre. Multiply by 100 for cents.'), A(Lt / C, 'mult-div', 'Cost per litre = cost ÷ litres.')],
             t('\\dfrac{\\$' + fx(C, 2) + '}{' + F(Lt.toFixed(1)) + '\\text{ L}}=\\$' + (C / Lt).toFixed(5) + '\\ldots') + ' per litre ' + t('=' + c.toFixed(4) + '\\ldots' + bold(c, 1, 'cents/L')) + '. A builder compares designs by cost per litre — the total alone just grows with size.',

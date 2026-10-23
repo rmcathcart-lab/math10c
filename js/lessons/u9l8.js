@@ -191,7 +191,11 @@
   /* EP16: (distance, angle, walk) where rounding h to a tenth changes the whole-degree answer — booklet 12.5 m, 68°, 40 m */
   var EP16 = [[8,59,40],[8,62,25],[8,65,20],[8,65,25],[8,65,50],[8.5,55,30],[8.5,67,45],[8.5,67,55],[8.5,69,40],[8.5,74,25],[9,57,35],[9,61,25],[9,63,25],[9,64,20],[9,64,25],[9,73,50],[9.5,55,25],[9.5,56,45],[9.5,60,25],[9.5,62,55],[9.5,64,40],[9.5,65,45],[9.5,72,30],[9.5,73,20],[10,56,40],[10,59,50],[10,61,55],[10,67,30],[10,68,60],[10,69,50],[10,70,20],[10,70,30],[10.5,57,25],[10.5,59,45],[10.5,66,60],[10.5,67,35],[11,57,50],[11,60,35],[11,60,40],[11,61,45],[11,69,55],[11,72,60],[11.5,62,30],[11.5,68,35],[12,63,25],[12,66,50],[12,71,55],[12,74,25],[12.5,55,25],[12.5,56,50],[12.5,57,45],[12.5,61,55],[12.5,68,25],[12.5,68,40],[12.5,68,40],[12.5,68,40],[12.5,75,35],[13,59,60],[13,62,20],[13,62,60],[13,74,30],[13,75,55],[13.5,56,40],[13.5,59,50],[13.5,61,40],[13.5,65,60],[14,65,55],[14.5,59,50],[15,56,60],[15,59,20],[15,73,20],[15.5,56,40],[15.5,60,25],[15.5,60,30],[15.5,70,40],[15.5,74,55],[16,66,45],[16.5,59,25],[16.5,65,35],[17,60,20],[17,60,35],[17,64,50],[17.5,56,60],[17.5,59,30],[18,59,35],[18,61,35],[18.5,57,20],[18.5,61,25],[18.5,66,55],[19,64,30],[19,67,25],[19.5,62,25],[20,59,25]];
 
-  HW.defineLesson({
+  function subs(def) { // keep the booklet's letters on extra-practice parts (e1b2 → "b2": the second card for booklet part (b))
+    def.extra.forEach(function (q) { q.parts.forEach(function (p) { var m = /^e\d+([a-z])(\d?)$/.exec(p.id); if (!p.sub && m) p.sub = m[1] + m[2]; }); });
+    return def;
+  }
+  HW.defineLesson(subs({
     id: 'u9l8', unit: 9, num: '8', title: 'Right Triangle Trigonometry: A Cumulative Review', outcome: 'M4',
     blurb: 'Naming sides, solving for a side, solving for an angle, elevation and depression, and splitting a figure into right triangles (extension: bearings and 3-D).',
     questions: [
@@ -648,7 +652,7 @@
         { id: 'e3e', level: 'EMG', make: function (r) { var s = gen(r, function (r) { return { a: d1(r, 10, 30), A: r.int(20, 60) }; }, function (s) { return safe(s.a / T.cos(s.A), 1); }), x = s.a / T.cos(s.A);
           return near('Determine ' + t('JL') + '.' + figWrap(tri({ w: 4, h: 4 * T.tan(s.A), names: ['J', 'L', 'K'], sides: { b: s1(s.a) }, angles: { A: s.A + '°' }, width: 230 }, r)), x, 1, '', sideAlts(s.a, s.A, 'adj', 'hyp'),
             '<b>A ratio</b> (cosine). ' + sideWork(s.a, s1(s.a), s.A, 'adj', 'hyp', x, 1, '', 'JL'), ['Relative to ' + t('\\angle J') + ', the given side is adjacent and ' + t('JL') + ' is the hypotenuse.', 'The unknown ends up in the denominator.'], 'JL cosine'); } },
-        { id: 'e3g', level: 'EMG', make: function (r) {
+        { id: 'e3g', sub: 'a–e', level: 'EMG', make: function (r) {
           var rows = r.shuffle([{ id: 'a', html: '(a) ' + t('PQ') + ' from two legs' }, { id: 'b', html: '(b) ' + t('\\angle P') + ' from ' + t('\\angle M') }, { id: 'c', html: '(c) ' + t('YZ') + ' from an angle and the hyp.' }, { id: 'd', html: '(d) ' + t('\\angle D') + ' from two legs' }, { id: 'e', html: '(e) ' + t('JL') + ' from an angle and a leg' }]);
           return grid('Name the tool for each triangle.', rows, [{ id: 'py', html: 'Pythag.' }, { id: 'ra', html: 'ratio' }, { id: 'inv', html: 'inverse' }, { id: 'co', html: t('90^\\circ-') }], { a: 'py', b: 'co', c: 'ra', d: 'inv', e: 'ra' },
             function (row, got) { return { code: 'trig-ratio', hint: { a: 'Two sides known and a side wanted, with no angle in sight: no trigonometry needed.', b: 'One acute angle gives the other for free: they add to ' + t('90^\\circ') + '.', c: 'A side is wanted from an angle and a side: a ratio (SOH CAH TOA).', d: 'An <b>angle</b> is wanted from two sides: an inverse ratio.', e: 'A side is wanted from an angle and a side: a ratio.' }[row] }; },
@@ -1293,5 +1297,5 @@
           } }] }
     ]
 
-  });
+  }));
 })(window);
