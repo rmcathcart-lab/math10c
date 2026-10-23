@@ -28,21 +28,21 @@
       { id: 'u1l6', num: '6', title: 'Roots of Real Numbers' },
       { id: 'u1l7', num: '7', title: 'Entire and Mixed Radicals' },
       { id: 'u1l8', num: '8', title: 'Entire and Mixed Radicals: Index 3 and Higher' },
-      { id: 'u1l9', num: '9', title: 'Cumulative Number Sense Check-Up' }] },
+      { id: 'u1l9', num: '9', title: 'Number Unit Review' }] },
     { unit: 2, title: 'Exponents', outcomes: 'AN3', lessons: [
       { id: 'u2l1', num: '1', title: 'Understanding Powers and the Exponent Laws' },
       { id: 'u2l2', num: '2', title: 'Simplifying Expressions with Several Exponent Laws' },
       { id: 'u2l3', num: '3', title: 'Negative Exponents and Scientific Notation' },
       { id: 'u2l4', num: '4', title: 'Rational Exponents and Radicals' },
       { id: 'u2l5', num: '5', title: 'Simplifying with Rational Exponents' },
-      { id: 'u2l6', num: '6', title: 'Exponent Laws in Review' }] },
+      { id: 'u2l6', num: '6', title: 'Exponents Unit Review' }] },
     { unit: 3, title: 'Polynomial Operations', outcomes: 'AN4', lessons: [
       { id: 'u3l1', num: '1', title: 'Polynomials: Review and Preview' },
       { id: 'u3l2', num: '2', title: 'Multiplying Monomials and Binomials' },
       { id: 'u3l3', num: '3', title: 'Multiplying Polynomials I: Special Products' },
       { id: 'u3l4', num: '4', title: 'Multiplying Polynomials II: Binomial × Trinomial and Three Binomials' },
       { id: 'u3l5', num: '5', title: 'Applying Polynomial Products to Area, Volume, and Equations' },
-      { id: 'u3l6', num: '6', title: 'Polynomial Operations: Comprehensive Review' }] },
+      { id: 'u3l6', num: '6', title: 'Polynomial Operations Unit Review' }] },
     { unit: 4, title: 'Factoring Polynomial Expressions', outcomes: 'AN5', lessons: [
       { id: 'u4l1', num: '1', title: 'Common Factors: The GCF of Monomials and Polynomials' },
       { id: 'u4l2', num: '2', title: 'Common Factors: Binomial Common Factors and Grouping' },
@@ -51,7 +51,7 @@
       { id: 'u4l5', num: '5', title: 'Factoring ax² + bx + c (where a ≠ 1)' },
       { id: 'u4l6', num: '6', title: 'Further Factoring' },
       { id: 'u4l7', num: '7', title: 'Choosing a Factoring Strategy' },
-      { id: 'u4l8', num: '8', title: 'Unit 4 Review: Factoring' }] },
+      { id: 'u4l8', num: '8', title: 'Factoring Polynomial Expressions Unit Review' }] },
     { unit: 5, title: 'Relations and Functions', outcomes: 'RF1 · RF2 · RF8', lessons: [
       { id: 'u5l1', num: '1', title: 'The Cartesian Plane, Growing Patterns, and Types of Variables' },
       { id: 'u5l2', num: '2', title: 'Describing Relationships Between Two Quantities' },
@@ -61,13 +61,13 @@
       { id: 'u5l6', num: '6', title: 'Function Notation' },
       { id: 'u5l7', num: '7', title: 'Function Notation: Graphs, Conversions, and Real-World Models' },
       { id: 'u5l8', num: '8', title: 'Interpreting and Sketching Real-World Graphs' },
-      { id: 'u5l9', num: '9', title: 'Relations and Functions Review: Domain, Range, and Function Notation' }] },
+      { id: 'u5l9', num: '9', title: 'Relations and Functions Unit Review' }] },
     { unit: 6, title: 'Characteristics of Linear Relations', outcomes: 'RF3 · RF4 · RF5', lessons: [
       { id: 'u6l1', num: '1', title: 'Length, Distance, and Midpoint of a Line Segment' },
       { id: 'u6l2', num: '2', title: 'Rise Over Run: The Slope of a Line Segment' },
       { id: 'u6l3', num: '3', title: 'Slope Relationships: Collinearity, Parallel and Perpendicular Lines' },
       { id: 'u6l4', num: '4', title: 'Characteristics of Linear Graphs' },
-      { id: 'u6l5', num: '5', title: 'Coordinate Geometry Review: Slope, Linear Graphs, Distance and Midpoint' }] },
+      { id: 'u6l5', num: '5', title: 'Characteristics of Linear Relations Unit Review' }] },
     { unit: 7, title: 'Equations of Linear Relations', outcomes: 'RF4 · RF5 · RF6 · RF7', lessons: [
       { id: 'u7l1', num: '1', title: 'Slope–Intercept Form and the Graph of a Line' },
       { id: 'u7l2', num: '2', title: 'From Slope to Equation: Building Linear Equations with y = mx + b' },
@@ -75,14 +75,14 @@
       { id: 'u7l4', num: '4', title: 'Using Slope–Point Form to Determine the Equation of a Line' },
       { id: 'u7l5', num: '5', title: 'Graphing Linear Equations: A Strategy for Every Form' },
       { id: 'u7l6', num: '6', title: 'Slope in Context: Interpreting Rates of Change' },
-      { id: 'u7l7', num: '7', title: 'Equations of Lines Review: Slope, Intercepts, and Perpendicularity' }] },
+      { id: 'u7l7', num: '7', title: 'Equations of Linear Relations Unit Review' }] },
     { unit: 8, title: 'Systems of Linear Equations', outcomes: 'RF9', lessons: [
       { id: 'u8l1', num: '1', title: 'Solving Systems by Graphing: How Many Solutions?' },
       { id: 'u8l2', num: '2', title: 'Solving Systems of Equations by Substitution' },
       { id: 'u8l3', num: '3', title: 'Combining Equations: The Elimination Method' },
       { id: 'u8l4', num: '4', title: 'Solving Word Problems with Systems of Equations' },
       { id: 'u8l5', num: '5', title: 'Mixture and Motion: More Applications of Linear Systems' },
-      { id: 'u8l6', num: '6', title: 'Systems of Linear Equations: Cumulative Review' }] },
+      { id: 'u8l6', num: '6', title: 'Systems of Linear Equations Unit Review' }] },
     { unit: 9, title: 'Trigonometry', outcomes: 'M4', lessons: [
       { id: 'u9l1', num: '1', title: 'Right-Triangle Trigonometry: Sine, Cosine, and Tangent' },
       { id: 'u9l2', num: '2', title: 'Trig Ratios: Calculator Values and Angle Patterns' },
@@ -91,14 +91,14 @@
       { id: 'u9l5', num: '5', title: 'Solving Right Triangles Completely' },
       { id: 'u9l6', num: '6', title: 'Multi-Step Trigonometry: Eye Level, Elevation and Depression' },
       { id: 'u9l7', num: '7', title: 'Chaining Right Triangles Together' },
-      { id: 'u9l8', num: '8', title: 'Right Triangle Trigonometry: A Cumulative Review' }] },
+      { id: 'u9l8', num: '8', title: 'Trigonometry Unit Review' }] },
     { unit: 10, title: 'Measurement', outcomes: 'M1 · M2 · M3', lessons: [
       { id: 'u10l1', num: '1', title: 'Systems of Measurement, Referents, and Measuring Instruments' },
       { id: 'u10l2', num: '2', title: 'Converting Units Within and Between SI and Imperial' },
       { id: 'u10l3', num: '3', title: 'Surface Area and Volume of Prisms and Cylinders' },
       { id: 'u10l4', num: '4', title: 'Surface Area and Volume of Pyramids and Cones' },
       { id: 'u10l5', num: '5', title: 'Surface Area and Volume of Spheres and Hemispheres' },
-      { id: 'u10l6', num: '6', title: 'Measurement — A Cumulative Review' }] }
+      { id: 'u10l6', num: '6', title: 'Measurement Unit Review' }] }
   ];
   /* a colour for each unit (class calendar, unit headings): neighbouring units contrast, so a unit change is easy to see.
      HW.unitStyle(u) gives CSS variables: --uc (the colour), --ucl (pale tint), --ucs (soft border), --ucd (dark text),

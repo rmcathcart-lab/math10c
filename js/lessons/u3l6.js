@@ -318,7 +318,7 @@
   }
 
   HW.defineLesson({
-    id: 'u3l6', unit: 3, num: '6', title: 'Polynomial Operations: Comprehensive Review', outcome: 'AN4',
+    id: 'u3l6', unit: 3, num: '6', title: 'Polynomial Operations Unit Review', outcome: 'AN4',
     blurb: 'Every skill in the unit, mixed: classify and find degree, expand products and special products, area and volume, and catch the classic errors.',
     questions: [
       { num: '1', section: 'Part A — Multiple Choice', stem: '<i>(Multiple Choice)</i>', parts: [

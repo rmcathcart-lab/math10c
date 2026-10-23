@@ -163,7 +163,7 @@
   function genSumSq(r) { return genPST2(r); } // a²p² + b²q²
 
   HW.defineLesson({
-    id: 'u4l8', unit: 4, num: '8', title: 'Unit 4 Review: Factoring', outcome: 'AN5',
+    id: 'u4l8', unit: 4, num: '8', title: 'Factoring Polynomial Expressions Unit Review', outcome: 'AN5',
     blurb: 'Laid out like the unit test: Beginning, Progressing and Mastery questions on every factoring tool, each section laid out like the unit test.',
     questions: [
       /* ================= BEGINNING ================= */

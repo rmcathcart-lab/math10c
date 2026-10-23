@@ -1206,7 +1206,7 @@
   ];
 
   HW.defineLesson({
-    id: 'u7l7', unit: 7, num: '7', title: 'Equations of Lines Review: Slope, Intercepts, and Perpendicularity', outcome: 'RF7',
+    id: 'u7l7', unit: 7, num: '7', title: 'Equations of Linear Relations Unit Review', outcome: 'RF7',
     blurb: 'The whole unit on one page: read slope and intercepts from any form, write a line from a graph, two points or a condition, use parallel and perpendicular slopes, graph each form, and model rates of change in context.',
     questions: [
       /* ---------- 1 ---------- */

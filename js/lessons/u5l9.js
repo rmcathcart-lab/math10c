@@ -693,7 +693,7 @@
   function subs(list) { list.forEach(function (q) { if (q.parts.length > 1) q.parts.forEach(function (p) { var m = /\d([a-z])$/.exec(p.id); if (!p.sub && m) p.sub = m[1]; }); }); return list; }
 
   HW.defineLesson({
-    id: 'u5l9', unit: 5, num: '9', title: 'Relations and Functions Review: Domain, Range, and Function Notation', outcome: 'RF8',
+    id: 'u5l9', unit: 5, num: '9', title: 'Relations and Functions Unit Review', outcome: 'RF8',
     blurb: 'The whole unit in one place: discrete and continuous variables, domain and range, intercepts, function notation forwards and backwards, and the vertical line test — in pictures, tables and real situations.',
     questions: subs([
       /* ---------------- Q1 ---------------- */
