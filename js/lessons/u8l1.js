@@ -403,7 +403,7 @@
             return pointPart(t('y=' + T([[s.m1, 'x']])) + ', \\(\\;\\) ' + t('y=' + T([[m2, 'x'], [b2, '']])), P, [mbL(s.m1, 0), mbL(m2, b2)], { wrong: eqWrongs(s.m1, 0, m2, b2, P) },
               eqSol(s.m1, 0, m2, b2, P), ['Set ' + t(T([[s.m1, 'x']]) + '=' + T([[m2, 'x'], [b2, '']])) + ', then multiply every term by ' + t(s.q) + ' to clear the fraction.'], 'set equal, fraction slope');
           } },
-          { id: '2c', level: 'EMG', make: function (r) {
+          { id: '2c', level: 'PRG', make: function (r) {
             var s = pick2(r, function (r) { var q = r.pick([3, 3, 2, 4]), p = r.pick(q === 4 ? [1, 3] : q === 3 ? [1, 2] : [1]); return { q: q, p: p * r.pick([1, 1, -1]), k: r.pick([-4, -3, -2, 2, 3, 4]), b1: r.pick([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]) }; },
               function (s) { var x0 = s.q * s.k, y0 = x0 + s.b1, b2 = y0 - s.p * s.k; return b2 !== 0 && Math.abs(b2) <= 12 && b2 !== s.b1 && Math.abs(x0) <= 16 && Math.abs(y0) <= 16; });
             var x0 = s.q * s.k, y0 = x0 + s.b1, m2 = [s.p, s.q], b2 = y0 - s.p * s.k, P = [x0, y0];
@@ -586,7 +586,7 @@
       { num: '7', shared: function (r) { var A = r.pick([5, 5, 2, 3, 4, 6]), C = r.pick([3, 3, 1, 2, 4, 5, 7, -1, -2, -3]); return { A: A, C: C, L: line(A, -1, -C), n: eqT([[A, 'x'], [-1, 'y']], C) }; },
         stem: function (sh) { return 'Write an equation which forms a system with the equation ' + t(sh.n) + ' so that the system has:'; },
         parts: ['none', 'one', 'inf'].map(function (want, i) {
-          return { id: '7' + 'abc'[i], level: want === 'one' ? 'PRG' : 'ADV', make: function (r, sh) {
+          return { id: '7' + 'abc'[i], level: want === 'one' ? 'EMG' : 'ADV', make: function (r, sh) {
             var A = sh.A, C = sh.C, G = sh.L;
             var check = function (resp) {
               var rd = Ln.read(resp); if (!rd.ok) return form(rd.why === 'empty' ? 'empty' : 'line-' + rd.why, rd.why === 'empty' ? 'Type your equation first.' : rd.why === 'no-eq' ? 'Write an equation with an equals sign, e.g. ' + t('y=2x+1') + '.' : 'I can’t read that equation — use ' + t('x') + ', ' + t('y') + ' and numbers.');
@@ -665,7 +665,7 @@
       { num: '2', stem: 'Graph both lines of each system on the grid. State the solution as an ordered pair, and verify it by substituting into both original equations.',
         shared: function (r) { return { a: mixSys(r, 'a'), b: mixSys(r, 'b'), c: mixSys(r, 'c') }; },
         parts: [].concat.apply([], ['a', 'b', 'c'].map(function (k) {
-          return [{ id: 'e2' + k, sub: k + ' graph', level: 'EMG', make: function (r, sh) {
+          return [{ id: 'e2' + k, sub: k + ' graph', level: 'PRG', make: function (r, sh) {
             var s = sh[k];
             return sysGraph('(' + k + ') ' + t(s.n1) + ', \\(\\;\\) ' + t(s.n2) + '<br>Graph both lines.', [s.L1, s.L2], [s.n1, s.n2], W7, {},
               t(s.n2) + ' rearranges to ' + t(si(s.L2)) + '.<br>' + t(s.n1) + ': start at ' + ptt([0, s.b1]) + ', slope ' + t(nT(s.m1)) + '. ' + t(si(s.L2)) + ': ' + (Math.abs(s.b2) <= 7 ? 'start at ' + ptt([0, s.b2]) : 'use the points ' + latS(s.L2, W7).slice(0, 2).map(ptt).join(' and ')) + ', slope ' + t(nT(s.m2)) + '.<br>The lines cross at ' + ptt([s.x0, s.y0]) + '.',
@@ -719,7 +719,7 @@
           { id: 'e4b', sub: 'b', level: 'EMG', make: function (r, sh) {
             return classMC(r, t('\\ell_1') + ' and ' + t('\\ell_3') + ' differ in one number only. Classify the system formed by ' + t('\\ell_1') + ' and ' + t('\\ell_3') + '.', 'none', clsD(sh.L[0], sh.L[2]), abSol(sh.R1, sh.R3, '\\ell_1', '\\ell_3'), ['Use ' + t('-\\frac{A}{B}') + ' and ' + t('-\\frac{C}{B}') + ' for each line.'], 'classify l1 l3');
           } },
-          { id: 'e4c', sub: 'c', level: 'EMG', make: function (r, sh) {
+          { id: 'e4c', sub: 'c', level: 'PRG', make: function (r, sh) {
             return pointPart(t('\\ell_2') + ' and ' + t('\\ell_4') + ' also look almost alike. Classify the system they form; if it has one solution, find it.', [sh.x0, sh.y0], [sh.L[1], sh.L[3]], {},
               'Slopes: ' + t('\\ell_2') + ': ' + t('-\\frac{' + sh.a + '}{' + (-sh.b) + '}=' + fT(fr(sh.a, sh.b))) + '; ' + t('\\ell_4') + ': ' + t('-\\frac{' + sh.a + '}{' + (-sh.b4) + '}=' + fT(fr(sh.a, sh.b4))) + '. Different, so <b>one solution</b>.<br>' +
               'Subtract the equations (the ' + t('x') + '-terms cancel): ' + t('(' + (-sh.b) + '+' + sh.b4 + ')y+(' + sh.c + '-' + par(sh.c4) + ')=0') + ', so ' + t(T([[sh.b4 - sh.b, 'y']]) + '=' + (sh.c4 - sh.c)) + ' and ' + t('y=' + sh.y0) + '.<br>' +
@@ -754,7 +754,7 @@
               'Slopes: ' + t('-\\frac{k}{' + sh.q + '}') + ' and ' + t('-\\frac{' + sh.m * sh.p + '}{' + sh.m * sh.q + '}=' + fT(fr(-sh.p, sh.q))) + '. Equal slopes: ' + t('k=' + k) + '.<br>Check: ' + t(rawG([k, sh.q, -sh.s])) + ' gives ' + t(si(line(k, sh.q, -sh.s))) + ', and ' + t(sh.e2) + ' gives ' + t(si(sh.L2)) + ': same slope, different ' + t('y') + '-intercepts — parallel, <b>no solution</b>.',
               ['No solution: equal slopes, different ' + t('y') + '-intercepts.', 'Write each slope as ' + t('-\\frac{A}{B}') + '.'], 'k for no solution');
           } },
-          { id: 'e5b', sub: 'b', level: 'EMG', make: function (r, sh) {
+          { id: 'e5b', sub: 'b', level: 'PRG', make: function (r, sh) {
             var half = fr(1, sh.m), need = -sh.r0, have = -sh.s;
             return mc(r, 'Which explanation shows that <b>no</b> value of ' + t('k') + ' gives infinitely many solutions?', [
               { html: 'For the same line, every term of the first equation must be the same multiple of the second. The ' + t('y') + '-terms fix that multiplier at ' + t(fT(half)) + ', so the constant would have to be ' + t(need) + ' — but it is ' + t(have) + '. The <b>constant condition fails</b>, and ' + t('k') + ' can’t change it.', right: true },
@@ -824,7 +824,7 @@
             p.bad = [[String(sh.k), String(sh.m * sh.m * sh.c)], [String(-sh.k), String(sh.c)]];
             return p;
           } },
-          { id: 'e7b', sub: 'b', level: 'EMG', make: function (r, sh) {
+          { id: 'e7b', sub: 'b', level: 'PRG', make: function (r, sh) {
             return mc(r, 'Which statement gives the values of ' + t('k') + ' and ' + t('c') + ' for no solution, and for exactly one solution?', [
               { html: 'No solution: ' + t('k=' + sh.k) + ' and ' + t('c\\ne ' + sh.c) + '. One solution: ' + t('k\\ne ' + sh.k) + ', with ' + t('c') + ' any number.', right: true },
               { html: 'No solution: ' + t('k\\ne ' + sh.k) + '. One solution: ' + t('k=' + sh.k) + ' and ' + t('c\\ne ' + sh.c) + '.', why: 'These are switched: with ' + t('k=' + sh.k) + ' the slopes are equal, which is what no solution needs.', code: 'swap' },
@@ -1007,7 +1007,7 @@
               'Slopes ' + t(fT(fr(sh.m1[0], sh.m1[1]))) + ' and ' + t(fT(fr(sh.m2[0], sh.m2[1]))) + ' are different, so the lines are not parallel: exactly <b>one solution</b>. The student read “no crossing on my grid” as “no crossing at all” — the intersection lies outside the grid.',
               ['Compare the slopes.'], 'error: grid too small');
           } },
-          { id: 'e11b', sub: 'b', level: 'EMG', make: function (r, sh) {
+          { id: 'e11b', sub: 'b', level: 'PRG', make: function (r, sh) {
             return pointPart('Determine the point of intersection algebraically.', [sh.X, sh.Y], [sh.L1, sh.L2], { wrong: eqWrongs(sh.m1, sh.b1, sh.m2, sh.b2, [sh.X, sh.Y]) },
               eqSol(sh.m1, sh.b1, sh.m2, sh.b2, [sh.X, sh.Y]), ['Set the two expressions for ' + t('y') + ' equal and clear the fractions.'], 'far intersection');
           } },
@@ -1072,7 +1072,7 @@
               ['Divide every term by the common factor ' + t(sh.k) + ' first.'], 'rearrange l3');
             p.bad = [si(mbL(1, sh.k * sh.b3))]; return p;
           } },
-          { id: 'e13a2', sub: 'a graph', level: 'EMG', make: function (r, sh) {
+          { id: 'e13a2', sub: 'a graph', level: 'PRG', make: function (r, sh) {
             return sysGraph('Draw all three lines on the grid.', sh.L, sh.n.map(function (n, i) { return '\\ell_' + (i + 1) + ':\\ ' + n; }), sh.win, {},
               t('\\ell_1:\\ ' + si(sh.L[0])) + ', ' + t('\\ell_2:\\ ' + si(sh.L[1])) + ', ' + t('\\ell_3:\\ ' + si(sh.L[2])) + '. Plot each ' + t('y') + '-intercept (or a table point) and use the slope.<br>' + t('\\ell_1') + ' and ' + t('\\ell_3') + ' are parallel; ' + t('\\ell_2') + ' crosses them at ' + ptt([sh.x1, sh.y1]) + ' and ' + ptt([sh.x2, sh.y2]) + '.',
               ['Write each line in ' + t('y=mx+b') + ' form first.'], 'graph three lines');
@@ -1139,7 +1139,7 @@
             clsSol(L1, L2, rawG(R1), rawG(R2)) + (kind === 'inf' ? '<br>(Multiply the first equation by ' + t(fT(fr(s.m2, s.m1))) + ' to get the second.)' : ''), ['Compare ' + t('-\\frac{A}{B}') + ' and ' + t('-\\frac{C}{B}') + ' for both lines.'], 'MC classify general form', true);
         } }] },
       { num: '15', parts: [
-        { id: 'e15', level: 'EMG', make: function (r) {
+        { id: 'e15', level: 'PRG', make: function (r) {
           /* sg: sign of the y-term of the second line (the booklet's 3x − 4y + 9 = 0 has sg = −1); it sets the sign of k, so the key letter varies */
           var s = pick2(r, function (r) { var pq = r.pick([[3, 4], [3, 4], [4, 3], [2, 3], [3, 2], [2, 5], [5, 2], [3, 5], [5, 3]]); return { p: pq[0], q: pq[1], sg: r.pick([-1, -1, 1]), rr: r.pick([9, 9, 5, 7, 2, -3]), s: r.pick([-5, -5, 4, 7, -1]) }; }, function (s) { return s.s !== s.sg * s.p * s.rr; });
           var k = s.sg * s.p * s.p, m2 = fT(fr(-s.sg * s.p, s.q)), e1 = T([[1, 'kx'], [s.p * s.q, 'y'], [s.s, '']]) + '=0', e2 = rawG([s.p, s.sg * s.q, s.rr]);
@@ -1150,7 +1150,7 @@
             ['No point in common means parallel lines: equal slopes.'], 'MC k for parallel', true);
         } }] },
       { num: '16', parts: [
-        { id: 'e16', level: 'EMG', make: function (r) {
+        { id: 'e16', level: 'PRG', make: function (r) {
           var s = pick2(r, function (r) { var cd = r.pick([[4, 3], [4, 3], [3, 2], [2, 5], [5, 2], [3, 4]]); return { x0: r.pick([4, 4, 2, 6]), y0: r.int(1, 6), a: r.pick([5, 5, 3, 1, -1, -3]), c: cd[0], d: cd[1] }; }, function (s) { var b = s.y0 - s.a * s.x0 / 2; return b !== 0 && Math.abs(b) <= 12 && fv([s.a, 2]) !== -s.c / s.d; });
           var b = s.y0 - s.a * s.x0 / 2, e = s.c * s.x0 + s.d * s.y0, m1 = [s.a, 2], L1 = mbL(m1, b), L2 = line(s.c, s.d, -e), ans = s.x0 + s.y0;
           var n1 = 'y=' + T([[m1, 'x'], [b, '']]), n2 = rawG([s.c, s.d, -e]);
