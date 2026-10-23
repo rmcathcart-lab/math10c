@@ -860,7 +860,7 @@
               ['Halve the perimeter equation, then add the two equations.'], 'banner solve');
           } },
           { id: 'e8c', sub: 'c', level: 'EMG', make: function (r, o) {
-            return numP('What are the dimensions of the banner? Give its area.', o.l * o.w, function (v) { if (v === o.P || v === o.P / 2) return { code: 'area-perim', hint: 'That’s the perimeter (or half). Area = length × width.' }; if (v === o.l || v === o.w) return { code: 'dim-not-area', hint: 'That’s one dimension; multiply length × width.' }; return null; },
+            return numP('Find the dimensions of the banner, then give its area.', o.l * o.w, function (v) { if (v === o.P || v === o.P / 2) return { code: 'area-perim', hint: 'That’s the perimeter (or half). Area = length × width.' }; if (v === o.l || v === o.w) return { code: 'dim-not-area', hint: 'That’s one dimension; multiply length × width.' }; return null; },
               t('2l+2w=' + o.P) + ', ' + t('l-w=' + o.d) + ' ⟹ ' + t('l=' + o.l) + ', ' + t('w=' + o.w) + '. <b>The banner is ' + o.l + ' cm long and ' + o.w + ' cm wide.</b><br>Area ' + t('=' + o.l + '\\times ' + o.w + '=' + N(o.l * o.w)) + '. <b>The area of the banner is ' + N(o.l * o.w) + ' cm².</b>',
               ['Find the length and width, then multiply.'], 'banner area', { after: 'cm²' });
           } },
@@ -1235,7 +1235,7 @@
               { html: 'Because large hoodies cost more.', why: 'Prices have nothing to do with the relationship between the counts.' }],
             'With ' + t('s=' + o.s) + ', ' + t('l=' + o.l) + ': ' + t('l=' + o.k + 's') + ' reads ' + t(o.l + '=' + o.k + '(' + o.s + ')') + ' ✓, while ' + t(o.k + 'l=s') + ' would claim ' + t(o.k * o.l + '=' + o.s) + ', false. Multiplying the <b>smaller</b> count by ' + o.k + ' produces the larger one.', ['Substitute the numbers into each version.'], 'why l = 2s');
           } }] },
-      { num: '19', shared: function (r) { return gen(function () { var ra = r.int(8, 14), rb = r.int(5, ra - 2), H = r.int(10, 20), a = r.int(3, H - 3), b = H - a, dl = r.int(2, 12); return { ra: ra, rb: rb, H: H, a: a, b: b, A: ra * a + rb * b, A2: ra * H + dl, nm: r.pick([['Amir', 'Bo'], ['Amir', 'Bo'], ['Nadia', 'Theo'], ['Jun', 'Sara']]) }; }, { ra: 11, rb: 8, H: 15, a: 7, b: 8, A: 141, A2: 170, nm: ['Amir', 'Bo'] }); },
+      { num: '19', shared: function (r) { return gen(function () { var ra = r.int(8, 14), rb = r.int(5, ra - 2), H = r.int(10, 20), a = r.int(3, H - 3), b = H - a, dl = r.int(2, 12); if (a === b) return null; return { ra: ra, rb: rb, H: H, a: a, b: b, A: ra * a + rb * b, A2: ra * H + dl, nm: r.pick([['Amir', 'Bo'], ['Amir', 'Bo'], ['Nadia', 'Theo'], ['Jun', 'Sara']]) }; }, { ra: 11, rb: 8, H: 15, a: 7, b: 8, A: 141, A2: 170, nm: ['Amir', 'Bo'] }); },
         stem: function (o) { return 'Two workers spread mulch. Working on their own, ' + o.nm[0] + ' covers ' + t(o.ra + '\\text{ m}^2') + ' per hour and ' + o.nm[1] + ' covers ' + t(o.rb + '\\text{ m}^2') + ' per hour. On Saturday the two of them logged ' + t(o.H) + ' hours of work between them and covered ' + t(o.A + '\\text{ m}^2') + '. Let ' + t('a') + ' be the hours ' + o.nm[0] + ' worked and ' + t('b') + ' the hours ' + o.nm[1] + ' worked.'; },
         parts: [
           { id: 'e19a', sub: 'a', level: 'BEG', make: function (r, o) {

@@ -329,8 +329,8 @@
   function eqSol(m1, b1, m2, b2, P) {
     var lhs = T([[m1, 'x'], [b1, '']]), rhs = T([[m2, 'x'], [b2, '']]), d1 = den(m1), d2 = den(m2), q = d1 * d2 / gcd(d1, d2);
     var s = 'Both expressions equal ' + t('y') + ', so set them equal: ' + t(lhs + '=' + rhs) + '.<br>';
-    if (q > 1) { var a1 = r6(fv(m1) * q), a2 = r6(fv(m2) * q); s += 'Multiply every term by ' + t(q) + ': ' + t(T([[a1, 'x'], [b1 * q, '']]) + '=' + T([[a2, 'x'], [b2 * q, '']])) + '.<br>Collect: ' + t(T([[r6(a1 - a2), 'x']]) + '=' + nT(q * (b2 - b1))) + ', so ' + t('x=' + nT(P[0])) + '.<br>'; }
-    else s += 'Collect: ' + t(T([[fv(m1) - fv(m2), 'x']]) + '=' + nT(b2 - b1)) + ', so ' + t('x=' + nT(P[0])) + '.<br>';
+    if (q > 1) { var a1 = r6(fv(m1) * q), a2 = r6(fv(m2) * q); s += 'Multiply every term by ' + t(q) + ': ' + t(T([[a1, 'x'], [b1 * q, '']]) + '=' + T([[a2, 'x'], [b2 * q, '']])) + '.<br>Collect: ' + t(T([[r6(a1 - a2), 'x']]) + '=' + nT(q * (b2 - b1))) + (Math.abs(a1 - a2 - 1) < 1e-9 ? '' : ', so ' + t('x=' + nT(P[0]))) + '.<br>'; }
+    else s += 'Collect: ' + t(T([[fv(m1) - fv(m2), 'x']]) + '=' + nT(b2 - b1)) + (Math.abs(fv(m1) - fv(m2) - 1) < 1e-9 ? '' : ', so ' + t('x=' + nT(P[0]))) + '.<br>';
     s += 'Substitute into the first equation: ' + t('y=' + subT([[m1, 'x'], [b1, '']], { x: P[0] }) + '=' + nT(P[1])) + '.<br>';
     s += 'Check in the second: ' + t(subT([[m2, 'x'], [b2, '']], { x: P[0] }) + '=' + nT(P[1])) + ' ✓. The solution is ' + ptt(P) + '.';
     return s;
@@ -465,9 +465,10 @@
               ['Cost = fixed charge + (rate per km) × (number of km).'], 'bus cost equations', [sh.nA, sh.nB]);
           } },
           { id: '4b', sub: 'b', level: 'EMG', make: function (r, sh) {
+            var dA = Math.min(200, Math.floor((1000 - sh.F) / sh.a / 20) * 20);   // a second point of A's line that is on the grid
             return sysGraph('Graph both equations on the grid. (Tap and drag: the box shows the coordinates. ' + t('C') + '-values snap to 50s.)', [sh.LA, sh.LB], [sh.nA, sh.nB], sh.win,
               { context: true, pad: { grid: 20, gridY: 100, labels: 1, labelsX: 40, labelsY: 200, snapX: 20, snapY: 50, unitX: 1.6, unitY: 0.3, xName: 'd', yName: 'C', firstQuadrant: true, defaultEnd: 'none' } },
-              'Company A: ' + ptt([0, sh.F]) + ' and ' + ptt([200, sh.F + 200 * sh.a]) + '. Company B: ' + ptt([0, 0]) + ' and ' + ptt([100, 100 * sh.b]) + '.<br>Draw a line through each pair. They cross at ' + ptt([sh.d0, sh.C0]) + '.',
+              'Company A: ' + ptt([0, sh.F]) + ' and ' + ptt([dA, sh.F + dA * sh.a]) + '. Company B: ' + ptt([0, 0]) + ' and ' + ptt([100, 100 * sh.b]) + '.<br>Draw a line through each pair. They cross at ' + ptt([sh.d0, sh.C0]) + '.',
               ['Find two points for each company: e.g. ' + t('d=0') + ' and ' + t('d=100') + '.', 'Company B’s line starts at the origin (no fixed charge).'], 'graph bus costs');
           } },
           { id: '4c', sub: 'c point', level: 'BEG', make: function (r, sh) {
@@ -514,7 +515,7 @@
           { id: '5a2', sub: 'a solutions', level: 'BEG', make: function (r, sh) {
             var a = sh.a;
             return pointPart('(a) ' + t(a.n1) + ', \\(\\;\\) ' + t(a.n2) + '<br>How many solutions does the system have? If there is exactly one, give it as an ordered pair; otherwise use the <b>no solution</b> or <b>infinitely many</b> key.', [a.x0, a.y0], [a.L1, a.L2], {},
-              'The slopes ' + t(a.m1) + ' and ' + t(a.m2) + ' are different, so the lines cross once: <b>one solution</b>, ' + ptt([a.x0, a.y0]) + '.<br>Check: ' + t(a.m1 + '(' + a.x0 + ')' + (a.b1 < 0 ? '' : '+') + a.b1 + '=' + a.y0) + ' and ' + t(a.m2 + '(' + a.x0 + ')' + (a.b2 < 0 ? '' : '+') + a.b2 + '=' + a.y0) + ' ✓',
+              'The slopes ' + t(a.m1) + ' and ' + t(a.m2) + ' are different, so the lines cross once: <b>one solution</b>, ' + ptt([a.x0, a.y0]) + '.<br>Check: ' + t(subT([[a.m1, 'x'], [a.b1, '']], { x: a.x0 }) + '=' + a.y0) + ' and ' + t(subT([[a.m2, 'x'], [a.b2, '']], { x: a.x0 }) + '=' + a.y0) + ' ✓',
               ['Where do your two lines cross?'], 'count: one solution');
           } },
           { id: '5b', sub: 'b graph', level: 'BEG', make: function (r, sh) {
