@@ -97,6 +97,7 @@
     s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, function (m) { return '^' + m.split('').map(function (c) { return SUP[c]; }).join(''); });
     s = s.replace(/−|–|—/g, '-');
     s = s.replace(/\^\{([^{}]*)\}/g, '^($1)');
+    s = s.replace(/\\[dt]frac/g, '\\frac').replace(/\\frac(\d)(\d)/g, '\\frac{$1}{$2}').replace(/\\frac(\d)\{/g, '\\frac{$1}{').replace(/\\frac(\{[^{}]*\})(\d)/g, '\\frac$1{$2}').replace(/\\sqrt(\d)/g, '\\sqrt{$1}'); // MathLive's compact forms
     s = s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)');
     s = s.replace(/\\sqrt\{([^{}]*)\}/g, 'sqrt($1)');
     s = s.replace(/[{}]/g, function (c) { return c === '{' ? '(' : ')'; });
