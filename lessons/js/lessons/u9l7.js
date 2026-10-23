@@ -221,6 +221,7 @@ function drawCliff(S, a, d) {
   return { b, xB, hh, F, shade, FT, rm, AT, BTs, BF, l1, l2, q };
 }
 const cliff = {
+  fitH: 384, capH: 54,   // in the warm-up: the questions sit below it on the first screen
   title: 'The Unreachable Cliff: solve the triangle you can, hand its side on',
   height: 430,
   minW: 940, // drawn this wide and scaled to fit beside the sidebar

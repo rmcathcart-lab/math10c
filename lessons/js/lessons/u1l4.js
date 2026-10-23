@@ -56,6 +56,7 @@ async function tween(c, ms, fn) { // frame-by-frame animation that respects Back
 const longdiv = {
   title: 'Long division, one digit at a time',
   height: 540,
+  capH: 104,   // three-line captions
   minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [fc(1, 7), fc(5, 11), fc(3, 8), fc(2, 3), fc(7, 12), fc(1, 13), { sep: 'Starter check:' }, fc(17, 6), fc(17, 4), { sep: 'Example 1 check:' }, fc(1, 4), fc(3, 11), fc(5, 6)],
   intro: (v) => { const [a, d] = v.split('/'); return `Divide <b>${a} ÷ ${d}</b> one digit at a time. Keep an eye on the <b>remainders</b> — they decide everything.`; },

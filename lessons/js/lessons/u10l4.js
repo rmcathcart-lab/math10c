@@ -573,6 +573,7 @@ const RICECFG = { kind: 'pyr', W: 4, D: 3, H: 3.6, S: 40, c0: '#b89a4a', c1: RIC
 const third = {
   title: 'One third: three pyramids fill the prism',
   height: 490,
+  capH: 120,   // long captions
   minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'rice', label: 'Rice: funnel into planter box' }, { v: 'cube', label: 'Why ⅓? Cut a cube into 3' }, { v: 'ex1', label: 'Example 1(a) check: the skylight' }],
   intro: (v) => (v === 'rice' ? 'Mr. Halden’s woodworking class. Press <b>Next</b>.' : v === 'cube' ? 'A cube cut into three identical pyramids. Press <b>Next</b>.' : 'The skylight inside the prism on the same base. Press <b>Next</b>.'),

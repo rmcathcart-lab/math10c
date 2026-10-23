@@ -688,6 +688,7 @@ function mountReveals() {
 /* ============ wiring ============ */
 function mountExplainers() {
   const defs = { handshake, grid, distribute, core, box, pairs, check };
+  box.capH = 82;   // three-line captions
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
 

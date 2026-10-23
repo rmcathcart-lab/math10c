@@ -561,7 +561,7 @@ body.viewer .edot { display: none; }
 .hist-wide .hist-head { margin-bottom: 6px; }
 .hist-wide .hist-q .pl { font-size: 16.5px; }
 
-/* ---- trial explainer layout (main.ex-float, Lesson 1.4): chips above, caption below, controls outside the card ---- */
+/* ---- explainer layout on screen-fit lessons: chips above, caption below, controls floating right of the card ---- */
 .ex-fl { margin: 14px 0 4px; }
 .ex-fl .ex-top { margin-bottom: 8px; }
 .ex-fl .ex-chips { gap: 6px; }

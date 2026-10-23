@@ -72,24 +72,16 @@ export class Explainer {
     this.count = h('span', 'ex-count'); ctl.appendChild(this.count);
     this.bNext = B('next', 'Next <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>', 'Next step', () => { this.stop(); this.next(); });
     this.bPlay = B('play', '<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>', 'Play to the end', () => this.togglePlay());
-    /* Screen-fit lessons (<main class="lesson screen">): the number chips, the caption and the controls sit in a column
-     * beside the picture, so the whole explainer fits on one screen and Next stays in the same place every step. */
-    if (def.side !== false && host.closest('.lesson.screen.ex-float')) {
-      /* Trial layout (2026-10-23, Lesson 1.4 only): number chips in a row above the picture, the caption in a band below
-       * it, and the controls floating in the page margin just right of the card, so the picture gets the full card
-       * width. If the margin is too narrow (a scaled-down page) the controls drop back under the caption. */
+    if (host.closest('.lesson.screen')) {
+      /* Screen-fit lessons (<main class="lesson screen">, 2026-10-23): number chips in a row above the picture, the
+       * caption in a band below it, and the controls floating in the page margin just right of the card, so the
+       * picture gets the full card width and the whole explainer fits one iPad screen. If the margin is too narrow
+       * (a scaled-down page, or an explainer in a narrow column) the controls sit under the caption instead. */
       host.classList.add('ex-fl');
       ctl.appendChild(h('span', 'ex-tapnote', def.tap === false ? '' : 'or tap the picture'));
       host.append(top, this.hold, this.cap, ctl);
       this.ctl = ctl; this.placeCtl = () => this.floatCtl();
       window.addEventListener('resize', this.placeCtl); new ResizeObserver(this.placeCtl).observe(host);
-    } else if (def.side !== false && host.closest('.lesson.screen')) {
-      host.classList.add('ex-side');
-      const body = h('div', 'ex-body'), panel = h('div', 'ex-panel');
-      const chips = top.querySelector('.ex-chips'); if (chips) panel.appendChild(chips);
-      ctl.appendChild(h('span', 'ex-tapnote', def.tap === false ? '' : 'or tap the picture'));
-      panel.append(this.cap, ctl); body.append(this.hold, panel);
-      host.append(top, body);
     } else host.append(top, this.hold, this.cap, ctl);
     this.tapToNext();
     const first = def.choices ? def.choices.find((c) => !(c && typeof c === 'object' && c.sep)) : undefined; // skip { sep } headings
@@ -97,6 +89,11 @@ export class Explainer {
     this.lastW = 0;
     const ro = new ResizeObserver(() => { const w = this.hold.clientWidth; if (w && Math.abs(w - this.lastW) > 2) { const first = !this.lastW; this.lastW = w; this.fitStage(w); if (first) this.build(0); else { this.stop(); this.build(this.k); } } });
     ro.observe(this.hold);
+    // the chips row can change height after the first fit (fonts and maths loading): fit the picture again
+    if (host.classList.contains('ex-fl')) {
+      let topH = top.offsetHeight;
+      new ResizeObserver(() => { const t = top.offsetHeight; if (Math.abs(t - topH) > 2 && this.lastW) { topH = t; const s0 = this.scale; this.fitStage(this.lastW); if (Math.abs((this.scale || 1) - (s0 || 1)) > 0.002) { this.stop(); this.build(this.k); } } }).observe(top);
+    }
   }
   /* A finger tap on the picture does Next (like a clicker). Not for a Pencil or mouse (they write), not while
    * "Finger draws too" is on, not on anything tappable in the picture (buttons, [data-tap]), not for a two-finger tap
@@ -125,10 +122,12 @@ export class Explainer {
   fitStage(w) {
     const m = this.def.minW, st = this.stage;
     if (this.host.classList.contains('ex-fl')) {
-      /* trial layout: the whole explainer (chips + picture + caption) fits one iPad screen (~676 px). The picture is
+      /* the whole explainer (chips + picture + caption) fits one iPad screen (684 px). The picture is
        * as big as that height and the card width allow: drawn a little wider when it's height-limited, then scaled. */
       const H = this.def.height, topH = this.host.querySelector('.ex-top') ? this.host.querySelector('.ex-top').offsetHeight + 8 : 0;
-      const maxH = Math.max(220, 664 - topH - 10 - 80);
+      const capH = this.def.capH || 80;   // caption band: two lines; def.capH for an explainer with longer captions
+      this.cap.style.minHeight = capH + 'px';
+      const maxH = Math.max(160, (this.def.fitH || 664) - topH - 10 - capH);   // def.fitH: a smaller total, e.g. in a warm-up with questions below
       let s = Math.min(1, maxH / H); if (m) s = Math.min(s, w / m);
       if (s < 0.999) { st.style.width = (w / s) + 'px'; st.style.transform = 'scale(' + s + ')'; st.style.transformOrigin = '0 0'; this.hold.style.height = H * s + 'px'; this.scale = s; }
       else { st.style.width = st.style.transform = this.hold.style.height = ''; this.scale = 1; }
@@ -144,7 +143,8 @@ export class Explainer {
     const lesson = this.host.closest('.lesson'), r = card.getBoundingClientRect();
     const s = lesson ? (lesson.getBoundingClientRect().width / lesson.offsetWidth || 1) : 1;
     const room = (document.documentElement.clientWidth - r.right) / s;   // margin right of the card, in lesson px
-    const out = room >= 66;
+    const pad = parseFloat(getComputedStyle(card).paddingLeft) + parseFloat(getComputedStyle(card).paddingRight);
+    const out = room >= 66 && this.host.offsetWidth >= 0.8 * (card.clientWidth - pad);   // not for an explainer in a narrow column
     ctl.classList.toggle('ex-ctl-out', out);
     if (!out) { ctl.style.top = ''; return; }
     let y = 0, el = this.hold; while (el && el !== card) { y += el.offsetTop; el = el.offsetParent; }

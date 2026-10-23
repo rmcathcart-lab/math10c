@@ -512,6 +512,7 @@ function makeInspect(title, choices) {
 const inspectA = makeInspect('Factoring by inspection', [{ v: 'd1', label: tex(IN.d1) }, { sep: 'Example 5 check:' }, ...['a5', 'c5', 'd5', 'g5', 'h5'].map((k) => ({ v: k, label: '(' + k[0] + ')' }))]);
 inspectA.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 const inspectB = makeInspect('Negative c, and every case at once', [{ v: 'n15', label: tex(IN.n15) }, { sep: 'Example 6 check:' }, ...['a6', 'b6', 'c6'].map((k) => ({ v: k, label: '(' + k[0] + ')' })), { sep: 'Example 7 check:' }, ...['a7', 'b7', 'c7', 'd7'].map((k) => ({ v: k, label: '(' + k[0] + ')' }))]);
+inspectB.capH = 104;   // three-line captions
 inspectB.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 const inspectC = makeInspect('Two variables, by inspection', [{ v: 'n10', label: tex(IN.n10) }, { sep: 'Example 10 check:' }, ...['a10', 'b10', 'c10'].map((k) => ({ v: k, label: '(' + k[0] + ')' }))]);
 inspectC.minW = 940; // drawn this wide and scaled to fit beside the sidebar

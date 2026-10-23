@@ -24,7 +24,7 @@ JS = """async ([MJ, CAND]) => {
   };
   const worse = (a, b) => a.some((r, i) => r.some((s, k) => { const f = (b[i] || [])[k] || [0, 0, 0]; return s[0] > f[0] || s[1] > f[1]; }));
   for (const host of document.querySelectorAll('.ex')) {
-    const ex = host._ex; if (!ex || !host.classList.contains('ex-side')) continue;
+    const ex = host._ex; if (!ex || !host.classList.contains('ex-fl')) continue;
     const name = host.dataset.explainer || host.id;
     const vals = (ex.def.choices || []).filter(c => !(c && c.sep)).map(c => typeof c === 'object' ? c.v : c);
     if (!vals.length) vals.push(ex.value);
