@@ -277,11 +277,14 @@
     opt = opt || {};
     return function (resp) {
       resp = resp || [];
+      var firstForm = null, firstWrong = null;
       for (var i = 0; i < checkers.length; i++) {
         var r = checkers[i](resp[i] == null ? '' : resp[i]);
-        if (r.v !== 'correct') { var lab = opt.labels ? opt.labels[i] : 'Box ' + (i + 1); return { v: r.v, code: r.code, hint: (lab ? '<b>' + lab + ':</b> ' : '') + (r.hint || 'Check this one again.') }; }
+        if (r.v === 'correct') continue;
+        var lab = opt.labels ? opt.labels[i] : 'Box ' + (i + 1), out = { v: r.v, code: r.code, hint: (lab ? '<b>' + lab + ':</b> ' : '') + (r.hint || 'Check this one again.') };
+        if (r.v === 'form') { if (!firstForm) firstForm = out; } else if (!firstWrong) firstWrong = out;
       }
-      return ok();
+      return firstWrong || firstForm || ok();
     };
   };
 
