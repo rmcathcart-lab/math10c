@@ -74,7 +74,16 @@ export class Explainer {
     this.bPlay = B('play', '<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>', 'Play to the end', () => this.togglePlay());
     /* Screen-fit lessons (<main class="lesson screen">): the number chips, the caption and the controls sit in a column
      * beside the picture, so the whole explainer fits on one screen and Next stays in the same place every step. */
-    if (def.side !== false && host.closest('.lesson.screen')) {
+    if (def.side !== false && host.closest('.lesson.screen.ex-float')) {
+      /* Trial layout (2026-10-23, Lesson 1.4 only): number chips in a row above the picture, the caption in a band below
+       * it, and the controls floating in the page margin just right of the card, so the picture gets the full card
+       * width. If the margin is too narrow (a scaled-down page) the controls drop back under the caption. */
+      host.classList.add('ex-fl');
+      ctl.appendChild(h('span', 'ex-tapnote', def.tap === false ? '' : 'or tap the picture'));
+      host.append(top, this.hold, this.cap, ctl);
+      this.ctl = ctl; this.placeCtl = () => this.floatCtl();
+      window.addEventListener('resize', this.placeCtl); new ResizeObserver(this.placeCtl).observe(host);
+    } else if (def.side !== false && host.closest('.lesson.screen')) {
       host.classList.add('ex-side');
       const body = h('div', 'ex-body'), panel = h('div', 'ex-panel');
       const chips = top.querySelector('.ex-chips'); if (chips) panel.appendChild(chips);
@@ -115,8 +124,31 @@ export class Explainer {
    * picture at minW and scales the whole stage down to fit, so nothing is cut off or overlaps. */
   fitStage(w) {
     const m = this.def.minW, st = this.stage;
+    if (this.host.classList.contains('ex-fl')) {
+      /* trial layout: the whole explainer (chips + picture + caption) fits one iPad screen (~676 px). The picture is
+       * as big as that height and the card width allow: drawn a little wider when it's height-limited, then scaled. */
+      const H = this.def.height, topH = this.host.querySelector('.ex-top') ? this.host.querySelector('.ex-top').offsetHeight + 8 : 0;
+      const maxH = Math.max(220, 664 - topH - 10 - 80);
+      let s = Math.min(1, maxH / H); if (m) s = Math.min(s, w / m);
+      if (s < 0.999) { st.style.width = (w / s) + 'px'; st.style.transform = 'scale(' + s + ')'; st.style.transformOrigin = '0 0'; this.hold.style.height = H * s + 'px'; this.scale = s; }
+      else { st.style.width = st.style.transform = this.hold.style.height = ''; this.scale = 1; }
+      return;
+    }
     if (m && w < m - 1) { const s = w / m; st.style.width = m + 'px'; st.style.transform = 'scale(' + s + ')'; st.style.transformOrigin = '0 0'; this.hold.style.height = this.def.height * s + 'px'; this.scale = s; }
     else { st.style.width = st.style.transform = this.hold.style.height = ''; this.scale = 1; }
+  }
+  /* the floating controls: level with the top of the picture, in the margin right of the card (or under the caption
+   * when the margin is too narrow, e.g. on a phone where the page is scaled down) */
+  floatCtl() {
+    const card = this.host.closest('.card'), ctl = this.ctl; if (!card || !ctl) return;
+    const lesson = this.host.closest('.lesson'), r = card.getBoundingClientRect();
+    const s = lesson ? (lesson.getBoundingClientRect().width / lesson.offsetWidth || 1) : 1;
+    const room = (document.documentElement.clientWidth - r.right) / s;   // margin right of the card, in lesson px
+    const out = room >= 66;
+    ctl.classList.toggle('ex-ctl-out', out);
+    if (!out) { ctl.style.top = ''; return; }
+    let y = 0, el = this.hold; while (el && el !== card) { y += el.offsetTop; el = el.offsetParent; }
+    ctl.style.top = y + 'px';
   }
   choose(v) { this.stop(); this.value = v; this.build(0); }
   ctx(g, fast) {
