@@ -448,8 +448,7 @@
       { num: '11', stem: '<i>(Multiple Choice)</i>', parts: [{ id: '11', level: 'EMG', make: function (r) { return q11(r); } }] },
 
       { num: '12', stem: '<i>(Numerical Response)</i>', parts: [{ id: '12', level: 'EMG', make: function (r) {
-        var tr = r.pick([[5, 12, 13], [8, 15, 17], [7, 24, 25], [12, 35, 37], [9, 40, 41], [28, 45, 53], [16, 63, 65], [33, 56, 65], [20, 21, 29]]), k = r.pick(tr[2] > 40 ? [1] : [1, 2, 3, 4]);
-        if (tr[0] === 20) k = r.pick([1, 2]);
+        var tr = r.pick([[5, 12, 13], [8, 15, 17], [7, 24, 25], [12, 35, 37], [9, 40, 41], [28, 45, 53], [16, 63, 65], [33, 56, 65]]), k = r.pick(tr[2] > 40 ? [1] : [1, 2, 3, 4]); // not 20-21-29: 21/20 = 1.05 is a rounding tie
         var T = tri({ A: 'T', B: 'S', R: 'R' }, tr[1] * k, tr[0] * k, tr[2] * k), ans = K.roundTo(T.o / T.a, 1), or = ori(r, false);
         return P.nr('In the diagram, to the nearest tenth, the value of ' + t('\\dfrac{\\sin t^\\circ}{\\cos t^\\circ}') + ' is ________.' + triFig(T, { rot: or.rot, flip: or.flip, angA: 't°', lab: labs(T), names: false }), ans, function (v) {
           if (Math.abs(v - K.roundTo(T.a / T.o, 1)) < 1e-9) return { code: 'quot-flip', hint: 'Upside down: ' + t('\\frac{\\sin t^\\circ}{\\cos t^\\circ}') + ' is ' + t('\\frac{\\text{opp}/\\text{hyp}}{\\text{adj}/\\text{hyp}}=\\frac{\\text{opp}}{\\text{adj}}') + ', with the opposite side on top.' };
@@ -769,7 +768,7 @@
           var W = 4, q = Math.max(0.35, Math.min(1.6, O / Aa)), f = c.a / Aa;
           var raw = { A: [0, 0], D: [W * f, 0], C: [W, 0], E: [W * f, W * q * f], B: [W, W * q] };
           var rot = r.pick([0, 0, 90, 180, 270]), flip = r.chance(0.5);
-          var fig = '<div class="fig" style="text-align:center;margin:6px 0">' + HW.fig({ pts: xf(raw, rot, flip), segs: [['A', 'D', String(c.a)], ['D', 'C', String(Aa - c.a)], ['C', 'B', String(O)], ['D', 'E', String(c.o)], ['A', 'E', String(c.h)], ['E', 'B', String(H - c.h)]],
+          var fig = '<div class="fig" style="text-align:center;margin:6px 0">' + HW.fig({ pts: xf(raw, rot, flip), segs: [['A', 'D', String(c.a)], ['D', 'C', String(Aa - c.a)], ['C', 'B', String(O)], ['D', 'E', String(c.o), c.s > 1.5 ? { side: -1 } : {}], ['A', 'E', String(c.h)], ['E', 'B', String(H - c.h)]],
             right: [['D', 'A', 'E'], ['C', 'D', 'B']], angles: [['A', 'C', 'B', 'x°']], width: 290, aria: 'nested right triangles' }) + '</div>';
           return { c: c, O: O, Aa: Aa, H: H, fig: fig, Ts: tri({ A: 'A', B: 'E', R: 'D' }, c.o, c.a, c.h), Tb: tri({ A: 'A', B: 'B', R: 'C' }, O, Aa, H) };
         },
@@ -808,7 +807,9 @@
         },
         shared: function (r) {
           var tr = r.pick([[48, 55, 73], [20, 21, 29], [28, 45, 53], [33, 56, 65], [8, 15, 17], [36, 77, 85], [39, 80, 89], [12, 35, 37]]), m = tr[2] < 40 ? r.pick([2, 3]) : 2;
-          var two = r.sample(LETS.filter(function (L) { return L.indexOf('I') < 0 && L[0] !== 'L'; }), 2), os = r.chance(0.5);
+          var pool = LETS.filter(function (L) { return L.indexOf('I') < 0 && L[0] !== 'L'; }), two = r.sample(pool, 2);
+          for (var g = 0; g < 50 && two[0].some(function (c) { return two[1].indexOf(c) >= 0; }); g++) two = r.sample(pool, 2);
+          var os = r.chance(0.5);
           var T1 = fromTriple(r, { A: two[0][0], B: two[0][2], R: two[0][1] }, tr, 1, os), T2 = fromTriple(r, { A: two[1][0], B: two[1][2], R: two[1][1] }, tr, m, os);
           var r1 = r.pick([0, 90, 180, 270]), r2 = (r1 + r.pick([90, 180, 270])) % 360;
           return { tr: tr, m: m, T1: T1, T2: T2, or1: { rot: r1, flip: false }, or2: { rot: r2, flip: true } };
@@ -912,7 +913,7 @@
           { id: 'e11e', sub: 'e', level: 'EMG', make: function (r, sh) {
             return mc(r, 'How many different right triangles have ' + t('\\tan A=' + uT(sh.o, sh.a)) + ', and what do they all have in common?', [
               { html: 'Infinitely many (opp ' + t('=' + sh.o + 'k') + ', adj ' + t('=' + sh.a + 'k') + ' for any ' + t('k>0') + '); they are all <b>similar</b>, with the same angle ' + t('A') + '.', right: true },
-              { html: 'Exactly one: the triangle with legs ' + t(sh.o) + ' and ' + t(sh.a) + '.', why: 'The classmate’s triangle with legs ' + t(sh.o * sh.m) + ' and ' + t(sh.a * sh.m) + ' also works. A ratio fixes the shape, not the size.' },
+              { html: 'Exactly one: the triangle with legs ' + t(sh.o) + ' and ' + t(sh.a) + '.', why: 'A triangle with legs ' + t(sh.o * sh.m) + ' and ' + t(sh.a * sh.m) + ' also works. A ratio fixes the shape, not the size.' },
               { html: 'Two: one for each acute angle.', why: 'Any enlargement of the triangle works too — there are infinitely many.' },
               { html: 'Infinitely many, and each has a different angle ' + t('A') + '.', why: 'Equal tangent means equal angle: they are all similar, with the same angle ' + t('A') + '.' }],
               '<b>Infinitely many</b> — one for every scale factor ' + t('k') + ' applied to the ' + sh.o + '–' + sh.a + '–' + sh.h + ' triangle. They are all <b>similar</b>, so every one has the same angle ' + t('A') + ' and the same three ratios. A ratio pins down the angle, not the triangle.', ['Could you draw the triangle twice as big?'], 'how many triangles');
@@ -987,7 +988,7 @@
               { html: 'The radical forms are <b>exact</b>; the decimals are approximations, and reusing a rounded value lets the error grow at every later step.', right: true },
               { html: 'The decimals are wrong — a trig ratio can’t be a decimal.', why: 'The decimals are correct to the nearest thousandth; they just aren’t exact.' },
               { html: 'Radicals are always smaller numbers, so they are easier to work with.', why: 'The two forms have the same value. The difference is exactness, not size.' },
-              { html: 'There is no difference: the two forms are exactly equal.', why: t('0.745') + ' isn’t exactly ' + t('\\frac{\\sqrt{5}}{3}') + ' — it is rounded. The radical is exact.' }],
+              { html: 'There is no difference: the two forms are exactly equal.', why: t((Math.sqrt(sh.M) / sh.q).toFixed(3)) + ' isn’t exactly ' + t(K.radTex({ k: ex.norm(sh.c, sh.q), n: 2, m: sh.m })) + ' — it is rounded. The radical is exact.' }],
               'The radical forms are <b>exact</b>; the decimals are rounded approximations. Rounding early and reusing the rounded value lets the error grow, so carry the exact forms forward.', ['Which form has been rounded?'], 'why exact');
           } }] },
 
@@ -1157,7 +1158,7 @@
               { html: t('\\cos ' + A), why: t('\\cos ' + A) + ' uses the leg touching ' + t(A) + '; ' + t('\\cos ' + B) + ' uses the leg touching ' + t(B) + ' — the leg <b>opposite</b> ' + t(A) + '.' },
               { html: t('\\tan ' + A), why: t('\\cos ' + B) + ' has the hypotenuse on the bottom; ' + t('\\tan ' + A) + ' doesn’t use the hypotenuse.' },
               { html: t('1-\\cos ' + A), why: 'Write ' + t('\\cos ' + B) + ' with side names: adjacent to ' + t(B) + ' over hyp. That leg is opposite ' + t(A) + '.' }],
-              t('\\cos ' + B + '=\\cos(90-' + A + ')^\\circ=\\sin ' + A) + ' — the same cofunction result as (c), written with angles instead of side names.', ['The leg adjacent to ' + t(B) + ' is opposite ' + t(A) + '.'], 'cos(90-A) = sin A');
+              t('\\cos ' + B + '=\\cos(90-' + A + ')^\\circ=\\sin ' + A) + ' — the same cofunction result as ' + t('\\sin ' + A + '=\\cos ' + B) + ', written with angles instead of side names: the leg adjacent to ' + t(B) + ' is the leg opposite ' + t(A) + '.', ['The leg adjacent to ' + t(B) + ' is opposite ' + t(A) + '.'], 'cos(90-A) = sin A');
           } }] }
     ];
 

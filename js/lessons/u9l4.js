@@ -36,6 +36,8 @@
   function search(r, gen, ok, n) { for (var i = 0; i < (n || 600); i++) { var c = gen(r); if (c && ok(c)) return c; } throw new Error('u9l4: no candidate'); }
   function sq(x) { return x * x; }
   function frac(n, d) { return '\\frac{' + n + '}{' + d + '}'; }
+  function an(n) { var s = String(n); return /^8/.test(s) || /^1[18](\D|$)/.test(s) ? 'an' : 'a'; } // “an 8 m ladder”, “an 11% grade”
+  function An(n) { var a = an(n); return a.charAt(0).toUpperCase() + a.slice(1); }
 
   /* strip a typed degree sign before grading */
   function degWrap(p) {
@@ -315,11 +317,11 @@
       { num: '11', stem: '', parts: [
         { id: '11', level: 'EMG', make: function (r) {
           var g = search(r, function (r) { return r.int(3, 25); }, function (g) { return safe(TR.atan(g / 100), 0); }), x = TR.atan(g / 100);
-          return near('The term “% grade” describes the slope of a road: a road with a ' + t(g + '\\%') + ' grade rises ' + t(g) + ' m vertically for every ' + t('100') + ' m of horizontal distance. Calculate, to the nearest degree, the angle a road with a ' + t(g + '\\%') + ' grade makes with the horizontal.', x, 0,
-            [{ v: g, code: 'grade-angle', hint: 'A ' + t(g + '\\%') + ' grade is not ' + t(g + '^{\\circ}') + '. Sketch the triangle: rise ' + t(g) + ', horizontal run ' + t('100') + '.' },
+          return near('The term “% grade” describes the slope of a road: a road with ' + an(g) + ' ' + t(g + '\\%') + ' grade rises ' + t(g) + ' m vertically for every ' + t('100') + ' m of horizontal distance. Calculate, to the nearest degree, the angle a road with ' + an(g) + ' ' + t(g + '\\%') + ' grade makes with the horizontal.', x, 0,
+            [{ v: g, code: 'grade-angle', hint: An(g) + ' ' + t(g + '\\%') + ' grade is not ' + t(g + '^{\\circ}') + '. Sketch the triangle: rise ' + t(g) + ', horizontal run ' + t('100') + '.' },
               { v: TR.atan(100 / g), code: 'ratio-flip', hint: 'That is the angle with the <b>vertical</b>. From the angle at the road, the rise is OPPOSITE and the run is ADJACENT.' },
               { v: TR.asin(g / 100), code: 'used-sin', hint: 'The ' + t('100') + ' m is horizontal distance, not the road surface, so it is ADJACENT: use TOA.' }].concat(std('tan')(g / 100)),
-            'A ' + t(g + '\\%') + ' grade is a rise of ' + t(g) + ' for a run of ' + t('100') + ': the rise is OPPOSITE the angle, the run is ADJACENT ' + t('\\Rightarrow') + ' TOA.<br>' + t('\\tan\\theta=' + frac(g, 100) + '=' + (g / 100) + '\\Rightarrow\\theta=\\tan^{-1}(' + (g / 100) + ')=' + x.toFixed(2) + '^{\\circ}\\approx ' + deg(x, 0)),
+            An(g) + ' ' + t(g + '\\%') + ' grade is a rise of ' + t(g) + ' for a run of ' + t('100') + ': the rise is OPPOSITE the angle, the run is ADJACENT ' + t('\\Rightarrow') + ' TOA.<br>' + t('\\tan\\theta=' + frac(g, 100) + '=' + (g / 100) + '\\Rightarrow\\theta=\\tan^{-1}(' + (g / 100) + ')=' + x.toFixed(2) + '^{\\circ}\\approx ' + deg(x, 0)),
             ['Sketch a right triangle with a vertical rise of ' + t(g) + ' and a horizontal run of ' + t('100') + '.'], 'grade ' + g + '%', { before: t('\\theta=') });
         } }] },
       { num: '12', stem: '', parts: [
@@ -342,7 +344,7 @@
           var opts = [{ html: t(R + '^{\\circ}'), right: true },
             { html: t((R - 1) + '^{\\circ}'), why: 'Round, don’t chop: ' + t('\\tan^{-1}\\left(' + frac(c.a, c.b) + '\\right)=' + x.toFixed(2) + '^{\\circ}') + '.' },
             { html: t((90 - R) + '^{\\circ}'), why: 'That is the other acute angle (between the ramp and the vertical rise). The angle with the floor is opposite the rise.' },
-            { html: t((91 - R) + '^{\\circ}'), why: 'That is the other acute angle, and chopped instead of rounded. The angle with the floor is opposite the rise.' }];
+            { html: t((91 - R) + '^{\\circ}'), why: 'That is ' + t('90^{\\circ}-' + (R - 1) + '^{\\circ}') + ': the other acute angle, worked out from a chopped (not rounded) ' + t((R - 1) + '^{\\circ}') + '. The angle with the floor is opposite the rise.' }];
           return mc(r, 'A wheelchair ramp has a vertical rise of ' + t(c.a) + ' cm for every ' + t(c.b) + ' cm of horizontal run. To the nearest degree, the angle between the ramp and the floor is', opts,
             'Rise ' + t(c.a) + ' is OPPOSITE, run ' + t(c.b) + ' is ADJACENT ' + t('\\Rightarrow') + ' TOA.<br>' + t('\\tan\\theta=' + frac(c.a, c.b) + '\\Rightarrow\\theta=' + x.toFixed(2) + '^{\\circ}\\approx ' + R + '^{\\circ}'),
             ['Sketch it: the rise is opposite the angle at the floor and the run is adjacent.'], 'ramp angle MC ' + c.a + '/' + c.b);
@@ -590,7 +592,7 @@
             var m = s.h * s.h - s.a * s.a, k = 1; for (var i = 2; i * i <= m; i++) if (m % (i * i) === 0) k = i;
             if (k === 1 || k * k === m) return false; s.k = k; s.m = m / (k * k); s.st = Math.sqrt(m);
             var T = TR.asin(s.a / s.h), T2 = TR.atan(s.a / rd(s.st, 1));
-            return safe(T, 0, 0.015) && Math.round(T) !== Math.round(T2) && Math.abs(T - 45) > 2;
+            return safe(T, 0, 0.015) && safe(T2, 0, 0.02) && Math.round(T) !== Math.round(T2) && Math.abs(T - 45) > 2;
           }, 6000);
         },
         parts: [
@@ -666,14 +668,14 @@
           { id: 'e12e', sub: 'd i', level: 'BEG', make: function (r, s) { var p = pitchPart(2 * s.q); p.prompt = 'Doubling the pitch from “' + s.q + ' in 12” to “' + (2 * s.q) + ' in 12”: determine the angle of the ' + (2 * s.q) + ' in 12 roof to the nearest degree.'; return p; } },
           { id: 'e12f', sub: 'd ii', level: 'EMG', make: function (r, s) {
             var a = TR.atan(s.q / 12), b = TR.atan(2 * s.q / 12);
-            return mc(r, 'A “' + s.q + ' in 12” roof is ' + t(a.toFixed(2) + '^{\\circ}') + ' and an “' + (2 * s.q) + ' in 12” roof is ' + t(b.toFixed(2) + '^{\\circ}') + '. Does doubling the pitch double the angle?', [
+            return mc(r, 'A “' + s.q + ' in 12” roof is ' + t(a.toFixed(2) + '^{\\circ}') + ' and ' + an(2 * s.q) + ' “' + (2 * s.q) + ' in 12” roof is ' + t(b.toFixed(2) + '^{\\circ}') + '. Does doubling the pitch double the angle?', [
               { html: 'No — the angle is less than double (' + t('2\\times ' + a.toFixed(2) + '^{\\circ}=' + (2 * a).toFixed(2) + '^{\\circ}') + '). ' + t('\\tan^{-1}') + ' is not proportional: each extra unit of rise adds less angle.', right: true },
               { html: 'Yes — angle and pitch are proportional.', why: 'Compare: ' + t('2\\times ' + a.toFixed(2) + '^{\\circ}=' + (2 * a).toFixed(2) + '^{\\circ}') + ', but the steeper roof is ' + t(b.toFixed(2) + '^{\\circ}') + '.' },
               { html: 'No — the angle more than doubles.', why: 'Compare ' + t(b.toFixed(2) + '^{\\circ}') + ' with ' + t((2 * a).toFixed(2) + '^{\\circ}') + '. Which is bigger?' },
               { html: 'Yes, but only for pitches less than 12 in 12.', why: 'Even for small pitches the angles don’t double exactly: ' + t(b.toFixed(2) + '^{\\circ}\\ne ' + (2 * a).toFixed(2) + '^{\\circ}') + '.' }],
               'Twice ' + t(a.toFixed(2) + '^{\\circ}') + ' is ' + t((2 * a).toFixed(2) + '^{\\circ}') + ', but the ' + (2 * s.q) + ' in 12 roof is only ' + t(b.toFixed(2) + '^{\\circ}') + '. The angle is ' + t('\\tan^{-1}') + ' of the pitch, which grows more and more slowly — it can never reach ' + t('90^{\\circ}') + ', so it can’t keep doubling.', [], 'pitch doubling');
           } }] },
-      { num: '13', stem: function (sh) { return 'A ' + t(sh.L) + ' m ladder leans against a vertical wall with its foot ' + t(sh.d) + ' m from the base of the wall. Safety guidance says a leaning ladder should sit between ' + t('70^{\\circ}') + ' and ' + t('80^{\\circ}') + ' to the ground.'; },
+      { num: '13', stem: function (sh) { return An(sh.L) + ' ' + t(sh.L) + ' m ladder leans against a vertical wall with its foot ' + t(sh.d) + ' m from the base of the wall. Safety guidance says a leaning ladder should sit between ' + t('70^{\\circ}') + ' and ' + t('80^{\\circ}') + ' to the ground.'; },
         shared: function (r) { return search(r, function (r) { var L = r.int(50, 80) / 10; return { L: L, d: r.int(Math.round(L * 1.2), Math.round(L * 4.2)) / 10, phi: r.int(71, 79) }; }, function (s) { var x = TR.acos(s.d / s.L); return safe(x, 0) && Math.abs(x - 70) > 1 && Math.abs(x - 80) > 1 && x > 62 && x < 86 && Math.abs(x - s.phi) > 1.5 && safe(Math.sqrt(s.L * s.L - s.d * s.d), 1) && safe(s.L * TR.cos(s.phi), 1); }); },
         parts: [
           { id: 'e13a', level: 'EMG', make: function (r, s) { var p = sidePart(r, { kind: 'ah', n: s.d, d: s.L, dp: 0, ang: ['θ', '\\theta', '\\theta'], noFig: true, prompt: 'Sketch and label the situation, then determine the angle the ladder makes with the ground, to the nearest degree.' }); p.solution = 'The ladder is the hypotenuse; the ' + t(s.d) + ' m along the ground touches the angle at the foot. ' + p.solution; return p; } },
@@ -725,7 +727,7 @@
           { id: 'e15b', level: 'BEG', make: function (r, s) { return gradePart(2 * s.g); } },
           { id: 'e15c', level: 'EMG', make: function (r, s) {
             var a = TR.atan(s.g / 100), b = TR.atan(2 * s.g / 100);
-            return mc(r, 'Unrounded, a ' + t(s.g + '\\%') + ' grade is ' + t(a.toFixed(4) + '^{\\circ}') + ' and a ' + t((2 * s.g) + '\\%') + ' grade is ' + t(b.toFixed(4) + '^{\\circ}') + '. The grade doubled. Did the angle double?', [
+            return mc(r, 'Unrounded, ' + an(s.g) + ' ' + t(s.g + '\\%') + ' grade is ' + t(a.toFixed(4) + '^{\\circ}') + ' and ' + an(2 * s.g) + ' ' + t((2 * s.g) + '\\%') + ' grade is ' + t(b.toFixed(4) + '^{\\circ}') + '. The grade doubled. Did the angle double?', [
               { html: 'Not quite: ' + t('2\\times ' + a.toFixed(4) + '^{\\circ}=' + (2 * a).toFixed(4) + '^{\\circ}') + '. For small grades the relationship is nearly proportional, but it fails badly for large grades (' + t('100\\%') + ' is ' + t('45^{\\circ}') + ').', right: true },
               { html: 'Yes, exactly — angle and grade are proportional.', why: 'Compare the unrounded values: ' + t((2 * a).toFixed(4)) + ' vs ' + t(b.toFixed(4)) + '.' },
               { html: 'No — the angle more than doubled.', why: 'Is ' + t(b.toFixed(4)) + ' more or less than ' + t((2 * a).toFixed(4)) + '?' },
@@ -734,10 +736,13 @@
           } },
           { id: 'e15d', level: 'EMG', make: function (r, s) {
             var x = 100 * TR.tan(s.a);
-            return near('A sign warns of a ' + t(s.a + '^{\\circ}') + ' descent ahead. Convert it to a % grade, to the nearest percent.', x, 0,
+            var p = near('A sign warns of ' + an(s.a) + ' ' + t(s.a + '^{\\circ}') + ' descent ahead. Convert it to a % grade, to the nearest percent.', x, 0,
               [{ v: 100 * TR.sin(s.a), code: 'wrong-ratio', hint: 'Grade is rise over <b>horizontal</b> run: that is tangent.' }, { v: 100 * Math.tan(s.a), code: 'radian', hint: 'Your calculator seems to be in <b>radian</b> mode.' }, { v: TR.atan(s.a), code: 'inverse-used', hint: 'The angle is known here, so no inverse is needed: grade ' + t('=100\\tan ' + s.a + '^{\\circ}') + '.' }, { v: TR.tan(s.a), code: 'value', hint: 'That is the ratio as a decimal. Multiply by ' + t('100') + ' to make it a percent.' }],
               'The angle is known and the ratio is wanted, so no inverse is needed.<br>' + t('\\tan ' + s.a + '^{\\circ}=' + TR.tan(s.a).toFixed(6)) + ', so grade ' + t('=' + (100 * TR.tan(s.a)).toFixed(4) + '\\%\\approx ' + Math.round(x) + '\\%'),
               ['Grade = rise ÷ run × 100%, and rise ÷ run is the tangent of the angle.'], 'angle to grade ' + s.a, { unit: '%' });
+            var c0 = p.check; // a typed % sign: nudge, like a typed unit
+            p.check = function (resp) { var m = /^\s*(.*?)\s*\\?%\s*$/.exec(String(resp == null ? '' : resp)); if (m && HW.parse.number(m[1]).ok) return K.form('units', 'Leave the % sign out — just type the number (the % is already after the box).'); return c0(resp); };
+            return p;
           } }] },
       { num: '16', stem: 'A building code requires that a wheelchair ramp make an angle of <b>no more than ' + t('4.8^{\\circ}') + '</b> with the ground. Give each angle to the <b>nearest hundredth of a degree</b>, and don’t round anything before you compare.',
         shared: function (r) {
@@ -751,7 +756,7 @@
           { id: 'e16b', level: 'BEG', make: function (r, s) { return rampPart('B', s.B, false); } },
           { id: 'e16c', sub: 'b ii', level: 'PRG', make: function (r, s) {
             var m = s.B.rise / TAN48, up = Math.ceil(m * 10 - 1e-9) / 10;
-            return near('Ramp B (rise ' + t(s.B.rise) + ' cm) is too steep. Determine the <b>shortest</b> horizontal run that would make a ' + t(s.B.rise) + ' cm rise comply, to the nearest tenth of a centimetre.', up, 1,
+            return near('Ramp B (rise ' + t(s.B.rise) + ' cm) is too steep. Determine the <b>shortest</b> horizontal run that would make ' + an(s.B.rise) + ' ' + t(s.B.rise) + ' cm rise comply, to the nearest tenth of a centimetre.', up, 1,
               [{ v: Math.floor(m * 10) / 10 + 0.0001, code: 'round-direction', hint: 'Careful: rounding normally gives a run slightly <b>shorter</b> than the minimum, so that ramp would be too steep. The run must be <i>at least</i> the exact value — round <b>up</b>.' },
                 { v: s.B.rise * TAN48, code: 'ratio-flip', hint: t('\\tan 4.8^{\\circ}=\\frac{' + s.B.rise + '}{\\text{run}}') + ', so the run is ' + t(s.B.rise + '\\div\\tan 4.8^{\\circ}') + '.' },
                 { v: s.B.rise / TR.sin(4.8), code: 'wrong-ratio', hint: 'That is the length along the slope. The <b>horizontal</b> run is adjacent: use tangent.' }, { v: s.B.rise / Math.tan(4.8), code: 'radian', hint: 'Your calculator seems to be in <b>radian</b> mode.' }],
@@ -765,7 +770,7 @@
               { html: 'No — ' + t(frac(s.C.rise, s.C.run) + '=' + rd(s.C.rise / s.C.run, 6) + '>\\tan 4.8^{\\circ}=' + TAN48.toFixed(6)) + ', so the angle (' + t(x.toFixed(4) + '^{\\circ}') + ') is just over the limit.', right: true },
               { html: 'Yes — its angle rounds to ' + t('4.80^{\\circ}') + ', which equals the limit.', why: 'A rounded value can’t decide a boundary case. Compare before rounding: is ' + t(frac(s.C.rise, s.C.run)) + ' more or less than ' + t('\\tan 4.8^{\\circ}') + '?' },
               { html: 'Yes — to the nearest tenth it is ' + t('4.8^{\\circ}') + '.', why: 'Rounding to the tenth throws away exactly the digits that decide it. Compare unrounded values.' },
-              { html: 'No — to the nearest degree it is ' + t('5^{\\circ}') + '.', why: 'Right verdict, wrong reason: to the nearest degree a ' + t('4.6^{\\circ}') + ' ramp would also read ' + t('5^{\\circ}') + '. Compare unrounded values.' }],
+              { html: 'No — any ramp whose angle rounds to ' + t('5^{\\circ}') + ' breaks the code.', why: 'False: a ' + t('4.6^{\\circ}') + ' ramp also rounds to ' + t('5^{\\circ}') + ' and it complies. Compare the unrounded values.' }],
               t('\\theta=\\tan^{-1}\\left(' + frac(s.C.rise, s.C.run) + '\\right)=' + x.toFixed(6) + '^{\\circ}') + '. Compare before rounding: ' + t(frac(s.C.rise, s.C.run) + '=' + rd(s.C.rise / s.C.run, 6)) + ' and ' + t('\\tan 4.8^{\\circ}=' + TAN48.toFixed(6) + '\\ldots') + ', so the angle exceeds ' + t('4.8^{\\circ}') + ' by about ' + t((x - 4.8).toFixed(4) + '^{\\circ}') + '. Ramp C does <b>not</b> comply. Rounding an angle before testing it against a limit can land it on either side of the boundary.', [], 'borderline ramp');
           } },
           { id: 'e16f', sub: 'd', level: 'PRG', make: function (r, s) {
@@ -923,7 +928,7 @@
           } },
           { id: 'e20e', sub: 'd', level: 'EMG', make: function (r, s) {
             var p = sidePart(r, { kind: 'oa', n: s.h, d: s.bd, dp: 0, ang: vtxLab('B'), noFig: true, prompt: 'Determine ' + t('\\angle ABC') + ' (which equals ' + t('\\angle ACB') + ') to the nearest degree.' });
-            p.solution = 'In ' + t('\\triangle ABD') + ', relative to ' + t('\\angle ABD') + ': opp ' + t('=AD=' + s.h) + ', adj ' + t('=BD=' + s.bd) + ' (from part b) ' + t('\\Rightarrow') + ' TOA.<br>' + t('\\angle ABC=\\tan^{-1}\\left(' + frac(s.h, s.bd) + '\\right)=' + TR.atan(s.h / s.bd).toFixed(4) + '^{\\circ}\\approx ' + deg(TR.atan(s.h / s.bd), 0)) + '. The two right triangles are congruent, so ' + t('\\angle ACB') + ' is the same.';
+            p.solution = 'In ' + t('\\triangle ABD') + ', relative to ' + t('\\angle ABD') + ': opp ' + t('=AD=' + s.h) + ', adj ' + t('=BD=' + s.bd) + ' (Pythagoras: ' + t('\\sqrt{' + s.c + '^{2}-' + s.h + '^{2}}') + ') ' + t('\\Rightarrow') + ' TOA.<br>' + t('\\angle ABC=\\tan^{-1}\\left(' + frac(s.h, s.bd) + '\\right)=' + TR.atan(s.h / s.bd).toFixed(4) + '^{\\circ}\\approx ' + deg(TR.atan(s.h / s.bd), 0)) + '. The two right triangles are congruent, so ' + t('\\angle ACB') + ' is the same.';
             p.hints = ['You know ' + t('AD=' + s.h) + ' and ' + t('BD') + ' (half of the base, from Pythagoras). From ' + t('B') + ', which is opposite?']; return p;
           } },
           { id: 'e20f', sub: 'e', level: 'EMG', make: function (r, s) {
@@ -1007,20 +1012,20 @@
     return HW.fig({ pts: pts, segs: [['K', 'N', String(s.a)], ['N', 'M', String(s.h)], ['M', 'L', String(b)], ['L', 'K']], right: [['N', 'K', 'M'], ['M', 'N', 'L']], width: 300 });
   }
   function cubeFig(s) {
-    var P = { A: [0, 0], B: [3, 0], C: [3.9, 0.7], D: [0.9, 0.7], E: [0, 3], F: [3, 3], G: [3.9, 3.7], H: [0.9, 3.7] };
+    var P = { A: [0, 0], B: [3, 0], C: [4.2, 0.65], D: [1.2, 0.65], E: [0, 3], F: [3, 3], G: [4.2, 3.65], H: [1.2, 3.65] }; // depth offset chosen so AG doesn’t run along AF
     return HW.fig({ pts: P, segs: [['A', 'B', s + ' cm'], ['B', 'F'], ['F', 'E'], ['E', 'A'], ['B', 'C'], ['C', 'G'], ['G', 'F'], ['E', 'H'], ['H', 'G'],
       ['A', 'D', { dash: 1, width: 1.3 }], ['D', 'C', { dash: 1, width: 1.3 }], ['D', 'H', { dash: 1, width: 1.3 }], ['A', 'C', { dash: 1, color: '#2f5d9e', width: 2 }], ['A', 'G', { color: '#b0452f', width: 2.4 }]], width: 240 });
   }
   function pitchPart(p) {
     var x = TR.atan(p / 12);
-    return near('Determine the angle a “' + p + ' in 12” roof makes with the horizontal, to the nearest degree.', x, 0, sideAlts('oa', p, 12, '\\theta', String(p), '12', 0),
+    return near('Determine the angle ' + an(p) + ' “' + p + ' in 12” roof makes with the horizontal, to the nearest degree.', x, 0, sideAlts('oa', p, 12, '\\theta', String(p), '12', 0),
       'Rise ' + t(p) + ' is OPPOSITE, run ' + t('12') + ' is ADJACENT ' + t('\\Rightarrow') + ' TOA.<br>' + t('\\theta=\\tan^{-1}\\left(' + frac(p, 12) + '\\right)=' + x.toFixed(4) + '^{\\circ}\\approx ' + deg(x, 0)),
       ['Sketch a right triangle with rise ' + t(p) + ' and horizontal run ' + t('12') + '.'], 'pitch ' + p + ' in 12', { before: t('\\theta=') });
   }
   function gradePart(g) {
     var x = TR.atan(g / 100);
-    return near('Sketch a labelled triangle for a ' + t(g + '\\%') + ' grade and determine the angle the road makes with the horizontal, to the nearest degree.', x, 0,
-      [{ v: g, code: 'grade-angle', hint: 'A ' + t(g + '\\%') + ' grade is not ' + t(g + '^{\\circ}') + '. Rise ' + t(g) + ', run ' + t('100') + ': use TOA.' }, { v: TR.atan(100 / g), code: 'ratio-flip', hint: 'That is the angle with the vertical. The rise is opposite the road’s angle and the run is adjacent.' }].concat(std('tan')(g / 100)),
+    return near('Sketch a labelled triangle for ' + an(g) + ' ' + t(g + '\\%') + ' grade and determine the angle the road makes with the horizontal, to the nearest degree.', x, 0,
+      [{ v: g, code: 'grade-angle', hint: An(g) + ' ' + t(g + '\\%') + ' grade is not ' + t(g + '^{\\circ}') + '. Rise ' + t(g) + ', run ' + t('100') + ': use TOA.' }, { v: TR.atan(100 / g), code: 'ratio-flip', hint: 'That is the angle with the vertical. The rise is opposite the road’s angle and the run is adjacent.' }].concat(std('tan')(g / 100)),
       t('\\tan\\theta=' + frac(g, 100) + '=' + (g / 100)) + '<br>' + t('\\theta=\\tan^{-1}(' + (g / 100) + ')=' + x.toFixed(4) + '^{\\circ}\\approx ' + deg(x, 0)),
       ['Rise ' + t(g) + ' m over a horizontal run of ' + t('100') + ' m.'], 'grade ' + g + '%', { before: t('\\theta=') });
   }
