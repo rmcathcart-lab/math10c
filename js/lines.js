@@ -178,9 +178,124 @@
     var key = sl == null ? '\\text{undefined}' : (function (f) { return frT(f[0], f[1]); })(Array.isArray(sl) ? sl : toFr(sl));
     return K.P.math(prompt, K.slope(sl, opt), key, sol, hints, text, { keys: 'slope', before: (opt && opt.before) || 'm=', placeholder: 'e.g. -2/3 or undefined' });
   };
+
+  /* ---------------- systems of linear equations ----------------
+   * K.point(target, opt): the solution of a system / a point. target = [x, y] (numbers or [p, q] fractions), 'none'
+   *   (no solution: parallel lines) or 'inf' (infinitely many: the same line). Accepts (x, y), {(x, y)}, x = …, y = …
+   *   (either order), fractions or exact decimals. opt.vars: the letters (default ['x', 'y']); opt.system: the two
+   *   equations as [A, B, C] (Ax + By + C = 0) or targets for HW.lines.of — diagnoses "satisfies only one equation";
+   *   opt.wrong: [{ is: [x, y] | 'none' | 'inf', code, hint }].
+   * K.P.point(prompt, target, opt, sol, hints, text) — the 'point' keypad (with "no solution" / "infinitely many" keys).
+   * K.system(targets, opt) / K.P.system(prompt, targets, opt, sol, hints, text): write a system — two equation boxes,
+   *   either order; each equation graded like K.line (opt.form, opt.vars, opt.labels, opt.wrong per box not supported —
+   *   use opt.diag(resp) -> { code, hint } | null for classic mistakes). */
+  function numOf(s) {
+    s = String(s).trim(); if (!s) return null;
+    var a = ex.parse(s); if (!a.ok) return null; var v = ex.value(a.ast); if (!isFinite(v)) return null;
+    var r = ratAst(a.ast); return { v: v, ast: a.ast, rat: r };
+  }
+  function tval(v) { return Array.isArray(v) ? v[0] / v[1] : v; }
+  function ptTex(P) { return '(' + frT.apply(null, toFr(tval(P[0]))) + ',\\ ' + frT.apply(null, toFr(tval(P[1]))) + ')'; }
+  Lns.ptTex = ptTex;
+  Lns.readPoint = function (text, vars) {
+    vars = vars || ['x', 'y'];
+    var s = clean(text).replace(/\\\{|\\\}/g, '').replace(/\s+/g, ' ').trim();
+    if (!s) return { empty: true };
+    var low = s.replace(/\\text\{([^}]*)\}/g, '$1').replace(/\\infty/g, '∞').toLowerCase();
+    if (/^(no\s*solutions?|none|∅|\\varnothing|\\emptyset|no\s*point)$/.test(low)) return { kind: 'none' };
+    if (/^(infinitely\s*many(\s*solutions?)?|∞\s*many|infinite(ly)?(\s*many)?|∞)$/.test(low)) return { kind: 'inf' };
+    var m = /^\((.*)\)$/.exec(s), body = m ? m[1] : s, X, Y;
+    var eqs = body.split(/,|\\text\{\s*and\s*\}|\band\b|;/).map(function (q) { return q.trim(); }).filter(Boolean);
+    if (eqs.length === 2 && eqs.every(function (q) { return /=/.test(q); })) {
+      eqs.forEach(function (q) { var kv = q.split('='); var k = kv[0].trim(), v = kv[1]; if (k === vars[0]) X = v; else if (k === vars[1]) Y = v; });
+      if (X == null || Y == null) return { bad: true };
+      var nx = numOf(X), ny = numOf(Y); if (!nx || !ny) return { bad: true };
+      return { kind: 'pt', p: [nx, ny], named: true };
+    }
+    if (eqs.length !== 2) return { bad: true };
+    var a = numOf(eqs[0]), b = numOf(eqs[1]); if (!a || !b) return { bad: true };
+    return { kind: 'pt', p: [a, b], brackets: !!m };
+  };
+  function lineOfAny(L) { return Array.isArray(L) && L.length === 3 && typeof L[0] === 'number' ? L : Lns.of(L); }
+  K.point = function (target, opt) {
+    opt = opt || {};
+    var vars = opt.vars || ['x', 'y'], X = vars[0], Y = vars[1];
+    var T = target === 'none' || target === 'inf' ? target : [tval(target[0]), tval(target[1])];
+    var sys = opt.system ? opt.system.map(lineOfAny) : null;
+    var on = function (L, P) { return Math.abs(L[0] * P[0] + L[1] * P[1] + L[2]) < 1e-9 * Math.max(1, Math.abs(L[2]), Math.abs(L[0] * P[0]), Math.abs(L[1] * P[1])); };
+    return function (resp) {
+      var r = Lns.readPoint(resp, vars);
+      if (r.empty) return form('empty', 'Type your answer first.');
+      if (r.bad) return form('pt-unreadable', 'Write the solution as an ordered pair, e.g. ' + t('(3,\\ -2)') + (T === 'none' || T === 'inf' || opt.allowNone ? ', or use the <b>no solution</b> / <b>infinitely many</b> key.' : '.'));
+      var W0 = (opt.wrong || []).filter(function (w) { return r.kind === 'pt' ? Array.isArray(w.is) && Math.abs(r.p[0].v - tval(w.is[0])) < 1e-9 && Math.abs(r.p[1].v - tval(w.is[1])) < 1e-9 : w.is === r.kind; })[0];
+      if (T === 'none' || T === 'inf') {
+        if (r.kind === T) return ok();
+        if (W0) return wrong(W0.code || 'diag', W0.hint);
+        if (r.kind === 'pt') return wrong('sys-count', T === 'none' ? 'Check: do the lines ever meet? Compare their slopes and intercepts — same slope and different intercepts means the lines are parallel.' : 'Check: the two equations describe the <b>same line</b> (one is a multiple of the other), so every point on it is a solution.');
+        return wrong('sys-none-inf', T === 'none' ? 'Same slope but <b>different</b> intercepts: the lines are parallel and never meet, so there is <b>no solution</b>.' : 'The equations are multiples of each other — the <b>same line</b> — so there are <b>infinitely many</b> solutions.');
+      }
+      if (r.kind !== 'pt') return wrong('sys-count', 'This system has exactly one solution: the lines have different slopes, so they cross at one point.');
+      if (r.named === undefined && !r.brackets && !opt.noBrackets) return form('pt-brackets', 'Write the solution as an ordered pair in brackets: ' + t('(' + X + ',\\ ' + Y + ')') + '.');
+      var P = [r.p[0].v, r.p[1].v], near = function (a, b) { return Math.abs(a - b) < 1e-9 * Math.max(1, Math.abs(b)); };
+      if (near(P[0], T[0]) && near(P[1], T[1])) {
+        for (var i = 0; i < 2; i++) { var q = r.p[i].rat; if (q && Math.abs(q[1]) !== 1 && Math.abs(gcdI(q[0], q[1])) > 1) return form('pt-lowest', 'Right point — now reduce the fraction to lowest terms.'); }
+        return ok();
+      }
+      if (W0) return wrong(W0.code || 'diag', W0.hint);
+      var exactish = function (v) { var s = String(v); return s.length < 12; };
+      if (r.p.some(function (pp) { return !pp.rat && /\.\d{3,}/.test(String(resp)); }) && Math.abs(P[0] - T[0]) < 0.006 && Math.abs(P[1] - T[1]) < 0.006) return form('pt-exact', 'Close — give the exact values (use fractions, not rounded decimals).');
+      if (near(P[0], T[1]) && near(P[1], T[0])) return wrong('pt-swap', 'Your coordinates are in the wrong order: write ' + t('(' + X + ',\\ ' + Y + ')') + ' — the ' + t(X) + '-value first.');
+      if (sys) {
+        var s0 = on(sys[0], P), s1 = on(sys[1], P);
+        if (s0 && !s1) return wrong('sys-one-eq', 'Your point works in the <b>first</b> equation but not the second. Substitute it into both to check, then look for the error in your work.');
+        if (s1 && !s0) return wrong('sys-one-eq', 'Your point works in the <b>second</b> equation but not the first. Substitute it into both to check, then look for the error in your work.');
+      }
+      if (near(P[0], T[0])) return wrong(near(P[1], -T[1]) ? 'pt-sign' : 'pt-y', near(P[1], -T[1]) ? 'Check the sign of ' + t(Y) + '.' : 'Your ' + t(X) + '-value is right — substitute it back to find ' + t(Y) + ' again.');
+      if (near(P[1], T[1])) return wrong(near(P[0], -T[0]) ? 'pt-sign' : 'pt-x', near(P[0], -T[0]) ? 'Check the sign of ' + t(X) + '.' : 'Your ' + t(Y) + '-value is right — substitute it back to find ' + t(X) + ' again.');
+      return wrong('pt', null);
+    };
+  };
+  function gcdI(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var c = a % b; a = b; b = c; } return a; }
+  K.P.point = function (prompt, target, opt, sol, hints, text) {
+    opt = opt || {};
+    var key = target === 'none' ? '\\text{no solution}' : target === 'inf' ? '\\text{infinitely many}' : ptTex(target);
+    return K.P.math(prompt, K.point(target, opt), key, sol, hints, text, { keys: 'point', placeholder: opt.placeholder || 'e.g. (3, -2)', before: opt.before });
+  };
+  K.system = function (targets, opt) {
+    opt = opt || {};
+    var vars = opt.vars || ['x', 'y'], TL = targets.map(lineOfAny), checks = targets.map(function (T) { return K.line(T, { form: opt.form || 'any', vars: vars }); });
+    return function (resp) {
+      resp = resp || [];
+      var a = String(resp[0] || '').trim(), b = String(resp[1] || '').trim();
+      if (!a && !b) return form('empty', 'Write both equations.');
+      if (!a || !b) return form('sys-one', 'Write <b>two</b> equations — one in each box.');
+      var ra = Lns.read(a, vars), rb = Lns.read(b, vars);
+      var bad = [ra, rb].filter(function (r) { return !r.ok; })[0];
+      if (bad) return form('line-' + bad.why, bad.why === 'vars' ? 'Use the letters ' + t(vars[0]) + ' and ' + t(vars[1]) + ' from the question.' : bad.why === 'no-eq' ? 'Each box needs an equation with an equals sign.' : 'One of your equations can’t be read — check the brackets and signs.');
+      var LA = [ra.a, ra.b, ra.c], LB = [rb.a, rb.b, rb.c];
+      var order = same(LA, TL[0]) || same(LB, TL[1]) ? [0, 1] : [1, 0];
+      var res = [checks[order[0]](a), checks[order[1]](b)];
+      if (res[0].v === 'correct' && res[1].v === 'correct') return ok();
+      if (opt.diag) { var h = opt.diag(resp); if (h) return wrong(h.code || 'sys-eq', h.hint); }
+      if (same(LA, LB)) return wrong('sys-same', 'Your two equations describe the same line. The two facts in the question give two <b>different</b> equations.');
+      var fm = res.filter(function (q) { return q.v === 'form'; })[0];
+      if (fm && res.every(function (q) { return q.v !== 'wrong'; })) return fm;
+      var which = res[0].v !== 'correct' ? 0 : 1, other = 1 - which, name = ['first', 'second'][which];
+      return wrong(res[which].code || 'sys-eq', (res[other].v === 'correct' ? 'Your ' + ['first', 'second'][other] + ' equation is right. ' : '') + 'Check your ' + name + ' equation' + (res[which].hint ? ': ' + res[which].hint : '.'));
+    };
+  };
+  K.P.system = function (prompt, targets, opt, sol, hints, text) {
+    opt = opt || {};
+    var vars = opt.vars || ['x', 'y'], fm = opt.form && opt.form !== 'any' ? opt.form : 'general';
+    var keys = opt.keyTex || targets.map(function (T) { return Lns.tex(T, fm, null, vars); });
+    var labels = opt.labels || ['Equation 1', 'Equation 2'];
+    return { prompt: prompt, input: { type: 'fields', fields: labels.map(function (l) { return { label: l, mode: 'math', keys: 'eq', vars: vars, placeholder: ' ' }; }) },
+      check: K.system(targets, opt), key: keys, answer: keys.map(function (k) { return t(k); }).join('<br>'), solution: sol, hints: hints || [], text: text };
+  };
   if (HW.addCodes) HW.addCodes({ 'line-form-si': 'Not in slope–intercept form', 'line-form-simplify': 'Equation not simplified', 'line-form-zero': 'General form: one side not 0', 'line-form-int': 'General form: fractions left', 'line-form-sign': 'General form: A negative', 'line-form-gcd': 'General form: common factor left', 'line-form-ps': 'Not in slope–point form', 'line-form-point': 'Slope–point form with a different point',
     'line-vertical': 'Wrote a vertical line', 'line-vh': 'Horizontal/vertical mixed up', 'line-x': 'Vertical line: wrong x', 'line-slope': 'Wrong slope', 'line-point': 'Misses the given point', 'line-intercept': 'Wrong y-intercept', 'line-b-sign': 'y-intercept sign', 'line-slope-sign': 'Slope sign', 'line-slope-flip': 'Run over rise', 'line-perp': 'Perpendicular slope used', line: 'Wrong equation',
-    'slope-und': 'Called a slope undefined', 'slope-zero-und': 'Slope 0 for a vertical line', 'slope-num-und': 'Number slope for a vertical line', 'slope-lowest': 'Slope not in lowest terms', 'slope-sign': 'Slope sign', 'slope-flip': 'Run over rise', 'slope-perp': 'Negative reciprocal slope', slope: 'Wrong slope' });
+    'slope-und': 'Called a slope undefined', 'slope-zero-und': 'Slope 0 for a vertical line', 'slope-num-und': 'Number slope for a vertical line', 'slope-lowest': 'Slope not in lowest terms', 'slope-sign': 'Slope sign', 'slope-flip': 'Run over rise', 'slope-perp': 'Negative reciprocal slope', slope: 'Wrong slope',
+    'pt-swap': 'Point: coordinates swapped', 'pt-sign': 'Point: sign of a coordinate', 'pt-x': 'Point: wrong x-value', 'pt-y': 'Point: wrong y-value', pt: 'Wrong point', 'sys-one-eq': 'Point satisfies only one equation', 'sys-count': 'Wrong number of solutions', 'sys-none-inf': 'No solution vs infinitely many mixed up', 'sys-same': 'Wrote the same equation twice', 'sys-eq': 'Wrong equation in the system' });
 
   /* keypads */
   var W = HW.widgets;
@@ -195,6 +310,8 @@
       return vs.length <= 3 ? rows.concat([[d(0), KY.dot].concat(vs, [KY.enter])]) : rows.concat([[d(0), KY.dot, KY.enter], vs]);
     };
     W.KEYSETS.slope = function () { return [[d(7), d(8), d(9), KY.frac, KY.del], [d(4), d(5), d(6), KY.minus, KY.clear], [d(1), d(2), d(3), KY.left, KY.right], [d(0), KY.dot, { label: 'undef.', tex: '\\text{undefined}', plain: 'undefined', title: 'Undefined (vertical line)' }, KY.enter]]; };
+    W.KEYSETS.point = function () { return [[d(7), d(8), d(9), KY.frac, KY.del], [d(4), d(5), d(6), KY.minus, KY.clear], [d(1), d(2), d(3), KY.par, KY.left, KY.right], [d(0), KY.dot, { label: ',', tex: ',', plain: ',' }, KY.enter], [{ label: 'no solution', tex: '\\text{no solution}', plain: 'no solution', title: 'Parallel lines: no solution' }, { label: 'infinitely many', tex: '\\text{infinitely many}', plain: 'infinitely many', title: 'The same line: infinitely many solutions' }]]; };
+    W.KEYHELP.point = ['Press <b>( )</b>, type the ' + HW.k('x') + '-value, a comma, then the ' + HW.k('y') + '-value. Use the <b>no solution</b> / <b>infinitely many</b> keys when the lines don’t cross at one point.', 'Type e.g. <code>(3, -2)</code>, <code>no solution</code> or <code>infinitely many</code>.'];
     W.KEYHELP.eq = ['Type the whole equation, e.g. ' + HW.k('y=-\\frac{2}{3}x+4') + '. Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction and <b>▶</b> to step out of it.', 'Type e.g. <code>y = -2/3x + 4</code> or <code>2x - 3y + 6 = 0</code>.'];
     W.KEYHELP.slope = ['Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction, or <b>undef.</b> (undefined) for a vertical line.', 'Type e.g. <code>-2/3</code>, or <code>undefined</code>.'];
   }

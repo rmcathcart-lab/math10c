@@ -27,5 +27,17 @@ var p2 = K.P.line('w', { m: 2, b: 3 }, { form: 'point-slope' }, 's', [], 't'); e
 chk(K.slope([-1, 2]), { '\\frac{-4}{8}': 'form:slope-lowest', '-\\frac{4}{8}': 'form:slope-lowest', '\\frac{4}{-8}': 'form:slope-lowest', '-\\frac{1}{2}': 'correct', '-0.5': 'correct' }, 'slope lowest neg');
 chk(K.line({ m: [1, 4], point: [0, -9] }, { form: 'point-slope', point: [0, -9] }), { 'y+9=\\frac{x}{4}': 'correct', 'y+9=\\frac{1}{4}x': 'correct' }, 'ps x/4');
 chk(K.line({ m: [-5, 4], point: [-5, 2] }, { form: 'point-slope', point: [-5, 2] }), { 'y-2=-\\frac{5(x+5)}{4}': 'correct', 'y-2=-\\frac{5}{4}(x+5)': 'correct', 'y=-\\frac{5}{4}x-\\frac{17}{4}': 'form:line-form-ps' }, 'ps fraction of bracket');
+
+// systems: points and two-equation answers
+var S1 = [[2, 1, -7], [1, -1, -2]]; // 2x+y=7, x-y=2 -> (3, 1)
+chk(K.point([3, 1], { system: S1 }), { '(3,1)': 'correct', '\\left(3, 1\\right)': 'correct', 'x=3, y=1': 'correct', 'y=1,x=3': 'correct', '\\{(3,1)\\}': 'correct', '(1,3)': 'wrong:pt-swap', '3,1': 'form:pt-brackets', '(3,-1)': 'wrong:pt-sign', '(3,4)': 'wrong:pt-y', '(2,3)': 'wrong:sys-one-eq', '\\text{no solution}': 'wrong:sys-count', '': 'form:empty', '(a,b)': 'form:pt-unreadable' }, 'point');
+chk(K.point([[1, 2], [-5, 3]]), { '(\\frac{1}{2},-\\frac{5}{3})': 'correct', '(0.5,-\\frac{5}{3})': 'correct', '(\\frac{2}{4},-\\frac{5}{3})': 'form:pt-lowest', '(0.5,-1.667)': 'form:pt-exact' }, 'point fractions');
+chk(K.point('none'), { '\\text{no solution}': 'correct', 'no solution': 'correct', '\\text{infinitely many}': 'wrong:sys-none-inf', '(1,2)': 'wrong:sys-count' }, 'none');
+chk(K.point('inf'), { '\\text{infinitely many}': 'correct', 'infinitely many solutions': 'correct', '\\text{no solution}': 'wrong:sys-none-inf' }, 'inf');
+chk(K.point([4, 6], { vars: ['a', 'c'] }), { 'a=4, c=6': 'correct', '(4,6)': 'correct' }, 'point letters');
+var sy = K.system([{ A: 1, B: 1, C: -20 }, { A: 5, B: 10, C: -150 }], { vars: ['n', 'd'] }); // n+d=20, 5n+10d=150
+chk(function (r) { return sy(r.split('|')); }, { 'n+d=20|5n+10d=150': 'correct', 'n+d-20=0|n+2d=30': 'correct', '5n+10d=150|d=20-n': 'correct', 'n+d=20|': 'form:sys-one', 'n+d=20|n+d=20': 'wrong:sys-same', 'n+d=20|10n+5d=150': 'wrong:line-slope-flip' }, 'system');
+var ps = K.P.system('Write it', [{ A: 1, B: 1, C: -20 }, { A: 5, B: 10, C: -150 }], { vars: ['n', 'd'] }, 's', [], 't'); eq([ps.check(ps.key).v, ps.key], ['correct', ['n+d-20=0', 'n+2d-30=0']], 'system builder');
+var pp = K.P.point('Solve', [3, 1], { system: S1 }, 's', [], 't'); eq([pp.key, pp.check(pp.key).v, pp.input.keys], ['(3,\\ 1)', 'correct', 'point'], 'point builder');
 console.log(n + ' checks, ' + fails + ' failed');
 process.exit(fails ? 1 : 0);

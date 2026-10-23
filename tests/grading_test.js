@@ -2,7 +2,7 @@
 // Mastery-box multiple choice, missing boxes, saved marks with teacher-set indicators.   node tests/grading_test.js
 var fs = require('fs'), path = require('path'), vm = require('vm'), root = path.join(__dirname, '..');
 var ctx = { console: console, Math: Math, Date: Date, JSON: JSON, Number: Number, String: String, Array: Array, Object: Object, isFinite: isFinite, RegExp: RegExp }; ctx.window = ctx; vm.createContext(ctx);
-['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js', 'js/factor.js', 'js/relfn.js', 'js/draw.js', 'js/draw2.js', 'js/lines.js', 'js/lessons/u1l1.js', 'js/lessons/u1l2.js', 'js/lessons/u1test.js', 'js/testcore.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx); });
+['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js', 'js/factor.js', 'js/relfn.js', 'js/draw.js', 'js/draw2.js', 'js/lines.js', 'js/geom.js', 'js/lessons/u1l1.js', 'js/lessons/u1l2.js', 'js/lessons/u1test.js', 'js/testcore.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx); });
 if (fs.existsSync(path.join(root, 'js/partial.js'))) vm.runInContext(fs.readFileSync(path.join(root, 'js/partial.js'), 'utf8'), ctx);
 var TC = ctx.HW.TestCore, fails = 0;
 function eq(name, got, want) { var g = JSON.stringify(got), w = JSON.stringify(want); if (g !== w) { fails++; console.log('FAIL', name, g, 'want', w); } else console.log('ok  ', name, g); }

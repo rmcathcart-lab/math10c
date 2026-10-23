@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Geometry figures</title>
+<link rel="stylesheet" href="../assets/app.css"><style>body{padding:12px;max-width:640px;margin:auto}.c{border:1px solid #ddd;border-radius:12px;padding:10px;margin:10px 0}</style></head><body>
+<div id="out"></div>
+<script src="../assets/katex/katex.min.js"></script><script src="../js/core.js"></script><script src="../js/expr.js"></script><script src="../js/kit.js"></script><script src="../js/kitx.js"></script><script src="../js/geom.js"></script>
+<script>
+var o=document.getElementById('out'), add=function(h,cap){var d=document.createElement('div');d.className='c';d.innerHTML='<div>'+cap+'</div>'+h;o.appendChild(d);};
+add(HW.tri({w:4,h:3,sides:{a:'9 cm',b:'x',c:'15 cm'},angles:{A:'θ'}}),'tri default');
+add(HW.tri({w:5,h:2,rot:1,sides:{a:'12.4 m',c:'y'},angles:{B:'38°'},names:['P','Q','R']}),'tri rot1');
+add(HW.tri({w:3,h:5,flip:true,rot:2,sides:{b:'7.2',c:'h'},angles:{A:'52°'}}),'tri flip rot2');
+add(HW.fig({pts:{A:[0,0],B:[10,0],C:[10,6],D:[4,0]},segs:[['A','B'],['B','C','x'],['A','C'],['D','C'],['A','D','20 m']],right:[['B','A','C']],angles:[['A','B','C','28°'],['D','B','C','47°']]}),'chained');
+add(HW.fig({pts:{E:[0,1.6],T:[30,22],G:[30,0],F:[0,0],H:[30,1.6]},segs:[['E','T'],['T','G','h'],['F','G','30 m'],['E','H',{dash:1}]],right:[['H','E','T']],angles:[['E','H','T','35°']],names:{E:'E',T:'T'},extra:[{type:'ground',y:0,x0:-3,x1:34},{type:'person',at:[0,0],h:1.6},{type:'tree',at:[30,0],h:22}]}),'elevation');
+['rectprism','cube','triprism','cylinder','cone','sqpyramid','rectpyramid','sphere','hemisphere'].forEach(function(k){add(HW.solid(k,{l:'8 cm',w:'5 cm',h:'12 cm',s:'6 m',b:'4 ft',ht:'3 ft',r:'r = 4 cm',sl:'s = 10 cm'}),k);});
+</script></body></html>
