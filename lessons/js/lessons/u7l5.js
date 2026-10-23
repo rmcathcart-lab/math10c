@@ -8,9 +8,7 @@
  *   cover   general form: cover the x-term, cover the y-term; C = 0 and fraction intercepts (Ex 1c, 2b, 2c)
  *   dials   m tilts the line about (0, b); b slides it (sign and size of m)
  *   match   Example 3 check: solve for y, read m and b, find the graph
- *   ti84    the TI-84 steps: solve for y, Y=, ZStandard, WINDOW, GRAPH, TRACE (Example 4)
- *   window  the window as a rectangle on the plane that must hold every intercept (Example 4b)
- *   data    table → collinear → slope → intercept → general form → check → solve for x (Example 5)
+ *   data    table → collinear → slope → intercept → general form → check → solve for x (Example 4)
  *   machine y = 9/5 x + 32 as a two-step machine, and its reverse x = 5/9 (y − 32)
  * Colours: line blue, run amber, rise purple, slope purple, y-intercept green, x-intercept orange, given point red. */
 import {
@@ -158,17 +156,7 @@ function mountFigures() {
     const G = new Graph(f, { width: 220, height: 220, xmin: -6.5, xmax: 6.5, ymin: -6.5, ymax: 6.5, xlabels: 4, ylabels: 4, fontSize: 13 });
     G.segment(d.a, d.b, { color: INK, width: 3, ends: ['arrow', 'arrow'] });
   });
-  // Example 4(b): blank 16 × 16 grid; answer with the scale labelled
-  const f4 = document.getElementById('u7l5-ex4fig');
-  if (f4) new Graph(f4, { width: 400, height: 400, xmin: -8, xmax: 8, ymin: -8, ymax: 8, numbers: false });
-  const a4 = document.getElementById('u7l5-ex4ans');
-  if (a4) {
-    const G = new Graph(a4, { width: 340, height: 340, xmin: -8, xmax: 8, ymin: -16, ymax: 16, ystep: 2, xlabels: 2, ylabels: 4, fontSize: 13 });
-    G.line([0, -6], [-3, 0], { color: LINE, width: 3 }); G.line([0, 12], [-4, 0], { color: PT, width: 3, dash: '9 7' });
-    [[-3, 0, 'se'], [0, -6, 'e'], [-4, 0, 'nw'], [0, 12, 'e']].forEach(([x, y, p]) => G.point(x, y, { color: INK, r: 5, coords: true, pos: p }));
-    G.label(-6.5, 9, T('y=-2x-6'), { cls: 'bk-ptlab u7l5-small', color: LINE }); G.label(-5.8, -10, T('y=3x+12'), { cls: 'bk-ptlab u7l5-small', color: PT });
-  }
-  // Example 5: data table, tap-to-plot grid, answer graph
+  // Example 4: data table, tap-to-plot grid, answer graph
   const t5 = document.getElementById('u7l5-ex5tab');
   if (t5) new ValueTable(t5, { headers: ['x', 'y'], rows: EX5.xs.map((x, i) => [x, EX5.ys[i]]), layout: 'h', cellW: 74, cellH: 50, tap: false });
   const f5 = document.getElementById('u7l5-ex5fig');
@@ -557,145 +545,9 @@ const match = {
   }
 };
 
-/* =============================== ti84: the graphing calculator steps =============================== */
-const M = (s) => String(s).replace(/-/g, '−');
-const KCLS = { '2nd': 'u7l5-k2', ALPHA: 'u7l5-ka' };
-const kb = (k) => `<kbd${KCLS[k] ? ` class="${KCLS[k]}"` : ''}>${k}</kbd>`;
-const kk = (...ks) => ks.map(kb).join(' ');
-class Keys {
-  constructor(stage, x, y, w) { this.el = add(stage, box(h('div', 'u7l5-keys'), w, 50), x, y); this.clear(); }
-  clear() { this.el.innerHTML = '<b class="u7l5-kl">TI-84 keys</b>'; this.el.classList.remove('u7l5-many'); }
-  add(k) { const e = h('kbd', KCLS[k] || '', k); this.el.appendChild(e); if (this.el.scrollWidth > this.el.clientWidth + 1 || this.el.scrollHeight > this.el.clientHeight + 1) this.el.classList.add('u7l5-many'); return e; }
-  async set(c, ks, keep) { if (!keep) this.clear(); for (const k of ks) { const e = this.add(k); await pop(c, e, 200); await sleep(c, 90); } }
-}
-function lcd(G) {
-  const d = h('div', 'u7l5-lcd'); d.style.display = 'none'; G.el.appendChild(d);
-  return { el: d, show(lines) { d.innerHTML = lines.map((l) => (typeof l === 'object' ? `<div class="u7l5-ln ${l.cls || ''}">${l.t}</div>` : `<div class="u7l5-ln">${l}</div>`)).join(''); d.style.display = ''; }, hide() { d.style.display = 'none'; } };
-}
-const inv = (s) => `<b class="u7l5-inv">${s}</b>`;
-const KCH = { '(−)': '−', 'X,T,θ,n': 'X', '−': '−', '+': '+', '÷': '/' };
-const winLines = (w, hl) => ['WINDOW', ...[['Xmin', w.xmin], ['Xmax', w.xmax], ['Xscl', w.xscl], ['Ymin', w.ymin], ['Ymax', w.ymax], ['Yscl', w.yscl], ['Xres', 1]].map(([k, v], i) => ({ t: `${k}=${M(v)}`, cls: hl && i < 6 ? 'u7l5-hl' : '' }))];
-const TI = {
-  ex4: { label: 'Example 4', eqs: [['y-4=-2(x+5)', 'y-4=-2x-10', 'y=-2x-6'], ['3x-y+12=0', '-y=-3x-12', 'y=3x+12']],
-    f: [(x) => -2 * x - 6, (x) => 3 * x + 12], y: ['-2X-6', '3X+12'],
-    keys: [['(−)', '2', 'X,T,θ,n', '−', '6'], ['3', 'X,T,θ,n', '+', '1', '2']],
-    ints: [[-3, 0], [0, -6], [-4, 0], [0, 12]], need: { x: [-4, 0], y: [-6, 12] }, off: [0, 12],
-    win: { xmin: -8, xmax: 8, xscl: 1, ymin: -16, ymax: 16, yscl: 2 }, trace: { i: 1, xs: [0, -4] } },
-  cars: { label: `Cars #2 and #4`, eqs: [['2x+3y-12=0', '3y=-2x+12', 'y=-\\tfrac23x+4'], ['4x-2y-10=0', '-2y=-4x+10', 'y=2x-5']],
-    f: [(x) => -2 / 3 * x + 4, (x) => 2 * x - 5], y: ['-2/3X+4', '2X-5'],
-    keys: [['(−)', '2', '÷', '3', 'X,T,θ,n', '+', '4'], ['2', 'X,T,θ,n', '−', '5']],
-    ints: [[6, 0], [0, 4], [2.5, 0], [0, -5]], need: { x: [0, 6], y: [-5, 4] }, off: null,
-    win: null, trace: { i: 0, xs: [0, 6] } }
-};
-const ti84 = {
-  title: 'On the TI-84 graphing calculator: solve for y, Y=, WINDOW, GRAPH',
-  height: 470,
-  minW: 840, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(TI).map((k) => ({ v: k, label: TI[k].label })),
-  intro: 'These keystrokes are for a <b>TI-83/84 graphing calculator</b>. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = TI[k], STD = { xmin: -10, xmax: 10, xscl: 1, ymin: -10, ymax: 10, yscl: 1 };
-    const G = new Graph(stage, Object.assign({ x: 26, y: 26, width: 500, height: 330, theme: 'calc' }, STD));
-    const L = lcd(G), K = new Keys(stage, 16, 384, 530);
-    const P = panel(stage, 572, 14, ex.W - 586, 440, 'Solve for y first');
-    const Yl = (ys, cur) => ['Plot1 Plot2 Plot3', ...[0, 1, 2, 3, 4].map((i) => (i === cur ? inv(`Y${i + 1}`) : `Y${i + 1}`) + '=' + M(ys[i] || ''))];
-    let lines = [], tr;
-    const intsTex = d.ints.map((p) => T(pairTex(p[0], p[1]))).join(', ');
-    const steps = [
-      { cap: `A graphing calculator only accepts ${T('y=\\ldots')}. <b>Solve each equation for ${T('y')}</b> first.`,
-        run: async (c) => {
-          for (let i = 0; i < 2; i++) { const e = d.eqs[i]; await pls(c, P, T(e[0])); await pls(c, P, `${T('\\Rightarrow ' + e[1])}`, 'u7l5-soft'); await pls(c, P, `${T('\\Rightarrow ' + e[2])}`, i ? 'u7l5-y2' : 'u7l5-y1'); }
-        } },
-      { cap: `Press ${kk('Y=')} and type ${T('Y_1')} and ${T('Y_2')}: ${kk('(−)')} is the negative sign, ${kk('X,T,θ,n')} types ${T('x')}.`,
-        run: async (c) => {
-          const ys = ['', '']; L.show(Yl(ys, 0)); await K.set(c, ['Y=']);
-          for (let i = 0; i < 2; i++) { for (const key of d.keys[i]) { K.add(key); ys[i] += KCH[key] || key; L.show(Yl(ys, i)); await sleep(c, 170); } K.add('ENTER'); await sleep(c, 200); }
-          ys[0] = d.y[0]; ys[1] = d.y[1]; L.show(Yl(ys, -1));
-        } },
-      { cap: `${kk('ZOOM')} <b>6:ZStandard</b> graphs both in the standard window, ${T('-10\\le x\\le10')} and ${T('-10\\le y\\le10')}.`,
-        run: async (c) => {
-          await K.set(c, ['ZOOM', '6']); L.hide();
-          lines = [G.fn(d.f[0], { color: LINE, width: 3 }), G.fn(d.f[1], { color: PT, width: 3 })];
-          for (const l of lines) await G.drawIn(l, 800, c);
-        } },
-      d.off ? { cap: `Problem: ${T('Y_2')} crosses the ${T('y')}-axis at ${T('(0,12)')}, <b>above the screen</b>. The intercepts need ${T('-4\\le x\\le0')} and ${T('-6\\le y\\le12')}.`,
-        run: async (c) => {
-          const t = h('div', 'u7l5-off', '↑ (0, 12) is up here'); G.el.appendChild(t); place(t, G.toPx(0, 10)[0] + 8, G.toPx(0, 10)[1] + 4, 'se', 2); await pop(c, t);
-          await pls(c, P, `intercepts ${intsTex}`, 'u7l5-small');
-        } }
-        : { cap: `The intercepts ${intsTex} already fit: ${T('-10\\le x,y\\le10')} holds them all, so no ${kk('WINDOW')} change is needed.`,
-          run: async (c) => { for (const p of d.ints) await G.reveal(G.point(p[0], p[1], { color: INK, r: 5 }), c, 200); await pls(c, P, `intercepts ${intsTex}`, 'u7l5-small'); } }
-    ];
-    if (d.win) steps.push(
-      { cap: `${kk('WINDOW')}: Xmin ${n(d.win.xmin)}, Xmax ${n(d.win.xmax)}, Xscl ${d.win.xscl}, Ymin ${n(d.win.ymin)}, Ymax ${n(d.win.ymax)}, Yscl ${d.win.yscl}.`,
-        run: async (c) => { G.el.querySelectorAll('.u7l5-off').forEach((e) => e.remove()); await K.set(c, ['WINDOW']); L.show(winLines(STD)); await sleep(c, 400); L.show(winLines(d.win, true)); await pls(c, P, `window ${T(`x:[${d.win.xmin},${d.win.xmax},${d.win.xscl}]`)}, ${T(`y:[${d.win.ymin},${d.win.ymax},${d.win.yscl}]`)}`); } },
-      { cap: `${kk('GRAPH')}: now all four intercepts are on the screen.`,
-        run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); await G.setWindow(d.win, c, 1100); for (const p of d.ints) await G.reveal(G.point(p[0], p[1], { color: INK, r: 5 }), c, 200); } });
-    const t = d.trace, fy = d.f[t.i], Y = (x) => calcNum(fy(x));
-    steps.push({ cap: `Check with ${kk('TRACE')}: ${t.i ? `${kk('▼')} to ${T('Y_' + (t.i + 1))}` : `it starts on ${T('Y_1')}`}, type ${t.xs[0]} ${kk('ENTER')}: ${T('Y=' + texNum(fy(t.xs[0])))}. Type ${n(t.xs[1])} ${kk('ENTER')}: ${T('Y=' + texNum(fy(t.xs[1])))}.`,
-      run: async (c) => {
-        await K.set(c, ['TRACE', ...Array(t.i).fill('▼'), ...(String(t.xs[0]).split('')), 'ENTER']);
-        tr = G.traceMarker(fy, t.xs[0], { title: `Y${t.i + 1}=${M(d.y[t.i])}` }); await pop(c, tr.el); await sleep(c, 700);
-        await K.set(c, [...(t.xs[1] < 0 ? ['(−)'] : []), ...String(Math.abs(t.xs[1])).split(''), 'ENTER'], true);
-        await tr.move(c, t.xs[1], 900);
-        await pls(c, P, `TRACE: X=${M(t.xs[0])}, Y=${M(Y(t.xs[0]))}; X=${M(t.xs[1])}, Y=${M(Y(t.xs[1]))}`, 'u7l5-mono');
-      } });
-    return steps;
-  }
-};
-
-/* =============================== window: a rectangle that holds every intercept =============================== */
-const WN = {
-  ex4: { label: 'Example 4', f: [[-2, -6], [3, 12]], ints: [[-3, 0, 'se'], [0, -6, 'e'], [-4, 0, 'nw'], [0, 12, 'e']], need: { x: [-4, 0], y: [-6, 12] }, out: [0, 12],
-    win: { xmin: -8, xmax: 8, ymin: -16, ymax: 16, xs: 1, ys: 2 } },
-  cars: { label: 'Cars #2 and #4', f: [[-2 / 3, 4], [2, -5]], ints: [[6, 0, 'ne'], [0, 4, 'e'], [2.5, 0, 'se'], [0, -5, 'e']], need: { x: [0, 6], y: [-5, 4] }, out: null,
-    win: { xmin: -8, xmax: 8, ymin: -8, ymax: 8, xs: 1, ys: 1 } }
-};
-const windowEx = {
-  title: 'Choosing a window',
-  height: 470,
-  choices: Object.keys(WN).map((k) => ({ v: k, label: WN[k].label })),
-  intro: 'The whole plane, zoomed out. The <b>window</b> is the rectangle the screen shows. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = WN[k], G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -20, xmax: 20, ymin: -20, ymax: 20, xstep: 2, ystep: 2, xlabels: 10, ylabels: 10, fontSize: 15, major: 5 });
-    const P = panel(stage, 474, 14, ex.W - 488, 440, 'The window');
-    d.f.forEach(([m, b], i) => G.line([0, b], [1, b + m], { color: i ? PT : LINE, width: 3, opacity: 0.85 }));
-    const fr0 = { xmin: -10, xmax: 10, ymin: -10, ymax: 10 }, F = Object.assign({}, fr0);
-    const rect = svgEl('rect', { class: 'u7l5-wrect' }, G.layers.top);
-    G.track(rect, () => { const [x0, y0] = G.toPx(F.xmin, F.ymax), [x1, y1] = G.toPx(F.xmax, F.ymin); rect.setAttribute('x', x0); rect.setAttribute('y', y0); rect.setAttribute('width', Math.max(0, x1 - x0)); rect.setAttribute('height', Math.max(0, y1 - y0)); });
-    const vals = pl(P, '', 'u7l5-wvals');
-    const paintV = () => { vals.innerHTML = `<div>${T(`x: ${texNum(Math.round(F.xmin))}\\ \\text{to}\\ ${texNum(Math.round(F.xmax))}`)}</div><div>${T(`y: ${texNum(Math.round(F.ymin))}\\ \\text{to}\\ ${texNum(Math.round(F.ymax))}`)}</div>`; };
-    paintV(); hide(rect); hide(vals);
-    const go = (c, to) => { const a = Object.assign({}, F); return tween(c, 1100, (t) => { for (const q in to) F[q] = a[q] + (to[q] - a[q]) * t; rect._bkDraw(); paintV(); }); };
-    const w = d.win, ints = d.ints.map((p) => T(pairTex(p[0], p[1]))).join(', ');
-    let pts = [];
-    return [
-      { cap: `The standard window: ${T('-10\\le x\\le 10')}, ${T('-10\\le y\\le 10')}. Only what is <b>inside</b> the rectangle shows on the screen.`,
-        run: async (c) => { await appear(c, rect); await show(c, vals); } },
-      { cap: d.out ? `Mark the four intercepts: ${ints}. ${T('(0,12)')} is <b>outside</b> the rectangle, so it would be cut off.` : `Mark the four intercepts: ${ints}. All are inside the standard window.`,
-        run: async (c) => {
-          for (const p of d.ints) { const out = d.out && p[0] === d.out[0] && p[1] === d.out[1]; const e = G.point(p[0], p[1], { color: out ? COLORS.red : INK, r: out ? 8 : 6, coords: true, pos: p[2] }); pts.push(e); await G.reveal(e, c, 220); }
-          if (d.out) await pls(c, P, `${T('(0,12)')} is off the screen ✗`, 'u7l5-warn');
-        } },
-      { cap: `The ${T('x')}-values needed: ${T(texNum(d.need.x[0]) + '\\ \\text{to}\\ ' + texNum(d.need.x[1]))}. The ${T('y')}-values needed: ${T(texNum(d.need.y[0]) + '\\ \\text{to}\\ ' + texNum(d.need.y[1]))}.`,
-        run: async (c) => {
-          await G.drawIn(G.shadeX(d.need.x[0], d.need.x[1], { color: 'amber' }), 600, c); await G.drawIn(G.shadeY(d.need.y[0], d.need.y[1], { color: 'purple' }), 600, c);
-          await pls(c, P, `need ${T(`${d.need.x[0]}\\le x\\le ${d.need.x[1]}`)} and ${T(`${d.need.y[0]}\\le y\\le ${d.need.y[1]}`)}`);
-        } },
-      { cap: `On a 16 by 16 grid: ${T('x')} by ${w.xs} gives ${T(`${w.xmin}`)} to ${T(`${w.xmax}`)}; ${T('y')} by ${w.ys} gives ${T(`${w.ymin}`)} to ${T(`${w.ymax}`)}. Every intercept is inside.`,
-        run: async (c) => { await go(c, { xmin: w.xmin, xmax: w.xmax, ymin: w.ymin, ymax: w.ymax }); rect.classList.add('ok'); await pls(c, P, `window ${T(`x:[${w.xmin},${w.xmax},${w.xs}]`)}, ${T(`y:[${w.ymin},${w.ymax},${w.ys}]`)}`, 'u7l5-ok'); } },
-      { cap: `Zoom in to the window: this is the graph to draw, with the scale labelled${w.ys !== w.xs ? `: the ${T('y')}-axis counts by ${w.ys}` : ''}.${k === 'ex4' ? ` (Any window holding all four, e.g. ${T('x:[-6,4,2]')}, ${T('y:[-10,14,4]')}, also works.)` : ''}`,
-        run: async (c) => {
-          hide(rect); G.o.xlabels = w.xs * 2; G.o.ylabels = w.ys * 2;
-          await G.setWindow({ xmin: w.xmin, xmax: w.xmax, ymin: w.ymin, ymax: w.ymax, xscl: w.xs, yscl: w.ys }, c, 1300);
-        } }
-    ];
-  }
-};
-
 /* =============================== data: table → equation =============================== */
 const DA = {
-  ex5: { label: 'Example 5 check', xs: EX5.xs, ys: EX5.ys, m: [9, 5], b: 32, mult: 5, gf: '9x-5y+160=0', mid: '5y=9x+160', chk: [30, 86], chkT: '9(30)-5(86)+160=270-430+160=0',
+  ex5: { label: 'Example 4 check', xs: EX5.xs, ys: EX5.ys, m: [9, 5], b: 32, mult: 5, gf: '9x-5y+160=0', mid: '5y=9x+160', chk: [30, 86], chkT: '9(30)-5(86)+160=270-430+160=0',
     solve: ['9x=5y-160', 'x=\\dfrac{5y-160}{9}', '=\\dfrac{5}{9}(y-32)'], g: { xmax: 80, ymax: 180, xstep: 10, ystep: 20, xlabels: 10, ylabels: 20 }, meaning: true },
   own: { label: `Try: ${T('(0,5),(2,8),\\ldots')}`, xs: [0, 2, 4, 6, 8], ys: [5, 8, 11, 14, 17], m: [3, 2], b: 5, mult: 2, gf: '3x-2y+10=0', mid: '2y=3x+10', chk: [4, 11], chkT: '3(4)-2(11)+10=12-22+10=0',
     solve: ['3x=2y-10', 'x=\\dfrac{2y-10}{3}', '=\\dfrac{2}{3}(y-5)'], g: { xmax: 10, ymax: 20, xstep: 1, ystep: 2, xlabels: 2, ylabels: 4 } }
@@ -795,5 +647,5 @@ const machine = {
 /* =============================== mount =============================== */
 mountWarm();
 mountFigures();
-export const explainers = mountExplainers({ morph, flow, step, cover, dials, match, ti84, window: windowEx, data, machine });
-export const _test = { MO, FP, ST, CV, DI, MT, TI, WN, DA, MC, fr, red };
+export const explainers = mountExplainers({ morph, flow, step, cover, dials, match, data, machine });
+export const _test = { MO, FP, ST, CV, DI, MT, DA, MC, fr, red };

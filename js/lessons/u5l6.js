@@ -1,1179 +1,1273 @@
-/* Math 10C · Unit 5 · Lesson 6 — Exploring Real-World Relations With a Graphing Calculator (RF1, RF2)
- * Assignment questions 1–8 (u5_L06.tex) and the Lesson 6 Extra Practice (u5_EP06.tex).
- * Every part is a generator: each question keeps the booklet's model type (linear cost / cooling / profit, a quadratic
- * height or revenue with a vertex, a discrete count) and the same kind of numbers, and the booklet's own numbers are one
- * of the possible versions.
- * Conversions: "sketch the graph / state a window" → four window boxes (Xmin, Xmax, Ymin, Ymax), checked against the
- * features the prompt names (any window that shows them is right, but not a negative Xmin for a time or a count, and not
- * a window 10× too big); values found with TRACE / zero / maximum / intersect → numbers (exact, or rounded to the
- * hundredth as the booklet asks); "explain / describe the significance" → multiple choice with misconception hints;
- * practical domain and range → set answers (K.P.set; a count is a list such as {n | 0 ≤ n ≤ 300, n ∈ W}).
- * Calculator work drops a level (LEVEL_RUBRIC.md). Levels: LIM BEG EMG PRG ADV MAS. */
+/* Math 10C · Unit 5 · Lesson 6 — Function Notation (RF8)
+ * Assignment questions 1–21 (u5_L06.tex; 19–21 are the booklet's Extension) and the function-notation questions of
+ * the shared Extra Practice 7 (u5_EP05.tex: Q10–19 and Q22–25 — Q1–9, 20 and 21 belong to 7A),
+ * plus three short mapping-notation items from the lesson's Extension section.
+ * Every part is a generator: it keeps the booklet question's structure (which input is negative, a squared or cubed
+ * input, a radical or decimal input, an expression input, two solutions, the context) and changes the numbers; the
+ * booklet's own numbers are among the possible values.
+ * Graphing parts ("graph the function", "plot the points and draw a smooth curve") are drawn on the graph pad
+ * (js/draw.js, points mode with a Join button): discrete domains must stay unjoined, "draw a smooth curve" must be
+ * joined; classic mistakes get targeted hints. "Explain" parts become multiple choice with misconception hints.
+ * "Solve f(x) = b" off a drawn graph: one part per graph (EP11 d, EP23 b) is answered by tapping every point of the
+ * graph at height b (K.P.points, js/draw2.js; the graph moves from the stem onto the pad); its partner (EP11 c, EP23 c)
+ * keeps the typed x-values. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
-  var HW = root.HW, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P;
+  var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, P = HW.poly;
 
   HW.addCodes({
-    'win-number': 'Window value not a number', 'win-order': 'Window min not less than max', 'win-neg-x': 'Negative Xmin for an input that can’t be negative',
-    'win-cut-left': 'Window cuts off the start', 'win-cut-x': 'Window cuts off the end (Xmax too small)', 'win-cut-top': 'Window cuts off the top (Ymax too small)',
-    'win-cut-bottom': 'Window cuts off the bottom (Ymin too big)', 'win-huge': 'Window far too large', 'win-neg-y': 'Most of the window below zero for a quantity that can’t be negative',
-    'ctx-no-fee': 'Left out the fixed amount', 'ctx-no-sub': 'Didn’t subtract the starting amount before dividing', 'ctx-added': 'Added the starting amount instead of subtracting',
-    'ctx-eval': 'Substituted instead of solving', 'ctx-mult': 'Multiplied instead of dividing', 'ctx-sign': 'Sign slip in the model', 'ctx-change': 'Gave the change instead of the value',
-    'int-sign': 'Intercept with the wrong sign', 'int-no-divide': 'Didn’t divide by the coefficient', 'int-gave-y': 'Gave the other intercept',
-    'ctx-zero-start': 'Said the starting height is 0', 'ctx-sign-sq': 'Lost the minus sign on the squared term', 'ctx-no-c': 'Left out the constant term',
-    'ctx-max-time': 'Gave the input of the vertex instead of the output', 'ctx-gave-h': 'Gave the output of the vertex instead of the input', 'ctx-coef': 'Gave a coefficient of the formula',
-    'ctx-half-land': 'Took the vertex halfway to the landing', 'ctx-neg-time': 'Kept the negative root', 'ctx-double-vertex': 'Doubled the vertex time for the landing',
-    'ctx-revenue': 'Revenue instead of profit', 'ctx-not-whole': 'Continuous set for a whole-number count', 'ctx-dom-breakeven': 'Domain started at break-even',
-    'ctx-dom-vertex': 'Domain stopped at the vertex', 'ctx-dom-open': 'Domain with no upper end', 'ctx-dom-neg': 'Domain includes negative inputs',
-    'ctx-rng-start': 'Range started at the starting value, not 0', 'ctx-rng-vertex-x': 'Used the input of the vertex in the range', 'ctx-rng-open': 'Range with a missing end',
-    'ctx-no-k': 'Left out the factor in front of the bracket', 'ctx-gave-end': 'Gave the end of the domain', 'ctx-used': 'Gave the amount used instead of the amount left',
-    'ctx-to-empty': 'Distance to empty instead of to the refuel level', 'ctx-swap-boxes': 'Two answers in each other’s boxes', 'ctx-round-down': 'Rounded down where the count must round up',
-    'ctx-round-up': 'Rounded up where the count must round down', 'ctx-year-round': 'Rounded the year up', 'ctx-gave-a': 'Gave a number from the formula, not the intercept',
-    'ctx-gave-cost': 'Gave the expenses instead of the number of tickets', whole: 'Decimal where a whole number is needed', 'order-boxes': 'Two right answers in each other’s boxes', 'ctx-start-diff': 'Gave a starting height instead of the difference', 'ctx-more-cases': 'Chose the price that sells more', 'ctx-sum': 'Added the two zeros'
+    'fn-times': 'Read f(a) as f × a', 'fn-concat': 'Wrote 4x with x = 3 as 43', 'fn-add-coef': 'Added the coefficient instead of multiplying',
+    'fn-solved': 'Solved f(x) = a instead of evaluating f(a)', 'fn-evaluated': 'Evaluated f(b) instead of solving f(x) = b',
+    'fn-neg-sub': 'Sign slip substituting a negative', 'fn-neg-square': 'Squared a negative and got a negative', 'fn-minus-square': 'Treated −x² as (−x)²',
+    'fn-square-2x': 'Squared by doubling (x² as 2x)', 'fn-cube-3x': 'Cubed by tripling (x³ as 3x)', 'fn-cube-sq': 'Squared instead of cubing',
+    'fn-cube-neg': 'Cube of a negative given as positive', 'fn-const': 'Left out the constant term', 'fn-const-sign': 'Wrong sign on the constant',
+    'fn-zero-coef': 'Treated m·0 as m', 'fn-zero-all': 'Gave f(0) = 0', 'fn-order': 'Subtracted before multiplying', 'fn-sign': 'Sign slip',
+    'fn-coef-power': 'Squared the coefficient with the input: (3·2)²', 'fn-rad-square': 'Squared the radicand: (√2)² as 4',
+    'fn-dist': 'Didn’t multiply every term of the bracket', 'fn-dist-sign': 'Didn’t change the sign of the second term in the bracket',
+    'fn-drop': 'Dropped part of the input expression', 'fn-scale-out': 'Multiplied the whole output instead of the input',
+    'fn-solve-inverse': 'Inverse-operation slip (added instead of subtracted)', 'fn-solve-divide': 'Didn’t divide by the coefficient',
+    'fn-solve-sign': 'Sign slip solving', 'fn-sqrt-not': 'Didn’t take the square root', 'fn-root-solve': 'Took the root instead of squaring',
+    'fn-input-sum': 'Added the inputs first (g(6)+g(−3) as g(3))', 'fn-neg-drop': 'Dropped the negative sign of an input',
+    'fn-fee': 'Left out the fixed fee', 'fn-swap-rate': 'Swapped the fee and the rate', 'fn-rad-noroot': 'Left the perfect square under the radical',
+    'fn-rad-coef': 'Forgot the coefficient in front of the radical', 'fn-rad-add': 'Added instead of multiplying the coefficients',
+    'fn-binom-sq': 'Squared a binomial as (a+b)² = a² + b²', 'fn-plus-out': 'Confused f(a + 1) with f(a) + 1', 'fn-plus-in': 'Confused f(a) + 1 with f(a + 1)',
+    'fn-coef-in': 'Put the coefficient inside the square: 2(x+4)² as (2x+8)²', 'fn-neg-out': 'Gave −F(x) for F(−x)', 'fn-unchanged': 'Didn’t substitute',
+    'fn-sq-coef': 'Squared only the letter: (2a)² as 2a²', 'fn-reverse': 'Subtracted in the wrong order', 'fn-add-fns': 'Added instead of subtracting',
+    'fn-comp-order': 'Composed in the wrong order', 'fn-eq-flip': 'Swapped input and output in f(a) = b', 'fn-one-root': 'Used only one solution',
+    'fn-inner': 'Ignored the expression inside the brackets', 'fn-sqrt-half': 'Halved instead of taking the square root', 'pairs-identity': 'Gave pairs (x, x)', 'fn-const-zero': 'Gave output 0 for a constant function',
+    'tap-height': 'Tapped a point of the graph at the wrong height', 'tap-off-graph': 'Tapped a point that is not on the graph'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
   function cl(x) { return Math.round(x * 1e6) / 1e6; }
-  function nT(x) { return F(cl(x)); }                                 // number for display (thin spaces ≥ 1000)
-  function pT(x) { return String(cl(x)); }                            // plain number (inside set notation)
-  function isDp(x, d) { var f = Math.pow(10, d); return Math.abs(x * f - Math.round(x * f)) < 1e-6; }
-  function rd(x, d) { return K.roundTo(x, d); }
-  function rT(x, d) { return isDp(x, d) ? nT(x) : F(rd(x, d).toFixed(d)); }   // exact, or rounded to d places
-  function ap(x, d) { return isDp(x, d) ? '=' : '\\approx '; }
-  function money(x) { var a = Math.abs(cl(x)); return (x < 0 ? '-' : '') + '\\$' + (isDp(a, 0) ? F(a) : F(a.toFixed(2))); }
-  function sg(c) { c = cl(c); return c < 0 ? nT(c) : '+' + nT(c); }
-  function sgp(c) { c = cl(c); return c < 0 ? '(' + nT(c) + ')' : nT(c); }
-  function quadT(a, b, c, v) {                                         // a v^2 + b v + c
-    var s = '';
-    [[a, v + '^{2}'], [b, v], [c, '']].forEach(function (p) {
-      var k = cl(p[0]); if (!k) return;
-      var mag = nT(Math.abs(k)); if (p[1] && mag === '1') mag = '';
-      s += (k < 0 ? '-' : s ? '+' : '') + mag + p[1];
-    });
-    return s || '0';
+  function same(a, b) { return Math.abs(a - b) < 1e-9; }
+  function nT(x) { return F(cl(x)); }
+  function sgp(x) { x = cl(x); return x < 0 ? '(' + nT(x) + ')' : nT(x); }      // bracket a negative input
+  function sg(c) { c = cl(c); return c < 0 ? nT(c) : '+' + nT(c); }              // signed constant "+5" / "-5"
+  function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); return o; }
+  function nz(a, b) { return range(a, b).filter(function (x) { return x !== 0; }); }
+  function term(c, v, first) {
+    c = cl(c); if (!c) return '';
+    var neg = c < 0, mag = nT(Math.abs(c));
+    if (v && mag === '1') mag = '';
+    return (neg ? '-' : first ? '' : '+') + mag + v;
   }
-  function rng(a, b, step) { var o = []; for (var x = a; x <= b + 1e-9; x += (step || 1)) o.push(cl(x)); return o; }
+  function lin(list) { var s = ''; list.forEach(function (p) { s += term(p[0], p[1], s === ''); }); return s || '0'; }
+  function sortU(a) { var s = a.slice().sort(function (x, y) { return x - y; }); return s.filter(function (x, i) { return i === 0 || !same(x, s[i - 1]); }); }
+  function setTex(arr) { return '\\{' + arr.map(nT).join(', ') + '\\}'; }
+  function setSame(A, Bs) { A = sortU(A); Bs = sortU(Bs); return A.length === Bs.length && A.every(function (x, i) { return Math.abs(x - Bs[i]) < 1e-6; }); }
+  function money(c) { return (c / 100).toFixed(2); }
   function pickWhere(gen, okf) { for (var i = 0; i < 3000; i++) { var o = gen(); if (okf(o)) return o; } throw new Error('u5l6: no valid numbers'); }
-  function margin(x, d) { var f = Math.pow(10, d), fr = x * f - Math.floor(x * f); return isDp(x, d) || Math.abs(fr - 0.5) > 0.04; }  // exact, or safely away from a rounding tie
-  function kb(s) { return '<b>' + s + '</b>'; }
-  function cd(s) { return '<code>' + s + '</code>'; }
-  function niceUp(v) { if (v <= 0) return 0; var p = Math.pow(10, Math.floor(Math.log10(v))), ms = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 10]; for (var i = 0; i < ms.length; i++) if (ms[i] * p >= v - 1e-9) return cl(ms[i] * p); return cl(10 * p); }
-  function niceStep(v) { var p = Math.pow(10, Math.floor(Math.log10(v))), ms = [1, 2, 2.5, 5, 10]; for (var i = 0; i < ms.length; i++) if (ms[i] * p >= v - 1e-9) return cl(ms[i] * p); return cl(10 * p); }
-  function quadRoots(a, b, c) { var D = b * b - 4 * a * c; if (D < 0) return []; var s = Math.sqrt(D), r1 = (-b - s) / (2 * a), r2 = (-b + s) / (2 * a); return [Math.min(r1, r2), Math.max(r1, r2)]; }
-  function setT(v, lo, hi, ns) { return '\\{' + v + '\\mid ' + pT(lo) + '\\le ' + v + '\\le ' + pT(hi) + ',\\ ' + v + '\\in ' + (ns || '\\mathbb{R}') + '\\}'; }
+  /* polynomial from [[coef, letter, power], …] */
+  function PL(list) { var p = P.num(0); list.forEach(function (q) { var v = {}; if (q[1]) v[q[1]] = q[2] || 1; p = P.add(p, q[1] ? P.mono(q[0], v) : P.num(q[0])); }); return p; }
 
-  /* ---------------- answer checkers ---------------- */
-  /* diagnoses: cands = [{ v, code, hint }] matched to the typed value (to within rounding) */
-  function near(cands, x, d) {
-    var tol = 0.5 * Math.pow(10, -d) + 1e-6;
-    var list = (cands || []).filter(function (c) { return c && c.v != null && isFinite(c.v) && Math.abs(c.v - x) >= 1.5 * tol; });
-    return function (v) { for (var i = 0; i < list.length; i++) if (Math.abs(v - list[i].v) < tol) return { code: list[i].code, hint: list[i].hint }; return null; };
+  /* ---------------- part makers ---------------- */
+  function numPart(prompt, ans, dl, sol, hints, text, inp) {
+    ans = cl(ans);
+    var L = (dl || []).filter(function (d) { return d && isFinite(d[0]) && !same(cl(d[0]), ans); });
+    var p = B.number(prompt, ans, function (v) { for (var i = 0; i < L.length; i++) if (Math.abs(v - L[i][0]) < 1e-6) return { code: L[i][1], hint: L[i][2] }; return null; }, sol, hints, text, inp);
+    p.bad = L.map(function (d) { return String(cl(d[0])); }).filter(function (s, i, a) { return a.indexOf(s) === i; });
+    return p;
   }
-  /* a value: exact when it has at most d decimals, otherwise rounded to d places */
-  function numChk(x, d, cands) { d = d == null ? 2 : d; return isDp(x, d) ? K.number(cl(x), near(cands, x, d)) : K.approx(x, d, { diag: near(cands, x, d) }); }
-  function numKey(x, d) { d = d == null ? 2 : d; return isDp(x, d) ? String(cl(x)) : rd(x, d).toFixed(d); }
-  function numPart(prompt, x, d, cands, sol, hints, text, inp) {
-    inp = inp || {}; d = d == null ? 2 : d;
-    var key = numKey(x, d), shown = inp.money ? money(Number(key)) : F(key);
-    var answer = (inp.money ? t(shown) : (inp.before ? inp.before + ' ' : '') + t(shown)) + (inp.after ? ' ' + inp.after : '');
-    var input = { type: 'number' }; if (inp.money) input.before = '$'; else if (inp.before) input.before = inp.before; if (inp.after) input.after = inp.after;
-    return { prompt: prompt, input: input, check: numChk(x, d, cands), key: key, answer: answer, solution: sol, hints: hints || [], text: text,
-      bad: (cands || []).filter(function (c) { return c && isFinite(c.v) && Math.abs(c.v - x) > 0.02; }).map(function (c) { return numKey(c.v, d); }) };
+  function polyPart(prompt, before, T, keyTex, wl, sol, hints, text, vars) {
+    var W = (wl || []).filter(function (w) { return !P.eq(w.is, T); });
+    var p = B.poly(prompt, T, { before: before, keyTex: keyTex, wrong: W, vars: vars }, sol, hints, text);
+    p.bad = W.map(function (w) { return P.tex(w.is); });
+    return p;
   }
-  /* several number boxes: boxes = [{ label, x, d, cands, after, before }]; opt.swap: 'form' | 'wrong' when two answers are swapped */
-  function fieldsPart(prompt, boxes, sol, hints, text, opt) {
-    opt = opt || {};
-    var checks = boxes.map(function (b) { return numChk(b.x, b.d == null ? 2 : b.d, b.cands); });
-    var fields = boxes.map(function (b) { return { name: b.label, label: b.label, before: b.before, after: b.after }; });
-    var inner = K.fields(checks, { labels: boxes.map(function (b) { return b.label; }) });
-    var check = function (resp) {
-      resp = resp || [];
-      if (opt.swap && boxes.length === 2 && Math.abs(boxes[0].x - boxes[1].x) > 0.02) {
-        var a = numChk(boxes[1].x, boxes[1].d == null ? 2 : boxes[1].d)(resp[0] == null ? '' : resp[0]), b = numChk(boxes[0].x, boxes[0].d == null ? 2 : boxes[0].d)(resp[1] == null ? '' : resp[1]);
-        if (a.v === 'correct' && b.v === 'correct') return opt.swap === 'form' ? form('order-boxes', 'Both values are right — but they are in each other’s boxes. Put the ' + boxes[0].label.toLowerCase() + ' first.') : wrong('ctx-swap-boxes', opt.swapHint || 'Your two answers are in each other’s boxes. Read the labels again.');
-      }
-      return inner(resp);
-    };
-    var keys = boxes.map(function (b) { return numKey(b.x, b.d == null ? 2 : b.d); });
-    return { prompt: prompt, input: { type: 'fields', fields: fields }, check: check, key: keys,
-      answer: boxes.map(function (b, i) { return b.label + ': ' + (b.before || '') + t(b.plain ? keys[i] : F(keys[i])) + (b.after ? ' ' + b.after : ''); }).join('<br>'),
-      solution: sol, hints: hints || [], text: text, bad: opt.swap ? [keys.slice().reverse()] : [] };
+  function solPart(prompt, vals, v, dl, sol, hints, text, keyTex) {
+    var L = (dl || []).filter(function (d) { return d[0].length && d[0].every(isFinite) && !setSame(d[0], vals); });
+    var p = B.valueSet(prompt, vals, { v: v, keyTex: keyTex, diag: function (A) { for (var i = 0; i < L.length; i++) if (setSame(A, L[i][0])) return { code: L[i][1], hint: L[i][2] }; return null; } }, sol, hints, text);
+    p.bad = L.map(function (d) { return d[0].map(function (x) { return v + '=' + nT(x); }).join(', '); });
+    var s = sortU(vals);
+    p.good = [s.slice().reverse().map(function (x) { return v + '=' + nT(x); }).join(', '), s.map(nT).join(', ')];
+    if (s.length === 2 && same(s[0], -s[1])) p.good.push('\\pm ' + nT(s[1]));
+    return p;
   }
-  /* window settings. o = { x:[lo,hi], y:[lo,hi] (what must be visible), xv, yv, xHi, xHiHow, yHi, yHiHow, yLo, yNonneg, key, good, bad } */
-  var WN = ['Xmin', 'Xmax', 'Ymin', 'Ymax'];
-  function winCheck(o) {
-    var xs = o.x[1] - o.x[0], ys = o.y[1] - o.y[0];
-    return function (resp) {
-      resp = resp || []; var v = [];
-      for (var i = 0; i < 4; i++) {
-        var p = HW.parse.number(resp[i] == null ? '' : resp[i]);
-        if (!p.ok) return form(p.code === 'empty' ? 'empty' : 'win-number', p.code === 'empty' ? 'Fill in all four window settings.' : '<b>' + WN[i] + ':</b> enter a single number.');
-        v.push(p.value);
-      }
-      var x0 = v[0], x1 = v[1], y0 = v[2], y1 = v[3];
-      if (x0 >= x1) return wrong('win-order', cd('Xmin') + ' must be less than ' + cd('Xmax') + ' — the left edge of the screen comes first.');
-      if (y0 >= y1) return wrong('win-order', cd('Ymin') + ' must be less than ' + cd('Ymax') + ' — the bottom edge of the screen comes first.');
-      if (x0 < -1e-9) return wrong('win-neg-x', t(o.xv) + ' ' + o.xNeg + ', so negative values of ' + t(o.xv) + ' never happen in this situation. Start the window at ' + cd('Xmin') + ' = 0.');
-      if (x0 > o.x[0] + 1e-9) return wrong('win-cut-left', 'With ' + cd('Xmin') + ' = ' + t(nT(x0)) + ' the start of the situation (' + t(o.xv + '=0') + ') is off the screen.');
-      // Xmax = the end value to the hundredth (e.g. a landing at 4.12 for 4.1213) is fine
-      if (x1 < Math.min(o.x[1], rd(o.x[1], 2)) - 1e-9) return wrong('win-cut-x', cd('Xmax') + ' = ' + t(nT(x1)) + ' cuts off ' + o.xHi + '. ' + o.xHiHow);
-      if (y1 < o.y[1] - 1e-9) return wrong('win-cut-top', cd('Ymax') + ' = ' + t(nT(y1)) + ' cuts off ' + o.yHi + '. ' + o.yHiHow);
-      if (y0 > o.y[0] + 1e-9) return wrong('win-cut-bottom', cd('Ymin') + ' = ' + t(nT(y0)) + ' hides ' + o.yLo + '.');
-      if (x1 - x0 > 10 * xs) return wrong('win-huge', 'That window is so wide that the graph is squeezed into a thin strip at the left. Bring ' + cd('Xmax') + ' down to just past the values the question needs.');
-      if (y1 - y0 > 10 * ys) return wrong('win-huge', 'That window is so tall that the graph is squashed flat. Bring ' + cd('Ymin') + ' / ' + cd('Ymax') + ' closer to the values the question needs.');
-      if (o.yNonneg && y0 < -0.5 * ys) return wrong('win-neg-y', t(o.yv) + ' can’t be negative here, but your window spends a big part of the screen below ' + t(o.yv + '=0') + '. Use ' + cd('Ymin') + ' = 0 (or just a little below).');
-      return ok();
-    };
+  function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
+  function mc2(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text, true); p.tries = 1; p.input.columns = 2; return p; }
+  function dots(pts) { return pts.map(function (p) { return { x: p[0], y: p[1] }; }); }
+  function yWin(vals, pad) { var lo = Math.min.apply(null, vals.concat([0])) - (pad || 1), hi = Math.max.apply(null, vals.concat([0])) + (pad || 1); return [lo, hi]; }
+  function ptsTex(pts) { return pts.map(function (p) { return '(' + nT(p[0]) + ',\\ ' + nT(p[1]) + ')'; }).join(',\\ '); }
+  /* ---------------- graphing on the graph pad (js/draw.js) ---------------- */
+  var Dr = HW.draw;
+  function pT(q) { return '(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')'; }
+  function dv(pts, join) { return { pts: pts.map(function (q) { return [q[0], q[1]]; }), pieces: [], join: join || 'none' }; }
+  function joined(pts) { return dv(pts, 'curve'); }
+  /* a points-mode pad (with a Join button) sized for phones; win = { x, y, … } */
+  function padIn(win) {
+    var xs = win.x[1] - win.x[0], ys = win.y[1] - win.y[0];
+    return Object.assign({ labels: 1, unitX: Math.min(44, 290 / xs), unitY: Math.min(26, 330 / ys), mode: 'points', join: true, max: 360 }, win);
   }
-  function winPart(o) {
-    return { prompt: o.prompt, input: { type: 'fields', fields: WN.map(function (n) { return { name: n, label: n + ' =' }; }) }, check: winCheck(o), key: o.key.map(String),
-      answer: 'For example ' + WN.map(function (n, i) { return cd(n) + ' = ' + t(nT(o.key[i])); }).join(', ') + '. Any window that shows ' + o.need + ' is right.',
-      solution: o.sol, hints: o.hints || ['List what has to be on the screen: the start (' + t(o.xv + '=0') + '), ' + o.need + '. Find those values first, then choose bounds a little beyond them.', 'Choose ' + cd('Xmin') + ' and ' + cd('Ymin') + ' to suit the quantities: a time or a count starts at 0.'],
-      text: o.text, good: (o.good || []).map(function (w) { return w.map(String); }), bad: (o.bad || []).map(function (w) { return w.map(String); }) };
-  }
-  function winKey(x, y) { return [0, niceUp(x[1] * 1.04), y[0] < 0 ? -niceUp(-y[0] * 1.05) : 0, niceUp(y[1] * 1.05)]; }
-  /* a calculator-screen style picture of the model in a window */
-  function screen(win, o) {
-    var xs = win[1] - win[0], ys = win[3] - win[2], gx = niceStep(xs / 8), gy = niceStep(ys / 6);
-    return HW.graph({ x: [win[0], win[1]], y: [win[2], win[3]], unitX: 260 / xs, unitY: 160 / ys, grid: gx, gridY: gy, labels: 1, labelsX: gx * 2, labelsY: ys / gy > 6 ? gy * 2 : gy,
-      firstQuadrant: true, xName: o.xv, yName: o.yv, yTitle: Math.max(Math.abs(win[2]), Math.abs(win[3])) >= 1000 ? '\u00a0' : undefined, max: 330, fns: o.fns, points: o.points, segs: o.segs, aria: o.aria || 'graph of the model' });
-  }
-  function mc(r, prompt, opts, sol, hints, text, keep) { return B.mc(r, prompt, opts, sol, hints || [], text, keep); }
-  function setPart(prompt, target, opt, sol, hints, text) { return B.set(prompt, target, opt, sol, hints, text); }
-
-  /* ---------------- shared hint text ---------------- */
-  var H_TRACE = 'For the output at a given input, use ' + kb('TRACE') + ' (type the input, press ' + kb('ENTER') + ') or the table — or substitute the input into the formula.';
-  var H_INT = 'For the input that gives a certain output, graph that output as ' + t('Y_2') + ' and use ' + cd('2ND TRACE → 5:intersect') + ' — or set the formula equal to it and solve.';
-  var H_ZERO = 'Where the graph meets the horizontal axis the output is ' + t('0') + ': use ' + cd('2ND TRACE → 2:zero') + ', or set the formula equal to ' + t('0') + ' and solve.';
-  var H_MAX = 'The highest point is the vertex: ' + cd('2ND TRACE → 4:maximum') + ' (left bound, right bound, guess). It gives both coordinates.';
-  var H_VERT = 'Algebra check: the vertex of ' + t('y=ax^{2}+bx+c') + ' is at ' + t('x=-\\frac{b}{2a}') + '; substitute that back in for the greatest value.';
-  var H_DOM = ['The practical domain runs from where the situation starts to where it ends (a landing, an empty tank, the last value that makes sense).', 'The practical range runs from the least to the greatest output in that domain — for a parabola, check the vertex.'];
-  function zeroSol(eqLeft, v, roots, keepIdx, d, extra) {
-    return 'Calculator: ' + cd('2ND TRACE → 2:zero') + ' on the crossing in the practical domain.<br>Algebra: ' + t(eqLeft + '=0') + ' gives ' + roots.map(function (x) { return t(v + ap(x, d) + rT(x, d)); }).join(' or ') + (extra || '') + '.';
+  var PAD_HELP = '<div class="muted">Press <b>Join</b> only if the points should be joined by a smooth curve.</div>';
+  /* plot the points of a function on a discrete domain; wl = [[points, code, hint], …] classic wrong drawings */
+  function plotPart(prompt, win, pts, wl, sol, hints, text) {
+    var wrongs = [];
+    wl.forEach(function (w) { wrongs.push({ is: dv(w[0]), code: w[1], hint: w[2] }); wrongs.push({ is: joined(w[0]), code: w[1], hint: w[2] }); });
+    var key = dv(pts), p = B.graph(prompt + PAD_HELP, padIn(win), K.graphExact(key, { joinMatters: true, wrong: wrongs }), key, sol, hints, text);
+    p.bad = [joined(pts), dv(pts.map(function (q) { return [q[1], q[0]]; }))].concat(wl.map(function (w) { return dv(w[0]); }));
+    return p;
   }
 
-  /* ---------------- model generators ---------------- */
-  function jerseys(r) {
-    var m = r.pick([2, 3, 4, 5, 6]), ks = rng(Math.max(5, Math.ceil(20 / m)), Math.min(20, Math.floor(90 / m))), k = r.pick(ks), f = m * k;
-    var N = r.int(15, 40), n0 = pickWhere(function () { return r.int(30, 75); }, function (x) { return x !== N; });
-    return { m: m, k: k, f: f, N: N, n0: n0, X: m * n0 + f, Nmax: r.pick([40, 50, 60, 80]), eq: 'C=' + m + 'n+' + f, y1: 'Y_1=' + m + 'X+' + f };
+  /* ---------------- tapping points on a given graph (K.P.points, js/draw2.js) ----------------
+   * "Solve f(x) = b" read off a graph: the student taps every point of the graph at height b. inp: the pad window with the
+   * given graph in bg; fx(x): the graph's value (NaN outside its domain); xs: the solutions (all on the snap grid). */
+  function onSnap(inp, q) {
+    var sx = inp.snapX || inp.snap || inp.grid || 1, sy = inp.snapY || inp.snap || inp.gridY || inp.grid || 1, X = inp.x || [-6, 6], Y = inp.y || [-6, 6];
+    var k = function (v, s) { return Math.abs(v / s - Math.round(v / s)) < 1e-9; };
+    return k(q[0], sx) && k(q[1], sy) && q[0] >= X[0] && q[0] <= X[1] && q[1] >= Y[0] && q[1] <= Y[1];
   }
-  function tea(r) {
-    var opts = [];
-    [0.4, 0.5, 0.6, 0.8].forEach(function (rt) { for (var T0 = 76; T0 <= 96; T0++) { var ti = T0 / rt; if (isDp(ti, 0) && ti >= 90 && ti <= 240) opts.push([rt, T0]); } });
-    var o = r.pick(opts), rt = o[0], T0 = o[1], ti = cl(T0 / rt), t1 = r.pick([10, 15, 20, 25, 30, 35, 40]);
-    var t2s = rng(20, 90, 5).filter(function (x) { var Tc = T0 - rt * x; return x !== t1 && isDp(Tc, 0) && Tc >= 35 && Tc <= 70; });
-    var t2 = r.pick(t2s);
-    return { rt: rt, T0: T0, ti: ti, t1: t1, T1: cl(T0 - rt * t1), t2: t2, Tc: cl(T0 - rt * t2), eq: 'T=-' + nT(rt) + 't+' + T0, y1: 'Y_1=-' + nT(rt) + 'X+' + T0 };
+  var GIVEN = '#5b6573'; // the given graph is drawn in slate (its end dots too) so the student's teal taps stand out
+  function givenDots(pts) { return pts.map(function (q) { return { x: q[0], y: q[1], color: GIVEN }; }); }
+  function levelTap(prompt, inp, fx, name, b, xs, sol, hints, text) {
+    var T = sortU(xs).map(function (x) { return [x, b]; }), fb = name + '(x)=' + nT(b);
+    T.forEach(function (q) { if (!onSnap(inp, q)) throw new Error('u5l6: solution point ' + q + ' is off the tap grid'); });
+    var onG = function (q) { var v = fx(q[0]); return isFinite(v) && same(v, q[1]); };
+    var wr = T.length > 1 ? T.map(function (q) { return { pts: [q], code: 'fn-one-root', hint: 'Correct so far — but keep following the horizontal line ' + t('y=' + nT(b)) + ' across the <b>whole</b> graph: it meets the graph ' + (T.length === 2 ? 'once more' : 'again') + '.' }; }) : [];
+    var opt = { what: 'solution point', whats: 'solution points', wrong: wr, whatHint: 'Tap only points of the graph at height ' + t(nT(b)) + '.', pointHint: function (q) {
+      if (T.some(function (w) { return same(w[0], q[1]) && same(w[1], q[0]); })) return null; // swapped coordinates: built-in hint
+      if (onG(q) && same(q[0], b) && !same(q[1], b)) return { code: 'fn-evaluated', hint: 'That is the point at input ' + t(nT(b)) + ' — it gives ' + t(name + '(' + nT(b) + ')') + '. In ' + t(fb) + ' the number ' + t(nT(b)) + ' is the <b>output</b>, a height: start at ' + t(nT(b)) + ' on the vertical axis and read across.' };
+      if (same(q[0], b) && !same(q[1], b)) return { code: 'fn-eq-flip', hint: t(nT(b)) + ' is the <b>output</b> (a height), not an input. Find ' + t(nT(b)) + ' on the vertical axis and read across to the graph.' };
+      if (onG(q)) return { code: 'tap-height', hint: t('(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')') + ' is on the graph, but at height ' + t(nT(q[1])) + ', not ' + t(nT(b)) + '. Look along the horizontal line ' + t('y=' + nT(b)) + '.' };
+      if (same(q[1], b)) return { code: 'tap-off-graph', hint: t('(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')') + ' is at the right height, but it isn’t on the graph. Follow the line ' + t('y=' + nT(b)) + ' until it meets the graph.' };
+      return { code: 'tap-off-graph', hint: t('(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')') + ' is not on the graph, and not at height ' + t(nT(b)) + '. Tap the points where the horizontal line ' + t('y=' + nT(b)) + ' meets the graph.' };
+    } };
+    var p = B.points(prompt, inp, T, sol, hints, text, opt);
+    var bad = T.map(function (q) { return [q]; }).filter(function () { return T.length > 1; });
+    bad.push(T.map(function (q) { return [q[1], q[0]]; }));
+    if (onSnap(inp, [b, b]) && isFinite(fx(b)) && onSnap(inp, [b, fx(b)])) bad.push([[b, fx(b)]]);
+    if (onSnap(inp, [0, b]) && !T.some(function (w) { return same(w[0], 0); })) bad.push(T.concat([[0, b]]));
+    p.bad = bad.filter(function (ps) { return !(ps.length === T.length && ps.every(function (q) { return T.some(function (w) { return same(w[0], q[0]) && same(w[1], q[1]); }); })); }).map(function (ps) { return dv(ps); });
+    return p;
   }
-  function shuttle(r) {
-    return pickWhere(function () {
-      var b = r.pick([12, 14, 16, 18, 20]), c = r.pick([1, 1.5, 2, 2.5]), t1 = r.pick([0.5, 1, 1.5]);
-      var rt = quadRoots(-5, b, c);
-      return { a: -5, b: b, c: c, t1: t1, h1: cl(-5 * t1 * t1 + b * t1 + c), tv: cl(b / 10), hm: cl(c + b * b / 20), land: rt[1], neg: rt[0], eq: 'h=' + quadT(-5, b, c, 't'), y1: 'Y_1=' + quadT(-5, b, c, 'X') };
-    }, function (o) { return margin(o.land, 2) && margin(o.neg, 2) && o.t1 < o.land - 0.5; });
-  }
-  function charity(r) {
-    return pickWhere(function () {
-      var p = r.pick([5, 8, 10, 12, 15, 20]), k = r.int(40, 90), E = p * k, cap = r.pick([200, 250, 300, 350]);
-      var n3s = rng(k + 30, cap - 20).filter(function (n) { return (p * n - E) % 100 === 0; });
-      var n3 = n3s.length ? r.pick(n3s) : 0, N4 = r.pick(rng(Math.ceil((k + 20) / 10) * 10, cap - 10, 10).filter(function (n) { return n !== n3; }));
-      return { p: p, k: k, E: E, cap: cap, n3: n3, Pt: p * n3 - E, N4: N4, P4: p * N4 - E, top: p * cap - E, eq: 'P=' + p + 'n-' + E, y1: 'Y_1=' + p + 'X-' + E };
-    }, function (o) { return o.n3 > 0 && o.cap > o.k + 60 && o.Pt > 0; });
-  }
-  function soccer(r) {
-    var k = r.pick([0.02, 0.04, 0.05]), L = r.pick([30, 32, 34, 36, 38, 40]), d1 = r.int(L / 2 + 3, L - 2), d2 = r.int(3, L / 2 - 4);
-    var h = function (d) { return cl(k * (-d * d + L * d)); };
-    return { k: k, L: L, d1: d1, d2: d2, h1: h(d1), h2: h(d2), hm: h(L / 2), dv: L / 2, h: h, eq: 'h=' + nT(k) + '(-d^{2}+' + L + 'd)', y1: 'Y_1=' + nT(k) + '(-X^{2}+' + L + 'X)' };
-  }
-  function shell(r) {   // fireworks shell h = -5t^2 + bt + c (EP1, EP2)
-    return pickWhere(function () {
-      var b = r.pick([20, 24, 26, 28, 30, 32]), c = r.pick([1, 1.5, 2, 2.5, 3]), tv = cl(b / 10), pk = cl(c + b * b / 20), rt = quadRoots(-5, b, c);
-      var Hs = rng(Math.ceil((c + 8) / 5) * 5, pk - 4, 5), H = Hs.length ? r.pick(Hs) : 0, ht = H ? quadRoots(-5, b, c - H) : [0, 0];
-      return { b: b, c: c, tv: tv, pk: pk, land: rt[1], neg: rt[0], H: H, h1: ht[0], h2: ht[1], eq: 'h=' + quadT(-5, b, c, 't'), y1: 'Y_1=' + quadT(-5, b, c, 'X') };
-    }, function (o) { return o.H && margin(o.land, 2) && margin(o.neg, 2) && margin(o.h1, 2) && margin(o.h2, 2) && o.pk > 25; });
-  }
-  function windowsFor(s) {   // the four students' windows for a shell
-    var Xg = Math.ceil(s.land + 0.3), Yg = Math.ceil((s.pk + 1) / 10) * 10, Yl = Math.max(10, Math.round(s.pk * 0.4 / 10) * 10);
-    return { Ama: [-10, 10, -10, 10], Beni: [0, s.tv, 0, Yg], Carly: [0, Xg, 0, Yg], Dev: [0, Xg, 0, Yl] };
-  }
-  function quadFig(s, win, extraPts) {
-    return screen(win, { xv: 't', yv: 'h', fns: [{ f: function (x) { return -5 * x * x + s.b * x + s.c; }, from: 0, to: s.land }], points: extraPts || [] });
-  }
+
+  var HE = ['To evaluate ' + t('f(a)') + ', replace <b>every</b> ' + t('x') + ' in the formula with ' + t('a') + ' (in brackets), then simplify.',
+    'The brackets in ' + t('f(a)') + ' mark the input — they do not mean “times”.'];
+  var HN = ['Put a negative input in brackets — for example, if ' + t('f(x)=4x-9') + ', then ' + t('f(-2)=4(-2)-9') + '. Then use the sign rules carefully.', 'Do powers first, then multiplication, then addition and subtraction.'];
+  var HS = ['To solve ' + t('f(x)=b') + ', you are given the <b>output</b>. Set the formula equal to ' + t('b') + ' and solve for the input ' + t('x') + '.',
+    'Check: substitute your answer back into the formula — do you get ' + t('b') + '?'];
+  var HX = ['Replace every ' + t('x') + ' with the whole expression, in brackets, then expand and collect like terms.', 'A number in front of the bracket multiplies <b>every</b> term inside it, signs included.'];
+  function evalSol(name, ftex, arg, steps, ans) { return t(name + '(' + arg + ')=' + steps + (String(ans) === String(steps) ? '' : '=' + ans)); }
+
+  /* ---------------- Q15 contexts ---------------- */
+  var CTX = [
+    { v: 'd', unit: 'km', F: [250, 300, 350, 350, 400, 450], R: [110, 120, 120, 125, 140, 150, 175, 200], n: function (r) { return r.int(5, 20); },
+      stem: function (Ft, Rt) { return 'A taxi fare, in dollars, for a trip of ' + t('d') + ' kilometres is given by the linear function ' + t('C(d)=' + Ft + '+' + Rt + 'd') + '.'; },
+      phrase: function (n) { return 'A ' + n + ' km trip'; }, swap: function (n, V) { return 'You can travel ' + V + ' km for $' + n + '.'; },
+      per: 'kilometre', inWord: 'distance', fee: 'fixed pickup fee', after: 'km' },
+    { v: 'h', unit: 'h', F: [500, 800, 1000, 1250], R: [450, 600, 750, 800], n: function (r) { return r.int(2, 9); },
+      stem: function (Ft, Rt) { return 'The cost, in dollars, to rent an e-bike for ' + t('h') + ' hours is given by the linear function ' + t('C(h)=' + Ft + '+' + Rt + 'h') + '.'; },
+      phrase: function (n) { return 'Renting the e-bike for ' + n + ' hours'; }, swap: function (n, V) { return 'You can ride for ' + V + ' hours for $' + n + '.'; },
+      per: 'hour', inWord: 'time', fee: 'flat rental fee', after: 'h' },
+    { v: 'k', unit: 'km', F: [2500, 3000, 4000, 4500], R: [25, 30, 40, 50], n: function (r) { return 10 * r.int(2, 15); },
+      stem: function (Ft, Rt) { return 'Renting a moving van costs ' + t('C(k)=' + Ft + '+' + Rt + 'k') + ' dollars, where ' + t('k') + ' is the number of kilometres driven.'; },
+      phrase: function (n) { return 'Driving the van ' + n + ' km'; }, swap: function (n, V) { return 'You can drive ' + V + ' km for $' + n + '.'; },
+      per: 'kilometre', inWord: 'distance', fee: 'flat rental fee', after: 'km' }];
 
   HW.defineLesson({
-    id: 'u5l6', unit: 5, num: '6', title: 'Exploring Real-World Relations With a Graphing Calculator', outcome: 'RF1',
-    blurb: 'Linear and quadratic models in context: set a window that fits the situation, find intercepts, trace, intersect and the vertex, and state a domain and range that make sense.',
+    id: 'u5l6', unit: 5, num: '6', title: 'Function Notation', outcome: 'RF8',
+    blurb: 'Naming a function, writing f(x), evaluating f(a) and solving f(x) = b — with numbers, negatives, radicals and expressions as inputs.',
     questions: [
-      /* ---------- Q1 jerseys ---------- */
-      { num: '1', section: 'Relations in context (linear: 1, 2, 4 · quadratic: 3, 5)', shared: jerseys,
-        stem: function (s) { return 'A school team sells custom jerseys. The cost of producing them is modelled by ' + t(s.eq) + ', where ' + t('C') + ' is the total cost in dollars and ' + t('n') + ' is the number of jerseys produced.'; },
+      /* ---------- Q1: linear function on a small domain ---------- */
+      { num: '1', section: 'Function notation, tables and graphs', stem: function (sh) { return 'The function ' + t('f(x)=' + sh.ftex) + ' has domain ' + t(setTex(sh.D)) + '.'; },
+        shared: function (r) {
+          var o = pickWhere(function () { return { m: r.pick([2, 3, 4, 4]), b: r.pick([-5, -4, -3, -3, -2, -1, 1, 2, 3]), s: r.pick([0, 0, 0, 1, -1]) }; },
+            function (o) { var y0 = o.m * o.s + o.b, y1 = o.m * (o.s + 3) + o.b; return Math.max(0, y1) - Math.min(0, y0) + 2 <= 15; });   // the graph pad stays at most 15 squares tall
+          return { m: o.m, b: o.b, D: [o.s, o.s + 1, o.s + 2, o.s + 3], ftex: lin([[o.m, 'x'], [o.b, '']]) };
+        },
         parts: [
-          { id: '1a1', sub: 'a-i', level: 'BEG', make: function (r, s) {
-            var top = s.m * s.Nmax + s.f, key = [0, s.Nmax, 0, niceUp(top * 1.04)];
-            var pts = []; for (var n = 0; n <= s.Nmax; n += s.Nmax <= 50 ? 2 : 4) pts.push({ x: n, y: s.m * n + s.f });
-            return winPart({ prompt: 'Graph ' + t(s.eq) + ' on a graphing calculator. The team will produce at most ' + t(s.Nmax) + ' jerseys. Enter a window that shows every point from ' + t('n=0') + ' to ' + t('n=' + s.Nmax) + '.',
-              x: [0, s.Nmax], y: [s.f, top], xv: 'n', yv: 'C', xNeg: 'counts jerseys', yNonneg: true, need: 'the points from ' + t('n=0') + ' to ' + t('n=' + s.Nmax) + ' (costs from ' + t(money(s.f)) + ' to ' + t(money(top)) + ')',
-              xHi: 'the last jerseys', xHiHow: 'The team can produce up to ' + t(s.Nmax) + ' jerseys, so ' + cd('Xmax') + ' must reach ' + t(s.Nmax) + '.',
-              yHi: 'the most expensive orders', yHiHow: 'Trace to ' + t('n=' + s.Nmax) + ' to see the greatest cost, then choose ' + cd('Ymax') + ' at or above it.', yLo: 'the first point, the cost of 0 jerseys (the ' + t('C') + '-intercept)',
-              key: key, good: s.Nmax === 60 && s.m === 3 && s.f === 45 ? [[0, 60, 0, 225]] : [[0, s.Nmax, 0, top], [0, s.Nmax + 5, -10, top + 20]], bad: [[-10, 10, -10, 10], [0, s.Nmax / 2, 0, top], [0, s.Nmax, 0, s.f], [-5, s.Nmax, 0, top]],
-              sol: 'Jerseys can’t be negative, so ' + cd('Xmin') + ' = 0 and ' + cd('Xmax') + ' = ' + t(s.Nmax) + '. The cost starts at ' + t(money(s.f)) + ' (at ' + t('n=0') + ') and reaches ' + t('C=' + s.m + '(' + s.Nmax + ')+' + s.f + '=' + top) + ' at ' + t('n=' + s.Nmax) + ', so ' + cd('Ymin') + ' = 0 and ' + cd('Ymax') + ' = ' + t(top) + ' or a little more.' + screen(key, { xv: 'n', yv: 'C', points: pts }),
-              text: 'window for ' + s.eq });
+          { id: '1a', level: 'BEG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, D = sh.D, f = function (x) { return m * x + b; }, ys = sortU(D.map(f));
+            var p = B.set('List the elements of the range of the function.', setTex(ys), { other: setTex(D), otherName: 'domain', wrong: [
+              { is: setTex(sortU(D.map(function (x) { return m * x; }))), code: 'fn-const', hint: 'You multiplied each input by ' + t(m) + ' — now include the ' + t(sg(b)) + ' as well. Every term of the formula is part of the output.' },
+              { is: setTex(sortU(D.map(function (x) { return m * x - b; }))), code: 'fn-const-sign', hint: 'Check the sign of the constant: the formula ends in ' + t(sg(b)) + '.' },
+              { is: setTex(sortU(D.map(function (x) { return m + x + b; }))), code: 'fn-add-coef', hint: t(m + 'x') + ' means ' + t(m + '\\times x') + ': multiply the input by ' + t(m) + ', don’t add it.' }] },
+              'Evaluate ' + t('f') + ' at each element of the domain:<br>' + D.map(function (x) { return t('f(' + x + ')=' + m + '(' + x + ')' + sg(b) + '=' + f(x)); }).join('<br>') + '<br>Range ' + t('=' + setTex(ys)) + '.',
+              ['The range is the set of <b>outputs</b>. Substitute each input from the domain into ' + t('f(x)=' + sh.ftex) + '.', 'List each output once, inside braces.'], 'range of f(x)=' + sh.ftex);
+            p.good = [setTex(ys.slice().reverse())]; p.bad = [setTex(sortU(D.map(function (x) { return m * x; }))), setTex(sortU(D.map(function (x) { return m * x - b; }))), setTex(D)];
+            return p;
           } },
-          { id: '1a2', sub: 'a-ii', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Why does the graph of this relation consist of separate points rather than a continuous line?', [
-              { html: 'Only a whole number of jerseys can be produced, so only whole-number values of ' + t('n') + ' make sense.', right: true },
-              { html: 'The cost goes up in jumps of ' + t(money(s.m)) + ', so the line has gaps.', why: 'The jumps happen <i>because</i> ' + t('n') + ' jumps from one whole number to the next. Ask yourself: can a team produce ' + t('2.5') + ' jerseys?' },
-              { html: 'A graphing calculator can only plot separate points.', why: 'A calculator normally draws a connected line. The points are separate because of what ' + t('n') + ' counts.' },
-              { html: 'A cost can’t be a decimal number of dollars.', why: 'Costs like ' + t('\\$46.50') + ' are fine. It’s the <b>input</b>, the number of jerseys, that has to be a whole number.' }],
-              'The input ' + t('n') + ' counts jerseys. There is no such thing as producing ' + t('2.5') + ' jerseys, so only ' + t('n=0, 1, 2, \\ldots') + ' make sense: the graph is a set of separate points (the data are <b>discrete</b>).', ['What kind of number is ' + t('n') + '? Could it be ' + t('2.5') + '?'], 'why jersey graph is discrete');
-          } },
-          { id: '1b1', sub: 'b-i', level: 'EMG', make: function (r, s) {
-            return numPart('Determine the ' + t('n') + '-intercept of the graph.', -s.k, 0, [
-              { v: s.k, code: 'int-sign', hint: 'Check the sign: ' + t('0=' + s.m + 'n+' + s.f) + ' gives ' + t(s.m + 'n=-' + s.f) + '.' },
-              { v: -s.f, code: 'int-no-divide', hint: 'After ' + t(s.m + 'n=-' + s.f) + ', divide both sides by ' + t(s.m) + '.' },
-              { v: s.f, code: 'int-gave-y', hint: t(s.f) + ' is the ' + t('C') + '-intercept (the cost when ' + t('n=0') + '). The ' + t('n') + '-intercept is where ' + t('C=0') + '.' }],
-              'At the ' + t('n') + '-intercept ' + t('C=0') + ' (calculator: ' + cd('2:zero') + ', after widening the window to the left).<br>' + t('0=' + s.m + 'n+' + s.f + '\\Rightarrow ' + s.m + 'n=-' + s.f + '\\Rightarrow n=-' + s.k) + '.',
-              [H_ZERO], 'n-intercept of ' + s.eq);
-          } },
-          { id: '1b2', sub: 'b-ii', level: 'EMG', make: function (r, s) {
-            return mc(r, 'The ' + t('n') + '-intercept is ' + t('-' + s.k) + '. Is it relevant to the graph of this relation?', [
-              { html: 'No — it would mean producing ' + t('-' + s.k) + ' jerseys, and a negative number of jerseys can’t be produced.', right: true },
-              { html: 'Yes — it is the number of jerseys the team must sell to break even.', why: 'This formula is only the <b>cost</b>; there is no income in it, so it can’t show breaking even. And look at the sign of ' + t('n') + '.' },
-              { html: 'Yes — it shows that ' + t(s.k) + ' jerseys can be produced for ' + t('\\$0') + '.', why: 'The intercept is ' + t('n=-' + s.k) + ', not ' + t(s.k) + '. Producing jerseys always costs at least ' + t(money(s.f)) + '.' },
-              { html: 'No — intercepts are never relevant in a real situation.', why: 'The ' + t('C') + '-intercept here is very relevant: it is the fixed cost. Decide by what ' + t('n=-' + s.k) + ' would mean.' }],
-              t('0=' + s.m + 'n+' + s.f) + ' gives ' + t('n=-' + s.k) + '. That would be ' + t('-' + s.k) + ' jerseys, which can’t happen, so the ' + t('n') + '-intercept is <b>not relevant</b>: the graph starts at ' + t('n=0') + '.', ['What would a negative value of ' + t('n') + ' mean here?'], 'jersey n-intercept relevant?');
-          } },
-          { id: '1c', sub: 'c', level: 'BEG', make: function (r, s) {
-            var C = s.m * s.N + s.f;
-            return numPart('What would be the cost of producing ' + t(s.N) + ' jerseys?', C, 2, [
-              { v: s.m * s.N, code: 'ctx-no-fee', hint: 'Don’t forget the fixed ' + t(money(s.f)) + ': ' + t('C=' + s.m + '(' + s.N + ')+' + s.f) + '.' },
-              { v: (s.m + s.f) * s.N, code: 'ctx-mult', hint: 'Only the ' + t(money(s.m)) + ' per jersey is multiplied by the number of jerseys; the ' + t(money(s.f)) + ' is added once.' }],
-              kb('TRACE') + ' to ' + t('X=' + s.N) + ' (or substitute): ' + t('C=' + s.m + '(' + s.N + ')+' + s.f + '=' + (s.m * s.N) + '+' + s.f + '=' + money(C)) + '.', [H_TRACE], 'cost of ' + s.N + ' jerseys, ' + s.eq, { money: true });
-          } },
-          { id: '1d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numPart('How many jerseys are produced if the total cost is ' + t(money(s.X)) + '?', s.n0, 2, [
-              { v: s.X / s.m, code: 'ctx-no-sub', hint: 'First take away the fixed ' + t(money(s.f)) + ': only the rest of the cost comes from the ' + t(money(s.m)) + ' per jersey.' },
-              { v: (s.X + s.f) / s.m, code: 'ctx-added', hint: 'Subtract the fixed ' + t(money(s.f)) + ' from both sides (don’t add it).' },
-              { v: s.m * s.X + s.f, code: 'ctx-eval', hint: t(F(s.X)) + ' is the <b>cost</b> (the output). Set ' + t(s.m + 'n+' + s.f + '=' + s.X) + ' and solve for ' + t('n') + '.' }],
-              'Calculator: ' + t(s.y1) + ', ' + t('Y_2=' + s.X) + ', ' + cd('5:intersect') + ' gives ' + t('(' + s.n0 + ',\\ ' + s.X + ')') + '.<br>Check: ' + t(s.X + '=' + s.m + 'n+' + s.f + '\\Rightarrow ' + s.m + 'n=' + (s.X - s.f) + '\\Rightarrow n=' + s.n0) + ' jerseys.', [H_INT], 'jerseys for cost ' + s.X, { after: 'jerseys' });
-          } },
-          { id: '1e', sub: 'e', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Describe the significance of the ' + t('C') + '-intercept, ' + t(s.f) + '.', [
-              { html: 'It is a fixed cost of ' + t(money(s.f)) + ' (such as a setup or design fee) that is charged no matter how many jerseys are produced.', right: true },
-              { html: 'Each jersey costs ' + t(money(s.f)) + ' to produce.', why: 'Each jersey adds ' + t(money(s.m)) + ' (the number multiplied by ' + t('n') + '). The ' + t('C') + '-intercept is the cost when ' + t('n=0') + '.' },
-              { html: 'The team can produce at most ' + t(s.f) + ' jerseys.', why: 'The ' + t('C') + '-intercept is a value of ' + t('C') + ' — a cost in dollars, not a number of jerseys.' },
-              { html: 'It is the cost of producing ' + t(s.f) + ' jerseys.', why: 'At the ' + t('C') + '-intercept ' + t('n=0') + ': no jerseys at all. Producing ' + t(s.f) + ' jerseys costs ' + t(money(s.m * s.f + s.f)) + '.' }],
-              'The ' + t('C') + '-intercept is found at ' + t('n=0') + ': ' + t('C=' + s.m + '(0)+' + s.f + '=' + s.f) + '. Even before one jersey is made the team pays ' + t(money(s.f)) + ' — a fixed (setup) cost. Each jersey then adds ' + t(money(s.m)) + '.', ['Find ' + t('C') + ' when ' + t('n=0') + '. What does a cost for zero jerseys represent?'], 'meaning of C-intercept');
+          { id: '1b', level: 'EMG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, D = sh.D, ok0 = D.map(function (x) { return [x, m * x + b]; });
+            var ys = ok0.map(function (q) { return q[1]; }), win = { x: [Math.min(-1, D[0] - 1), D[3] + 1], y: [Math.min(0, Math.min.apply(null, ys)) - 1, Math.max(0, Math.max.apply(null, ys)) + 1], labelsY: 2, xName: 'x', yName: 'f(x)' };
+            return plotPart('Graph the function ' + t('f') + '.', win, ok0, [
+              [D.map(function (x) { return [x, m * x - b]; }), 'fn-const-sign', 'Check one point: ' + t('f(' + D[1] + ')=' + m + '(' + D[1] + ')' + sg(b) + '=' + (m * D[1] + b)) + '. Watch the sign of the constant.'],
+              [D.map(function (x) { return [x, m * x]; }), 'fn-const', 'These points leave out the constant ' + t(sg(b)) + '. Check ' + t('f(' + D[0] + ')') + '.'],
+              [D.map(function (x) { return [x, m + x + b]; }), 'fn-add-coef', t(m + 'x') + ' means ' + t(m + '\\times x') + ': multiply the input by ' + t(m) + ', don’t add it.']],
+              'Plot one point ' + t('(x,\\ f(x))') + ' for each element of the domain: ' + t(ptsTex(ok0)) + '. The domain has only four values, so the graph is four separate points — they are <b>not</b> joined.',
+              ['Each element of the domain gives one point ' + t('(x,\\ f(x))') + '. Work out the four outputs first (your range from part (a)).', 'The domain is a short list, not all real numbers: should the points be joined?'], 'graph f(x)=' + sh.ftex + ' on a 4-element domain');
           } }] },
-
-      /* ---------- Q2 tea ---------- */
-      { num: '2', shared: tea,
-        stem: function (s) { return 'For a science experiment, a beaker of tea is poured and left to cool. Its temperature ' + t('T') + ', in degrees Celsius, after ' + t('t') + ' minutes is estimated by ' + t(s.eq) + '.'; },
+      /* ---------- Q2: cubic on a small domain ---------- */
+      { num: '2', stem: function (sh) { return 'The function ' + t('g(x)=' + lin([[1, 'x^{3}'], [sh.c, '']])) + ' has domain ' + t(setTex(sh.D)) + '.'; },
+        shared: function (r) { return { c: r.pick([-3, -2, -1, -1, 1, 2, 3]), D: [-2, -1, 0, 1, 2] }; },
         parts: [
-          { id: '2a', sub: 'a', level: 'EMG', make: function (r, s) {
-            var key = winKey([0, s.ti], [0, s.T0]);
-            return winPart({ prompt: 'Graph ' + t(s.eq) + ' on a graphing calculator. Enter a window that shows the line from the moment the tea is poured until the model reaches ' + t('0^\\circ\\text{C}') + '.',
-              x: [0, s.ti], y: [0, s.T0], xv: 't', yv: 'T', xNeg: 'is time since the tea was poured', yNonneg: true, need: 'the line from ' + t('t=0') + ' (' + t(s.T0 + '^\\circ\\text{C}') + ') down to the ' + t('t') + '-axis',
-              xHi: 'the point where the line reaches the ' + t('t') + '-axis', xHiHow: 'Find when ' + t('T=0') + ' (' + cd('2:zero') + ', or solve ' + t('-' + nT(s.rt) + 't+' + s.T0 + '=0') + ') and set ' + cd('Xmax') + ' a little past it.',
-              yHi: 'the starting temperature', yHiHow: 'The tea starts at ' + t(s.T0 + '^\\circ\\text{C}') + ' (the ' + t('T') + '-intercept).', yLo: 'the ' + t('t') + '-axis, where the line ends',
-              key: key, good: s.rt === 0.5 && s.T0 === 85 ? [[0, 180, -10, 90]] : [[0, Math.ceil(s.ti / 10) * 10, -10, Math.ceil(s.T0 / 10) * 10]], bad: [[-10, 10, -10, 10], [0, s.ti / 2, 0, s.T0 + 5], [0, s.ti + 10, 0, s.T0 - 10], [0, s.ti + 10, 20, s.T0 + 5]],
-              sol: 'Time starts at pouring, so ' + cd('Xmin') + ' = 0. The model reaches ' + t('0^\\circ\\text{C}') + ' when ' + t('-' + nT(s.rt) + 't+' + s.T0 + '=0') + ', so ' + t('t=' + s.T0 + '\\div ' + nT(s.rt) + '=' + nT(s.ti)) + ': ' + cd('Xmax') + ' at least ' + t(nT(s.ti)) + '. ' + t('T') + ' falls from ' + t(s.T0) + ' to ' + t('0') + ': ' + cd('Ymin') + ' = 0 (or a little below) and ' + cd('Ymax') + ' at least ' + t(s.T0) + '.' + screen(key, { xv: 't', yv: 'T', fns: [{ f: function (x) { return s.T0 - s.rt * x; }, from: 0, to: s.ti }] }),
-              text: 'window for ' + s.eq });
+          { id: '2a', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, D = sh.D, g = function (x) { return x * x * x + c; }, ys = sortU(D.map(g)), gt = lin([[1, 'x^{3}'], [c, '']]);
+            var p = B.set('List the elements of the range of the function.', setTex(ys), { other: setTex(D), otherName: 'domain', wrong: [
+              { is: setTex(sortU(D.map(function (x) { return Math.abs(x * x * x) + c; }))), code: 'fn-cube-neg', hint: 'Check the negative inputs: ' + t('(-2)^{3}=(-2)(-2)(-2)=-8') + '. An odd power of a negative number is negative.' },
+              { is: setTex(sortU(D.map(function (x) { return 3 * x + c; }))), code: 'fn-cube-3x', hint: t('x^{3}') + ' means ' + t('x\\times x\\times x') + ', not ' + t('3\\times x') + '. For example ' + t('2^{3}=8') + '.' },
+              { is: setTex(sortU(D.map(function (x) { return x * x * x - c; }))), code: 'fn-const-sign', hint: 'Check the sign of the constant: the formula ends in ' + t(sg(c)) + '.' }] },
+              D.map(function (x) { return t('g(' + x + ')=(' + x + ')^{3}' + sg(c) + '=' + (x * x * x) + sg(c) + '=' + g(x)); }).join('<br>') + '<br>Range ' + t('=' + setTex(ys)) + '.',
+              ['Substitute each input into ' + t('g(x)=' + gt) + '. Put negative inputs in brackets before cubing.', 'The range is the set of outputs, listed once each.'], 'range of g(x)=' + gt);
+            p.good = [setTex(ys.slice().reverse())];
+            return p;
           } },
-          { id: '2b', sub: 'b', level: 'BEG', make: function (r, s) {
-            return numPart('What was the temperature of the tea at ' + t(s.t1) + ' minutes?', s.T1, 2, [
-              { v: s.T0 + s.rt * s.t1, code: 'ctx-sign', hint: 'The tea is cooling: ' + t('-' + nT(s.rt) + '(' + s.t1 + ')') + ' is subtracted from ' + t(s.T0) + '.' },
-              { v: s.rt * s.t1, code: 'ctx-change', hint: 'That is how many degrees the tea has <b>dropped</b>. The temperature is ' + t(s.T0) + ' minus that.' }],
-              kb('TRACE') + ' to ' + t('X=' + s.t1) + ': ' + t('T=-' + nT(s.rt) + '(' + s.t1 + ')+' + s.T0 + '=' + nT(-s.rt * s.t1) + '+' + s.T0 + '=' + nT(s.T1) + '^\\circ\\text{C}') + '.', [H_TRACE], 'tea temperature at ' + s.t1, { after: '°C' });
-          } },
-          { id: '2c', sub: 'c', level: 'EMG', make: function (r, s) {
-            return numPart('How long did it take for the tea to cool to ' + t(s.Tc + '^\\circ\\text{C}') + '?', s.t2, 2, [
-              { v: -s.t2, code: 'ctx-sign', hint: 'A time can’t be negative. Check the signs: ' + t(s.Tc + '-' + s.T0 + '=-' + nT(s.rt) + 't') + ', and both sides are negative.' },
-              { v: s.Tc / s.rt, code: 'ctx-no-sub', hint: 'First subtract the starting ' + t(s.T0) + ' from both sides, then divide by ' + t('-' + nT(s.rt)) + '.' },
-              { v: s.T0 - s.rt * s.Tc, code: 'ctx-eval', hint: t(s.Tc) + ' is a <b>temperature</b> (the output). Set ' + t('-' + nT(s.rt) + 't+' + s.T0 + '=' + s.Tc) + ' and solve for ' + t('t') + '.' },
-              { v: (s.T0 - s.Tc) * s.rt, code: 'ctx-mult', hint: 'Divide by ' + t(nT(s.rt)) + ' — don’t multiply.' }],
-              'Calculator: ' + t(s.y1) + ', ' + t('Y_2=' + s.Tc) + ', ' + cd('5:intersect') + ' gives ' + t('(' + s.t2 + ',\\ ' + s.Tc + ')') + '.<br>Check: ' + t(s.Tc + '=-' + nT(s.rt) + 't+' + s.T0 + '\\Rightarrow -' + nT(s.rt) + 't=' + (s.Tc - s.T0) + '\\Rightarrow t=' + s.t2) + ' minutes.', [H_INT], 'time to cool to ' + s.Tc, { after: 'minutes' });
-          } },
-          { id: '2d1', sub: 'd-i', level: 'EMG', make: function (r, s) {
-            return numPart('Determine the ' + t('t') + '-intercept of the graph.', s.ti, 2, [
-              { v: s.T0, code: 'int-gave-y', hint: t(s.T0) + ' is the ' + t('T') + '-intercept (the temperature when ' + t('t=0') + '). The ' + t('t') + '-intercept is where ' + t('T=0') + '.' },
-              { v: s.T0 * s.rt, code: 'ctx-mult', hint: 'From ' + t(nT(s.rt) + 't=' + s.T0) + ', divide by ' + t(nT(s.rt)) + ' — don’t multiply.' },
-              { v: -s.ti, code: 'int-sign', hint: 'Check the sign: ' + t('0=-' + nT(s.rt) + 't+' + s.T0) + ' gives ' + t(nT(s.rt) + 't=' + s.T0) + '.' }],
-              cd('2:zero') + ' gives ' + t('t=' + nT(s.ti)) + '. Check: ' + t('0=-' + nT(s.rt) + 't+' + s.T0 + '\\Rightarrow ' + nT(s.rt) + 't=' + s.T0 + '\\Rightarrow t=' + nT(s.ti)) + '.', [H_ZERO], 't-intercept of ' + s.eq, { after: 'minutes' });
-          } },
-          { id: '2d2', sub: 'd-ii', level: 'PRG', make: function (r, s) {
-            return mc(r, 'The ' + t('t') + '-intercept is ' + t(nT(s.ti)) + '. Describe its significance in this question.', [
-              { html: 'It is when the model predicts the tea reaches ' + t('0^\\circ\\text{C}') + '. Real tea levels off near room temperature, so the straight-line model stops being realistic well before ' + t('t=' + nT(s.ti)) + '.', right: true },
-              { html: 'It is when the tea reaches room temperature.', why: 'At the ' + t('t') + '-intercept ' + t('T=0') + ': ' + t('0^\\circ\\text{C}') + ', the freezing point — far below room temperature.' },
-              { html: 'It is the temperature of the tea when it was poured.', why: 'That is the ' + t('T') + '-intercept (where ' + t('t=0') + '), ' + t(s.T0 + '^\\circ\\text{C}') + '.' },
-              { html: 'It is when the tea has finished cooling, and the model is accurate right up to that time.', why: 'Tea on a desk can’t cool below the temperature of the room, so the model can’t be trusted all the way down to ' + t('0^\\circ\\text{C}') + '.' }],
-              'At the ' + t('t') + '-intercept ' + t('T=0') + ': the model says the tea is at ' + t('0^\\circ\\text{C}') + ' after ' + t(nT(s.ti)) + ' minutes. That can’t really happen in a warm room — the tea levels off at room temperature — so the line is only realistic for the first part of the cooling.', ['What is the value of ' + t('T') + ' at a ' + t('t') + '-intercept? Can tea on a desk get that cold?'], 'meaning of tea t-intercept');
-          } },
-          { id: '2e', sub: 'e', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Describe the relation in words.', [
-              { html: 'The tea starts at ' + t(s.T0 + '^\\circ\\text{C}') + ' and cools at a constant rate of ' + t(nT(s.rt) + '^\\circ\\text{C}') + ' per minute.', right: true },
-              { html: 'The tea starts at ' + t(nT(s.rt) + '^\\circ\\text{C}') + ' and warms by ' + t(s.T0 + '^\\circ\\text{C}') + ' per minute.', why: 'The constant term ' + t(s.T0) + ' is the starting value (at ' + t('t=0') + '); the number multiplied by ' + t('t') + ' is the change per minute.' },
-              { html: 'The tea starts at ' + t(s.T0 + '^\\circ\\text{C}') + ' and its temperature is cut in half every minute.', why: t('-' + nT(s.rt) + 't') + ' <b>subtracts</b> ' + t(nT(s.rt)) + ' degrees for each minute — the same drop every minute, not a halving.' },
-              { html: 'The tea starts at ' + t(s.T0 + '^\\circ\\text{C}') + ' and cools faster and faster.', why: 'The graph is a straight line, so the rate is constant: ' + t(nT(s.rt) + '^\\circ\\text{C}') + ' every minute.' }],
-              'In ' + t(s.eq) + ' the constant ' + t(s.T0) + ' is the temperature at ' + t('t=0') + ' and ' + t('-' + nT(s.rt)) + ' is the change per minute. So the tea is poured at ' + t(s.T0 + '^\\circ\\text{C}') + ' and its temperature drops at a constant ' + t(nT(s.rt) + '^\\circ\\text{C}') + ' per minute.', ['Which number is the value at ' + t('t=0') + '? Which is the change for each minute?'], 'describe ' + s.eq);
+          { id: '2b', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, D = sh.D, g = function (x) { return x * x * x + c; }, ok0 = D.map(function (x) { return [x, g(x)]; });
+            var win = { x: [-3, 3], y: [c - 9, c + 9], labelsY: 2, xName: 'x', yName: 'g(x)' };
+            return plotPart('Graph the function ' + t('g') + '.', win, ok0, [
+              [D.map(function (x) { return [x, Math.abs(x * x * x) + c]; }), 'fn-cube-neg', 'Look at the negative inputs: ' + t('g(-2)=(-2)^{3}' + sg(c) + '=-8' + sg(c) + '=' + g(-2)) + '. An odd power of a negative is negative.'],
+              [D.map(function (x) { return [x, 3 * x + c]; }), 'fn-cube-3x', 'These points lie on a straight line — they come from ' + t('3x' + sg(c)) + '. Cubing means ' + t('x\\times x\\times x') + ': ' + t('g(2)=8' + sg(c) + '=' + g(2)) + '.'],
+              [D.map(function (x) { return [x, x * x * x - c]; }), 'fn-const-sign', 'Check the sign of the constant: the formula ends in ' + t(sg(c)) + '.']],
+              'The points are ' + t(ptsTex(ok0)) + '. The domain has five values, so the graph is five separate points (not joined: a curve would mean every real number between ' + t('-2') + ' and ' + t('2') + ' is an input).',
+              ['Work out the five outputs (your range from part (a)), then plot ' + t('(x,\\ g(x))') + ' for each.', 'Put negative inputs in brackets before cubing: ' + t('(-1)^{3}=-1') + '.'], 'graph g(x)=x^3' + sg(c) + ' on a 5-element domain');
           } }] },
-
-      /* ---------- Q3 shuttlecock ---------- */
-      { num: '3', shared: shuttle,
-        stem: function (s) { return 'During a badminton practice, a player strikes a shuttlecock. Its height above the court is modelled by ' + t(s.eq) + ', where ' + t('t') + ' is the time in seconds since contact and ' + t('h') + ' is the height in metres.'; },
+      /* ---------- Q3: quadratic table and smooth curve ---------- */
+      { num: '3', stem: function (sh) { return 'Consider the function ' + t('f(x)=x^{2}' + sg(sh.c)) + '.'; },
+        shared: function (r) { return { c: r.pick([1, 2, 3, 3, 4]) }; },   // c ≤ 4 keeps the graph pad at most 15 squares tall
         parts: [
-          { id: '3a', sub: 'a', level: 'EMG', make: function (r, s) {
-            var key = winKey([0, s.land], [0, s.hm]);
-            return winPart({ prompt: 'Graph the relation on a graphing calculator. Enter a window that shows the whole flight: from contact, through the highest point, to the landing.',
-              x: [0, s.land], y: [0, s.hm], xv: 't', yv: 'h', xNeg: 'is time since contact', yNonneg: true, need: 'the whole flight from contact to landing, including the highest point',
-              xHi: 'the landing', xHiHow: 'The curve must come back down to ' + t('h=0') + ' on the screen: find that time with ' + cd('2:zero') + ' and set ' + cd('Xmax') + ' a little past it.',
-              yHi: 'the top of the flight', yHiHow: 'Find the greatest height with ' + cd('4:maximum') + ' and set ' + cd('Ymax') + ' above it.', yLo: 'the court (' + t('h=0') + '), where the shuttlecock lands',
-              key: key, good: s.b === 16 && s.c === 2 ? [[0, 3.5, 0, 16]] : [[0, Math.ceil(s.land), 0, Math.ceil(s.hm + 1)]], bad: [[-10, 10, -10, 10], [0, s.tv, 0, s.hm + 2], [0, s.land + 1, 0, s.hm / 2]],
-              sol: 'Time starts at contact: ' + cd('Xmin') + ' = 0. ' + cd('2:zero') + ' gives the landing at ' + t('t\\approx ' + rT(s.land, 2)) + ' and ' + cd('4:maximum') + ' gives the top at ' + t('h=' + nT(s.hm)) + '. So ' + cd('Xmax') + ' a little more than ' + t(rT(s.land, 2)) + ', ' + cd('Ymin') + ' = 0 and ' + cd('Ymax') + ' a little more than ' + t(nT(s.hm)) + '.' + quadFig(s, key, [{ x: s.tv, y: s.hm }]),
-              text: 'window for ' + s.eq });
+          { id: '3a', level: 'BEG', make: function (r, sh) {
+            var c = sh.c, xs = [3, 2, 1, -1, -2, -3], f = function (x) { return x * x + c; };
+            var fields = xs.map(function (x) { return { name: t('f(' + x + ')'), before: t('f(' + x + ')=') }; });
+            var checks = xs.map(function (x) {
+              return K.number(f(x), function (v) {
+                if (x < 0 && same(v, -x * x + c)) return { code: 'fn-neg-square', hint: t('(' + x + ')^{2}=(' + x + ')(' + x + ')=' + x * x) + ': a negative times a negative is positive.' };
+                if (same(v, 2 * x + c)) return { code: 'fn-square-2x', hint: t('x^{2}') + ' means ' + t('x\\times x') + ', not ' + t('2\\times x') + '.' };
+                if (same(v, x * x - c)) return { code: 'fn-const-sign', hint: 'Remember to <b>add</b> ' + t(c) + ' after squaring.' };
+                return null;
+              });
+            });
+            var p = B.fields('Complete the table of values for the domain ' + t(setTex(xs)) + '.', fields, checks, xs.map(function (x) { return String(f(x)); }),
+              HW.valueTable([[t('x')].concat(xs.map(function (x) { return t(x); })), [t('f(x)')].concat(xs.map(function (x) { return t(f(x)); }))]),
+              xs.map(function (x) { return t('f(' + x + ')=' + sgp(x) + '^{2}' + sg(c) + '=' + x * x + sg(c) + '=' + f(x)); }).join('<br>'),
+              ['Square the input first (put negatives in brackets), then add ' + t(c) + '.', 'Opposite inputs like ' + t('2') + ' and ' + t('-2') + ' give the same square.'], 'table of x^2' + sg(c));
+            p.bad = [xs.map(function (x) { return String(2 * x + c); }), xs.map(function (x) { return String(x < 0 ? -x * x + c : x * x + c); })];
+            return p;
           } },
-          { id: '3b', sub: 'b', level: 'LIM', make: function (r, s) {
-            return numPart('What was the height of the shuttlecock above the court at the moment of contact?', s.c, 2, [
-              { v: 0, code: 'ctx-zero-start', hint: 'At contact ' + t('t=0') + ' — but the racket hits the shuttlecock above the court. Substitute ' + t('t=0') + '.' },
-              { v: s.b, code: 'ctx-coef', hint: 'Substitute ' + t('t=0') + ': every term with ' + t('t') + ' becomes ' + t('0') + '.' }],
-              'At contact ' + t('t=0') + ': ' + t('h=-5(0)^{2}+' + s.b + '(0)+' + nT(s.c) + '=' + nT(s.c)) + ' m — the ' + t('h') + '-intercept.', ['Contact is the start: ' + t('t=0') + '.'], 'height at contact ' + s.eq, { after: 'm' });
-          } },
-          { id: '3c', sub: 'c', level: 'BEG', make: function (r, s) {
-            return numPart('What was the height of the shuttlecock above the court ' + t(nT(s.t1)) + ' second' + (s.t1 === 1 ? '' : 's') + ' after contact?', s.h1, 2, [
-              { v: 5 * s.t1 * s.t1 + s.b * s.t1 + s.c, code: 'ctx-sign-sq', hint: 'Keep the minus sign: ' + t('-5(' + nT(s.t1) + ')^{2}=' + nT(-5 * s.t1 * s.t1)) + '.' },
-              { v: -5 * s.t1 * s.t1 + s.b * s.t1, code: 'ctx-no-c', hint: 'Don’t forget the ' + t('+' + nT(s.c)) + ' at the end.' },
-              { v: -25 * s.t1 * s.t1 + s.b * s.t1 + s.c, code: 'ctx-sign-sq', hint: 'Square ' + t('t') + ' first, then multiply by ' + t('-5') + ': ' + t('-5(' + nT(s.t1) + ')^{2}') + ', not ' + t('(-5\\times ' + nT(s.t1) + ')^{2}') + '.' }],
-              kb('TRACE') + ' to ' + t('X=' + nT(s.t1)) + ': ' + t('h=-5(' + nT(s.t1) + ')^{2}+' + s.b + '(' + nT(s.t1) + ')+' + nT(s.c) + '=' + nT(-5 * s.t1 * s.t1) + '+' + nT(s.b * s.t1) + '+' + nT(s.c) + '=' + nT(s.h1)) + ' m.', [H_TRACE], 'height at t=' + s.t1, { after: 'm' });
-          } },
-          { id: '3d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numPart('What is the maximum height the shuttlecock reaches?', s.hm, 2, [
-              { v: s.tv, code: 'ctx-max-time', hint: t(nT(s.tv)) + ' is <b>when</b> the maximum happens (the ' + t('t') + '-coordinate). The height is the other coordinate of the vertex.' },
-              { v: s.hm - s.c, code: 'ctx-no-c', hint: 'Include the starting ' + t(nT(s.c)) + ' m: substitute the vertex time into the whole formula.' },
-              { v: s.b, code: 'ctx-coef', hint: t(s.b) + ' is a coefficient in the formula, not a height. Use ' + cd('4:maximum') + '.' }],
-              cd('4:maximum') + ' gives ' + t('(' + nT(s.tv) + ',\\ ' + nT(s.hm) + ')') + '.<br>Check: ' + t('t=-\\frac{' + s.b + '}{2(-5)}=' + nT(s.tv)) + ', ' + t('h=-5(' + nT(s.tv) + ')^{2}+' + s.b + '(' + nT(s.tv) + ')+' + nT(s.c) + '=' + nT(s.hm)) + ' m.', [H_MAX, H_VERT], 'max height ' + s.eq, { after: 'm' });
-          } },
-          { id: '3e', sub: 'e', level: 'BEG', make: function (r, s) {
-            return numPart('How many seconds after contact does the shuttlecock reach its maximum height?', s.tv, 2, [
-              { v: s.hm, code: 'ctx-gave-h', hint: t(nT(s.hm)) + ' is the greatest <b>height</b>. The question asks <b>when</b> — the ' + t('t') + '-coordinate of the vertex.' },
-              { v: s.land / 2, code: 'ctx-half-land', hint: 'The shuttlecock starts ' + t(nT(s.c)) + ' m up, so the top is <i>not</i> halfway to the landing time. Use ' + cd('4:maximum') + '.' }],
-              'The ' + t('t') + '-coordinate of the vertex from ' + cd('4:maximum') + ': ' + t('t=' + nT(s.tv)) + ' s. Check: ' + t('t=-\\frac{b}{2a}=-\\frac{' + s.b + '}{2(-5)}=' + nT(s.tv)) + '.', [H_MAX], 'time of max ' + s.eq, { after: 's' });
-          } },
-          { id: '3f', sub: 'f', level: 'EMG', make: function (r, s) {
-            return numPart('To the nearest hundredth of a second, how long does it take for the shuttlecock to land on the court?', s.land, 2, [
-              { v: s.neg, code: 'ctx-neg-time', hint: 'That zero is at a negative time — before the shuttlecock was hit. Use the crossing on the right.' },
-              { v: s.tv, code: 'ctx-max-time', hint: 'That is the time of the highest point. Landing means ' + t('h=0') + '.' },
-              { v: 2 * s.tv, code: 'ctx-double-vertex', hint: 'At ' + t('t=' + nT(2 * s.tv)) + ' the shuttlecock is back at its starting height, ' + t(nT(s.c)) + ' m — it still has to fall to the court. Use ' + cd('2:zero') + '.' }],
-              'Landing means ' + t('h=0') + ': ' + cd('2:zero') + ' on the right-hand crossing gives ' + t('t\\approx ' + rd(s.land, 4)) + ', so ' + t('t\\approx ' + rT(s.land, 2)) + ' s.<br>Check: ' + t('h(' + rT(s.land, 2) + ')=-5(' + rT(s.land, 2) + ')^{2}+' + s.b + '(' + rT(s.land, 2) + ')+' + nT(s.c) + '\\approx ' + rT(-5 * Math.pow(rd(s.land, 2), 2) + s.b * rd(s.land, 2) + s.c, 2) + '\\approx 0') + ' ✓ (the other zero, ' + t(rT(s.neg, 2)) + ', is before contact).', [H_ZERO, 'Use the zero on the right: the one at a negative time is before the shuttlecock was hit.'], 'landing time ' + s.eq, { after: 's' });
+          { id: '3b', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, xs = [-3, -2, -1, 1, 2, 3], f = function (x) { return x * x + c; }, pts = xs.map(function (x) { return [x, f(x)]; });
+            var win = { x: [-4, 4], y: [-1, c + 10], labelsY: 2, xName: 'x', yName: 'f(x)' };
+            var check = function (resp) {
+              var v = Dr.norm(resp);
+              if (!v.pts.length) return form('empty', 'Plot the points from your table on the grid first.');
+              var on = function (q) { return same(q[1], f(q[0])); }, has = function (q) { return v.pts.some(function (z) { return same(z[0], q[0]) && same(z[1], q[1]); }); };
+              var off = v.pts.filter(function (q) { return !on(q); });
+              if (off.length) {
+                if (v.pts.every(function (q) { return same(q[0], f(q[1])); })) return wrong('graph-swap', 'You swapped the coordinates: in ' + t('(x,\\ f(x))') + ' go <b>across</b> to ' + t('x') + ' first, then <b>up</b> to ' + t('f(x)') + '.');
+                var q = off[0];
+                if (q[0] < 0 && same(q[1], -q[0] * q[0] + c)) return wrong('fn-neg-square', 'Check ' + t(pT(q)) + ': ' + t('(' + nT(q[0]) + ')^{2}=' + q[0] * q[0]) + ' — squaring a negative gives a positive, so ' + t('f(' + nT(q[0]) + ')=' + f(q[0])) + '.');
+                if (same(q[1], 2 * q[0] + c)) return wrong('fn-square-2x', 'Check ' + t(pT(q)) + ': ' + t('x^{2}') + ' means ' + t('x\\times x') + ', not ' + t('2\\times x') + '.');
+                return wrong('graph-points', t(pT(q)) + ' is not on the graph: ' + t('f(' + nT(q[0]) + ')=' + sgp(q[0]) + '^{2}' + sg(c) + '=' + f(q[0])) + '. Plot the pairs from your table.');
+              }
+              var miss = pts.filter(function (q) { return !has(q); });
+              if (miss.length) return wrong('graph-missing', 'Those points are right — now plot every pair from your table: ' + (miss.length === 1 ? t(pT(miss[0])) + ' is missing.' : miss.length + ' of them are missing.'));
+              if (v.join === 'none') return wrong('graph-not-joined', 'Your points are right — now press <b>Join</b>: the domain is ' + t('x\\in\\mathbb{R}') + ', so every value in between is an input too and the graph is a smooth curve.');
+              return ok();
+            };
+            var key = joined(pts), p = B.graph('Plot the ordered pairs ' + t('(x,\\ f(x))') + ' for ' + t('x=3,\\ 2,\\ 1,\\ -1,\\ -2,\\ -3') + ', then draw a smooth curve through them (press <b>Join</b>) to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. You may plot more points of the graph if you like.', padIn(win), check, key,
+              'The points ' + t(ptsTex(pts)) + ' are symmetric about the ' + t('y') + '-axis (' + t('f(-x)=f(x)') + '). The domain is all real numbers, so they are joined by a smooth curve: a U-shaped parabola whose lowest point (vertex) is ' + t('(0,\\ ' + c + ')') + ' — you may plot that point too.',
+              ['Use your table: each column gives one point ' + t('(x,\\ f(x))') + '.', 'With domain ' + t('x\\in\\mathbb{R}') + ' the graph is a smooth curve, not separate dots.'], 'smooth curve x^2' + sg(c));
+            p.good = [joined(pts.concat([[0, c]]))];
+            p.bad = [dv(pts), joined(xs.map(function (x) { return [x, x * Math.abs(x) + c]; }).filter(function (q) { return q[1] >= -1; })), joined(pts.slice(1)), joined(xs.map(function (x) { return [x, 2 * x + c]; }))];
+            return p;
           } }] },
-
-      /* ---------- Q4 charity ---------- */
-      { num: '4', shared: charity,
-        stem: function (s) { return 'A charity is planning a benefit dinner-dance. Tickets sell for ' + t(money(s.p)) + ' each and the expenses total ' + t(money(s.E)) + ', so the profit is ' + t(s.eq) + ', where ' + t('P') + ' is the profit in dollars and ' + t('n') + ' is the number of tickets sold. The venue holds at most ' + t(s.cap) + ' guests.'; },
+      /* ---------- Q4: constant function ---------- */
+      { num: '4', stem: function (sh) { return 'The function ' + t('h(x)=' + sh.k) + ' has domain ' + t(setTex(sh.D)) + '.'; },
+        shared: function (r) { return { k: r.int(3, 10), D: r.pick([[0, 5, 15], [0, 5, 15], [0, 4, 12], [0, 6, 12], [0, 5, 10], [2, 6, 14], [0, 3, 15]]) }; },
         parts: [
-          { id: '4a', sub: 'a', level: 'EMG', make: function (r, s) {
-            var key = winKey([0, s.cap], [-s.E, s.top]); key[1] = s.cap;
-            return winPart({ prompt: 'Graph the relation on a graphing calculator. Enter a window that shows the profit for every possible number of tickets, from ' + t('0') + ' up to a full venue.',
-              x: [0, s.cap], y: [-s.E, s.top], xv: 'n', yv: 'P', xNeg: 'counts tickets', yNonneg: false, need: 'the profits from ' + t('n=0') + ' (a loss of ' + t(money(s.E)) + ') to a full venue, ' + t('n=' + s.cap),
-              xHi: 'the larger ticket sales', xHiHow: 'The venue holds ' + t(s.cap) + ' guests, so ' + cd('Xmax') + ' must reach ' + t(s.cap) + '.',
-              yHi: 'the biggest profits', yHiHow: 'Trace to ' + t('n=' + s.cap) + ' for the greatest profit and set ' + cd('Ymax') + ' at or above it.', yLo: 'the losses: with few tickets sold the profit is negative, down to ' + t(money(-s.E)) + ' at ' + t('n=0'),
-              key: key, good: s.p === 10 && s.E === 650 && s.cap === 300 ? [[0, 300, -700, 2400]] : [[0, s.cap, -s.E, s.top]], bad: [[-10, 10, -10, 10], [0, s.cap, 0, s.top + 100], [0, s.cap / 2, -s.E - 50, s.top + 50]],
-              sol: 'Tickets can’t be negative: ' + cd('Xmin') + ' = 0, and the venue caps sales at ' + cd('Xmax') + ' = ' + t(s.cap) + '. At ' + t('n=0') + ' the profit is ' + t(money(-s.E)) + ' (a loss), and at ' + t('n=' + s.cap) + ' it is ' + t(s.p + '(' + s.cap + ')-' + s.E + '=' + s.top) + '. So ' + cd('Ymin') + ' at most ' + t(-s.E) + ' and ' + cd('Ymax') + ' at least ' + t(F(s.top)) + '.' + screen([key[0], key[1], key[2], key[3]], { xv: 'n', yv: 'P', fns: [{ f: function (x) { return s.p * x - s.E; }, from: 0, to: s.cap }] }),
-              text: 'window for ' + s.eq });
+          { id: '4a', level: 'EMG', make: function (r, sh) {
+            var k = sh.k, D = sh.D, pts = D.map(function (x) { return [x, k]; });
+            var p = B.pairs('List the ordered pairs of the graph of the function.', pts, {},
+              'Every input gives the same output ' + t(k) + ': ' + D.map(function (x) { return t('h(' + x + ')=' + k); }).join(', ') + '. The ordered pairs are ' + t(ptsTex(pts)) + '.',
+              ['There is no ' + t('x') + ' in the formula, so nothing changes with the input: the output is always ' + t(k) + '.', 'Write one pair (input, output) for each element of the domain.'], 'pairs of h(x)=' + k);
+            var base = p.check, tim = K.pairs(D.map(function (x) { return [x, k * x]; })), idc = K.pairs(D.map(function (x) { return [x, x]; })), zer = K.pairs(D.map(function (x) { return [x, 0]; }));
+            p.check = function (resp) {
+              var res = base(resp); if (res.v !== 'wrong') return res;
+              if (tim(resp).v === 'correct') return wrong('fn-times', t('h(x)=' + k) + ' doesn’t mean ' + t(k) + ' times ' + t('x') + ': it says the output is ' + t(k) + ' whatever the input is.');
+              if (idc(resp).v === 'correct') return wrong('pairs-identity', 'The second number of each pair is the <b>output</b> ' + t('h(x)') + ', and here ' + t('h(x)=' + k) + ' for every input.');
+              if (zer(resp).v === 'correct') return wrong('fn-const-zero', 'There is no ' + t('x') + ' to substitute into, but the output is not ' + t('0') + ': the formula says ' + t('h(x)=' + k) + '.');
+              return res;
+            };
+            p.bad = ['\\{' + D.map(function (x) { return '(' + x + ', ' + k * x + ')'; }).join(', ') + '\\}', '\\{' + D.map(function (x) { return '(' + x + ', ' + x + ')'; }).join(', ') + '\\}', '\\{' + D.map(function (x) { return '(' + k + ', ' + x + ')'; }).join(', ') + '\\}'];
+            return p;
           } },
-          { id: '4b', sub: 'b', level: 'EMG', make: function (r, s) {
-            return numPart('How many tickets need to be sold to break even?', s.k, 2, [
-              { v: -s.k, code: 'int-sign', hint: 'A number of tickets can’t be negative: ' + t('0=' + s.p + 'n-' + s.E) + ' gives ' + t(s.p + 'n=' + s.E) + '.' },
-              { v: s.E, code: 'ctx-gave-cost', hint: t(money(s.E)) + ' is the expenses. Break even means ' + t('P=0') + ': how many ' + t(money(s.p)) + ' tickets cover the expenses?' },
-              { v: -s.E, code: 'int-gave-y', hint: t(-s.E) + ' is the ' + t('P') + '-intercept (the profit if no tickets are sold). Break even is where ' + t('P=0') + '.' }],
-              'Break even means ' + t('P=0') + ' (' + cd('2:zero') + '): ' + t('0=' + s.p + 'n-' + s.E + '\\Rightarrow ' + s.p + 'n=' + s.E + '\\Rightarrow n=' + s.k) + ' tickets.', ['Break even means no profit and no loss: ' + t('P=0') + '.', H_ZERO], 'break even ' + s.eq, { after: 'tickets' });
-          } },
-          { id: '4c', sub: 'c', level: 'EMG', make: function (r, s) {
-            return numPart('How many tickets need to be sold to earn a ' + t(money(s.Pt)) + ' profit?', s.n3, 2, [
-              { v: s.Pt / s.p, code: 'ctx-no-sub', hint: 'The tickets must also pay the ' + t(money(s.E)) + ' expenses: ' + t(s.Pt + '=' + s.p + 'n-' + s.E) + '.' },
-              { v: (s.Pt - s.E) / s.p, code: 'ctx-added', hint: 'Add ' + t(s.E) + ' to both sides (don’t subtract it): ' + t(s.p + 'n=' + s.Pt + '+' + s.E) + '.' },
-              { v: s.p * s.Pt - s.E, code: 'ctx-eval', hint: t(money(s.Pt)) + ' is a <b>profit</b> (the output). Set ' + t(s.p + 'n-' + s.E + '=' + s.Pt) + ' and solve for ' + t('n') + '.' }],
-              'Calculator: ' + t(s.y1) + ', ' + t('Y_2=' + s.Pt) + ', ' + cd('5:intersect') + ' gives ' + t('(' + s.n3 + ',\\ ' + s.Pt + ')') + '.<br>Check: ' + t(s.Pt + '=' + s.p + 'n-' + s.E + '\\Rightarrow ' + s.p + 'n=' + (s.Pt + s.E) + '\\Rightarrow n=' + s.n3) + ' tickets.', [H_INT], 'tickets for profit ' + s.Pt, { after: 'tickets' });
-          } },
-          { id: '4d', sub: 'd', level: 'BEG', make: function (r, s) {
-            return numPart('What profit is earned if ' + t(s.N4) + ' tickets are sold?', s.P4, 2, [
-              { v: s.p * s.N4, code: 'ctx-revenue', hint: 'That is the ticket money (revenue). Profit is what’s left after the ' + t(money(s.E)) + ' expenses.' },
-              { v: s.p * s.N4 + s.E, code: 'ctx-added', hint: 'Expenses are <b>subtracted</b>: ' + t('P=' + s.p + '(' + s.N4 + ')-' + s.E) + '.' }],
-              kb('TRACE') + ' to ' + t('X=' + s.N4) + ': ' + t('P=' + s.p + '(' + s.N4 + ')-' + s.E + '=' + (s.p * s.N4) + '-' + s.E + '=' + money(s.P4)) + '.', [H_TRACE], 'profit for ' + s.N4 + ' tickets', { money: true });
-          } },
-          { id: '4e1', sub: 'e-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('n', 0, s.cap, 'W');
-            return setPart('State the domain of this relation. (Tickets are counted in whole numbers.)', tg, { v: 'n', wrong: [
-              { is: '[0, ' + s.cap + ']', code: 'ctx-not-whole', hint: 'Tickets come in whole numbers, so ' + t('n') + ' can’t be ' + t('12.5') + '. Finish the set notation with ' + t('n\\in W') + ', e.g. ' + t('\\{n\\mid 0\\le n\\le\\ldots,\\ n\\in W\\}') + '.' },
-              { is: setT('n', s.k, s.cap, 'W'), code: 'ctx-dom-breakeven', hint: 'Selling fewer than ' + t(s.k) + ' tickets is possible — it just gives a loss. The domain starts at ' + t('0') + ' tickets.' },
-              { is: '[' + s.k + ', ' + s.cap + ']', code: 'ctx-dom-breakeven', hint: 'Selling fewer than ' + t(s.k) + ' tickets is possible — it just gives a loss. Also, tickets are whole numbers: use ' + t('n\\in W') + '.' }] },
-              t('n') + ' counts tickets, so it is a whole number from ' + t('0') + ' up to the venue’s ' + t(s.cap) + ': ' + t('D=' + tg) + '.', ['What is the fewest tickets that could be sold? The most?', 'Tickets are whole numbers: end with ' + t('n\\in W') + '.'], 'domain charity n≤' + s.cap);
-          } },
-          { id: '4e2', sub: 'e-ii', level: 'EMG', outcome: 'RF2', make: function (r, s) {
-            var lo = -s.E, hi = s.top;
-            return mc(r, 'Which is the range of this relation?', [
-              { html: t('\\{' + lo + ',\\ ' + (lo + s.p) + ',\\ ' + (lo + 2 * s.p) + ',\\ \\ldots,\\ ' + F(hi) + '\\}'), right: true },
-              { html: t('\\{P\\mid ' + lo + '\\le P\\le ' + F(hi) + ',\\ P\\in\\mathbb{R}\\}'), why: 'The profit changes ' + t(money(s.p)) + ' at a time (one ticket at a time), so values in between, like ' + t(lo + 1) + ', can’t happen. List the values.' },
-              { html: t('\\{0,\\ ' + s.p + ',\\ ' + (2 * s.p) + ',\\ \\ldots,\\ ' + F(s.p * s.cap) + '\\}'), why: 'That is the ticket money, ' + t(s.p + 'n') + '. The profit also subtracts the ' + t(money(s.E)) + ' expenses.' },
-              { html: t('\\{P\\mid 0\\le P\\le ' + F(hi) + ',\\ P\\in\\mathbb{R}\\}'), why: 'With fewer than ' + t(s.k) + ' tickets sold the profit is negative (a loss), and that can happen. Also the profit only changes in steps of ' + t(money(s.p)) + '.' }],
-              'Each ticket adds exactly ' + t(money(s.p)) + ', so ' + t('P') + ' climbs in steps of ' + t(s.p) + ' from ' + t(s.p + '(0)-' + s.E + '=' + lo) + ' to ' + t(s.p + '(' + s.cap + ')-' + s.E + '=' + F(hi)) + ': ' + t('R=\\{' + lo + ',\\ ' + (lo + s.p) + ',\\ \\ldots,\\ ' + F(hi) + '\\}') + '.', ['Find the profit for the fewest and the most tickets. Can the profit take values in between those steps?'], 'range charity');
+          { id: '4b', level: 'EMG', make: function (r, sh) {
+            var k = sh.k, D = sh.D, pts = D.map(function (x) { return [x, k]; });
+            var win = { x: [0, 15], y: [0, 15], labels: 5, unitX: 20, unitY: 20, firstQuadrant: true, xName: 'x', yName: 'h(x)' };
+            return plotPart('Graph the function ' + t('h') + '.', win, pts, [
+              [D.map(function (x) { return [x, 0]; }), 'fn-const-zero', 'The output is ' + t('h(x)=' + k) + ' for every input, not ' + t('0') + '.']],
+              'Each input gives the output ' + t(k) + ', so the graph is the three points ' + t(ptsTex(pts)) + ', all at the height ' + t(k) + ' (on the horizontal line ' + t('y=' + k) + '). The domain has only three values, so the points are not joined. A function like this is called a <b>constant function</b>.',
+              ['Plot ' + t('(x,\\ h(x))') + ' for each input in the domain — your ordered pairs from part (a).', 'There is no ' + t('x') + ' in the formula: every output is ' + t(k) + '.'], 'graph constant function h(x)=' + k);
           } }] },
-
-      /* ---------- Q5 soccer ---------- */
-      { num: '5', shared: soccer,
-        stem: function (s) { return 'A soccer player takes a shot on goal. The height of the ball above the field is modelled by ' + t(s.eq) + ', where ' + t('h') + ' is the height in metres and ' + t('d') + ' is the horizontal distance in metres the ball has travelled.'; },
+      /* ---------- Q5: vocabulary ---------- */
+      { num: '5', stem: function (sh) { return 'Each statement below refers to a function ' + t(sh.n) + ' whose graph has equation ' + t('y=' + sh.n + '(x)') + '.'; },
+        shared: function (r) { return { n: r.pick(['h', 'h', 'f', 'g']) }; },
         parts: [
-          { id: '5a', sub: 'a', level: 'EMG', make: function (r, s) {
-            var key = winKey([0, s.L], [0, s.hm]);
-            return winPart({ prompt: 'Graph the relation on a graphing calculator. Enter a window that shows the whole shot, from the kick until the ball comes back down to the field.',
-              x: [0, s.L], y: [0, s.hm], xv: 'd', yv: 'h', xNeg: 'is the distance the ball has travelled', yNonneg: true, need: 'the whole shot, from the kick to where the ball comes down, including its highest point',
-              xHi: 'where the ball comes back down', xHiHow: 'Find the other ' + t('d') + '-intercept (' + cd('2:zero') + ') and set ' + cd('Xmax') + ' at or past it.',
-              yHi: 'the top of the shot', yHiHow: 'Find the greatest height with ' + cd('4:maximum') + '.', yLo: 'the field (' + t('h=0') + ')',
-              key: key, good: s.k === 0.04 && s.L === 36 ? [[0, 40, 0, 15]] : [[0, s.L, 0, Math.ceil(s.hm)]], bad: [[-10, 10, -10, 10], [0, s.L / 2, 0, s.hm + 1], [0, s.L + 2, 0, s.hm / 2]],
-              sol: 'The ball is kicked at ' + t('d=0') + ' and lands at the other zero, ' + t('d=' + s.L) + '; ' + cd('4:maximum') + ' gives the top, ' + t('h=' + nT(s.hm)) + ' m. So ' + cd('Xmin') + ' = 0, ' + cd('Xmax') + ' at least ' + t(s.L) + ', ' + cd('Ymin') + ' = 0 and ' + cd('Ymax') + ' a little more than ' + t(nT(s.hm)) + '.' + screen(key, { xv: 'd', yv: 'h', fns: [{ f: s.h, from: 0, to: s.L }], points: [{ x: s.dv, y: s.hm }] }),
-              text: 'window for ' + s.eq });
+          { id: '5a', level: 'LIM', make: function (r, sh) {
+            var n = sh.n, val = r.chance(0.5); // ask about h (name) or h(x) (value)
+            if (val) return mc2(r, t(n + '(x)') + ' is the ________ of the function at the input ' + t('x') + '.', [{ html: '<b>name</b>', why: 'The name is just the letter ' + t(n) + '. ' + t(n + '(x)') + ' has an input in its brackets: it is what comes out of ' + t(n) + ' for that input.' }, { html: '<b>value</b>', right: true }],
+              t(n + '(x)') + ' is the <b>value</b> (output) of the function at the input ' + t('x') + '. The letter ' + t(n) + ' on its own is the function’s name.', ['Compare ' + t(n) + ' with ' + t(n + '(x)') + '. Which one has an input?'], 'h(x) is the value');
+            return mc2(r, t(n) + ' is the ________ of the function.', [{ html: '<b>name</b>', right: true }, { html: '<b>value</b>', why: 'A value (output) of the function is written ' + t(n + '(x)') + ' or ' + t(n + '(3)') + '. The letter ' + t(n) + ' on its own is just the function’s name.' }],
+              t(n) + ' is the <b>name</b> of the function. Its value at the input ' + t('x') + ' is written ' + t(n + '(x)') + '.', ['Compare ' + t(n) + ' with ' + t(n + '(x)') + '. Which one has an input?'], 'h is the name');
           } },
-          { id: '5b', sub: 'b', level: 'LIM', make: function (r, s) {
-            return numPart('What is the height from which the ball is kicked?', 0, 2, [{ v: s.L, code: 'ctx-coef', hint: 'Substitute ' + t('d=0') + ' (the kick): both terms in the bracket become ' + t('0') + '.' }, { v: s.k, code: 'ctx-coef', hint: 'Substitute ' + t('d=0') + ' (the kick) into the whole formula.' }],
-              'At the kick ' + t('d=0') + ': ' + t('h=' + nT(s.k) + '(-(0)^{2}+' + s.L + '(0))=0') + ' m — the ball is kicked from the ground.', ['The kick happens at ' + t('d=0') + '.'], 'kick height ' + s.eq, { after: 'm' });
+          { id: '5b', level: 'LIM', make: function (r, sh) {
+            var n = sh.n, rows = r.shuffle([{ id: 'x', html: 'The values of ' + t('x') }, { id: 'fx', html: 'The values of ' + t(n + '(x)') }, { id: 'y', html: 'The values of ' + t('y') }]);
+            var why = { x: t('x') + ' is what you substitute into the function, so it is the input.', fx: t(n + '(x)') + ' is what comes out of the function for the input ' + t('x') + ', so it is the output.', y: 'On the graph ' + t('y=' + n + '(x)') + ', ' + t('y') + ' stands for ' + t(n + '(x)') + ', so it is the output.' };
+            var p = B.grid('Do the values in each row represent the <b>inputs</b> or the <b>outputs</b> of the function?', rows, [{ id: 'in', html: 'inputs' }, { id: 'out', html: 'outputs' }], { x: 'in', fx: 'out', y: 'out' },
+              { tries: 2, why: function (row) { return why[row]; } }, why.x + '<br>' + why.fx + '<br>' + why.y, ['Think of the function as a machine: ' + t('x') + ' goes in, ' + t(n + '(x)') + ' comes out.'], 'inputs/outputs x, h(x), y');
+            return p;
           } },
-          { id: '5c', sub: 'c', level: 'EMG', make: function (r, s) {
-            return numPart('What is the maximum height the ball reaches?', s.hm, 2, [
-              { v: s.dv, code: 'ctx-max-time', hint: t(s.dv) + ' m is <b>where</b> the maximum happens (the ' + t('d') + '-coordinate). The height is the other coordinate.' },
-              { v: s.dv * s.dv, code: 'ctx-no-k', hint: 'Multiply by the ' + t(nT(s.k)) + ' in front of the bracket too.' }],
-              t(s.y1) + ', ' + cd('4:maximum') + ' gives ' + t('(' + s.dv + ',\\ ' + nT(s.hm) + ')') + '.<br>Check: ' + t('h=' + nT(s.k) + '(-' + s.dv + '^{2}+' + s.L + '(' + s.dv + '))=' + nT(s.k) + '(' + (s.dv * s.dv) + ')=' + nT(s.hm)) + ' m.', [H_MAX], 'max height ' + s.eq, { after: 'm' });
-          } },
-          { id: '5d', sub: 'd', level: 'BEG', make: function (r, s) {
-            return numPart('At what horizontal distance does the ball reach its maximum height?', s.dv, 2, [
-              { v: s.hm, code: 'ctx-gave-h', hint: t(nT(s.hm)) + ' m is the greatest <b>height</b>. The question asks for the horizontal distance, the ' + t('d') + '-coordinate of the vertex.' },
-              { v: s.L, code: 'ctx-gave-end', hint: 'At ' + t('d=' + s.L) + ' the ball is back on the ground. The top is halfway between the two ' + t('d') + '-intercepts.' }],
-              'The ' + t('d') + '-coordinate of the vertex: ' + t('d=' + s.dv) + ' m (halfway between the zeros ' + t('0') + ' and ' + t(s.L) + ').', [H_MAX], 'distance of max ' + s.eq, { after: 'm' });
-          } },
-          { id: '5e', sub: 'e', level: 'BEG', make: function (r, s) {
-            return numPart('A defender heads the ball after it has travelled ' + t(s.d1) + ' m. What is the height of the ball at that point?', s.h1, 2, [
-              { v: s.k * (s.d1 * s.d1 + s.L * s.d1), code: 'ctx-sign-sq', hint: 'Keep the minus sign: ' + t('-(' + s.d1 + ')^{2}=-' + s.d1 * s.d1) + '.' },
-              { v: -s.d1 * s.d1 + s.L * s.d1, code: 'ctx-no-k', hint: 'Multiply the bracket by ' + t(nT(s.k)) + '.' }],
-              kb('TRACE') + ' to ' + t('X=' + s.d1) + ': ' + t('h=' + nT(s.k) + '(-(' + s.d1 + ')^{2}+' + s.L + '(' + s.d1 + '))=' + nT(s.k) + '(' + (-s.d1 * s.d1) + '+' + (s.L * s.d1) + ')=' + nT(s.k) + '(' + (s.L * s.d1 - s.d1 * s.d1) + ')=' + nT(s.h1)) + ' m.', [H_TRACE], 'height at d=' + s.d1, { after: 'm' });
-          } },
-          { id: '5f', sub: 'f', level: 'BEG', make: function (r, s) {
-            return numPart('How high is the ball when it has travelled ' + t(s.d2) + ' m?', s.h2, 2, [
-              { v: s.k * (s.d2 * s.d2 + s.L * s.d2), code: 'ctx-sign-sq', hint: 'Keep the minus sign: ' + t('-(' + s.d2 + ')^{2}=-' + s.d2 * s.d2) + '.' },
-              { v: -s.d2 * s.d2 + s.L * s.d2, code: 'ctx-no-k', hint: 'Multiply the bracket by ' + t(nT(s.k)) + '.' }],
-              t('h=' + nT(s.k) + '(-(' + s.d2 + ')^{2}+' + s.L + '(' + s.d2 + '))=' + nT(s.k) + '(' + (-s.d2 * s.d2) + '+' + (s.L * s.d2) + ')=' + nT(s.k) + '(' + (s.L * s.d2 - s.d2 * s.d2) + ')=' + nT(s.h2)) + ' m (or ' + kb('TRACE') + ' to ' + t('X=' + s.d2) + ').', [H_TRACE], 'height at d=' + s.d2, { after: 'm' });
-          } },
-          { id: '5g1', sub: 'g-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('d', 0, s.L), rg = setT('h', 0, s.hm);
-            return setPart('State the domain of this relation.', tg, { v: 'd', other: rg, otherName: 'range', wrong: [
-              { is: setT('d', 0, s.dv), code: 'ctx-dom-vertex', hint: 'The shot doesn’t stop at its highest point — the ball comes back down to the field. Where is ' + t('h=0') + ' again?' },
-              { is: 'd\\ge 0', code: 'ctx-dom-open', hint: 'The relation only describes the ball while it is in the air: it stops where the ball comes back down (' + t('h=0') + ').' },
-              { is: 'd\\in\\mathbb{R}', code: 'ctx-dom-open', hint: 'Negative distances and distances after the ball lands don’t fit the situation. Start at the kick and stop at the landing.' }] },
-              'The ball returns to the field when ' + t('h=0') + ': ' + t('d(-' + nT(s.k) + 'd+' + nT(s.k * s.L) + ')=0') + ', so ' + t('d=0') + ' or ' + t('d=' + s.L) + ' (' + cd('2:zero') + '). The shot spans ' + t(s.L) + ' m: ' + t('D=' + tg) + '.', H_DOM, 'domain ' + s.eq);
-          } },
-          { id: '5g2', sub: 'g-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('h', 0, s.hm), dg = setT('d', 0, s.L);
-            return setPart('State the range of this relation.', tg, { v: 'h', other: dg, otherName: 'domain', wrong: [
-              { is: setT('h', 0, s.dv), code: 'ctx-rng-vertex-x', hint: t(s.dv) + ' is the <b>distance</b> of the highest point. The range is about heights: up to the greatest height.' },
-              { is: 'h\\ge 0', code: 'ctx-rng-open', hint: 'The ball doesn’t go up forever: the greatest height is at the vertex.' },
-              { is: 'h\\le ' + pT(s.hm), code: 'ctx-rng-open', hint: 'The ball never goes below the field, so the least height is ' + t('0') + '.' }] },
-              'The heights run from ' + t('0') + ' (on the field) up to the vertex height ' + t(nT(s.hm)) + ' m: ' + t('R=' + tg) + '.', H_DOM, 'range ' + s.eq);
+          { id: '5c', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+            var n = sh.n, rows = r.shuffle([{ id: 'x', html: t('x') }, { id: 'fx', html: t(n + '(x)') }, { id: 'y', html: t('y') }]);
+            var why = { x: t('x') + ' can be chosen freely, so it is the independent variable.', fx: t(n + '(x)') + ' depends on the value of ' + t('x') + ' you chose, so it is the dependent variable.', y: t('y') + ' stands for ' + t(n + '(x)') + ', so it is the dependent variable.' };
+            return B.grid('Which variable of the function does each represent: the <b>independent</b> or the <b>dependent</b> variable?', rows, [{ id: 'ind', html: 'independent' }, { id: 'dep', html: 'dependent' }], { x: 'ind', fx: 'dep', y: 'dep' },
+              { tries: 2, why: function (row) { return why[row]; } }, why.x + '<br>' + why.fx + '<br>' + why.y, ['The independent variable is the input you choose; the dependent variable is the output that results.'], 'independent/dependent x, h(x), y');
           } }] },
-
-      /* ---------- Q6–8 diploma style ---------- */
-      { num: '6', section: 'Diploma-style questions', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '6', level: 'PRG', outcome: 'RF2', make: function (r) {
-          var o = pickWhere(function () { return [r.pick([8000, 9000, 10000, 12000, 15000, 18000]), r.pick([1000, 1200, 1500, 2000, 2500, 3000])]; }, function (o) { var y = o[0] / o[1]; return isDp(y, 0) && y >= 4 && y <= 12; });
-          var V0 = o[0], R = o[1], Y = V0 / R;
-          return mc(r, 'The value of a snowmobile is modelled by ' + t('V=' + F(V0) + '-' + F(R) + 't') + ', where ' + t('V') + ' is the value in dollars and ' + t('t') + ' is its age in years. The most appropriate domain is', [
-            { html: t('\\{t\\mid t\\in\\mathbb{R}\\}'), why: 'Negative ages, and ages after the value reaches ' + t('\\$0') + ', don’t make sense here.' },
-            { html: t('\\{t\\mid 0\\le t\\le ' + Y + ',\\ t\\in\\mathbb{R}\\}'), right: true },
-            { html: t('\\{t\\mid 0\\le t\\le ' + F(V0) + ',\\ t\\in\\mathbb{R}\\}'), why: t(F(V0)) + ' is the starting <b>value</b> in dollars — that belongs to the range, not to the age.' },
-            { html: t('\\{t\\mid t\\ge 0,\\ t\\in W\\}'), why: 'Age can be any number of years (like ' + t('2.5') + '), not just whole years — and after ' + t(Y) + ' years the formula gives a negative value.' }],
-            'The value reaches ' + t('0') + ' when ' + t(F(R) + 't=' + F(V0)) + ', so ' + t('t=' + Y) + '. The age can be any value from ' + t('0') + ' to ' + t(Y) + ' years: ' + t('\\{t\\mid 0\\le t\\le ' + Y + ',\\ t\\in\\mathbb{R}\\}') + '.', ['When is the snowmobile worth ' + t('\\$0') + '? Can the age be a decimal?'], 'snowmobile domain');
+      /* ---------- Q6: evaluate a linear function ---------- */
+      { num: '6', section: 'Evaluating functions', stem: function (sh) { return 'If ' + t('f(x)=' + sh.ftex) + ', determine:'; },
+        shared: function (r) { var m = r.int(2, 9), b = -r.int(2, 12); return { m: m, b: b, ftex: lin([[m, 'x'], [b, '']]) }; },
+        parts: [
+          { id: '6a', level: 'BEG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, a = r.int(2, 6), ans = m * a + b;
+            return numPart(t('f(' + a + ')'), ans, [
+              [m * a - b, 'fn-const-sign', 'Check the sign of the constant: ' + t(m + '(' + a + ')' + sg(b)) + '.'],
+              [10 * m + a + b, 'fn-concat', 'Careful: ' + t(m + 'x') + ' means ' + t(m + '\\times x') + '. With ' + t('x=' + a) + ' it becomes ' + t(m + '(' + a + ')=' + m * a) + ', not ' + t(10 * m + a) + '.'],
+              [m + a + b, 'fn-add-coef', t(m + 'x') + ' means ' + t(m) + ' <b>times</b> ' + t('x') + ': multiply, don’t add.'],
+              [(a - b) / m, 'fn-solved', 'That solves ' + t('f(x)=' + a) + '. Here ' + t(a) + ' is the <b>input</b>: substitute it for ' + t('x') + '.']],
+              t('f(' + a + ')=' + m + '(' + a + ')' + sg(b) + '=' + m * a + sg(b) + '=' + ans), HE, 'f(' + a + ') for ' + sh.ftex);
+          } },
+          { id: '6b', level: 'BEG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, a = -r.int(1, 5), ans = m * a + b;
+            return numPart(t('f(' + a + ')'), ans, [
+              [-m * a + b, 'fn-neg-sub', t(m + '(' + a + ')=' + m * a) + ': a positive times a negative is negative.'],
+              [m * a - b, 'fn-const-sign', 'Keep the constant as it is: ' + t(m + '(' + a + ')' + sg(b)) + '.'],
+              [m + a + b, 'fn-concat', 'Put the input in brackets: ' + t(m + 'x') + ' becomes ' + t(m + '(' + a + ')') + ', which means multiply.'],
+              [(a - b) / m, 'fn-solved', 'That solves ' + t('f(x)=' + a) + '. Here ' + t(a) + ' is the <b>input</b>: substitute it for ' + t('x') + '.']],
+              t('f(' + a + ')=' + m + '(' + a + ')' + sg(b) + '=' + m * a + sg(b) + '=' + ans), HN, 'f(' + a + ') for ' + sh.ftex);
+          } },
+          { id: '6c', level: 'LIM', make: function (r, sh) {
+            var m = sh.m, b = sh.b;
+            return numPart(t('f(0)'), b, [
+              [m + b, 'fn-zero-coef', t(m + '(0)=0') + ', not ' + t(m) + '. Anything times zero is zero.'],
+              [0, 'fn-zero-all', t(m + '(0)=0') + ', but the constant ' + t(sg(b)) + ' is still there.'],
+              [10 * m + b, 'fn-concat', 'Careful: ' + t(m + 'x') + ' with ' + t('x=0') + ' is ' + t(m + '\\times 0') + ', not ' + t(10 * m) + '.'],
+              [-b, 'fn-const-sign', 'Check the sign of the constant.']],
+              t('f(0)=' + m + '(0)' + sg(b) + '=0' + sg(b) + '=' + b), HE, 'f(0) for ' + sh.ftex);
+          } }] },
+      /* ---------- Q7: g(x) = c - x^2 ---------- */
+      { num: '7', stem: function (sh) { return 'Function ' + t('g') + ' is defined by ' + t('g(x)=' + sh.c + '-x^{2}') + '. Evaluate:'; },
+        shared: function (r) { return { c: r.int(5, 12) }; },
+        parts: [
+          { id: '7a', level: 'BEG', make: function (r, sh) {
+            var c = sh.c, a = r.pick([2, 3, 3, 4]), ans = c - a * a;
+            return numPart(t('g(' + a + ')'), ans, [
+              [c - 2 * a, 'fn-square-2x', t(a + '^{2}=' + a + '\\times ' + a + '=' + a * a) + ', not ' + t(2 * a) + '.'],
+              [c + a * a, 'fn-sign', 'The formula <b>subtracts</b> the square: ' + t(c + '-' + a * a) + '.'],
+              [(c - a) * (c - a), 'fn-order', 'Square first, then subtract: ' + t(c + '-(' + a + ')^{2}=' + c + '-' + a * a) + '.'],
+              [a * a - c, 'fn-sign', 'Check the order of the subtraction: ' + t(c + '-' + a * a) + '.']],
+              t('g(' + a + ')=' + c + '-(' + a + ')^{2}=' + c + '-' + a * a + '=' + ans), HE, 'g(' + a + ') for ' + c + '-x^2');
+          } },
+          { id: '7b', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, a = -r.int(3, 6), ans = c - a * a;
+            return numPart(t('g(' + a + ')'), ans, [
+              [c + a * a, 'fn-minus-square', t('-x^{2}') + ' means “square, then subtract”: ' + t('(' + a + ')^{2}=' + a * a) + ', so ' + t('g(' + a + ')=' + c + '-' + a * a) + '. The minus sign is not part of the square.'],
+              [c + 2 * a, 'fn-square-2x', 'Squaring means multiplying the number by itself: ' + t('(' + a + ')^{2}=(' + a + ')(' + a + ')=' + a * a) + '.'],
+              [c - 2 * a, 'fn-square-2x', 'Squaring means multiplying the number by itself: ' + t('(' + a + ')^{2}=(' + a + ')(' + a + ')=' + a * a) + '.'],
+              [(c - a) * (c - a), 'fn-order', 'Square first, then subtract: ' + t(c + '-(' + a + ')^{2}') + '.']],
+              t('g(' + a + ')=' + c + '-(' + a + ')^{2}=' + c + '-' + a * a + '=' + ans), ['Put the negative input in brackets: ' + t('g(' + a + ')=' + c + '-(' + a + ')^{2}') + '.', 'Square first: ' + t('(' + a + ')^{2}') + ' is positive. Then subtract it from ' + t(c) + '.'], 'g(' + a + ') for ' + c + '-x^2');
+          } },
+          { id: '7c', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, k = r.pick([2, 2, 3, 5, 6, 7]), ans = c - k;
+            return numPart(t('g(\\sqrt{' + k + '})'), ans, [
+              [c - k * k, 'fn-rad-square', t('(\\sqrt{' + k + '})^{2}=\\sqrt{' + k + '}\\times\\sqrt{' + k + '}=' + k) + ': squaring undoes the square root.'],
+              [c + k, 'fn-sign', 'The formula subtracts the square: ' + t(c + '-(\\sqrt{' + k + '})^{2}') + '.'],
+              [c - 2 * k, 'fn-square-2x', t('(\\sqrt{' + k + '})^{2}=' + k) + ', not ' + t(2 * k) + '.']],
+              t('g(\\sqrt{' + k + '})=' + c + '-(\\sqrt{' + k + '})^{2}=' + c + '-' + k + '=' + ans), ['Substitute ' + t('\\sqrt{' + k + '}') + ' for ' + t('x') + ' in brackets.', 'What is ' + t('\\sqrt{' + k + '}\\times\\sqrt{' + k + '}') + '?'], 'g(sqrt' + k + ') for ' + c + '-x^2');
+          } }] },
+      /* ---------- Q8: x^3 + c, image and value ---------- */
+      { num: '8', stem: function (sh) { return 'A function ' + t('f') + ' is defined by the formula ' + t('f(x)=x^{3}' + sg(sh.c)) + '. Find:'; },
+        shared: function (r) { return { c: r.pick([-5, -4, -3, -2, -2, -1, 1, 2, 3, 4]) }; },
+        parts: [
+          { id: '8a', level: 'BEG', make: function (r, sh) {
+            var c = sh.c, a = r.pick([2, 3, 3, 4]), ans = a * a * a + c;
+            return numPart('the image of ' + t(a) + ' under ' + t('f'), ans, [
+              [3 * a + c, 'fn-cube-3x', t(a + '^{3}=' + a + '\\times ' + a + '\\times ' + a + '=' + a * a * a) + ', not ' + t('3\\times ' + a) + '.'],
+              [a * a + c, 'fn-cube-sq', 'That is ' + t(a + '^{2}') + '. Cube means three factors: ' + t(a + '\\times ' + a + '\\times ' + a) + '.'],
+              [a * a * a - c, 'fn-const-sign', 'Check the sign of the constant ' + t(sg(c)) + '.'],
+              [Math.cbrt(a - c), 'fn-solved', 'The <b>image</b> of ' + t(a) + ' is the output when the input is ' + t(a) + ': work out ' + t('f(' + a + ')') + '.']],
+              'The image of ' + t(a) + ' is ' + t('f(' + a + ')') + ':<br>' + t('f(' + a + ')=(' + a + ')^{3}' + sg(c) + '=' + a * a * a + sg(c) + '=' + ans),
+              ['“The image of ' + t(a) + ' under ' + t('f') + '” means the output ' + t('f(' + a + ')') + '.', 'Cube first, then add the constant.'], 'image of ' + a + ' under x^3' + sg(c));
+          } },
+          { id: '8b', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, a = -r.pick([2, 3, 4, 4]), ans = a * a * a + c;
+            return numPart('the value of ' + t('f') + ' at ' + t(a), ans, [
+              [-a * a * a + c, 'fn-cube-neg', t('(' + a + ')^{3}=(' + a + ')(' + a + ')(' + a + ')=' + a * a * a) + ': three negative factors give a negative answer.'],
+              [3 * a + c, 'fn-cube-3x', t('(' + a + ')^{3}') + ' means ' + t('(' + a + ')(' + a + ')(' + a + ')') + ', not ' + t('3(' + a + ')') + '.'],
+              [a * a * a - c, 'fn-const-sign', 'Check the sign of the constant ' + t(sg(c)) + '.'],
+              [a * a * a - Math.abs(c), 'fn-sign', 'Watch the signs when you add the constant: ' + t(a * a * a + sg(c)) + '.']],
+              t('f(' + a + ')=(' + a + ')^{3}' + sg(c) + '=' + a * a * a + sg(c) + '=' + ans), HN, 'f(' + a + ') for x^3' + sg(c));
+          } }] },
+      /* ---------- Q9: cubic polynomial ---------- */
+      { num: '9', stem: function (sh) { return 'If ' + t('f(x)=' + sh.ftex) + ', evaluate:'; },
+        shared: function (r) { var a = r.int(1, 4), b = -r.int(1, 4), d = r.int(1, 6); return { a: a, b: b, d: d, ftex: lin([[1, 'x^{3}'], [a, 'x^{2}'], [b, 'x'], [d, '']]) }; },
+        parts: [
+          { id: '9a', level: 'EMG', make: function (r, sh) {
+            var a = sh.a, b = sh.b, d = sh.d, x = r.pick([2, 2, 3]), f = function (v) { return v * v * v + a * v * v + b * v + d; }, ans = f(x);
+            var steps = '(' + x + ')^{3}' + term(a, '(' + x + ')^{2}') + term(b, '(' + x + ')') + sg(d), s2 = x * x * x + sg(a * x * x) + sg(b * x) + sg(d);
+            return numPart(t('f(' + x + ')'), ans, [
+              [x * x * x + a * x * x - b * x + d, 'fn-sign', 'Check the sign of the ' + t(term(b, 'x', true)) + ' term: ' + t(term(b, '(' + x + ')', true) + '=' + b * x) + '.'],
+              [x * x * x + a * a * x * x + b * x + d, 'fn-coef-power', 'Only the input is squared: ' + t(term(a, '(' + x + ')^{2}', true) + '=' + a + '(' + x * x + ')=' + a * x * x) + '.'],
+              [3 * x + 2 * a * x + b * x + d, 'fn-cube-3x', 'Powers mean repeated multiplication: ' + t(x + '^{3}=' + x * x * x) + ' and ' + t(x + '^{2}=' + x * x) + '.']],
+              t('f(' + x + ')=' + steps) + '<br>' + t('=' + s2 + '=' + ans), HE, 'f(' + x + ') for ' + sh.ftex);
+          } },
+          { id: '9b', level: 'PRG', make: function (r, sh) {
+            var a = sh.a, b = sh.b, d = sh.d, x = -r.pick([2, 3, 3]), f = function (v) { return v * v * v + a * v * v + b * v + d; }, ans = f(x);
+            var steps = '(' + x + ')^{3}' + term(a, '(' + x + ')^{2}') + term(b, '(' + x + ')') + sg(d), s2 = x * x * x + sg(a * x * x) + sg(b * x) + sg(d);
+            return numPart(t('f(' + x + ')'), ans, [
+              [-x * x * x + a * x * x + b * x + d, 'fn-cube-neg', t('(' + x + ')^{3}=' + x * x * x) + ': an odd power of a negative is negative.'],
+              [x * x * x - a * x * x + b * x + d, 'fn-neg-square', t('(' + x + ')^{2}=' + x * x) + ': an even power of a negative is positive.'],
+              [x * x * x + a * x * x - b * x + d, 'fn-neg-sub', 'Check the ' + t(term(b, 'x', true)) + ' term: ' + t(term(b, '(' + x + ')', true) + '=' + sg(b * x)) + ' — a negative times a negative is positive.'],
+              [x * x * x + a * a * x * x + b * x + d, 'fn-coef-power', 'Only the input is squared: ' + t(term(a, '(' + x + ')^{2}', true) + '=' + a + '(' + x * x + ')=' + a * x * x) + '.']],
+              t('f(' + x + ')=' + steps) + '<br>' + t('=' + s2 + '=' + ans), HN, 'f(' + x + ') for ' + sh.ftex);
+          } }] },
+      /* ---------- Q10: f(x) = c - mx, five ways ---------- */
+      { num: '10', stem: function (sh) { return 'Consider the function ' + t('f') + ' defined by ' + t('f(x)=' + sh.ftex + ',\\ x\\in\\mathbb{R}') + '. Determine:'; },
+        shared: function (r) { var c = r.int(8, 20), m = r.int(2, 5); return { c: c, m: m, ftex: c + '-' + m + 'x' }; },
+        parts: [
+          { id: '10a', level: 'BEG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, a = r.int(2, 5), ans = c - m * a;
+            return numPart(t('f(' + a + ')'), ans, [
+              [c + m * a, 'fn-sign', 'The formula subtracts: ' + t(c + '-' + m + '(' + a + ')') + '.'],
+              [(c - m) * a, 'fn-order', 'Multiply before you subtract: ' + t(c + '-' + m + '(' + a + ')=' + c + '-' + m * a) + '.'],
+              [m * a - c, 'fn-sign', 'Check the order: ' + t(c + '-' + m * a) + '.'],
+              [c - 10 * m - a, 'fn-concat', t(m + 'x') + ' with ' + t('x=' + a) + ' is ' + t(m + '\\times ' + a) + '.']],
+              t('f(' + a + ')=' + c + '-' + m + '(' + a + ')=' + c + '-' + m * a + '=' + ans), HE, 'f(' + a + ') for ' + sh.ftex);
+          } },
+          { id: '10b', level: 'BEG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, a = -r.int(2, 6), ans = c - m * a;
+            return numPart('the value of ' + t('f') + ' when ' + t('x=' + a), ans, [
+              [c + m * a, 'fn-neg-sub', t('-' + m + '(' + a + ')=+' + (-m * a)) + ': a negative times a negative is positive.'],
+              [(c - m) * a, 'fn-order', 'Multiply before you subtract: ' + t(c + '-' + m + '(' + a + ')') + '.'],
+              [m * a - c, 'fn-sign', 'Check the order of the subtraction: ' + t(c + '-' + m + '(' + a + ')') + '.']],
+              t('f(' + a + ')=' + c + '-' + m + '(' + a + ')=' + c + '+' + (-m * a) + '=' + ans), HN, 'f(' + a + ') for ' + sh.ftex);
+          } },
+          { id: '10c', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, a = r.pick([0.5, 1.5, 1.5, 2.5, 3.5]), ans = cl(c - m * a);
+            return numPart('the image of ' + t(a) + ' under ' + t('f'), ans, [
+              [c + m * a, 'fn-sign', 'The formula subtracts: ' + t(c + '-' + m + '(' + a + ')') + '.'],
+              [(c - m) * a, 'fn-order', 'Multiply before you subtract: ' + t(c + '-' + m + '(' + a + ')=' + c + '-' + nT(m * a)) + '.'],
+              [c - m - a, 'fn-add-coef', t(m + 'x') + ' means ' + t(m + '\\times x') + ': ' + t(m + '(' + a + ')=' + nT(m * a)) + '.'],
+              [(c - a) / m, 'fn-solved', 'The <b>image</b> of ' + t(a) + ' is the output ' + t('f(' + a + ')') + ' — substitute ' + t(a) + ' for ' + t('x') + '.']],
+              'The image of ' + t(a) + ' is ' + t('f(' + a + ')=' + c + '-' + m + '(' + a + ')=' + c + '-' + nT(m * a) + '=' + nT(ans)),
+              ['“The image of ' + t(a) + '” means the output when the input is ' + t(a) + '.', 'A calculator is fine for the decimal multiplication.'], 'image of ' + a + ' under ' + sh.ftex);
+          } },
+          { id: '10d', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, k = r.int(2, 5), T = PL([[c], [-m * k, 't']]);
+            return polyPart('an expression for ' + t('f(' + k + 't)'), t('f(' + k + 't)='), T, c + '-' + m * k + 't', [
+              { is: PL([[c], [-(m + k), 't']]), code: 'fn-add-coef', hint: t(m + '(' + k + 't)') + ' means ' + t(m + '\\times ' + k + 't=' + m * k + 't') + ': multiply the numbers.' },
+              { is: PL([[c * k], [-m * k, 't']]), code: 'fn-scale-out', hint: 'Only the input changes: replace ' + t('x') + ' with ' + t(k + 't') + '. The ' + t(c) + ' is not multiplied by ' + t(k) + '.' },
+              { is: PL([[c - m], [k, 't']]), code: 'fn-order', hint: 'Replace ' + t('x') + ' with ' + t('(' + k + 't)') + ': ' + t(c + '-' + m + '(' + k + 't)') + '. Then multiply ' + t(m + '\\times ' + k + 't') + '.' }],
+              t('f(' + k + 't)=' + c + '-' + m + '(' + k + 't)=' + c + '-' + m * k + 't'), HX, 'f(' + k + 't) for ' + sh.ftex);
+          } },
+          { id: '10e', level: 'PRG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, h = r.int(1, 4), T = PL([[c + m * h], [-m, 'a']]);
+            var p = polyPart('an expression for ' + t('f(a-' + h + ')'), t('f(a-' + h + ')='), T, (c + m * h) + '-' + m + 'a', [
+              { is: PL([[c - m * h], [-m, 'a']]), code: 'fn-dist-sign', hint: t('-' + m + '(a-' + h + ')=-' + m + 'a+' + m * h) + ': a negative times a negative is positive, so the ' + t(m * h) + ' is <b>added</b>.' },
+              { is: PL([[c - h], [-m, 'a']]), code: 'fn-dist', hint: 'Put the whole input in brackets: ' + t(c + '-' + m + '(a-' + h + ')') + '. The ' + t(m) + ' multiplies both terms.' },
+              { is: PL([[c], [-m, 'a']]), code: 'fn-drop', hint: 'That is ' + t('f(a)') + '. Replace ' + t('x') + ' with the whole expression ' + t('(a-' + h + ')') + '.' }],
+              t('f(a-' + h + ')=' + c + '-' + m + '(a-' + h + ')') + '<br>' + t('=' + c + '-' + m + 'a+' + m * h) + '<br>' + t('=' + (c + m * h) + '-' + m + 'a'), HX, 'f(a-' + h + ') for ' + sh.ftex);
+            p.good = ['-' + m + 'a+' + (c + m * h)];
+            return p;
+          } }] },
+      /* ---------- Q11: solving f(x) = b ---------- */
+      { num: '11', section: 'Solving f(x) = b', stem: 'Solve for the unknown in each case.', parts: [
+        { id: '11a', level: 'EMG', make: function (r) {
+          var m = r.int(2, 9), b = r.int(2, 12), x = r.int(2, 9), V = m * x - b, ft = m + 'x-' + b;
+          return numPart('If ' + t('f(x)=' + ft) + ', determine ' + t('x') + ' if ' + t('f(x)=' + V) + '.', x, [
+            [m * V - b, 'fn-evaluated', 'That is ' + t('f(' + V + ')') + '. Here ' + t(V) + ' is the <b>output</b>: solve ' + t(ft + '=' + V) + ' for ' + t('x') + '.'],
+            [(V - b) / m, 'fn-solve-inverse', 'To undo ' + t('-' + b) + ', <b>add</b> ' + t(b) + ' to both sides: ' + t(m + 'x=' + (V + b)) + '.'],
+            [V + b, 'fn-solve-divide', t(m + 'x=' + (V + b)) + ' — now divide both sides by ' + t(m) + '.'],
+            [-x, 'fn-solve-sign', 'Check the sign: substitute your answer into ' + t(ft) + '.']],
+            t(ft + '=' + V) + '<br>' + t(m + 'x=' + (V + b)) + '<br>' + t('x=' + x), HS, 'solve ' + ft + '=' + V, { before: t('x=') });
+        } },
+        { id: '11b', level: 'EMG', make: function (r) {
+          var m = r.int(3, 9), b = r.int(2, 9), x = -r.int(2, 6), V = m * x + b, ft = m + 'x+' + b;
+          return numPart('If ' + t('g(x)=' + ft) + ', determine ' + t('x') + ' if ' + t('g(x)=' + V) + '.', x, [
+            [m * V + b, 'fn-evaluated', 'That is ' + t('g(' + V + ')') + '. Here ' + t(V) + ' is the <b>output</b>: solve ' + t(ft + '=' + V) + '.'],
+            [(V + b) / m, 'fn-solve-inverse', 'To undo ' + t('+' + b) + ', <b>subtract</b> ' + t(b) + ' from both sides: ' + t(m + 'x=' + (V - b)) + '.'],
+            [V - b, 'fn-solve-divide', t(m + 'x=' + (V - b)) + ' — now divide both sides by ' + t(m) + '.'],
+            [-x, 'fn-solve-sign', 'Check the sign: ' + t((V - b) + '\\div ' + m) + ' is negative.']],
+            t(ft + '=' + V) + '<br>' + t(m + 'x=' + (V - b)) + '<br>' + t('x=' + x), HS, 'solve ' + ft + '=' + V, { before: t('x=') });
+        } },
+        { id: '11c', level: 'PRG', make: function (r) {
+          var c = r.int(20, 60), m = r.int(2, 9), x = r.int(2, 9), V = c - m * x, ft = c + '-' + m + 't';
+          if (V <= 0) { c = m * x + r.int(3, 20); V = c - m * x; ft = c + '-' + m + 't'; }
+          return numPart('If ' + t('g(t)=' + ft) + ', determine ' + t('t') + ' if ' + t('g(t)=' + V) + '.', x, [
+            [c - m * V, 'fn-evaluated', 'That is ' + t('g(' + V + ')') + '. Here ' + t(V) + ' is the output: solve ' + t(ft + '=' + V) + ' for ' + t('t') + '.'],
+            [-x, 'fn-solve-sign', t('-' + m + 't=' + (V - c)) + ': dividing a negative by a negative gives a positive.'],
+            [(c + V) / m, 'fn-solve-inverse', 'Subtract ' + t(c) + ' from both sides: ' + t('-' + m + 't=' + V + '-' + c + '=' + (V - c)) + '.'],
+            [c - V, 'fn-solve-divide', t('-' + m + 't=' + (V - c)) + ' — now divide both sides by ' + t(-m) + '.']],
+            t(ft + '=' + V) + '<br>' + t('-' + m + 't=' + (V - c)) + '<br>' + t('t=' + x), HS, 'solve ' + ft + '=' + V, { before: t('t=') });
+        } },
+        { id: '11d', level: 'PRG', make: function (r) {
+          var m = r.int(2, 6), b = r.int(2, 12), x = -r.int(2, 8), V = -m * x + b, ft = '-' + m + 'x+' + b;
+          return numPart('If ' + t('h(x)=' + ft) + ', determine ' + t('x') + ' if ' + t('h(x)=' + V) + '.', x, [
+            [-m * V + b, 'fn-evaluated', 'That is ' + t('h(' + V + ')') + '. Here ' + t(V) + ' is the output: solve ' + t(ft + '=' + V) + '.'],
+            [-x, 'fn-solve-sign', t('-' + m + 'x=' + (V - b)) + ': divide both sides by ' + t('-' + m) + ' — a positive divided by a negative is negative.'],
+            [(V + b) / -m, 'fn-solve-inverse', 'Subtract ' + t(b) + ' from both sides: ' + t('-' + m + 'x=' + (V - b)) + '.'],
+            [V - b, 'fn-solve-divide', t('-' + m + 'x=' + (V - b)) + ' — now divide both sides by ' + t('-' + m) + '.']],
+            t(ft + '=' + V) + '<br>' + t('-' + m + 'x=' + (V - b)) + '<br>' + t('x=' + x), HS, 'solve ' + ft + '=' + V, { before: t('x=') });
+        } },
+        { id: '11e', level: 'PRG', make: function (r) {
+          var o = pickWhere(function () { var k = r.int(2, 5), s = r.int(2, 6); return { k: k, s: s, c: 10 * r.int(1, 9) }; }, function (o) { return o.c <= o.k * o.s * o.s - 10; });
+          var k = o.k, s = o.s, c = o.c, V = c - k * s * s, ft = c + '-' + k + 'x^{2}';
+          return solPart('If ' + t('P(x)=' + ft) + ', determine the values of ' + t('x') + ' if ' + t('P(x)=' + V) + '.', [s, -s], 'x', [
+            [[s * s, -s * s], 'fn-sqrt-not', t('x^{2}=' + s * s) + ' — now take the square root of both sides.'],
+            [[s * s], 'fn-sqrt-not', t('x^{2}=' + s * s) + ' — now take the square root (both the positive and the negative root).'],
+            [[Math.sqrt((c + V) / k), -Math.sqrt((c + V) / k)], 'fn-solve-inverse', 'Subtract ' + t(c) + ' from both sides first: ' + t('-' + k + 'x^{2}=' + V + '-' + c + '=' + (V - c)) + '.'],
+            [[c - k * V * V], 'fn-evaluated', 'That is ' + t('P(' + V + ')') + '. Here ' + t(V) + ' is the output: solve ' + t(ft + '=' + V) + '.']],
+            t(ft + '=' + V) + '<br>' + t('-' + k + 'x^{2}=' + (V - c)) + '<br>' + t('x^{2}=' + s * s) + '<br>' + t('x=\\pm' + s) + ' — two inputs give the output ' + t(V) + '.', HS.concat(['A square has two square roots: ' + t('x^{2}=25') + ' gives ' + t('x=5') + ' or ' + t('x=-5') + '.']), 'solve ' + ft + '=' + V, 'x=\\pm ' + s);
         } }] },
-      { num: '7', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '7', level: 'EMG', make: function (r) {
-          var o = pickWhere(function () { var tv = r.pick([1, 1.5, 2, 2.5, 3]), c = r.pick([1.2, 1.5, 1.8, 2, 2.4]); return { tv: tv, c: c, b: cl(9.8 * tv), hm: 4.9 * tv * tv + c }; },
-            function (o) { var vals = [rd(o.tv, 1), rd(o.b, 1), rd(o.hm, 1), rd(o.b * o.tv + o.c, 1)]; return margin(o.hm, 1) && vals.every(function (v, i) { return vals.indexOf(v) === i; }); });
-          var opts = [
-            { v: rd(o.tv, 1), why: t(rd(o.tv, 1).toFixed(1)) + ' is the <b>time</b> of the maximum (the ' + t('t') + '-coordinate). The height is the other coordinate.' },
-            { v: rd(o.b, 1), why: t(nT(o.b)) + ' is the coefficient of ' + t('t') + ' in the formula, not a height. Use ' + cd('4:maximum') + '.' },
-            { v: rd(o.hm, 1), right: true },
-            { v: rd(o.b * o.tv + o.c, 1), why: 'Include the ' + t('-4.9t^{2}') + ' term when you substitute the vertex time: ' + t('-4.9(' + nT(o.tv) + ')^{2}') + '.' }].sort(function (a, b) { return a.v - b.v; });
-          return mc(r, 'A ball’s height, ' + t('h') + ' metres, after ' + t('t') + ' seconds is ' + t('h=' + quadT(-4.9, o.b, o.c, 't')) + '. Using the maximum feature of a graphing calculator, the greatest height of the ball, to the nearest tenth of a metre, is',
-            opts.map(function (x) { return { html: t(x.v.toFixed(1)) + ' m', right: !!x.right, why: x.why }; }),
-            cd('4:maximum') + ' gives ' + t('t\\approx ' + nT(o.tv)) + ', ' + t('h\\approx ' + rd(o.hm, 1).toFixed(1)) + '.<br>Check: ' + t('-4.9(' + nT(o.tv) + ')^{2}+' + nT(o.b) + '(' + nT(o.tv) + ')+' + nT(o.c) + '=' + nT(-4.9 * o.tv * o.tv) + '+' + nT(o.b * o.tv) + '+' + nT(o.c) + '\\approx ' + rd(o.hm, 1).toFixed(1)) + ' m.', [H_MAX], 'max height ' + quadT(-4.9, o.b, o.c, 't'), true);
-        } }] },
-      { num: '8', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '8', level: 'EMG', make: function (r) {
-          var o = pickWhere(function () { var rt = r.pick([0.05, 0.1, 0.15, 0.2, 0.25]), b = r.pick([15, 20, 25, 30, 35]), m = 5 * r.int(12, 80); return { rt: rt, b: b, m: m, C: cl(b + rt * m) }; }, function (o) { return isDp(o.C, 2) && o.m * o.rt >= 10; });
-          var p = B.nr('A phone plan costs ' + t('C=' + nT(o.rt) + 'm+' + o.b) + ' dollars per month, where ' + t('m') + ' is the number of minutes of calls. Using the intersect feature, the number of minutes that gives a monthly bill of ' + t(money(o.C)) + ' is ________.', o.m, near([
-            { v: o.C / o.rt, code: 'ctx-no-sub', hint: 'Take away the ' + t(money(o.b)) + ' base fee first: only the rest of the bill comes from minutes.' },
-            { v: (o.C + o.b) / o.rt, code: 'ctx-added', hint: 'Subtract the ' + t(money(o.b)) + ' (don’t add it) before dividing by ' + t(nT(o.rt)) + '.' },
-            { v: (o.C - o.b) * o.rt, code: 'ctx-mult', hint: 'Divide by ' + t(nT(o.rt)) + ' — don’t multiply.' }], o.m, 0),
-            t('Y_1=' + nT(o.rt) + 'X+' + o.b) + ', ' + t('Y_2=' + nT(o.C)) + ': ' + cd('5:intersect') + ' gives ' + t('(' + o.m + ',\\ ' + nT(o.C) + ')') + '.<br>Check: ' + t(nT(o.rt) + '(' + o.m + ')+' + o.b + '=' + nT(o.rt * o.m) + '+' + o.b + '=' + nT(o.C)) + ' ✓. Answer: ' + t(o.m) + '.', [H_INT], 'phone plan minutes for ' + o.C);
-          p.bad = [String(rd(o.C / o.rt, 0))].filter(function (x) { return Number(x) !== o.m; });
+      /* ---------- Q12 ---------- */
+      { num: '12', stem: function (sh) { return 'Consider the function ' + t('f') + ' defined by ' + t('f(x)=' + sh.m + 'x-' + sh.b) + '. Find:'; },
+        shared: function (r) { return { m: r.int(3, 9), b: r.int(5, 25) }; },
+        parts: [
+          { id: '12a', level: 'LIM', make: function (r, sh) {
+            var m = sh.m, b = sh.b;
+            return numPart(t('f(0)'), -b, [[m - b, 'fn-zero-coef', t(m + '(0)=0') + ': anything times zero is zero.'], [0, 'fn-zero-all', t(m + '(0)=0') + ', but the ' + t('-' + b) + ' is still there.'], [b, 'fn-const-sign', 'Check the sign.']],
+              t('f(0)=' + m + '(0)-' + b + '=-' + b), HE, 'f(0) for ' + m + 'x-' + b);
+          } },
+          { id: '12b', level: 'PRG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, p = r.int(2, 4), q = r.int(1, 4), T = PL([[m * p, 'x'], [-m * q - b]]);
+            return polyPart('an expression for ' + t('f(' + p + 'x-' + q + ')'), t('f(' + p + 'x-' + q + ')='), T, null, [
+              { is: PL([[m * p, 'x'], [-q - b]]), code: 'fn-dist', hint: 'The ' + t(m) + ' multiplies <b>both</b> terms of the input: ' + t(m + '(' + p + 'x-' + q + ')=' + m * p + 'x-' + m * q) + '.' },
+              { is: PL([[m * p, 'x'], [m * q - b]]), code: 'fn-dist-sign', hint: t(m + '(-' + q + ')=-' + m * q) + ': keep the sign of the second term.' },
+              { is: PL([[m * p, 'x'], [-b]]), code: 'fn-drop', hint: 'Don’t lose the ' + t('-' + q) + ' inside the input: ' + t(m + '(' + p + 'x-' + q + ')') + '.' }],
+              t('f(' + p + 'x-' + q + ')=' + m + '(' + p + 'x-' + q + ')-' + b) + '<br>' + t('=' + m * p + 'x-' + m * q + '-' + b) + '<br>' + t('=' + m * p + 'x-' + (m * q + b)), HX, 'f(' + p + 'x-' + q + ') for ' + m + 'x-' + b);
+          } },
+          { id: '12c', level: 'EMG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, x = r.int(2, 9), V = m * x - b;
+            return numPart('the solution to the equation ' + t('f(x)=' + V), x, [
+              [m * V - b, 'fn-evaluated', 'That is ' + t('f(' + V + ')') + '. Solve ' + t(m + 'x-' + b + '=' + V) + ' instead.'],
+              [(V - b) / m, 'fn-solve-inverse', 'Add ' + t(b) + ' to both sides: ' + t(m + 'x=' + (V + b)) + '.'],
+              [V + b, 'fn-solve-divide', t(m + 'x=' + (V + b)) + ' — now divide by ' + t(m) + '.']],
+              t(m + 'x-' + b + '=' + V) + '<br>' + t(m + 'x=' + (V + b)) + '<br>' + t('x=' + x), HS, 'solve ' + m + 'x-' + b + '=' + V, { before: t('x=') });
+          } }] },
+      /* ---------- Q13: C(x) = sqrt(x) ---------- */
+      { num: '13', stem: 'A function ' + t('C') + ' is defined by ' + t('C(x)=\\sqrt{x}') + ', where ' + t('x\\ge 0') + '.', parts: [
+        { id: '13a', sub: 'a(i)', level: 'BEG', make: function (r) {
+          var n = r.int(4, 15);
+          return numPart('Evaluate ' + t('C(' + n * n + ')') + '.', n, [[n * n, 'fn-sqrt-not', t('C(' + n * n + ')=\\sqrt{' + n * n + '}') + ': take the square root.'], [n * n / 2, 'fn-sqrt-half', 'The square root is the number that multiplies by itself to give ' + t(n * n) + ' — not half of it.']],
+            t('C(' + n * n + ')=\\sqrt{' + n * n + '}=' + n), ['Replace ' + t('x') + ' with ' + t(n * n) + ': ' + t('C(' + n * n + ')=\\sqrt{' + n * n + '}') + '.'], 'C(' + n * n + ')');
+        } },
+        { id: '13b', sub: 'a(ii)', level: 'EMG', make: function (r) {
+          var n = r.int(3, 12);
+          return B.fraction('Evaluate ' + t('C\\left(\\dfrac{1}{' + n * n + '}\\right)') + ' (as a fraction).', [1, n], { diag: function (v) {
+            if (same(v, 1 / (n * n))) return { code: 'fn-sqrt-not', hint: 'Take the square root: ' + t('\\sqrt{\\tfrac{1}{' + n * n + '}}=\\tfrac{\\sqrt{1}}{\\sqrt{' + n * n + '}}') + '.' };
+            if (same(v, 1 / (2 * n * n)) || same(v, 0.5 / n)) return { code: 'fn-sqrt-half', hint: 'The square root of a fraction is the root of the top over the root of the bottom.' };
+            return null;
+          } }, t('C\\left(\\tfrac{1}{' + n * n + '}\\right)=\\sqrt{\\tfrac{1}{' + n * n + '}}=\\tfrac{\\sqrt{1}}{\\sqrt{' + n * n + '}}=\\tfrac{1}{' + n + '}'), ['Take the square root of the numerator and of the denominator separately.'], 'C(1/' + n * n + ')');
+        } },
+        { id: '13c', sub: 'a(iii)', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { var b = r.int(2, 5), k = r.int(2, 5); return { b: b, k: k, a: b * k }; }, function (o) { return o.a <= 15; });
+          var a = o.a, b = o.b, k = o.k;
+          return numPart('Evaluate ' + t('\\dfrac{C(' + a * a + ')}{C(' + b * b + ')}') + '.', k, [[k * k, 'fn-sqrt-not', 'Evaluate each part first: ' + t('C(' + a * a + ')=\\sqrt{' + a * a + '}=' + a) + '.'], [a - b, 'fn-sign', 'The fraction bar means divide: ' + t(a + '\\div ' + b) + '.'], [a * a / b, 'fn-sqrt-not', 'Take the square root of the bottom too: ' + t('C(' + b * b + ')=' + b) + '.']],
+            t('C(' + a * a + ')=\\sqrt{' + a * a + '}=' + a) + ' and ' + t('C(' + b * b + ')=\\sqrt{' + b * b + '}=' + b) + ', so ' + t('\\dfrac{' + a + '}{' + b + '}=' + k) + '.', ['Work out the top and the bottom separately, then divide.'], 'C(' + a * a + ')/C(' + b * b + ')');
+        } },
+        { id: '13d', sub: 'b', level: 'EMG', make: function (r) {
+          var n = r.int(6, 15);
+          var p = numPart('If ' + t('C(x)=' + n) + ', find ' + t('x') + '.', n * n, [[2 * n, 'fn-square-2x', 'Undo the square root by <b>squaring</b>: ' + t(n + '^{2}=' + n + '\\times ' + n) + '.'], [n / 2, 'fn-root-solve', 'Undo a square root by squaring, not halving.']],
+            t('\\sqrt{x}=' + n) + '<br>' + t('x=' + n + '^{2}=' + n * n) + '<br>Check: ' + t('\\sqrt{' + n * n + '}=' + n) + '.', HS.concat(['What number has a square root of ' + t(n) + '?']), 'solve sqrt x=' + n, { before: t('x=') });
+          var c = p.check; p.check = function (resp) { var v = HW.parse.number(resp); if (v.ok && Math.abs(v.value - Math.sqrt(n)) < 0.01) return wrong('fn-root-solve', 'That is ' + t('\\sqrt{' + n + '}') + ' — it evaluates ' + t('C(' + n + ')') + '. Here ' + t(n) + ' is the <b>output</b>: which input has square root ' + t(n) + '?'); return c(resp); };
+          p.bad.push(String(Math.round(Math.sqrt(n) * 100) / 100));
           return p;
-        } }] }
+        } }] },
+      /* ---------- Q14 ---------- */
+      { num: '14', stem: function () { return 'A function ' + t('g') + ' is defined by a formula of the form ' + t('g(t)=t+c') + '.'; }, parts: [
+        { id: '14', level: 'EMG', make: function (r) {
+          var c = r.int(5, 30), p = r.int(2, 9), q = -r.int(2, 9), ans = 2 * c + p + q;
+          return numPart('If ' + t('g(t)=t+' + c) + ', calculate the value of ' + t('g(' + p + ')+g(' + q + ')') + '.', ans, [
+            [p + q + c, 'fn-input-sum', 'Evaluate each part first: ' + t('g(' + p + ')') + ' and ' + t('g(' + q + ')') + ' are two outputs. Each one includes the ' + t('+' + c) + '.'],
+            [p + q, 'fn-neg-sub', t('g(' + q + ')=' + q + '+' + c + '=' + (q + c)) + '. Add ' + t(c) + ' to ' + t(q) + ', don’t subtract it.'],
+            [2 * c + p - q, 'fn-neg-drop', 'Keep the negative input: ' + t('g(' + q + ')=' + q + '+' + c + '=' + (q + c)) + '.']],
+            t('g(' + p + ')=' + p + '+' + c + '=' + (p + c)) + ' and ' + t('g(' + q + ')=' + q + '+' + c + '=' + (q + c)) + ', so ' + t('g(' + p + ')+g(' + q + ')=' + (p + c) + '+' + (q + c) + '=' + ans) + '.', ['Find each output separately, then add the two outputs.'], 'g(' + p + ')+g(' + q + ') for t+' + c);
+        } }] },
+      /* ---------- Q15: context ---------- */
+      { num: '15', stem: function (sh) { return sh.ctx.stem(money(sh.Fc), money(sh.Rc)); },
+        shared: function (r) {
+          var ctx = r.pick([CTX[0], CTX[0], CTX[1], CTX[2]]), Fc = r.pick(ctx.F), Rc = r.pick(ctx.R), n1 = ctx.n(r), n2 = pickWhere(function () { return ctx.n(r); }, function (x) { return x !== n1; });
+          return { ctx: ctx, Fc: Fc, Rc: Rc, n1: n1, n2: n2, C: function (n) { return Fc + Rc * n; } };
+        },
+        parts: [
+          { id: '15a', level: 'EMG', make: function (r, sh) {
+            var x = sh.ctx, v = x.v, n = sh.n1, V = sh.C(n), Ft = money(sh.Fc), Rt = money(sh.Rc);
+            var p = numPart('Evaluate ' + t('C(' + n + ')') + '.', V / 100, [
+              [(sh.Fc + sh.Rc) * n / 100, 'fn-order', 'Multiply first: ' + t(Rt + '(' + n + ')') + ', then add the ' + t(Ft) + '.'],
+              [(sh.Fc * n + sh.Rc) / 100, 'fn-swap-rate', 'The ' + t(n) + ' replaces ' + t(v) + ', so it multiplies ' + t(Rt) + ' (the number next to ' + t(v) + '), not ' + t(Ft) + '.'],
+              [sh.Rc * n / 100, 'fn-fee', 'Don’t forget the ' + t(Ft) + ' at the start of the formula.']],
+              t('C(' + n + ')=' + Ft + '+' + Rt + '(' + n + ')=' + Ft + '+' + money(sh.Rc * n) + '=' + money(V)) + ', so ' + t('\\$' + money(V)) + '.',
+              ['Replace ' + t(v) + ' with ' + t(n) + ' and use the order of operations.', 'A calculator is fine here.'], 'C(' + n + ') context', { before: '$' });
+            p.answer = t('\\$' + money(V)); p.good = [money(V)];
+            return p;
+          } },
+          { id: '15b', level: 'EMG', make: function (r, sh) {
+            var x = sh.ctx, n = sh.n1, V = money(sh.C(n)), Rt = money(sh.Rc);
+            return mc(r, 'What does ' + t('C(' + n + ')=' + V) + ' mean in this situation?', [
+              { html: x.phrase(n) + ' costs $' + V + '.', right: true },
+              { html: 'It costs $' + V + ' for every ' + x.per + '.', why: t('C(' + n + ')') + ' is the <b>total</b> cost for an input of ' + t(n) + '. The cost per ' + x.per + ' is $' + Rt + '.' },
+              { html: x.swap(n, V), why: 'That swaps input and output. In ' + t('C(' + x.v + ')') + ' the input ' + t(x.v) + ' is the ' + x.inWord + ' and the output ' + t('C(' + x.v + ')') + ' is the cost.' },
+              { html: t('C') + ' multiplied by ' + t(n) + ' is ' + V + '.', why: 'The brackets mark the input: ' + t('C(' + n + ')') + ' is the output when the input is ' + t(n) + '.' }],
+              t('C(' + n + ')') + ' is the output (cost, in dollars) when the input (' + x.inWord + ') is ' + t(n) + ': ' + x.phrase(n).toLowerCase() + ' costs $' + V + '.', ['Input: ' + x.inWord + '. Output: cost. Which is which in ' + t('C(' + n + ')=' + V) + '?'], 'meaning of C(n)');
+          } },
+          { id: '15c', level: 'PRG', make: function (r, sh) {
+            var x = sh.ctx, v = x.v, n = sh.n2, Vc = sh.C(n), V = money(Vc), Ft = money(sh.Fc), Rt = money(sh.Rc);
+            return numPart('Solve ' + t('C(' + v + ')=' + V) + '.', n, [
+              [(sh.Fc + sh.Rc * Vc / 100) / 100, 'fn-evaluated', 'That is ' + t('C(' + V + ')') + '. Here ' + t(V) + ' is the <b>cost</b> (the output): solve ' + t(Ft + '+' + Rt + v + '=' + V) + '.'],
+              [Vc / sh.Rc, 'fn-fee', 'Subtract the ' + t(Ft) + ' first: ' + t(Rt + v + '=' + V + '-' + Ft + '=' + money(Vc - sh.Fc)) + '.'],
+              [(Vc + sh.Fc) / sh.Rc, 'fn-solve-inverse', 'To undo ' + t('+' + Ft) + ', <b>subtract</b> it from both sides.'],
+              [(Vc - sh.Fc) / 100, 'fn-solve-divide', t(Rt + v + '=' + money(Vc - sh.Fc)) + ' — now divide by ' + t(Rt) + '.']],
+              t(Ft + '+' + Rt + v + '=' + V) + '<br>' + t(Rt + v + '=' + money(Vc - sh.Fc)) + '<br>' + t(v + '=' + money(Vc - sh.Fc) + '\\div ' + Rt + '=' + n) + ' ' + x.after + '.', HS, 'solve C=' + V + ' context', { before: t(v + '='), after: x.after });
+          } },
+          { id: '15d', level: 'EMG', make: function (r, sh) {
+            var x = sh.ctx, Ft = money(sh.Fc), Rt = money(sh.Rc);
+            return mc(r, 'What does ' + t('C(0)=' + Ft) + ' represent?', [
+              { html: 'The ' + x.fee + ': $' + Ft + ' is charged even when the ' + x.inWord + ' is ' + t('0') + '.', right: true },
+              { html: 'The cost per ' + x.per + '.', why: 'The cost per ' + x.per + ' is the number multiplied by ' + t(x.v) + ' ($' + Rt + '). ' + t('C(0)') + ' is the cost when the input is ' + t('0') + '.' },
+              { html: 'The ' + x.inWord + ' you get when the cost is $0.', why: 'In ' + t('C(0)') + ' the <b>input</b> is ' + t('0') + '. The output ' + t(Ft) + ' is a cost.' },
+              { html: 'Nothing: an input of ' + t('0') + ' can’t happen, so ' + t('C(0)') + ' has no meaning.', why: 'Substituting ' + t('0') + ' tells you the part of the cost that doesn’t depend on the input — the starting amount.' }],
+              t('C(0)=' + Ft + '+' + Rt + '(0)=' + Ft) + ': the cost before any ' + x.inWord + ' is added. It is the ' + x.fee + ' (the starting value, the vertical intercept of the graph).', ['Substitute ' + t('0') + ' into the formula. Which part of the cost is left?'], 'meaning of C(0)');
+          } }] },
+      /* ---------- Q16–Q18 ---------- */
+      { num: '16', section: 'Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '16', level: 'EMG', make: function (r) {
+          var c = r.int(8, 14), m = r.pick([2, 3, 3, 4]), D = [0, 1, 2, 3, 4], R = D.map(function (k) { return c - m * k; });
+          var cand = range(Math.min.apply(null, R) + 1, Math.max.apply(null, R) - 1).filter(function (v) { return R.indexOf(v) < 0; }), ans = r.pick(cand);
+          var ins = r.sample(R, 3);
+          var opts = ins.map(function (v) { var k = (c - v) / m; return { html: t(v), why: t('f(' + k + ')=' + c + '-' + m + '(' + k + ')=' + v) + ', so ' + t(v) + ' <i>is</i> in the range.' }; }).concat([{ html: t(ans), right: true }]);
+          return mc(r, 'The function ' + t('f(x)=' + c + '-' + m + 'x') + ' has domain ' + t(setTex(D)) + '. Which of the following is <b>not</b> an element of the range of the function?', opts,
+            D.map(function (k) { return t('f(' + k + ')=' + (c - m * k)); }).join(', ') + ', so the range is ' + t(setTex(sortU(R))) + '. ' + t(ans) + ' is not in it.', ['Evaluate ' + t('f') + ' at every element of the domain to get the range.'], 'not in range of ' + c + '-' + m + 'x');
+        } }] },
+      { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '17', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { var m = r.int(2, 5), b = r.int(1, 6), x = r.int(3, 9); return { m: m, b: b, x: x, V: m * x - b }; }, function (o) { var w = [(o.V - o.b) / o.m, o.V + o.b, o.m * o.V - o.b]; return Number.isInteger(w[0]) && w[0] > 0 && sortU(w.concat([o.x])).length === 4; });
+          var m = o.m, b = o.b, x = o.x, V = o.V, vals = sortU([x, (V - b) / m, V + b, m * V - b]);
+          var why = {}; why[(V - b) / m] = 'Check it: ' + t('f(' + (V - b) / m + ')=' + (m * (V - b) / m - b)) + ', not ' + t(V) + '. To undo ' + t('-' + b) + ', add ' + t(b) + '.'; why[V + b] = t(m + 't=' + (V + b)) + ' — you still have to divide by ' + t(m) + '.'; why[m * V - b] = 'That is ' + t('f(' + V + ')') + '. ' + t(V) + ' is the output; solve ' + t(m + 't-' + b + '=' + V) + '.';
+          return mc(r, 'If ' + t('f(x)=' + m + 'x-' + b) + ' and ' + t('f(t)=' + V) + ', then ' + t('t=') + ' ________', vals.map(function (v) { return { html: t(v), right: v === x, why: v === x ? null : why[v] }; }),
+            t(m + 't-' + b + '=' + V) + ', so ' + t(m + 't=' + (V + b)) + ' and ' + t('t=' + x) + '.', HS, 'f(t)=' + V + ' for ' + m + 'x-' + b);
+        } }] },
+      { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: '18', level: 'PRG', make: function (r) {
+          var o = pickWhere(function () { return { a: r.int(2, 7), s: r.int(2, 5), q: r.pick([2, 3, 5, 5, 6, 7]) }; }, function (o) { return o.s * o.s * o.q <= 200; });
+          var a = o.a, s = o.s, q = o.q, n = s * s * q, k = a * s;
+          return B.nr('A function ' + t('f') + ' is defined by the formula ' + t('f(x)=' + a + '\\sqrt{x},\\ x\\ge 0') + '. The value of ' + t('f(' + n + ')') + ' can be written in the form ' + t('k\\sqrt{' + q + '}') + '. The value of ' + t('k') + ' is ________.', k, function (v) {
+            if (v === a * s * s) return { code: 'fn-rad-noroot', hint: t(s * s) + ' comes out of the radical as its square root: ' + t('\\sqrt{' + s * s + '}=' + s) + '.' };
+            if (v === s) return { code: 'fn-rad-coef', hint: 'Don’t forget the ' + t(a) + ' in front: ' + t('f(' + n + ')=' + a + '\\sqrt{' + n + '}') + '.' };
+            if (v === a + s) return { code: 'fn-rad-add', hint: t(a + '(' + s + '\\sqrt{' + q + '})') + ' means multiply: ' + t(a + '\\times ' + s) + '.' };
+            return null;
+          }, t('f(' + n + ')=' + a + '\\sqrt{' + n + '}=' + a + '\\sqrt{' + s * s + '\\cdot ' + q + '}=' + a + '(' + s + '\\sqrt{' + q + '})=' + k + '\\sqrt{' + q + '}') + ', so ' + t('k=' + k) + '.',
+          ['Substitute, then simplify the radical: look for a perfect-square factor of ' + t(n) + '.'], 'k for ' + a + 'sqrt(' + n + ')');
+        } }] },
+      /* ---------- Extension Q19–21 ---------- */
+      { num: '19', section: 'Extension — substituting expressions into non-linear functions', stem: '<i>(Extension)</i>', parts: [
+        { id: '19', level: 'BEG', make: function (r) {
+          var c = r.pick([-5, -4, -3, -2, -2, -1, 1, 2, 3]), T = PL([[1, 'a', 3], [c]]);
+          return polyPart('For ' + t('f(x)=x^{3}' + sg(c)) + ', find an expression for ' + t('f(a)') + '.', t('f(a)='), T, null, [
+            { is: PL([[3, 'a'], [c]]), code: 'fn-cube-3x', hint: 'Replace ' + t('x') + ' with ' + t('a') + ' and keep the exponent: ' + t('a^{3}') + ', not ' + t('3a') + '.' },
+            { is: PL([[1, 'a', 3]]), code: 'fn-const', hint: 'Keep the constant: only the ' + t('x') + ' changes.' }],
+            'Replace ' + t('x') + ' with ' + t('a') + ': ' + t('f(a)=a^{3}' + sg(c)) + '.', ['Replace every ' + t('x') + ' with ' + t('a') + '. Nothing else changes.'], 'f(a) for x^3' + sg(c));
+        } }] },
+      { num: '20', stem: '<i>(Extension)</i>', parts: [
+        { id: '20', level: 'ADV', make: function (r) {
+          var o = pickWhere(function () { return { s: r.int(2, 5), q: r.pick([2, 3, 3, 5, 6, 7]), c: r.int(5, 30) }; }, function (o) { return o.s * o.s * o.q <= 120; });
+          var s = o.s, q = o.q, c = o.c, A = s * s * q, V = A + c, root = s * Math.sqrt(q);
+          var p = solPart('For ' + t('g(t)=t+' + c) + ', if ' + t('g(a^{2})=' + V) + ', determine the values of ' + t('a') + ' in simplest radical form.', [root, -root], 'a', [
+            [[A, -A], 'fn-sqrt-not', t('a^{2}=' + A) + ' — now take the square root of both sides.'],
+            [[Math.sqrt(V + c), -Math.sqrt(V + c)], 'fn-solve-inverse', 'Subtract ' + t(c) + ' from both sides: ' + t('a^{2}=' + V + '-' + c) + '.'],
+            [[c + V * V], 'fn-evaluated', t(V) + ' is the output. Replace ' + t('t') + ' with ' + t('a^{2}') + ' and solve ' + t('a^{2}+' + c + '=' + V) + '.']],
+            t('g(a^{2})=a^{2}+' + c) + ', so ' + t('a^{2}+' + c + '=' + V) + '<br>' + t('a^{2}=' + A) + '<br>' + t('a=\\pm\\sqrt{' + A + '}=\\pm\\sqrt{' + s * s + '\\cdot ' + q + '}=\\pm ' + s + '\\sqrt{' + q + '}'),
+            ['Replace ' + t('t') + ' with ' + t('a^{2}') + ', then solve for ' + t('a^{2}') + ' first.', 'Take both square roots and simplify the radical (look for a perfect-square factor).'], 'g(a^2)=' + V, 'a=\\pm ' + s + '\\sqrt{' + q + '}');
+          var c0 = p.check;
+          p.check = function (resp) {
+            var res = c0(resp); if (res.v !== 'correct') return res;
+            var str = String(resp || '');
+            if (/\d\.\d/.test(str)) return form('decimal', 'Right values — but give them <b>exactly</b>, in simplest radical form (use ' + t('\\sqrt{\\ }') + '), not as decimals.');
+            var m, re = /\\sqrt\{(\d+)\}|sqrt\((\d+)\)|√\{?(\d+)/g;
+            while ((m = re.exec(str))) { var N = Number(m[1] || m[2] || m[3]); if (!ex.simplest(N, 2)) return form('not-simplest', 'Right values — now simplify the radical: ' + t(N) + ' has a perfect-square factor.'); }
+            return res;
+          };
+          p.good = ['\\pm ' + s + '\\sqrt{' + q + '}', 'a=-' + s + '\\sqrt{' + q + '}, a=' + s + '\\sqrt{' + q + '}'];
+          p.bad.push('\\pm\\sqrt{' + A + '}', '\\pm ' + cl(root), s + '\\sqrt{' + q + '}');
+          return p;
+        } }] },
+      { num: '21', stem: function (sh) { return '<i>(Extension)</i> If ' + t('F(x)=' + sh.ft) + ', determine a simplified expression for:'; },
+        shared: function (r) { var a = r.pick([2, 2, 3]), b = -r.int(2, 7), c = -r.int(1, 5); return { a: a, b: b, c: c, h: r.int(2, 5), ft: lin([[a, 'x^{2}'], [b, 'x'], [c, '']]) }; },
+        parts: [
+          { id: '21a', level: 'PRG', make: function (r, sh) {
+            var a = sh.a, b = sh.b, c = sh.c, T = PL([[a, 'x', 2], [-b, 'x'], [c]]);
+            return polyPart(t('F(-x)'), t('F(-x)='), T, null, [
+              { is: PL([[-a, 'x', 2], [-b, 'x'], [c]]), code: 'fn-neg-square', hint: t('(-x)^{2}=(-x)(-x)=x^{2}') + ': the square is positive.' },
+              { is: PL([[-a, 'x', 2], [-b, 'x'], [-c]]), code: 'fn-neg-out', hint: 'That is ' + t('-F(x)') + ': you changed every sign. Only the input changes: replace each ' + t('x') + ' with ' + t('(-x)') + '.' },
+              { is: PL([[a, 'x', 2], [b, 'x'], [c]]), code: 'fn-unchanged', hint: 'Replace each ' + t('x') + ' with ' + t('(-x)') + ': the ' + t('x') + ' term changes sign.' }],
+              t('F(-x)=' + a + '(-x)^{2}' + term(b, '(-x)') + sg(c)) + '<br>' + t('=' + a + 'x^{2}' + term(-b, 'x') + sg(c)), HX, 'F(-x) for ' + sh.ft);
+          } },
+          { id: '21b', level: 'ADV', make: function (r, sh) {
+            var a = sh.a, b = sh.b, c = sh.c, h = sh.h, xp = PL([[1, 'x'], [h]]);
+            var T = P.add(P.scale(P.pow(xp, 2), a), P.scale(xp, b), P.num(c));
+            return polyPart(t('F(x+' + h + ')'), t('F(x+' + h + ')='), T, null, [
+              { is: P.add(P.scale(PL([[1, 'x', 2], [h * h]]), a), P.scale(xp, b), P.num(c)), code: 'fn-binom-sq', hint: t('(x+' + h + ')^{2}=(x+' + h + ')(x+' + h + ')=x^{2}+' + 2 * h + 'x+' + h * h) + ' — don’t forget the middle term.' },
+              { is: PL([[a, 'x', 2], [b, 'x'], [c + h]]), code: 'fn-plus-out', hint: 'That is ' + t('F(x)+' + h) + '. Replace every ' + t('x') + ' in the formula with ' + t('(x+' + h + ')') + '.' },
+              { is: P.add(P.pow(PL([[a, 'x'], [a * h]]), 2), P.scale(xp, b), P.num(c)), code: 'fn-coef-in', hint: 'Square the bracket first, then multiply by ' + t(a) + ': ' + t(a + '(x+' + h + ')^{2}=' + a + '(x^{2}+' + 2 * h + 'x+' + h * h + ')') + '.' },
+              { is: P.add(P.scale(P.pow(xp, 2), a), PL([[b, 'x'], [-b * h]]), P.num(c)), code: 'fn-dist-sign', hint: t(b + '(x+' + h + ')=' + b + 'x' + sg(b * h)) + ': the ' + t(b) + ' multiplies both terms, sign included.' }],
+              t('F(x+' + h + ')=' + a + '(x+' + h + ')^{2}' + term(b, '(x+' + h + ')') + sg(c)) + '<br>' + t('=' + a + '(x^{2}+' + 2 * h + 'x+' + h * h + ')' + term(b, 'x') + sg(b * h) + sg(c)) + '<br>' + t('=' + a + 'x^{2}+' + 2 * a * h + 'x+' + a * h * h + term(b, 'x') + sg(b * h) + sg(c)) + '<br>' + t('=' + P.tex(T)), HX.concat(['Expand ' + t('(x+' + h + ')^{2}') + ' as ' + t('(x+' + h + ')(x+' + h + ')') + ' before multiplying by ' + t(a) + '.']), 'F(x+' + h + ') for ' + sh.ft);
+          } }] }
     ],
-
     extra: [
-      /* ---------- Part A — windows ---------- */
-      { num: '1', section: 'Extra practice A — Setting a window you can trust', shared: function (r) { var s = shell(r); s.w = windowsFor(s); return s; },
-        stem: function (s) {
-          var row = function (n) { return '<tr><th>' + n + '</th>' + s.w[n].map(function (v) { return '<td>' + t(nT(v)) + '</td>'; }).join('') + '</tr>'; };
-          return 'A fireworks shell is fired from the top of a mortar tube. Its height above the ground, in metres, ' + t('t') + ' seconds after firing is ' + t(s.eq) + '. Four students graph it in different windows:' +
-            '<table class="vtab"><tr><th>Student</th><th>Xmin</th><th>Xmax</th><th>Ymin</th><th>Ymax</th></tr>' + ['Ama', 'Beni', 'Carly', 'Dev'].map(row).join('') + '</table>';
-        },
-        parts: [
-          { id: 'e1a', sub: 'a', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Which student’s window shows the whole flight, from firing to landing?', [
-              { html: 'Ama', why: 'Ama’s ' + cd('Ymax') + ' is ' + t('10') + ', but the shell climbs much higher than ' + t('10') + ' m — the top of the arc is off the screen.' },
-              { html: 'Beni', why: 'Beni’s ' + cd('Xmax') + ' = ' + t(nT(s.tv)) + ' is the time of the highest point, so the whole descent and the landing are cut off.' },
-              { html: 'Carly', right: true },
-              { html: 'Dev', why: 'Dev’s ' + cd('Ymax') + ' = ' + t(s.w.Dev[3]) + ' is below the peak, so the top of the flight is cut off.' }],
-              'The shell lands at ' + t('t\\approx ' + rT(s.land, 2)) + ' s (' + cd('2:zero') + ') and peaks at ' + t(nT(s.pk)) + ' m (' + cd('4:maximum') + '). A window needs ' + cd('Xmax') + ' past ' + t(rT(s.land, 2)) + ' and ' + cd('Ymax') + ' above ' + t(nT(s.pk)) + ', starting from ' + t('0') + '. Only <b>Carly</b>’s does.' + quadFig(s, s.w.Carly, [{ x: s.tv, y: s.pk }]),
-              ['Find the landing time and the greatest height first, then compare each window with them.'], 'which window shows flight');
-          } },
-          { id: 'e1b', sub: 'b', level: 'PRG', make: function (r, s) {
-            var rows = [{ id: 'Ama', html: 'Ama' }, { id: 'Beni', html: 'Beni' }, { id: 'Carly', html: 'Carly' }, { id: 'Dev', html: 'Dev' }];
-            var cols = [{ id: 'top', html: 'cuts off the top' }, { id: 'land', html: 'cuts off the landing' }, { id: 'neg', html: 'wastes screen on negative values' }];
-            var want = { Ama: ['top', 'neg'], Beni: ['land'], Carly: [], Dev: ['top'] };
-            var why = { Ama: 'Ama (the standard ' + kb('ZOOM 6') + ' window): ' + cd('Ymax') + ' = 10 is far below the peak, and ' + cd('Xmin') + ' = ' + cd('Ymin') + ' = −10 spend half the screen on negative times and heights. Its ' + cd('Xmax') + ' = 10 is past the landing, so the landing is fine.',
-              Beni: 'Beni: ' + cd('Xmax') + ' = ' + t(nT(s.tv)) + ' stops at the top of the arc, so the descent and landing are missing. Its ' + cd('Ymax') + ' is high enough.',
-              Carly: 'Carly’s window shows everything — tick nothing for her.', Dev: 'Dev: ' + cd('Ymax') + ' = ' + t(s.w.Dev[3]) + ' is below the ' + t(nT(s.pk)) + ' m peak. His ' + cd('Xmax') + ' reaches past the landing.' };
-            return B.grid('For each window, tick every problem it has. (A window with no problems gets no ticks.)', rows, cols, want, { allowBlank: true, why: function (row) { return { code: 'row', hint: why[row] }; } },
-              'The flight needs ' + t('0\\le t\\le ' + rT(s.land, 2)) + ' and ' + t('0\\le h\\le ' + nT(s.pk)) + '.<br>' + rows.map(function (x) { return why[x.id]; }).join('<br>'),
-              ['Compare each ' + cd('Xmax') + ' with the landing time and each ' + cd('Ymax') + ' with the greatest height.', 'Negative times and heights can’t happen here.'], 'window problems grid');
-          } },
-          { id: 'e1c', sub: 'd', level: 'EMG', make: function (r, s) {
-            return mc(r, 'On Dev’s screen the curve runs off the top edge and comes back. Why is that <b>not</b> the maximum?', [
-              { html: 'The curve only crosses the window’s top edge, ' + t('h=' + s.w.Dev[3]) + '. It turns out of sight, higher up: the edge is the window’s limit, not the shell’s.', right: true },
-              { html: 'It is the maximum: the highest point you can see is the greatest height.', why: 'A maximum is where the curve <b>turns</b>. On Dev’s screen it is still rising when it leaves the screen.' },
-              { html: 'A calculator can’t find the maximum of a parabola.', why: cd('4:maximum') + ' finds it — once the turning point is on the screen.' },
-              { html: 'The maximum of a height model is always at ' + t('t=0') + '.', why: 'The shell rises after it is fired, so the greatest height comes later, at the vertex.' }],
-              'A maximum is where the curve turns. Dev’s curve crosses ' + t('h=' + s.w.Dev[3]) + ' on the way up and on the way down; it turns out of sight at ' + t(nT(s.pk)) + ' m. Raise ' + cd('Ymax') + ' to see it.', ['Is the curve turning at the edge, or still rising?'], 'edge is not a maximum');
-          } }] },
-      { num: '2', shared: shell,
-        stem: function (s) { return 'Use a fireworks shell with height ' + t(s.eq) + ' metres, ' + t('t') + ' seconds after firing. Graph it on your calculator in a window you trust.'; },
-        parts: [
-          { id: 'e2a', sub: 'window', level: 'EMG', make: function (r, s) {
-            var key = winKey([0, s.land], [0, s.pk]);
-            return winPart({ prompt: 'Enter a window that shows the whole flight, from firing to landing, including the highest point.', x: [0, s.land], y: [0, s.pk], xv: 't', yv: 'h', xNeg: 'is time since firing', yNonneg: true,
-              need: 'the whole flight from firing to landing, including the highest point', xHi: 'the landing', xHiHow: 'Find the landing with ' + cd('2:zero') + ' and set ' + cd('Xmax') + ' a little past it.', yHi: 'the top of the flight', yHiHow: 'Find the greatest height with ' + cd('4:maximum') + '.', yLo: 'the ground (' + t('h=0') + ')',
-              key: key, good: s.b === 30 && s.c === 2 ? [[0, 7, 0, 50]] : [[0, Math.ceil(s.land), 0, Math.ceil(s.pk + 1)]], bad: [[-10, 10, -10, 10], [0, s.tv, 0, s.pk + 3], [0, s.land + 1, 0, s.pk * 0.4]],
-              sol: cd('2:zero') + ' gives the landing at ' + t('t\\approx ' + rT(s.land, 2)) + ' and ' + cd('4:maximum') + ' gives the peak ' + t(nT(s.pk)) + ' m, so a window like ' + t('[0,\\ ' + nT(key[1]) + ']') + ' by ' + t('[0,\\ ' + nT(key[3]) + ']') + ' works.' + quadFig(s, key, [{ x: s.tv, y: s.pk }]), text: 'window ' + s.eq });
-          } },
-          { id: 'e2b', sub: 'a', level: 'BEG', make: function (r, s) {
-            return numPart('State the ' + t('h') + '-intercept. (It is the height of the mouth of the mortar tube.)', s.c, 2, [{ v: 0, code: 'ctx-zero-start', hint: 'The shell starts at the top of the tube, above the ground. Substitute ' + t('t=0') + '.' }],
-              'At ' + t('t=0') + ': ' + t('h=-5(0)^{2}+' + s.b + '(0)+' + nT(s.c) + '=' + nT(s.c)) + '. The mouth of the tube is ' + t(nT(s.c)) + ' m above the ground — that is where the shell starts.', ['The ' + t('h') + '-intercept is the value at ' + t('t=0') + '.'], 'h-intercept ' + s.eq, { after: 'm' });
-          } },
-          { id: 'e2c', sub: 'b', level: 'EMG', make: function (r, s) {
-            return numPart('Use ' + cd('2:zero') + ' to find the ' + t('t') + '-intercept in the practical domain (to the nearest hundredth). It is when the shell lands.', s.land, 2, [
-              { v: s.neg, code: 'ctx-neg-time', hint: 'That zero is at a negative time — before the shell was fired. Use the crossing on the right.' },
-              { v: s.tv, code: 'ctx-max-time', hint: 'That is the time of the highest point, not the landing.' },
-              { v: 2 * s.tv, code: 'ctx-double-vertex', hint: 'At ' + t('t=' + nT(2 * s.tv)) + ' the shell is back at the height of the tube, ' + t(nT(s.c)) + ' m — not yet on the ground.' }],
-              zeroSol(quadT(-5, s.b, s.c, 't'), 't', [s.neg, s.land], 1, 2, ' (the negative one is before firing)') + ' The shell is back on the ground ' + t(rT(s.land, 2)) + ' s after firing.', [H_ZERO], 'landing ' + s.eq, { after: 's' });
-          } },
-          { id: 'e2d', sub: 'c', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Use ' + cd('4:maximum') + '. State the greatest height reached and the time it happens.', [
-              { label: 'Greatest height', x: s.pk, d: 2, after: 'm', cands: [{ v: s.tv, code: 'ctx-max-time', hint: 'That is the time. The height is the other coordinate of the vertex.' }] },
-              { label: 'Time', x: s.tv, d: 2, after: 's', cands: [{ v: s.pk, code: 'ctx-gave-h', hint: 'That is the height. The time is the ' + t('t') + '-coordinate of the vertex.' }] }],
-              cd('4:maximum') + ' gives ' + t('(' + nT(s.tv) + ',\\ ' + nT(s.pk) + ')') + '. Check: ' + t('h(' + nT(s.tv) + ')=-5(' + nT(s.tv) + ')^{2}+' + s.b + '(' + nT(s.tv) + ')+' + nT(s.c) + '=' + nT(s.pk)) + '. Greatest height ' + t(nT(s.pk)) + ' m, ' + t(nT(s.tv)) + ' s after firing.', [H_MAX, H_VERT], 'max ' + s.eq, { swap: 'wrong', swapHint: 'Your height and time are swapped: the vertex is ' + t('(t,\\ h)') + ' = (time, height).' });
-          } },
-          { id: 'e2e', sub: 'd', level: 'EMG', make: function (r, s) {
-            return fieldsPart('The shell is set to burst at ' + t(s.H) + ' m. Graph ' + t('Y_2=' + s.H) + ' and use ' + cd('5:intersect') + '. At what two times is the shell ' + t(s.H) + ' m up? (Nearest hundredth.)', [
-              { label: 'Earlier time', x: s.h1, d: 2, after: 's', cands: [{ v: s.tv, code: 'ctx-max-time', hint: 'That is the time of the peak. Find where the curve meets the line ' + t('h=' + s.H) + '.' }] },
-              { label: 'Later time', x: s.h2, d: 2, after: 's', cands: [{ v: s.land, code: 'ctx-gave-end', hint: 'That is the landing. Find where the falling curve passes ' + t(s.H) + ' m.' }] }],
-              t(s.y1) + ', ' + t('Y_2=' + s.H) + ', ' + cd('5:intersect') + ' twice.<br>Algebra: ' + t(quadT(-5, s.b, s.c, 't') + '=' + s.H) + ' gives ' + t(quadT(5, -s.b, s.H - s.c, 't') + '=0') + ', so ' + t('t\\approx ' + rT(s.h1, 2)) + ' and ' + t('t\\approx ' + rT(s.h2, 2)) + ' s.', [H_INT, 'The curve passes this height twice: once going up, once coming down.'], 'times at h=' + s.H, { swap: 'form' });
-          } },
-          { id: 'e2f', sub: 'e', level: 'EMG', make: function (r, s) {
-            var d = rd(s.tv - s.h1, 2);
-            return mc(r, 'Why are there two answers when you find the times at ' + t(s.H) + ' m, and which one must the fuse be set for?', [
-              { html: 'The parabola is symmetric about ' + t('t=' + nT(s.tv)) + ': the shell passes ' + t(s.H) + ' m once rising and once falling. The fuse is set for the first time, ' + t(rT(s.h1, 2)) + ' s.', right: true },
-              { html: 'The parabola is symmetric about ' + t('t=' + nT(s.tv)) + ': the shell passes ' + t(s.H) + ' m twice. The fuse is set for the later time, ' + t(rT(s.h2, 2)) + ' s.', why: 'A fuse burns from the moment of firing: the shell bursts the first time it reaches ' + t(s.H) + ' m, on the way up.' },
-              { html: 'Only ' + t(rT(s.h1, 2)) + ' s is real; ' + t(rT(s.h2, 2)) + ' s is a calculator error.', why: 'Substitute ' + t(rT(s.h2, 2)) + ' into the relation: it really gives about ' + t(s.H) + ' m. The shell comes back down past that height.' },
-              { html: 'The calculator found two different shells.', why: 'There is one shell. A parabola can meet a horizontal line twice — once on each side of the vertex.' }],
-              'The two times are each about ' + t(nT(d)) + ' s from the axis of symmetry ' + t('t=' + nT(s.tv)) + ' (' + t(nT(s.tv) + '\\mp ' + nT(d)) + '): the shell passes ' + t(s.H) + ' m going up and again coming down. The fuse must fire the first time: ' + t(rT(s.h1, 2)) + ' s.', ['Where is the vertex? Which time is on the way up?'], 'symmetry two times');
-          } },
-          { id: 'e2g', sub: 'f-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var L = rd(s.land, 2), tg = setT('t', 0, L), rg = setT('h', 0, s.pk);
-            return setPart('State the practical domain (use the landing time to the nearest hundredth).', tg, { v: 't', other: rg, otherName: 'range', wrong: [
-              { is: setT('t', 0, s.tv), code: 'ctx-dom-vertex', hint: 'The flight doesn’t end at the top — the shell comes back down. End the domain at the landing.' },
-              { is: setT('t', rd(s.neg, 2), L), code: 'ctx-dom-neg', hint: 'The negative zero is before the shell was fired. The flight starts at ' + t('t=0') + '.' },
-              { is: 't\\ge 0', code: 'ctx-dom-open', hint: 'The relation stops describing the shell when it lands.' }] },
-              'From firing (' + t('t=0') + ') to landing (' + t('t\\approx ' + L.toFixed(2)) + '): ' + t('D=' + tg) + '.', H_DOM, 'domain ' + s.eq);
-          } },
-          { id: 'e2h', sub: 'f-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('h', 0, s.pk), dg = setT('t', 0, rd(s.land, 2));
-            return setPart('State the practical range.', tg, { v: 'h', other: dg, otherName: 'domain', wrong: [
-              { is: setT('h', s.c, s.pk), code: 'ctx-rng-start', hint: 'The shell starts at ' + t(nT(s.c)) + ' m, but it ends on the ground: the lowest height is ' + t('0') + '.' },
-              { is: setT('h', 0, s.tv), code: 'ctx-rng-vertex-x', hint: t(nT(s.tv)) + ' is the <b>time</b> of the peak. The range is about heights.' }] },
-              'The lowest height is ' + t('0') + ' (landing) and the highest is ' + t(nT(s.pk)) + ' m at the vertex: ' + t('R=' + tg) + '.', H_DOM, 'range ' + s.eq);
-          } }] },
-      { num: '3', shared: function (r) {
-          var o = r.pick([[84, 0.14], [72, 0.12], [90, 0.15], [96, 0.16], [60, 0.12], [78, 0.13], [105, 0.15], [120, 0.2], [70, 0.14], [88, 0.11], [64, 0.16], [91, 0.13]]);
-          var F0 = o[0], k = o[1], dI = Math.round(F0 / k), dT = r.pick(rng(100, dI - 100, 50)), R = r.pick([10, 15, 20, 25]);
-          return { F0: F0, k: k, dI: dI, dT: dT, FT: cl(F0 - k * dT), R: R, dR: (F0 - R) / k, eq: 'F=' + F0 + '-' + nT(k) + 'd', y1: 'Y_1=' + F0 + '-' + nT(k) + 'X' };
-        },
-        stem: function (s) { return 'A transport truck leaves a depot with a full tank. The fuel remaining, ' + t('F') + ' litres, after the truck has driven ' + t('d') + ' kilometres is modelled by ' + t(s.eq) + '.'; },
-        parts: [
-          { id: 'e3a', sub: 'a', level: 'BEG', make: function (r, s) {
-            var key = winKey([0, s.dI], [0, s.F0]);
-            return winPart({ prompt: 'Enter a window that shows the line from the depot until the tank is empty.', x: [0, s.dI], y: [0, s.F0], xv: 'd', yv: 'F', xNeg: 'is the distance driven from the depot', yNonneg: true,
-              need: 'the line from the depot (' + t('d=0') + ', full tank) to an empty tank', xHi: 'the point where the tank is empty', xHiHow: 'Find the ' + t('d') + '-intercept (' + cd('2:zero') + ', or solve ' + t(s.F0 + '-' + nT(s.k) + 'd=0') + ').', yHi: 'the full tank', yHiHow: 'The tank starts with ' + t(s.F0) + ' L.', yLo: 'the empty tank (' + t('F=0') + ')',
-              key: key, good: s.F0 === 84 ? [[0, 600, 0, 90]] : [[0, s.dI, 0, s.F0]], bad: [[-100, s.dI, 0, s.F0 + 5], [0, s.dI / 2, 0, s.F0 + 5], [0, s.dI + 50, 0, s.F0 / 2]],
-              sol: 'The truck starts at the depot with ' + t(s.F0) + ' L and is empty when ' + t(nT(s.k) + 'd=' + s.F0) + ', ' + t('d=' + s.dI) + ' km. A window ' + t('[0,\\ ' + nT(key[1]) + ']') + ' by ' + t('[0,\\ ' + nT(key[3]) + ']') + ' shows it all.' + screen(key, { xv: 'd', yv: 'F', fns: [{ f: function (x) { return s.F0 - s.k * x; }, from: 0, to: s.dI }] }), text: 'window ' + s.eq });
-          } },
-          { id: 'e3b', sub: 'b', level: 'EMG', make: function (r, s) {
-            return fieldsPart('State the ' + t('F') + '-intercept and the ' + t('d') + '-intercept.', [
-              { label: t('F') + '-intercept', x: s.F0, d: 2, after: 'L', cands: [] },
-              { label: t('d') + '-intercept', x: s.dI, d: 2, after: 'km', cands: [{ v: s.F0 * s.k, code: 'ctx-mult', hint: 'From ' + t(nT(s.k) + 'd=' + s.F0) + ', divide by ' + t(nT(s.k)) + '.' }] }],
-              t('d=0') + ': ' + t('F=' + s.F0) + ' — the truck leaves with ' + t(s.F0) + ' L. ' + t('F=0') + ': ' + t(nT(s.k) + 'd=' + s.F0 + '\\Rightarrow d=' + s.dI) + ' — the tank is empty after ' + t(s.dI) + ' km.', [H_ZERO, 'The ' + t('F') + '-intercept is the value at ' + t('d=0') + '.'], 'intercepts ' + s.eq, { swap: 'wrong', swapHint: 'The two intercepts are in each other’s boxes: the ' + t('F') + '-intercept is a number of litres (at ' + t('d=0') + ').' });
-          } },
-          { id: 'e3c', sub: 'c', level: 'BEG', make: function (r, s) {
-            return numPart('Use ' + kb('TRACE') + ' to find how much fuel is left after ' + t(s.dT) + ' km.', s.FT, 2, [
-              { v: s.k * s.dT, code: 'ctx-used', hint: 'That is the fuel <b>used</b>. The fuel left is ' + t(s.F0) + ' minus that.' },
-              { v: s.F0 + s.k * s.dT, code: 'ctx-sign', hint: 'Fuel goes down as the truck drives: subtract ' + t(nT(s.k) + '(' + s.dT + ')') + '.' }],
-              kb('TRACE') + ' to ' + t('X=' + s.dT) + ': ' + t('F=' + s.F0 + '-' + nT(s.k) + '(' + s.dT + ')=' + s.F0 + '-' + nT(s.k * s.dT) + '=' + nT(s.FT)) + ' L.', [H_TRACE], 'fuel after ' + s.dT, { after: 'L' });
-          } },
-          { id: 'e3d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numPart('The driver refuels when ' + t(s.R) + ' L remain. How far can the truck go first? (Nearest hundredth.)', s.dR, 2, [
-              { v: s.R / s.k, code: 'ctx-no-sub', hint: 'That is how far ' + t(s.R) + ' L would last. Solve ' + t(s.F0 + '-' + nT(s.k) + 'd=' + s.R) + '.' },
-              { v: s.dI, code: 'ctx-to-empty', hint: 'That is the distance until the tank is empty. The driver stops when ' + t(s.R) + ' L are left.' },
-              { v: (s.F0 + s.R) / s.k, code: 'ctx-added', hint: 'Subtract ' + t(s.R) + ' from ' + t(s.F0) + ' (don’t add): ' + t(nT(s.k) + 'd=' + s.F0 + '-' + s.R) + '.' }],
-              t('Y_2=' + s.R) + ', ' + cd('5:intersect') + '. Algebra: ' + t(s.R + '=' + s.F0 + '-' + nT(s.k) + 'd\\Rightarrow ' + nT(s.k) + 'd=' + (s.F0 - s.R) + '\\Rightarrow d=\\frac{' + (s.F0 - s.R) + '}{' + nT(s.k) + '}' + ap(s.dR, 2) + rT(s.dR, 2)) + ' km.', [H_INT], 'distance to ' + s.R + ' L', { after: 'km' });
-          } },
-          { id: 'e3e', sub: 'e-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('d', 0, s.dI), rg = setT('F', 0, s.F0);
-            return setPart('State the practical domain.', tg, { v: 'd', other: rg, otherName: 'range', wrong: [{ is: 'd\\ge 0', code: 'ctx-dom-open', hint: 'The truck can’t keep driving once the tank is empty.' }] },
-              t('D=' + tg) + ': ' + t('d\\ge 0') + ' because distance driven can’t be negative; ' + t('d\\le ' + s.dI) + ' because the tank is empty there and the truck stops.', H_DOM, 'domain ' + s.eq);
-          } },
-          { id: 'e3f', sub: 'e-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('F', 0, s.F0), dg = setT('d', 0, s.dI);
-            return setPart('State the practical range.', tg, { v: 'F', other: dg, otherName: 'domain', wrong: [{ is: 'F\\le ' + s.F0, code: 'ctx-rng-open', hint: 'A tank can’t hold a negative amount of fuel: the least value is ' + t('0') + '.' }] },
-              t('R=' + tg) + ': ' + t('F\\ge 0') + ' (a tank can’t hold negative fuel) and ' + t('F\\le ' + s.F0) + ' (the tank was full at the start).', H_DOM, 'range ' + s.eq);
-          } },
-          { id: 'e3g', sub: 'f', level: 'EMG', make: function (r, s) {
-            return mc(r, 'A student sets ' + cd('Xmin') + ' = −100 “so the ' + t('y') + '-axis isn’t on the edge of the screen.” What is wrong with a negative ' + cd('Xmin') + ' here?', [
-              { html: t('d') + ' counts kilometres driven from the depot, so ' + t('d<0') + ' never happened: the screen would show fuel levels above a full tank (' + t('F>' + s.F0) + ') that never existed. Keep ' + cd('Xmin') + ' = 0.', right: true },
-              { html: 'Nothing — a negative ' + cd('Xmin') + ' always makes the graph easier to read.', why: 'The part left of ' + t('d=0') + ' describes distances the truck never drove. Fit the window to the situation.' },
-              { html: 'The calculator can’t graph negative values of ' + t('X') + '.', why: 'It can — that is the problem: it draws a part of the line that has no meaning here.' },
-              { html: 'It hides the ' + t('F') + '-intercept.', why: 'The ' + t('F') + '-intercept (at ' + t('d=0') + ') is still on the screen. The trouble is the extra piece to its left.' }],
-              t('d') + ' is the distance <i>from</i> the depot, so negative values never happen; the graph left of ' + t('d=0') + ' shows ' + t('F>' + s.F0) + ', more fuel than the full tank. Use ' + cd('Xmin') + ' = 0 (and widen ' + cd('Xmax') + ' if you want room).', ['What would ' + t('d=-100') + ' mean for the truck?'], 'negative Xmin');
-          } }] },
-
-      /* ---------- Part B — revenue, profit, vertex ---------- */
-      { num: '4', section: 'Extra practice B — Revenue, profit, and what the vertex means', shared: function (r) {
-          var Bc = r.pick([2, 4, 5]), Z = r.pick([20, 24, 30, 36, 40]), A = Bc * Z, p1 = r.int(3, Z / 2 - 3), p2 = Z - p1;
-          return { B: Bc, Z: Z, A: A, pv: Z / 2, Vm: Bc * Z * Z / 4, p1: p1, p2: p2, T: Bc * p1 * p2, eq: 'V=' + A + 'p-' + Bc + 'p^{2}' };
-        },
-        stem: function (s) { return 'A shop finds that if it charges ' + t('p') + ' dollars for a phone case, it sells ' + t(s.A + '-' + s.B + 'p') + ' cases a week. Its weekly revenue, ' + t('V') + ' dollars, is ' + t('V=p(' + s.A + '-' + s.B + 'p)') + ', which expands to ' + t(s.eq) + '.'; },
-        parts: [
-          { id: 'e4a', sub: 'b-i', level: 'EMG', make: function (r, s) {
-            return B.valueSet('Find both ' + t('p') + '-intercepts.', [0, s.Z], { v: 'p', diag: function (A) { if (A.length === 1 && Math.abs(A[0] - s.A) < 1e-9) return { code: 'ctx-gave-a', hint: t(s.A) + ' is the number of cases sold when the price is ' + t('\\$0') + '. Solve ' + t('p(' + s.A + '-' + s.B + 'p)=0') + '.' }; return null; } },
-              cd('2:zero') + ' twice, or factor: ' + t('p(' + s.A + '-' + s.B + 'p)=0') + ', so ' + t('p=0') + ' or ' + t(s.A + '-' + s.B + 'p=0\\Rightarrow p=' + s.Z) + '.', [H_ZERO, 'Each factor of ' + t('p(' + s.A + '-' + s.B + 'p)') + ' can be zero.'], 'p-intercepts ' + s.eq);
-          } },
-          { id: 'e4b', sub: 'b-ii', level: 'EMG', make: function (r, s) {
-            return mc(r, 'The two ' + t('p') + '-intercepts mean two <i>different</i> things. Which explanation is right?', [
-              { html: t('p=\\$0') + ': ' + t(s.A) + ' cases are given away free, so the revenue is ' + t('\\$0') + '. ' + t('p=\\$' + s.Z) + ': nobody buys a case, so again the revenue is ' + t('\\$0') + '.', right: true },
-              { html: 'Both mean that no cases are sold.', why: 'At ' + t('p=0') + ' the shop “sells” ' + t(s.A + '-' + s.B + '(0)=' + s.A) + ' cases — but for nothing.' },
-              { html: t('p=\\$0') + ': the shop is closed. ' + t('p=\\$' + s.Z) + ': the shop sells out.', why: 'Use the formula for cases sold, ' + t(s.A + '-' + s.B + 'p') + ': at ' + t('p=' + s.Z) + ' it is ' + t('0') + ' cases.' },
-              { html: t('p=\\$' + s.Z) + ' is the best price, because it is the largest intercept.', why: 'At an intercept the revenue is ' + t('\\$0') + '. The best price is at the vertex, between the intercepts.' }],
-              'At ' + t('p=0') + ' the cases are free: ' + t(s.A) + ' sold × ' + t('\\$0') + ' = ' + t('\\$0') + '. At ' + t('p=' + s.Z) + ', ' + t(s.A + '-' + s.B + '(' + s.Z + ')=0') + ' cases sell: ' + t('\\$0') + ' again.', ['Find the number of cases sold, ' + t(s.A + '-' + s.B + 'p') + ', at each intercept.'], 'meaning of revenue intercepts');
-          } },
-          { id: 'e4c', sub: 'c', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Use ' + cd('4:maximum') + '. State the price that earns the most and the revenue it earns.', [
-              { label: 'Price', x: s.pv, d: 2, before: '$', cands: [] }, { label: 'Weekly revenue', x: s.Vm, d: 2, before: '$', cands: [] }],
-              cd('4:maximum') + ' gives ' + t('(' + s.pv + ',\\ ' + s.Vm + ')') + '. Check: ' + t(s.A + '(' + s.pv + ')-' + s.B + '(' + s.pv + ')^{2}=' + (s.A * s.pv) + '-' + (s.B * s.pv * s.pv) + '=' + s.Vm) + '. Charge ' + t(money(s.pv)) + ' per case for ' + t(money(s.Vm)) + ' a week.', [H_MAX, H_VERT], 'max revenue ' + s.eq, { swap: 'wrong', swapHint: 'Price and revenue are swapped: the vertex is (price, revenue).' });
-          } },
-          { id: 'e4d', sub: 'd', level: 'BEG', make: function (r, s) {
-            var n = s.A - s.B * s.pv;
-            return numPart('How many cases are sold at the price that earns the most revenue?', n, 2, [{ v: s.Vm, code: 'ctx-gave-h', hint: 'That is the revenue. Cases sold = ' + t(s.A + '-' + s.B + 'p') + '.' }, { v: s.pv, code: 'ctx-gave-a', hint: 'That is the price. Substitute it into ' + t(s.A + '-' + s.B + 'p') + '.' }],
-              t(s.A + '-' + s.B + '(' + s.pv + ')=' + n) + ' cases. Check: ' + t(n + '\\times\\$' + s.pv + '=\\$' + F(s.Vm)) + ' ✓.', ['Substitute the price into the number of cases sold, ' + t(s.A + '-' + s.B + 'p') + '.'], 'cases at best price', { after: 'cases' });
-          } },
-          { id: 'e4e', sub: 'e', level: 'PRG', make: function (r, s) {
-            return B.valueSet('Use ' + cd('5:intersect') + ' with ' + t('Y_2=' + s.T) + '. Two prices give a weekly revenue of ' + t(money(s.T)) + '. Find both.', [s.p1, s.p2], { v: 'p' },
-              t(s.y1 || ('Y_1=' + s.A + 'X-' + s.B + 'X^{2}')) + ', ' + t('Y_2=' + s.T) + ': ' + cd('5:intersect') + ' on each side of the vertex.<br>Algebra: ' + t(s.A + 'p-' + s.B + 'p^{2}=' + s.T + '\\Rightarrow p^{2}-' + s.Z + 'p+' + (s.p1 * s.p2) + '=0\\Rightarrow (p-' + s.p1 + ')(p-' + s.p2 + ')=0') + ', so ' + t('p=' + s.p1) + ' or ' + t('p=' + s.p2) + '.', [H_INT, 'The line ' + t('V=' + s.T) + ' meets the parabola twice, once on each side of the vertex.'], 'prices for revenue ' + s.T);
-          } },
-          { id: 'e4f', sub: 'f', level: 'PRG', make: function (r, s) {
-            var c1 = s.A - s.B * s.p1, c2 = s.A - s.B * s.p2;
-            return fieldsPart('Two prices give the same weekly revenue of ' + t(money(s.T)) + '. The owner says “the same money for fewer cases is better.” Which of the two prices should she charge, and how many cases does she sell?', [
-              { label: 'Price', x: s.p2, d: 2, before: '$', cands: [{ v: s.p1, code: 'ctx-more-cases', hint: 'At ' + t(money(s.p1)) + ' she sells ' + t(c1) + ' cases. Which price sells <b>fewer</b> cases for the same money?' }] },
-              { label: 'Cases sold', x: c2, d: 2, after: 'cases', cands: [{ v: c1, code: 'ctx-more-cases', hint: 'That is the number of cases at the lower price.' }] }],
-              'At ' + t(money(s.p1)) + ': ' + t(s.A + '-' + s.B + '(' + s.p1 + ')=' + c1) + ' cases. At ' + t(money(s.p2)) + ': ' + t(s.A + '-' + s.B + '(' + s.p2 + ')=' + c2) + ' cases. Same ' + t(money(s.T)) + ' for fewer cases: charge ' + t(money(s.p2)) + ' and sell ' + t(c2) + ' cases.', ['Find the cases sold at each price with ' + t(s.A + '-' + s.B + 'p') + '.'], 'fewer cases price');
-          } },
-          { id: 'e4g', sub: 'g-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('p', 0, s.Z), rg = setT('V', 0, s.Vm);
-            return setPart('State the practical domain.', tg, { v: 'p', other: rg, otherName: 'range', wrong: [{ is: setT('p', 0, s.pv), code: 'ctx-dom-vertex', hint: 'Prices above ' + t(money(s.pv)) + ' are possible — they just earn less. The domain ends where sales reach ' + t('0') + '.' }, { is: 'p\\ge 0', code: 'ctx-dom-open', hint: 'Above ' + t(money(s.Z)) + ' the formula gives a negative number of cases sold.' }] },
-              'Prices from ' + t('\\$0') + ' up to ' + t(money(s.Z)) + ', where sales reach ' + t('0') + ': ' + t('D=' + tg) + '.', H_DOM, 'domain ' + s.eq);
-          } },
-          { id: 'e4h', sub: 'g-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('V', 0, s.Vm), dg = setT('p', 0, s.Z);
-            return setPart('State the practical range.', tg, { v: 'V', other: dg, otherName: 'domain', wrong: [{ is: setT('V', 0, s.pv), code: 'ctx-rng-vertex-x', hint: t(s.pv) + ' is the best <b>price</b>. The range is about revenue.' }] },
-              'Revenue from ' + t('\\$0') + ' (at either intercept) up to the ' + t(money(s.Vm)) + ' peak: ' + t('R=' + tg) + '.', H_DOM, 'range ' + s.eq);
-          } }] },
-      { num: '5', shared: function (r) {
-          return pickWhere(function () {
-            var b = r.pick([30, 36, 40, 44, 50]), c = r.pick([150, 200, 250, 300, 350]), D = b * b - 2 * c, sq = Math.sqrt(D), N = r.int(15, 35);
-            return { b: b, c: c, r1: b - sq, r2: b + sq, nv: b, Pm: 0.5 * b * b - c, N: N, PN: cl(-0.5 * N * N + b * N - c), eq: 'P=' + quadT(-0.5, b, -c, 'n'), P: function (n) { return cl(-0.5 * n * n + b * n - c); } };
-          }, function (o) { return o.r1 > 3 && margin(o.r1, 2) && margin(o.r2, 2) && Math.abs(o.r1 - Math.round(o.r1)) > 0.05 && o.N > o.r1 + 2 && o.N < o.nv - 2; });
-        },
-        stem: function (s) { return 'A food truck’s daily profit, ' + t('P') + ' dollars, from selling ' + t('n') + ' meals is modelled by ' + t(s.eq) + '.'; },
-        parts: [
-          { id: 'e5a', sub: 'a-i', level: 'BEG', make: function (r, s) {
-            return numPart('Find the ' + t('P') + '-intercept.', -s.c, 2, [{ v: s.c, code: 'int-sign', hint: 'Check the sign: at ' + t('n=0') + ' only the ' + t('-' + s.c) + ' is left.' }, { v: 0, code: 'ctx-zero-start', hint: 'Substitute ' + t('n=0') + ': the constant term stays.' }],
-              t('n=0') + ': ' + t('P=-0.5(0)^{2}+' + s.b + '(0)-' + s.c + '=-' + s.c) + '.', ['The ' + t('P') + '-intercept is the value at ' + t('n=0') + '.'], 'P-intercept ' + s.eq, { money: true });
-          } },
-          { id: 'e5b', sub: 'a-ii', level: 'EMG', make: function (r, s) {
-            return mc(r, 'What does a <b>negative</b> ' + t('P') + '-intercept mean for the truck?', [
-              { html: 'With no meals sold the truck is ' + t(money(s.c)) + ' down: its fixed daily costs (permit, fuel, propane) with no sales to pay for them.', right: true },
-              { html: 'The truck must sell ' + t(s.c) + ' meals to break even.', why: 'The ' + t('P') + '-intercept is a profit in dollars at ' + t('n=0') + ', not a number of meals.' },
-              { html: 'The truck starts each day with ' + t(money(s.c)) + ' in cash.', why: 'The value is negative: a loss, not money in hand.' },
-              { html: 'The model doesn’t work at ' + t('n=0') + ', so the intercept means nothing.', why: 'A day with no sales can happen, and the truck still pays its costs — the intercept is meaningful.' }],
-              t('P(0)=-' + s.c) + ': on a day with no sales the truck still pays its fixed costs, so it loses ' + t(money(s.c)) + '.', ['What is the profit when ' + t('n=0') + '? What does a negative profit mean?'], 'negative P-intercept meaning');
-          } },
-          { id: 'e5c', sub: 'b', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Use ' + cd('2:zero') + ' twice. State both break-even values of ' + t('n') + ' (nearest hundredth).', [
-              { label: 'Smaller', x: s.r1, d: 2, after: 'meals', cands: [{ v: s.nv, code: 'ctx-max-time', hint: 'That is the vertex. Break even is where ' + t('P=0') + '.' }] },
-              { label: 'Larger', x: s.r2, d: 2, after: 'meals', cands: [{ v: s.nv, code: 'ctx-max-time', hint: 'That is the vertex. Break even is where ' + t('P=0') + '.' }] }],
-              cd('2:zero') + ' on each crossing. Algebra: ' + t(quadT(-0.5, s.b, -s.c, 'n') + '=0\\Rightarrow n^{2}-' + (2 * s.b) + 'n+' + (2 * s.c) + '=0\\Rightarrow n=' + s.b + '\\pm\\sqrt{' + (s.b * s.b - 2 * s.c) + '}') + ', so ' + t('n\\approx ' + rT(s.r1, 2)) + ' and ' + t('n\\approx ' + rT(s.r2, 2)) + '.', [H_ZERO], 'break-even ' + s.eq, { swap: 'form' });
-          } },
-          { id: 'e5d', sub: 'c', level: 'ADV', make: function (r, s) {
-            var lo = Math.ceil(s.r1), hi = Math.floor(s.r2);
-            return wholeOnly(fieldsPart('Meals are sold whole. State the smallest and the largest whole numbers of meals that still make a profit.', [
-              { label: 'Smallest', x: lo, d: 0, after: 'meals', cands: [{ v: lo - 1, code: 'ctx-round-down', hint: 'Check: ' + t('P(' + (lo - 1) + ')=' + money(s.P(lo - 1))) + ' — still a loss. Round <b>up</b> from ' + t(rT(s.r1, 2)) + '.' }] },
-              { label: 'Largest', x: hi, d: 0, after: 'meals', cands: [{ v: hi + 1, code: 'ctx-round-up', hint: 'Check: ' + t('P(' + (hi + 1) + ')=' + money(s.P(hi + 1))) + ' — a loss. Round <b>down</b> from ' + t(rT(s.r2, 2)) + '.' }] }],
-              'A profit needs ' + t(rT(s.r1, 2) + '<n<' + rT(s.r2, 2)) + '. Smallest: ' + t(lo) + ' meals, ' + t('P(' + lo + ')=' + money(s.P(lo)) + '>0') + '. Largest: ' + t(hi) + ' meals, ' + t('P(' + hi + ')=' + money(s.P(hi)) + '>0') + '. The neighbours lose: ' + t('P(' + (lo - 1) + ')=' + money(s.P(lo - 1))) + ', ' + t('P(' + (hi + 1) + ')=' + money(s.P(hi + 1))) + '.', ['The profit is positive between the two break-even values. Which whole numbers are inside that interval?', 'Check your answers by substituting them (and their neighbours) into ' + t('P') + '.'], 'whole meals for profit'), 'Meals are sold whole: give whole numbers of meals. Which whole numbers lie between the two break-even values?');
-          } },
-          { id: 'e5e', sub: 'd', level: 'EMG', make: function (r, s) {
-            return fieldsPart('What is the greatest daily profit, and how many meals produce it?', [
-              { label: 'Greatest profit', x: s.Pm, d: 2, before: '$', cands: [{ v: s.nv, code: 'ctx-max-time', hint: 'That is the number of meals. The profit is the other coordinate.' }] },
-              { label: 'Meals', x: s.nv, d: 2, after: 'meals', cands: [{ v: s.Pm, code: 'ctx-gave-h', hint: 'That is the profit. The number of meals is the ' + t('n') + '-coordinate of the vertex.' }] }],
-              cd('4:maximum') + ' gives ' + t('(' + s.nv + ',\\ ' + s.Pm + ')') + '. Check: ' + t('n=-\\frac{' + s.b + '}{2(-0.5)}=' + s.nv) + ', ' + t('P(' + s.nv + ')=' + nT(-0.5 * s.nv * s.nv) + '+' + (s.b * s.nv) + '-' + s.c + '=' + s.Pm) + '.', [H_MAX, H_VERT], 'max profit ' + s.eq, { swap: 'wrong', swapHint: 'Profit and meals are swapped: the vertex is (meals, profit).' });
-          } },
-          { id: 'e5f', sub: 'e', level: 'BEG', make: function (r, s) {
-            return numPart('Find the profit on a day when ' + t(s.N) + ' meals are sold.', s.PN, 2, [{ v: 0.5 * s.N * s.N + s.b * s.N - s.c, code: 'ctx-sign-sq', hint: 'Keep the minus sign: ' + t('-0.5(' + s.N + ')^{2}=' + nT(-0.5 * s.N * s.N)) + '.' }, { v: -0.5 * s.N * s.N + s.b * s.N, code: 'ctx-no-c', hint: 'Subtract the ' + t(s.c) + ' too.' }],
-              t('P=-0.5(' + s.N + ')^{2}+' + s.b + '(' + s.N + ')-' + s.c + '=' + nT(-0.5 * s.N * s.N) + '+' + (s.b * s.N) + '-' + s.c + '=' + money(s.PN)) + '.', [H_TRACE], 'profit at ' + s.N, { money: true });
-          } },
-          { id: 'e5g', sub: 'f', level: 'PRG', make: function (r, s) {
-            return mc(r, 'Why does selling <b>more</b> than ' + t(s.nv) + ' meals lower the profit, even though every meal is sold at a price?', [
-              { html: 'Past the vertex the parabola falls: the ' + t('-0.5n^{2}') + ' cost term grows faster than the ' + t(s.b + 'n') + ' income, so each extra meal costs more to make than it brings in.', right: true },
-              { html: 'It doesn’t: selling more meals always earns more profit.', why: 'Compare ' + t('P(' + s.nv + ')=' + money(s.Pm)) + ' with ' + t('P(' + (s.nv + 1) + ')=' + money(s.P(s.nv + 1))) + '.' },
-              { html: 'After ' + t(s.nv) + ' meals the price of a meal drops below ' + t('\\$0') + '.', why: 'The model is about profit, not price. Look at how the two terms ' + t(s.b + 'n') + ' and ' + t('-0.5n^{2}') + ' grow.' },
-              { html: 'The truck runs out of food after ' + t(s.nv) + ' meals.', why: 'Then the profit would stay the same, not fall. The falling graph says each extra meal loses money.' }],
-              'The graph turns at the vertex ' + t('(' + s.nv + ',\\ ' + s.Pm + ')') + ' and then falls: ' + t('P(' + (s.nv + 1) + ')=' + money(s.P(s.nv + 1)) + '<' + money(s.Pm)) + '. The ' + t('-0.5n^{2}') + ' term (costs like overtime and waste) grows faster than the ' + t(s.b + 'n') + ' income.', ['What does the graph do after the vertex?'], 'why profit falls past vertex');
-          } }] },
-      { num: '6', shared: function (r) {
-          return pickWhere(function () {
-            var a = r.pick([2, 3, 4]), r1 = r.pick([16, 18, 20, 22, 24]), r2 = r.pick([2, 4]), b = a * (r1 - r2), c = a * r1 * r2, tv = (r1 - r2) / 2, pk = a * Math.pow((r1 + r2) / 2, 2);
-            var Ts = rng(Math.ceil((c + 0.3 * (pk - c)) / 50) * 50, pk - 0.15 * (pk - c), 50), T = Ts.length ? r.pick(Ts) : 0, d = T ? Math.sqrt((pk - T) / a) : 0;
-            return { a: a, r1: r1, r2: r2, b: b, c: c, tv: tv, pk: pk, T: T, t1: tv - d, t2: tv + d, eq: 'N=' + quadT(-a, b, c, 't') };
-          }, function (o) { return o.T && margin(o.t1, 2) && margin(o.t2, 2) && o.c < 400; });
-        },
-        stem: function (s) { return 'A lake is stocked with trout. The number of trout, ' + t('N') + ', in the lake ' + t('t') + ' years after stocking is modelled by ' + t(s.eq) + '.'; },
-        parts: [
-          { id: 'e6a', sub: 'b', level: 'BEG', make: function (r, s) {
-            return numPart('How many trout were put in the lake? (Which feature of the graph tells you?)', s.c, 0, [{ v: s.pk, code: 'ctx-gave-h', hint: 'That is the greatest population. The number stocked is the value at ' + t('t=0') + '.' }],
-              t('t=0') + ': ' + t('N=-' + s.a + '(0)^{2}+' + s.b + '(0)+' + s.c + '=' + s.c) + '. ' + t(s.c) + ' trout were stocked — the ' + t('N') + '-intercept.', ['The stocking happens at ' + t('t=0') + ': the ' + t('N') + '-intercept.'], 'trout stocked', { after: 'trout' });
-          } },
-          { id: 'e6b', sub: 'c', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Find the vertex: when does the population peak, and how many trout are there then?', [
-              { label: 'Time', x: s.tv, d: 2, after: 'years', cands: [] }, { label: 'Greatest number', x: s.pk, d: 0, after: 'trout', cands: [] }],
-              cd('4:maximum') + ' gives ' + t('(' + s.tv + ',\\ ' + s.pk + ')') + '. Check: ' + t('t=-\\frac{' + s.b + '}{2(-' + s.a + ')}=' + s.tv) + ', ' + t('N(' + s.tv + ')=' + (-s.a * s.tv * s.tv) + '+' + (s.b * s.tv) + '+' + s.c + '=' + s.pk) + '. The population peaks at ' + t(s.pk) + ' trout, ' + t(s.tv) + ' years after stocking.', [H_MAX, H_VERT], 'trout vertex', { swap: 'wrong', swapHint: 'Time and number are swapped: the vertex is (time, number of trout).' });
-          } },
-          { id: 'e6c', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numPart('Use ' + cd('2:zero') + '. How many years after stocking does the model predict the trout are gone?', s.r1, 2, [
-              { v: -s.r2, code: 'ctx-neg-time', hint: 'That zero is before the lake was stocked. Use the crossing on the right.' },
-              { v: s.tv, code: 'ctx-max-time', hint: 'That is when the population peaks, not when it reaches ' + t('0') + '.' }],
-              zeroSol(quadT(-s.a, s.b, s.c, 't'), 't', [-s.r2, s.r1], 1, 2) + ' (factored: ' + t('-' + s.a + '(t-' + s.r1 + ')(t+' + s.r2 + ')=0') + '). Reject ' + t('t=-' + s.r2) + ': the trout are gone ' + t(s.r1) + ' years after stocking.', [H_ZERO], 'trout gone', { after: 'years' });
-          } },
-          { id: 'e6d', sub: 'e', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Use ' + cd('5:intersect') + ' with ' + t('Y_2=' + s.T) + ' to find both times the population is ' + t(s.T) + ' trout (nearest hundredth).', [
-              { label: 'Earlier time', x: s.t1, d: 2, after: 'years', cands: [{ v: s.tv, code: 'ctx-max-time', hint: 'That is the peak. Find where the curve meets ' + t('N=' + s.T) + '.' }] },
-              { label: 'Later time', x: s.t2, d: 2, after: 'years', cands: [{ v: s.r1, code: 'ctx-gave-end', hint: 'That is when the trout are gone. Find where the falling curve passes ' + t(s.T) + '.' }] }],
-              t('Y_2=' + s.T) + ', ' + cd('5:intersect') + ' twice. Algebra: ' + t(quadT(-s.a, s.b, s.c, 't') + '=' + s.T + '\\Rightarrow ' + quadT(s.a, -s.b, s.T - s.c, 't') + '=0') + ', ' + t('t\\approx ' + rT(s.t1, 2)) + ' and ' + t('t\\approx ' + rT(s.t2, 2)) + ' years (symmetric about ' + t('t=' + s.tv) + ').', [H_INT], 'trout = ' + s.T, { swap: 'form' });
-          } },
-          { id: 'e6e', sub: 'f-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('t', 0, s.r1), rg = setT('N', 0, s.pk);
-            return setPart('State the practical domain.', tg, { v: 't', other: rg, otherName: 'range', wrong: [{ is: setT('t', -s.r2, s.r1), code: 'ctx-dom-neg', hint: 'Before stocking (' + t('t<0') + ') this relation describes nothing. Start at ' + t('t=0') + '.' }, { is: setT('t', 0, s.tv), code: 'ctx-dom-vertex', hint: 'The model goes on after the peak, until the trout are gone.' }] },
-              'From stocking (' + t('t=0') + ') until the trout are gone (' + t('t=' + s.r1) + '): ' + t('D=' + tg) + '.', H_DOM, 'trout domain');
-          } },
-          { id: 'e6f', sub: 'f-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('N', 0, s.pk), dg = setT('t', 0, s.r1);
-            return setPart('State the practical range.', tg, { v: 'N', other: dg, otherName: 'domain', wrong: [{ is: setT('N', s.c, s.pk), code: 'ctx-rng-start', hint: 'The population falls below the ' + t(s.c) + ' stocked, all the way to ' + t('0') + '.' }] },
-              'Fewest ' + t('0') + ' (when they are gone), most ' + t(s.pk) + ' at the vertex: ' + t('R=' + tg) + '.', H_DOM, 'trout range');
-          } },
-          { id: 'e6g', sub: 'g', level: 'EMG', make: function (r, s) {
-            return mc(r, 'The other ' + t('t') + '-intercept is ' + t('t=-' + s.r2) + '. Why does the calculator draw it while a biologist ignores it?', [
-              { html: 'The calculator graphs the whole equation, which has two roots. ' + t('t=-' + s.r2) + ' is ' + t(s.r2) + ' years <i>before</i> stocking, outside the practical domain.', right: true },
-              { html: t('t=-' + s.r2) + ' is a calculator rounding error.', why: 'Substitute ' + t('t=-' + s.r2) + ': ' + t('N=0') + ' exactly. It is a real root of the equation.' },
-              { html: 'It means the trout were gone ' + t(s.r2) + ' years ago.', why: 'Before stocking there were no trout in this model at all; the relation only starts at ' + t('t=0') + '.' },
-              { html: 'Biologists only use positive numbers.', why: 'The reason is the situation: time is measured from the stocking.' }],
-              'The equation has two roots, and the calculator draws both. But ' + t('t') + ' is measured from the stocking, so ' + t('t=-' + s.r2) + ' is before anything happened: it lies outside the practical domain.', ['When does this situation start?'], 'ignore negative root');
-          } }] },
-
-      /* ---------- Part C — where the model stops being realistic ---------- */
-      { num: '7', section: 'Extra practice C — Where the model stops being realistic', shared: function (r) {
-          return pickWhere(function () {
-            var T0 = r.int(85, 95), rt = r.pick([2.4, 2.5, 3.2, 3.6, 4]), room = r.pick([20, 21, 22]), t1 = r.int(5, 15), t2 = r.pick([5, 10, 15]);
-            return { T0: T0, rt: rt, room: room, t1: t1, T1: cl(T0 - rt * t1), t2: t2, Tc: cl(T0 - rt * t2), ti: T0 / rt, tr: (T0 - room) / rt, eq: 'T=' + T0 + '-' + nT(rt) + 't' };
-          }, function (o) { return isDp(o.Tc, 0) && o.Tc > o.room + 10 && o.T1 > o.room + 3 && (isDp(o.tr, 2) || margin(o.tr, 2)) && (isDp(o.ti, 2) || margin(o.ti, 2)); });
-        },
-        stem: function (s) { return 'A mug of coffee is poured at ' + t(s.T0 + '^\\circ\\text{C}') + ' in a room kept at ' + t(s.room + '^\\circ\\text{C}') + '. For the first while, its temperature ' + t('T') + ' (in ' + t('^\\circ\\text{C}') + ') after ' + t('t') + ' minutes is modelled by ' + t(s.eq) + '.'; },
-        parts: [
-          { id: 'e7a', sub: 'a', level: 'BEG', make: function (r, s) {
-            return numPart('Use ' + kb('TRACE') + ' to find the temperature after ' + t(s.t1) + ' minutes.', s.T1, 2, [{ v: s.rt * s.t1, code: 'ctx-change', hint: 'That is the drop. Subtract it from ' + t(s.T0) + '.' }, { v: s.T0 + s.rt * s.t1, code: 'ctx-sign', hint: 'The coffee cools: subtract ' + t(nT(s.rt) + '(' + s.t1 + ')') + '.' }],
-              t('T=' + s.T0 + '-' + nT(s.rt) + '(' + s.t1 + ')=' + s.T0 + '-' + nT(s.rt * s.t1) + '=' + nT(s.T1) + '^\\circ\\text{C}') + '.', [H_TRACE], 'coffee at ' + s.t1, { after: '°C' });
-          } },
-          { id: 'e7b', sub: 'b', level: 'EMG', make: function (r, s) {
-            return numPart('Use ' + cd('5:intersect') + ' to find when the coffee reaches ' + t(s.Tc + '^\\circ\\text{C}') + '.', s.t2, 2, [{ v: s.Tc / s.rt, code: 'ctx-no-sub', hint: 'Solve ' + t(s.T0 + '-' + nT(s.rt) + 't=' + s.Tc) + ': first subtract ' + t(s.T0) + '.' }, { v: s.T0 - s.rt * s.Tc, code: 'ctx-eval', hint: t(s.Tc) + ' is a temperature (output). Set the formula equal to it.' }],
-              t('Y_2=' + s.Tc) + ', ' + cd('5:intersect') + ' gives ' + t('(' + s.t2 + ',\\ ' + s.Tc + ')') + '. Algebra: ' + t(s.T0 + '-' + nT(s.rt) + 't=' + s.Tc + '\\Rightarrow ' + nT(s.rt) + 't=' + (s.T0 - s.Tc) + '\\Rightarrow t=' + s.t2) + ' minutes.', [H_INT], 'coffee reaches ' + s.Tc, { after: 'minutes' });
-          } },
-          { id: 'e7c', sub: 'c-i', level: 'EMG', make: function (r, s) {
-            return numPart('Find the ' + t('t') + '-intercept of the line (nearest hundredth).', s.ti, 2, [{ v: s.tr, code: 'ctx-to-empty', hint: 'That is when the line reaches room temperature. The ' + t('t') + '-intercept is where ' + t('T=0') + '.' }, { v: s.T0, code: 'int-gave-y', hint: 'That is the ' + t('T') + '-intercept. Set ' + t('T=0') + '.' }],
-              t('0=' + s.T0 + '-' + nT(s.rt) + 't\\Rightarrow t=\\frac{' + s.T0 + '}{' + nT(s.rt) + '}' + ap(s.ti, 2) + rT(s.ti, 2)) + ' minutes (' + cd('2:zero') + ').', [H_ZERO], 'coffee t-intercept', { after: 'min' });
-          } },
-          { id: 'e7d', sub: 'c-ii', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Why is the ' + t('t') + '-intercept nonsense for a mug of coffee?', [
-              { html: 'The model says the coffee reaches ' + t('0^\\circ\\text{C}') + ', but in a ' + t(s.room + '^\\circ\\text{C}') + ' room it can never get colder than the room.', right: true },
-              { html: 'It is negative, and times can’t be negative.', why: 'The intercept, ' + t(rT(s.ti, 2)) + ', is positive. Think about the temperature it predicts.' },
-              { html: 'Coffee always boils away before it cools that much.', why: 'Cooling coffee doesn’t boil. Compare ' + t('0^\\circ\\text{C}') + ' with the room temperature.' },
-              { html: 'It isn’t nonsense: coffee left long enough freezes.', why: 'Coffee on a table in a ' + t(s.room + '^\\circ\\text{C}') + ' room ends up at room temperature, not frozen.' }],
-              'At the ' + t('t') + '-intercept the line predicts ' + t('0^\\circ\\text{C}') + ' (freezing). A mug in a ' + t(s.room + '^\\circ\\text{C}') + ' room can only cool down to ' + t(s.room + '^\\circ\\text{C}') + '.', ['What temperature does the model give at the ' + t('t') + '-intercept?'], 'coffee intercept nonsense');
-          } },
-          { id: 'e7e', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numPart('Graph ' + t('Y_2=' + s.room) + '. At what time does the line reach room temperature (nearest hundredth)? From then on the model stops being realistic.', s.tr, 2, [{ v: s.ti, code: 'ctx-to-empty', hint: 'That is when the line reaches ' + t('0^\\circ\\text{C}') + '. Use ' + t('Y_2=' + s.room) + '.' }, { v: s.room / s.rt, code: 'ctx-no-sub', hint: 'Solve ' + t(s.T0 + '-' + nT(s.rt) + 't=' + s.room) + ': subtract ' + t(s.T0) + ' first.' }],
-              cd('5:intersect') + ' with ' + t('Y_2=' + s.room) + '. Algebra: ' + t(s.T0 + '-' + nT(s.rt) + 't=' + s.room + '\\Rightarrow ' + nT(s.rt) + 't=' + (s.T0 - s.room) + '\\Rightarrow t' + ap(s.tr, 2) + rT(s.tr, 2)) + ' min. After this the line predicts temperatures below the room’s, which can’t happen.', [H_INT], 'coffee reaches room temp', { after: 'min' });
-          } },
-          { id: 'e7f', sub: 'e-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var hi = rd(s.tr, 2), tg = setT('t', 0, hi), rg = setT('T', s.room, s.T0);
-            return setPart('State the practical domain: from the moment the coffee is poured until the line reaches room temperature, ' + t(s.room + '^\\circ\\text{C}') + ' (upper bound to the nearest hundredth).', tg, { v: 't', other: rg, otherName: 'range', wrong: [{ is: setT('t', 0, rd(s.ti, 2)), code: 'ctx-to-empty', hint: 'The model stops being realistic at room temperature, before it reaches ' + t('0^\\circ\\text{C}') + '.' }] },
-              'From pouring to reaching room temperature: ' + t('D=' + tg) + '.', H_DOM, 'coffee domain');
-          } },
-          { id: 'e7g', sub: 'e-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('T', s.room, s.T0), dg = setT('t', 0, rd(s.tr, 2));
-            return setPart('State the practical range.', tg, { v: 'T', other: dg, otherName: 'domain', wrong: [{ is: setT('T', 0, s.T0), code: 'ctx-rng-start', hint: 'The coffee only cools down to room temperature, ' + t(s.room + '^\\circ\\text{C}') + '.' }] },
-              'From ' + t(s.T0 + '^\\circ\\text{C}') + ' down to ' + t(s.room + '^\\circ\\text{C}') + ': ' + t('R=' + tg) + '.', H_DOM, 'coffee range');
-          } },
-          { id: 'e7h', sub: 'f', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Real coffee doesn’t drop below room temperature, and it cools fastest at the start. How does the true graph differ from this straight line?', [
-              { html: 'It is a curve: steep at first, then flattening out as it approaches ' + t(s.room + '^\\circ\\text{C}') + ', levelling off there instead of crossing it.', right: true },
-              { html: 'It is a steeper straight line that reaches ' + t('0^\\circ\\text{C}') + ' sooner.', why: 'Real coffee never reaches ' + t('0^\\circ\\text{C}') + ' in a warm room, and its rate of cooling changes.' },
-              { html: 'It is a curve that starts flat and gets steeper and steeper.', why: 'The question says it cools <b>fastest at the start</b> — steepest at first.' },
-              { html: 'It is the same line, but it stops at ' + t(s.room + '^\\circ\\text{C}') + '.', why: 'A straight line means a constant rate. Real coffee slows down as it gets close to room temperature.' }],
-              'Fastest at the start means steepest at the start; never below room temperature means it flattens and levels off at ' + t(s.room + '^\\circ\\text{C}') + '. So the true graph is a curve that bends toward the line ' + t('T=' + s.room) + '.', ['Steep where it cools fast, flat where it cools slowly.'], 'true cooling curve');
-          } }] },
-      { num: '8', shared: function (r) {
-          return pickWhere(function () {
-            var P0 = r.pick([3600, 4200, 4800, 5400, 6000]), rt = r.pick([60, 75, 85, 90, 110, 120]), base = r.pick([2005, 2010, 2015]), Pt = 100 * r.int(15, 50), Y = r.pick([15, 20, 25]);
-            return { P0: P0, rt: rt, base: base, Pt: Pt, t1: (P0 - Pt) / rt, ti: P0 / rt, Y: Y, PY: P0 - rt * Y, eq: 'P=' + F(P0) + '-' + rt + 't' };
-          }, function (o) { return o.t1 > 6 && o.t1 < 26 && !isDp(o.t1, 0) && margin(o.t1, 2) && (isDp(o.ti, 2) || margin(o.ti, 2)) && o.ti > 30 && o.PY > 500 && Math.floor(o.base + o.t1) !== Math.ceil(o.base + o.t1); });
-        },
-        stem: function (s) { return 'A town’s population, ' + t('P') + ', is modelled by ' + t(s.eq) + ', where ' + t('t') + ' is the number of years since ' + s.base + '.'; },
-        parts: [
-          { id: 'e8a', sub: 'b', level: 'EMG', make: function (r, s) {
-            var yr = Math.floor(s.base + s.t1);
-            return fieldsPart('In what year does the model give a population of ' + t(F(s.Pt)) + '? Give the number of years (nearest hundredth) and then the calendar year.', [
-              { label: 'Years since ' + s.base, x: s.t1, d: 2, cands: [{ v: s.Pt / s.rt, code: 'ctx-no-sub', hint: 'Solve ' + t(F(s.P0) + '-' + s.rt + 't=' + F(s.Pt)) + ': the change is ' + t(F(s.P0) + '-' + F(s.Pt)) + '.' }] },
-              { label: 'Calendar year', x: yr, d: 0, plain: true, cands: [{ v: yr + 1, code: 'ctx-year-round', hint: t(s.base + '+' + rT(s.t1, 2) + '=' + rT(s.base + s.t1, 2)) + ' is part-way through ' + yr + ', so it happens <b>during</b> ' + yr + '.' }, { v: Math.round(s.t1), code: 'ctx-year-round', hint: 'Add the years to ' + s.base + ' to get the calendar year.' }] }],
-              t(F(s.P0) + '-' + s.rt + 't=' + F(s.Pt) + '\\Rightarrow ' + s.rt + 't=' + F(s.P0 - s.Pt) + '\\Rightarrow t\\approx ' + rT(s.t1, 2)) + ' years (' + cd('5:intersect') + '). ' + t(s.base + '+' + rT(s.t1, 2) + '=' + rT(s.base + s.t1, 2)) + ', so during ' + yr + '.', [H_INT, 'Add the years to ' + s.base + '; a part-way year is still that calendar year.'], 'year population ' + s.Pt);
-          } },
-          { id: 'e8b', sub: 'c', level: 'EMG', make: function (r, s) {
-            return numPart('Find the ' + t('t') + '-intercept (nearest hundredth). The model claims the town is empty then.', s.ti, 2, [{ v: s.P0, code: 'int-gave-y', hint: 'That is the ' + t('P') + '-intercept. Set ' + t('P=0') + '.' }, { v: s.base + s.ti, code: 'ctx-year-round', hint: 'Give the number of years since ' + s.base + ', not the calendar year.' }],
-              t('0=' + F(s.P0) + '-' + s.rt + 't\\Rightarrow t=\\frac{' + F(s.P0) + '}{' + s.rt + '}' + ap(s.ti, 2) + rT(s.ti, 2)) + ' years: the model claims the town is empty during ' + Math.floor(s.base + s.ti) + '.', [H_ZERO], 'town t-intercept', { after: 'years' });
-          } },
-          { id: 'e8c', sub: 'd', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Which is the best reason a straight line is a poor model for the town that far into the future?', [
-              { html: 'A line loses exactly ' + t(s.rt) + ' people every year for decades; real towns change (a new employer, a closure), and the line goes below zero people after ' + t(rT(s.ti, 2)) + ' years.', right: true },
-              { html: 'Populations always grow, so the line should go up.', why: 'Many towns do shrink. The issue is that a constant change for decades is unrealistic.' },
-              { html: 'A line can’t be used for populations at all.', why: 'For a few years a line can be a fine model; it is the long-term prediction that fails.' },
-              { html: 'The model is wrong because ' + t(F(s.P0)) + ' is too big for a town.', why: 'The starting size is fine. Think about what happens to the line decades later.' }],
-              'A straight line assumes the same change, ' + t('-' + s.rt) + ' people per year, forever. Over decades real causes change the rate, and a population can’t fall below zero as the line does after ' + t(rT(s.ti, 2)) + ' years.', ['What does the line assume about the change each year?'], 'line poor long-term');
-          } },
-          { id: 'e8d', sub: 'e-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('t', 0, s.Y), rg = setT('P', s.PY, s.P0);
-            return setPart('The council trusts the model for ' + t(s.Y) + ' years only. State the practical domain under that restriction.', tg, { v: 't', other: rg, otherName: 'range', wrong: [{ is: setT('t', 0, rd(s.ti, 2)), code: 'ctx-dom-open', hint: 'The council only trusts the first ' + t(s.Y) + ' years.' }] },
-              t('D=' + tg) + '.', H_DOM, 'town domain');
-          } },
-          { id: 'e8e', sub: 'e-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('P', s.PY, s.P0), dg = setT('t', 0, s.Y);
-            return setPart('The council trusts the model for the first ' + t(s.Y) + ' years only ' + t('(0\\le t\\le ' + s.Y + ')') + '. State the practical range for those ' + t(s.Y) + ' years.', tg, { v: 'P', other: dg, otherName: 'domain', wrong: [{ is: setT('P', 0, s.P0), code: 'ctx-rng-start', hint: 'Only the first ' + t(s.Y) + ' years count: find ' + t('P') + ' at ' + t('t=' + s.Y) + '.' }] },
-              t('t=0') + ': ' + t('P=' + F(s.P0)) + '. ' + t('t=' + s.Y) + ': ' + t('P=' + F(s.P0) + '-' + s.rt + '(' + s.Y + ')=' + F(s.PY)) + '. So ' + t('R=' + tg) + '.', H_DOM, 'town range');
-          } },
-          { id: 'e8f', sub: 'f', level: 'EMG', outcome: 'RF2', make: function (r, s) {
-            return mc(r, 'A population is a whole number of people, yet the practical range of this model is written with ' + t('P\\in\\mathbb{R}') + '. Why is that reasonable for a model?', [
-              { html: 'The model gives the trend: as ' + t('t') + ' varies continuously the line passes through every value between the ends. A real head count just rounds those values.', right: true },
-              { html: 'It isn’t reasonable: a population range must always be written with ' + t('\\in I') + '.', why: 'For a model of a trend, ' + t('\\in\\mathbb{R}') + ' is a fair description; ' + t('\\in I') + ' would be a list of ' + t(F(s.P0 - s.PY + 1)) + ' values.' },
-              { html: 'Because towns can contain fractions of people.', why: 'People are whole — the model’s outputs just aren’t. A count would round them.' },
-              { html: 'Because ' + t('\\mathbb{R}') + ' means the population is rising.', why: t('\\mathbb{R}') + ' only says which numbers are allowed (all real numbers between the ends).' }],
-              'The line is a model of the trend, and as ' + t('t') + ' varies it passes through every value between ' + t(F(s.PY)) + ' and ' + t(F(s.P0)) + '. Insisting on whole people would give ' + t('\\{P\\mid ' + s.PY + '\\le P\\le ' + s.P0 + ',\\ P\\in I\\}') + ', a list of whole numbers.', ['What does a model describe: exact head counts, or the trend?'], 'R vs I for population');
-          } }] },
-      { num: '9', stem: 'Every calculator draws more of a curve than the situation allows.', parts: [
-        { id: 'e9a', sub: 'a–c', level: 'EMG', make: function (r) {
-          var Z = r.pick([20, 25, 30]), Bc = r.pick([4, 5]), b = r.pick([20, 25, 30]), c = r.pick([1, 2, 3]), F0 = r.pick([72, 84, 90]), k = { 72: 0.12, 84: 0.14, 90: 0.15 }[F0], dI = Math.round(F0 / k);
-          var list = '<ol type="a"><li>' + t('V=' + (Bc * Z) + 'p-' + Bc + 'p^{2}') + ', the weekly revenue when a phone case costs ' + t('p') + ' dollars and ' + t((Bc * Z) + '-' + Bc + 'p') + ' cases sell, for ' + t('p>' + Z) + '</li><li>' + t('h=' + quadT(-5, b, c, 't')) + ', a fireworks shell ' + t('t') + ' seconds after firing, for ' + t('t<0') + '</li><li>' + t('F=' + F0 + '-' + nT(k) + 'd') + ', the fuel left after ' + t('d') + ' km, for ' + t('d>' + dI) + '</li></ol>';
-          var rows = [{ id: 'rev', html: '(a) revenue' }, { id: 'shell', html: '(b) shell' }, { id: 'fuel', html: '(c) fuel' }];
-          var cols = [{ id: 'before', html: 'time before it began' }, { id: 'neg', html: 'impossible negative amount' }];
-          var want = { rev: 'neg', shell: 'before', fuel: 'neg' };
-          var why = { rev: '(a) For ' + t('p>' + Z) + ', ' + t((Bc * Z) + '-' + Bc + 'p<0') + ': a negative number of cases sold (and negative revenue). A price of ' + t(money(Z + 1)) + ' is fine — the shop simply sells nothing.',
-            shell: '', fuel: '(c) For ' + t('d>' + dI) + ', ' + t('F<0') + ': a negative volume of fuel. The truck stops when the tank is empty.' };
-          why.shell = '(b) ' + t('t<0') + ' is time <b>before</b> the shell was fired; it was still in the tube.';
-          return B.grid('The calculator draws each of these pieces, but the situation throws them away:' + list + 'For each piece, choose the reason.', rows, cols, want, { why: function (row) { return { code: 'row', hint: why[row] }; } },
-            rows.map(function (x) { return why[x.id]; }).join('<br>'), ['For each piece, ask: is the problem the input (when) or the output (how much)?'], 'pieces the situation throws away');
+      /* ---------- EP10: rewriting ---------- */
+      { num: '10', section: 'Extra practice C — The name, the value and the graph', stem: 'Each line below says something about a function. Take ' + t('y=f(x)') + ' to be the equation of the graph of ' + t('f') + '.', parts: [
+        { id: 'e10a', level: 'LIM', make: function (r) {
+          var p = r.pick(nz(-6, 6)), q = pickWhere(function () { return r.pick(nz(-9, 9)); }, function (q) { return q !== p; });
+          var part = B.pairs(t('f(' + p + ')=' + q) + '. Write the ordered pair this puts on the graph of ' + t('f') + '.', [[p, q]], {}, 'Input ' + t(p) + ', output ' + t(q) + ': the point ' + t('(' + p + ',\\ ' + q + ')') + '.',
+            ['In ' + t('f(a)=b') + ', ' + t('a') + ' is the input (the ' + t('x') + '-coordinate) and ' + t('b') + ' is the output (the ' + t('y') + '-coordinate).'], 'f(p)=q as a point');
+          part.bad = ['(' + q + ', ' + p + ')'];
+          return part;
         } },
-        { id: 'e9b', sub: 'd', level: 'PRG', make: function (r) {
-          var o = pickWhere(function () { var b = r.pick([30, 36, 40, 44]), c = r.pick([200, 250, 300, 350]), r1 = b - Math.sqrt(b * b - 2 * c), n = Math.floor(r1 * 0.6); return { b: b, c: c, r1: r1, n: n, Pn: cl(-0.5 * n * n + b * n - c) }; }, function (o) { return o.n >= 2 && o.Pn < 0; });
-          return mc(r, 'A student concludes: “the practical part of any graph is the part in Quadrant I.” Use a food truck’s profit ' + t('P=' + quadT(-0.5, o.b, -o.c, 'n')) + ' (for ' + t('n') + ' meals sold) to test the claim.', [
-            { html: '<b>False.</b> For a slow day, e.g. ' + t('n=' + o.n) + ', ' + t('P=' + money(o.Pn)) + ': the point is in Quadrant IV and perfectly realistic. What decides is which values the quantities can really take.', right: true },
-            { html: '<b>True.</b> A negative profit never makes sense, so only Quadrant I counts.', why: 'Can a food truck lose money? A negative profit is a loss — it really happens.' },
-            { html: '<b>False.</b> The practical part is always the whole parabola.', why: 'Negative numbers of meals still make no sense. The rule is about the quantities, not “all” or “Quadrant I”.' },
-            { html: '<b>True.</b> The calculator only graphs Quadrant I when ' + cd('Xmin') + ' = 0.', why: 'The window doesn’t decide what is realistic. Check a slow day: ' + t('P(' + o.n + ')') + '.' }],
-            t('P(' + o.n + ')=' + nT(-0.5 * o.n * o.n) + '+' + (o.b * o.n) + '-' + o.c + '=' + money(o.Pn)) + ': a real loss on a slow day, at ' + t('(' + o.n + ',\\ ' + o.Pn + ')') + ' in Quadrant IV. The practical domain and range come from which values the quantities can take, not from the quadrant.', ['Find the profit for a small number of meals.'], 'Quadrant I claim');
+        { id: 'e10b', level: 'BEG', make: function (r) {
+          var p = r.pick(nz(-6, 6)), q = pickWhere(function () { return r.pick(nz(-9, 9)); }, function (q) { return q !== p; });
+          return fnEqPart('The point ' + t('(' + p + ',\\ ' + q + ')') + ' lies on the graph of ' + t('f') + '. Write this in function notation.', 'f', p, q, false);
+        } },
+        { id: 'e10c', level: 'BEG', make: function (r) {
+          var p = r.pick(nz(-6, 6)), q = pickWhere(function () { return r.pick(nz(-9, 9)); }, function (q) { return q !== p; });
+          return fnEqPart('The image of ' + t(p) + ' under ' + t('f') + ' is ' + t(q) + '. Write this in function notation and as a point.', 'f', p, q, true);
+        } },
+        { id: 'e10d', level: 'BEG', make: function (r) {
+          var v = r.pick(nz(-7, 7));
+          return mc(r, t('g(0)=' + v) + '. Which feature of the graph of ' + t('g') + ' does this describe?', [
+            { html: 'The ' + t('y') + '-intercept, ' + t('(0,\\ ' + v + ')'), right: true },
+            { html: 'An ' + t('x') + '-intercept, ' + t('(' + v + ',\\ 0)'), why: 'Here the <b>input</b> is ' + t('0') + ', so the point is ' + t('(0,\\ ' + v + ')') + ', on the ' + t('y') + '-axis. An ' + t('x') + '-intercept has output ' + t('0') + '.' },
+            { html: 'The highest point of the graph', why: 'Nothing says ' + t(v) + ' is the largest output. ' + t('g(0)=' + v) + ' only gives the point with input ' + t('0') + '.' },
+            { html: 'The slope of the graph', why: 'A single value ' + t('g(0)') + ' gives one point, not a rate of change.' }],
+            'Input ' + t('0') + ', output ' + t(v) + ': the point ' + t('(0,\\ ' + v + ')') + ' is on the ' + t('y') + '-axis, so it is the <b>' + t('y') + '-intercept</b>.', ['Write ' + t('g(0)=' + v) + ' as a point. Which axis is it on?'], 'g(0) is the y-intercept');
+        } },
+        { id: 'e10e', level: 'BEG', make: function (r) {
+          var v = r.pick(nz(-7, 7));
+          return mc(r, t('h(' + v + ')=0') + '. Which feature of the graph of ' + t('h') + ' does this describe?', [
+            { html: 'An ' + t('x') + '-intercept, ' + t('(' + v + ',\\ 0)'), right: true },
+            { html: 'The ' + t('y') + '-intercept, ' + t('(0,\\ ' + v + ')'), why: 'The input is ' + t(v) + ' and the output is ' + t('0') + ': the point is ' + t('(' + v + ',\\ 0)') + ', on the ' + t('x') + '-axis.' },
+            { html: 'The point where ' + t('h') + ' is not defined', why: 'An output of ' + t('0') + ' is a perfectly good output.' },
+            { html: 'The lowest point of the graph', why: 'An output of ' + t('0') + ' doesn’t have to be the lowest one.' }],
+            'Input ' + t(v) + ', output ' + t('0') + ': the point ' + t('(' + v + ',\\ 0)') + ' is on the ' + t('x') + '-axis, so it is an <b>' + t('x') + '-intercept</b>.', ['Write ' + t('h(' + v + ')=0') + ' as a point. Which axis is it on?'], 'h(v)=0 is an x-intercept');
+        } },
+        { id: 'e10f', level: 'EMG', make: function (r) {
+          var v = r.int(2, 6);
+          return mc(r, t('f(' + v + ')=f(-' + v + ')') + '. What does this say about the graph of ' + t('f') + '?', [
+            { html: 'The points with inputs ' + t(v) + ' and ' + t('-' + v) + ' are at the same height: two inputs share one output.', right: true },
+            { html: t('f') + ' is not a function, because two inputs give the same output.', why: 'A function may give two inputs the same output. It fails only if one input has two outputs.' },
+            { html: 'Both outputs are ' + t('0') + '.', why: 'The outputs are equal to each other, but nothing says they are ' + t('0') + '.' },
+            { html: 'The graph passes through ' + t('(' + v + ',\\ -' + v + ')') + '.', why: t('f(' + v + ')') + ' is an output; the statement compares two outputs, it doesn’t give their value.' }],
+            'The points ' + t('(' + v + ',\\ f(' + v + '))') + ' and ' + t('(-' + v + ',\\ f(' + v + '))') + ' are at the <b>same height</b>: two inputs share one output, which a function may do.', ['Write both sides as points ' + t('(x,\\ y)') + '. What do the two points have in common?'], 'f(v)=f(-v)');
         } }] },
-
-      /* ---------- Part D — saying what each feature means ---------- */
-      { num: '10', section: 'Extra practice D — Saying what each feature means', stem: 'Each model below comes with one feature already found. Choose the sentence that says, in context, what that feature means.', parts: [
-        { id: 'e10a', sub: 'a', level: 'EMG', make: function (r) {
-          var b = r.pick([15, 20, 25, 30]), c = r.pick([1.2, 1.5, 1.8, 2]), tv = cl(b / 10), pk = cl(b * b / 20 + c);
-          return mc(r, t('h=' + quadT(-5, b, c, 't')) + ' — the height of a thrown ball, ' + t('h') + ' in metres, ' + t('t') + ' in seconds. <i>Vertex:</i> ' + t('(' + nT(tv) + ',\\ ' + nT(pk) + ')') + '.', [
-            { html: 'The ball reaches its greatest height, ' + t(nT(pk)) + ' m, ' + t(nT(tv)) + ' s after it is thrown.', right: true },
-            { html: 'The ball reaches its greatest height, ' + t(nT(tv)) + ' m, ' + t(nT(pk)) + ' s after it is thrown.', why: 'The vertex is ' + t('(t,\\ h)') + ': time first, then height.' },
-            { html: 'The ball lands ' + t(nT(tv)) + ' s after it is thrown.', why: 'At the landing ' + t('h=0') + '. The vertex is the highest point.' },
-            { html: 'The ball is thrown from a height of ' + t(nT(pk)) + ' m.', why: 'The starting height is the ' + t('h') + '-intercept, ' + t(nT(c)) + ' m.' }],
-            'Check: ' + t('h(' + nT(tv) + ')=' + nT(-5 * tv * tv) + '+' + nT(b * tv) + '+' + nT(c) + '=' + nT(pk)) + '. The vertex is the top of the flight: greatest height ' + t(nT(pk)) + ' m at ' + t(nT(tv)) + ' s.', ['A vertex is (input, output) at the turning point.'], 'meaning of vertex');
-        } },
-        { id: 'e10b', sub: 'b', level: 'EMG', make: function (r) {
-          var u = r.pick([0.45, 0.62, 0.75, 0.85]), S = r.pick([120, 150, 180, 240]);
-          return mc(r, t('C=' + nT(u) + 'n+' + S) + ' — the cost of printing ' + t('n') + ' concert programs, ' + t('C') + ' in dollars. <i>' + t('C') + '-intercept:</i> ' + t(S) + '.', [
-            { html: 'Printing no programs still costs ' + t(money(S)) + ': a fixed setup charge paid before any program is printed. Each program then adds ' + t(money(u)) + '.', right: true },
-            { html: 'Each program costs ' + t(money(S)) + ' to print.', why: 'Each program adds ' + t(money(u)) + '. The ' + t('C') + '-intercept is the cost at ' + t('n=0') + '.' },
-            { html: t(S) + ' programs can be printed for free.', why: 'The intercept is a cost (' + t('C') + ') at ' + t('n=0') + ', not a number of programs.' },
-            { html: 'The printer can print at most ' + t(S) + ' programs.', why: 'The intercept says nothing about a limit; it is the cost when ' + t('n=0') + '.' }],
-            'At ' + t('n=0') + ', ' + t('C=' + S) + ': ' + t(money(S)) + ' before a single program is printed — the fixed setup charge.', ['Find ' + t('C') + ' when ' + t('n=0') + '.'], 'meaning of C-intercept programs');
-        } },
-        { id: 'e10c', sub: 'c', level: 'EMG', make: function (r) {
-          var rt = r.pick([300, 400, 450, 500, 600]), M = r.int(9, 15), V0 = rt * M;
-          return mc(r, t('V=' + F(V0) + '-' + rt + 't') + ' — the value of a snow machine, ' + t('V') + ' in dollars, ' + t('t') + ' in months. <i>' + t('t') + '-intercept:</i> ' + t(M) + '.', [
-            { html: 'The model says the snow machine is worth ' + t('\\$0') + ' ' + t(M) + ' months after it is bought.', right: true },
-            { html: 'The snow machine loses ' + t(money(M)) + ' each month.', why: 'It loses ' + t(money(rt)) + ' a month. The ' + t('t') + '-intercept is a time, where ' + t('V=0') + '.' },
-            { html: 'The snow machine is worth ' + t(money(M)) + ' when it is bought.', why: 'Its starting value is the ' + t('V') + '-intercept, ' + t(money(V0)) + '.' },
-            { html: 'The snow machine is worth ' + t(money(V0)) + ' after ' + t(M) + ' months.', why: 'At the ' + t('t') + '-intercept the value is ' + t('0') + '.' }],
-            'Check: ' + t(F(V0) + '-' + rt + '(' + M + ')=0') + '. The ' + t('t') + '-intercept is when the value reaches ' + t('\\$0') + ': ' + t(M) + ' months after purchase.', ['At a ' + t('t') + '-intercept, ' + t('V=0') + '.'], 'meaning of t-intercept value');
-        } },
-        { id: 'e10d', sub: 'd', level: 'EMG', make: function (r) {
-          var o = pickWhere(function () { var b = r.pick([20, 24, 30, 36]), c = r.pick([100, 150, 200, 250, 300]), q = Math.sqrt(b * b - c); return { b: b, c: c, r1: 2 * b - 2 * q, r2: 2 * b + 2 * q }; }, function (o) { return o.r1 > 1.5 && !isDp(o.r1, 0); });
-          var lo = Math.ceil(o.r1), hi = Math.floor(o.r2);
-          return mc(r, t('P=' + quadT(-0.25, o.b, -o.c, 'n')) + ' — the profit from a banquet, ' + t('P') + ' in dollars, ' + t('n') + ' meals served. <i>' + t('n') + '-intercepts:</i> ' + t(rT(o.r1, 2)) + ' and ' + t(rT(o.r2, 2)) + '.', [
-            { html: 'The banquet breaks even (profit ' + t('\\$0') + ') at about ' + t(rT(o.r1, 2)) + ' and ' + t(rT(o.r2, 2)) + ' meals; serving from ' + t(lo) + ' to ' + t(hi) + ' meals makes a profit, fewer or more loses money.', right: true },
-            { html: 'The banquet makes its greatest profit at ' + t(rT(o.r1, 2)) + ' and ' + t(rT(o.r2, 2)) + ' meals.', why: 'At an ' + t('n') + '-intercept the profit is ' + t('\\$0') + '. The greatest profit is at the vertex, between them.' },
-            { html: 'The banquet loses money when it serves between ' + t(lo) + ' and ' + t(hi) + ' meals.', why: 'The parabola opens down, so the profit is <b>positive</b> between the intercepts.' },
-            { html: 'The banquet earns ' + t(money(rd(o.r1, 2))) + ' and ' + t(money(rd(o.r2, 2))) + '.', why: 'The intercepts are numbers of meals (' + t('n') + '), where ' + t('P=0') + '.' }],
-            'At the ' + t('n') + '-intercepts ' + t('P=0') + ': break-even points. The parabola opens down, so between them the profit is positive; meals are whole, so it profits from ' + t(lo) + ' to ' + t(hi) + ' meals.', ['What is ' + t('P') + ' at an ' + t('n') + '-intercept? Is the profit positive between them or outside them?'], 'meaning of n-intercepts');
-        } }] },
-      { num: '11', shared: function (r) {
-          var a = r.pick([4, 5]), R = r.pick([5, 7]), tv = (R - 1) / 2, h0 = a * R, pk = a * Math.pow((R + 1) / 2, 2);
-          return { a: a, R: R, tv: tv, h0: h0, pk: pk, H: pk - a, b: a * (R - 1), eq: 'h=' + quadT(-a, a * (R - 1), a * R, 't') };
+      /* ---------- EP11: reading a parabola ---------- */
+      { num: '11', stem: function (sh) {
+          var f = sh.f;
+          return 'The graph of a function ' + t('f') + ' is shown. Read every answer off the graph.' + (sh.onPad ? '' : HW.graph({ x: sh.wx, y: sh.wy, labels: 2, max: 320, xName: 'x', yName: 'y', fns: [{ f: f, from: sh.h - 3, to: sh.h + 3, start: 'closed', end: 'closed' }], aria: 'graph of f' }));
         },
-        stem: function (s) {
-          // grid squares are a metres up, so A, B, D and the height in (f) all sit on grid lines (h0 = aR, pk and H are multiples of a)
-          var ly = s.a === 4 || s.pk > 54 ? 20 : 10, top = Math.ceil((s.pk + 6) / ly) * ly, f = function (x) { return -s.a * x * x + s.b * x + s.h0; };
-          return 'A stunt diver is launched upward from a platform above a lake. Her height above the water, in metres, ' + t('t') + ' seconds after launch is ' + t(s.eq) + '. Each grid square is ' + t('0.5') + ' s across and ' + t(s.a) + ' m up.' +
-            HW.graph({ x: [0, s.R + 0.5], y: [0, top], unitX: 270 / (s.R + 0.5), unitY: 190 / top, grid: 0.5, gridY: s.a, labels: 1, labelsX: 1, labelsY: ly, firstQuadrant: true, xName: 't', yName: 'h', xTitle: 'Time (s)', yTitle: 'Height (m)', max: 360,
-              fns: [{ f: f, from: 0, to: s.R }], points: [{ x: 0, y: s.h0, label: 'A' }, { x: s.tv, y: s.pk, label: 'B' }, { x: s.R, y: 0, label: 'C' }, { x: 2 * s.tv, y: s.h0, label: 'D' }], aria: 'graph of the diver’s height with points A, B, C, D' });
+        shared: function (r) {
+          var h = r.pick([-2, -1, 1, 1, 2]), k = r.pick([-4, -4, -1]);
+          return { h: h, k: k, f: function (x) { return (x - h) * (x - h) + k; }, j: k === -4 ? 1 : 2, root: Math.sqrt(-k), wx: [Math.min(-1, h - 4), Math.max(1, h + 4)], wy: [k - 2, k + 10] };
         },
         parts: [
-          { id: 'e11a', sub: 'a', level: 'BEG', make: function (r, s) { return ptPart('State the coordinates of ' + t('A') + '.', 'A', [0, s.h0], t('h(0)=' + s.h0) + ', so ' + t('A(0,\\ ' + s.h0 + ')') + ': the platform is ' + t(s.h0) + ' m above the water — her height at launch.', 'diver A'); } },
-          { id: 'e11b', sub: 'b', level: 'EMG', make: function (r, s) { return ptPart('State the coordinates of ' + t('B') + ', the highest point.', 'B', [s.tv, s.pk], t('t=-\\frac{' + s.b + '}{2(-' + s.a + ')}=' + s.tv) + ', ' + t('h(' + s.tv + ')=' + (-s.a * s.tv * s.tv) + '+' + (s.b * s.tv) + '+' + s.h0 + '=' + s.pk) + ': ' + t('B(' + s.tv + ',\\ ' + s.pk + ')') + ' — ' + t(s.tv) + ' s after launch she reaches her greatest height, ' + t(s.pk) + ' m.', 'diver B'); } },
-          { id: 'e11c', sub: 'c', level: 'BEG', make: function (r, s) { return ptPart('State the coordinates of ' + t('C') + ', where she enters the water.', 'C', [s.R, 0], t('h(' + s.R + ')=' + (-s.a * s.R * s.R) + '+' + (s.b * s.R) + '+' + s.h0 + '=0') + ': ' + t('C(' + s.R + ',\\ 0)') + ' — she enters the water ' + t(s.R) + ' s after launch.', 'diver C'); } },
-          { id: 'e11d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return mc(r, t('A') + ' and ' + t('D') + ' have the same height. Why?', [
-              { html: 'The axis of symmetry is ' + t('t=' + s.tv) + ', through ' + t('B') + '. ' + t('A') + ' (' + t('t=0') + ') and ' + t('D') + ' (' + t('t=' + 2 * s.tv) + ') are each ' + t(s.tv) + ' s from it, so their heights match.', right: true },
-              { html: 'She stops at ' + t('D') + ' to rest at platform height.', why: 'The graph keeps falling through ' + t('D') + '; she passes the platform height on the way down.' },
-              { html: t('D') + ' is halfway between ' + t('B') + ' and ' + t('C') + '.', why: 'Check the times: ' + t('D') + ' is at ' + t('t=' + 2 * s.tv) + '. Compare its distance from the vertex with ' + t('A') + '’s.' },
-              { html: 'Every parabola has the same height at ' + t('t=0') + ' and ' + t('t=' + 2 * s.tv) + '.', why: 'That depends on where the vertex is: here the axis of symmetry is ' + t('t=' + s.tv) + '.' }],
-              'The parabola is symmetric about ' + t('t=' + s.tv) + '. ' + t('A') + ' and ' + t('D') + ' are each ' + t(s.tv) + ' s from it, so ' + t('h(' + 2 * s.tv + ')=h(0)=' + s.h0) + ' m: she passes the platform height on the way down.', ['Where is the axis of symmetry?'], 'diver symmetry');
+          { id: 'e11a', level: 'BEG', make: function (r, sh) {
+            var v = sh.f(0);
+            return numPart(t('f(0)'), v, [[0, 'fn-zero-all', 'Find where the graph crosses the ' + t('y') + '-axis (input ' + t('0') + ') and read its height.']], 'The graph meets the vertical line ' + t('x=0') + ' at ' + t('(0,\\ ' + v + ')') + ', so ' + t('f(0)=' + v) + '.', ['Go to ' + t('x=0') + ' (the ' + t('y') + '-axis) and read the height of the graph there.'], 'read f(0)');
           } },
-          { id: 'e11e', sub: 'e-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('t', 0, s.R), rg = setT('h', 0, s.pk);
-            return setPart('State the practical domain.', tg, { v: 't', other: rg, otherName: 'range', wrong: [{ is: setT('t', 0, s.tv), code: 'ctx-dom-vertex', hint: 'Her dive goes on after the top, until she enters the water at ' + t('C') + '.' }, { is: setT('t', -1, s.R), code: 'ctx-dom-neg', hint: 'Before launch she isn’t flying; start at ' + t('t=0') + '.' }] },
-              'Launch (' + t('t=0') + ') to entering the water (' + t('t=' + s.R) + '): ' + t('D=' + tg) + '.', H_DOM, 'diver domain');
+          { id: 'e11b', level: 'BEG', make: function (r, sh) {
+            var x = sh.h + sh.root === 0 ? sh.h - sh.root : sh.h + sh.root;
+            return numPart(t('f(' + x + ')'), 0, [[x, 'fn-eq-flip', 'Go to the input ' + t(x) + ' on the horizontal axis and read the <b>height</b> of the graph there.']], 'The graph crosses the ' + t('x') + '-axis at ' + t('(' + x + ',\\ 0)') + ', so ' + t('f(' + x + ')=0') + '.', ['Find ' + t('x=' + x) + ' on the horizontal axis, then go up or down to the graph.'], 'read f at root');
           } },
-          { id: 'e11f', sub: 'e-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('h', 0, s.pk), dg = setT('t', 0, s.R);
-            return setPart('State the practical range.', tg, { v: 'h', other: dg, otherName: 'domain', wrong: [{ is: setT('h', s.h0, s.pk), code: 'ctx-rng-start', hint: 'She ends at the water, ' + t('h=0') + ', below the platform.' }] },
-              'Lowest ' + t('0') + ' (the water), highest ' + t(s.pk) + ' m at ' + t('B') + ': ' + t('R=' + tg) + '.', H_DOM, 'diver range');
+          { id: 'e11c', level: 'EMG', make: function (r, sh) {
+            var h = sh.h, v = sh.f(h + 3);
+            return solPart('All values of ' + t('x') + ' for which ' + t('f(x)=' + v) + '.', [h - 3, h + 3], 'x', [[[v], 'fn-eq-flip', 'You want the <b>inputs</b> where the height is ' + t(v) + '. Draw the horizontal line ' + t('y=' + v) + ' and read the ' + t('x') + '-values where it meets the graph.']],
+              'The line ' + t('y=' + v) + ' meets the graph at the endpoints ' + t('(' + (h - 3) + ',\\ ' + v + ')') + ' and ' + t('(' + (h + 3) + ',\\ ' + v + ')') + ', so ' + t('x=' + (h - 3)) + ' or ' + t('x=' + (h + 3)) + '.', ['Draw the horizontal line ' + t('y=' + v) + '. Where does it meet the graph?', 'Check both sides of the graph.'], 'read f(x)=' + v);
           } },
-          { id: 'e11g', sub: 'f', level: 'EMG', make: function (r, s) {
-            return fieldsPart('A rescue boat must stay clear while the diver is above ' + t(s.H) + ' m. Between which two times is she above ' + t(s.H) + ' m? Read them from the graph and check on your calculator.', [
-              { label: 'Earlier time', x: s.tv - 1, d: 2, after: 's', cands: [] }, { label: 'Later time', x: s.tv + 1, d: 2, after: 's', cands: [{ v: s.R, code: 'ctx-gave-end', hint: 'That is when she enters the water. Find where she passes ' + t(s.H) + ' m on the way down.' }] }],
-              'On the graph ' + t('h=' + s.H) + ' at ' + t('t=' + (s.tv - 1)) + ' and ' + t('t=' + (s.tv + 1)) + '. Check: ' + t(s.eq.slice(2) + '=' + s.H + '\\Rightarrow ' + quadT(1, -(s.R - 1), s.H / s.a - s.R, 't') + '=0\\Rightarrow (t-' + (s.tv - 1) + ')(t-' + (s.tv + 1) + ')=0') + '. She is above ' + t(s.H) + ' m from ' + t(s.tv - 1) + ' s to ' + t(s.tv + 1) + ' s.', [H_INT], 'diver above ' + s.H, { swap: 'form' });
+          { id: 'e11d', level: 'EMG', make: function (r, sh) {
+            var h = sh.h, j = sh.j, v = sh.f(h + j);
+            sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
+            var inp = { x: sh.wx, y: sh.wy, labels: 2, xName: 'x', yName: 'y', bg: { fns: [{ f: sh.f, from: h - 3, to: h + 3, color: GIVEN }], points: givenDots([[h - 3, sh.f(h - 3)], [h + 3, sh.f(h + 3)]]) } };
+            return levelTap('Solve ' + t('f(x)=' + v) + ': tap every point of the graph where ' + t('f(x)=' + v) + '.', inp, function (x) { return x >= h - 3 - 1e-9 && x <= h + 3 + 1e-9 ? sh.f(x) : NaN; }, 'f', v, [h - j, h + j],
+              'The line ' + t('y=' + v) + ' meets the graph at ' + t('(' + (h - j) + ',\\ ' + v + ')') + ' and ' + t('(' + (h + j) + ',\\ ' + v + ')') + '. The solutions are their inputs: ' + t('x=' + (h - j)) + ' or ' + t('x=' + (h + j)) + '.',
+              ['Find ' + t(v) + ' on the vertical axis and follow the horizontal line ' + t('y=' + v) + ' across. Where does it meet the graph?', 'A parabola can reach the same height twice — check both sides.'], 'tap f(x)=' + v);
+          } },
+          { id: 'e11e', level: 'EMG', make: function (r, sh) {
+            var h = sh.h, k = sh.k;
+            return mc(r, 'The equation ' + t('f(x)=' + k) + ' has exactly one solution. Which statement is correct?', [
+              { html: t('x=' + h) + ': the point ' + t('(' + h + ',\\ ' + k + ')') + ' is the lowest point (vertex), so the line ' + t('y=' + k) + ' touches the graph only there.', right: true },
+              h !== k ? { html: t('x=' + k) + ': it is the lowest point of the graph.', why: t(k) + ' is the <b>output</b> (the height). The solution is the input: read the ' + t('x') + '-coordinate of that point.' }
+                : { html: t('x=' + (-h)) + ': it is the lowest point of the graph.', why: 'Check which side of the ' + t('y') + '-axis the lowest point is on: it is ' + t('(' + h + ',\\ ' + k + ')') + ', so the input is ' + t(h) + '.' },
+              { html: t('x=' + h) + ': it is where the graph crosses the ' + t('y') + '-axis.', why: 'The ' + t('y') + '-axis is where the input is ' + t('0') + '. Look at what is special about the height ' + t(k) + '.' },
+              { html: t('x=' + (h - sh.root)) + ' and ' + t('x=' + (h + sh.root)) + ': the ' + t('x') + '-intercepts.', why: 'Those solve ' + t('f(x)=0') + '. Draw the line ' + t('y=' + k) + ' instead.' }],
+              'The line ' + t('y=' + k) + ' touches the graph only at ' + t('(' + h + ',\\ ' + k + ')') + ', the lowest point (vertex). So ' + t('x=' + h) + ' is the only solution.', ['Draw the horizontal line ' + t('y=' + k) + '. How many times does it meet the graph, and where?'], 'f(x)=k at vertex');
+          } },
+          { id: 'e11f', level: 'PRG', make: function (r, sh) {
+            var k = sh.k, v = k - 2;
+            return mc(r, 'The equation ' + t('f(x)=' + v) + ' has no solution. Which explanation is correct?', [
+              { html: 'The lowest point is at height ' + t(k) + ', so the line ' + t('y=' + v) + ' never meets the graph: ' + t(v) + ' is not in the range. ' + t('f') + ' is still a function, because every vertical line meets the graph at most once.', right: true },
+              { html: t('f') + ' is not a function, because some output values have no input.', why: 'The function test is about <b>inputs</b>: each input must have exactly one output. An output value that is never used says nothing about it.' },
+              { html: 'The graph would reach ' + t('y=' + v) + ' if it continued past its endpoints.', why: 'Past its endpoints the curve would keep going <b>up</b>. Its lowest point is at height ' + t(k) + '.' },
+              { html: t('f(x)') + ' can never be negative.', why: 'Look at the graph: some outputs are negative — for example ' + t('f(' + sh.h + ')=' + k) + '.' }],
+              'The whole graph lies on or above ' + t('y=' + k) + ', so the line ' + t('y=' + v) + ' never meets it: ' + t(v) + ' is not in the range. Whether ' + t('f') + ' is a function depends on vertical lines (one output per input), not on unused outputs.', ['What is the lowest height the graph reaches?'], 'f(x)=k-2 no solution');
           } }] },
-
-      /* ---------- Part E — error analysis ---------- */
-      { num: '12', section: 'Extra practice E — Error analysis', shared: function (r) {
-          var o = r.pick([[4, 2], [3, 1], [5, 1], [6, 2], [5, 3]]), R = o[0], S = o[1];
-          return { R: R, S: S, b: 5 * (R - S), c: 5 * R * S, tv: (R - S) / 2, pk: 5 * Math.pow((R + S) / 2, 2), eq: 'h=' + quadT(-5, 5 * (R - S), 5 * R * S, 't') };
-        },
-        stem: function (s) { return 'A ball is thrown upward from a balcony. Its height above the ground, in metres, after ' + t('t') + ' seconds is ' + t(s.eq) + '. Asked how long the ball is in the air, a student uses ' + cd('2:zero') + ', reports <b>' + t('-' + s.S) + ' seconds</b>, and moves on.'; },
-        parts: [
-          { id: 'e12a', sub: 'a', level: 'BEG', make: function (r, s) {
-            if (r.chance(0.5)) return B.tf(r, 'True or false: ' + t('t=-' + s.S) + ' is <b>not</b> a solution of the equation ' + t(quadT(-5, s.b, s.c, 't') + '=0') + ', so the student must have made an arithmetic error.', false, 'Substitute: ' + t('-5(-' + s.S + ')^{2}+' + s.b + '(-' + s.S + ')+' + s.c + '=' + (-5 * s.S * s.S) + (-s.b * s.S) + '+' + s.c + '=0') + '. It does solve the equation.',
-              t('h(-' + s.S + ')=-5(' + (s.S * s.S) + ')-' + (s.b * s.S) + '+' + s.c + '=0') + ' — <b>false</b>: ' + t('t=-' + s.S) + ' <i>is</i> a solution of the equation, so the algebra is fine. The trouble is elsewhere.', ['Substitute ' + t('t=-' + s.S) + ' and see whether you get ' + t('0') + '.'], 'is -S not a root (false)');
-            return B.tf(r, 'True or false: substituting ' + t('t=-' + s.S) + ' gives ' + t('h=0') + ', so ' + t('t=-' + s.S) + ' is a solution of the equation ' + t(quadT(-5, s.b, s.c, 't') + '=0') + '.', true, 'Substitute: ' + t('-5(-' + s.S + ')^{2}+' + s.b + '(-' + s.S + ')+' + s.c + '=' + (-5 * s.S * s.S) + (-s.b * s.S) + '+' + s.c + '=0') + '. It does solve the equation.',
-              t('h(-' + s.S + ')=-5(' + (s.S * s.S) + ')-' + (s.b * s.S) + '+' + s.c + '=0') + ' — <b>true</b>: ' + t('t=-' + s.S) + ' is a solution of the equation. The trouble is elsewhere.', ['Substitute ' + t('t=-' + s.S) + ' and see whether you get ' + t('0') + '.'], 'is -S a root');
-          } },
-          { id: 'e12b', sub: 'b', level: 'EMG', make: function (r, s) {
-            return mc(r, '“Correct algebra, wrong answer.” Why can’t ' + t('-' + s.S) + ' seconds be the answer?', [
-              { html: t('t') + ' is measured from the throw, so ' + t('t=-' + s.S) + ' is ' + t(s.S) + ' s <i>before</i> the ball was released — outside the practical domain, even though it solves the equation.', right: true },
-              { html: 'It doesn’t solve the equation; the student made an arithmetic error.', why: 'Substitute it: ' + t('h(-' + s.S + ')=0') + '. The algebra is fine; the problem is what ' + t('t=-' + s.S) + ' means.' },
-              { html: 'It can: the minus sign just shows the ball is falling.', why: 'A negative ' + t('t') + ' is a time before the throw, not a direction.' },
-              { html: 'A ball can’t be in the air for less than ' + t('5') + ' seconds.', why: 'There is no such rule. Ask what ' + t('t=-' + s.S) + ' means for this throw.' }],
-              'Both zeros satisfy the equation, so the algebra is sound. But ' + t('t') + ' starts at the throw, and ' + t('t=-' + s.S) + ' is before it — the ball was still in the thrower’s hand. Only the positive zero lies in the practical domain.', ['What does a negative value of ' + t('t') + ' mean here?'], 'why negative root wrong');
-          } },
-          { id: 'e12c', sub: 'c', level: 'EMG', make: function (r, s) {
-            return numPart('Find the other ' + t('t') + '-intercept: how long is the ball in the air?', s.R, 2, [
-              { v: -s.S, code: 'ctx-neg-time', hint: 'That is the student’s answer, before the throw. Use the other zero.' },
-              { v: s.S, code: 'int-sign', hint: 'The other zero isn’t just the opposite of ' + t('-' + s.S) + '. Use ' + cd('2:zero') + ' on the right-hand crossing.' },
-              { v: s.tv, code: 'ctx-max-time', hint: 'That is the time of the highest point.' },
-              { v: s.R + s.S, code: 'ctx-sum', hint: 'Don’t combine the two zeros: the ball is thrown at ' + t('t=0') + ' and lands at the positive zero.' }],
-              zeroSol(quadT(-5, s.b, s.c, 't'), 't', [-s.S, s.R], 1, 2) + ' (factored: ' + t('-5(t-' + s.R + ')(t+' + s.S + ')=0') + '). The ball is in the air ' + t(s.R) + ' s.', [H_ZERO], 'time in air', { after: 's' });
-          } },
-          { id: 'e12d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return mc(r, 'What single window setting would have stopped this mistake before it started?', [
-              { html: cd('Xmin') + ' = 0', right: true },
-              { html: cd('Ymin') + ' = 0', why: 'The negative zero is on the ' + t('t') + '-axis at ' + t('h=0') + ', so it is still on the screen. Hide the negative <b>times</b> instead.' },
-              { html: cd('Xmax') + ' = 10', why: 'That changes the right edge. The mistake was on the left: negative times.' },
-              { html: 'The standard window ' + kb('ZOOM 6'), why: 'That window runs from ' + t('-10') + ' to ' + t('10') + ' and shows the negative zero.' }],
-              'Time starts at the throw. With ' + cd('Xmin') + ' = 0 the negative zero is off the screen, so ' + cd('2:zero') + ' can only find ' + t('t=' + s.R) + '.', ['Which edge of the screen is the negative zero near?'], 'window prevents error');
-          } },
-          { id: 'e12e', sub: 'e', level: 'EMG', make: function (r, s) {
-            return fieldsPart('State the height of the balcony and the greatest height the ball reaches.', [
-              { label: 'Balcony height', x: s.c, d: 2, after: 'm', cands: [] }, { label: 'Greatest height', x: s.pk, d: 2, after: 'm', cands: [{ v: s.tv, code: 'ctx-max-time', hint: 'That is the time of the highest point. Substitute it into the formula.' }] }],
-              t('h(0)=' + s.c) + ': the balcony is ' + t(s.c) + ' m up. Vertex: ' + t('t=-\\frac{' + s.b + '}{2(-5)}=' + s.tv) + ', ' + t('h(' + s.tv + ')=' + (-5 * s.tv * s.tv) + '+' + (s.b * s.tv) + '+' + s.c + '=' + s.pk) + ' m (' + cd('4:maximum') + ').', [H_MAX, 'The balcony height is the value at ' + t('t=0') + '.'], 'balcony and max', { swap: 'wrong', swapHint: 'Those are swapped: the balcony is the height at ' + t('t=0') + ', the greatest height is at the vertex.' });
-          } }] },
-      { num: '13', shared: function (r) {
-          var a = r.pick([0.2, 0.4, 0.5]), nv = r.pick([40, 50, 60, 75, 80]), b = cl(2 * a * nv), Ws = nv - r.pick([10, 20]);
-          var V = function (n) { return cl(-a * n * n + b * n); };
-          return { a: a, nv: nv, b: b, Ws: Ws, Vs: V(Ws), Vm: V(nv), V: V, eq: 'V=' + quadT(-a, b, 0, 'n') };
-        },
-        stem: function (s) {
-          var top = niceUp(s.Vs * 1.08);
-          return 'A booth’s revenue from selling ' + t('n') + ' souvenirs is ' + t(s.eq) + ' dollars. A student graphs it in the window ' + t('[0,\\ ' + s.Ws + ']') + ' by ' + t('[0,\\ ' + F(top) + ']') + ', presses ' + cd('4:maximum') + ' and reports “the most revenue is ' + t(money(s.Vs)) + ', at ' + t(s.Ws) + ' souvenirs.” The student’s screen:' +
-            screen([0, s.Ws, 0, top], { xv: 'n', yv: 'V', fns: [{ f: s.V, from: 0, to: s.Ws }], points: [{ x: s.Ws, y: s.Vs }], aria: 'the student’s calculator screen' });
-        },
-        parts: [
-          { id: 'e13a', sub: 'a', level: 'BEG', make: function (r, s) {
-            return numPart('Check the student’s arithmetic: what is ' + t('V') + ' when ' + t('n=' + s.Ws) + '?', s.Vs, 2, [{ v: s.a * s.Ws * s.Ws + s.b * s.Ws, code: 'ctx-sign-sq', hint: 'Keep the minus sign on ' + t('-' + nT(s.a) + 'n^{2}') + '.' }],
-              t('V=-' + nT(s.a) + '(' + s.Ws + ')^{2}+' + nT(s.b) + '(' + s.Ws + ')=' + nT(-s.a * s.Ws * s.Ws) + '+' + nT(s.b * s.Ws) + '=' + money(s.Vs)) + '. The number is right — it is just the value at the window’s right edge, not the maximum.', [H_TRACE], 'V at window edge', { money: true });
-          } },
-          { id: 'e13b', sub: 'b', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Find the true maximum revenue and the number of souvenirs that produces it.', [
-              { label: 'Maximum revenue', x: s.Vm, d: 2, before: '$', cands: [{ v: s.Vs, code: 'ctx-gave-end', hint: 'That is the student’s value at the edge of the window. Widen the window until the curve turns.' }] },
-              { label: 'Souvenirs', x: s.nv, d: 0, cands: [{ v: s.Ws, code: 'ctx-gave-end', hint: 'That is the edge of the student’s window, not the vertex.' }] }],
-              'Vertex: ' + t('n=-\\frac{' + nT(s.b) + '}{2(-' + nT(s.a) + ')}=' + s.nv) + ', ' + t('V(' + s.nv + ')=' + nT(-s.a * s.nv * s.nv) + '+' + nT(s.b * s.nv) + '=' + F(s.Vm)) + ' (or ' + cd('4:maximum') + ' in a wider window). Maximum ' + t(money(s.Vm)) + ' at ' + t(s.nv) + ' souvenirs.' +
-              screen([0, niceUp(2 * s.nv * 1.04), 0, niceUp(s.Vm * 1.05)], { xv: 'n', yv: 'V', fns: [{ f: s.V, from: 0, to: 2 * s.nv }], points: [{ x: s.nv, y: s.Vm }] }), [H_MAX, H_VERT], 'true max revenue', { swap: 'wrong', swapHint: 'Revenue and souvenirs are swapped.' });
-          } },
-          { id: 'e13c', sub: 'c', level: 'EMG', make: function (r, s) {
-            return mc(r, 'What feature of the student’s screen should have warned them not to trust it?', [
-              { html: 'The curve is still rising at the right edge: no turning point is visible, so nothing on that screen is a maximum.', right: true },
-              { html: 'The curve starts at the origin.', why: 'Selling no souvenirs really does earn ' + t('\\$0') + '. Look at the right edge.' },
-              { html: 'The curve is bending.', why: 'A parabola always bends. A maximum needs the curve to rise, turn and fall on the screen.' },
-              { html: 'The numbers on the axes are too big.', why: 'The scale is fine. Look at what the curve is doing at the right edge.' }],
-              'On the student’s screen the curve is still climbing when it reaches ' + t('n=' + s.Ws) + ': the turn happens off the screen. Trust a maximum only if the curve rises, turns and falls inside the window.', ['Is the curve turning at the right edge, or still going up?'], 'warning sign window');
-          } },
-          { id: 'e13d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numPart('By how many dollars was the student’s reported maximum too low?', s.Vm - s.Vs, 2, [{ v: s.Vs - s.Vm, code: 'int-sign', hint: 'Give the size of the difference: true maximum minus the student’s value.' }, { v: s.Vm, code: 'ctx-gave-h', hint: 'That is the true maximum. Subtract the student’s ' + t(money(s.Vs)) + '.' }],
-              t(F(s.Vm) + '-' + F(s.Vs) + '=' + F(s.Vm - s.Vs)) + ': the student was ' + t(money(s.Vm - s.Vs)) + ' too low.', ['True maximum minus the reported value.'], 'how far off', { money: true });
-          } },
-          { id: 'e13e', sub: 'e', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var tg = setT('n', 0, 2 * s.nv, 'W');
-            return setPart('Souvenirs are counted. Find the other ' + t('n') + '-intercept and state the practical domain.', tg, { v: 'n', wrong: [
-              { is: '[0, ' + 2 * s.nv + ']', code: 'ctx-not-whole', hint: 'Souvenirs are whole numbers: finish with ' + t('n\\in W') + ' (or ' + t('n\\in I') + ').' },
-              { is: setT('n', 0, s.nv, 'W'), code: 'ctx-dom-vertex', hint: 'The booth can sell more than ' + t(s.nv) + ' — the revenue just falls. End where ' + t('V=0') + ' again.' },
-              { is: setT('n', 0, s.Ws, 'W'), code: 'ctx-gave-end', hint: t(s.Ws) + ' is only the edge of the student’s window.' }] },
-              t('n(-' + nT(s.a) + 'n+' + nT(s.b) + ')=0') + ', so ' + t('n=0') + ' or ' + t('n=' + 2 * s.nv) + '. Souvenirs are counted: ' + t('D=' + tg) + '.', H_DOM.concat(['Counted quantities end with ' + t('n\\in W') + '.']), 'booth domain');
-          } }] },
-
-      /* ---------- Part F — a stretch, and two for the test ---------- */
-      { num: '14', section: 'Extra practice F — A stretch, and two for the test', shared: function (r) {
+      /* ---------- EP12: a function given by a table ---------- */
+      { num: '12', stem: function (sh) { return 'A function ' + t('f') + ' is given entirely by the table below.' + HW.valueTable([[t('x')].concat(sh.xs.map(function (x) { return t(x); })), [t('f(x)')].concat(sh.ys.map(function (y) { return t(y); }))]); },
+        shared: function (r) {
           return pickWhere(function () {
-            var vA = r.pick([30, 35, 40]), D = r.pick([5, 10]), c = r.pick([12, 15, 18, 20]), vB = vA - D, ts = c / D, landB = quadRoots(-5, vB, c)[1];
-            return { vA: vA, vB: vB, D: D, c: c, ts: ts, hs: cl(-5 * ts * ts + vA * ts), landA: vA / 5, landB: landB, tA: vA / 10, hA: vA * vA / 20, tB: vB / 10, hB: vB * vB / 20 + c, eqA: 'h_{A}=' + quadT(-5, vA, 0, 't'), eqB: 'h_{B}=' + quadT(-5, vB, c, 't') };
-          }, function (o) { return isDp(o.ts, 1) && o.ts < o.landB - 0.5 && margin(o.landB, 2) && margin(o.landA - o.landB, 2) && o.landA > o.landB; });
+            var xs = sortU(r.sample(nz(-5, 7), 5).concat([0])), vals = r.sample(nz(-5, 9), 4), A = vals[0], Bv = vals[1], C = vals[2], D = vals[3];
+            var slots = r.shuffle([0, 1, 2, 3, 4, 5]), ys = []; ys[slots[0]] = A; ys[slots[1]] = A; ys[slots[2]] = Bv; ys[slots[3]] = Bv; ys[slots[4]] = C; ys[slots[5]] = D;
+            return { xs: xs, ys: ys, A: A, B: Bv, i0: xs.indexOf(0) };
+          }, function (o) { return o.xs.length === 6 && (o.ys[o.i0] !== o.A && o.ys[o.i0] !== o.B); });
         },
-        stem: function (s) { return 'Two model rockets are launched at the same instant from the same field: Rocket A from the ground, Rocket B from a platform. Their heights, in metres, ' + t('t') + ' seconds after launch are ' + t(s.eqA) + ' and ' + t(s.eqB) + '. Graph both together.'; },
         parts: [
-          { id: 'e14a', sub: 'b', level: 'BEG', make: function (r, s) {
-            return numPart('How many metres higher than Rocket A does Rocket B start?', s.c, 2, [{ v: 0, code: 'ctx-zero-start', hint: 'Find each height at ' + t('t=0') + ': ' + t('h_{A}(0)') + ' and ' + t('h_{B}(0)') + '.' }],
-              t('h_{A}(0)=0') + ', ' + t('h_{B}(0)=' + s.c) + ': Rocket B starts ' + t(s.c) + ' m higher.', ['Find both heights at ' + t('t=0') + '.'], 'start difference', { after: 'm' });
+          { id: 'e12a', level: 'BEG', make: function (r, sh) {
+            var iB = sh.ys.indexOf(sh.B), iU = range(0, 5).filter(function (i) { return i !== sh.i0 && sh.ys[i] !== sh.A && sh.ys[i] !== sh.B; })[0];
+            var xa = sh.xs[iB], xb = sh.xs[iU], ya = sh.ys[iB], yb = sh.ys[iU];
+            var flip = function (x, y) { return K.number(y, function (v) { return sh.xs.indexOf(v) >= 0 ? { code: 'fn-eq-flip', hint: t(v) + ' is an input (top row). Find ' + t(x) + ' in the <b>' + t('x') + '</b> row, then read the output underneath it.' } : null; }); };
+            return B.fields('State ' + t('f(' + xa + ')') + ' and ' + t('f(' + xb + ')') + '.', [{ name: t('f(' + xa + ')'), before: t('f(' + xa + ')=') }, { name: t('f(' + xb + ')'), before: t('f(' + xb + ')=') }], [flip(xa, ya), flip(xb, yb)], [String(ya), String(yb)],
+              t('f(' + xa + ')=' + ya) + ', ' + t('f(' + xb + ')=' + yb), 'Read down the columns: under ' + t('x=' + xa) + ' the output is ' + t(ya) + '; under ' + t('x=' + xb) + ' it is ' + t(yb) + '.', ['Find the input in the top row and read the output directly below it.'], 'read table values');
           } },
-          { id: 'e14b', sub: 'c', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Use ' + cd('5:intersect') + '. At what time are the two rockets at the same height, and what height is that?', [
-              { label: 'Time', x: s.ts, d: 2, after: 's', cands: [] }, { label: 'Height', x: s.hs, d: 2, after: 'm', cands: [] }],
-              t('Y_1=' + quadT(-5, s.vA, 0, 'X')) + ', ' + t('Y_2=' + quadT(-5, s.vB, s.c, 'X')) + ', ' + cd('5:intersect') + '.<br>Algebra: ' + t(quadT(-5, s.vA, 0, 't') + '=' + quadT(-5, s.vB, s.c, 't') + '\\Rightarrow ' + s.D + 't=' + s.c + '\\Rightarrow t=' + nT(s.ts)) + ', ' + t('h_{A}(' + nT(s.ts) + ')=' + nT(-5 * s.ts * s.ts) + '+' + nT(s.vA * s.ts) + '=' + nT(s.hs)) + ' m.', [H_INT, 'The ' + t('-5t^{2}') + ' terms cancel when you set the two heights equal.'], 'rockets meet', { swap: 'wrong', swapHint: 'Time and height are swapped.' });
+          { id: 'e12b', level: 'EMG', make: function (r, sh) { return tableSolve(sh, sh.A); } },
+          { id: 'e12c', level: 'EMG', make: function (r, sh) { return tableSolve(sh, sh.B); } },
+          { id: 'e12d', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+            var A = sh.A, xa = sh.xs.filter(function (x, i) { return sh.ys[i] === A; });
+            return mc(r, 'Why does the repeated output ' + t(A) + ' not stop ' + t('f') + ' from being a function?', [
+              { html: 'The test restricts inputs, not outputs: each input appears once with one output. Two inputs sharing an output is allowed.', right: true },
+              { html: 'It does stop it: an output used twice means ' + t('f') + ' is not a function.', why: 'Look at the definition: each <b>input</b> must have exactly one output. Outputs may repeat.' },
+              { html: 'Because ' + t(A) + ' is ' + (A > 0 ? 'positive' : 'negative') + '.', why: 'The sign of an output has nothing to do with the function test.' },
+              { html: 'Because the table has more than ' + t('5') + ' columns.', why: 'The size of the table doesn’t matter. Check whether any input has two outputs.' }],
+              'The inputs ' + t(sh.xs.join(',\\ ')) + ' each appear once, each with one output. ' + t('f(' + xa[0] + ')=f(' + xa[1] + ')=' + A) + ' is two inputs sharing an output (many-to-one), which is allowed.', ['What does the definition of a function restrict — inputs or outputs?'], 'repeated output ok');
           } },
-          { id: 'e14c', sub: 'd', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Which rocket is higher <i>before</i> ' + t(nT(s.ts)) + ' s, and which is higher <i>after</i>?', [
-              { html: 'Before: Rocket B (it started ' + t(s.c) + ' m up). After: Rocket A (it was launched faster).', right: true },
-              { html: 'Before: Rocket A. After: Rocket B.', why: 'At ' + t('t=0') + ' Rocket B is ' + t(s.c) + ' m up and Rocket A is on the ground.' },
-              { html: 'Rocket B is always higher.', why: 'Check ' + t('h_{A}-h_{B}=' + s.D + 't-' + s.c) + ': it becomes positive after ' + t(nT(s.ts)) + ' s.' },
-              { html: 'Rocket A is always higher.', why: 'At launch Rocket A is at ' + t('0') + ' m and Rocket B at ' + t(s.c) + ' m.' }],
-              t('h_{A}-h_{B}=' + s.D + 't-' + s.c) + ' is negative before ' + t(nT(s.ts)) + ' s (B higher, it started on the platform) and positive after (A higher, launched faster).', ['Compare the heights at ' + t('t=0') + ' and at a time after they meet.'], 'which rocket higher');
+          { id: 'e12e', level: 'EMG', make: function (r, sh) {
+            var y0 = sh.ys[sh.i0], opts = [
+              { html: 'No solution: ' + t('0') + ' is not an output in the table.', right: true },
+              { html: t('x=0'), why: t('x=0') + ' is an input, and ' + t('f(0)=' + y0) + ', not ' + t('0') + '. Look for ' + t('0') + ' in the <b>output</b> row.' },
+              { html: t('x=' + y0), why: t(y0) + ' is the output ' + t('f(0)') + '. Solving ' + t('f(x)=0') + ' asks for an input whose output is ' + t('0') + '.' }];
+            for (var i = 0; i + 1 < 6; i++) if (sh.ys[i] * sh.ys[i + 1] < 0) { opts.push({ html: 'A value of ' + t('x') + ' between ' + t(sh.xs[i]) + ' and ' + t(sh.xs[i + 1]) + ', where the outputs change sign.', why: 'The function is given <b>entirely</b> by the table: there are no inputs between the columns.' }); break; }
+            if (opts.length < 4) opts.push({ html: 'Every value of ' + t('x') + '.', why: 'Check the output row: is any output equal to ' + t('0') + '?' });
+            return mc(r, 'What is the answer to “solve ' + t('f(x)=0') + '” for this function?', opts, t('0') + ' never appears in the ' + t('f(x)') + ' row, so no input has output ' + t('0') + ': <b>no solution</b>.', ['Look for ' + t('0') + ' in the output row.'], 'table f(x)=0');
           } },
-          { id: 'e14d', sub: 'e', level: 'EMG', make: function (r, s) {
-            return fieldsPart('Find each rocket’s maximum height.', [
-              { label: 'Rocket A', x: s.hA, d: 2, after: 'm', cands: [{ v: s.tA, code: 'ctx-max-time', hint: 'That is the time of A’s peak. Substitute it.' }] },
-              { label: 'Rocket B', x: s.hB, d: 2, after: 'm', cands: [{ v: s.tB, code: 'ctx-max-time', hint: 'That is the time of B’s peak. Substitute it.' }, { v: s.hB - s.c, code: 'ctx-no-c', hint: 'Include B’s ' + t(s.c) + ' m platform.' }] }],
-              'A: ' + t('t=-\\frac{' + s.vA + '}{2(-5)}=' + nT(s.tA)) + ', ' + t('h_{A}=' + nT(s.hA)) + ' m. B: ' + t('t=-\\frac{' + s.vB + '}{2(-5)}=' + nT(s.tB)) + ', ' + t('h_{B}=' + nT(-5 * s.tB * s.tB) + '+' + nT(s.vB * s.tB) + '+' + s.c + '=' + nT(s.hB)) + ' m. (' + cd('4:maximum') + ' on each curve.)', [H_MAX, H_VERT], 'rocket maxima', { swap: 'wrong', swapHint: 'The two rockets’ heights are in each other’s boxes.' });
-          } },
-          { id: 'e14e', sub: 'f', level: 'PRG', make: function (r, s) {
-            return fieldsPart('Find when each rocket lands (nearest hundredth), and how much longer Rocket A is in the air.', [
-              { label: 'Rocket A lands', x: s.landA, d: 2, after: 's', cands: [{ v: s.tA, code: 'ctx-max-time', hint: 'That is the time of A’s peak. Landing means ' + t('h=0') + '.' }] },
-              { label: 'Rocket B lands', x: s.landB, d: 2, after: 's', cands: [{ v: s.tB, code: 'ctx-max-time', hint: 'That is the time of B’s peak.' }, { v: 2 * s.tB, code: 'ctx-double-vertex', hint: 'At that time B is back at platform height, not yet on the ground.' }] },
-              { label: 'A is in the air longer by', x: s.landA - s.landB, d: 2, after: 's', cands: [] }],
-              'A: ' + t('-5t(t-' + nT(s.landA) + ')=0\\Rightarrow t=' + nT(s.landA)) + ' s. B: ' + cd('2:zero') + ', or ' + t(quadT(5, -s.vB, -s.c, 't') + '=0\\Rightarrow t=\\frac{' + s.vB + '+\\sqrt{' + (s.vB * s.vB + 20 * s.c) + '}}{10}\\approx ' + rT(s.landB, 2)) + ' s. A is up longer by ' + t(nT(s.landA) + '-' + rT(s.landB, 4) + '\\approx ' + rT(s.landA - s.landB, 2)) + ' s.', [H_ZERO], 'rocket landings');
-          } },
-          { id: 'e14f', sub: 'g', level: 'PRG', outcome: 'RF2', make: function (r, s) {
-            var L = rd(s.landB, 2), tg = setT('t', 0, L);
-            return setPart('State the practical domain of Rocket B’s relation.', tg, { v: 't', wrong: [{ is: setT('t', 0, s.landA), code: 'ctx-gave-end', hint: 'That is when Rocket A lands. Each rocket’s domain ends when <i>that</i> rocket lands.' }, { is: setT('t', 0, s.tB), code: 'ctx-dom-vertex', hint: 'Rocket B keeps flying after its peak until it lands.' }] },
-              'From launch to Rocket B’s landing: ' + t('D_{B}=' + tg) + '. (Rocket A’s is ' + t('\\{t\\mid 0\\le t\\le ' + nT(s.landA) + ',\\ t\\in\\mathbb{R}\\}') + ': launched faster, it stays up longer although it started lower.)', H_DOM, 'rocket B domain');
+          { id: 'e12f', level: 'BEG', make: function (r, sh) {
+            var pts = sh.xs.map(function (x, i) { return [x, sh.ys[i]]; });
+            return B.pairs('Write the six ordered pairs that lie on the graph of ' + t('y=f(x)') + '.', pts, {}, t(ptsTex(pts)), ['Each column gives one pair (input, output).'], 'table to pairs');
           } }] },
-      { num: '15', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e15', level: 'PRG', outcome: 'RF2', make: function (r) {
-          var o = pickWhere(function () { return [r.int(6, 14), r.int(1, 4)]; }, function (o) { return (o[0] - o[1]) % 2 === 0 && o[0] > o[1] + 1 && Math.pow((o[0] + o[1]) / 2, 2) !== o[0]; });
-          var R = o[0], S = o[1], tv = (R - S) / 2, pk = Math.pow((R + S) / 2, 2), b = R - S, c = R * S;
-          return mc(r, 'A gull is sighted flying above a beach. Its height above the beach, in metres, ' + t('t') + ' seconds after it is first sighted is ' + t('h=' + quadT(-1, b, c, 't')) + '. It lands on the beach when ' + t('h=0') + '. The practical domain of this relation is', [
-            { html: t('\\{t\\mid -' + S + '\\le t\\le ' + R + ',\\ t\\in\\mathbb{R}\\}'), why: t('t=-' + S) + ' is the rejected root: the gull wasn’t sighted yet. Time starts at ' + t('t=0') + '.' },
-            { html: t('\\{t\\mid 0\\le t\\le ' + R + ',\\ t\\in\\mathbb{R}\\}'), right: true },
-            { html: t('\\{t\\mid 0\\le t\\le ' + pk + ',\\ t\\in\\mathbb{R}\\}'), why: t(pk) + ' is the greatest <b>height</b>, ' + t('h(' + tv + ')') + ' — not a time.' },
-            { html: t('\\{t\\mid 0\\le t\\le ' + tv + ',\\ t\\in\\mathbb{R}\\}'), why: 'That stops at the vertex and cuts off the descent to the beach.' }],
-            t('-t^{2}+' + b + 't+' + c + '=0\\Rightarrow (t-' + R + ')(t+' + S + ')=0') + ', so ' + t('t=' + R) + ' or ' + t('t=-' + S) + '. Time starts at the sighting, ' + t('t=0') + ', and ends at the landing, ' + t('t=' + R) + '.', ['Find both zeros, then decide where the situation starts and ends.'], 'gull domain');
+      /* ---------- EP13: expressions as inputs ---------- */
+      { num: '13', section: 'Extra practice D — Numbers and expressions as inputs', stem: function (sh) { return 'A function is defined by ' + t('f(x)=' + sh.ft) + '. Determine each of the following, simplified.'; },
+        shared: function (r) { var b = -r.int(2, 6), c = r.pick([-3, -2, -1, 1, 1, 2, 3, 4, 5]); return { b: b, c: c, k: r.pick([2, 2, 3]), h: r.pick([1, 1, 2]), q: r.pick([2, 2, 1, 3]), ft: lin([[1, 'x^{2}'], [b, 'x'], [c, '']]) }; },
+        parts: [
+          { id: 'e13a', level: 'EMG', make: function (r, sh) {
+            var b = sh.b, c = sh.c, x = -sh.q, ans = x * x + b * x + c;
+            return numPart(t('f(' + x + ')'), ans, [[-x * x + b * x + c, 'fn-neg-square', t('(' + x + ')^{2}=' + x * x) + ': an even power of a negative is positive.'], [x * x - b * x + c, 'fn-neg-sub', t(b + '(' + x + ')=' + sg(b * x)) + ': a negative times a negative is positive.']],
+              t('f(' + x + ')=(' + x + ')^{2}' + term(b, '(' + x + ')') + sg(c) + '=' + x * x + sg(b * x) + sg(c) + '=' + ans), HN, 'f(' + x + ') for ' + sh.ft);
+          } },
+          { id: 'e13b', level: 'BEG', make: function (r, sh) {
+            var T = PL([[1, 'a', 2], [sh.b, 'a'], [sh.c]]);
+            return polyPart(t('f(a)'), t('f(a)='), T, null, [{ is: PL([[2, 'a'], [sh.b, 'a'], [sh.c]]), code: 'fn-square-2x', hint: 'Keep the exponent: ' + t('x^{2}') + ' becomes ' + t('a^{2}') + '.' }], 'Replace every ' + t('x') + ' with ' + t('a') + ': ' + t('f(a)=' + P.tex(T)) + '.', ['Replace every ' + t('x') + ' with ' + t('a') + '.'], 'f(a)');
+          } },
+          { id: 'e13c', level: 'PRG', make: function (r, sh) {
+            var b = sh.b, c = sh.c, k = sh.k, T = PL([[k * k, 'a', 2], [b * k, 'a'], [c]]);
+            return polyPart(t('f(' + k + 'a)'), t('f(' + k + 'a)='), T, null, [
+              { is: PL([[k, 'a', 2], [b * k, 'a'], [c]]), code: 'fn-sq-coef', hint: t('(' + k + 'a)^{2}=' + k + 'a\\cdot ' + k + 'a=' + k * k + 'a^{2}') + ': the ' + t(k) + ' is squared too.' },
+              { is: PL([[k * k, 'a', 2], [b, 'a'], [c]]), code: 'fn-dist', hint: 'Replace <b>every</b> ' + t('x') + ' with ' + t('(' + k + 'a)') + ', including the one in ' + t(term(b, 'x', true)) + '.' }],
+              t('f(' + k + 'a)=(' + k + 'a)^{2}' + term(b, '(' + k + 'a)') + sg(c) + '=' + P.tex(T)), HX, 'f(ka)');
+          } },
+          { id: 'e13d', level: 'ADV', make: function (r, sh) {
+            var b = sh.b, c = sh.c, h = sh.h, ap = PL([[1, 'a'], [h]]), T = P.add(P.pow(ap, 2), P.scale(ap, b), P.num(c));
+            return polyPart(t('f(a+' + h + ')'), t('f(a+' + h + ')='), T, null, [
+              { is: P.add(PL([[1, 'a', 2], [h * h]]), P.scale(ap, b), P.num(c)), code: 'fn-binom-sq', hint: t('(a+' + h + ')^{2}=(a+' + h + ')(a+' + h + ')=a^{2}+' + 2 * h + 'a+' + h * h) + ' — don’t forget the middle term.' },
+              { is: PL([[1, 'a', 2], [b, 'a'], [c + h]]), code: 'fn-plus-out', hint: 'That is ' + t('f(a)+' + h) + '. In ' + t('f(a+' + h + ')') + ' the ' + t('+' + h) + ' is part of the <b>input</b>, so it goes into every ' + t('x') + '.' },
+              { is: P.add(P.pow(ap, 2), PL([[b, 'a'], [h]]), P.num(c)), code: 'fn-dist', hint: t(b + '(a+' + h + ')=' + b + 'a' + sg(b * h)) + ': multiply both terms.' }],
+              t('f(a+' + h + ')=(a+' + h + ')^{2}' + term(b, '(a+' + h + ')') + sg(c)) + '<br>' + t('=a^{2}+' + 2 * h + 'a+' + h * h + term(b, 'a') + sg(b * h) + sg(c)) + '<br>' + t('=' + P.tex(T)), HX, 'f(a+h)');
+          } },
+          { id: 'e13e', level: 'EMG', make: function (r, sh) {
+            var b = sh.b, c = sh.c, h = sh.h, T = PL([[1, 'a', 2], [b, 'a'], [c + h]]), ap = PL([[1, 'a'], [h]]);
+            return polyPart(t('f(a)+' + h), t('f(a)+' + h + '='), T, null, [{ is: P.add(P.pow(ap, 2), P.scale(ap, b), P.num(c)), code: 'fn-plus-in', hint: 'That is ' + t('f(a+' + h + ')') + '. Here the ' + t('+' + h) + ' is outside the brackets: find ' + t('f(a)') + ', then add ' + t(h) + ' to the output.' }],
+              t('f(a)+' + h + '=(' + lin([[1, 'a^{2}'], [b, 'a'], [c, '']]) + ')+' + h + '=' + P.tex(T)), ['Find ' + t('f(a)') + ' first, then add ' + t(h) + ' to the finished output.'], 'f(a)+h');
+          } },
+          { id: 'e13f', level: 'PRG', make: function (r, sh) {
+            var h = sh.h, b = sh.b, c = sh.c, ap = PL([[1, 'a'], [h]]), T1 = P.add(P.pow(ap, 2), P.scale(ap, b), P.num(c)), T2 = PL([[1, 'a', 2], [b, 'a'], [c + h]]);
+            return mc(r, 'Simplified, ' + t('f(a+' + h + ')=' + P.tex(T1)) + ' but ' + t('f(a)+' + h + '=' + P.tex(T2)) + ' — different answers. Why does the ' + t('+' + h) + ' land in a different place?', [
+              { html: 'In ' + t('f(a+' + h + ')') + ' the ' + t('+' + h) + ' is part of the input, so it is squared and multiplied along with ' + t('a') + '. In ' + t('f(a)+' + h) + ' it is added to the finished output.', right: true },
+              { html: 'They should be the same; one of the answers has an arithmetic error.', why: 'Test with ' + t('a=0') + ': ' + t('f(' + h + ')') + ' and ' + t('f(0)+' + h) + ' are different numbers.' },
+              { html: 'Brackets mean multiply, so ' + t('f(a+' + h + ')=f\\cdot a+f\\cdot ' + h) + '.', why: 'In function notation the brackets mark the input — ' + t('f') + ' is a name, not a number.' },
+              { html: t('f(a)+' + h) + ' adds ' + t(h) + ' to the input; ' + t('f(a+' + h + ')') + ' adds it to the output.', why: 'That is backwards: whatever is inside the brackets is the input.' }],
+              'In ' + t('f(a+' + h + ')') + ' the whole expression ' + t('a+' + h) + ' goes into the machine. In ' + t('f(a)+' + h) + ' the machine works on ' + t('a') + ' and ' + t(h) + ' is added to the output afterwards.', ['Which one has the ' + t('+' + h) + ' inside the brackets?'], 'f(a+h) vs f(a)+h');
+          } }] },
+      /* ---------- EP14: g(x) = c - mx ---------- */
+      { num: '14', stem: function (sh) { return 'A function is defined by ' + t('g(x)=' + sh.c + '-' + sh.m + 'x') + '. Determine each of the following, simplified.'; },
+        shared: function (r) { return pickWhere(function () { return { c: r.int(3, 9), m: r.int(2, 4), p: r.int(2, 5), k: r.pick([2, 2, 3]) }; }, function (o) { return o.c > o.m; }); },
+        parts: [
+          { id: 'e14a', level: 'BEG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, a = -sh.p, ans = c - m * a;
+            return numPart(t('g(' + a + ')'), ans, [[c + m * a, 'fn-neg-sub', t('-' + m + '(' + a + ')=+' + (-m * a)) + ': a negative times a negative is positive.'], [(c - m) * a, 'fn-order', 'Multiply before subtracting.']],
+              t('g(' + a + ')=' + c + '-' + m + '(' + a + ')=' + c + '+' + (-m * a) + '=' + ans), HN, 'g(' + a + ')');
+          } },
+          { id: 'e14b', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, k = sh.k, T = PL([[c], [-m * k, 'a']]);
+            return polyPart(t('g(' + k + 'a)'), t('g(' + k + 'a)='), T, c + '-' + m * k + 'a', [
+              { is: PL([[c * k], [-m * k, 'a']]), code: 'fn-scale-out', hint: 'Only the input is ' + t(k + 'a') + ': the ' + t(c) + ' is not multiplied by ' + t(k) + '.' },
+              { is: PL([[c], [-(m + k), 'a']]), code: 'fn-add-coef', hint: t(m + '(' + k + 'a)=' + m * k + 'a') + ': multiply the numbers.' }],
+              t('g(' + k + 'a)=' + c + '-' + m + '(' + k + 'a)=' + c + '-' + m * k + 'a'), HX, 'g(ka)');
+          } },
+          { id: 'e14c', level: 'PRG', make: function (r, sh) {
+            var c = sh.c, m = sh.m, T = PL([[c - m], [-m, 'a']]);
+            return polyPart(t('g(a+1)'), t('g(a+1)='), T, (c - m) + '-' + m + 'a', [
+              { is: PL([[c + m], [-m, 'a']]), code: 'fn-dist-sign', hint: t('-' + m + '(a+1)=-' + m + 'a-' + m) + ': the ' + t('-' + m) + ' multiplies the ' + t('+1') + ' too.' },
+              { is: PL([[c - 1], [-m, 'a']]), code: 'fn-dist', hint: 'Put the input in brackets: ' + t(c + '-' + m + '(a+1)') + '. The ' + t(m) + ' multiplies both terms.' },
+              { is: PL([[c + 1], [-m, 'a']]), code: 'fn-plus-out', hint: 'That is ' + t('g(a)+1') + '. Replace ' + t('x') + ' with the whole input ' + t('(a+1)') + '.' }],
+              t('g(a+1)=' + c + '-' + m + '(a+1)=' + c + '-' + m + 'a-' + m + '=' + (c - m) + '-' + m + 'a'), HX, 'g(a+1)');
+          } },
+          { id: 'e14d', level: 'ADV', make: function (r, sh) {
+            var c = sh.c, m = sh.m, T = P.num(m);
+            return polyPart(t('g(a)-g(a+1)'), t('g(a)-g(a+1)='), T, null, [
+              { is: P.num(-m), code: 'fn-reverse', hint: 'Check the order: ' + t('(' + c + '-' + m + 'a)-(' + (c - m) + '-' + m + 'a)') + '.' },
+              { is: PL([[-2 * m, 'a'], [-m]]), code: 'fn-dist-sign', hint: 'When you subtract the bracket ' + t('(' + (c - m) + '-' + m + 'a)') + ', change the sign of <b>every</b> term inside it.' },
+              { is: PL([[-2 * m, 'a'], [2 * c - m]]), code: 'fn-add-fns', hint: 'The question asks for the <b>difference</b> ' + t('g(a)-g(a+1)') + '.' }],
+              t('g(a)-g(a+1)=(' + c + '-' + m + 'a)-(' + (c - m) + '-' + m + 'a)') + '<br>' + t('=' + c + '-' + m + 'a-' + (c - m) + '+' + m + 'a=' + m), HX.concat(['Find ' + t('g(a)') + ' and ' + t('g(a+1)') + ' first, then subtract the whole second bracket.']), 'g(a)-g(a+1)', ['a']);
+          } },
+          { id: 'e14e', level: 'PRG', make: function (r, sh) {
+            var m = sh.m;
+            return mc(r, 'Simplified, ' + t('g(a)-g(a+1)=' + m) + ', which contains no ' + t('a') + '. What does that tell you about the graph of ' + t('g') + '?', [
+              { html: 'Wherever you start, one step right drops the output by exactly ' + t(m) + ': the graph is a straight line with slope ' + t('-' + m) + '.', right: true },
+              { html: 'The graph is a horizontal line, because the answer has no ' + t('a') + '.', why: 'It is the <b>change</b> in the output that is always the same, not the output itself.' },
+              { html: 'The graph passes through the origin.', why: t('g(0)=' + sh.c) + ', so it doesn’t. The answer is about how the output changes.' },
+              { html: 'The graph is a curve that gets steeper.', why: 'A constant change for each step of ' + t('1') + ' means a constant rate of change — a straight line.' }],
+              'Each step of ' + t('1') + ' to the right changes the output by the same amount (it drops by ' + t(m) + '), so the graph of ' + t('g') + ' is a <b>straight line</b> with slope ' + t('-' + m) + '.', ['What does ' + t('g(a)-g(a+1)') + ' measure as you move one unit right?'], 'constant difference means line');
+          } },
+          { id: 'e14f', level: 'PRG', make: function (r, sh) {
+            var c = sh.c, m = sh.m;
+            return mc(r, 'Compare ' + t('g(a)+g(1)') + ' with ' + t('g(a+1)') + '. Is there any value of ' + t('a') + ' for which ' + t('g(a+1)=g(a)+g(1)') + '?', [
+              { html: 'No: ' + t('g(a)+g(1)=' + (2 * c - m) + '-' + m + 'a') + ' is always ' + t(c) + ' more than ' + t('g(a+1)=' + (c - m) + '-' + m + 'a') + '.', right: true },
+              { html: 'Yes, for every ' + t('a') + ': that is the distributive property.', why: 'Function notation isn’t multiplication, so there is no distributive property. Work out both sides.' },
+              { html: 'Yes, only when ' + t('a=0') + '.', why: 'Test ' + t('a=0') + ': ' + t('g(1)=' + (c - m)) + ' but ' + t('g(0)+g(1)=' + c + '+' + (c - m) + '=' + (2 * c - m)) + '.' },
+              { html: 'Yes, only when ' + t('a=1') + '.', why: 'Test ' + t('a=1') + ': ' + t('g(2)=' + (c - 2 * m)) + ' but ' + t('g(1)+g(1)=' + 2 * (c - m)) + '.' }],
+              t('g(1)=' + (c - m)) + ', so ' + t('g(a)+g(1)=' + c + '-' + m + 'a+' + (c - m) + '=' + (2 * c - m) + '-' + m + 'a') + '. Setting it equal to ' + t('g(a+1)=' + (c - m) + '-' + m + 'a') + ' gives ' + t((c - m) + '=' + (2 * c - m)) + ', which is false: <b>no value</b> works.', ['Write both expressions in terms of ' + t('a') + ', then set them equal.'], 'g(a+1) vs g(a)+g(1)');
+          } }] },
+      /* ---------- EP15: two functions ---------- */
+      { num: '15', stem: function (sh) { return 'Two functions are defined by ' + t('f(x)=x^{2}+' + sh.p) + ' and ' + t('g(x)=' + lin([[sh.m, 'x'], [sh.q, '']])) + '.'; },
+        shared: function (r) {
+          return pickWhere(function () { var r1 = r.int(2, 5), r2 = -r.int(1, 3), p = r.int(1, 4); return { r1: r1, r2: r2, p: p, m: r1 + r2, q: p - r1 * r2, u: r.int(1, 3), w: r.int(1, 3), v: r.pick([1, 2]) }; },
+            function (o) { return o.m >= 1 && o.q !== 0; });
+        },
+        parts: [
+          { id: 'e15a', level: 'EMG', make: function (r, sh) {
+            var u = sh.u, fu = u * u + sh.p, gu = sh.m * u + sh.q;
+            return numPart(t('f(' + u + ')+g(' + u + ')'), fu + gu, [[fu * gu, 'fn-add-fns', 'The question says <b>add</b> the outputs.']],
+              t('f(' + u + ')=' + u + '^{2}+' + sh.p + '=' + fu) + ', ' + t('g(' + u + ')=' + sh.m + '(' + u + ')' + sg(sh.q) + '=' + gu) + ', so ' + t(fu + '+' + sgp(gu) + '=' + (fu + gu)) + '.', ['Find ' + t('f(' + u + ')') + ' and ' + t('g(' + u + ')') + ' separately.'], 'f(u)+g(u)');
+          } },
+          { id: 'e15b', level: 'EMG', make: function (r, sh) {
+            var v = sh.v, fv = v * v + sh.p, g0 = sh.q;
+            return numPart(t('f(-' + v + ')\\cdot g(0)'), fv * g0, [[(-v * v + sh.p) * g0, 'fn-neg-square', t('(-' + v + ')^{2}=' + v * v) + ': the square is positive.'], [fv * (sh.m + sh.q), 'fn-zero-coef', t('g(0)=' + sh.m + '(0)' + sg(sh.q) + '=' + sh.q) + '.'], [fv + g0, 'fn-add-fns', 'The dot means <b>multiply</b> the two outputs.']],
+              t('f(-' + v + ')=(-' + v + ')^{2}+' + sh.p + '=' + fv) + ', ' + t('g(0)=' + sh.q) + ', so ' + t(fv + '\\cdot ' + sgp(g0) + '=' + fv * g0) + '.', ['Evaluate each function first, then multiply.'], 'f(-v)g(0)');
+          } },
+          { id: 'e15c', level: 'PRG', make: function (r, sh) {
+            var w = sh.w, gw = sh.m * w + sh.q, ans = gw * gw + sh.p, fw = w * w + sh.p;
+            return numPart('Evaluate ' + t('g(' + w + ')') + ', then use that answer as the input to ' + t('f') + '. What is the result?', ans, [[sh.m * fw + sh.q, 'fn-comp-order', 'That puts ' + t('f(' + w + ')') + ' into ' + t('g') + '. Start with ' + t('g(' + w + ')') + ', then put its output into ' + t('f') + '.'], [gw, 'fn-drop', 'That is ' + t('g(' + w + ')') + ' — now use it as the input to ' + t('f') + '.'], [fw * gw, 'fn-times', 'Use ' + t('g(' + w + ')') + ' as the <b>input</b> of ' + t('f') + ' — don’t multiply.']],
+              t('g(' + w + ')=' + sh.m + '(' + w + ')' + sg(sh.q) + '=' + gw) + '<br>' + t('f(' + gw + ')=' + sgp(gw) + '^{2}+' + sh.p + '=' + ans), ['Work from the inside out: first ' + t('g(' + w + ')') + ', then ' + t('f') + ' of that number.'], 'f(g(w))');
+          } },
+          { id: 'e15d', level: 'ADV', make: function (r, sh) {
+            var r1 = sh.r1, r2 = sh.r2, m = sh.m, q = sh.q, p = sh.p, cc = p - q;
+            return solPart('Solve ' + t('f(x)=g(x)') + '.', [r1, r2], 'x', [[[-r1, -r2], 'sol-sign', 'Check the signs: if ' + t('(x-' + r1 + ')=0') + ' then ' + t('x=' + r1) + '.']],
+              t('x^{2}+' + p + '=' + lin([[m, 'x'], [q, '']])) + '<br>' + t(lin([[1, 'x^{2}'], [-m, 'x'], [cc, '']]) + '=0') + '<br>' + t('(x-' + r1 + ')(x+' + (-r2) + ')=0') + '<br>' + t('x=' + r1) + ' or ' + t('x=' + r2), ['Set the two formulas equal, move everything to one side, and factor.', 'Each factor gives one solution.'], 'f(x)=g(x)');
+          } }] },
+      /* ---------- EP16: f(a+1) - f(a) ---------- */
+      { num: '16', stem: 'For a function ' + t('f') + ', the expression ' + t('f(a+1)-f(a)') + ' measures how much the output changes when the input goes up by ' + t('1') + '. Determine and simplify ' + t('f(a+1)-f(a)') + ' for each function.', parts: [
+        { id: 'e16a', level: 'PRG', make: function (r) {
+          var m = r.int(2, 6), b = -r.int(1, 7), ft = lin([[m, 'x'], [b, '']]);
+          return polyPart(t('f(x)=' + ft), t('f(a+1)-f(a)='), P.num(m), null, [
+            { is: P.num(-m), code: 'fn-reverse', hint: 'Check the order: ' + t('f(a+1)') + ' comes first.' },
+            { is: P.num(m + 2 * b), code: 'fn-dist-sign', hint: 'When you subtract ' + t('(' + ft.replace(/x/g, 'a') + ')') + ', change the sign of <b>every</b> term, including the ' + t(sg(b)) + '.' },
+            { is: PL([[2 * m, 'a'], [m + 2 * b]]), code: 'fn-add-fns', hint: 'The question asks for the <b>difference</b>.' }],
+            t('[' + m + '(a+1)' + sg(b) + ']-[' + m + 'a' + sg(b) + ']=' + m + 'a' + sg(m + b) + '-' + m + 'a' + sg(-b) + '=' + m), HX, 'diff of linear', ['a']);
+        } },
+        { id: 'e16b', level: 'ADV', make: function (r) {
+          var k = r.pick([1, 1, 2, 3]), ft = (k === 1 ? '' : k) + 'x^{2}', T = PL([[2 * k, 'a'], [k]]);
+          return polyPart(t('f(x)=' + ft), t('f(a+1)-f(a)='), T, null, [
+            { is: P.num(k), code: 'fn-binom-sq', hint: t('(a+1)^{2}=a^{2}+2a+1') + ', not ' + t('a^{2}+1') + '.' },
+            { is: PL([[2 * k, 'a']]), code: 'fn-binom-sq', hint: t('(a+1)^{2}=a^{2}+2a+1') + ': don’t lose the ' + t('+1') + '.' }],
+            t((k === 1 ? '' : k) + '(a+1)^{2}-' + (k === 1 ? '' : k) + 'a^{2}=' + (k === 1 ? '' : k + '(') + 'a^{2}+2a+1' + (k === 1 ? '' : ')') + '-' + (k === 1 ? '' : k) + 'a^{2}=' + P.tex(T)), HX, 'diff of kx^2');
+        } },
+        { id: 'e16c', level: 'ADV', make: function (r) {
+          var b = -r.int(2, 6), c = r.pick([-3, -1, 1, 2, 4]), ft = lin([[1, 'x^{2}'], [b, 'x'], [c, '']]), T = PL([[2, 'a'], [1 + b]]);
+          return polyPart(t('f(x)=' + ft), t('f(a+1)-f(a)='), T, null, [
+            { is: P.num(1 + b), code: 'fn-binom-sq', hint: t('(a+1)^{2}=a^{2}+2a+1') + ': include the middle term ' + t('2a') + '.' },
+            { is: PL([[2, 'a'], [1]]), code: 'fn-drop', hint: 'Don’t forget the change in the ' + t(term(b, 'x', true)) + ' term: ' + t(b + '(a+1)-(' + b + 'a)=' + b) + '.' },
+            { is: PL([[2, 'a'], [1 + b + 2 * c]]), code: 'fn-dist-sign', hint: 'When you subtract ' + t('f(a)') + ', change the sign of every term, including the constant.' }],
+            t('f(a+1)=(a+1)^{2}' + term(b, '(a+1)') + sg(c) + '=' + lin([[1, 'a^{2}'], [2 + b, 'a'], [1 + b + c, '']])) + '<br>' + t('f(a+1)-f(a)=(' + lin([[1, 'a^{2}'], [2 + b, 'a'], [1 + b + c, '']]) + ')-(' + lin([[1, 'a^{2}'], [b, 'a'], [c, '']]) + ')=' + P.tex(T)), HX, 'diff of quadratic');
+        } },
+        { id: 'e16d', level: 'PRG', make: function (r) {
+          return mc(r, 'For ' + t('f(x)=3x-5') + ' the change ' + t('f(a+1)-f(a)') + ' is ' + t('3') + ', which does not depend on ' + t('a') + '. For ' + t('f(x)=x^{2}') + ' it is ' + t('2a+1') + ', which does. Why?', [
+            { html: t('3x-5') + ' is <b>linear</b>: a line rises by the same amount (its slope, ' + t('3') + ') for every step of ' + t('1') + ', wherever the step starts.', right: true },
+            { html: 'Because ' + t('3x-5') + ' has a negative constant.', why: 'The constant cancels when you subtract. It is the type of function that matters.' },
+            { html: 'Because ' + t('x^{2}') + ' is not a function.', why: t('y=x^{2}') + ' passes the vertical line test: it is a function. Its steepness changes from place to place.' },
+            { html: 'Because ' + t('a') + ' was chosen differently for each function.', why: 'The same expression ' + t('f(a+1)-f(a)') + ' was used for both. Think about the shape of each graph.' }],
+            'A <b>linear</b> function has a constant rate of change: every step of ' + t('1') + ' to the right changes the output by the slope. A quadratic gets steeper, so its change depends on where you start.', ['Picture the two graphs: which one is a straight line?'], 'constant change for linear');
         } }] },
-      { num: '16', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e16', level: 'EMG', make: function (r) {
-          var b = r.pick([20, 30, 40, 50]), c = r.int(5, 20), tv = b / 10, pk = b * b / 20 + c;
-          var p = B.nr('A model rocket is fired from the roof of a shed. Its height above the ground, in metres, ' + t('t') + ' seconds after firing is ' + t('h=' + quadT(-5, b, c, 't')) + '. The greatest height the rocket reaches, to the nearest metre, is ________ m.', pk, near([
-            { v: tv, code: 'ctx-max-time', hint: 'That is the time of the peak. Substitute it to get the height.' },
-            { v: pk - c, code: 'ctx-no-c', hint: 'Include the ' + t(c) + ' m roof height.' },
-            { v: c, code: 'ctx-zero-start', hint: 'That is the starting height (the roof). The rocket climbs higher.' }], pk, 0),
-            'Vertex: ' + t('t=-\\frac{' + b + '}{2(-5)}=' + tv) + ' s. ' + t('h(' + tv + ')=-5(' + (tv * tv) + ')+' + (b * tv) + '+' + c + '=' + pk) + ' m (' + cd('4:maximum') + ' agrees). Answer: ' + t(pk) + '.', [H_MAX, H_VERT], 'NR max height ' + quadT(-5, b, c, 't'));
-          p.bad = [String(tv), String(pk - c)];
-          return p;
+      /* ---------- EP17: given the output, find the input ---------- */
+      { num: '17', section: 'Extra practice E — Working backwards: given the output, find the input', stem: 'Solve for the input in each case.', parts: [
+        { id: 'e17a', level: 'PRG', make: function (r) {
+          var c = r.int(3, 15), m = r.int(2, 6), x = r.int(2, 8), V = c - m * x, ft = c + '-' + m + 'x';
+          return numPart(t('f(x)=' + ft) + '; solve ' + t('f(x)=' + V) + '.', x, [[-x, 'fn-solve-sign', t('-' + m + 'x=' + (V - c)) + ': divide by ' + t('-' + m) + '.'], [c - m * V, 'fn-evaluated', 'That is ' + t('f(' + V + ')') + '. Solve ' + t(ft + '=' + V) + '.'], [(V + c) / -m, 'fn-solve-inverse', 'Subtract ' + t(c) + ' from both sides.']],
+            t(ft + '=' + V) + '<br>' + t('-' + m + 'x=' + (V - c)) + '<br>' + t('x=' + x), HS, 'solve ' + ft + '=' + V, { before: t('x=') });
+        } },
+        { id: 'e17b', level: 'PRG', make: function (r) {
+          var k = r.pick([2, 3, 3, 4, 5]), b = r.int(4, 12), x = -k * r.int(1, 6), V = x / k + b, ft = '\\dfrac{x}{' + k + '}+' + b;
+          return numPart(t('g(x)=' + ft) + '; solve ' + t('g(x)=' + V) + '.', x, [[(V - b) / k, 'fn-solve-divide', 'To undo dividing by ' + t(k) + ', <b>multiply</b> both sides by ' + t(k) + '.'], [k * (V + b), 'fn-solve-inverse', 'Subtract ' + t(b) + ' from both sides first: ' + t('\\tfrac{x}{' + k + '}=' + (V - b)) + '.'], [-x, 'fn-solve-sign', 'Check the sign.'], [V / k + b, 'fn-evaluated', 'That is ' + t('g(' + V + ')') + '. Solve ' + t(ft + '=' + V) + '.']],
+            t(ft + '=' + V) + '<br>' + t('\\tfrac{x}{' + k + '}=' + (V - b)) + '<br>' + t('x=' + k + '(' + (V - b) + ')=' + x), HS, 'solve x/k+b', { before: t('x=') });
+        } },
+        { id: 'e17c', level: 'PRG', make: function (r) {
+          var c = r.int(2, 9), s = r.int(3, 9), V = s * s - c, ft = 'x^{2}-' + c;
+          return solPart(t('h(x)=' + ft) + '; solve ' + t('h(x)=' + V) + '.', [s, -s], 'x', [[[V + c], 'fn-sqrt-not', t('x^{2}=' + (V + c)) + ' — now take the square root (two roots).'], [[V + c, -(V + c)], 'fn-sqrt-not', t('x^{2}=' + (V + c)) + ' — now take the square root.'], [[Math.sqrt(V - c), -Math.sqrt(V - c)], 'fn-solve-inverse', 'To undo ' + t('-' + c) + ', <b>add</b> ' + t(c) + ' to both sides.']],
+            t(ft + '=' + V) + '<br>' + t('x^{2}=' + s * s) + '<br>' + t('x=' + s) + ' or ' + t('x=-' + s) + ' — two inputs give the output ' + t(V) + '.', HS.concat(['A positive number has two square roots.']), 'solve x^2-c', 'x=\\pm ' + s);
+        } },
+        { id: 'e17d', level: 'EMG', make: function (r) {
+          var k = r.int(2, 5), c = r.int(2, 9), ft = k + 'x^{2}+' + c;
+          return numPart(t('P(x)=' + ft) + '; solve ' + t('P(x)=' + c) + '.', 0, [[c / k, 'fn-solve-inverse', 'Subtract ' + t(c) + ' from both sides: ' + t(k + 'x^{2}=0') + '.'], [Math.sqrt(c / k), 'fn-solve-inverse', 'Subtract ' + t(c) + ' from both sides: ' + t(k + 'x^{2}=0') + '.']],
+            t(ft + '=' + c) + '<br>' + t(k + 'x^{2}=0') + '<br>' + t('x^{2}=0') + ', so ' + t('x=0') + ' — just one solution (' + t('0') + ' and ' + t('-0') + ' are the same).', HS, 'solve kx^2+c=c', { before: t('x=') });
+        } },
+        { id: 'e17e', level: 'PRG', make: function (r) {
+          var k = r.pick([2, 3]), s = r.int(2, 4), c = r.int(20, 60), V = c + k * s * s, ft = c + '-' + k + 'x^{2}';
+          return mc(r, t('k(x)=' + ft) + '; solve ' + t('k(x)=' + V) + '.', [
+            { html: 'No real solution', right: true },
+            { html: t('x=\\pm' + s), why: 'Check it: ' + t('k(' + s + ')=' + c + '-' + k + '(' + s * s + ')=' + (c - k * s * s)) + ', not ' + t(V) + '. Watch the sign when you divide by ' + t('-' + k) + '.' },
+            { html: t('x=-' + s), why: 'Follow the steps: ' + t('-' + k + 'x^{2}=' + (V - c)) + ', so ' + t('x^{2}=-' + s * s) + '. Can a square be negative?' },
+            { html: t('x=\\pm' + s * s), why: 'Follow the steps: you get ' + t('x^{2}=-' + s * s) + '. No real number squared is negative.' }],
+            t(ft + '=' + V) + '<br>' + t('-' + k + 'x^{2}=' + (V - c)) + '<br>' + t('x^{2}=-' + s * s) + '<br>No real number squares to a negative, so there is <b>no real solution</b>: ' + t(V) + ' is not in the range of ' + t('k') + '.', HS, 'solve with x^2 negative');
+        } },
+        { id: 'e17f', level: 'EMG', make: function (r) {
+          var b = r.int(1, 9), s = r.int(3, 12), V = s + b, ft = '\\sqrt{x}+' + b;
+          return numPart(t('m(x)=' + ft) + '; solve ' + t('m(x)=' + V) + '.', s * s, [[s, 'fn-root-solve', t('\\sqrt{x}=' + s) + ' — to undo the square root, <b>square</b> both sides.'], [Math.sqrt(s), 'fn-root-solve', t('\\sqrt{x}=' + s) + ' — square both sides, don’t take another root.'], [(V + b) * (V + b), 'fn-solve-inverse', 'Subtract ' + t(b) + ' first: ' + t('\\sqrt{x}=' + s) + '.'], [V * V - b, 'fn-order', 'Subtract ' + t(b) + ' before you square.']],
+            t(ft + '=' + V) + '<br>' + t('\\sqrt{x}=' + s) + '<br>' + t('x=' + s + '^{2}=' + s * s), HS, 'solve sqrt x + b', { before: t('x=') });
+        } }] },
+      /* ---------- EP18: f(x) = mx - b ---------- */
+      { num: '18', stem: function (sh) { return 'A function is defined by ' + t('f(x)=' + sh.m + 'x-' + sh.b) + '. Solve each equation for ' + t('x') + '.'; },
+        shared: function (r) { return pickWhere(function () { var m = r.int(3, 5); return { m: m, b: (m - 1) * r.int(2, 5), k: r.pick([2, 3]), xc: r.int(1, 4), xd: r.int(-2, 3), h: r.int(1, 4) }; }, function (o) { return o.b % o.m !== 0; }); },
+        parts: [
+          { id: 'e18a', level: 'PRG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, x = b / (m - 1);
+            return numPart(t('f(x)=x'), x, [[b / m, 'fn-drop', 'There is an ' + t('x') + ' on both sides: ' + t(m + 'x-' + b + '=x') + '. Subtract ' + t('x') + ' from both sides first.'], [b / (m + 1), 'fn-solve-inverse', 'Subtract ' + t('x') + ' from both sides: ' + t((m - 1) + 'x=' + b) + '.'], [-x, 'fn-solve-sign', 'Check the sign.']],
+              t(m + 'x-' + b + '=x') + '<br>' + t((m - 1) + 'x=' + b) + '<br>' + t('x=' + x), ['Replace ' + t('f(x)') + ' with its formula: ' + t(m + 'x-' + b + '=x') + '.', 'Collect the ' + t('x') + '-terms on one side.'], 'f(x)=x', { before: t('x=') });
+          } },
+          { id: 'e18b', level: 'PRG', make: function (r, sh) {
+            var m = sh.m, b = sh.b;
+            return B.fraction(t('f(x)=0') + ' (give ' + t('x') + ' as a fraction)', [b, m], { before: t('x='), diag: function (v) { if (same(v, b)) return { code: 'fn-solve-divide', hint: t(m + 'x=' + b) + ' — now divide by ' + t(m) + '.' }; if (same(v, -b)) return { code: 'fn-solve-inverse', hint: 'Add ' + t(b) + ' to both sides: ' + t(m + 'x=' + b) + '.' }; return null; } },
+              t(m + 'x-' + b + '=0') + '<br>' + t(m + 'x=' + b) + '<br>' + t('x=\\tfrac{' + b + '}{' + m + '}') + ' (the ' + t('x') + '-intercept of the graph).', ['Set the formula equal to ' + t('0') + ' and solve.', 'Leave the answer as a fraction.'], 'f(x)=0');
+          } },
+          { id: 'e18c', level: 'ADV', make: function (r, sh) {
+            var m = sh.m, b = sh.b, k = sh.k, x = sh.xc, V = m * k * x - b;
+            return numPart(t('f(' + k + 'x)=' + V), x, [[(V + b) / m, 'fn-inner', 'That solves ' + t('f(x)=' + V) + '. First write ' + t('f(' + k + 'x)=' + m + '(' + k + 'x)-' + b + '=' + m * k + 'x-' + b) + '.'], [k * (V + b) / m, 'fn-inner', t('f(' + k + 'x)=' + m * k + 'x-' + b) + ': divide by ' + t(m * k) + '.'], [m * k * V - b, 'fn-evaluated', t(V) + ' is the output. Set ' + t(m * k + 'x-' + b + '=' + V) + '.']],
+              t('f(' + k + 'x)=' + m + '(' + k + 'x)-' + b + '=' + m * k + 'x-' + b) + '<br>' + t(m * k + 'x-' + b + '=' + V) + '<br>' + t(m * k + 'x=' + (V + b)) + '<br>' + t('x=' + x), ['First find an expression for ' + t('f(' + k + 'x)') + ', then set it equal to ' + t(V) + '.'], 'f(kx)=V', { before: t('x=') });
+          } },
+          { id: 'e18d', level: 'ADV', make: function (r, sh) {
+            var m = sh.m, b = sh.b, h = sh.h, x = sh.xd, V = m * (x + h) - b, cst = m * h - b;
+            return numPart(t('f(x+' + h + ')=' + V), x, [[(V + b) / m, 'fn-inner', 'That solves ' + t('f(x)=' + V) + '. First write ' + t('f(x+' + h + ')=' + m + '(x+' + h + ')-' + b) + '.'], [(V + b) / m + h, 'fn-solve-sign', 'Check the sign: substitute your answer into ' + t(m + '(x+' + h + ')-' + b) + '.'], [(V + b - h) / m, 'fn-dist', 'The ' + t(m) + ' multiplies both terms: ' + t(m + '(x+' + h + ')=' + m + 'x+' + m * h) + '.']],
+              t('f(x+' + h + ')=' + m + '(x+' + h + ')-' + b + '=' + lin([[m, 'x'], [cst, '']])) + '<br>' + t(lin([[m, 'x'], [cst, '']]) + '=' + V) + '<br>' + t(m + 'x=' + (V - cst)) + '<br>' + t('x=' + x), ['First find an expression for ' + t('f(x+' + h + ')') + ', then set it equal to ' + t(V) + '.'], 'f(x+h)=V', { before: t('x=') });
+          } }] },
+      /* ---------- EP19: find the mistake ---------- */
+      { num: '19', section: 'Extra practice F — Find the mistake', stem: function (sh) { return '<i>(Error analysis)</i> A function is defined by ' + t('f(x)=' + sh.m + 'x+' + sh.b) + '. A student computes ' + t('f(1)=' + (sh.m + sh.b)) + ', then writes: “' + t('f(' + sh.p + ')') + ' means ' + t('f') + ' times ' + t(sh.p) + ', and ' + t('f') + ' is ' + t(sh.m + sh.b) + ', so ' + t('f(' + sh.p + ')=' + sh.p * (sh.m + sh.b)) + '.”'; },
+        shared: function (r) { return { m: r.int(2, 6), b: r.int(2, 9), p: r.int(2, 5), h: r.pick([2, 2, 3]) }; },
+        parts: [
+          { id: 'e19a', level: 'BEG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, p = sh.p, ans = m * p + b;
+            return numPart('Calculate ' + t('f(' + p + ')') + ' correctly.', ans, [[p * (m + b), 'fn-times', 'That is the student’s answer. The brackets mark the input: replace ' + t('x') + ' with ' + t(p) + '.'], [m * p, 'fn-const', 'Don’t forget the ' + t('+' + b) + '.']],
+              t('f(' + p + ')=' + m + '(' + p + ')+' + b + '=' + m * p + '+' + b + '=' + ans), HE, 'f(p) correctly');
+          } },
+          { id: 'e19b', level: 'EMG', make: function (r, sh) {
+            return mc(r, 'The student made two separate mistakes. Which choice names both?', [
+              { html: 'The brackets in ' + t('f(' + sh.p + ')') + ' mark the input ' + t(sh.p) + ', not multiplication; and ' + t('f') + ' is the name of the function, not the number ' + t('f(1)') + '.', right: true },
+              { html: 'The student should have started from ' + t('f(0)') + ' instead of ' + t('f(1)') + '.', why: 'Starting from any value and multiplying is still the wrong method. What do the brackets mean?' },
+              { html: 'The only mistake is the arithmetic in ' + t(sh.p + '\\times ' + (sh.m + sh.b)) + '.', why: 'The arithmetic is right. The mistakes are about what the notation means.' },
+              { html: t('f(' + sh.p + ')') + ' means ' + t('f+' + sh.p) + ', not ' + t('f\\times ' + sh.p) + '.', why: 'Neither: the brackets mark an <b>input</b>. ' + t('f(' + sh.p + ')') + ' is the output when ' + t('x=' + sh.p) + '.' }],
+              '<b>Brackets:</b> in ' + t('f(' + sh.p + ')') + ' they mark the input, not multiplication. <b>The letter:</b> ' + t('f') + ' names the function; ' + t(sh.m + sh.b) + ' is the value ' + t('f(1)') + ', so “' + t('f') + ' is ' + t(sh.m + sh.b) + '” is meaningless.', ['One mistake is about the brackets, one about the letter ' + t('f') + '.'], 'two notation mistakes');
+          } },
+          { id: 'e19c', level: 'PRG', make: function (r, sh) {
+            var h = sh.h, T = PL([[1, 'x', 2], [2 * h, 'x'], [h * h]]);
+            return polyPart('The same student writes ' + t('f(x+' + h + ')=f(x)+' + h) + '. For ' + t('f(x)=x^{2}') + ' that is false (test ' + t('x=1') + ': ' + t('f(' + (1 + h) + ')=' + (1 + h) * (1 + h)) + ' but ' + t('f(1)+' + h + '=' + (1 + h)) + '). State a correct simplified expression for ' + t('f(x+' + h + ')') + '.', t('f(x+' + h + ')='), T, null, [
+              { is: PL([[1, 'x', 2], [h]]), code: 'fn-plus-out', hint: 'That is the student’s claim, ' + t('f(x)+' + h) + '. Replace ' + t('x') + ' with ' + t('(x+' + h + ')') + ' and square it.' },
+              { is: PL([[1, 'x', 2], [h * h]]), code: 'fn-binom-sq', hint: t('(x+' + h + ')^{2}=(x+' + h + ')(x+' + h + ')') + ' has a middle term.' }],
+              t('f(x+' + h + ')=(x+' + h + ')^{2}=(x+' + h + ')(x+' + h + ')=x^{2}+' + 2 * h + 'x+' + h * h), HX, 'f(x+h) for x^2');
+          } },
+          { id: 'e19d', level: 'PRG', make: function (r, sh) {
+            var m = sh.m, p = sh.p, b = sh.b;
+            return mc(r, 'For ' + t('f(x)=' + m + 'x') + ' the student’s method happens to work: ' + t('f(' + p + ')=' + m * p) + ' and ' + t(p + 'f(1)=' + p + '(' + m + ')=' + m * p) + '. Why is it still a wrong method?', [
+              { html: 'It only works because ' + t(m + 'x') + ' has no constant term (its graph passes through the origin). For ' + t('f(x)=' + m + 'x+' + b) + ' it gives ' + t(p * (m + b)) + ' instead of ' + t(m * p + b) + '.', right: true },
+              { html: 'It isn’t wrong: a method that gives the right answer is a correct method.', why: 'Try the same method on ' + t('f(x)=' + m + 'x+' + b) + ': it gives ' + t(p * (m + b)) + ', but ' + t('f(' + p + ')=' + (m * p + b)) + '.' },
+              { html: 'It works for every linear function, so it is only wrong for curves.', why: t('f(x)=' + m + 'x+' + b) + ' is linear, and the method fails for it.' },
+              { html: 'Brackets really do mean multiplication, so the method is fine for all functions.', why: 'In function notation the brackets mark the input. The method fails as soon as there is a constant term.' }],
+              t(p + 'f(1)=f(' + p + ')') + ' only when the function has no constant term. For ' + t(m + 'x+' + b) + ': ' + t(p + 'f(1)=' + p * (m + b)) + ' but ' + t('f(' + p + ')=' + (m * p + b)) + '. A method that only works by luck is still wrong.', ['Test the method on the original function ' + t('f(x)=' + m + 'x+' + b) + '.'], 'right answer wrong method');
+          } },
+          { id: 'e19e', level: 'BEG', make: function (r, sh) {
+            var p = sh.p;
+            return mc(r, 'Which sentence gives the meaning of ' + t('f(' + p + ')') + ' and can’t be misread as multiplication?', [
+              { html: t('f(' + p + ')') + ' is the output of the function ' + t('f') + ' when the input is ' + t(p) + '.', right: true },
+              { html: t('f(' + p + ')') + ' is ' + t('f') + ' multiplied by ' + t(p) + '.', why: 'That is exactly the misreading. The brackets mark an input.' },
+              { html: t('f(' + p + ')') + ' is the input that gives an output of ' + t(p) + '.', why: 'Backwards: ' + t(p) + ' is the input; ' + t('f(' + p + ')') + ' is the output.' },
+              { html: t('f(' + p + ')') + ' is the value of ' + t('x') + ' when ' + t('f=' + p) + '.', why: t('f') + ' is a name, not a number, so “' + t('f=' + p) + '” has no meaning.' }],
+              t('f(' + p + ')') + ' is the <b>output</b> of the function ' + t('f') + ' when the <b>input</b> is ' + t(p) + '.', ['Use the words input and output.'], 'meaning of f(p)');
+          } }] },
+      /* ---------- EP22 a, b, e, f: true or false ---------- */
+      { num: '22', section: 'Extra practice G — True or false', stem: 'State whether each statement is true or false.', parts: [
+        { id: 'e22a', sub: 'a', level: 'LIM', make: function (r) {
+          if (r.chance(0.5)) return B.tf(r, t('f(x)') + ' means the output of ' + t('f') + ' when the input is ' + t('x') + '.', true, 'The brackets mark the input: ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + ' — not ' + t('f') + ' multiplied by ' + t('x') + '.', '<b>True.</b> ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + '; the brackets mark an input, not multiplication.', [], 'f(x) is an output');
+          return B.tf(r, t('f(x)') + ' means ' + t('f') + ' multiplied by ' + t('x') + '.', false, 'The brackets mark the input: ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + '.', '<b>False.</b> ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + '; the brackets mark an input.', [], 'f(x) not multiplication');
+        } },
+        { id: 'e22b', sub: 'b', level: 'LIM', make: function (r) {
+          var p = r.pick(nz(-5, 6)), q = pickWhere(function () { return r.pick(nz(-9, 9)); }, function (q) { return q !== p && q !== -p; }), truth = r.chance(0.5), pt = truth ? '(' + p + ',\\ ' + q + ')' : '(' + q + ',\\ ' + p + ')';
+          return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ', the point ' + t(pt) + ' lies on the graph of ' + t('y=f(x)') + '.', truth, truth ? 'Input ' + t(p) + ', output ' + t(q) + ': the point is ' + t('(' + p + ',\\ ' + q + ')') + '.' : 'The input comes first in an ordered pair: ' + t('f(' + p + ')=' + q) + ' gives ' + t('(' + p + ',\\ ' + q + ')') + '.',
+            '<b>' + (truth ? 'True' : 'False') + '.</b> Input ' + t(p) + ', output ' + t(q) + ': the point ' + t('(' + p + ',\\ ' + q + ')') + ' is on the graph' + (truth ? '' : ', not ' + t(pt)) + '.', [], 'f(p)=q point');
+        } },
+        { id: 'e22c', sub: 'c', level: 'EMG', outcome: 'RF2', make: function (r) {
+          var p = r.int(1, 5), s = p + r.int(2, 6), q = r.pick(nz(-9, 12));
+          if (r.chance(0.5)) return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + s + ')=' + q) + ', then ' + t('f') + ' can still be a function.', true, 'Two different inputs may share an output (many-to-one). A function only forbids one input having two outputs.',
+            '<b>True.</b> The inputs ' + t(p) + ' and ' + t(s) + ' share the output ' + t(q) + ' (many-to-one), which is allowed; ' + t('f') + ' can still be a function.', [], 'shared output still a function (true)');
+          return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + s + ')=' + q) + ', then ' + t('f') + ' is not a function.', false, 'Two different inputs may share an output (many-to-one). A function only forbids one input having two outputs.',
+            '<b>False.</b> The inputs ' + t(p) + ' and ' + t(s) + ' share the output ' + t(q) + ' (many-to-one), which is allowed; ' + t('f') + ' can still be a function.', [], 'shared output still a function');
+        } },
+        { id: 'e22d', sub: 'd', level: 'BEG', outcome: 'RF2', make: function (r) {
+          var p = r.int(1, 6), q = r.pick(nz(-9, 12)), s = pickWhere(function () { return r.pick(nz(-9, 12)); }, function (v) { return v !== q; });
+          if (r.chance(0.5)) return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + p + ')=' + s) + ', then ' + t('f') + ' can still be a function.', false, 'The single input ' + t(p) + ' would have two different outputs, ' + t(q) + ' and ' + t(s) + ' — exactly what a function forbids.',
+            '<b>False.</b> The input ' + t(p) + ' would have two outputs, ' + t(q) + ' and ' + t(s) + ', so ' + t('f') + ' cannot be a function.', [], 'one input two outputs (false)');
+          return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + p + ')=' + s) + ', then ' + t('f') + ' is not a function.', true, 'The single input ' + t(p) + ' would have two different outputs, ' + t(q) + ' and ' + t(s) + ' — exactly what a function forbids.',
+            '<b>True.</b> The input ' + t(p) + ' would have two outputs, ' + t(q) + ' and ' + t(s) + ', so ' + t('f') + ' is not a function.', [], 'one input two outputs');
+        } },
+        { id: 'e22e', sub: 'e', level: 'BEG', make: function (r) {
+          if (r.chance(0.5)) return B.tf(r, t('f') + ' and ' + t('f(x)') + ' mean different things.', true, t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', '<b>True.</b> ' + t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', [], 'f vs f(x) (true)');
+          return B.tf(r, t('f') + ' and ' + t('f(x)') + ' mean the same thing.', false, t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', '<b>False.</b> ' + t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', [], 'f vs f(x)');
+        } },
+        { id: 'e22f', sub: 'f', level: 'PRG', make: function (r) {
+          if (r.chance(0.5)) return B.tf(r, 'Some functions ' + t('f') + ' do <b>not</b> satisfy ' + t('f(a+b)=f(a)+f(b)') + '.', true, 'Try ' + t('f(x)=x^{2}') + ' with ' + t('a=b=1') + ': ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '.', '<b>True.</b> For ' + t('f(x)=x^{2}') + ' and ' + t('a=b=1') + ': ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '. (It holds only for some functions, such as ' + t('f(x)=mx') + '.)', [], 'f(a+b) claim (true)');
+          return B.tf(r, t('f(a+b)=f(a)+f(b)') + ' for every function ' + t('f') + '.', false, 'Try a counterexample: ' + t('f(x)=x^{2}') + ' with ' + t('a=b=1') + ' gives ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '.', '<b>False.</b> For ' + t('f(x)=x^{2}') + ' and ' + t('a=b=1') + ': ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '. (It holds only for some functions, such as ' + t('f(x)=mx') + '.)', [], 'f(a+b) claim');
+        } }] },
+      /* ---------- EP23: zigzag graph ---------- */
+      { num: '23', section: 'Extra practice H — A stretch, and two for the test', stem: function (sh) {
+          return '<i>(Stretch)</i> The graph of a function ' + t('f') + ' is made of three straight pieces joined end to end, through the points ' + t(ptsTex(sh.P)) + '.' + (sh.onPad ? '' : HW.graph({ x: sh.wx, y: sh.wy, labels: 2, max: 320, segs: [{ pts: sh.P, start: 'closed', end: 'closed' }], points: dots(sh.P), aria: 'zigzag graph of f' }));
+        },
+        shared: function (r) {
+          return pickWhere(function () {
+            var ds = r.pick([[3, 2], [3, 2], [2, 2], [2, 3]]), d = ds[0], s = ds[1], x0 = r.int(-6, 6 - 3 * d), L = r.int(-5, 5 - s * d), H = L + s * d;
+            var P0 = [[x0, L], [x0 + d, H], [x0 + 2 * d, L], [x0 + 3 * d, H]];
+            var f = function (x) { for (var i = 0; i < 3; i++) { var a = P0[i], b = P0[i + 1]; if (x >= a[0] - 1e-9 && x <= b[0] + 1e-9) return a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]); } return NaN; };
+            var j = r.int(1, d - 1), q3 = x0 + 2 * d + j;
+            return { d: d, s: s, x0: x0, L: L, H: H, P: P0, f: f, j: j, q3: q3, wx: [Math.min(x0, -1) - 1, Math.max(x0 + 3 * d, 1) + 1], wy: [Math.min(L, -1) - 1, Math.max(H, 1) + 1] };
+          }, function (o) { return o.x0 < 0 && o.x0 + 3 * o.d > 0 && o.q3 !== 0 && o.L < 0 && o.H > 0 && o.x0 + o.d !== 0; });
+        },
+        parts: [
+          { id: 'e23a', level: 'PRG', make: function (r, sh) {
+            var qs = [sh.x0 + sh.d, 0, sh.q3], vs = qs.map(sh.f);
+            return B.fields('State ' + t('f(' + qs[0] + ')') + ', ' + t('f(0)') + ' and ' + t('f(' + qs[2] + ')') + '.', qs.map(function (q) { return { name: t('f(' + q + ')'), before: t('f(' + q + ')=') }; }), qs.map(function (q, i) { return K.number(vs[i]); }), vs.map(String), qs.map(function (q, i) { return t('f(' + q + ')=' + vs[i]); }).join(', '),
+              'Each piece changes height by ' + t(sh.s) + ' for every ' + t('1') + ' across. ' + t('f(' + qs[0] + ')=' + vs[0]) + ' (a corner). For ' + t('f(0)') + ' and ' + t('f(' + qs[2] + ')') + ', count steps of ' + t(sh.s) + ' from the nearest corner: ' + t('f(0)=' + vs[1]) + ', ' + t('f(' + qs[2] + ')=' + vs[2]) + '.', ['Find the slope of each piece (rise over run between the corners).', 'For an input between corners, start at a corner and move ' + t(sh.s) + ' up or down for each step of ' + t('1') + '.'], 'read zigzag values');
+          } },
+          { id: 'e23b', level: 'EMG', make: function (r, sh) {
+            var H = sh.H, xs = [sh.x0 + sh.d, sh.x0 + 3 * sh.d];
+            sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
+            var inp = { x: sh.wx, y: sh.wy, labels: 2, bg: { segs: [{ pts: sh.P, color: GIVEN }], points: givenDots(sh.P) } };
+            return levelTap('Solve ' + t('f(x)=' + H) + ': tap every point of the graph where ' + t('f(x)=' + H) + '.', inp, sh.f, 'f', H, xs,
+              'The line ' + t('y=' + H) + ' meets the graph at ' + t('(' + xs[0] + ',\\ ' + H + ')') + ' and ' + t('(' + xs[1] + ',\\ ' + H + ')') + ' — the two upper corners. The solutions are their inputs: ' + t('x=' + xs[0]) + ' or ' + t('x=' + xs[1]) + '.',
+              ['Find ' + t(H) + ' on the vertical axis and follow the horizontal line ' + t('y=' + H) + ' across the whole graph.', 'Count every point where the line meets the graph.'], 'tap zigzag f(x)=H');
+          } },
+          { id: 'e23c', level: 'EMG', make: function (r, sh) {
+            var L = sh.L, xs = [sh.x0, sh.x0 + 2 * sh.d];
+            return solPart('Solve ' + t('f(x)=' + L) + '.', xs, 'x', [[[L], 'fn-eq-flip', 'You want the inputs where the height is ' + t(L) + ': read the ' + t('x') + '-coordinates.']], 'The line ' + t('y=' + L) + ' meets the graph at ' + t('(' + xs[0] + ',\\ ' + L + ')') + ' and ' + t('(' + xs[1] + ',\\ ' + L + ')') + ': ' + t('x=' + xs[0]) + ' or ' + t('x=' + xs[1]) + '.', ['Draw the horizontal line ' + t('y=' + L) + '. Where does it meet the graph?'], 'zigzag f(x)=L');
+          } },
+          { id: 'e23d', level: 'ADV', make: function (r, sh) {
+            var q = sh.q3, v = sh.f(q), a1 = sh.x0 + sh.j, a2 = sh.x0 + 2 * sh.d - sh.j;
+            return solPart('Find every value of ' + t('a') + ', with ' + t('a\\ne ' + q) + ', for which ' + t('f(a)=f(' + q + ')') + '.', [a1, a2], 'a', [[[a1, a2, q], 'sol-extra', 'The question excludes ' + t('a=' + q) + ' itself.'], [[v], 'fn-eq-flip', t('f(' + q + ')=' + v) + ' is a height. You want the other <b>inputs</b> with that height.']],
+              t('f(' + q + ')=' + v) + '. The line ' + t('y=' + v) + ' meets the other two pieces at ' + t('x=' + a1) + ' and ' + t('x=' + a2) + ' (count steps of ' + t(sh.s) + ' from the corners). So ' + t('a=' + a1) + ' or ' + t('a=' + a2) + '.', ['Find ' + t('f(' + q + ')') + ' first, then draw that horizontal line.', 'It meets each of the three pieces once.'], 'f(a)=f(q)');
+          } },
+          { id: 'e23e', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
+            var v = sh.f(sh.q3);
+            return mc(r, 'The equation ' + t('f(x)=' + v) + ' has three solutions. Why is this graph still a function?', [
+              { html: 'Three solutions means the horizontal line ' + t('y=' + v) + ' meets the graph three times: three inputs share one output, which is allowed. Every vertical line meets the graph only once.', right: true },
+              { html: 'It isn’t a function: an equation with three solutions fails the test.', why: 'The test is about vertical lines (one output per input). Several inputs may share an output.' },
+              { html: 'Because the graph is made of straight pieces.', why: 'Straight pieces can still fail the test (a vertical segment does). Use the vertical line test.' },
+              { html: 'Because ' + t(v) + ' is between the lowest and highest points.', why: 'That explains why there are three solutions, not why ' + t('f') + ' is a function.' }],
+              'The three solutions are inputs that share the output ' + t(v) + ' (many-to-one) — allowed. Every <b>vertical</b> line meets the graph exactly once, so ' + t('f') + ' is a function.', ['Which kind of line decides whether a graph is a function?'], 'many-to-one still a function');
+          } },
+          { id: 'e23f', level: 'ADV', make: function (r, sh) {
+            var L = sh.L, H = sh.H;
+            return B.set('For which values of ' + t('k') + ' does ' + t('f(x)=k') + ' have exactly <b>three</b> solutions? Give your answer as an inequality.', '\\{k\\mid ' + L + '<k<' + H + ',\\ k\\in\\mathbb{R}\\}', { v: 'k', wrong: [
+              { is: '\\{k\\mid ' + L + '\\le k\\le ' + H + ',\\ k\\in\\mathbb{R}\\}', code: 'set-endpoint', hint: 'Check ' + t('k=' + H) + ': the line ' + t('y=' + H) + ' meets the graph only at the two upper corners. The same happens at ' + t('k=' + L) + '.' },
+              { is: '\\{k\\mid ' + (sh.x0) + '<k<' + (sh.x0 + 3 * sh.d) + ',\\ k\\in\\mathbb{R}\\}', code: 'set-swap', hint: t('k') + ' is a <b>height</b> (an output), so read it on the vertical axis.' }] },
+              'Each piece covers every height from ' + t(L) + ' to ' + t(H) + ' once. For ' + t(L + '<k<' + H) + ' the line ' + t('y=k') + ' meets each piece once: three solutions. At ' + t('k=' + H) + ' or ' + t('k=' + L) + ' it passes through corners only (two solutions), and beyond that there are none.',
+              ['Slide a horizontal line up and down the graph. When does it cross three times?', 'Check what happens exactly at the heights of the corners.'], 'k for three solutions');
+          } }] },
+      { num: '24', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e24', level: 'BEG', make: function (r) {
+          var p = r.pick(nz(-5, 5)), q = pickWhere(function () { return r.pick(nz(-9, 9)); }, function (q) { return q !== p; });
+          return mc(r, 'A function ' + t('f') + ' satisfies ' + t('f(' + p + ')=' + q) + '. Which statement must be true?', [
+            { html: 'The point ' + t('(' + q + ',\\ ' + p + ')') + ' lies on the graph of ' + t('y=f(x)') + '.', why: 'That reverses the coordinates. The input comes first: ' + t('(' + p + ',\\ ' + q + ')') + '.' },
+            { html: 'The point ' + t('(' + p + ',\\ ' + q + ')') + ' lies on the graph of ' + t('y=f(x)') + '.', right: true },
+            { html: t('f') + ' multiplied by ' + t(p) + ' equals ' + t(q) + '.', why: 'The brackets mark the input; they don’t mean multiplication.' },
+            { html: t('f(' + q + ')=' + p), why: 'That swaps input and output. Nothing tells you the output for the input ' + t(q) + '.' }],
+            t('f(' + p + ')=' + q) + ': input ' + t(p) + ', output ' + t(q) + ', so ' + t('(' + p + ',\\ ' + q + ')') + ' is on the graph (input first).', ['In an ordered pair, which comes first — input or output?'], 'f(p)=q statement');
+        } }] },
+      { num: '25', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e25', level: 'ADV', make: function (r) {
+          var p = r.int(3, 10), b = r.int(2, 7), V = p * (p + b), q = -(p + b), ans = p - q;
+          return B.nr('A function is defined by ' + t('f(x)=x^{2}+' + b + 'x') + '. The equation ' + t('f(x)=' + V) + ' has two solutions, ' + t('p') + ' and ' + t('q') + ', with ' + t('p>q') + '. The value of ' + t('p-q') + ' is ________.', ans, function (v) {
+            if (v === p + q || v === -(p + q)) return { code: 'fn-add-fns', hint: 'The question asks for the <b>difference</b> ' + t('p-q') + '. With a negative ' + t('q') + ', subtracting it adds.' };
+            if (v === p || v === -q) return { code: 'fn-one-root', hint: 'You need both solutions: factor ' + t('x^{2}+' + b + 'x-' + V + '=0') + '.' };
+            if (v === q - p) return { code: 'fn-reverse', hint: t('p') + ' is the larger solution, so ' + t('p-q') + ' is positive.' };
+            return null;
+          }, t('x^{2}+' + b + 'x-' + V + '=0') + '<br>' + t('(x-' + p + ')(x+' + (-q) + ')=0') + ', so ' + t('x=' + p) + ' or ' + t('x=' + q) + ': ' + t('p=' + p) + ', ' + t('q=' + q) + '.<br>' + t('p-q=' + p + '-(' + q + ')=' + ans) + '.', ['Set ' + t('x^{2}+' + b + 'x=' + V) + ', move ' + t(V) + ' to the left side, and factor.'], 'p-q for x^2+bx=V');
+        } }] },
+      /* ---------- mapping notation (lesson Extension, Section 4) ---------- */
+      { num: 'M', section: 'Extra practice — Mapping notation (lesson extension)', stem: 'Some books write a function as a <b>mapping</b>: ' + t('f: x\\to 3x+1') + ' (“' + t('f') + ' maps ' + t('x') + ' to ' + t('3x+1') + '”), so ' + t('f: 4\\to 13') + ' means the same as ' + t('f(4)=13') + '.', parts: [
+        { id: 'em1', level: 'BEG', make: function (r) {
+          var o = pickWhere(function () { var m = r.int(2, 6), b = r.pick(nz(-7, 7)), p = r.pick(nz(-4, 5)); return { m: m, b: b, p: p, q: m * p + b }; }, function (o) { return o.q !== o.p; });
+          var m = o.m, b = o.b, p = o.p, q = o.q;
+          return mc(r, 'For ' + t('f: x\\to ' + lin([[m, 'x'], [b, '']])) + ', which statement means the same as ' + t('f: ' + p + '\\to ' + q) + '?', [
+            { html: t('f(' + p + ')=' + q), right: true },
+            { html: t('f(' + q + ')=' + p), why: 'In ' + t('f: ' + p + '\\to ' + q) + ' the arrow goes from the input ' + t(p) + ' to the output ' + t(q) + '.' },
+            { html: t('f\\times ' + p + '=' + q), why: 'A mapping sends an input to an output; nothing is multiplied by ' + t('f') + '.' },
+            { html: 'The point ' + t('(' + q + ',\\ ' + p + ')') + ' is on the graph.', why: 'The input comes first in the ordered pair: ' + t('(' + p + ',\\ ' + q + ')') + '.' }],
+            t('f: ' + p + '\\to ' + q) + ' says the input ' + t(p) + ' is sent to the output ' + t(q) + ', which is ' + t('f(' + p + ')=' + q) + '.', ['Which number is the input in ' + t('f: ' + p + '\\to ' + q) + '?'], 'mapping to function notation');
+        } },
+        { id: 'em2', level: 'BEG', make: function (r) {
+          var c = r.int(5, 15), m = r.int(2, 5), p = -r.int(1, 5), ans = c - m * p;
+          return numPart('For ' + t('g: x\\to ' + c + '-' + m + 'x') + ', to which number is ' + t(p) + ' mapped?', ans, [[c + m * p, 'fn-neg-sub', t('-' + m + '(' + p + ')=+' + (-m * p)) + ': a negative times a negative is positive.'], [(c - p) / m, 'fn-solved', t(p) + ' is the input: substitute it for ' + t('x') + '.']],
+            t('g(' + p + ')=' + c + '-' + m + '(' + p + ')=' + c + '+' + (-m * p) + '=' + ans) + ', so ' + t('g: ' + p + '\\to ' + ans) + '.', ['“Mapped to” means the output for that input.'], 'mapping value');
+        } },
+        { id: 'em3', level: 'EMG', make: function (r) {
+          var c = r.int(1, 9), s = r.int(2, 7), V = s * s - c;
+          return solPart('For ' + t('h: x\\to x^{2}-' + c) + ', which inputs are mapped to ' + t(V) + '?', [s, -s], 'x', [[[s], 'sol-missing', 'Both ' + t(s) + ' and ' + t(-s) + ' square to ' + t(s * s) + '.'], [[V * V - c], 'fn-evaluated', 'That is where ' + t(V) + ' is mapped. You want the inputs whose output is ' + t(V) + '.']],
+            t('x^{2}-' + c + '=' + V) + ', so ' + t('x^{2}=' + s * s) + ' and ' + t('x=\\pm' + s) + '.', HS, 'mapping inputs', 'x=\\pm ' + s);
         } }] }
     ]
   });
 
-  /* boxes that must hold whole numbers: a decimal gets a nudge that doesn't use a try */
-  function wholeOnly(p, hint) {
-    var c = p.check;
-    p.check = function (resp) { var bad = (resp || []).some(function (v) { var q = HW.parse.number(v == null ? '' : v); return q.ok && Math.abs(q.value - Math.round(q.value)) > 1e-9; }); return bad ? form('whole', hint) : c(resp); };
-    return p;
+  /* ---------------- part makers used above ---------------- */
+  /* "Write this in function notation" (and, with point, "and as a point"): boxes f( _ ) = _ (and a point box) */
+  function fnEqPart(prompt, name, p, q, point) {
+    var fields = [{ name: 'Input', before: t(name + '\\Big('), after: t('\\Big)'), mode: point ? 'math' : undefined, keys: point ? 'pairs' : undefined }, { name: 'Output', before: t('='), mode: point ? 'math' : undefined, keys: point ? 'pairs' : undefined }];
+    if (point) fields.push({ name: 'Point', label: 'Point', mode: 'math', keys: 'pairs', placeholder: 'e.g. (2, 5)' });
+    var pc = K.pairs([[p, q]]), keys = [String(p), String(q)].concat(point ? ['(' + p + ', ' + q + ')'] : []);
+    var part = B.fields(prompt, fields, [K.number(p), K.number(q)].concat(point ? [pc] : []), keys,
+      t(name + '(' + p + ')=' + q) + (point ? ', point ' + t('(' + p + ',\\ ' + q + ')') : ''),
+      'Input ' + t(p) + ', output ' + t(q) + ': ' + t(name + '(' + p + ')=' + q) + (point ? ', and the point is ' + t('(' + p + ',\\ ' + q + ')') : '') + '.',
+      ['In ' + t(name + '(a)=b') + ', ' + t('a') + ' is the input (the ' + t('x') + '-coordinate) and ' + t('b') + ' the output (the ' + t('y') + '-coordinate).'], point ? 'image as notation and point' : 'point as function notation');
+    var base = part.check;
+    part.check = function (resp) {
+      resp = resp || [];
+      var a = HW.parse.number(resp[0] == null ? '' : resp[0]), b = HW.parse.number(resp[1] == null ? '' : resp[1]);
+      if (a.ok && b.ok && same(a.value, q) && same(b.value, p)) return wrong('fn-eq-flip', 'Input and output are swapped. The input goes inside the brackets: ' + t(name + '(\\text{input})=\\text{output}') + '.');
+      return base(resp);
+    };
+    part.bad = [[String(q), String(p)].concat(point ? ['(' + p + ', ' + q + ')'] : [])];
+    if (point) part.bad.push([String(p), String(q), '(' + q + ', ' + p + ')']);
+    return part;
   }
-  /* a point read from a graph (one ordered pair) */
-  function ptPart(prompt, name, xy, sol, text) {
-    var p = B.pairs(prompt, [xy], {}, sol, ['Read across to the time (' + t('t') + ') first, then up to the height (' + t('h') + '). Check with the formula.'], text);
-    p.key = '(' + xy[0] + ', ' + xy[1] + ')'; p.answer = t(name + '(' + xy[0] + ',\\ ' + xy[1] + ')');
-    p.bad = xy[0] !== xy[1] ? ['(' + xy[1] + ', ' + xy[0] + ')'] : [];
-    return p;
+  /* solve f(x) = v from the EP12 table (two inputs share v) */
+  function tableSolve(sh, v) {
+    var xs = sh.xs.filter(function (x, i) { return sh.ys[i] === v; }), dl = [];
+    var j = sh.xs.indexOf(v); if (j >= 0) dl.push([[sh.ys[j]], 'fn-evaluated', 'That is ' + t('f(' + v + ')') + ', reading ' + t(v) + ' as an input. Find ' + t(v) + ' in the <b>output</b> row and read the inputs above it.']);
+    return solPart('Solve ' + t('f(x)=' + v) + '.', xs, 'x', dl, 'The output ' + t(v) + ' sits under ' + t('x=' + xs[0]) + ' and ' + t('x=' + xs[1]) + ', so ' + t('x=' + xs[0]) + ' or ' + t('x=' + xs[1]) + '.',
+      ['Find ' + t(v) + ' in the ' + t('f(x)') + ' row. Which inputs are above it?', 'Check every column — an output can appear more than once.'], 'table solve f(x)=' + v);
   }
 })(window);

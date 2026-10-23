@@ -1,7 +1,7 @@
 """For explainers that are cramped on some choice (tests/screen_fit_choices.py), find the smallest minW at which EVERY
 choice at EVERY step has no more clipped / overlapping stage text than at full width (966 px).
 
-Usage: python3 tests/fit_choices_minw.py out.json u1/l1 u1/l5 ...
+Usage: python3 tests/fit_choices_minw.py out.json u1/l1 u1/l6 ...
 Writes results in the format tests/apply_minw.py reads. Caption overflow can't be fixed by minW; those are listed.
 """
 import asyncio, json, sys

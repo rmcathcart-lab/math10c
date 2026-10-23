@@ -1,892 +1,769 @@
-/* Math 10C · Unit 6 · Lesson 3 — Rise Over Run: the slope of a line segment.
- * Warm-up ramps, the example figures, the four-kinds tiles, and the explainers:
- *   count (count run and rise square by square, with signs), slide (a slope triangle slides along a line and scales
- *   up and down; the fraction stays equal), zeroCase (flatten the rise → 0; squeeze the run → undefined),
- *   leftRight (walk each line left to right: uphill, downhill, flat, wall), dial (a steepness dial rotates a line from
- *   flat to vertical with its signed slope read-out), order (steepness = size |m|, Example 5), roof (roofline slope and
- *   pitch, Example 6), rate (slope with units as a rate of change, Example 7), stepOff (step the rise and run off a point,
- *   Example 8a), missing (scale the slope triangle to a missing run or rise, Example 8b).
- * Colours: run amber (horizontal), rise purple (vertical), segments/lines blue; positive green, negative red. */
+/* Math 10C · Unit 6 · Lesson 3 — Slope Relationships: the slope formula, collinearity, parallel and perpendicular lines.
+ * Warm-up orchard, static figures (Example 1, Sections 3 and 4 tap-to-plot grids) and the explainers:
+ *   liftOff (rise and run lifted off the grid onto the axes), sameOrder (either point first, same order; Example 3's three
+ *   students), collinear (equal slopes + shared point), missing (slide a point until its slope matches), translate
+ *   (parallel = copies of one slope triangle), rotate (the slope triangle turned 90°: rise and run swap, one sign flips),
+ *   negRecip (parallel and perpendicular slopes from one slope), classify (parallel / perpendicular / neither flowchart),
+ *   rightAngle (slopes show a right angle), dialK (turn the k-line until it is parallel or perpendicular).
+ * Colours: run amber (horizontal), rise purple (vertical), segments brand blue. */
 import {
-  h, tex, add, box, Graph, NumberLine, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
-  pairTex, texNum, svgEl, liveCtx, pulse, shake, place, arrowHead, drawIn, COLORS
+  h, tex, add, box, Graph, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
+  svgEl, liveCtx, pulse, rightMark, drawIn, COLORS, col
 } from '../blocks.js';
 
 const T = (s) => tex(s);
-const RUN = COLORS.amber, RISE = COLORS.purple, SEG = COLORS.blue, POS = COLORS.green, NEG = COLORS.red, INK = COLORS.ink, GRAY = COLORS.gray, TEAL = COLORS.teal;
-const cR = (s) => `\\textcolor{${RISE}}{${s}}`, cU = (s) => `\\textcolor{${RUN}}{${s}}`;
-const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
-/** reduced [n, d] with d > 0 (integers) */
-const red = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; };
-/** TeX of a reduced fraction (sign in front), whole numbers plain */
-const fr = (n, d, big) => { const [a, b] = red(n, d); if (b === 1) return String(a); return (a < 0 ? '-' : '') + `\\${big ? 'd' : 't'}frac{${Math.abs(a)}}{${b}}`; };
-const rawFr = (r, u) => `\\dfrac{${cR(texNum(r))}}{${cU(texNum(u))}}`;
-/** slope TeX: rise/run = reduced */
-const slopeTex = (r, u) => { const raw = rawFr(r, u), [a, b] = red(r, u); const same = a === r && b === u; return same ? raw : `${raw}=${fr(r, u, true)}`; };
-const n = (v) => texNum(v).replace('-', '−');             // plain-text number with a real minus
-const one = (v) => n(Math.round(v * 10) / 10);
-const show = (c, el) => fadeIn(c, el, 320);
-const hide = (el) => { if (el) el.style.opacity = 0; return el; };
+const AMB = COLORS.amber, PUR = COLORS.purple, BLUE = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, TEAL = COLORS.teal, INK = COLORS.ink;
+
+/* =============================== helpers =============================== */
+const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+/** simplified TeX for n/d (integers) */
+function frac(n, d) {
+  if (d === 0) return '\\text{undefined}';
+  if (d < 0) { n = -n; d = -d; }
+  const g = gcd(Math.abs(n), d) || 1; n /= g; d /= g;
+  if (d === 1) return String(n);
+  return (n < 0 ? '-' : '') + `\\dfrac{${Math.abs(n)}}{${d}}`;
+}
+const par = (v) => (v < 0 ? `(${v})` : `${v}`);
+/** slope working from P to Q: sub (the substitution), raw (rise/run), val (simplified) */
+function slopeOf(P, Q) {
+  const rise = Q[1] - P[1], run = Q[0] - P[0];
+  const sub = `\\dfrac{${Q[1]}-${par(P[1])}}{${Q[0]}-${par(P[0])}}`, raw = `\\dfrac{${rise}}{${run}}`, val = frac(rise, run);
+  return { rise, run, sub, raw, val, m: rise / run, all: `${sub}=${raw}${raw === val ? '' : '=' + val}` };
+}
 const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u6l3-panel ' + cls, title ? `<div class="u6l3-ph">${title}</div>` : ''), w, hh), x, y);
 const line = (p, html, cls = '') => { const d = h('div', 'u6l3-line ' + cls, html); p.appendChild(d); return d; };
-
-/* ---------------------------------------------------------------------------------------------------------------
- * Slope triangle on a Graph: run leg (amber) from (x, y) across, then rise leg (purple) up/down to the line.
- * s = { x, y, run, rise }. Labels sit outside the triangle. Kept in sync on redraw/setWindow via G.track.
- * ------------------------------------------------------------------------------------------------------------- */
-class SlopeTri {
-  constructor(G, s, o = {}) {
-    this.G = G; this.s = Object.assign({}, s); this.o = o;
-    const L = o.layer || G.layers.data, w = o.w || 5;
-    this.g = svgEl('g', { class: 'u6l3-tri' }, L);
-    this.fill = svgEl('path', { fill: o.fill || SEG, 'fill-opacity': o.fillOp ?? 0.1, stroke: 'none' }, this.g);
-    this.mark = svgEl('path', { fill: 'none', stroke: INK, 'stroke-width': 1.6 }, this.g);
-    this.runP = svgEl('path', { class: 'bk-stroke', stroke: o.runColor || RUN, 'stroke-width': w, 'stroke-linecap': 'round', fill: 'none' }, this.g);
-    this.riseP = svgEl('path', { class: 'bk-stroke', stroke: o.riseColor || RISE, 'stroke-width': w, 'stroke-linecap': 'round', fill: 'none' }, this.g);
-    this.lRun = o.labels === false ? null : h('div', 'bk-lab u6l3-tlab u6l3-trun');
-    this.lRise = o.labels === false ? null : h('div', 'bk-lab u6l3-tlab u6l3-trise');
-    if (this.lRun) { G.html.append(this.lRun, this.lRise); }
-    G.track(this.g, () => this.draw());
-  }
-  text(kind, v) {
-    const f = kind === 'run' ? this.o.runText : this.o.riseText;
-    if (f) return f(v);
-    const exact = Math.abs(v - Math.round(v * 2) / 2) < 1e-6;
-    return `<b>${kind}</b> ${exact ? n(v) : one(v)}`;
-  }
-  draw() {
-    const G = this.G, { x, y, run, rise } = this.s;
-    const P = G.toPx(x, y), C = G.toPx(x + run, y), Q = G.toPx(x + run, y + rise);
-    const d = (a, b) => `M${a[0].toFixed(1)} ${a[1].toFixed(1)} L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
-    this.fill.setAttribute('d', `M${P[0]} ${P[1]} L${C[0]} ${C[1]} L${Q[0]} ${Q[1]} Z`);
-    this.runP.setAttribute('d', d(P, C)); this.riseP.setAttribute('d', d(C, Q));
-    this.runP.style.display = Math.abs(run) < 1e-9 ? 'none' : ''; this.riseP.style.display = Math.abs(rise) < 1e-9 ? 'none' : '';
-    const sx = Math.sign(P[0] - C[0]), sy = Math.sign(Q[1] - C[1]), k = 11;
-    this.mark.setAttribute('d', Math.abs(C[0] - P[0]) > 2 * k && Math.abs(Q[1] - C[1]) > 2 * k ? `M${C[0] + sx * k} ${C[1]} L${C[0] + sx * k} ${C[1] + sy * k} L${C[0]} ${C[1] + sy * k}` : '');
-    if (!this.lRun) return;
-    this.lRun.innerHTML = this.text('run', run); this.lRise.innerHTML = this.text('rise', rise);
-    const gap = this.o.gap ?? 6;
-    place(this.lRun, (P[0] + C[0]) / 2, P[1], this.o.runSide || (rise >= 0 ? 's' : 'n'), gap);
-    place(this.lRise, C[0], (C[1] + Q[1]) / 2, this.o.riseSide || (run >= 0 ? 'e' : 'w'), gap + 2);
-    this.lRun.style.visibility = Math.abs(run) < 1e-9 && !this.o.showZero ? 'hidden' : '';
-    this.lRise.style.visibility = Math.abs(rise) < 1e-9 && !this.o.showZero ? 'hidden' : '';
-  }
-  set(s) { Object.assign(this.s, s); this.draw(); return this; }
-  to(c, s, ms = 900) { const a = Object.assign({}, this.s); return tween(c, ms, (t) => { const o = {}; for (const k in s) o[k] = a[k] + (s[k] - a[k]) * t; this.set(o); }); }
-  els() { return [this.g, this.lRun, this.lRise].filter(Boolean); }
-  /** run leg, then rise leg, then labels */
-  async drawIn(c, ms = 500) {
-    const [lr, ls] = [this.lRun, this.lRise]; this.fill.style.opacity = 0; hide(lr); hide(ls);
-    await drawIn(this.runP, ms, c); if (lr) await fadeIn(c, lr, 220);
-    await drawIn(this.riseP, ms, c); if (ls) await fadeIn(c, ls, 220);
-    await appear(c, this.fill, 250);
-  }
-  remove() { this.G.remove(this.g); this.lRun && this.lRun.remove(); this.lRise && this.lRise.remove(); }
-  ghost() { this.g.style.opacity = 0.28; if (this.lRun) { this.lRun.remove(); this.lRise.remove(); this.lRun = this.lRise = null; } }
+const show = (c, el) => fadeIn(c, el, 320);
+const hid = (el) => { if (el) el.style.opacity = 0; return el; };
+const unhide = (el) => { if (el) el.style.opacity = ''; return el; };
+/** a Graph whose x and y units are the same size (so right angles look right) */
+function sqG(stage, x, y, win, unit, o = {}) {
+  const l = win.xmin >= 0 ? 42 : 18, b = win.ymin >= 0 ? 34 : 18;
+  return new Graph(stage, Object.assign({ x, y, width: Math.round((win.xmax - win.xmin) * unit) + l + 18, height: Math.round((win.ymax - win.ymin) * unit) + 18 + b }, win, o));
+}
+const dOf = (pts) => 'M' + pts.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L');
+function pth(parent, pts, color, o = {}) {
+  const p = svgEl('path', { class: 'bk-stroke', d: dOf(pts), fill: 'none', stroke: color, 'stroke-width': o.w || 5, 'stroke-linecap': 'round' }, parent);
+  if (o.dash) p.setAttribute('stroke-dasharray', o.dash);
+  return p;
+}
+const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+const ptLab = (n, x, y) => T(`${n}(${x},\\ ${y})`);
+/** a slope triangle from P to Q: run (amber) along P's row, then rise (purple) up/down to Q. o: { seg, runLab, riseLab, hidden, fill } */
+function tri(G, P, Q, o = {}) {
+  const C = [Q[0], P[1]], p = G.toPx(...P), cc = G.toPx(...C), q = G.toPx(...Q);
+  const g = svgEl('g', { class: 'u6l3-tri' }, o.parent || G.layers.data);
+  g.style.transformBox = 'view-box'; g.style.transformOrigin = '0px 0px'; // blocks.css centres g transforms; rotate about a graph point instead
+  const fill = svgEl('path', { d: dOf([p, cc, q]) + 'Z', fill: o.fill || PUR, 'fill-opacity': 0.09, stroke: 'none' }, g);
+  const seg = o.seg ? pth(g, [p, q], col(o.seg), { w: 4.5 }) : null;
+  const run = pth(g, [p, cc], AMB), rise = pth(g, [cc, q], PUR);
+  const rn = Q[0] - P[0], rs = Q[1] - P[1];
+  const rA = o.runAt ?? 0.5, sA = o.riseAt ?? 0.5;
+  const rl = o.runLab === false ? null : G.label(P[0] + (C[0] - P[0]) * rA, P[1], o.runLab || T(`\\text{run}=${rn}`), { pos: rs >= 0 ? 's' : 'n', cls: 'bk-ptlab u6l3-runlab', gap: 7 });
+  const sl = o.riseLab === false ? null : G.label(C[0], C[1] + (Q[1] - C[1]) * sA, o.riseLab || T(`\\text{rise}=${rs}`), { pos: rn >= 0 ? 'e' : 'w', cls: 'bk-ptlab u6l3-riselab', gap: 7 });
+  const t = { g, fill, seg, run, rise, rl, sl, P, Q, C, labs: [rl, sl].filter(Boolean) };
+  if (o.hidden !== false) [fill, seg, run, rise, rl, sl].forEach(hid);
+  return t;
+}
+async function showTri(c, t, ms = 420) {
+  if (t.seg) { unhide(t.seg); await drawIn(t.seg, ms, c); }
+  unhide(t.fill); await appear(c, t.fill, 250);
+  unhide(t.run); await drawIn(t.run, ms, c); if (t.rl) { unhide(t.rl); await fadeIn(c, t.rl, 250); }
+  unhide(t.rise); await drawIn(t.rise, ms, c); if (t.sl) { unhide(t.sl); await fadeIn(c, t.sl, 250); }
+}
+const dropTri = (t) => { if (!t) return; t.g.remove(); t.labs.forEach((l) => l.remove()); };
+const pt = (G, n, x, y, pos, o = {}) => G.point(x, y, Object.assign({ color: INK, label: o.name ? T(n) : ptLab(n, x, y), pos }, o));
+async function showPt(c, G, p) { unhide(p); if (p.label) unhide(p.label); await G.reveal(p, c); }
+const hidPt = (p) => { hid(p); if (p.label) hid(p.label); return p; };
+/** where line P1Q1 meets line P2Q2 */
+function meet(P1, Q1, P2, Q2) {
+  const d1 = [Q1[0] - P1[0], Q1[1] - P1[1]], d2 = [Q2[0] - P2[0], Q2[1] - P2[1]], den = d1[0] * d2[1] - d1[1] * d2[0];
+  const t = ((P2[0] - P1[0]) * d2[1] - (P2[1] - P1[1]) * d2[0]) / den;
+  return [P1[0] + t * d1[0], P1[1] + t * d1[1]];
+}
+/** the right-angle square at graph point V between graph directions d1 and d2 */
+function rmark(G, V, d1, d2, s = 16) {
+  const v = G.toPx(...V), a = G.toPx(V[0] + d1[0], V[1] + d1[1]), b = G.toPx(V[0] + d2[0], V[1] + d2[1]);
+  return rightMark(G.layers.top, v, a, b, s, { color: INK, width: 2.5 });
 }
 
-/** count a leg square by square: from (x, y) along axis 'x' or 'y' for v units (signed); unit pieces + count bubbles */
-async function countLeg(c, G, x, y, axis, v, o = {}) {
-  const els = [], bubbles = [], s = Math.sign(v), N = Math.abs(v), color = axis === 'x' ? RUN : RISE, ms = o.ms || 260;
-  for (let k = 0; k < N; k++) {
-    const a = axis === 'x' ? [x + s * k, y] : [x, y + s * k], b = axis === 'x' ? [x + s * (k + 1), y] : [x, y + s * (k + 1)];
-    const seg = G.segment(a, b, { color, width: 5.5 }); els.push(seg);
-    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], lab = (s < 0 ? '−' : '') + (k + 1);
-    const pos = axis === 'x' ? (o.side || 's') : (o.side || 'e');
-    const bub = G.label(mid[0], mid[1], lab, { pos, cls: 'u6l3-bub ' + (axis === 'x' ? 'u6l3-bub-run' : 'u6l3-bub-rise'), gap: 6 });
-    bubbles.push(bub); hide(bub);
-    await drawIn(seg, ms, c); await pop(c, bub, 200); bub.style.opacity = 1;
+/* =============================== warm-up: trees in a row =============================== */
+const TREES = [['Apple', 1, 1, '#d93b30'], ['Cherry', 4, 3, '#8f1d2a'], ['Plum', 7, 5, '#7b4fc4'], ['Pear', 11, 8, '#b5c227'], ['Peach', 13, 9, '#f08a24']];
+function mountOrchard() {
+  const host = document.getElementById('u6l3-orchard'); if (!host) return;
+  const G = new Graph(host, { width: 600, height: 452, xmin: 0, xmax: 14.4, ymin: 0, ymax: 10.4, xlabels: 2, ylabels: 2 });
+  const [x0, y0] = G.toPx(0, 0), [x1, y1] = G.toPx(14.4, 10.4);
+  svgEl('rect', { x: x0, y: y1, width: x1 - x0, height: y0 - y1, fill: '#2f9e5b', 'fill-opacity': 0.07 }, G.layers.bg);
+  const u = G.ux;
+  for (const [name, x, y, fc] of TREES) {
+    const [px, py] = G.toPx(x, y), g = svgEl('g', { class: 'u6l3-tree', transform: `translate(${px} ${py})` }, G.layers.top);
+    svgEl('rect', { x: -3, y: -0.46 * u, width: 6, height: 0.46 * u, fill: '#7a4a24' }, g);
+    svgEl('circle', { cx: 0, cy: -0.8 * u, r: 0.42 * u, fill: '#4fae5a', stroke: '#2f7d3a', 'stroke-width': 1.5 }, g);
+    for (const [dx, dy] of [[-0.18, 0.9], [0.15, 0.95], [0.02, 0.63], [0.2, 0.68], [-0.2, 0.64]]) svgEl('circle', { cx: dx * u, cy: -dy * u, r: 0.075 * u, fill: fc }, g);
+    svgEl('circle', { cx: 0, cy: 0, r: 5, fill: INK }, g);
+    G.label(x, y, name, { pos: 'se', cls: 'bk-ptlab u6l3-treelab', gap: 4 });
   }
-  return { els, bubbles };
-}
-
-/* =============================== warm-up: ramp rules =============================== */
-const RAMPS = [{ k: 'A', run: 120, rise: 10, x: 24, y: 120 }, { k: 'B', run: 180, rise: 20, x: 262, y: 120 }, { k: 'C', run: 400, rise: 25, x: 24, y: 262 }];
-function mountRamps() {
-  const host = document.getElementById('u6l3-ramps'); if (!host) return;
-  const W = 580, H = 300, sx = 1.05, sy = 3 * 1.05;   // heights drawn 3 times taller, like the board
-  const wrap = h('div', 'u6l3-rampwrap'); box(wrap, W, H); host.appendChild(wrap);
-  const svg = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'u6l3-rampsvg' }, wrap);
-  const html = h('div', 'bk-html'); wrap.appendChild(html);
-  const lab = (x, y, s, pos, cls) => { const d = h('div', 'bk-lab ' + cls, s); html.appendChild(d); return place(d, x, y, pos, 4); };
-  const tags = [];
-  RAMPS.forEach((r) => {
-    const w = r.run * sx, hh = r.rise * sy, x0 = r.x, y0 = r.y;
-    svgEl('line', { x1: x0 - 12, x2: x0 + w + 40, y1: y0, y2: y0, stroke: '#b9bec8', 'stroke-width': 2 }, svg);
-    svgEl('path', { d: `M${x0} ${y0} L${x0 + w} ${y0} L${x0 + w} ${y0 - hh} Z`, fill: '#d6d8dd', stroke: INK, 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
-    svgEl('rect', { x: x0 + w, y: y0 - hh, width: 16, height: hh, fill: '#a9adb6', stroke: INK, 'stroke-width': 2 }, svg);
-    svgEl('path', { d: `M${x0 + w - 10} ${y0} v-10 h10`, fill: 'none', stroke: INK, 'stroke-width': 1.4 }, svg);
-    lab(x0, y0 - hh - 2, `Ramp ${r.k}`, 'ne', 'u6l3-rname');
-    lab(x0 + w + 20, y0 - hh / 2, `rise ${r.rise} cm`, 'e', 'u6l3-rrise');
-    lab(x0 + w / 2, y0 + 2, `run ${r.run} cm`, 's', 'u6l3-rrun');
-    const [a, b] = red(r.rise, r.run);
-    const t = lab(x0 + 84, y0 - hh - 2, T(`\\tfrac{${r.rise}}{${r.run}}=\\tfrac{${a}}{${b}}`), 'ne', 'u6l3-rfrac'); hide(t); tags.push(t);
+  let tris = null, ruler = null;
+  document.getElementById('u6l3-wtri').addEventListener('click', async () => {
+    if (tris) { tris.forEach(dropTri); tris = null; return; }
+    const c = liveCtx();
+    tris = [tri(G, [1, 1], [4, 3], { runLab: T('3'), riseLab: T('2') }), tri(G, [4, 3], [7, 5], { runLab: T('3'), riseLab: T('2') })];
+    for (const t of tris) await showTri(c, t, 380);
   });
-  const note = lab(W - 6, H - 4, 'heights drawn 3 times taller', 'nw', 'u6l3-rnote'); void note;
-  // "same run" comparison: all three slopes over a run of 12 cm, from one corner
-  const cmp = h('div', 'u6l3-rcmp'); box(cmp, W, H); wrap.appendChild(cmp); cmp.style.opacity = 0; cmp.style.pointerEvents = 'none';
-  const cs = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, cmp);
-  const ox = 60, oy = 250, runPx = 360, upPx = 150;  // 12 cm across → 360 px (room for the labels inside the 580 px box); 1 cm up → 150 px (exaggerated)
-  svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: '#fffdf7', rx: 12 }, cs);
-  svgEl('line', { x1: ox, x2: ox + runPx, y1: oy, y2: oy, stroke: INK, 'stroke-width': 2.5 }, cs);
-  const chtml = h('div', 'bk-html'); cmp.appendChild(chtml);
-  const clab = (x, y, s, pos, cls) => { const d = h('div', 'bk-lab ' + cls, s); chtml.appendChild(d); return place(d, x, y, pos, 4); };
-  clab(ox + runPx / 2, oy + 4, '<b>run 12 cm</b> for every ramp', 's', 'u6l3-rrun');
-  const cmpCols = { A: TEAL, B: NEG, C: SEG };
-  const cmpLines = RAMPS.map((r) => {
-    const up = 12 * r.rise / r.run, py = oy - up * upPx;
-    const l = svgEl('line', { x1: ox, y1: oy, x2: ox + runPx, y2: py, stroke: cmpCols[r.k], 'stroke-width': 4.5, 'stroke-linecap': 'round' }, cs);
-    svgEl('line', { x1: ox + runPx, x2: ox + runPx, y1: oy, y2: py, stroke: cmpCols[r.k], 'stroke-width': 1.5, 'stroke-dasharray': '4 4' }, cs);
-    const t = clab(ox + runPx + 8, py, `<b>${r.k}</b>: rise ${n(+up.toFixed(2))} cm`, 'e', 'u6l3-rcl'); t.style.color = cmpCols[r.k];
-    return l;
-  });
-  void cmpLines;
-  clab(ox, 20, 'Same run, side by side (heights exaggerated): <b>B</b> climbs most, <b>C</b> least.', 'se', 'u6l3-rcap');
-  let shown = false, cmpOn = false;
-  document.getElementById('u6l3-rcmp').addEventListener('click', async () => {
-    const c = liveCtx(); shown = !shown;
-    if (cmpOn) { cmpOn = false; await fadeIn(c, cmp, 1); cmp.style.opacity = 0; }
-    for (const t of tags) { if (shown) await pop(c, t, 320); else t.style.opacity = 0; }
-  });
-  document.getElementById('u6l3-r12').addEventListener('click', async () => {
-    const c = liveCtx(); cmpOn = !cmpOn;
-    if (cmpOn) await fadeIn(c, cmp, 400); else cmp.style.opacity = 0;
+  document.getElementById('u6l3-wruler').addEventListener('click', async () => {
+    if (ruler) { G.remove(...ruler); ruler = null; return; }
+    const c = liveCtx();
+    ruler = [G.line([1, 1], [13, 9], { color: RED, width: 3, dash: '10 7' })];
+    await G.drawIn(ruler[0], 900, c);
+    const gap = G.segment([11, 23 / 3], [11, 8], { color: RED, width: 4 }); ruler.push(gap);
+    const lab = G.label(11, 7.8, `Pear: ${T('\\tfrac13')} too high!`, { pos: 'w', cls: 'bk-ptlab u6l3-redlab', gap: 12 }); ruler.push(lab);
+    await G.drawIn(gap, 300, c); await fadeIn(c, lab);
   });
 }
 
 /* =============================== static figures =============================== */
-const EX1 = [{ k: 'AB', P: [-4, -3], Q: [2, 3], pn: ['sw', 'ne'] }, { k: 'CD', P: [-3, 2], Q: [3, -2], pn: ['nw', 'se'] },
-  { k: 'EF', P: [-2, -4], Q: [4, -1], pn: ['sw', 'e'] }, { k: 'GH', P: [1, 4], Q: [4, -2], pn: ['n', 'se'] }];
-const segFig = (G, list, o = {}) => list.forEach((s) => {
-  G.segment(s.P, s.Q, { color: o.color || INK, width: 4 });
-  G.point(s.P[0], s.P[1], { color: INK, r: 5.5, label: T(s.k[0]), pos: s.pn[0] });
-  G.point(s.Q[0], s.Q[1], { color: INK, r: 5.5, label: T(s.k[1]), pos: s.pn[1] });
-});
-const EX2 = { A: [-5, -4], B: [-3, -3], C: [1, -1], D: [5, 1] };
-const EX3 = [{ k: 'MN', P: [-4, 3], Q: [2, 3], pn: ['w', 'e'] }, { k: 'PQ', P: [-3, -2], Q: [4, -2], pn: ['w', 'e'] },
-  { k: 'RS', P: [1, 4], Q: [1, -3], pn: ['n', 's'] }, { k: 'TU', P: [-2, 4], Q: [-2, -4], pn: ['n', 's'] }];
-const EX4 = [
-  { k: 1, pts: [[-1, 2], [3, 4]], from: [-1.6, 1.7], to: [3.6, 4.3], lab: [3.6, 4.3, 'e'] },
-  { k: 2, pts: [[2, -4], [4, 2]], from: [1.75, -4.75], to: [4.25, 2.75], lab: [4.25, 2.75, 'n'] },
-  { k: 3, pts: [[-5, -1], [1, -5]], from: [-5.3, -0.8], to: [1.6, -5.4], lab: [-4.4, -1.65, 's'] },
-  { k: 4, pts: [[-4, 5], [-2, -1]], from: [-4.1, 5.3], to: [-1.75, -1.75], lab: [-3.9, 5.2, 'e'] }];
-const ex4Fig = (G, color) => EX4.forEach((L) => {
-  G.segment(L.from, L.to, { color: color || INK, width: 4 });
-  L.pts.forEach((p) => G.point(p[0], p[1], { color: INK, r: 6 }));
-  G.label(L.lab[0], L.lab[1], `Line ${L.k}`, { pos: L.lab[2], cls: 'bk-ptlab u6l3-lname' });
-});
-function drawRoof(G, o = {}) {
-  const peak = o.peak || [4, 6], R = o.right || [8, 1], Lf = o.left || [0, 2.5];
-  G.segment(Lf, peak, { color: INK, width: 4.5 }); G.segment(peak, R, { color: INK, width: 4.5 });
-  if (o.chimney !== false) {
-    const [x0, y0] = G.toPx(0, 4.3), [x1, y1] = G.toPx(1.4, 0.4);
-    const ch = svgEl('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: '#a9adb6', stroke: '#8a8f99', 'stroke-width': 1 }, G.layers.top);
-    G.label(1.5, 1.4, 'chimney', { pos: 'e', cls: 'bk-ptlab u6l3-small' });
-    return ch;
-  }
-  return null;
-}
 function mountFigures() {
-  const g1 = document.getElementById('u6l3-ex1fig');
-  if (g1) segFig(new Graph(g1, { width: 400, height: 400, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 }), EX1);
-  const g2 = document.getElementById('u6l3-ex2fig');
-  if (g2) {
-    const G = new Graph(g2, { width: 380, height: 380, xmin: -6.5, xmax: 6.5, ymin: -6.5, ymax: 6.5, xlabels: 2, ylabels: 2 });
-    G.segment([-6, -4.5], [6, 1.5], { color: INK, width: 4 });
-    Object.entries(EX2).forEach(([k, p]) => G.point(p[0], p[1], { color: INK, r: 6, label: T(k), pos: k === 'A' ? 's' : 'n' }));
+  const e1 = document.getElementById('u6l3-ex1fig');
+  if (e1) {
+    const G = new Graph(e1, { width: 380, height: 380, xmin: 0, xmax: 10.6, ymin: 0, ymax: 10.6, xlabels: 2, ylabels: 2 });
+    G.segment([1, 2], [9, 8], { color: BLUE }); G.segment([2, 9], [8, 1], { color: BLUE });
+    pt(G, 'R', 1, 2, 'se', { name: true }); pt(G, 'S', 9, 8, 'nw', { name: true }); pt(G, 'T', 2, 9, 'ne', { name: true }); pt(G, 'U', 8, 1, 'ne', { name: true });
   }
-  const g3 = document.getElementById('u6l3-ex3fig');
-  if (g3) segFig(new Graph(g3, { width: 380, height: 380, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 }), EX3);
-  const g4 = document.getElementById('u6l3-ex4fig');
-  if (g4) ex4Fig(new Graph(g4, { width: 380, height: 380, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 }));
-  const g6 = document.getElementById('u6l3-ex6fig');
-  if (g6) {
-    const G = new Graph(g6, { width: 400, height: 330, xmin: 0, xmax: 9, ymin: 0, ymax: 7, arrows: false, xtitle: '', ytitle: '', origin: true });
-    drawRoof(G);
-    G.point(4, 6, { color: INK, r: 6, coords: true, pos: 'n' }); G.point(8, 1, { color: INK, r: 6, coords: true, pos: 'ne' });
-  }
-  const g7a = document.getElementById('u6l3-ex7a');
-  if (g7a) {
-    const G = new Graph(g7a, RATE.ex7a.g); G.segment([0, 0], [4, 320], { color: INK, width: 4 });
-    G.point(3, 240, { color: INK, r: 6, label: T('(3,\\ 240)'), pos: 'nw' });
-  }
-  const g7b = document.getElementById('u6l3-ex7b');
-  if (g7b) {
-    const G = new Graph(g7b, RATE.ex7b.g); G.segment([0, 120], [8, 0], { color: INK, width: 4 });
-    G.point(0, 120, { color: INK, r: 6, label: T('(0,\\ 120)'), pos: 'ne' }); G.point(4, 60, { color: INK, r: 6, label: T('(4,\\ 60)'), pos: 'ne' });
-  }
-  const g8 = document.getElementById('u6l3-ex8fig');
-  if (g8) {
-    const G = new Graph(g8, { width: 400, height: 400, xmin: -6.5, xmax: 6.5, ymin: -6.5, ymax: 6.5, xlabels: 2, ylabels: 2, interactive: { snap: 1, coords: true, color: 'blue' } });
-    G.point(-3, -4, { color: INK, r: 6.5, coords: true, pos: 'se' });
-  }
-  const g8a = document.getElementById('u6l3-ex8ans');
-  if (g8a) {
-    const G = new Graph(g8a, { width: 300, height: 300, xmin: -6.5, xmax: 6.5, ymin: -6.5, ymax: 6.5, xlabels: 2, ylabels: 2, fontSize: 14 });
-    G.segment([-13 / 3, -6], [11 / 3, 6], { color: NEG, width: 3.5 });
-    G.point(-3, -4, { color: INK, r: 5.5 });
-    [[-1, -1], [1, 2], [3, 5]].forEach((p) => G.point(p[0], p[1], { color: NEG, r: 5.5, coords: true, pos: 'nw', labelCls: 'u6l3-small' }));
-  }
-  // the four kinds of slope
-  const kinds = { pos: [[-1.3, -1.2], [1.3, 1.2], POS], neg: [[-1.3, 1.2], [1.3, -1.2], NEG], zero: [[-1.4, 0.8], [1.4, 0.8], SEG], und: [[0.8, -1.4], [0.8, 1.4], RISE] };
-  document.querySelectorAll('#u6l3-kinds .u6l3-kind').forEach((el) => {
-    const k = kinds[el.dataset.k]; if (!k) return;
-    const G = new Graph(el.querySelector('.u6l3-kfig'), { width: 130, height: 110, xmin: -1.7, xmax: 1.8, ymin: -1.6, ymax: 1.6, grid: false, numbers: false, xtitle: '', ytitle: '', pad: 4 });
-    G.segment(k[0], k[1], { color: k[2], width: 4.5 });
+  const tap = (id, clearId, win, unit, draw) => {
+    const host = document.getElementById(id); if (!host) return;
+    const G = sqG(host, null, null, win, unit, { xlabels: 2, ylabels: 2, interactive: { snap: 1, coords: true, color: 'red' } });
+    draw(G);
+    const b = document.getElementById(clearId);
+    if (b) b.addEventListener('click', () => { G.remove(...(G.userPts || [])); G.userPts = []; });
+  };
+  tap('u6l3-s3fig', 'u6l3-s3clear', { xmin: -10, xmax: 8, ymin: -6, ymax: 6 }, 27, (G) => {
+    G.segment([-4, 3], [4, -1], { color: BLUE }); pt(G, 'A', -4, 3, 'n', { name: true, color: BLUE }); pt(G, 'B', 4, -1, 's', { name: true, color: BLUE });
+  });
+  tap('u6l3-s4fig', 'u6l3-s4clear', { xmin: -2, xmax: 8, ymin: -8, ymax: 6 }, 27, (G) => {
+    G.segment([0, 0], [6, 3], { color: BLUE }); pt(G, 'A', 6, 3, 'n', { color: BLUE }); pt(G, 'O', 0, 0, 'sw', { name: true, color: BLUE });
   });
 }
 
-/* =============================== explainer 1: count the rise and the run =============================== */
-const CNT = {
-  up: { label: 'Up and right', P: [-3, -1], Q: [3, 3] },
-  down: { label: 'Down and right', P: [-2, 3], Q: [2, -3] },
-  back: { label: 'Counted right to left', P: [3, 3], Q: [-3, -1] },
-  ex1: { label: 'Example 1 check', ex: true }
+/* =============================== 1. rise and run lifted off the grid =============================== */
+const W10 = { xmin: 0, xmax: 11, ymin: 0, ymax: 10 };
+const LIFT = {
+  demo: { label: 'Any two points', A: ['M', 2, 3, 'nw'], B: ['N', 10, 7, 'n'], win: W10, rl: 'e' },
+  rs: { label: 'Example 1 check: ' + T('RS'), A: ['R', 1, 2, 'n'], B: ['S', 9, 8, 'nw'], win: W10, rl: 'e' },
+  tu: { label: 'Example 1 check: ' + T('TU'), A: ['T', 2, 9, 'sw'], B: ['U', 8, 1, 'w'], win: W10, rl: 'e' },
+  ex2: { label: 'Example 2 check', A: ['P', -3, 4, 'nw'], B: ['Q', 9, -6, 'sw'], win: { xmin: -7, xmax: 11, ymin: -8, ymax: 6 }, rl: 'w', lab: 2 }
 };
-const count = {
-  title: 'Count the run, then the rise',
-  height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(CNT).map((k) => ({ v: k, label: CNT[k].label })),
-  intro: 'Start at one endpoint and count squares to the other: <b>across</b> first (the run), then <b>up or down</b> (the rise). Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = CNT[k];
-    const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 });
-    const P = panel(stage, 474, 14, ex.W - 488, 440, d.ex ? 'Example 1' : 'Count from <i>P</i> to <i>Q</i>');
-    if (d.ex) return countEx1(G, P);
-    const [p, q] = [d.P, d.Q], run = q[0] - p[0], rise = q[1] - p[1];
-    let pieces = [];
-    const rr = h('div', 'u6l3-ro');
-    rr.innerHTML = `<div class="u6l3-ro-r u6l3-ro-run"><span class="u6l3-ro-k">run</span><b class="u6l3-ro-v">?</b></div><div class="u6l3-ro-r u6l3-ro-rise"><span class="u6l3-ro-k">rise</span><b class="u6l3-ro-v">?</b></div>`;
-    P.appendChild(rr); const [vRun, vRise] = rr.querySelectorAll('b');
-    const res = h('div', 'u6l3-big'); P.appendChild(res);
-    const back = run < 0;
-    const steps = [
-      { cap: `A segment from ${T(`P${pairTex(p[0], p[1])}`)} to ${T(`Q${pairTex(q[0], q[1])}`)}. Start at <b>P</b>${back ? ', the <b>right</b> end this time' : ''}.`,
-        run: async (c) => {
-          const s = G.segment(p, q, { color: SEG, width: 4.5 }); await G.drawIn(s, 700, c);
-          const away = (a, b) => (a[1] > b[1] ? 'n' : 's') + (a[0] > b[0] ? 'e' : 'w');
-          await G.reveal(G.point(p[0], p[1], { color: INK, r: 7, label: T('P'), pos: away(p, q) }), c);
-          await G.reveal(G.point(q[0], q[1], { color: INK, r: 7, label: T('Q'), pos: away(q, p) }), c);
-        } },
-      { cap: `<b>Run:</b> count the squares <b>across</b>, moving ${run > 0 ? '<b>right</b>: positive' : '<b>left</b>: negative'}. Run ${T('=' + run)}.`,
-        run: async (c) => { const r = await countLeg(c, G, p[0], p[1], 'x', run, { side: rise > 0 ? 's' : 'n' }); pieces = pieces.concat(r.els, r.bubbles); vRun.innerHTML = T(cU(run)); await pulse(c, vRun.parentNode, 1.08); } },
-      { cap: `<b>Rise:</b> count the squares ${rise > 0 ? '<b>up</b>: positive' : '<b>down</b>: negative'}, to reach Q. Rise ${T('=' + rise)}.`,
-        run: async (c) => { const r = await countLeg(c, G, q[0], p[1], 'y', rise, { side: run > 0 ? 'e' : 'w' }); pieces = pieces.concat(r.els, r.bubbles); vRise.innerHTML = T(cR(rise)); await pulse(c, vRise.parentNode, 1.08); } },
-      { cap: `${T('\\text{slope}=\\dfrac{\\text{rise}}{\\text{run}}=' + slopeTex(rise, run))}${red(rise, run)[1] !== Math.abs(run) ? ', in lowest terms.' : '.'}`,
-        run: async (c) => { res.innerHTML = T(`\\text{slope}=${slopeTex(rise, run)}`); await pop(c, res); } }
-    ];
-    if (back) steps.push({ cap: `Two negatives make a positive: counted right to left, it’s the <b>same</b> ${T('\\tfrac{2}{3}')} as counting left to right (run ${T('6')}, rise ${T('4')}). Left to right keeps the run positive, so it’s easier.`,
-      run: async (c) => { const t = line(P, `Left to right: ${T(slopeTex(4, 6))}`, 'u6l3-mline u6l3-soft'); await show(c, t); } });
-    return steps;
-  }
-};
-function countEx1(G, P) {
-  segFig(G, EX1, { color: '#7d8494' });
-  const tb = h('table', 'u6l3-ptab'); tb.innerHTML = '<tr><th></th><th class="u6l3-c-rise">rise</th><th class="u6l3-c-run">run</th><th>slope</th></tr>' + EX1.map((s) => `<tr><td>${T(s.k)}</td><td>?</td><td>?</td><td>?</td></tr>`).join('');
-  P.appendChild(tb);
-  let prev = [];
-  const steps = EX1.map((s, i) => {
-    const run = s.Q[0] - s.P[0], rise = s.Q[1] - s.P[1];
-    return { cap: `${T(s.k)}: from ${T(`${s.k[0]}${pairTex(s.P[0], s.P[1])}`)} run ${T(String(run))} right, rise ${T(String(rise))} ${rise > 0 ? 'up' : 'down'}: ${T(slopeTex(rise, run))}.`,
-      run: async (c) => {
-        G.remove(prev); prev = [];
-        const hl = G.segment(s.P, s.Q, { color: SEG, width: 5 }); prev.push(hl); await G.drawIn(hl, 400, c);
-        const a = await countLeg(c, G, s.P[0], s.P[1], 'x', run, { ms: 150, side: rise > 0 ? 's' : 'n' });
-        const b = await countLeg(c, G, s.Q[0], s.P[1], 'y', rise, { ms: 150, side: 'e' });
-        prev.push(...a.els, ...a.bubbles, ...b.els, ...b.bubbles);
-        const cells = tb.rows[i + 1].cells;
-        cells[1].innerHTML = T(cR(rise)); cells[2].innerHTML = T(cU(run)); cells[3].innerHTML = T(fr(rise, run, true));
-        for (const j of [1, 2, 3]) await pop(c, cells[j].firstChild, 260);
-      } };
-  });
-  steps.push({ cap: `All four, counted left to right: ${T('AB')} and ${T('EF')} rise (positive slopes), ${T('CD')} and ${T('GH')} fall (negative slopes).`, run: async () => { G.remove(prev); prev = []; } });
-  return steps;
-}
-
-/* =============================== explainer 2: slide and scale the slope triangle =============================== */
-const SL = {
-  pos: { label: 'Slope ' + T('\\tfrac{2}{3}'), m: [2, 3], b: -1, x0: -6, slideTo: 3, win: 7 },
-  neg: { label: 'Slope ' + T('-\\tfrac{3}{2}'), m: [-3, 2], b: 2, x0: -2, slideTo: 4, win: 7 },
-  ex2: { label: 'Example 2 check', ex: true, win: 7 }
-};
-const slide = {
-  title: 'Slide it, scale it: the slope stays the same',
-  height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(SL).map((k) => ({ v: k, label: SL[k].label })),
-  intro: 'A slope triangle sits on a line. Watch the fraction as the triangle <b>slides</b> and <b>grows</b>. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = SL[k], wn = d.win;
-    const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -wn, xmax: wn, ymin: -wn, ymax: wn, xlabels: 2, ylabels: 2 });
-    const P = panel(stage, 474, 14, ex.W - 488, 440, d.ex ? 'Example 2: four pairs' : 'The slope triangle');
-    const ro = h('div', 'u6l3-frbox'); P.appendChild(ro);
-    const log = h('div', 'u6l3-log'); P.appendChild(log);
-    const setRo = (r, u, exact) => { ro.innerHTML = T(`\\dfrac{\\text{rise}}{\\text{run}}=${exact ? slopeTex(r, u) : rawFr(+(r.toFixed(1)), +(u.toFixed(1)))}`); };
-    if (d.ex) return slideEx2(G, P, ro, log);
-    const [r0, u0] = d.m, m = r0 / u0, y = (x) => m * x + d.b;
-    let T1 = null;
-    const ghosts = [];
-    const sizes = [2, 3, 0.5];
-    const steps = [
-      { cap: `A slope triangle between two grid points on the line: run ${T(cU(u0))}, rise ${T(cR(r0))}. So ${T('\\tfrac{\\text{rise}}{\\text{run}}=' + slopeTex(r0, u0))}.`,
-        run: async (c) => {
-          await G.drawIn(G.line({ m, b: d.b }, { color: SEG, width: 4 }), 700, c);
-          T1 = new SlopeTri(G, { x: d.x0, y: y(d.x0), run: u0, rise: r0 });
-          await T1.drawIn(c, 450); setRo(r0, u0, true); await pop(c, ro);
-        } },
-      { cap: `<b>Slide</b> it along the line. Wherever it sits, it is still run ${T(cU(u0))} and rise ${T(cR(r0))}: still ${T(fr(r0, u0))}.`,
-        run: async (c) => {
-          await tween(c, 1800, (t) => { const x = d.x0 + (d.slideTo - d.x0) * t; T1.set({ x, y: y(x) }); });
-          await sleep(c, 300);
-          await tween(c, 1200, (t) => { const x = d.slideTo + (d.x0 - d.slideTo) * t; T1.set({ x, y: y(x) }); });
-          await show(c, line(log, `slid along: ${T(rawFr(r0, u0))}`));
-        } }
-    ];
-    sizes.forEach((s, i) => {
-      const r = r0 * s, u = u0 * s, big = s > 1;
-      steps.push({
-        cap: big ? `<b>Scale it up</b> ×${s}: run ${T(cU(u))}, rise ${T(cR(r))}. ${T(slopeTex(r, u))}, the same slope.`
-          : `<b>Shrink it</b> to half: run ${T(cU(texNum(u)))}, rise ${T(cR(texNum(r)))}. ${T(rawFr(r, u))} is ${T(texNum(r))} ÷ ${T(texNum(u))} ${T('=' + fr(r0, u0))} too.`,
-        run: async (c) => {
-          const g = new SlopeTri(G, T1.s, { labels: false, fillOp: 0.05 }); g.ghost(); ghosts.push(g);
-          await T1.to(c, { run: u, rise: r }, 1100);
-          ro.innerHTML = T(`\\dfrac{\\text{rise}}{\\text{run}}=${Number.isInteger(r) && Number.isInteger(u) ? slopeTex(r, u) : rawFr(r, u) + '=' + fr(r0, u0, true)}`); await pulse(c, ro, 1.06);
-          await show(c, line(log, `×${s}: ${T(rawFr(r, u) + '=' + fr(r0, u0, true))}`));
-        }
-      });
-    });
-    steps.push({ cap: `Every slope triangle on the line is a <b>scaled copy</b> of the others, so ${T('\\tfrac{\\text{rise}}{\\text{run}}')} never changes. That one number, ${T(fr(r0, u0))}, is <b>the slope of the line</b>.`,
-      run: async (c) => { await T1.to(c, { run: u0, rise: r0 }, 700); const s = stamp(P, `slope ${r0 < 0 ? '−' : ''}${Math.abs(r0)}/${u0}`, { ok: true }); s.classList.add('u6l3-stampb'); await stampIn(c, s); } });
-    return steps;
-  }
-};
-function slideEx2(G, P, ro, log) {
-  G.segment([-6.5, -4.75], [6.5, 1.75], { color: SEG, width: 4 });
-  Object.entries(EX2).forEach(([k, p]) => G.point(p[0], p[1], { color: INK, r: 6.5, label: T(k), pos: k === 'A' ? 'nw' : 'nw' }));
-  const pairs = [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C']];
-  let T1 = null; const ghosts = [];
-  const steps = pairs.map(([a, b], i) => {
-    const pa = EX2[a], pb = EX2[b], run = pb[0] - pa[0], rise = pb[1] - pa[1];
-    return { cap: `(${'abcd'[i]}) ${T(a + b)}: from ${T(`${a}${pairTex(pa[0], pa[1])}`)} to ${T(`${b}${pairTex(pb[0], pb[1])}`)}, run ${T(cU(run))}, rise ${T(cR(rise))}: ${T(slopeTex(rise, run))}.`,
-      run: async (c) => {
-        if (!T1) { T1 = new SlopeTri(G, { x: pa[0], y: pa[1], run, rise }); await T1.drawIn(c, 450); }
-        else { const g = new SlopeTri(G, T1.s, { labels: false }); g.ghost(); ghosts.push(g); await T1.to(c, { x: pa[0], y: pa[1], run, rise }, 1000); }
-        ro.innerHTML = T(`\\dfrac{\\text{rise}}{\\text{run}}=${slopeTex(rise, run)}`); await pop(c, ro);
-        await show(c, line(log, `${T(a + b)}: ${T(slopeTex(rise, run))}`));
-      } };
-  });
-  steps.push({ cap: `(e) All four pairs give ${T('\\tfrac{1}{2}')}. The slope belongs to the <b>whole line</b>, not to the pair of points you pick.`,
-    run: async (c) => { const s = stamp(P, 'all ½', { ok: true }); s.classList.add('u6l3-stampb'); await stampIn(c, s); } });
-  return steps;
-}
-
-/* =============================== explainer 3: zero and undefined =============================== */
-const ZC = {
-  flat: { label: 'Flatten the rise to 0', P: [-3, -2], run: 6, rises: [4, 2, 1, 0] },
-  stand: { label: 'Squeeze the run to 0', P: [-3, -3], rise: 6, runs: [6, 3, 1, 0.5, 0] },
-  ex3: { label: 'Example 3 check', ex: true }
-};
-const zeroCase = {
-  title: 'Why 0, and why undefined?',
-  height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(ZC).map((k) => ({ v: k, label: ZC[k].label })),
-  intro: (k) => (k === 'ex3' ? 'Count each segment of Example 3. Press <b>Next</b>.' : 'One endpoint stays put; the other moves. Watch <b>rise ÷ run</b>. Press <b>Next</b>.'),
-  make(stage, k, ex) {
-    const d = ZC[k];
-    const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 });
-    const P = panel(stage, 474, 14, ex.W - 488, 440, d.ex ? 'Example 3' : k === 'flat' ? 'Run stays 6' : 'Rise stays 6');
-    const ro = h('div', 'u6l3-frbox'); P.appendChild(ro);
-    const tb = h('table', 'u6l3-ptab'); P.appendChild(tb);
-    if (d.ex) return zeroEx3(G, P, ro, tb);
-    const p = d.P, flat = k === 'flat';
-    const vals = flat ? d.rises : d.runs;
-    tb.innerHTML = `<tr><th class="${flat ? 'u6l3-c-rise' : 'u6l3-c-run'}">${flat ? 'rise' : 'run'}</th><th>slope</th></tr>`;
-    let seg = null, Tr = null, Qp = null;
-    const st = { run: flat ? d.run : vals[0], rise: flat ? vals[0] : d.rise };
-    const mkSeg = () => G.curve(() => ({ subs: [[G.toPx(p[0], p[1]), G.toPx(p[0] + st.run, p[1] + st.rise)]] }), { color: SEG, width: 4.5 }, 'bk-seg', G.layers.data);
-    const setQ = (s) => { Object.assign(st, s); seg._bkDraw(); Tr.set({ run: st.run, rise: st.rise }); G.moveTo(Qp, p[0] + st.run, p[1] + st.rise); };
-    const live = () => { const r = st.rise, u = st.run; ro.innerHTML = T(`\\dfrac{${cR(one(r).replace('−', '-'))}}{${cU(one(u).replace('−', '-'))}}=${Math.abs(u) < 1e-9 ? '?' : texNum(Math.round(r / u * 100) / 100)}`); };
-    const row = (v, s) => { const r = tb.insertRow(); r.innerHTML = `<td>${T(texNum(v))}</td><td>${s}</td>`; return r; };
-    const steps = [];
-    vals.forEach((v, i) => {
-      const r = flat ? v : d.rise, u = flat ? d.run : v, zero = flat ? r === 0 : u === 0;
-      const sl = zero ? (flat ? '0' : '\\text{undefined}') : Number.isInteger(r / u) ? String(r / u) : fr(r, u, true);
-      let cap;
-      if (i === 0) cap = `A segment with run ${T(cU(u))} and rise ${T(cR(r))}: slope ${T(slopeTex(r, u))}.`;
-      else if (!zero) cap = flat ? `Lower the end: rise ${T(cR(r))}. Slope ${T(rawFr(r, u) + '=' + fr(r, u))}: <b>flatter, smaller</b>.` : `Squeeze the run to ${T(cU(texNum(u)))}. Slope ${T(rawFr(r, u) + '=' + texNum(r / u))}: <b>steeper, bigger</b>.`;
-      else cap = flat ? `Flat: rise ${T(cR(0))}. ${T(rawFr(0, 6) + '=0')}: zero divided by any number is 0. A <b>horizontal</b> segment has slope <b>0</b>.`
-        : `Straight up: run ${T(cU(0))}. ${T(rawFr(6, 0))}: no number times 0 makes 6, so we <b>cannot divide by zero</b>. A <b>vertical</b> segment’s slope is <b>undefined</b>.`;
-      steps.push({ cap, run: async (c) => {
-        if (i === 0) {
-          seg = mkSeg(); await G.drawIn(seg, 600, c);
-          G.point(p[0], p[1], { color: INK, r: 7 }); Qp = G.point(p[0] + st.run, p[1] + st.rise, { color: INK, r: 8 });
-          Tr = new SlopeTri(G, { x: p[0], y: p[1], run: st.run, rise: st.rise }, { showZero: true }); await Tr.drawIn(c, 350);
-        } else {
-          const a = { ...st }, b = flat ? { rise: r } : { run: u };
-          await tween(c, 1100, (t) => { const o = {}; for (const kk in b) o[kk] = a[kk] + (b[kk] - a[kk]) * t; setQ(o); live(); });
-        }
-        setQ(flat ? { rise: r } : { run: u });
-        ro.innerHTML = T(`\\dfrac{\\text{rise}}{\\text{run}}=${zero ? rawFr(r, u) + (flat ? '=0' : '') : slopeTex(r, u)}`);
-        const rr = row(v, zero ? `<b class="${flat ? 'u6l3-zero' : 'u6l3-und'}">${flat ? '0' : 'undefined'}</b>` : T(sl)); await show(c, rr);
-        if (zero) { const s2 = stamp(P, flat ? 'slope 0' : 'undefined', { ok: flat ? true : false }); s2.classList.add('u6l3-stampb'); await stampIn(c, s2); }
-      } });
-    });
-    return steps;
-  }
-};
-function zeroEx3(G, P, ro, tb) {
-  segFig(G, EX3, { color: '#7d8494' });
-  tb.innerHTML = '<tr><th></th><th class="u6l3-c-rise">rise</th><th class="u6l3-c-run">run</th><th>slope</th></tr>' + EX3.map((s) => `<tr><td>${T(s.k)}</td><td>?</td><td>?</td><td>?</td></tr>`).join('');
-  let prev = [];
-  const steps = EX3.map((s, i) => {
-    const run = s.Q[0] - s.P[0], rise = s.Q[1] - s.P[1], vert = run === 0;
-    return { cap: vert ? `${T(s.k)} is <b>vertical</b>: rise ${T(cR(rise))}, run ${T(cU(0))}. ${T(rawFr(rise, 0))} is <b>undefined</b>.`
-      : `${T(s.k)} is <b>horizontal</b>: run ${T(cU(run))}, rise ${T(cR(0))}. ${T(rawFr(0, run) + '=0')}.`,
-    run: async (c) => {
-      G.remove(prev); prev = [];
-      const hl = G.segment(s.P, s.Q, { color: SEG, width: 5 }); prev.push(hl); await G.drawIn(hl, 400, c);
-      const r = vert ? await countLeg(c, G, s.P[0], s.P[1], 'y', rise, { ms: 120, side: 'e' }) : await countLeg(c, G, s.P[0], s.P[1], 'x', run, { ms: 130, side: 's' });
-      prev.push(...r.els, ...r.bubbles);
-      ro.innerHTML = T(`\\dfrac{\\text{rise}}{\\text{run}}=${rawFr(rise, run)}${vert ? '' : '=0'}`);
-      const cells = tb.rows[i + 1].cells;
-      cells[1].innerHTML = T(cR(rise)); cells[2].innerHTML = T(cU(run)); cells[3].innerHTML = vert ? '<b class="u6l3-und">undefined</b>' : '<b class="u6l3-zero">0</b>';
-      for (const j of [1, 2, 3]) await pop(c, cells[j].firstChild, 240);
-    } };
-  });
-  steps.push({ cap: `(b) <b>Horizontal</b> segments have a slope of <b>0</b>. <b>Vertical</b> segments have an <b>undefined</b> slope.`,
-    run: async (c) => { G.remove(prev); prev = []; const b = h('div', 'u6l3-rulebox', 'horizontal → slope <b>0</b><br>vertical → slope <b>undefined</b>'); P.appendChild(b); await pop(c, b); } });
-  return steps;
-}
-
-/* =============================== explainer 4: read it left to right =============================== */
-const LR = {
-  kinds: { label: 'Walk four lines' },
-  ex4: { label: 'Example 4 check' }
-};
-const WALK = [
-  { k: 'pos', a: [-5, -3], b: [5, 3], word: 'uphill', sign: 'positive', col: POS, tile: '↗ uphill: <b>positive</b>' },
-  { k: 'neg', a: [-5, 3], b: [5, -2], word: 'downhill', sign: 'negative', col: NEG, tile: '↘ downhill: <b>negative</b>' },
-  { k: 'zero', a: [-5, 1], b: [5, 1], word: 'flat', sign: 'zero', col: SEG, tile: '→ flat: <b>zero</b>' },
-  { k: 'und', a: [2, -5.5], b: [2, 5.5], word: 'a wall', sign: 'undefined', col: RISE, tile: '↑ a wall: <b>undefined</b>' }];
-function walker(G) {
-  const g = svgEl('g', { class: 'u6l3-walker' }, G.layers.top), body = svgEl('g', {}, svgEl('g', { transform: 'scale(1.35)' }, g));
-  svgEl('circle', { cx: 0, cy: -36, r: 7, fill: INK }, body);
-  svgEl('path', { d: 'M0 -29 V-12 M0 -12 L-6 0 M0 -12 L6 0 M0 -24 L-8 -16 M0 -24 L9 -18', stroke: INK, 'stroke-width': 3.6, 'stroke-linecap': 'round', fill: 'none' }, body);
-  g.body = body;
-  g.at = (x, y, ang = 0) => { const [px, py] = G.toPx(x, y); g.setAttribute('transform', `translate(${px} ${py}) rotate(${ang})`); };
-  return g;
-}
-const leftRight = {
-  title: 'Read it left to right',
-  height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(LR).map((k) => ({ v: k, label: LR[k].label })),
-  intro: (k) => (k === 'ex4' ? 'Slope triangles on the four lines of Example 4, each from its left marked point. Press <b>Next</b>.' : 'A hiker walks each line from <b>left to right</b>. Press <b>Next</b>.'),
-  make(stage, k, ex) {
-    const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 });
-    const P = panel(stage, 474, 14, ex.W - 488, 440, k === 'ex4' ? 'Example 4' : 'Left to right');
-    if (k === 'ex4') return lrEx4(G, P);
-    const tiles = h('div', 'u6l3-tiles'); P.appendChild(tiles);
-    let W = null, prev = null;
-    const steps = WALK.map((w) => {
-      const m = w.k === 'und' ? null : (w.b[1] - w.a[1]) / (w.b[0] - w.a[0]);
-      const cap = w.k === 'pos' ? `Walking left to right, this line goes <b>uphill</b>: rise and run have the same sign, so the slope is <b>positive</b>.`
-        : w.k === 'neg' ? `This one goes <b>downhill</b> from left to right: the rise is negative while the run is positive, so the slope is <b>negative</b>.`
-          : w.k === 'zero' ? `<b>Flat</b>: no rise at all. Rise ${T('0')}, so the slope is <b>zero</b>.`
-            : `A <b>wall</b>: you can’t walk it from left to right at all. Run ${T('0')}, so the slope is <b>undefined</b>.`;
-      return { cap, run: async (c) => {
-        if (prev) prev.style.opacity = 0.25;
-        const L = G.segment(w.a, w.b, { color: w.col, width: 4.5 }); prev = L; await G.drawIn(L, 600, c);
-        if (!W) W = walker(G);
-        const ang = m == null ? 0 : -Math.atan(m * G.uy / G.ux) * 180 / Math.PI;
-        if (w.k === 'und') {
-          W.at(-4.5, -5.1); await tween(c, 1400, (t) => W.at(-4.5 + 6.1 * t, -5.1)); await shake(c, W.body);
-        } else {
-          await tween(c, 1800, (t) => { const x = w.a[0] + 0.3 + (w.b[0] - w.a[0] - 0.6) * t; W.at(x, w.a[1] + m * (x - w.a[0]), ang); });
-        }
-        const tl = h('div', 'u6l3-tile u6l3-tile-' + w.k, w.tile); tiles.appendChild(tl); await pop(c, tl);
-      } };
-    });
-    steps.push({ cap: `Always read a graph <b>left to right</b>. Up: positive. Down: negative. Flat: zero. Vertical: undefined.`,
-      run: async (c) => { if (W) W.style.opacity = 0; if (prev) prev.style.opacity = 0.25; const b = h('div', 'u6l3-rulebox', 'the <b>sign</b> of the slope tells the <b>direction</b>'); P.appendChild(b); await pop(c, b); } });
-    return steps;
-  }
-};
-function lrEx4(G, P) {
-  ex4Fig(G, '#7d8494');
-  const tb = h('table', 'u6l3-ptab'); P.appendChild(tb);
-  tb.innerHTML = '<tr><th></th><th class="u6l3-c-rise">rise</th><th class="u6l3-c-run">run</th><th>slope</th></tr>' + EX4.map((L) => `<tr><td>Line ${L.k}</td><td>?</td><td>?</td><td>?</td></tr>`).join('');
-  const steps = EX4.map((L, i) => {
-    const [a, b] = L.pts, run = b[0] - a[0], rise = b[1] - a[1], col = rise > 0 ? POS : NEG;
-    return { cap: `Line ${L.k}: from ${T(pairTex(a[0], a[1]))} to ${T(pairTex(b[0], b[1]))}, run ${T(cU(run))}, rise ${T(cR(rise))}. ${T(slopeTex(rise, run))}: it ${rise > 0 ? '<b>rises</b>' : '<b>falls</b>'}.`,
-      run: async (c) => {
-        const hl = G.segment(L.from, L.to, { color: col, width: 5 }); await G.drawIn(hl, 400, c);
-        const Tr = new SlopeTri(G, { x: a[0], y: a[1], run, rise }, { labels: false, fill: col }); await Tr.drawIn(c, 350);
-        const cells = tb.rows[i + 1].cells;
-        cells[1].innerHTML = T(cR(rise)); cells[2].innerHTML = T(cU(run)); cells[3].innerHTML = T(`\\textcolor{${col}}{${fr(rise, run, true)}}`);
-        for (const j of [1, 2, 3]) await pop(c, cells[j].firstChild, 240);
-      } };
-  });
-  steps.push({ cap: `(b) Lines 1 and 2 <b>rise</b> from left to right: <b>positive</b> slopes. Lines 3 and 4 <b>fall</b>: <b>negative</b> slopes.`,
-    run: async (c) => { const b = h('div', 'u6l3-rulebox', 'rises → <b class="u6l3-pos">positive</b><br>falls → <b class="u6l3-neg">negative</b>'); P.appendChild(b); await pop(c, b); } });
-  return steps;
-}
-
-/* =============================== explainer 5: the steepness dial =============================== */
-const DEG = Math.PI / 180;
-const mOf = (phi) => Math.tan(phi * DEG);           // phi: the line's angle in degrees, 0 ≤ phi < 180
-const phiOf = (m) => (m == null ? 90 : (Math.atan(m) / DEG + 180) % 180);
-const DIAL = {
-  pos: { label: 'Climb: positive slopes', stops: [[0, 1], [1, 4], [1, 2], [1, 1], [2, 1], [5, 1], null] },
-  neg: { label: 'Fall: negative slopes', stops: [[0, 1], [-1, 4], [-1, 2], [-1, 1], [-2, 1], [-5, 1], null] },
-  sweep: { label: 'Full turn', sweep: true }
-};
-const DIAL_TICKS = [[1, 4], [1, 2], [1, 1], [2, 1], [5, 1]];
-const dial = {
-  title: 'The steepness dial',
-  height: 470,
+const words = (v, pos, neg) => `${Math.abs(v)} ${v >= 0 ? pos : neg}`;
+const liftOff = {
+  title: 'Rise and run, lifted off the grid',
+  height: 480,
   minW: 880, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(DIAL).map((k) => ({ v: k, label: DIAL[k].label })),
-  intro: 'The line turns about the origin. The dial’s needle points along the line, left to right. Press <b>Next</b>.',
+  choices: Object.keys(LIFT).map((k) => ({ v: k, label: LIFT[k].label })),
+  intro: 'Count the rise and the run on the grid first, then find the same numbers straight from the coordinates. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = DIAL[k];
-    const G = new Graph(stage, { x: 14, y: 24, width: 400, height: 420, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 });
-    const PW = ex.W - 448;
-    const P = panel(stage, 434, 14, PW, 440, '', 'u6l3-dialp');
-    // the dial: a half-disc opening to the right; up = steepest rising, down = steepest falling
-    const DW = 270, DH = 410, cx = 80, cy = DH / 2, R = 152;
-    const row = h('div', 'u6l3-dialrow'); P.appendChild(row);
-    const wrap = h('div', 'u6l3-dialwrap'); box(wrap, DW, DH); row.appendChild(wrap);
-    const sv = svgEl('svg', { width: DW, height: DH, viewBox: `0 0 ${DW} ${DH}` }, wrap);
-    const dh = h('div', 'bk-html'); wrap.appendChild(dh);
-    const ptA = (a, r) => [cx + r * Math.cos(a * DEG), cy - r * Math.sin(a * DEG)];
-    const arc = (a0, a1, r, col, w) => { const [x0, y0] = ptA(a0, r), [x1, y1] = ptA(a1, r); return svgEl('path', { d: `M${x0} ${y0} A${r} ${r} 0 0 ${a0 > a1 ? 1 : 0} ${x1} ${y1}`, fill: 'none', stroke: col, 'stroke-width': w }, sv); };
-    svgEl('path', { d: `M${cx} ${cy - R} A${R} ${R} 0 0 1 ${cx} ${cy + R} Z`, fill: '#f6f5f1' }, sv);
-    arc(89.5, 0.5, R, POS, 9); arc(-0.5, -89.5, R, NEG, 9);
-    const dlab = (x, y, s, pos, cls) => { const e = h('div', 'bk-lab ' + cls, s); dh.appendChild(e); return place(e, x, y, pos, 3); };
-    DIAL_TICKS.forEach(([a, b]) => [1, -1].forEach((sg) => {
-      const ang = Math.atan(sg * a / b) / DEG, [x0, y0] = ptA(ang, R - 8), [x1, y1] = ptA(ang, R + 8), [lx, ly] = ptA(ang, R + 14);
-      svgEl('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: INK, 'stroke-width': 2 }, sv);
-      dlab(lx, ly, T((sg < 0 ? '-' : '') + (b === 1 ? String(a) : `\\tfrac{${a}}{${b}}`)), 'e', 'u6l3-dtick');
-    }));
-    { const [x0, y0] = ptA(0, R - 8), [x1, y1] = ptA(0, R + 8); svgEl('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: INK, 'stroke-width': 2 }, sv); dlab(cx + R + 14, cy, T('0'), 'e', 'u6l3-dtick'); }
-    dlab(cx - 4, cy - R + 6, 'undefined', 'w', 'u6l3-dtick u6l3-und'); dlab(cx - 4, cy + R - 6, 'undefined', 'w', 'u6l3-dtick u6l3-und');
-    dlab(cx + R * 0.42, cy - R * 0.5, 'positive', 'c', 'u6l3-dzone u6l3-pos'); dlab(cx + R * 0.42, cy + R * 0.5, 'negative', 'c', 'u6l3-dzone u6l3-neg');
-    const needle = svgEl('line', { x1: cx, y1: cy, x2: cx + R - 14, y2: cy, stroke: INK, 'stroke-width': 5, 'stroke-linecap': 'round' }, sv);
-    svgEl('circle', { cx, cy, r: 8, fill: INK }, sv);
-    const ro = h('div', 'u6l3-dialro'); row.appendChild(ro);
-    const roM = h('div', 'u6l3-dm'), roS = h('div', 'u6l3-ds'); ro.append(roM, roS);
-    // the line through the origin at angle phi
-    const st = { phi: 0 };
-    const Lc = G.curve(() => {
-      const ph = st.phi * DEG, dx = Math.cos(ph), dy = Math.sin(ph), k = 20;
-      return { subs: [[G.toPx(-k * dx, -k * dy), G.toPx(k * dx, k * dy)]] };
-    }, { color: SEG, width: 4.5 }, 'bk-line', G.layers.data);
-    let Tr = null;
-    const colOf = (m) => (m == null ? RISE : Math.abs(m) < 1e-9 ? SEG : m > 0 ? POS : NEG);
-    const setPhi = (phi, exact) => {
-      st.phi = phi; Lc._bkDraw();
-      const nd = phi > 90.0001 ? phi - 180 : phi, [x2, y2] = ptA(nd, R - 14);
-      needle.setAttribute('x2', x2); needle.setAttribute('y2', y2);
-      const vert = Math.abs(phi - 90) < 1e-6, m = vert ? null : mOf(phi);
-      const col = colOf(m); Lc.path.setAttribute('stroke', col); Lc.style.color = col;
-      if (exact !== undefined) return;
-      roM.innerHTML = vert ? `${T('m')} is <b class="u6l3-und">undefined</b>` : T(`m\\approx${texNum(Math.round(m * 100) / 100)}`);
-      roS.innerHTML = vert ? 'vertical: run 0' : `steepness ${T(`|m|\\approx${texNum(Math.round(Math.abs(m) * 100) / 100)}`)}`;
-    };
-    const setExact = (s) => {
-      if (!s) { roM.innerHTML = `${T('m')} is <b class="u6l3-und">undefined</b>`; roS.innerHTML = 'vertical: run = 0'; return; }
-      const [a, b] = s, m = a / b, col = colOf(m);
-      roM.innerHTML = T(`m=\\textcolor{${col}}{${fr(a, b, true)}}`);
-      roS.innerHTML = Math.abs(m) < 1e-9 ? 'horizontal: rise = 0' : `${m > 0 ? '<b class="u6l3-pos">positive</b>' : '<b class="u6l3-neg">negative</b>'} · steepness ${T(`|m|=${fr(Math.abs(a), b)}`)}`;
-    };
-    const turn = (c, to, ms) => { const a = st.phi; return tween(c, ms, (t) => setPhi(a + (to - a) * t)); };
-    const triFor = (s) => { if (Tr) { Tr.remove(); Tr = null; } if (!s || s[0] === 0) return; const [a, b] = s; Tr = new SlopeTri(G, { x: 0, y: 0, run: b, rise: a }, { fill: colOf(a / b) }); };
-    setPhi(0); setExact([0, 1]);
-    if (d.sweep) {
+    const d = LIFT[k], [an, x1, y1, ap] = d.A, [bn, x2, y2, bp] = d.B, A = [x1, y1], B = [x2, y2];
+    const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: 450, height: 452, xlabels: d.lab || 1, ylabels: d.lab || 1 }, d.win));
+    const P = panel(stage, 484, 14, ex.W - 498, 452, 'Slope of ' + T(an + bn));
+    const s = slopeOf(A, B), run = s.run, rise = s.rise;
+    G.segment(A, B, { color: BLUE, width: 4.5 });
+    pt(G, an, x1, y1, ap); pt(G, bn, x2, y2, bp);
+    const t = tri(G, A, B, { runLab: T(`${run}`), riseLab: T(`${rise}`) });
+    const dots = [];
+    for (let i = 1; i <= Math.abs(run); i++) dots.push([x1 + i * Math.sign(run), y1, AMB]);
+    for (let i = 1; i <= Math.abs(rise); i++) dots.push([x2, y1 + i * Math.sign(rise), PUR]);
+    const dotEls = dots.map(([x, y, cl]) => { const [px, py] = G.toPx(x, y); return hid(svgEl('circle', { cx: px, cy: py, r: 4.5, fill: cl }, G.layers.top)); });
+    let fBox;
+    return [
+      { cap: `Count squares from ${T(an)} to ${T(bn)}: run ${words(run, 'right', 'left')}, rise ${words(rise, 'up', 'down')}. Slope ${T(`=\\dfrac{\\text{rise}}{\\text{run}}=${s.raw}${s.raw === s.val ? '' : '=' + s.val}`)}.`,
+        run: async (c) => {
+          await showTri(c, t, 380);
+          for (const e of dotEls) { unhide(e); pop(c, e, 200); await sleep(c, Math.abs(run) + Math.abs(rise) > 14 ? 30 : 55); }
+          await show(c, line(P, `Counting: ${T(`\\dfrac{\\text{rise}}{\\text{run}}=${s.raw}`)}`, 'u6l3-muted'));
+        } },
+      { cap: `Now drop both points onto the <b>x-axis</b>. The run is the gap between the x-coordinates: ${T(`x_${bn}-x_${an}=${x2}-${par(x1)}=${run}`)}. Same as counting!`,
+        run: async (c) => {
+          const g1 = G.segment(A, [x1, 0], { color: 'gray', width: 2.2, dash: '6 6' }), g2 = G.segment(B, [x2, 0], { color: 'gray', width: 2.2, dash: '6 6' });
+          await Promise.all([G.drawIn(g1, 500, c), G.drawIn(g2, 500, c)]);
+          const arr = G.segment([x1, 0], [x2, 0], { color: AMB, width: 6, ends: [null, 'arrow'], layer: 'top' });
+          await G.drawIn(arr, 600, c);
+          await fadeIn(c, G.label((x1 + x2) / 2, 0, T(`${x2}-${par(x1)}=${run}`), { pos: 'n', cls: 'bk-ptlab u6l3-runlab', gap: 10 }));
+          await show(c, line(P, `<b>run</b> ${T(`=x_${bn}-x_${an}=${x2}-${par(x1)}=${run}`)}`, 'u6l3-crun'));
+        } },
+      { cap: `Slide both points across to the <b>y-axis</b>. The rise is the gap between the y-coordinates: ${T(`y_${bn}-y_${an}=${y2}-${par(y1)}=${rise}`)}.`,
+        run: async (c) => {
+          const g1 = G.segment(A, [0, y1], { color: 'gray', width: 2.2, dash: '6 6' }), g2 = G.segment(B, [0, y2], { color: 'gray', width: 2.2, dash: '6 6' });
+          await Promise.all([G.drawIn(g1, 500, c), G.drawIn(g2, 500, c)]);
+          const arr = G.segment([0, y1], [0, y2], { color: PUR, width: 6, ends: [null, 'arrow'], layer: 'top' });
+          await G.drawIn(arr, 600, c);
+          await fadeIn(c, G.label(0, (y1 + y2) / 2, T(`${y2}-${par(y1)}=${rise}`), { pos: d.rl, cls: 'bk-ptlab u6l3-riselab', gap: 10 }));
+          await show(c, line(P, `<b>rise</b> ${T(`=y_${bn}-y_${an}=${y2}-${par(y1)}=${rise}`)}`, 'u6l3-crise'));
+        } },
+      { cap: `No grid needed: subtract the coordinates, <b>y on top, x underneath, same order</b>. ${T(`m_{${an}${bn}}=${s.val}`)}.`,
+        run: async (c) => {
+          await c.anim(G.layers.grid, [{ opacity: 1 }, { opacity: 0.15 }], 700);
+          fBox = line(P, `${T(`m_{${an}${bn}}=\\dfrac{y_${bn}-y_${an}}{x_${bn}-x_${an}}`)}<div class="u6l3-l2">${T(`\\phantom{m_{${an}${bn}}}=${s.all}`)}</div>`, 'u6l3-big');
+          await show(c, fBox);
+        } },
+      { cap: `That is the <b>slope formula</b>: rise and run lifted off the grid. It works for any two points, even far apart or with negative coordinates.`,
+        run: async (c) => { const b = line(P, `<div class="u6l3-gen">${T('m=\\dfrac{\\color{#7b4fc4}y_2-y_1}{\\color{#c27a0e}x_2-x_1}')}</div>`, 'u6l3-rulebox'); await pop(c, b); } }
+    ];
+  }
+};
+
+/* =============================== 2. same order, top and bottom (Example 3) =============================== */
+const sameOrder = {
+  title: 'Either point first, but the same order top and bottom',
+  height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'demo', label: 'Either point first' }, { v: 'ex3', label: 'Example 3 check' }],
+  intro: (v) => (v === 'demo' ? 'Find the slope of <b>AB</b> starting from A, then from B, then with the order mixed up. Press <b>Next</b>.' : 'Draw each student’s answer as a line through <b>W</b>. Does it lie along <b>WZ</b>? Press <b>Next</b>.'),
+  make(stage, k, ex) {
+    if (k === 'demo') {
+      const A = [-3, -1], B = [5, 5];
+      const G = sqG(stage, 14, 30, { xmin: -5, xmax: 7, ymin: -3, ymax: 7 }, 38);
+      const P = panel(stage, G.W + 34, 14, ex.W - G.W - 48, 452, 'Slope of ' + T('AB'));
+      G.segment(A, B, { color: BLUE, width: 4.5 }); pt(G, 'A', -3, -1, 'nw'); pt(G, 'B', 5, 5, 'nw');
+      let t1, t2;
       return [
-        { cap: `Turn the line from flat towards vertical. Watch ${T('m')}: slowly at first, then it <b>races</b> as the line gets steep.`,
-          run: async (c) => { if (Tr) Tr.remove(); await turn(c, 88.9, 3600); } },
-        { cap: `Straight up: run ${T('0')}. There is no number left: the slope is <b>undefined</b>.`, run: async (c) => { await turn(c, 90, 400); setPhi(90); } },
-        { cap: `Keep turning: the line now <b>falls</b> left to right. ${T('m')} is a <b>huge negative</b> number, shrinking in size as the line flattens.`,
-          run: async (c) => { await turn(c, 179.9, 3600); setPhi(180 - 1e-9); setExact([0, 1]); } },
-        { cap: `Steepness grows towards vertical on <b>both</b> sides. The <b>sign</b> says up or down; the <b>size</b> ${T('|m|')} says how steep.`,
-          run: async (c) => { setPhi(0); setExact([0, 1]); const b = h('div', 'u6l3-rulebox', 'sign → direction · size <span class="tex"></span>→ steepness'); b.innerHTML = `sign → direction<br>size ${T('|m|')} → steepness`; ro.appendChild(b); await pop(c, b); } }
+        { cap: `Start at ${T('A')}: run 8 right, rise 6 up. ${T('\\dfrac{5-(-1)}{5-(-3)}=\\dfrac{6}{8}=\\dfrac34')}.`,
+          run: async (c) => { t1 = tri(G, A, B); await showTri(c, t1); await show(c, line(P, `<b>A first</b> ${T('\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{5-(-1)}{5-(-3)}=\\dfrac{6}{8}=\\dfrac34')}`, 'u6l3-card')); } },
+        { cap: `Start at ${T('B')} instead: run 8 <b>left</b> (−8), rise 6 <b>down</b> (−6). Both signs flip, and a negative over a negative is positive: still ${T('\\dfrac34')}.`,
+          run: async (c) => { dropTri(t1); t2 = tri(G, B, A); await showTri(c, t2); await show(c, line(P, `<b>B first</b> ${T('\\dfrac{y_A-y_B}{x_A-x_B}=\\dfrac{-1-5}{-3-5}=\\dfrac{-6}{-8}=\\dfrac34')}`, 'u6l3-card')); } },
+        { cap: `<b>Mixed order</b> (B − A on top, A − B underneath) flips only <b>one</b> sign: ${T('-\\dfrac34')}. That line slopes the wrong way!`,
+          run: async (c) => {
+            dropTri(t2);
+            const L = G.line(A, [1, -4], { color: RED, width: 3, dash: '10 7' }); await G.drawIn(L, 700, c);
+            await fadeIn(c, G.label(-4.2, 0.2, T('-\\tfrac34') + '?', { pos: 'n', cls: 'bk-ptlab u6l3-redlab' }));
+            const r = line(P, `<b>Mixed</b> ${T('\\dfrac{y_B-y_A}{x_A-x_B}=\\dfrac{5-(-1)}{-3-5}=\\dfrac{6}{-8}=-\\dfrac34')}`, 'u6l3-card u6l3-bad'); await show(c, r);
+            const s = stamp(r, '✗', { ok: false, size: 'sm' }); s.classList.add('u6l3-cstamp'); await stampIn(c, s);
+          } },
+        { cap: `Either point may go first, as long as the <b>same point comes first on top and on the bottom</b>.`,
+          run: async (c) => { await pop(c, line(P, '<b>Same order, top and bottom.</b> Start from either end.', 'u6l3-rulebox')); } }
       ];
     }
-    const steps = [];
-    d.stops.forEach((s, i) => {
-      const neg = k === 'neg';
-      let cap;
-      if (!s) cap = `Vertical: run ${T('0')}, so the slope is <b>undefined</b>. ${neg ? 'From either side, the' : 'The'} closer to vertical, the bigger ${T('|m|')}.`;
-      else if (s[0] === 0) cap = `Flat: rise ${T('0')}, ${T('m=0')}. The needle points straight across.`;
-      else {
-        const [a, b] = s, m = a / b, txt = fr(a, b);
-        const extra = { 0.25: 'a gentle climb', 0.5: 'steeper', 1: `rise equals run`, 2: `rise ${T('2')} for every ${T('1')} across`, 5: 'very steep: the numbers grow fast near vertical' }[Math.abs(m)];
-        const extraN = { 0.25: 'a gentle fall', 0.5: 'steeper', 1: `as steep as ${T('m=1')}`, 2: `just as steep as ${T('m=2')}`, 5: 'very steep: the size grows fast near vertical' }[Math.abs(m)];
-        cap = neg ? `${T('m=' + txt)}: run ${T(cU(b))}, rise ${T(cR(a))}, so the line <b>falls</b>. Steepness ${T('|m|=' + fr(Math.abs(a), b))}: ${extraN}.` : `${T('m=' + txt)}: run ${T(cU(b))}, rise ${T(cR(a))}. ${extra[0].toUpperCase() + extra.slice(1)}.`;
+    // Example 3: W(14, 3), Z(-6, 11)
+    const W = [14, 3], Z = [-6, 11];
+    const G = new Graph(stage, { x: 14, y: 14, width: 470, height: 452, xmin: -8, xmax: 16, ymin: -2, ymax: 14, xlabels: 2, ylabels: 2 });
+    const P = panel(stage, 504, 14, ex.W - 518, 452, 'Three students');
+    G.segment(W, Z, { color: BLUE, width: 5 }); pt(G, 'W', 14, 3, 'sw'); pt(G, 'Z', -6, 11, 'ne');
+    const STU = [
+      { n: 'Amara', w: '\\dfrac{3-11}{-6-14}=\\dfrac{-8}{-20}=\\dfrac25', m: 2 / 5, ok: false, why: 'mixed order: wrong sign', cap: `<b>Amara</b> used ${T('y_W-y_Z')} on top but ${T('x_Z-x_W')} underneath. Mixed order flips the sign: her line ${T('\\tfrac25')} rises, but WZ falls.` },
+      { n: 'Ben', w: '\\dfrac{-6-14}{11-3}=\\dfrac{-20}{8}=-\\dfrac52', m: -5 / 2, ok: false, why: 'run over rise: upside down', cap: `<b>Ben</b> put the run on top: run over rise. The sign is right, but ${T('-\\tfrac52')} is far too steep. His fraction is upside down.` },
+      { n: 'Chloe', w: '\\dfrac{11-3}{-6-14}=\\dfrac{8}{-20}=-\\dfrac25', m: -2 / 5, ok: true, why: 'same order: correct', cap: `<b>Chloe</b> used ${T('Z')} first on top <b>and</b> underneath. Her line lies right along WZ: ${T('m_{WZ}=-\\dfrac25')} ✓` }
+    ];
+    let cur = null;
+    const steps = [{ cap: `${T('Z')} is up on the left and ${T('W')} is down on the right: WZ <b>falls</b> from left to right, so its slope must be <b>negative</b>.`,
+      run: async (c) => { const a = G.segment([-6, 11], [14, 11], { color: 'gray', width: 2, dash: '6 6' }); await G.drawIn(a, 500, c); await G.drawIn(G.segment([14, 11], W, { color: 'gray', width: 2, dash: '6 6' }), 400, c); } }];
+    STU.forEach((s) => steps.push({ cap: s.cap, run: async (c) => {
+      if (cur) G.remove(cur);
+      cur = G.line(W, [W[0] - 4, W[1] - 4 * s.m], { color: s.ok ? GRN : RED, width: 3.5, dash: s.ok ? null : '10 7' });
+      await G.drawIn(cur, 700, c);
+      const r = line(P, `<div class="u6l3-stn">${s.n}</div>${T(s.w)}<div class="u6l3-why">${s.why}</div>`, 'u6l3-card u6l3-stcard' + (s.ok ? '' : ' u6l3-bad')); await show(c, r);
+      const st = stamp(r, s.ok ? '✓' : '✗', { ok: s.ok, size: 'sm' }); st.classList.add('u6l3-cstamp'); await stampIn(c, st);
+    } }));
+    steps.push({ cap: `Correct slope: ${T('m_{WZ}=\\dfrac{y_Z-y_W}{x_Z-x_W}=\\dfrac{11-3}{-6-14}=\\dfrac{8}{-20}=-\\dfrac25')}. Check the sign and the steepness against the picture.`,
+      run: async (c) => { await pulse(c, P.lastChild, 1.04); } });
+    return steps;
+  }
+};
+
+/* =============================== 3. collinear points =============================== */
+const COL = {
+  yes: { label: 'Same slope, shared point', win: { xmin: -8, xmax: 8, ymin: -5, ymax: 6 }, pts: [['P', -5, -4, 'nw'], ['Q', -1, -1, 'nw'], ['R', 7, 5, 'nw']], pairs: [[0, 1], [1, 2]], share: 1, v: 'col' },
+  par: { label: 'Same slope, no shared point', win: { xmin: -8, xmax: 7, ymin: -5, ymax: 8 }, pts: [['G', -5, 1, 'nw'], ['H', 3, 7, 'nw'], ['I', -2, -4, 'se'], ['J', 6, 2, 'se']], pairs: [[0, 1], [2, 3]], segs: [[0, 1], [2, 3]], v: 'par' },
+  bend: { label: 'Different slopes', win: { xmin: -8, xmax: 7, ymin: -4, ymax: 6 }, pts: [['P', -5, -3, 'nw'], ['Q', -1, 1, 'nw'], ['R', 6, 4, 'n']], pairs: [[0, 1], [1, 2]], share: 1, v: 'bend' },
+  trees: { label: 'Warm-up orchard', win: { xmin: 0, xmax: 14, ymin: 0, ymax: 10 }, names: true, pts: [['Apple', 1, 1, 'nw'], ['Cherry', 4, 3, 'nw'], ['Plum', 7, 5, 'nw'], ['Pear', 11, 8, 'nw'], ['Peach', 13, 9, 'nw']], pairs: [[0, 1], [0, 2], [0, 3], [0, 4]], v: 'trees', lab: 2 },
+  ex4: { label: 'Example 4 check', win: { xmin: -6, xmax: 13, ymin: -22, ymax: 12 }, pts: [['X', -4, 10, 'ne'], ['Y', 2, -2, 'ne'], ['Z', 11, -20, 'w']], pairs: [[0, 1], [1, 2]], share: 1, v: 'col', lab: 2, ylab: 4 }
+};
+const collinear = {
+  title: 'Collinear: equal slopes and a shared point',
+  height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(COL).map((k) => ({ v: k, label: COL[k].label })),
+  intro: 'Are these points on one straight line? Measure the slope between pairs of points. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = COL[k];
+    const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: 470, height: 452, xlabels: d.lab || 1, ylabels: d.ylab || d.lab || 1 }, d.win));
+    const P = panel(stage, 504, 14, ex.W - 518, 452, 'Slopes');
+    const PT = d.pts.map(([n, x, y]) => [x, y]);
+    (d.segs || []).forEach(([i, j]) => G.segment(PT[i], PT[j], { color: BLUE, width: 4 }));
+    const pts = d.pts.map(([n, x, y, pos]) => pt(G, n, x, y, pos, { name: d.names }));
+    const S = d.pairs.map(([i, j]) => slopeOf(PT[i], PT[j]));
+    const nm = (i, j) => (d.names ? `${d.pts[i][0]} → ${d.pts[j][0]}: ` : '');
+    const mName = (i, j) => (d.names ? 'm' : `m_{${d.pts[i][0]}${d.pts[j][0]}}`);
+    let t = null;
+    const steps = d.pairs.map(([i, j], q) => ({
+      cap: `${d.names ? `${d.pts[i][0]} to ${d.pts[j][0]}` : `${T(d.pts[i][0] + d.pts[j][0])}`}: rise ${T(String(S[q].rise))}, run ${T(String(S[q].run))}, slope ${T(S[q].val)}.${q && S[q].val !== S[0].val ? ' <b>Different!</b>' : q ? ' The same slope.' : ''}`,
+      run: async (c) => {
+        dropTri(t); t = tri(G, PT[i], PT[j], { runLab: T(`${S[q].run}`), riseLab: T(`${S[q].rise}`) }); await showTri(c, t, 380);
+        await show(c, line(P, nm(i, j) + T(`${mName(i, j)}=${S[q].all}`), q && S[q].val !== S[0].val ? 'u6l3-hot' : ''));
       }
-      steps.push({ cap, run: async (c) => {
-        if (Tr) { Tr.remove(); Tr = null; }
-        const to = s ? phiOf(s[0] / s[1]) : 90;
-        if (i > 0) await turn(c, to, 1200);
-        setPhi(to, true); setExact(s); if (s) { triFor(s); if (Tr) await Tr.drawIn(c, 300); }
-        await pulse(c, roM, 1.08);
-      } });
-    });
-    return steps;
-  }
-};
-
-/* =============================== explainer 6: ordering by steepness =============================== */
-const ORD = {
-  ex5a: { label: 'Example 5(a) check', sl: [[-5, 1], [2, 1], [-1, 2], [1, 4]], max: 5, step: 1, pos: ['n', 'n', 'ne', 'nw'] },
-  ex5b: { label: 'Example 5(b) check', sl: [[-3, 4], [2, 3]], max: 1, step: 0.25, pos: ['ne', 'nw'] },
-  mirror: { label: T('3') + ' and ' + T('-3'), sl: [[3, 1], [-3, 1]], max: 4, step: 1, pos: ['ne', 'nw'] }
-};
-const OCOL = [COLORS.red, COLORS.green, COLORS.blue, COLORS.amber];
-const order = {
-  title: 'Compare steepness: ignore the sign',
-  height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(ORD).map((k) => ({ v: k, label: ORD[k].label })),
-  intro: 'Lines through the origin, then their <b>sizes</b> on a steepness line. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = ORD[k];
-    const G = new Graph(stage, { x: 14, y: 14, width: 420, height: 440, xmin: -5.5, xmax: 5.5, ymin: -5.8, ymax: 5.8, xlabels: 2, ylabels: 2 });
-    const PW = ex.W - 468, P = panel(stage, 454, 14, PW, 440, 'Steepness = size');
-    const sl = d.sl.map(([a, b], i) => ({ a, b, m: a / b, col: OCOL[i], tx: fr(a, b) }));
-    const nlHost = h('div', 'u6l3-nlhost'); box(nlHost, PW - 28, 130); P.appendChild(nlHost);
-    const NL = new NumberLine(nlHost, { width: PW - 28, height: 130, min: 0, max: d.max, step: d.step, arrows: false,
-      labels: d.max === 1 ? [{ v: 0, html: T('0') }, { v: 0.5, html: T('\\tfrac12') }, { v: 1, html: T('1') }] : undefined, labelStep: d.max === 1 ? 0.5 : 1 });
-    const list = h('div', 'u6l3-log'); P.appendChild(list);
-    const steps = [
-      { cap: `Lines through the origin with slopes ${sl.map((s) => T(s.tx)).join(', ')}.`,
-        run: async (c) => {
-          for (const s of sl) {
-            const L = G.line({ m: s.m, b: 0 }, { color: s.col, width: 4 }); s.L = L; await G.drawIn(L, 500, c);
-            const r = Math.min(4.3, 4.3 / Math.abs(s.m)), x = s.m > 0 ? r : -r;
-            const steep = Math.abs(s.m) > 1, pos = steep ? (s.m > 0 ? 'ne' : 'nw') : (s.m > 0 ? 'nw' : 'ne');
-            const lab = G.label(x, s.m * x, T('m=' + fr(s.a, s.b, true)), { pos, cls: 'bk-ptlab', color: s.col }); await fadeIn(c, lab);
-          }
-        } },
-      { cap: `Drop the signs: ${sl.map((s) => T(`|${s.tx}|=${fr(Math.abs(s.a), s.b)}`)).join(', ')}. Put each size on the steepness line.`,
-        run: async (c) => { for (const [i, s] of sl.entries()) { const p = NL.point(Math.abs(s.m), { color: s.col, label: T(fr(Math.abs(s.a), s.b, true)), pos: (d.pos || [])[i] || 'n' }); await pop(c, p); } } }
-    ];
-    const sorted = sl.slice().sort((a, b) => Math.abs(a.m) - Math.abs(b.m));
-    if (k === 'ex5a') {
-      steps.push({ cap: `Least steep to steepest: ${T(sorted.map((s) => s.tx).join(',\\ '))}.`,
-        run: async (c) => { for (const [i, s] of sorted.entries()) { const r = line(list, `${i + 1}. ${T(`\\textcolor{${s.col}}{${fr(s.a, s.b, true)}}`)}`, 'u6l3-mline'); await show(c, r); s.L.path.setAttribute('stroke-width', 7); await sleep(c, 250); s.L.path.setAttribute('stroke-width', 4); } } });
-      steps.push({ cap: `${T('-5')} is the <b>smallest number</b> but the <b>steepest line</b>: size, not sign, decides steepness.`,
-        run: async (c) => { const s = stamp(P, 'steepest: −5', { ok: true }); s.classList.add('u6l3-stampb'); await stampIn(c, s); } });
-    } else if (k === 'ex5b') {
-      steps.push({ cap: `Compare ${T('\\tfrac34')} and ${T('\\tfrac23')}: ${T('\\tfrac34=\\tfrac{9}{12}')} and ${T('\\tfrac23=\\tfrac{8}{12}')} (or ${T('0.75')} and about ${T('0.67')}).`,
-        run: async (c) => { await show(c, line(list, T('\\tfrac{9}{12}>\\tfrac{8}{12}'), 'u6l3-mline')); await show(c, line(list, T('0.75>0.67'), 'u6l3-mline')); } });
-      steps.push({ cap: `So the line with slope ${T('-\\tfrac34')} is <b>steeper</b>. It falls, while the other rises.`,
-        run: async (c) => { sl[0].L.path.setAttribute('stroke-width', 7); const s = stamp(P, 'steeper: −3/4', { ok: true }); s.classList.add('u6l3-stampb'); await stampIn(c, s); } });
+    }));
+    const done = async (c, text, ok) => { const s = stamp(P, text, { ok }); s.classList.add('u6l3-pstamp'); await stampIn(c, s); };
+    if (d.v === 'col') {
+      steps.push({ cap: `${T(`${mName(0, 1)}=${mName(1, 2)}`)} <b>and</b> the two segments share the point ${T(d.pts[d.share][0])}.`,
+        run: async (c) => { dropTri(t); t = null; await pulse(c, pts[d.share].label, 1.3); await show(c, line(P, `Equal slopes <b>and</b> shared point ${T(d.pts[d.share][0])}`, 'u6l3-rulebox')); } });
+      steps.push({ cap: `So one straight line passes through all three points: they are <b>collinear</b>.`,
+        run: async (c) => { await G.drawIn(G.line(PT[0], PT[2], { color: GRN, width: 3 }), 800, c); await done(c, 'collinear ✓', true); } });
+    } else if (d.v === 'par') {
+      steps.push({ cap: `Equal slopes, but ${T('GH')} and ${T('IJ')} share <b>no point</b>. Extend them: two different lines that never meet.`,
+        run: async (c) => { dropTri(t); t = null; for (const [i, j] of d.segs) await G.drawIn(G.line(PT[i], PT[j], { color: BLUE, width: 2.5, dash: '10 7' }), 700, c); await show(c, line(P, 'Equal slopes, <b>no shared point</b>', 'u6l3-rulebox')); } });
+      steps.push({ cap: `Equal slopes alone only prove the segments are <b>parallel</b>. Collinear needs the shared point too.`,
+        run: async (c) => done(c, 'parallel, not collinear', null) });
+    } else if (d.v === 'bend') {
+      steps.push({ cap: `The slopes are different, so the path <b>bends</b> at ${T('Q')}. No single line passes through all three points.`,
+        run: async (c) => { dropTri(t); t = null; await G.drawIn(G.polyline([PT[0], PT[1], PT[2]], { color: RED, width: 3 }), 800, c); await done(c, 'not collinear ✗', false); } });
     } else {
-      steps.push({ cap: `Both sizes are ${T('3')}: the lines are <b>equally steep</b>, mirror images in the ${T('y')}-axis. One rises, one falls.`,
-        run: async (c) => { await show(c, line(list, `${T('|3|=|-3|=3')}: same steepness`, 'u6l3-mline')); } });
+      steps.push({ cap: `Hold up the ruler from the Apple through the Peach: it passes ${T('x=11')} at ${T('y=7\\tfrac23')}. The <b>Pear</b> is ${T('\\tfrac13')} of a unit too high.`,
+        run: async (c) => { dropTri(t); t = null; await G.drawIn(G.line(PT[0], PT[4], { color: GRN, width: 3 }), 800, c); await G.drawIn(G.segment([11, 23 / 3], [11, 8], { color: RED, width: 4 }), 300, c); await done(c, 'Pear out of line', false); } });
     }
     return steps;
   }
 };
 
-/* =============================== explainer 7: roofline and pitch =============================== */
-const RF = {
-  six: { label: 'A “6 in 12” roof', peak: [4, 5], right: [8, 3], left: [0, 1], chimney: false },
-  ex6: { label: 'Example 6 check', peak: [4, 6], right: [8, 1], left: [0, 2.5], chimney: true }
-};
-const roof = {
-  title: 'Slope of a roofline, and its pitch',
-  height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(RF).map((k) => ({ v: k, label: RF[k].label })),
-  intro: 'A grid laid over a roof. Find two points you can read <b>exactly</b>. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = RF[k];
-    const G = new Graph(stage, { x: 14, y: 14, width: 470, height: 400, xmin: 0, xmax: 9, ymin: 0, ymax: 7, arrows: false, xtitle: '', ytitle: '', origin: true });
-    const P = panel(stage, 504, 14, ex.W - 518, 400, d.chimney ? 'Example 6' : 'Roof pitch');
-    drawRoof(G, d);
-    const run = d.right[0] - d.peak[0], rise = d.right[1] - d.peak[1], k12 = 12 / run, up12 = Math.abs(rise) * k12;
-    let Tr = null;
-    const steps = [
-      { cap: `Two points on the right-hand roofline sit exactly on grid corners: the peak ${T(pairTex(...d.peak))} and the eave ${T(pairTex(...d.right))}.`,
-        run: async (c) => { for (const [p, pos] of [[d.peak, 'n'], [d.right, 'ne']]) await G.reveal(G.point(p[0], p[1], { color: INK, r: 7, coords: true, pos }), c); } },
-      { cap: `From the peak: run ${T(cU(run))} right, rise ${T(cR(rise))} (down ${Math.abs(rise)}).`,
-        run: async (c) => { Tr = new SlopeTri(G, { x: d.peak[0], y: d.peak[1], run, rise }); await Tr.drawIn(c, 500); } },
-      { cap: `${T('\\text{slope}=' + slopeTex(rise, run))}: negative, because the roofline <b>falls</b> from left to right.`,
-        run: async (c) => { await show(c, line(P, T('\\text{slope}=' + slopeTex(rise, run)), 'u6l3-mline')); } }
-    ];
-    if (d.chimney) steps.push({ cap: `(b) Left side: the chimney covers part of the left roofline, so where that roofline ends can only be <b>guessed</b>, and the visible part crosses no grid corner except the peak. A grid slope needs two points you can read exactly: <b>no</b>.`,
-      run: async (c) => { const q = G.label(0.7, 2.4, '?', { cls: 'u6l3-qmark' }); await pop(c, q); await show(c, line(P, '(b) hidden end: <b>not reliable</b>', 'u6l3-line u6l3-soft')); } });
-    steps.push({ cap: `Pitch is a <b>positive</b> rise for every ${T('12')} of run. ${T(`\\tfrac{${Math.abs(rise)}}{${run}}=\\tfrac{${up12}}{12}`)}: multiply top and bottom by ${T(texNum(k12))}.`,
-      run: async (c) => {
-        const b = h('div', 'u6l3-scale', T(`\\dfrac{${Math.abs(rise)}}{${run}}\\ \\xrightarrow{\\ \\times ${texNum(k12)}\\ }\\ \\dfrac{${up12}}{12}`)); P.appendChild(b); await pop(c, b);
-      } });
-    steps.push({ cap: `The pitch is “<b>${up12} in 12</b>”${up12 > 12 ? ': it rises more than it runs, a steep roof' : ''}.`,
-      run: async (c) => {
-        const ic = pitchIcon(up12); P.appendChild(ic); await pop(c, ic);
-      } });
-    return steps;
-  }
-};
-function pitchIcon(up) {
-  const W = 230, H = 120, w = 150, hh = Math.min(100, up / 12 * w * 0.62);
-  const d = h('div', 'u6l3-pitch'); box(d, W, H);
-  const s = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, d);
-  svgEl('path', { d: `M20 ${H - 14} h${w} v-${hh} Z`, fill: '#eef3fd', stroke: SEG, 'stroke-width': 3, 'stroke-linejoin': 'round' }, s);
-  const lab = (x, y, t, pos) => { const e = h('div', 'bk-lab u6l3-pitchlab', t); d.appendChild(e); place(e, x, y, pos, 4); };
-  lab(20 + w / 2, H - 14, '12', 's'); lab(20 + w, H - 14 - hh / 2, String(up), 'e');
-  return d;
-}
-
-/* =============================== explainer 8: slope as a rate of change =============================== */
-const RATE = {
-  ex7a: { label: 'Example 7(a) check', g: { width: 420, height: 330, xmin: 0, xmax: 4.6, ymin: 0, ymax: 360, xstep: 1, ystep: 80, xtitle: '\\text{Time (h)}', ytitle: '\\text{Distance (km)}', origin: true },
-    A: [0, 0], B: [3, 240], end: [4, 320], xu: 'h', yu: 'km', per: 'km/h', step: 1, mean: 'The car travels <b>80 km every hour</b>: the slope is its <b>speed</b>.' },
-  ex7b: { label: 'Example 7(b) check', g: { width: 420, height: 330, xmin: 0, xmax: 10, ymin: 0, ymax: 135, xstep: 2, ystep: 30, xtitle: '\\text{Time (min)}', ytitle: '\\text{Volume (L)}', origin: true },
-    A: [0, 120], B: [4, 60], end: [8, 0], xu: 'min', yu: 'L', per: 'L/min', step: 1, mean: 'The negative sign means the volume is <b>decreasing</b>: the tank loses <b>15 L every minute</b>.' },
-  walk: { label: 'Walking to school', g: { width: 420, height: 330, xmin: 0, xmax: 6.5, ymin: 0, ymax: 400, xstep: 1, ystep: 100, xtitle: '\\text{Time (min)}', ytitle: '\\text{Distance (m)}', origin: true },
-    A: [0, 0], B: [5, 300], end: [6, 360], xu: 'min', yu: 'm', per: 'm/min', step: 1, mean: 'She walks <b>60 m every minute</b>.' }
-};
-const rate = {
-  title: 'Slope with units: a rate of change',
-  height: 440,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(RATE).map((k) => ({ v: k, label: RATE[k].label })),
-  intro: 'Real axes have units, so the rise and the run do too. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = RATE[k];
-    const G = new Graph(stage, Object.assign({ x: 14, y: 14 }, d.g, { width: 480, height: 400 }));
-    const P = panel(stage, 514, 14, ex.W - 528, 400, 'Rate of change');
-    const run = d.B[0] - d.A[0], rise = d.B[1] - d.A[1], m = rise / run;
-    const unit = (v, u) => `${n(v)} ${u}`;
-    let Tr = null;
-    const steps = [
-      { cap: `Two points you can read exactly: ${T(pairTex(...d.A))} and ${T(pairTex(...d.B))}.`,
-        run: async (c) => { await G.drawIn(G.segment(d.A, d.end, { color: SEG, width: 4.5 }), 700, c); for (const p of [d.A, d.B]) await G.reveal(G.point(p[0], p[1], { color: INK, r: 7, coords: !!(p[0] || p[1]), pos: p === d.A ? 'ne' : 'nw' }), c); } },
-      { cap: `Run ${T(cU(texNum(run)))} ${d.xu}, rise ${T(cR(texNum(rise)))} ${d.yu}. The units come along.`,
-        run: async (c) => { Tr = new SlopeTri(G, { x: d.A[0], y: d.A[1], run, rise }, { runSide: 'n', runText: (v) => `<b>run</b> ${unit(v, d.xu)}`, riseText: (v) => `<b>rise</b> ${unit(v, d.yu)}` }); await Tr.drawIn(c, 600); } },
-      { cap: `${T(`\\text{slope}=\\dfrac{${cR(texNum(rise))}\\text{ ${d.yu}}}{${cU(texNum(run))}\\text{ ${d.xu}}}=${texNum(m)}\\text{ ${d.per}}`)}, read “${n(m)} ${d.yu} <b>per</b> ${d.xu === 'h' ? 'hour' : 'minute'}”.`,
-        run: async (c) => { const b = h('div', 'u6l3-scale', T(`\\dfrac{${cR(texNum(rise))}\\text{ ${d.yu}}}{${cU(texNum(run))}\\text{ ${d.xu}}}=\\boldsymbol{${texNum(m)}\\text{ ${d.per}}}`)); P.appendChild(b); await pop(c, b); } },
-      { cap: `Step by step: every ${T('1')} ${d.xu}, the graph ${m > 0 ? 'rises' : 'falls'} ${T(texNum(Math.abs(m)))} ${d.yu}. ${d.mean}`,
-        run: async (c) => {
-          Tr.ghost();
-          const N = Math.round(run / d.step);
-          for (let i = 0; i < N; i++) {
-            const x = d.A[0] + i * d.step, y = d.A[1] + i * d.step * m;
-            const s = new SlopeTri(G, { x, y, run: d.step, rise: d.step * m }, { labels: false, fillOp: 0.18, w: 4 }); await s.drawIn(c, 220);
-            const l = G.label(x + d.step, y + d.step * m / 2, `${m > 0 ? '+' : '−'}${Math.abs(m)}`, { pos: 'e', cls: 'u6l3-bub u6l3-bub-rise', gap: 5 }); await pop(c, l, 220);
-          }
-          await show(c, line(P, d.mean, 'u6l3-line'));
-        } }
-    ];
-    return steps;
-  }
-};
-
-/* =============================== explainer 9: step off the rise and run =============================== */
-const SO = {
-  ex8a: { label: 'Example 8(a) check', start: [-3, -4], r: 3, u: 2, fwd: 3, back: 1, seg: [[-5, -7], [4, 6.5]], win: 7.5, three: [[-1, -1], [1, 2], [3, 5]] },
-  neg: { label: 'Slope ' + T('-\\tfrac{2}{3}'), start: [-3, 4], r: -2, u: 3, fwd: 3, back: 1, seg: [[-6, 6], [7.5, -3]], win: 7.5 },
-  whole: { label: 'Slope ' + T('2'), start: [-2, -3], r: 2, u: 1, fwd: 4, back: 1, seg: [[-3, -5], [2.75, 6.5]], win: 6.5 }
-};
-const stepOff = {
-  title: 'From a slope back to points',
-  height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(SO).map((k) => ({ v: k, label: SO[k].label })),
-  intro: 'Start at the given point and step off the run and the rise, again and again. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = SO[k], wn = d.win;
-    const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -wn, xmax: wn, ymin: -wn, ymax: wn, xlabels: 2, ylabels: 2 });
-    const P = panel(stage, 474, 14, ex.W - 488, 440, 'Stepping off the slope');
-    const [x0, y0] = d.start, m = d.r / d.u;
-    const ro = h('div', 'u6l3-frbox'); P.appendChild(ro);
-    const leg = h('div', 'u6l3-leg', `each step: <b class="u6l3-c-run">run ${n(d.u)}</b> (right), <b class="u6l3-c-rise">rise ${n(d.r)}</b> (${d.r > 0 ? 'up' : 'down'})`); hide(leg); P.appendChild(leg);
-    const log = h('div', 'u6l3-log'); P.appendChild(log);
-    const how = d.u === 1 ? `${T(String(d.r))} is ${T(`\\tfrac{${d.r}}{1}`)}: run ${T(cU('1'))} right, rise ${T(cR(String(d.r)))} up`
-      : `run ${T(cU(String(d.u)))} right, rise ${T(cR(String(d.r)))} ${d.r > 0 ? 'up' : 'down'}`;
-    const steps = [{ cap: `Start at ${T(pairTex(x0, y0))}. Slope ${T(fr(d.r, d.u))} means ${how}.`,
-      run: async (c) => { await G.reveal(G.point(x0, y0, { color: INK, r: 7.5, coords: true, pos: d.r > 0 ? 'se' : 'sw', labelCls: 'u6l3-ptl' }), c); ro.innerHTML = T(`m=${fr(d.r, d.u, true)}=${rawFr(d.r, d.u)}`); await pop(c, ro); await show(c, leg); } }];
-    const pts = [];
-    for (let i = 1; i <= d.fwd; i++) {
-      const a = [x0 + (i - 1) * d.u, y0 + (i - 1) * d.r], b = [x0 + i * d.u, y0 + i * d.r];
-      steps.push({ cap: `${i === 1 ? 'Step' : 'Again'}: run ${T(cU(String(d.u)))}, rise ${T(cR(String(d.r)))} → ${T(pairTex(b[0], b[1]))}.`,
-        run: async (c) => {
-          const s = new SlopeTri(G, { x: a[0], y: a[1], run: d.u, rise: d.r }, { labels: false, fillOp: 0.12, w: 4.5 }); await s.drawIn(c, 300);
-          const p = G.point(b[0], b[1], { color: NEG, r: 7, coords: true, pos: d.r > 0 ? 'nw' : 'ne', labelCls: 'u6l3-ptl' }); pts.push(p); await G.reveal(p, c);
-          await show(c, line(log, T(`${pairTex(a[0], a[1])}\\to${pairTex(b[0], b[1])}`), 'u6l3-mline'));
-        } });
-    }
-    for (let i = 1; i <= d.back; i++) {
-      const a = [x0 - (i - 1) * d.u, y0 - (i - 1) * d.r], b = [x0 - i * d.u, y0 - i * d.r];
-      steps.push({ cap: `Step <b>backward</b> too: run ${T(cU(String(-d.u)))} (left), rise ${T(cR(String(-d.r)))} ${-d.r > 0 ? '(up)' : '(down)'}. ${T(rawFr(-d.r, -d.u) + '=' + fr(d.r, d.u))}, the same slope → ${T(pairTex(b[0], b[1]))}.`,
-        run: async (c) => {
-          const s = new SlopeTri(G, { x: a[0], y: a[1], run: -d.u, rise: -d.r }, { labels: false, fillOp: 0.12, w: 4.5 }); await s.drawIn(c, 300);
-          const p = G.point(b[0], b[1], { color: NEG, r: 7, coords: true, pos: d.r > 0 ? 'se' : 'ne', labelCls: 'u6l3-ptl' }); await G.reveal(p, c);
-          await show(c, line(log, `backward: ${T(`${pairTex(a[0], a[1])}\\to${pairTex(b[0], b[1])}`)}`, 'u6l3-mline'));
-        } });
-    }
-    steps.push({ cap: k === 'ex8a' ? `Join them with a ruler and extend the segment past both axes. Three other integer points: ${d.three.map((p) => T(pairTex(...p))).join(', ')}.`
-      : `Join them: every point is the same rise-over-run step from the last, so they all lie on <b>one line</b> with slope ${T(fr(d.r, d.u))}.`,
-    run: async (c) => { await G.drawIn(G.segment(d.seg[0], d.seg[1], { color: SEG, width: 4 }), 900, c); } });
-    return steps;
-  }
-};
-
-/* =============================== explainer 10: a missing rise or run =============================== */
-const MS = {
-  ex8b: { label: 'Example 8(b) check', m: [-5, 6], r0: 5, u0: -6, rise: 20,
-    g: { xmin: -27, xmax: 3, ymin: -3, ymax: 23, xstep: 6, ystep: 5 } },
-  demo: { label: 'Slope ' + T('\\tfrac25') + ', rise ' + T('14'), m: [2, 5], r0: 2, u0: 5, rise: 14,
-    g: { xmin: -3, xmax: 38, ymin: -2, ymax: 16, xstep: 5, ystep: 2 } },
-  ramp: { label: 'The big one: ' + T('\\tfrac{1}{12}') + ', rise 60 cm', m: [1, 12], r0: 1, u0: 12, rise: 60, units: 'cm',
-    g: { xmin: -4, xmax: 44, ymin: -0.6, ymax: 4.6, xstep: 12, ystep: 1 }, zoom: { xmin: -40, xmax: 790, ymin: -10, ymax: 75, xstep: 120, ystep: 10 } }
+/* =============================== 3b. a missing coordinate =============================== */
+const MISS = {
+  demo: { label: 'Demo: ' + T('C(3,\\ k)'), A: ['A', -3, -2, 'nw'], B: ['B', 6, 4, 'nw'], C: 'C', cx: 3, v: 'k', from: 7, to: 2, win: { xmin: -7, xmax: 8, ymin: -5, ymax: 8 }, alg: ['\\dfrac{k-(-2)}{3-(-3)}=\\dfrac{2}{3}', '\\dfrac{k+2}{6}=\\dfrac23', 'k+2=4', 'k=2'] },
+  ex4b: { label: 'Example 4(b) check', A: ['X', -4, 10, 'ne'], B: ['Z', 11, -20, 'w'], C: 'W', cx: 5, v: 'w', from: 4, to: -8, win: { xmin: -6, xmax: 13, ymin: -22, ymax: 12 }, lab: 2, ylab: 4, alg: ['\\dfrac{w-10}{5-(-4)}=-2', '\\dfrac{w-10}{9}=-2', 'w-10=-18', 'w=-8'] }
 };
 const missing = {
-  title: 'Find the missing run',
-  height: 450,
-  minW: 880, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(MS).map((k) => ({ v: k, label: MS[k].label })),
-  intro: 'The slope is a small triangle. The segment is that triangle copied over and over, like a staircase. Press <b>Next</b>.',
+  title: 'A missing coordinate',
+  height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(MISS).map((k) => ({ v: k, label: MISS[k].label })),
+  intro: (k) => `The point ${T(`${MISS[k].C}(${MISS[k].cx},\\ ${MISS[k].v})`)} must lie on the segment. Press <b>Next</b>.`,
   make(stage, k, ex) {
-    const d = MS[k], [ma, mb] = d.m, kk = d.rise / d.r0, run = kk * d.u0;
-    const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: 470, height: 420, xlabels: 0, ylabels: 0, origin: true }, d.g));
-    const P = panel(stage, 504, 14, ex.W - 518, 420, 'Scale the slope');
-    const eq = h('div', 'u6l3-eqs'); P.appendChild(eq);
-    const u = d.units ? ` ${d.units}` : '', par = (v) => (v < 0 ? `(${v})` : String(v));
-    let first = null;
-    const steps = [
-      { cap: `Slope ${T(fr(ma, mb))}${ma < 0 ? `: one part is negative. The rise ${T(String(d.rise))} is <b>up</b>, so write it as ${T(`\\tfrac{${d.r0}}{${d.u0}}`)}: up ${T(String(d.r0))}, left ${T(String(-d.u0))}` : `: rise ${T(String(d.r0))} for every run of ${T(String(d.u0))}`}.`,
+    const d = MISS[k], [an, ax, ay, ap] = d.A, [bn, bx, by, bp] = d.B, A = [ax, ay], B = [bx, by], v = d.v;
+    const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: 470, height: 452, xlabels: d.lab || 1, ylabels: d.ylab || d.lab || 1 }, d.win));
+    const P = panel(stage, 504, 14, ex.W - 518, 452, 'Find ' + T(v));
+    const s = slopeOf(A, B);
+    G.segment(A, B, { color: BLUE, width: 4.5 }); pt(G, an, ax, ay, ap); pt(G, bn, bx, by, bp);
+    const st = { y: d.from };
+    let Cp, seg, ro;
+    const roHtml = () => { const r = st.y - ay, rn = d.cx - ax; return `${T(`${v}=${st.y}`)}: ${T(`m_{${an}${d.C}}=\\dfrac{${st.y}-${par(ay)}}{${d.cx}-${par(ax)}}=${frac(r, rn)}`)}`; };
+    return [
+      { cap: `First the slope of the segment: ${T(`m_{${an}${bn}}=${s.all}`)}.`,
+        run: async (c) => { await show(c, line(P, T(`m_{${an}${bn}}=${s.all}`), 'u6l3-big')); } },
+      { cap: `${T(d.C)} has x-coordinate ${T(String(d.cx))}, so it sits somewhere on the line ${T(`x=${d.cx}`)}. Try ${T(`${v}=${d.from}`)}: the slope from ${T(an)} is ${T(frac(d.from - ay, d.cx - ax))}. Not equal, so not on the segment.`,
         run: async (c) => {
-          first = new SlopeTri(G, { x: 0, y: 0, run: d.u0, rise: d.r0 }, { fillOp: 0.2, runSide: 'n' }); await first.drawIn(c, 450);
-          await show(c, line(eq, T(`m=\\dfrac{${cR(d.r0)}}{${cU(d.u0)}}`), 'u6l3-mline'));
+          await G.drawIn(G.vline(d.cx, { color: 'gray', width: 2 }), 500, c);
+          seg = G.curve(() => ({ subs: [[G.toPx(ax, ay), G.toPx(d.cx, st.y)]] }), { color: RED, width: 3.5, dash: '9 7' }, 'u6l3-try', G.layers.data);
+          Cp = G.point(d.cx, st.y, { color: RED, r: 8, label: T(`${d.C}(${d.cx},\\ ${v})`), pos: 'e' });
+          await G.drawIn(seg, 500, c); await G.reveal(Cp, c);
+          ro = line(P, roHtml(), 'u6l3-ro'); await show(c, ro);
         } },
-      { cap: `The segment rises ${T(String(d.rise))}${u}. How many ${T(String(d.r0))}s make ${T(String(d.rise))}? ${T(`${d.rise}\\div${d.r0}=${kk}`)}, so it is ${T(String(kk))} copies of the small triangle.`,
+      { cap: `Slide ${T(d.C)} along ${T(`x=${d.cx}`)}, watching its slope from ${T(an)}… it lines up when ${T(`${v}=${d.to}`)}: the slope is ${T(s.val)}.`,
         run: async (c) => {
-          const N = kk > 8 ? 3 : kk;
-          for (let i = 1; i < N; i++) { const s = new SlopeTri(G, { x: i * d.u0, y: i * d.r0, run: d.u0, rise: d.r0 }, { labels: false, fillOp: 0.2, w: 4 }); await s.drawIn(c, 160); }
-          if (d.zoom) { first.ghost(); await G.setWindow(d.zoom, c, 1300); }
-          await show(c, line(eq, T(`${d.rise}\\div${d.r0}=${kk}\\ \\text{copies}`), 'u6l3-mline'));
+          const dir = Math.sign(d.to - d.from);
+          for (let y = d.from + dir; dir > 0 ? y <= d.to : y >= d.to; y += dir) { st.y = y; seg._bkDraw(); G.moveTo(Cp, d.cx, y); ro.innerHTML = roHtml(); await sleep(c, 170); }
+          Cp.querySelector('circle').setAttribute('fill', GRN); ro.classList.add('u6l3-good'); await pulse(c, ro, 1.05);
         } },
-      { cap: `So the run is ${T(String(kk))} times as long too: ${T(`${kk}\\times${par(d.u0)}=${run}`)}${u}. The run is ${T('\\boldsymbol{' + run + '}')}${u}${d.units ? ` (${n(run / 100)} m)` : ''}.`,
-        run: async (c) => {
-          const B = new SlopeTri(G, { x: 0, y: 0, run, rise: d.rise }, { fillOp: 0.06, w: 5, runSide: 'n', runText: (v) => `<b>run</b> ${n(v)}${u}`, riseText: (v) => `<b>rise</b> ${n(v)}${u}` }); await B.drawIn(c, 700);
-          await show(c, line(eq, T(`\\dfrac{${cR(d.r0)}}{${cU(d.u0)}}\\xrightarrow{\\ \\times${kk}\\ }\\dfrac{${cR(d.rise)}}{${cU(run)}}`), 'u6l3-mline'));
-        } },
-      { cap: `Check: ${T(`\\dfrac{${d.rise}}{${run}}=${fr(d.rise, run)}`)} ✓. Or in one line: ${T('\\text{run}=\\text{rise}\\div\\text{slope}')}\u200b${T(`=${d.rise}\\div\\left(${fr(ma, mb)}\\right)=${run}`)}.`,
-        run: async (c) => { await show(c, line(eq, T(`\\text{run}=${d.rise}\\div\\left(${fr(ma, mb)}\\right)=${run}`), 'u6l3-mline u6l3-soft')); const s = stamp(P, `run ${n(run)}`, { ok: true }); s.classList.add('u6l3-stampb'); await stampIn(c, s); } }
+      { cap: `Algebra goes straight there: <b>set the slope with ${T(v)} in it equal to</b> ${T(s.val)} and solve. ${T(`${v}=${d.to}`)}.`,
+        run: async (c) => { for (const a of d.alg) await show(c, line(P, T(a), a === d.alg[d.alg.length - 1] ? 'u6l3-big u6l3-ans' : 'u6l3-mline')); } }
     ];
+  }
+};
+
+/* =============================== 4. parallel: copies of one slope triangle =============================== */
+const TRANS = {
+  s3: { label: 'Section 3 check', A: ['A', -4, 3, 'n'], B: ['B', 4, -1, 's'], moves: [{ dx: 3, dy: -4, n: ['C', 'D'], pos: ['w', 's'], txt: '3 right and 4 down' }, { dx: -5, dy: 2, n: ['E', 'F'], pos: ['n', 'se'], txt: '5 left and 2 up' }] },
+  demo: { label: 'Another segment', A: ['K', -3, -4, 'w'], B: ['L', 0, 2, 'w'], moves: [{ dx: 5, dy: -1, n: ['M', 'N'], pos: ['e', 'e'], txt: '5 right and 1 down' }, { dx: -5, dy: 2, n: ['S', 'T'], pos: ['w', 'w'], txt: '5 left and 2 up' }] }
+};
+const translate = {
+  title: 'Parallel lines: copies of one slope triangle',
+  height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(TRANS).map((k) => ({ v: k, label: TRANS[k].label })),
+  intro: 'Slide the segment, slope triangle and all, without turning it. What happens to its slope? Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = TRANS[k], [an, ax, ay, ap] = d.A, [bn, bx, by, bp] = d.B, A = [ax, ay], B = [bx, by];
+    const G = sqG(stage, 14, 60, { xmin: -10, xmax: 8, ymin: -6, ymax: 6 }, 26, { xlabels: 2, ylabels: 2 });
+    const P = panel(stage, G.W + 34, 14, ex.W - G.W - 48, 440, 'Slopes');
+    const s = slopeOf(A, B);
+    G.segment(A, B, { color: BLUE, width: 4.5 }); pt(G, an, ax, ay, ap, { name: true }); pt(G, bn, bx, by, bp, { name: true });
+    const t0 = tri(G, A, B, { runLab: T(`${s.run}`), riseLab: T(`${s.rise}`) });
+    const imgs = [];
+    const steps = [{ cap: `${T(an + bn)} and its slope triangle: run ${T(String(s.run))}, rise ${T(String(s.rise))}. ${T(`m_{${an}${bn}}=${s.all}`)}.`,
+      run: async (c) => { await showTri(c, t0); await show(c, line(P, T(`m_{${an}${bn}}=${s.all}`))); } }];
+    d.moves.forEach((mv) => {
+      const C = [ax + mv.dx, ay + mv.dy], D = [bx + mv.dx, by + mv.dy], sc = slopeOf(C, D), [cn, dn] = mv.n;
+      steps.push({ cap: `Translate ${mv.txt}: ${T(`${an}${pairTex2(A)}\\to ${cn}${pairTex2(C)}`)}, ${T(`${bn}${pairTex2(B)}\\to ${dn}${pairTex2(D)}`)}. The slope triangle slides along unchanged.`,
+        run: async (c) => {
+          const cp = tri(G, A, B, { seg: TEAL, runLab: false, riseLab: false, hidden: false });
+          const [dx, dy] = [mv.dx * G.ux, -mv.dy * G.uy];
+          await tween(c, 1300, (q) => cp.g.setAttribute('transform', `translate(${dx * q} ${dy * q})`));
+          dropTri(cp);
+          const t = tri(G, C, D, { seg: TEAL, hidden: false, runLab: T(`${sc.run}`), riseLab: T(`${sc.rise}`) }); imgs.push([C, D]);
+          const p1 = pt(G, cn, ...C, mv.pos[0], { name: true, color: TEAL }), p2 = pt(G, dn, ...D, mv.pos[1], { name: true, color: TEAL });
+          await Promise.all([G.reveal(p1, c), G.reveal(p2, c), ...t.labs.map((l) => fadeIn(c, l))]);
+          await show(c, line(P, T(`m_{${cn}${dn}}=${sc.all}`)));
+        } });
+    });
+    steps.push({ cap: `Same rise, same run, so the <b>same slope</b> every time. A translated copy points the same way: <b>parallel lines have equal slopes</b>.`,
+      run: async (c) => {
+        const Ls = [[A, B], ...imgs].map(([p, q]) => G.line(p, q, { color: 'gray', width: 2, dash: '8 7' }));
+        await Promise.all(Ls.map((L) => G.drawIn(L, 800, c)));
+        await pop(c, line(P, `<b>Parallel</b> ${T('\\Leftrightarrow')} <b>equal slopes</b>`, 'u6l3-rulebox'));
+      } });
     return steps;
+  }
+};
+const pairTex2 = (p) => `(${p[0]},\\ ${p[1]})`;
+
+/* =============================== 5. perpendicular: rotate the slope triangle 90° =============================== */
+const ROT = {
+  s4: { label: 'Section 4 check: ' + T('A(6,\\ 3)'), a: 6, b: 3, n: 'A' },
+  d25: { label: T('(2,\\ 5)'), a: 2, b: 5, n: 'A' },
+  d51: { label: T('(5,\\ 1)'), a: 5, b: 1, n: 'A' },
+  gen: { label: 'Any point ' + T('P(a,\\ b)'), a: 5, b: 3, n: 'P', gen: true }
+};
+const rotate = {
+  title: 'Perpendicular: turn the slope triangle 90°',
+  height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(ROT).map((k) => ({ v: k, label: ROT[k].label })),
+  intro: 'Rotate the segment and its slope triangle a quarter-turn clockwise about the origin. Watch what happens to the rise and the run. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = ROT[k], a = d.a, b = d.b, g = d.gen, n = d.n, n2 = g ? 'Q' : n + "'";
+    const G = sqG(stage, 14, 14, { xmin: -2, xmax: 8, ymin: -8, ymax: 6 }, 31, { xlabels: 2, ylabels: 2 });
+    const P = panel(stage, G.W + 34, 14, ex.W - G.W - 48, 462, 'Slopes');
+    const O = [0, 0], A = [a, b], A2 = [b, -a];
+    const at = g ? 'a' : String(a), bt = g ? 'b' : String(b);
+    G.segment(O, A, { color: BLUE, width: 4.5 });
+    G.point(0, 0, { color: INK, label: T('O'), pos: 'sw' });
+    G.point(a, b, { color: BLUE, label: g ? T('P(a,\\ b)') : ptLab(n, a, b), pos: 'n' });
+    const t0 = tri(G, O, A, { runLab: T(`\\text{run}=${at}`), riseLab: T(`\\text{rise}=${bt}`) });
+    const m1 = g ? '\\dfrac{b}{a}' : frac(b, a), m2 = g ? '-\\dfrac{a}{b}' : frac(-a, b);
+    let cp, l1, l2;
+    const [ox, oy] = G.toPx(0, 0);
+    return [
+      { cap: `${T('O' + n)}: run ${T(at)}, rise ${T(bt)}. ${T(`m_{O${n}}=\\dfrac{${bt}}{${at}}${g || m1 === `\\dfrac{${b}}{${a}}` ? '' : '=' + m1}`)}.`,
+        run: async (c) => { await showTri(c, t0); await show(c, line(P, T(`m_{O${n}}=\\dfrac{${bt}-0}{${at}-0}=${g ? m1 : `\\dfrac{${b}}{${a}}` + (frac(b, a) === `\\dfrac{${b}}{${a}}` ? '' : '=' + m1)}`), 'u6l3-big')); } },
+      { cap: `Turn the whole triangle <b>90° clockwise</b> about ${T('O')}. ${g ? T('P(a,\\ b)\\to Q(b,\\ -a)') : T(`${n}(${a},\\ ${b})\\to ${n2}(${b},\\ ${-a})`)}: swap the coordinates, then change the sign of the new y.`,
+        run: async (c) => {
+          cp = tri(G, O, A, { seg: RED, runLab: false, riseLab: false, hidden: false });
+          await tween(c, 1700, (q) => cp.g.setAttribute('transform', `rotate(${90 * q} ${ox} ${oy})`));
+          const p2 = G.point(b, -a, { color: RED, label: g ? T('Q(b,\\ -a)') : ptLab(n2, b, -a), pos: 'e' }); await G.reveal(p2, c);
+        } },
+      { cap: `The old <b>run</b> (amber) now stands up, pointing <b>down</b>: it is the new rise, ${T(g ? '-a' : String(-a))}. The old <b>rise</b> (purple) now lies flat: the new run, ${T(bt)}. <b>Rise and run swap, and one sign flips.</b>`,
+        run: async (c) => {
+          l1 = G.label(0, -a / 2, T(`\\text{rise}=${g ? '-a' : -a}`), { pos: 'e', cls: 'bk-ptlab u6l3-runlab', gap: 8 });
+          l2 = G.label(b / 2, -a, T(`\\text{run}=${bt}`), { pos: 's', cls: 'bk-ptlab u6l3-riselab', gap: 8 });
+          await Promise.all(t0.labs.map((l) => c.anim(l, [{ opacity: 1 }, { opacity: 0.3 }], 300)));
+          await fadeIn(c, l1); await pulse(c, l1, 1.15); await fadeIn(c, l2); await pulse(c, l2, 1.15);
+        } },
+      { cap: `${T(`m_{O${n2}}=\\dfrac{${g ? '-a' : -a}}{${bt}}${g ? '' : '=' + m2}`)}: the slope turned <b>upside down</b> and <b>changed sign</b>. That is the <b>negative reciprocal</b>.`,
+        run: async (c) => { await show(c, line(P, T(`m_{O${n2}}=\\dfrac{${g ? '-a' : -a}-0}{${bt}-0}=${g ? m2 : `\\dfrac{${-a}}{${b}}` + (m2 === `\\dfrac{${-a}}{${b}}` ? '' : '=' + m2)}`), 'u6l3-big')); } },
+      { cap: `Multiply: ${T(`${m1}\\times${m2.startsWith('-') ? `\\left(${m2}\\right)` : m2}=-1`)}. Perpendicular slopes always have a product of ${T('-1')}.`,
+        run: async (c) => {
+          const mk = rmark(G, O, [a, b], [b, -a], 18); mk.style.opacity = 0; await appear(c, mk);
+          const r = line(P, T(`m_{O${n}}\\times m_{O${n2}}=${m1}\\times${m2.startsWith('-') ? `\\left(${m2}\\right)` : m2}=-1`), 'u6l3-rulebox'); await pop(c, r);
+          if (g) await show(c, line(P, `for any ${T('a,\\ b\\ne0')}`, 'u6l3-muted'));
+        } }
+    ];
+  }
+};
+
+/* =============================== 6. parallel and perpendicular slopes from one slope =============================== */
+const NR = {
+  ex5: { label: 'Example 5 check: ' + T('\\tfrac58'), win: { xmin: -8, xmax: 10, ymin: -8, ymax: 8 }, unit: 25,
+    g: { P: [-7, -3], Q: [1, 2], n: ['A', 'C'], pos: ['w', 'n'] }, p: { P: [-1, -7], Q: [7, -2], n: ['G', 'H'], pos: ['w', 'e'] }, q: { P: [-3, 6], Q: [2, -2], n: ['B', 'F'], pos: ['e', 'e'] },
+    given: 'm_{AC}=\\dfrac58', parT: 'm_{GH}=\\dfrac58', f0: '\\dfrac58', f1: '\\dfrac85', f2: '-\\dfrac85', perpT: 'm_{BF}=-\\dfrac85', check: '\\dfrac58\\times\\left(-\\dfrac85\\right)=-1' },
+  ex6: { label: 'Example 6 check', win: { xmin: -2, xmax: 12, ymin: -6, ymax: 10 }, unit: 27, calc: true,
+    g: { P: [3, 8], Q: [9, -4], n: ['P', 'Q'], pos: ['e', 'w'], coords: true }, p: { P: [-1, 9], Q: [5, -3] }, q: { P: [0, -1], Q: [12, 5] },
+    given: 'm_{PQ}=\\dfrac{-12}{6}=-2', givenCap: 'm_{PQ}=\\dfrac{-4-8}{9-3}=\\dfrac{-12}{6}=-2', parT: 'm=-2', f0: '-\\dfrac21', f1: '-\\dfrac12', f2: '\\dfrac12', perpT: 'm=\\dfrac12', check: '-2\\times\\dfrac12=-1' },
+  d3: { label: 'Slope ' + T('3'), win: { xmin: -6, xmax: 6, ymin: -6, ymax: 6 }, unit: 35,
+    g: { P: [-4, -4], Q: [-2, 2] }, p: { P: [1, -5], Q: [3, 1] }, q: { P: [-5, 3], Q: [1, 1] },
+    given: 'm=3', parT: 'm=3', f0: '\\dfrac31', f1: '\\dfrac13', f2: '-\\dfrac13', perpT: 'm=-\\dfrac13', check: '3\\times\\left(-\\dfrac13\\right)=-1' },
+  zero: { label: 'Slope ' + T('0'), win: { xmin: -6, xmax: 6, ymin: -6, ymax: 6 }, unit: 35, zero: true,
+    g: { P: [-4, 1], Q: [4, 1] }, p: { P: [-4, -3], Q: [4, -3] }, q: { P: [0, -5], Q: [0, 5] },
+    given: 'm=0', parT: 'm=0', f0: '\\dfrac01', f1: '\\dfrac10', f2: '\\text{undefined}', perpT: '\\text{undefined (vertical)}', check: '' }
+};
+const negRecip = {
+  title: 'Parallel and perpendicular slopes from one slope',
+  height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(NR).map((k) => ({ v: k, label: NR[k].label })),
+  intro: 'Given one slope: a <b>parallel</b> line copies the slope triangle; a <b>perpendicular</b> line turns it 90°. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = NR[k];
+    const G = sqG(stage, 14, 14, d.win, d.unit, { xlabels: 2, ylabels: 2 });
+    const P = panel(stage, G.W + 34, 14, ex.W - G.W - 48, 452, '');
+    const seg = (s, color) => {
+      const el = G.segment(s.P, s.Q, { color, width: 4.5 }); hid(el);
+      const ps = s.n ? s.n.map((nn, i) => hidPt(pt(G, nn, ...(i ? s.Q : s.P), s.pos[i], { name: !s.coords, color }))) : [];
+      return { el, ps, show: async (c) => { unhide(el); await G.drawIn(el, 600, c); for (const p of ps) await showPt(c, G, p); } };
+    };
+    const S1 = seg(d.g, BLUE), S2 = seg(d.p, TEAL), S3 = seg(d.q, RED);
+    const short = (s) => ({ runLab: T(`${s.Q[0] - s.P[0]}`), riseLab: T(`${s.Q[1] - s.P[1]}`) });
+    const t1 = d.zero ? null : tri(G, d.g.P, d.g.Q, short(d.g));
+    const t2 = d.zero ? null : tri(G, d.p.P, d.p.Q, short(d.p)), t3 = d.zero ? null : tri(G, d.q.P, d.q.Q, short(d.q));
+    const row = (lab, cls) => { const r = h('div', 'u6l3-nrrow ' + cls, `<div class="u6l3-nrl">${lab}</div><div class="u6l3-nrv"></div>`); P.appendChild(r); hid(r); return r; };
+    const rG = row('Given', 'u6l3-nrg'), rP = row('Parallel', 'u6l3-nrp'), rQ = row('Perpendicular', 'u6l3-nrq'), rC = row('Check', 'u6l3-nrc');
+    const card = h('span', 'u6l3-fcard', T(d.f0));
+    const at = d.zero ? [0, 1] : meet(d.g.P, d.g.Q, d.q.P, d.q.Q);
+    const dir = (s) => [s.Q[0] - s.P[0], s.Q[1] - s.P[1]];
+    const flip = async (c, el, html) => { await c.anim(el, [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(90deg)' }], 260); el.innerHTML = html; await c.anim(el, [{ transform: 'rotateY(90deg)' }, { transform: 'rotateY(0deg)' }], 260); };
+    return [
+      { cap: d.calc ? `First the slope of ${T('PQ')}: ${T(d.givenCap)}.` : `The given segment has slope ${T(d.given.split('=').pop())}${d.zero ? ': it is horizontal' : ''}.`,
+        run: async (c) => { await S1.show(c); if (!d.zero) await showTri(c, t1, 380); rG.querySelector('.u6l3-nrv').innerHTML = T(d.given); unhide(rG); await show(c, rG); } },
+      { cap: d.zero ? `<b>Parallel:</b> slide a copy of the horizontal segment up or down. Still a rise of ${T('0')}: ${T(d.parT)}.` : `<b>Parallel:</b> slide a copy of the same slope triangle somewhere else. Same rise, same run: ${T(d.parT)}.`,
+        run: async (c) => { await S2.show(c); if (t2) await showTri(c, t2, 380); rP.querySelector('.u6l3-nrv').innerHTML = T(d.parT); unhide(rP); await show(c, rP); } },
+      { cap: d.zero ? `<b>Perpendicular:</b> write ${T('0=\\dfrac01')} and flip it: ${T('\\dfrac10')}, division by zero. The slope is <b>undefined</b>.` : `<b>Perpendicular:</b> turning the triangle 90° swaps rise and run, so <b>flip the fraction</b>: ${T(d.f0)} becomes ${T(d.f1)}.`,
+        run: async (c) => { const v = rQ.querySelector('.u6l3-nrv'); v.innerHTML = ''; v.appendChild(card); unhide(rQ); await show(c, rQ); await sleep(c, 250); await flip(c, card, T(d.f1)); } },
+      { cap: d.zero ? `Undefined slope means a <b>vertical</b> line. Special case: horizontal and vertical lines are <b>perpendicular</b>, even though ${T('0')} and undefined can’t be multiplied.` : `…and one sign flips: <b>change the sign</b>. ${T(d.perpT)}, the <b>negative reciprocal</b>.`,
+        run: async (c) => {
+          if (d.zero) card.innerHTML = T(d.f2); else await flip(c, card, T(d.f2));
+          await S3.show(c); if (t3) await showTri(c, t3, 380);
+          const mk = rmark(G, at, dir(d.g), dir(d.q), 15); mk.style.opacity = 0; await appear(c, mk);
+        } },
+      { cap: d.zero ? `Two horizontal lines (slope 0) are parallel; a horizontal and a vertical line are perpendicular.` : `Check: ${T(d.check)} ✓. Perpendicular slopes multiply to ${T('-1')}.`,
+        run: async (c) => { rC.querySelector('.u6l3-nrv').innerHTML = d.zero ? 'horizontal ⊥ vertical' : T(d.check); unhide(rC); await pop(c, rC); } }
+    ];
+  }
+};
+
+/* =============================== 6b. parallel, perpendicular, or neither =============================== */
+const CL = {
+  c: { label: 'Example 5(c) check', m1: '\\dfrac{3}{10}', m2: '\\dfrac{9}{30}', eq: '\\dfrac{9}{30}=\\dfrac{3}{10}=m_1', isEq: true, L: [{ m: 0.3, b: 1.5 }, { m: 0.3, b: -1.5 }], v: 'par',
+    caps: ['Simplify first: ' + T('\\dfrac{9}{30}=\\dfrac{3}{10}') + '. The slopes are <b>equal</b>.', 'Equal slopes: the lines are <b>parallel</b>.'] },
+  d: { label: 'Example 5(d) check', m1: '\\dfrac{4}{9}', m2: '-\\dfrac{9}{4}', eq: '\\dfrac49\\ne-\\dfrac94', prod: '\\dfrac{4}{9}\\times\\left(-\\dfrac{9}{4}\\right)=-1', L: [{ m: 4 / 9, b: 0 }, { m: -9 / 4, b: 0 }], v: 'perp',
+    caps: ['Not equal, so not parallel.', 'Multiply: ' + T('\\dfrac{4}{9}\\times\\left(-\\dfrac{9}{4}\\right)=-1') + '. Negative reciprocals: <b>perpendicular</b>.'] },
+  trap: { label: T('\\tfrac23') + ' and ' + T('\\tfrac32'), m1: '\\dfrac{2}{3}', m2: '\\dfrac{3}{2}', eq: '\\dfrac23\\ne\\dfrac32', prod: '\\dfrac{2}{3}\\times\\dfrac{3}{2}=1\\ne-1', L: [{ m: 2 / 3, b: 0 }, { m: 1.5, b: 0 }], v: 'nei',
+    caps: ['Not equal, so not parallel.', 'The product is ' + T('+1') + ', not ' + T('-1') + '. Flipped but the sign never changed: <b>neither</b>.'] },
+  hv: { label: T('0') + ' and undefined', m1: '0', m2: '\\text{undefined}', eq: '0\\ne\\text{undefined}', prod: '0\\times\\text{undefined}:\\ \\text{can’t multiply}', L: [{ m: 0, b: 1.5 }, { x: 1.5 }], v: 'perp',
+    caps: ['Not equal, so not parallel.', 'They can’t be multiplied, but slope 0 is horizontal and undefined is vertical: the special case, <b>perpendicular</b>.'] }
+};
+const classify = {
+  title: 'Parallel, perpendicular, or neither?',
+  height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(CL).map((k) => ({ v: k, label: CL[k].label })),
+  intro: 'Follow the flowchart with two slopes. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = CL[k], FW = ex.W - 400;
+    const P = panel(stage, 14, 14, 366, 222, 'The two slopes', 'u6l3-sm');
+    const G = sqG(stage, 30, 244, { xmin: -6, xmax: 6, ymin: -4, ymax: 4 }, 25, { numbers: false });
+    const c1 = FW * 0.33, c2 = FW - 112;
+    const F = new Flowchart(stage, { x: 392, y: 14, width: FW, height: 452,
+      nodes: {
+        start: { x: c1, y: 44, w: 290, h: 58, html: `<b>Two slopes</b>${T('m_1')} and ${T('m_2')}`, cls: 'bk-round' },
+        eq: { x: c1, y: 160, w: 290, h: 64, html: '<b>Equal?</b>simplify first', color: 'blue' },
+        par: { x: c2, y: 160, w: 200, h: 64, html: '<b>Parallel</b>', color: 'teal' },
+        prod: { x: c1, y: 284, w: 290, h: 64, html: `<b>Product ${T('=-1')}?</b>`, color: 'blue' },
+        perp: { x: c2, y: 284, w: 200, h: 78, html: '<b>Perpendicular</b><span class="u6l3-fsm">or one 0, one undefined</span>', color: 'red' },
+        nei: { x: c1, y: 402, w: 290, h: 58, html: '<b>Neither</b>', color: 'slate' }
+      },
+      edges: [{ from: 'start', to: 'eq' }, { from: 'eq', to: 'par', label: 'yes' }, { from: 'eq', to: 'prod', label: 'no' }, { from: 'prod', to: 'perp', label: 'yes' }, { from: 'prod', to: 'nei', label: 'no' }] });
+    const lines = d.L.map((L, i) => { const el = G.line(L.x != null ? { x: L.x } : { m: L.m, b: L.b }, { color: i ? RED : BLUE, width: 3.5 }); hid(el); return el; });
+    const steps = [
+      { cap: `Start with ${T(`m_1=${d.m1}`)} and ${T(`m_2=${d.m2}`)}.`,
+        run: async (c) => { await F.visit(c, 'start'); await show(c, line(P, `${T(`m_1=${d.m1}`)}, &nbsp; ${T(`m_2=${d.m2}`)}`, 'u6l3-mline')); } },
+      { cap: d.caps[0],
+        run: async (c) => { await F.go(c, 'start', 'eq'); await F.visit(c, 'eq'); await show(c, line(P, T(d.eq), d.isEq ? 'u6l3-good' : '')); } }
+    ];
+    if (d.v === 'par') {
+      steps.push({ cap: d.caps[1], run: async (c) => { await F.go(c, 'eq', 'par'); await F.visit(c, 'par'); for (const L of lines) { unhide(L); await G.drawIn(L, 600, c); } } });
+    } else {
+      steps.push({ cap: d.caps[1], run: async (c) => { await F.go(c, 'eq', 'prod'); await F.visit(c, 'prod'); await show(c, line(P, T(d.prod), d.v === 'perp' ? 'u6l3-good' : 'u6l3-hot')); } });
+      steps.push({ cap: d.v === 'perp' ? 'The lines meet at a right angle.' : 'The lines cross, but not at a right angle.',
+        run: async (c) => {
+          await F.go(c, 'prod', d.v); await F.visit(c, d.v);
+          for (const L of lines) { unhide(L); await G.drawIn(L, 600, c); }
+          if (d.v === 'perp') { const V = d.L[1].x != null ? [1.5, 1.5] : [0, 0], d1 = d.L[0].m != null ? [1, d.L[0].m] : [0, 1], d2 = d.L[1].x != null ? [0, -1] : [1, d.L[1].m]; const mk = rmark(G, V, d1, d2, 14); mk.style.opacity = 0; await appear(c, mk); }
+        } });
+    }
+    return steps;
+  }
+};
+
+/* =============================== 7. using slope to find a right angle =============================== */
+const RA = {
+  ex7: { label: 'Example 7 check', win: { xmin: -5, xmax: 3, ymin: -3, ymax: 7 }, unit: 42, pts: [['D', -3, 1, 'w'], ['E', -1, 5, 'ne'], ['F', 1, -1, 'e']] },
+  demo: { label: 'Triangle ' + T('JKL') + ': test every corner', win: { xmin: -4, xmax: 5, ymin: -3, ymax: 6 }, unit: 46, pts: [['J', -2, -1, 'sw'], ['K', 3, 1, 'e'], ['L', 0, 4, 'n']] }
+};
+const prodTex = (a, b) => `${a}\\times${b.startsWith('-') ? `\\left(${b}\\right)` : b}`;
+const rightAngle = {
+  title: 'Using slope to find a right angle',
+  height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(RA).map((k) => ({ v: k, label: RA[k].label })),
+  intro: (k) => (k === 'ex7' ? 'Is the angle at <b>D</b> a right angle? Test the two sides that meet there. Press <b>Next</b>.' : 'Is triangle <b>JKL</b> right-angled anywhere? Press <b>Next</b>.'),
+  make(stage, k, ex) {
+    const d = RA[k];
+    const G = sqG(stage, 14, 14, d.win, d.unit, { xlabels: 1, ylabels: 1 });
+    const P = panel(stage, G.W + 34, 14, ex.W - G.W - 48, 452, 'Slopes');
+    const V = d.pts.map(([n, x, y]) => [x, y]), N = d.pts.map((p) => p[0]);
+    const triEl = G.polyline(V, { closed: true, color: BLUE, width: 4, fill: BLUE, fillOpacity: 0.05 }); hid(triEl);
+    const pts = d.pts.map(([n, x, y, pos]) => hidPt(pt(G, n, x, y, pos)));
+    const plot = { cap: k === 'ex7' ? `Plot ${T('\\triangle DEF')}. The angle at ${T('D')} is formed by the sides ${T('DE')} and ${T('DF')}.` : `Plot ${T('\\triangle JKL')}. A right angle could be at any of the three corners.`,
+      run: async (c) => { unhide(triEl); await G.drawIn(triEl, 800, c); for (const p of pts) await showPt(c, G, p); } };
+    if (k === 'ex7') {
+      const [D, E, F] = V, sE = slopeOf(D, E), sF = slopeOf(D, F);
+      const tE = tri(G, D, E, { runLab: T('2'), riseLab: T('4') }), tF = tri(G, D, F, { runLab: T('4'), riseLab: T('-2'), runAt: 0.6 });
+      const [dx, dy] = G.toPx(...D);
+      return [plot,
+        { cap: `${T('DE')}: run 2, rise 4. ${T(`m_{DE}=${sE.all}`)}.`, run: async (c) => { await showTri(c, tE, 380); await show(c, line(P, T(`m_{DE}=${sE.all}`))); } },
+        { cap: `${T('DF')}: run 4, rise −2. ${T(`m_{DF}=${sF.all}`)}.`, run: async (c) => { await showTri(c, tF, 380); await show(c, line(P, T(`m_{DF}=${sF.all}`))); } },
+        { cap: `Turn ${T('DE')}’s slope triangle 90° clockwise about ${T('D')}: it lands right along ${T('DF')}. Rise and run swap (4 and 2), and one sign flips.`,
+          run: async (c) => {
+            const cp = tri(G, D, E, { seg: RED, runLab: false, riseLab: false, hidden: false });
+            await tween(c, 1500, (q) => cp.g.setAttribute('transform', `rotate(${90 * q} ${dx} ${dy})`));
+          } },
+        { cap: `${T(`m_{DE}\\times m_{DF}=${prodTex('2', '-\\dfrac12')}=-1`)}, so ${T('DE\\perp DF')}: ${T('\\triangle DEF')} is <b>right-angled at</b> ${T('D')}.`,
+          run: async (c) => {
+            const mk = rmark(G, D, [2, 4], [4, -2], 18); mk.style.opacity = 0; await appear(c, mk);
+            await pop(c, line(P, T(`m_{DE}\\times m_{DF}=${prodTex('2', '-\\dfrac12')}=-1`), 'u6l3-rulebox'));
+            const s = stamp(stage, 'right angle at D ✓', { ok: true, x: G.W / 2 + 14, y: 44 }); await stampIn(c, s);
+          } }
+      ];
+    }
+    const [J, K, L] = V, sJK = slopeOf(J, K), sJL = slopeOf(J, L), sKL = slopeOf(K, L);
+    return [plot,
+      { cap: `The three slopes: ${T(`m_{JK}=${sJK.val}`)}, ${T(`m_{JL}=${sJL.val}`)}, ${T(`m_{KL}=${sKL.val}`)}.`,
+        run: async (c) => { for (const [n, s] of [['JK', sJK], ['JL', sJL], ['KL', sKL]]) await show(c, line(P, T(`m_{${n}}=${s.all}`), 'u6l3-mline')); } },
+      { cap: `At ${T('J')}: ${T(`${prodTex(sJK.val, sJL.val)}=1`)}. Reciprocals, but the sign did not flip: <b>not</b> a right angle.`,
+        run: async (c) => { await pulse(c, pts[0].label, 1.3); await show(c, line(P, `at ${T('J')}: ${T(`${prodTex(sJK.val, sJL.val)}=1`)}`, 'u6l3-hot')); } },
+      { cap: `At ${T('K')}: ${T(`${prodTex(sJK.val, sKL.val)}=-\\dfrac25`)}. At ${T('L')}: ${T(`${prodTex(sJL.val, sKL.val)}=-\\dfrac52`)}. Neither is ${T('-1')}.`,
+        run: async (c) => { await show(c, line(P, `at ${T('K')}: ${T(`${prodTex(sJK.val, sKL.val)}=-\\dfrac25`)}`, 'u6l3-hot')); await show(c, line(P, `at ${T('L')}: ${T(`${prodTex(sJL.val, sKL.val)}=-\\dfrac52`)}`, 'u6l3-hot')); } },
+      { cap: `No pair of sides has a product of ${T('-1')}, so ${T('\\triangle JKL')} has <b>no right angle</b>. Testing every corner is the only way to be sure.`,
+        run: async (c) => { const s = stamp(stage, 'no right angle', { ok: false, x: G.W / 2 + 14, y: 44 }); await stampIn(c, s); } }
+    ];
+  }
+};
+
+/* =============================== 8. solving for an unknown slope: turn the k-line =============================== */
+const KD = {
+  a: { label: 'Example 8(a) check: parallel', to: -7.5, v: 'par',
+    alg: ['\\dfrac{k}{9}=-\\dfrac{5}{6}', 'k=9\\times\\left(-\\dfrac{5}{6}\\right)=-\\dfrac{45}{6}', 'k=-\\dfrac{15}{2}\\ (=-7.5)'] },
+  b: { label: 'Example 8(b) check: perpendicular', to: 10.8, v: 'perp',
+    alg: ['-\\dfrac{5}{6}\\times\\dfrac{k}{9}=-1', '-\\dfrac{5k}{54}=-1\\ \\Rightarrow\\ 5k=54', 'k=\\dfrac{54}{5}\\ (=10.8)'] }
+};
+const dialK = {
+  title: 'Turn the dial: find k',
+  height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(KD).map((k) => ({ v: k, label: KD[k].label })),
+  intro: `One line has slope ${T('-\\tfrac56')}. The other has run 9 and rise <b>k</b>. Change k until the lines are right. Press <b>Next</b>.`,
+  make(stage, k, ex) {
+    const d = KD[k];
+    const G = sqG(stage, 14, 14, { xmin: -10, xmax: 10, ymin: -10, ymax: 10 }, 21.5, { xlabels: 2, ylabels: 2 });
+    const P = panel(stage, G.W + 34, 14, ex.W - G.W - 48, 462, 'Find ' + T('k'));
+    const fix = (x) => 3 - (5 / 6) * x, S = [-8, -2], st = { k: 3 };
+    const L1 = G.fn(fix, { color: BLUE, width: 3.5 }); hid(L1);
+    const t1 = tri(G, [-6, 8], [0, 3], { runLab: T('6'), riseLab: T('-5') });
+    const L2 = G.curve(() => { const m = st.k / 9, a = [-10, S[1] + m * (-10 - S[0])], b = [10, S[1] + m * (10 - S[0])]; return { subs: [[G.toPx(...a), G.toPx(...b)]] }; }, { color: RED, width: 3.5 }, 'u6l3-kline', G.layers.data); hid(L2);
+    const g2 = svgEl('g', {}, G.layers.data); hid(g2);
+    const run2 = pth(g2, [G.toPx(...S), G.toPx(1, S[1])], AMB), rise2 = svgEl('path', { class: 'bk-stroke', fill: 'none', stroke: PUR, 'stroke-width': 5, 'stroke-linecap': 'round' }, g2);
+    const fill2 = svgEl('path', { fill: PUR, 'fill-opacity': 0.09 }, g2);
+    const lr = G.label(-3.5, S[1], T('9'), { pos: 's', cls: 'bk-ptlab u6l3-runlab', gap: 6 }); hid(lr);
+    const lk = G.label(1, S[1], T('k'), { pos: 'e', cls: 'bk-ptlab u6l3-riselab', gap: 8 }); hid(lk);
+    const drawK = () => {
+      const q = [1, S[1] + st.k]; L2._bkDraw();
+      rise2.setAttribute('d', dOf([G.toPx(1, S[1]), G.toPx(...q)])); fill2.setAttribute('d', dOf([G.toPx(...S), G.toPx(1, S[1]), G.toPx(...q)]) + 'Z');
+      lk.gy = S[1] + st.k / 2; lk._bkDraw();
+    };
+    drawK();
+    const fmtK = (v) => (Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(1)).replace('-', '−');
+    const ro = h('div', 'u6l3-kro'); P.appendChild(ro); hid(ro);
+    const setRo = (exact) => { ro.innerHTML = `<div>${T('k')} = <b>${exact ? fmtK(st.k) : fmtK(Math.round(st.k * 10) / 10)}</b></div><div class="u6l3-muted">slope ${T('\\dfrac{k}{9}')} ≈ ${(st.k / 9).toFixed(2).replace('-', '−')}</div>`; };
+    const X = meet([0, 3], [6, -2], S, [1, S[1] + d.to]);
+    return [
+      { cap: `The blue line has slope ${T('-\\dfrac56')}: run 6, rise ${T('-5')}.`,
+        run: async (c) => { unhide(L1); await G.drawIn(L1, 700, c); await showTri(c, t1, 380); await show(c, line(P, `${T('m_1=-\\dfrac56')}, &nbsp; ${T('m_2=\\dfrac{k}{9}')}`, 'u6l3-mline')); } },
+      { cap: `The red line’s slope triangle has run ${T('9')} and rise ${T('k')}, so its slope is ${T('\\dfrac{k}{9}')}. Try ${T('k=3')}: slope ${T('\\tfrac13')}.`,
+        run: async (c) => { unhide(L2); await G.drawIn(L2, 700, c); unhide(g2); await appear(c, g2); unhide(lr); unhide(lk); await fadeIn(c, lr); await fadeIn(c, lk); setRo(true); unhide(ro); await show(c, ro); } },
+      { cap: d.v === 'par' ? `Turn the dial down: the red line swings round until it runs <b>parallel</b> to the blue one, at ${T('k=-7.5')}.` : `Turn the dial up: the red line swings round until it crosses the blue one at a <b>right angle</b>, at ${T('k=10.8')}.`,
+        run: async (c) => {
+          const k0 = st.k;
+          await tween(c, 2200, (q) => { st.k = k0 + (d.to - k0) * q; drawK(); setRo(false); });
+          st.k = d.to; drawK(); setRo(true);
+          if (d.v === 'perp') { const mk = rmark(G, X, [6, -5], [9, d.to], 15); mk.style.opacity = 0; await appear(c, mk); }
+          const s = stamp(stage, d.v === 'par' ? 'parallel' : 'perpendicular', { ok: true, x: G.W / 2 + 14, y: 40 }); await stampIn(c, s);
+        } },
+      { cap: d.v === 'par' ? `Algebra: parallel means <b>equal slopes</b>, so ${T('\\dfrac{k}{9}=-\\dfrac56')}. Multiply both sides by 9: ${T('k=-\\dfrac{15}{2}')}.` : `Algebra: perpendicular means the <b>product is</b> ${T('-1')}: ${T('-\\dfrac56\\times\\dfrac{k}{9}=-1')}, so ${T('k=\\dfrac{54}{5}')}. (Or: the negative reciprocal is ${T('\\dfrac65')}, and ${T('\\dfrac{k}{9}=\\dfrac65')}.)`,
+        run: async (c) => { for (let i = 0; i < d.alg.length; i++) await show(c, line(P, T(d.alg[i]), i === d.alg.length - 1 ? 'u6l3-big u6l3-ans' : 'u6l3-mline')); } }
+    ];
   }
 };
 
 /* =============================== mount =============================== */
-mountRamps();
+mountOrchard();
 mountFigures();
-export const explainers = mountExplainers({ count, slide, zeroCase, leftRight, dial, order, roof, rate, stepOff, missing });
-export const _test = { CNT, SL, ZC, ORD, RF, RATE, SO, MS, red, fr };
+export const explainers = mountExplainers({ liftOff, sameOrder, collinear, missing, translate, rotate, negRecip, classify, rightAngle, dialK });
+export const _test = { LIFT, COL, MISS, TRANS, ROT, NR, CL, RA, KD, frac, slopeOf };
+
+/* ---------- Math History box: Recorde's equals sign (1557) ----------
+ * "is equalle to" → two long twin lines → today's short "=" → tilted onto a grid (rise 4, run 8: both slopes 1/2). */
+(function recordeEquals() {
+  const svg = document.getElementById('u6l3-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  const lerp = (a, b, u) => a + (b - a) * u;
+  // grid: 24 px per unit, origin at (204, 250)
+  const U = 24, OX = 204, OY = 250, P = (x, y) => [OX + x * U, OY - y * U];
+  const grid = mk('g', { class: 'u6l4h-grid' });
+  for (let i = -1; i <= 9; i++) mk('line', { x1: OX + i * U, x2: OX + i * U, y1: OY + U, y2: OY - 8 * U }, grid);
+  for (let j = -1; j <= 8; j++) mk('line', { x1: OX - U, x2: OX + 9 * U, y1: OY - j * U, y2: OY - j * U }, grid);
+  // header
+  txt('The Whetstone of Witte', { x: 40, y: 32, class: 'u6l4h-cap' });
+  txt('1557', { x: 40, y: 62, class: 'u6l4h-year' });
+  const note = txt('', { x: 562, y: 36, 'text-anchor': 'end', class: 'u6l4h-note' });
+  // rise/run triangles (top line: up then across; bottom line: across then up, so their labels never cross the other line)
+  const [b0, b1, t0p, t1p] = [P(0, 0), P(8, 4), P(0, 3), P(8, 7)];
+  const triT = mk('g', { class: 'u6l4h-tri' }), triB = mk('g', { class: 'u6l4h-tri' });
+  mk('path', { d: `M${t0p[0]} ${t0p[1]} V${t1p[1]} H${t1p[0]}`, class: 'u6l4h-leg' }, triT);
+  txt('rise 4', { x: t0p[0] - 8, y: (t0p[1] + t1p[1]) / 2 + 5, 'text-anchor': 'end', class: 'u6l4h-lab' }, triT);
+  txt('run 8', { x: (t0p[0] + t1p[0]) / 2, y: t1p[1] - 9, 'text-anchor': 'middle', class: 'u6l4h-lab' }, triT);
+  mk('path', { d: `M${b0[0]} ${b0[1]} H${b1[0]} V${b1[1]}`, class: 'u6l4h-leg' }, triB);
+  txt('run 8', { x: (b0[0] + b1[0]) / 2, y: b0[1] + 19, 'text-anchor': 'middle', class: 'u6l4h-lab' }, triB);
+  txt('rise 4', { x: b1[0] + 8, y: (b0[1] + b1[1]) / 2 + 5, class: 'u6l4h-lab' }, triB);
+  const slT = txt('m = 4/8 = 1/2', { x: t1p[0] + 14, y: t1p[1] + 18, class: 'u6l4h-slope' });
+  const slB = txt('m = 4/8 = 1/2', { x: b1[0] + 14, y: b1[1] + 4, class: 'u6l4h-slope' });
+  // the equation and the two lines
+  const eqL = txt('14x + 15', { x: 180, y: 160, 'text-anchor': 'end', class: 'u6l4h-eq' });
+  const eqR = txt('71', { x: 420, y: 160, class: 'u6l4h-eq' });
+  const words = txt('is equalle to', { x: 300, y: 158, 'text-anchor': 'middle', class: 'u6l4h-words' });
+  const lnT = mk('line', { class: 'u6l4h-ln' }), lnB = mk('line', { class: 'u6l4h-ln' });
+  // key shapes: [x1, y1, x2, y2] for the top line and the bottom line
+  const LONG = [[190, 140, 410, 140], [190, 162, 410, 162]];
+  const DOT = [[300, 140, 300, 140], [300, 162, 300, 162]];
+  const TILT = [[...t0p, ...t1p], [...b0, ...b1]];
+  const SHORT = [[278, 143, 322, 143], [278, 159, 322, 159]];
+  const mix = (A, B, u) => A.map((r, i) => r.map((v, j) => lerp(v, B[i][j], u)));
+  const setLn = (S) => [lnT, lnB].forEach((l, i) => { l.setAttribute('x1', S[i][0]); l.setAttribute('y1', S[i][1]); l.setAttribute('x2', S[i][2]); l.setAttribute('y2', S[i][3]); });
+  const op = (el, v) => { el.style.opacity = v; };
+  const END = 10400;
+  function draw(t) {
+    const w = (a, b) => ease((t - a) / (b - a));
+    // lines: draw in (1900–2900), shrink to today's "=" (3600–5000), grow and tilt onto the grid (6000–7600)
+    let S = mix(DOT, LONG, w(1900, 2900));
+    if (t >= 3600) S = mix(LONG, SHORT, w(3600, 5000));
+    if (t >= 6000) S = mix(SHORT, TILT, w(6000, 7600));
+    setLn(S); [lnT, lnB].forEach((l) => l.classList.toggle('u6l4h-gold', t >= 5000 && t < 6000));
+    op(lnT, t >= 1900 ? 1 : 0); op(lnB, t >= 1900 ? 1 : 0);
+    op(words, 1 - w(1200, 1800));
+    // the equation hugs the sign as it shrinks, then fades while the sign goes onto the grid
+    const sh = w(3600, 5000);
+    eqL.setAttribute('x', lerp(180, 264, sh)); eqR.setAttribute('x', lerp(420, 336, sh));
+    const eqOp = 1 - w(5900, 6300); op(eqL, eqOp); op(eqR, eqOp);
+    op(grid, w(6000, 6600));
+    op(triT, w(7800, 8300)); op(triB, w(8200, 8700)); op(slT, w(8800, 9200)); op(slB, w(9000, 9400));
+    note.textContent = t < 1200 ? 'in words' : t < 3600 ? 'twin lines of one length' : t < 6000 ? (t < 5000 ? '' : 'today’s =') : t < 7800 ? 'tilt the sign onto a grid' : 'equal slopes: parallel';
+  }
+  let st = 0, raf = 0;
+  function frame(now) { if (!st) st = now; const t = Math.min(END, now - st); draw(t); if (t < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); st = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

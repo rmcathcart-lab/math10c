@@ -52,7 +52,8 @@ function drawOutline(cal, noSchool) {
     host.appendChild(h('div', 'u1l0-ev', `<b>${esc(e.title || 'Exam')}</b><span>${esc(C.nice(e.date, { weekday: 'long', month: 'long', day: 'numeric' }))}</span>`));
   });
   const note = $('u1l0-cnote');
-  if (note) note.textContent = L ? 'Unit test dates for ' + (BLOCK ? 'Block ' + BLOCK : 'our class') : '10 units · 79 lessons · a unit test after each unit';
+  const nL = CAT.reduce((n, u) => n + lessonsOf(u).length, 0) || 70;
+  if (note) note.textContent = L ? 'Unit test dates for ' + (BLOCK ? 'Block ' + BLOCK : 'our class') : (CAT.length || 10) + ' units · ' + nL + ' lessons · a unit test after each unit';
   const first = $('u1l0-first');
   if (first && L) { const d1 = L.dateOf.u1l0 || cal.start; first.innerHTML = 'Day one: <b>' + esc(C.nice(d1, { weekday: 'long', month: 'long', day: 'numeric' })) + '</b>'; }
 }
@@ -101,8 +102,6 @@ const ICONS = {
   calc: '<svg viewBox="0 0 92 92"><rect x="22" y="8" width="48" height="76" rx="7" fill="#2c3e5c"/><rect x="28" y="14" width="36" height="16" rx="2" fill="#c9d8c3"/><text x="61" y="26" font-size="8" text-anchor="end" fill="#1c2230" font-family="monospace">4.24264</text>' +
     [0, 1, 2, 3].map((r) => [0, 1, 2, 3].map((c) => `<rect x="${28 + c * 9.5}" y="${36 + r * 11}" width="7" height="8" rx="1.5" fill="${r === 3 && c === 3 ? '#e8a01e' : '#c9ccd2'}"/>`).join('')).join('') + '</svg>',
   laptop: '<svg viewBox="0 0 92 92"><rect x="16" y="20" width="60" height="40" rx="4" fill="#1c2230"/><rect x="20" y="24" width="52" height="32" rx="1.5" fill="#e3f1ef"/><rect x="25" y="29" width="22" height="5" rx="2" fill="#13807a"/><rect x="25" y="38" width="40" height="4" rx="2" fill="#b9d8d4"/><rect x="25" y="45" width="32" height="4" rx="2" fill="#b9d8d4"/><path d="M8 64h76l-6 8H14z" fill="#c9ccd2"/></svg>',
-  graph: '<svg viewBox="0 0 92 92"><rect x="24" y="4" width="44" height="84" rx="8" fill="#1c2230"/><rect x="29" y="10" width="34" height="26" rx="2" fill="#dfe8d2"/><path d="M31 32 Q40 8 48 22 T61 14" stroke="#1f5bd6" stroke-width="2" fill="none"/><path d="M29 23h34M46 10v26" stroke="#9aa69a" stroke-width="1"/>' +
-    [0, 1, 2, 3, 4].map((r) => [0, 1, 2, 3].map((c) => `<rect x="${30 + c * 8.5}" y="${42 + r * 9}" width="6.5" height="6" rx="1.5" fill="${r === 0 && c < 2 ? '#e8a01e' : '#4a5468'}"/>`).join('')).join('') + '</svg>'
 };
 document.querySelectorAll('.u1l0-ic[data-ic]').forEach((e) => { e.innerHTML = ICONS[e.dataset.ic] || ''; });
 

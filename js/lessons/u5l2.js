@@ -470,7 +470,7 @@
           var two = sh.two, ys = sh.pairs.filter(function (p) { return p[0] === two; }).map(function (p) { return p[1]; }), sharedOut = sh.outs.filter(function (y) { return sh.pairs.filter(function (p) { return p[1] === y; }).length === 2; })[0];
           var o = [
             { html: t(two) + ' has two outputs (' + t(ys[0]) + ' and ' + t(ys[1]) + '). It is still a relation: a relation is any set of ordered pairs, and nothing requires one output per input.', right: true },
-            { html: t(two) + ' has two outputs, so this is not a relation.', why: 'A relation is <b>any</b> set of ordered pairs. Having two outputs for one input is allowed (it just isn’t a <i>function</i>, which you will meet in Lesson 7).' },
+            { html: t(two) + ' has two outputs, so this is not a relation.', why: 'A relation is <b>any</b> set of ordered pairs. Having two outputs for one input is allowed (it just isn’t a <i>function</i>, which you will meet in Lesson 5).' },
             { html: t(two) + ' has two outputs, so you may write only one of the pairs ' + t(pt([two, ys[0]])) + ' or ' + t(pt([two, ys[1]])) + '.', why: 'Both pairs are in the relation, so both are written.' }];
           o.push(sharedOut != null ? { html: t(sharedOut) + ' has two arrows, so it is the input with two outputs.', why: t(sharedOut) + ' is in ' + t('Y') + ' — it is an output that two arrows point to. Look for a value in ' + t('X') + ' with two arrows <b>leaving</b> it.' }
             : { html: 'No input has two outputs; every arrow goes to a different number.', why: 'Count the arrows leaving each number in ' + t('X') + '.' });

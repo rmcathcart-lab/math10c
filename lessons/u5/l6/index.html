@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Real-World Relations · Math 10C 5.6</title>
-<meta name="description" content="Math 10C Unit 5 Lesson 6: exploring real-world relations with a graphing calculator. Linear and quadratic models: choosing a window that fits the situation, intercepts as the start and end of the story, trace for an output, intersect for an input, the vertex with maximum, a landing time with zero, symmetry, and a domain and range that make sense in context. Write on it with an Apple Pencil.">
+<title>Function Notation · Math 10C 5.6</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 6: function notation. Naming a function, reading f(x) as “f of x”, the function machine, one function as a table, arrow diagram, ordered pairs and graph, evaluating f(a) (forwards) and solving f(x) = b (backwards), plus the Extension: mapping notation and substituting expressions. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,244 +27,353 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 6</div>
-  <h1>Exploring Real-World Relations With a Graphing Calculator</h1>
-  <p class="lede">A formula from real life (a kayak losing value, a stunt performer flying through the air) graphs as a <b>line</b> or a <b>parabola</b> that goes on forever. The calculator gives the <b>math answer</b>; the situation decides which part of it <b>makes sense</b>. Today: choose a window that fits, read the intercepts, trace, intersect and the vertex, and trim the domain and range to the story.</p>
+  <h1>Function Notation</h1>
+  <p class="lede">In Lesson 5 you decided whether a relation is a function. Once we know it is, we can give it a <b>name</b>, such as <span class="tex">f</span>, and a short way to write “the output when the input is <span class="tex">x</span>”: <span class="tex">f(x)</span>. Today: reading, writing and using that notation, <b>forwards</b> (evaluate) and <b>backwards</b> (solve).</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>choose a <b>viewing window</b> (<code class="u5l6-m">Xmin</code>, <code class="u5l6-m">Xmax</code>, <code class="u5l6-m">Ymin</code>, <code class="u5l6-m">Ymax</code>) that fits the quantities in a situation</li>
-      <li>find the <b>intercepts</b> of a real-world graph and explain what each one means (usually the <b>start</b> or the <b>end</b> of the story)</li>
-      <li>use <b>trace</b> (or <code class="u5l6-m">1:value</code>) for the output at a given input, and <b>intersect</b> for the input that gives a given output</li>
-      <li>find the <b>vertex</b> of a parabola with <code class="u5l6-m">4:maximum</code>, a landing time with <code class="u5l6-m">2:zero</code>, and use the <b>axis of symmetry</b></li>
-      <li>state a <b>domain and range that make sense in context</b>, and reject math answers that don’t (negative time, negative height)</li>
+      <li>read <span class="tex">f(4)=13</span> as “<span class="tex">f</span> of 4 is 13”: the <b>name</b> is <span class="tex">f</span>, the <b>input</b> is 4, the <b>output</b> is 13 (and it is <b>not</b> <span class="tex">f</span> times 4)</li>
+      <li>connect <span class="tex">f(x)</span> with <span class="tex">y</span>: inputs on the horizontal axis, outputs on the vertical axis, and <span class="tex">f(a)=b</span> means the point <span class="tex">(a,\ b)</span> is on the graph</li>
+      <li>show a function as a table, an arrow diagram, ordered pairs and a graph, and list its range</li>
+      <li><b>evaluate</b> <span class="tex">f(a)</span> by substituting, using brackets, including an expression into a linear function</li>
+      <li><b>solve</b> <span class="tex">f(x)=b</span>: given the output, find the input</li>
+      <li><span class="u5l6-ext">Extension</span> use mapping notation, and substitute an expression into a non-linear function</li>
     </ul>
   </div>
-  <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.<br><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the intercepts, slope, domain and range.</div>
+  <div class="outcome"><b>RF8</b> Represent a linear function, using function notation.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Stopping Distance" id="wu" style="--wf-side: 320px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Stopping Distance</h2>
-  <p class="wf-rule">Two cars slam on the brakes at the same line. How far until they stop?</p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Phone Keypad" id="wu" style="--wf-side: 390px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Phone Keypad</h2>
+  <p class="wf-rule">Every letter lives on exactly <b>one</b> key. Every key holds <b>several</b> letters.</p></div>
   <div class="wf-grid"><div class="wf-main">
-  <div class="u5l6-road">
-    <svg viewBox="0 0 1000 262" aria-label="A two-lane road seen from above. Both cars brake at the same line. The blue car at 50 km/h skids 15 m. The orange car at 100 km/h stops after an unknown distance. A ruler from 0 to 70 m runs under the road.">
-      <defs>
-        <linearGradient id="u5l6-fade" x1="0" x2="1"><stop offset="0" stop-color="#1e2d46"/><stop offset="1" stop-color="#5f646e"/></linearGradient>
-        <g id="u5l6-car">
-          <rect x="-79" y="-36" width="17" height="7" fill="#1e2d46"/><rect x="-35" y="-36" width="17" height="7" fill="#1e2d46"/>
-          <rect x="-79" y="29" width="17" height="7" fill="#1e2d46"/><rect x="-35" y="29" width="17" height="7" fill="#1e2d46"/>
-          <rect x="-94" y="-31" width="94" height="62" rx="12" fill="currentColor" stroke="#1e2d46" stroke-width="2.5"/>
-          <rect x="-36" y="-24" width="16" height="48" rx="4" fill="#c9d2e0"/>
-          <rect x="-85" y="-22" width="12" height="44" rx="3" fill="#c9d2e0"/>
-          <circle cx="-6" cy="-16" r="5" fill="#ffecb3"/><circle cx="-6" cy="16" r="5" fill="#ffecb3"/>
-        </g>
-      </defs>
-      <rect x="0" y="34" width="1000" height="170" fill="#5f646e"/>
-      <path d="M0 119H1000" stroke="#fff" stroke-width="3" stroke-dasharray="18 15"/>
-      <path d="M0 35H1000M0 203H1000" stroke="#fff" stroke-width="3"/>
-      <!-- top lane: 50 km/h, skid marks 15 m (to scale: 12.6 px per metre from x = 80) -->
-      <path d="M80 62H269M80 92H269" stroke="#1e2d46" stroke-width="7" stroke-linecap="round"/>
-      <use href="#u5l6-car" x="269" y="77" style="color:#2878c8"/>
-      <text x="300" y="86" class="u5l6-rt">50 km/h</text>
-      <!-- bottom lane: 100 km/h -->
-      <g id="u5l6-skidB" style="opacity:0"><path d="M80 146H836M80 176H836" stroke="url(#u5l6-fade)" stroke-width="7" stroke-linecap="round"/></g>
-      <g id="u5l6-carB" class="u5l6-carB"><use href="#u5l6-car" x="80" y="161" style="color:#e6781e"/></g>
-      <text x="300" y="170" class="u5l6-rt">100 km/h <tspan dx="14">stops after</tspan> <tspan id="u5l6-q" class="u5l6-rq">?</tspan> m</text>
-      <!-- braking line -->
-      <path d="M80 35V203" stroke="#ffecb3" stroke-width="6"/>
-      <text x="80" y="26" text-anchor="middle" class="u5l6-rb">brakes on</text>
-      <!-- ruler: 0 to 70 m -->
-      <g stroke="#1e2d46" stroke-width="2">
-        <path d="M80 204v12M206 204v12M332 204v12M458 204v12M584 204v12M710 204v12M836 204v12M962 204v12"/>
-        <path d="M143 204v7M269 204v7M395 204v7M521 204v7M647 204v7M773 204v7M899 204v7" stroke-width="1.4"/>
-      </g>
-      <g class="u5l6-rn" text-anchor="middle">
-        <text x="80" y="240">0</text><text x="206" y="240">10</text><text x="332" y="240">20</text><text x="458" y="240">30</text>
-        <text x="584" y="240">40</text><text x="710" y="240">50</text><text x="836" y="240">60</text><text x="962" y="240">70</text>
-      </g>
-      <text x="985" y="240" class="u5l6-rn">m</text>
-    </svg>
+  <div class="u5l6-wtop">
+    <div class="u5l6-phone">
+      <div class="u5l6-scr">555-<span>TACO</span></div>
+      <div class="u5l6-pad">
+        <button type="button" class="u5l6-key" data-k="1"><b>1</b><i>&nbsp;</i></button>
+        <button type="button" class="u5l6-key" data-k="2"><b>2</b><i>ABC</i></button>
+        <button type="button" class="u5l6-key" data-k="3"><b>3</b><i>DEF</i></button>
+        <button type="button" class="u5l6-key" data-k="4"><b>4</b><i>GHI</i></button>
+        <button type="button" class="u5l6-key" data-k="5"><b>5</b><i>JKL</i></button>
+        <button type="button" class="u5l6-key" data-k="6"><b>6</b><i>MNO</i></button>
+        <button type="button" class="u5l6-key" data-k="7"><b>7</b><i>PQRS</i></button>
+        <button type="button" class="u5l6-key" data-k="8"><b>8</b><i>TUV</i></button>
+        <button type="button" class="u5l6-key" data-k="9"><b>9</b><i>WXYZ</i></button>
+        <button type="button" class="u5l6-key" data-k="*"><b>∗</b><i>&nbsp;</i></button>
+        <button type="button" class="u5l6-key" data-k="0"><b>0</b><i>&nbsp;</i></button>
+        <button type="button" class="u5l6-key" data-k="#"><b>#</b><i>&nbsp;</i></button>
+      </div>
+      <div class="u5l6-rulecap">the rule <span class="tex">K</span>: letter → key</div>
+    </div>
+    <div class="u5l6-wright">
+      <div class="u5l6-namecard">
+        <div class="u5l6-nc-h">Name the rule <span class="tex">K</span>.</div>
+        <div class="u5l6-nc-eg"><span class="tex">K(\text{A})=2</span><span class="tex">K(\text{M})=6</span><span class="tex">K(\text{S})=7</span></div>
+        <div>Read <span class="tex">K(\text{M})=6</span> as “<span class="tex">K</span> of M is 6”: put in the letter M, get out the key 6.</div>
+      </div>
+      <div class="u5l6-sign">A pizza sign says <b class="u5l6-mono">CALL 555-TACO</b>. Which digits do you actually press?</div>
+      <div class="u5l6-kctl"><button type="button" class="pill small" data-dial>Dial 555-TACO</button><button type="button" class="pill small" data-undial>Reset</button></div>
+      <div class="u5l6-kout">Tap a key to go <b>backwards</b>: which letters give that key?</div>
+    </div>
   </div>
-  <div class="u5l6-model">Braking-distance model (dry road): <span class="tex">\boldsymbol{d=0.006\,v^{2}}</span> <span class="muted">&nbsp;<span class="tex">d</span> in metres, <span class="tex">v</span> in km/h</span></div>
   <div class="u5l6-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Use the model: how far does the <b>50 km/h</b> car skid? Check the ruler. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l6-wa"><div class="bk-ans"><span class="tex">d=0.006(50)^2=0.006(2500)=15</span> m. Yes: the skid marks end at 15 m on the ruler.</div></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How far does a car skid from <b>30 km/h</b> (a school zone)? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l6-wa"><div class="bk-ans"><span class="tex">d=0.006(30)^2=0.006(900)=5.4</span> m.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Find <span class="tex">K(\text{H})</span> and <span class="tex">K(\text{Z})</span>. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans"><span class="tex">K(\text{H})=4</span> and <span class="tex">K(\text{Z})=9</span>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Dial 555-TACO: which 4 digits follow 555? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans">T, A, C, O are on keys 8, 2, 2, 6: dial <b>555-8226</b>.</div></div></div>
   </div>
   </div><div class="wf-side">
   <div class="u5l6-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Graphing <span class="tex">d=0.006v^2</span> on a graphing calculator, should <code class="u5l6-m">Xmin</code> be negative? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l6-wa"><div class="bk-ans"><b>No.</b> A speed can’t be negative, so <code class="u5l6-m">Xmin=0</code>. A sensible window: <span class="tex">x{:}\,[0,\,120,\,10]</span>, <span class="tex">y{:}\,[0,\,100,\,10]</span>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which letters make <span class="tex">K(\text{letter})=7</span>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans"><b>Four</b> answers: P, Q, R and S all give <span class="tex">K(\text{letter})=7</span>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">4</div><div>Is key → letter a function? Why or why not? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans"><b>No.</b> Key 7 is paired with four letters: one input, several outputs. Letter → key <b>is</b> a function: every letter is on exactly one key.</div></div></div>
   </div>
   <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The orange car goes <b>twice as fast</b>. About how far does it skid before it stops? <b>Guess first.</b></div></div>
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A friend texts only the keys <b>6-2-8-4</b> (one letter per key). How many different 4-letter strings could those keys spell? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
-      <div class="opt"><b>A</b> about 30 m</div>
-      <div class="opt"><b>B</b> about 40 m</div>
-      <div class="opt right"><b>C</b> about 60 m</div>
-      <div class="opt"><b>D</b> about 100 m</div>
+      <div class="opt"><b>A</b> 4</div>
+      <div class="opt"><b>B</b> 12</div>
+      <div class="opt right"><b>C</b> 81</div>
+      <div class="opt"><b>D</b> 256</div>
     </div>
-    <button class="pill" type="button" data-poll-reveal id="u5l6-pollbtn">Reveal</button>
-    <div class="poll-ans"><b>C: about 60 m.</b> <span class="tex">d=0.006(100)^2=0.006(10\,000)=60</span> m, which is <b>4 times</b> the 15 m at 50 km/h. Why: the speed is <b>squared</b>. Doubling <span class="tex">v</span> multiplies <span class="tex">v^2</span> by <span class="tex">2^2=4</span>.<br>
-      <span class="muted"><b>A</b> (30 m) is the “double the speed, double the distance” trap: it treats the relation as a straight line. <b>B</b> is a “bit more than double” hedge. <b>D</b> overshoots, usually from “100 km/h means 100 m”.</span><br>
-      <span class="muted">A simplified dry-road model: real braking distances depend on the car, tires and road, but they do grow roughly with the square of the speed. Total stopping distance also adds the reaction distance before the brakes go on.</span></div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: 81.</b> Key 6 has 3 letters (MNO), key 2 has 3 (ABC), key 8 has 3 (TUV) and key 4 has 3 (GHI), so there are <span class="tex">3\times3\times3\times3=81</span> strings. Only one of them is <b>MATH</b>.<br>
+      <span class="muted"><b>A</b> (4) thinks each key means one letter. <b>B</b> (12) adds <span class="tex">3+3+3+3</span> instead of multiplying. <b>D</b> (256) uses <span class="tex">4^4</span>, as if every key had 4 letters (only 7 and 9 do).</span><br>
+      <b>Today’s lesson:</b> letter → key is a function, so we name it <span class="tex">K</span> and write <span class="tex">K(\text{H})=4</span>. Finding <span class="tex">K(\text{H})</span> is <b>evaluating</b>; finding the letters with <span class="tex">K(\text{letter})=7</span> is <b>solving</b>: we know the output and want the input.</div>
   </div>
   </div></div>
 
-  <div class="explainer" data-explainer="braking"></div>
-
   <div class="bk-wq" style="margin-top:14px">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> What speed gives a braking distance of <b>24 m</b>?</div></div>
-    <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">0.006v^2=24\Rightarrow v^2=4000\Rightarrow v\approx63</span> km/h.</div>
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Find <span class="tex">K(\text{J})+K(\text{O})+K(\text{Y})</span>. Which letters <span class="tex">x</span> make <span class="tex">K(x)=9</span>?</div></div>
+    <div class="u5l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5+6+9=20</span>. <span class="tex">K(x)=9</span> for <b>W, X, Y and Z</b>.</div></div>
   </div>
-  <p class="u5l6-social">Hands up for A, B, C or D. Then find someone who voted differently and convince them.</p>
+  <p class="u5l6-social">Spell your first name as keypad digits. Can your neighbour decode it?</p>
 </section>
 
-<!-- ================= 1. Setting a useful window ================= -->
-<section class="card" data-ink="s1" data-section="1. Setting a Useful Window">
-  <div class="sec-h"><span class="badge">1</span><h2>Setting a Useful Window</h2></div>
-  <div class="u5l6-gcnote">
-    <div class="u5l6-gcic"><svg viewBox="0 0 32 44"><rect x="3" y="2" width="26" height="40" rx="5"/><rect x="7" y="6" width="18" height="13" rx="1.5" class="scr"/><path d="M9 16q4-9 7-2t7-5" class="cv"/><path d="M8 25h4M14 25h4M20 25h4M8 30h4M14 30h4M20 30h4M8 35h4M14 35h4M20 35h4"/></svg></div>
-    <div><b>Today’s keystrokes are for the graphing calculator (TI-83/84).</b> The keys look like <kbd class="u5l6-k t">Y=</kbd> <kbd class="u5l6-k t">WINDOW</kbd> <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd>, and the screens on this page are drawn like its screen. Your TI-30XIIS can’t graph, but it can still <b>check</b> any answer by substitution (the grey “Show me” tips).</div>
+<!-- ================= 1. Function notation ================= -->
+<section class="card" data-ink="s1" data-section="1. Function Notation">
+  <div class="sec-h"><span class="badge">1</span><h2>Function Notation</h2></div>
+  <p>For the function <span class="tex">f(x)=3x+1</span>, the output when the input is 4 is</p>
+  <div class="u5l6-disp"><span class="tex display">f(4)=3(4)+1=13</span></div>
+  <div class="def">We say the <b>image</b> of 4 under <span class="tex">f</span> is 13, or that the <b>value of the function</b> is 13 when <span class="tex">x=4</span>. The symbol <span class="tex">f(x)</span> is read “<b><span class="tex">f</span> of <span class="tex">x</span></b>”: an input <span class="tex">x</span> enters the function machine <span class="tex">f</span>, and the output is labelled <span class="tex">f(x)</span>.</div>
+  <div class="u5l6-fm" aria-label="Function machine: input x, arrow labelled f, output f of x">
+    <div class="u5l6-fm-o"><span class="tex">x</span><small>input</small></div>
+    <div class="u5l6-fm-a"><div class="u5l6-fm-lab">“<span class="tex">f</span>”</div></div>
+    <div class="u5l6-fm-o wide"><span class="tex">f(x)</span><small>output</small></div>
   </div>
-  <p>The <b>viewing window</b> is the visible span along each axis, set by <code class="u5l6-m">Xmin</code>, <code class="u5l6-m">Xmax</code>, <code class="u5l6-m">Ymin</code> and <code class="u5l6-m">Ymax</code>. Adjust it until the part of the graph that matters for the situation is on screen. A <code class="u5l6-m">ZoomFit</code>-style feature (<kbd class="u5l6-k t">ZOOM</kbd> <kbd class="u5l6-k n">0</kbd>) can suggest a starting window, but nudge it so the bounds suit the quantities involved: if the input is time in seconds, a negative <code class="u5l6-m">Xmin</code> rarely makes sense.</p>
-  <div class="def">A window is written <span class="tex">x{:}\,[\text{Xmin},\,\text{Xmax},\,\text{Xscl}]</span>, <span class="tex">y{:}\,[\text{Ymin},\,\text{Ymax},\,\text{Yscl}]</span>; <code class="u5l6-m">Xscl</code> and <code class="u5l6-m">Yscl</code> are the spacing of the tick marks. In context, start each axis at <b>0</b> unless the quantity can really be negative, and stop a little past the biggest value that matters.</div>
-  <div class="tip u5l6-gtip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="1.5" width="14" height="21" rx="2.5"/><rect x="7.5" y="4" width="9" height="6" rx="1"/><path d="M8.5 9q2-4 3.5-1t3.5-2"/></svg></div>
-    <div><b>Graphing calculator.</b> <kbd class="u5l6-k t">Y=</kbd> type the rule (the input is always <code class="u5l6-m">X</code>) · <kbd class="u5l6-k t">ZOOM</kbd> <kbd class="u5l6-k n">6</kbd> standard window <span class="tex">x{:}\,[-10,10,1]</span>, <span class="tex">y{:}\,[-10,10,1]</span> · <kbd class="u5l6-k t">ZOOM</kbd> <kbd class="u5l6-k n">0</kbd> ZoomFit · <kbd class="u5l6-k t">WINDOW</kbd> type your own values, then <kbd class="u5l6-k t">GRAPH</kbd>.</div>
-  </div>
-  <div class="explainer" data-explainer="window"></div>
+  <div class="explainer" data-explainer="machine"></div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Intercepts in context">
-  <h3 class="sub">Intercepts: the start and the end of the story</h3>
-  <p>Locate the <b>intercepts</b>, where the graph crosses each axis, right away. For a relation with input <span class="tex">t</span> and output <span class="tex">y</span>, the <b><span class="tex">t</span>-intercept</b> occurs where <span class="tex">y=0</span> and the <b><span class="tex">y</span>-intercept</b> occurs where <span class="tex">t=0</span>. In context these are renamed to match the variables in the problem (a <span class="tex">V</span>-intercept, an <span class="tex">h</span>-intercept), and each usually represents the <b>starting point</b> or the <b>ending point</b> of the scenario.</p>
-  <div class="u5l6-sbs">
-    <div><div class="u5l6-sbh">On the output axis</div>the <b>input is 0</b>: substitute <span class="tex">t=0</span><div class="muted">usually the <b>start</b>: the value when new, the launch height</div></div>
-    <div><div class="u5l6-sbh">On the input axis</div>the <b>output is 0</b>: substitute <span class="tex">V=0</span> and solve<div class="muted">often the <b>end</b>: worth $0, landing on the ground</div></div>
+<section class="card" data-ink="s1b" data-section="1. Two ways to write it">
+  <h3 class="sub">The same information, written two ways</h3>
+  <div class="u5l6-2way">
+    <div class="hd">function notation</div><div class="hd">equation of the graph</div><div class="hd"></div>
+    <div><span class="tex">f(x)=3x+1</span></div><div><span class="tex">y=3x+1</span></div><div></div>
+    <div><span class="tex">f(4)=3(4)+1</span></div><div><span class="tex">y=3(4)+1</span></div><div></div>
+    <div><span class="tex">f(4)=13</span></div><div><span class="tex">y=13</span></div><div class="note">the point <span class="tex">(4,\ 13)</span> is on the graph</div>
   </div>
-  <div class="explainer" data-explainer="intercepts"></div>
+  <div class="def">The symbol <span class="tex">f(x)</span> does <b>double duty</b>: it is a <b>formula</b> for the function <span class="tex">f</span>, and it also represents the <b>output value</b> of the function for a particular input <span class="tex">x</span>.</div>
+  <div class="explainer" data-explainer="anatomy"></div>
 </section>
 
-<section class="card" data-ink="s1c" data-section="1. Trace and intersect">
-  <h3 class="sub">Given the input, or given the output?</h3>
-  <p>The calculator tools are the ones from Lesson 5. <b>Trace</b> (or <code class="u5l6-m">1:value</code>, or the table) reads the <b>output at a given input</b>. Use <b>intersect</b> (with <span class="tex">Y_2</span> set to the target value) for a <b>given output</b>: it answers “<b>when</b> does the quantity reach this value?”</p>
-  <div class="u5l6-sbs">
-    <div><div class="u5l6-sbh">Forwards: input → output</div><kbd class="u5l6-k t">TRACE</kbd>, type the input, <kbd class="u5l6-k">ENTER</kbd><div class="muted">or <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd> <code class="u5l6-m">1:value</code></div></div>
-    <div><div class="u5l6-sbh">Backwards: output → input</div><kbd class="u5l6-k t">Y=</kbd> <span class="tex">Y_2=</span> the target, then <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd> <code class="u5l6-m">5:intersect</code><div class="muted"><code class="u5l6-m">First curve?</code> <kbd class="u5l6-k">ENTER</kbd> <code class="u5l6-m">Second curve?</code> <kbd class="u5l6-k">ENTER</kbd> <code class="u5l6-m">Guess?</code> <kbd class="u5l6-k">ENTER</kbd></div></div>
-  </div>
-  <div class="explainer" data-explainer="traceInt"></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>No graphing calculator? Check by substituting (TI-30XIIS).</b> The kayak after 4 years: <span class="keys"><kbd>3</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>−</kbd><kbd>2</kbd><kbd>0</kbd><kbd>0</kbd><kbd>×</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 2200. Check the intersect answer the same way: <span class="tex">t=7.5</span> should give 1500.</div>
-    <div class="pill-col"><button class="pill" data-keys="3000 − 200 × 4 =">Show t = 4</button><button class="pill" data-keys="3000 − 200 × 7.5 =">Show t = 7.5</button></div>
+<section class="card" data-ink="s1c" data-section="1. Key facts">
+  <h3 class="sub">Key facts about function notation</h3>
+  <ul class="u5l6-facts">
+    <li><span class="tex">f(x)</span> does <b>not</b> mean “<span class="tex">f</span> times <span class="tex">x</span>”: the parentheses indicate an <b>input</b>, not multiplication.</li>
+    <li>The letter in front of the parentheses (here, <span class="tex">f</span>) is simply the <b>name</b> of the function; other common names are <span class="tex">g</span>, <span class="tex">h</span>, <span class="tex">P</span>, and so on.</li>
+    <li><b>Inputs</b> (values of the independent variable, usually <span class="tex">x</span>) are plotted on the <b>horizontal</b> axis.</li>
+    <li><b>Outputs</b> (values of the dependent variable, usually <span class="tex">y</span> or <span class="tex">f(x)</span>) are plotted on the <b>vertical</b> axis.</li>
+  </ul>
+  <p class="u5l6-fliph">Quick check: tap a card to flip it.</p>
+  <div class="bk-flips" style="--bk-cols:4">
+    <div class="bk-flip"><div class="bk-front">Does <span class="tex">g(5)</span> mean <span class="tex">g\times5</span>?</div><div class="bk-back"><b>No.</b> It is the output of <span class="tex">g</span> when the input is 5.</div></div>
+    <div class="bk-flip"><div class="bk-front">In <span class="tex">h(t)=2t+7</span>, what is the <b>name</b>? The <b>input variable</b>?</div><div class="bk-back">Name <span class="tex">h</span>; input variable <span class="tex">t</span>.</div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">f(2)=9</span>. Which point is on the graph of <span class="tex">f</span>?</div><div class="bk-back"><span class="tex">(2,\ 9)</span>: input on the horizontal axis, output on the vertical.</div></div>
+    <div class="bk-flip"><div class="bk-front">Is <span class="tex">f(x)</span> the independent or the dependent variable?</div><div class="bk-back"><b>Dependent</b>: the output depends on the input <span class="tex">x</span>.</div></div>
   </div>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. Domain and range in context">
-  <h3 class="sub">The math answer vs the answer that makes sense</h3>
-  <p>An equation doesn’t know what it describes. <span class="tex">V=3000-200t</span> graphs as a whole line, for every real <span class="tex">t</span>: that is the <b>math answer</b>. The situation only uses a piece of it, from the <b>start</b> of the story to its <b>end</b>. That piece decides a <b>domain and range that make sense</b>.</p>
-  <div class="u5l6-mvc">
-    <div class="u5l6-mvch">Math answer</div><div class="u5l6-mvch ok">Makes sense in context</div>
-    <div>the whole line: <span class="tex">t</span> can be any real number, even <span class="tex">-3</span> or <span class="tex">40</span></div>
-    <div>only from <b>purchase</b> (<span class="tex">t=0</span>) to <b>worth $0</b> (<span class="tex">t=15</span>): no negative ages, no negative values</div>
+<!-- sources: https://mathshistory.st-andrews.ac.uk/Miller/mathsym/functions (f(x) first used by Euler in 1734, Commentarii Academiae Scientiarum Petropolitanae; Cajori)
+     https://archive.blogs.harvard.edu/pamphlet/2015/09/28/whence-function-notation/ ("Additamentum ad Dissertationem de Infinitis Curvis Eiusdem Generis", sec. 7: "si f(x/a + c) denotet functionem quamcunque ipsius x/a + c"; proposed 1734, printed 1740, vol. VII for 1734-35)
+     https://mathshistory.st-andrews.ac.uk/HistTopics/Functions/ (Leibniz uses the word "function" in August 1673: lines that "perform some function" in a figure) -->
+<!-- ================= Math History box (brown) ================= -->
+<section class="card history" data-ink="hist" data-section="Math History: Euler's f(x)">
+  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">1673 · 1734</span></div>
+  <div class="hist-grid">
+    <div class="hist-text">
+      <h3 class="hist-title">Who first wrote <i>f</i>(<i>x</i>)?</h3>
+      <p>In <b>1673</b> the German mathematician Gottfried <b>Leibniz</b> began using the word <b>“function”</b> for lines that do a job in a drawing of a curve. He had no short way to write one.</p>
+      <p>In <b>1734</b> the Swiss mathematician Leonhard <b>Euler</b> (say “OY-ler”) wrote <span class="tex">\color{#7b4fc4}f\color{#3d2817}\left(\color{#1f5bd6}\tfrac{x}{a}+c\color{#3d2817}\right)</span> for “a function of <span class="tex">\tfrac{x}{a}+c</span>”: <b class="u5l7bh-n">f</b> for <b class="u5l7bh-n">f</b>unction, the <b class="u5l7bh-i">input</b> in brackets. It is the notation you write today.</p>
+      <div class="part hist-q"><div class="pl">Euler’s input was an expression. Let <span class="tex">f(x)=3x+1</span>, <span class="tex">a=2</span> and <span class="tex">c=1</span>. What is <span class="tex">f\left(\tfrac{x}{a}+c\right)</span> when <span class="tex">x=8</span>?</div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The input is <span class="tex">\tfrac{8}{2}+1=5</span>, so the output is <span class="tex">f(5)=3(5)+1=\boldsymbol{16}</span>.</div></div></div>
+    </div>
+    <figure class="hist-anim">
+      <svg id="u5l6-hist" viewBox="0 0 600 300" role="img" aria-label="A function machine. In 1673 it is only called a function. In 1734 Euler names it f: the input x over a plus c goes in and f of x over a plus c comes out. Today the input 4 goes into f of x equals 3x plus 1 and f of 4 equals 13 comes out."></svg>
+      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
+      <p class="hist-note">Euler’s paper was written in 1734 and printed in 1740 by the Academy of Sciences in St. Petersburg, Russia, where he worked.</p>
+    </figure>
   </div>
-  <div class="explainer" data-explainer="context"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Dots or a line?</b> Age and value change <b>continuously</b> (any decimal makes sense), so the graph is a solid segment and we write <span class="tex">t\in\mathbb{R}</span>. If the input could only be whole numbers (jerseys, tickets), the graph would be <b>separate dots</b>.</div></div>
+</section>
+
+<!-- ================= 2. Several representations ================= -->
+<section class="card" data-ink="s2" data-section="2. Several Representations">
+  <div class="sec-h"><span class="badge">2</span><h2>One Function, Several Representations</h2></div>
+  <p>A function with a small domain can be shown as a table of values, an arrow diagram, a set of ordered pairs or a graph. Every one of them pairs each input with exactly <b>one</b> output, and the outputs together form the <b>range</b>.</p>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>A depreciating value: intercepts, trace and intersect</h3></div>
-  <p class="q">An outfitter purchases a new kayak for $3000. The value of the kayak depreciates according to the formula <span class="tex">V=3000-200t</span>, where <span class="tex">V</span> is the value of the kayak in dollars and <span class="tex">t</span> is its age in years.</p>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Completing a function and showing it three ways</h3></div>
+  <p class="q"><b>(a)</b> The relation “is the cube of” from Lesson 5 is a function. Written in function notation it is <span class="tex">g(x)=\sqrt[3]{x}</span>, with domain <span class="tex">\{1,\ 8,\ 27,\ 64\}</span>. Complete:</p>
   <div class="parts c1">
-    <div class="part"><div class="pl">(a) Graph <span class="tex">V=3000-200t</span> using a graphing calculator. State a window setting appropriate for this scenario, and sketch the graph on the grid below.</div>
-      <div class="u5l6-win"><span><code class="u5l6-m">Xmin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Xmax=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymax=</code><i class="u5l6-bl"></i></span></div>
-      <div class="u5l6-gridrow"><div class="u5l6-grid" id="ex1-grid"></div><div class="work" style="--h:340px"></div></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l6-ansrow"><div><span class="tex">t</span> is an age in years and <span class="tex">V</span> a value in dollars, so both are non-negative, and the value never exceeds the $3000 purchase price:<br><b><code class="u5l6-m">Xmin=0</code>, <code class="u5l6-m">Xmax=16</code>, <code class="u5l6-m">Ymin=0</code>, <code class="u5l6-m">Ymax=3200</code></b><br><span class="u5l6-small">(windows may vary: anything that shows both intercepts and no negatives works)</span></div><div class="u5l6-fig" id="ex1a-fig"></div></div></div></div></div>
+    <div class="part"><div class="pl u5l6-blanks"><span class="tex">g(1)=</span>___ <span class="tex">g(8)=</span>___ <span class="tex">g(27)=</span>___ <span class="tex">g(64)=</span>___</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">g(1)=\sqrt[3]{1}=\boldsymbol{1}</span>, &nbsp; <span class="tex">g(8)=\sqrt[3]{8}=\boldsymbol{2}</span>, &nbsp; <span class="tex">g(27)=\sqrt[3]{27}=\boldsymbol{3}</span>, &nbsp; <span class="tex">g(64)=\sqrt[3]{64}=\boldsymbol{4}</span></div></div></div>
   </div>
+  <p class="q"><b>(b)</b> Consider the function <span class="tex">f(x)=3x-2</span>, with domain <span class="tex">\{-2,\ -1,\ 0,\ 1,\ 2\}</span>.</p>
   <div class="parts c2">
-    <div class="part"><div class="pl">(b) Determine the <span class="tex">t</span>-intercept of the graph, and describe what it represents in the context of this scenario.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">t</span>-intercept occurs where <span class="tex">V=0</span>:<br><span class="tex">0=3000-200t\Rightarrow 200t=3000\Rightarrow t=15</span><br>The <span class="tex">t</span>-intercept is <span class="tex">\boldsymbol{(15,\ 0)}</span>: after 15 years this model predicts the kayak has depreciated to a value of $0.</div></div></div>
-    <div class="part"><div class="pl">(c) Determine the <span class="tex">V</span>-intercept of the graph, and describe what it represents in the context of this scenario.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">V</span>-intercept occurs where <span class="tex">t=0</span>:<br><span class="tex">V=3000-200(0)=3000</span><br>The <span class="tex">V</span>-intercept is <span class="tex">\boldsymbol{(0,\ 3000)}</span>: the kayak’s original purchase price was $3000.</div></div></div>
-    <div class="part"><div class="pl">(d) Use the trace feature (or direct substitution) to determine the value of the kayak after 4 years.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Trace to <span class="tex">t=4</span> (or substitute):<br><span class="tex">V=3000-200(4)=3000-800=\boldsymbol{\$2200}</span></div></div></div>
-    <div class="part"><div class="pl">(e) Use the intersect feature (or algebra) to determine after how many years the kayak will be worth half of its original price.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Half the original price is <span class="tex">3000\div2=1500</span>. With <span class="tex">Y_2=1500</span>, <code class="u5l6-m">5:intersect</code> gives <span class="tex">(7.5,\ 1500)</span>.<br>Algebraically: <span class="tex">1500=3000-200t\Rightarrow 200t=1500\Rightarrow t=\boldsymbol{7.5}</span> years.</div></div></div>
+    <div class="part"><div class="pl">(i) Complete: <span class="tex">f(-2),\ f(-1),\ f(0),\ f(1),\ f(2)</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute each domain value into <span class="tex">3x-2</span>:<br><span class="tex">f(-2)=3(-2)-2=\boldsymbol{-8}</span>, <span class="tex">f(-1)=\boldsymbol{-5}</span>,<br><span class="tex">f(0)=\boldsymbol{-2}</span>, <span class="tex">f(1)=\boldsymbol{1}</span>, <span class="tex">f(2)=\boldsymbol{4}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) List the elements of the range of the function.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Range <span class="tex">=\boldsymbol{\{-8,\ -5,\ -2,\ 1,\ 4\}}</span></div></div></div>
   </div>
-  <div class="parts c2">
-    <div class="part u5l6-s2"><div class="pl">(f) State an appropriate domain and range for this relation.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The model is meaningful from the purchase date, <span class="tex">t=0</span>, until the value reaches $0 at <span class="tex">t=15</span>, and both quantities vary continuously:<br><span class="tex">D=\{t\mid 0\le t\le15,\ t\in\mathbb{R}\}</span>, &nbsp;&nbsp; <span class="tex">R=\{V\mid 0\le V\le3000,\ V\in\mathbb{R}\}</span></div></div></div>
-    <div class="part think u5l6-s2"><div class="pl"><span class="think-tag">Think</span> The equation gives <span class="tex">V=3000-200(17)=-400</span>. What does that tell you about the kayak?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Nothing real: a kayak can’t be worth <span class="tex">-\$400</span>. It’s a <b>math answer</b> from a part of the line the situation doesn’t use. The model stops making sense at <span class="tex">t=15</span>, which is why the domain stops there.</div></div></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(iii) Show the function <span class="tex">f</span> as an arrow diagram, a set of ordered pairs, and a graph.</div>
+      <div class="u5l6-three">
+        <div id="ex1-map"></div>
+        <div class="u5l6-op-space"><div class="u5l6-opl">Ordered pairs:</div></div>
+        <div id="ex1-grid"></div>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">
+        <div class="u5l6-three ans3"><div id="ex1-map-a"></div><div class="u5l6-op-space"><div class="u5l6-opl">Ordered pairs:</div><span class="tex">(-2,\ -8),\ (-1,\ -5),</span><br><span class="tex">(0,\ -2),\ (1,\ 1),\ (2,\ 4)</span></div><div id="ex1-grid-a"></div></div>
+        Five separate points: the domain has only five numbers, so the dots are <b>not</b> joined.</div></div></div>
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could a function have <span class="tex">f(1)=4</span> <b>and</b> <span class="tex">f(1)=5</span>?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> The input 1 would have two outputs (two arrows leaving 1), so it would not be a function. Two <b>different</b> inputs with the same output, like <span class="tex">h(2)=h(-2)=4</span> for <span class="tex">h(x)=x^2</span>, is fine.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube roots on the TI-30XIIS.</b> The <kbd>ˣ√</kbd> key is <kbd>2nd</kbd> <kbd>^</kbd>: type the index first. For <span class="tex">g(64)=\sqrt[3]{64}</span>: <span class="keys"><kbd>3</kbd><kbd>ˣ√</kbd><kbd>6</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 4.</div>
+    <button class="pill" data-keys="3 ˣ√ 64 =">Show me</button>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<!-- ================= 2. Quadratic relations ================= -->
-<section class="card" data-ink="s2" data-section="2. Quadratic Relations">
-  <div class="sec-h"><span class="badge">2</span><h2>Quadratic Relations: Vertex, Maximum, and Symmetry</h2></div>
-  <p>Many real quantities (the height of a thrown or launched object, for example) change according to a <b>quadratic</b> relation, whose graph is a <b>parabola</b>. A parabola has a single turning point, the <b>vertex</b>, which is either the highest point (a <b>maximum</b>) or the lowest point (a <b>minimum</b>) on the graph.</p>
-  <div class="def">The parabola is symmetric about a vertical line through the vertex, the <b>axis of symmetry</b>. That’s why two different inputs on either side of the vertex produce the <b>same output</b>.</div>
-  <div class="explainer" data-explainer="symmetry"></div>
+<section class="card" data-ink="s2b" data-section="2. Check Example 1">
+  <h3 class="sub">Check Example 1: table → range → arrows → pairs → graph</h3>
+  <div class="explainer" data-explainer="represent"></div>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Maximum and zero on the calculator">
-  <h3 class="sub">On the graphing calculator: maximum and zero</h3>
-  <p>The intercepts, a value found by trace, and an appropriate domain and range are all still meaningful. The vertex, located with <code class="u5l6-m">4:maximum</code> or <code class="u5l6-m">3:minimum</code> exactly as in Lesson 5, Section 9, now answers a question of its own, such as “what is the greatest height reached?” A landing time is an <span class="tex">x</span>-intercept: use <code class="u5l6-m">2:zero</code>.</p>
-  <div class="tip u5l6-gtip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="1.5" width="14" height="21" rx="2.5"/><rect x="7.5" y="4" width="9" height="6" rx="1"/><path d="M8.5 9q2-4 3.5-1t3.5-2"/></svg></div>
-    <div><b>Graphing calculator.</b> <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd> opens <code class="u5l6-m">CALC</code>. Choose <code class="u5l6-m">4:maximum</code> (or <code class="u5l6-m">2:zero</code>), then answer three questions: <code class="u5l6-m">Left Bound?</code> move left of the point, <kbd class="u5l6-k">ENTER</kbd> · <code class="u5l6-m">Right Bound?</code> move right of it, <kbd class="u5l6-k">ENTER</kbd> · <code class="u5l6-m">Guess?</code> <kbd class="u5l6-k">ENTER</kbd>.</div>
+<!-- ================= 3. Evaluating and solving ================= -->
+<section class="card" data-ink="s3" data-section="3. Evaluating and Solving">
+  <div class="sec-h"><span class="badge">3</span><h2>Evaluating and Solving</h2></div>
+  <div class="def-grid">
+    <div class="def">To <b>evaluate</b> <span class="tex">f(a)</span> for a number <span class="tex">a</span>, replace every <span class="tex">x</span> in the formula for <span class="tex">f(x)</span> with <span class="tex">a</span>, then simplify. <span class="muted">You are given the <b>input</b>: go <b>forwards</b>.</span></div>
+    <div class="def amber">To <b>solve</b> <span class="tex">f(x)=b</span>, set the formula equal to <span class="tex">b</span> and solve for <span class="tex">x</span>. <span class="muted">You are given the <b>output</b> and asked for the input: go <b>backwards</b>.</span></div>
   </div>
-  <div class="explainer" data-explainer="calcMax"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>The calculator doesn’t know the story.</b> <span class="tex">8+10t-t^2=0</span> has <b>two</b> solutions, <span class="tex">t\approx-0.74</span> and <span class="tex">t\approx10.74</span>. Only the second makes sense: <span class="tex">t\approx-0.74</span> is before Blaze was launched. Always ask “does this answer fit the situation?”</div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check the vertex (TI-30XIIS).</b> <span class="keys"><kbd>8</kbd><kbd>+</kbd><kbd>1</kbd><kbd>0</kbd><kbd>×</kbd><kbd>5</kbd><kbd>−</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 33. At the landing time, <span class="tex">h(10.74)</span> should be very close to 0.</div>
-    <div class="pill-col"><button class="pill" data-keys="8 + 10 × 5 − 5 x² =">Show h(5)</button><button class="pill" data-keys="8 + 10 × 10.74 − 10.74 x² =">Show h(10.74)</button></div>
-  </div>
+  <p>For a <b>linear</b> function the input can also be an expression: if <span class="tex">g(x)=5x-2</span>, then <span class="tex">g(3t)=5(3t)-2=15t-2</span>.</p>
+  <div class="explainer" data-explainer="machineFB"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Substituting">
+  <h3 class="sub">Evaluating: brackets around the input, every time</h3>
+  <p>Every <span class="tex">x</span> in the rule is a slot. Put the input into <b>every</b> slot, <b>in brackets</b>, then follow the order of operations.</p>
+  <div class="explainer" data-explainer="substitute"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Brackets around a negative input.</b> For <span class="tex">f(x)=x^2+3</span>, <span class="tex">f(-3)=(-3)^2+3=9+3=12</span>. Without brackets, <span class="tex">-3^2</span> means <span class="tex">-(3^2)=-9</span>, and you get the wrong answer, <span class="tex">-6</span>. The calculator does the same thing.</div></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A launched stunt performer: vertex, landing time and symmetry</h3></div>
-  <p class="q">A stunt performer named Blaze is launched from a spring-loaded platform on top of a tower. Blaze’s height above the ground, in metres, can be modelled by <span class="tex">h=8+10t-t^2</span>, where <span class="tex">t</span> is the time in seconds after launch. Blaze lands in an airbag whose top surface is level with the ground.</p>
-  <div class="parts c1">
-    <div class="part"><div class="pl">(a) Graph <span class="tex">h=8+10t-t^2</span> using a graphing calculator. State a window setting appropriate for this scenario, and sketch the graph on the grid below.</div>
-      <div class="u5l6-win"><span><code class="u5l6-m">Xmin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Xmax=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymax=</code><i class="u5l6-bl"></i></span></div>
-      <div class="u5l6-gridrow"><div class="u5l6-grid" id="ex2-grid"></div><div class="work" style="--h:340px"></div></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l6-ansrow"><div>Time and height are both non-negative, and the graph only matters until Blaze lands:<br><b><code class="u5l6-m">Xmin=0</code>, <code class="u5l6-m">Xmax=11</code>, <code class="u5l6-m">Ymin=0</code>, <code class="u5l6-m">Ymax=35</code></b><br><span class="u5l6-small">(windows may vary)</span></div><div class="u5l6-fig" id="ex2a-fig"></div></div></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Two functions, five values</h3></div>
+  <p class="q">Consider the functions <span class="tex">f(x)=x^2+3</span> and <span class="tex">g(x)=5-x</span>. Evaluate each of the following.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">f(4)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(4)=(4)^2+3</span><br><span class="tex">=16+3=\boldsymbol{19}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">g(2)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">g(2)=5-2=\boldsymbol{3}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">f(-3)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(-3)=(-3)^2+3</span><br><span class="tex">=9+3=\boldsymbol{12}</span></div></div></div>
   </div>
   <div class="parts c2">
-    <div class="part"><div class="pl">(b) What is the height of the platform above the ground?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The platform height is the height at <span class="tex">t=0</span> (the <span class="tex">h</span>-intercept):<br><span class="tex">h=8+10(0)-(0)^2=\boldsymbol{8}</span> m.</div></div></div>
-    <div class="part"><div class="pl">(c) What is the maximum height Blaze reaches above the ground, and how many seconds after launch does this occur?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><code class="u5l6-m">4:maximum</code> (<kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd>), with bounds on either side of the top, gives <span class="tex">t\approx5</span>, <span class="tex">h=33</span>.<br>Check: <span class="tex">h(5)=8+10(5)-5^2=8+50-25=33</span> ✓<br>Maximum height <b>33 m</b>, reached <b>5 s</b> after launch.</div></div></div>
-    <div class="part"><div class="pl">(d) To the nearest hundredth of a second, how long does it take Blaze to land in the airbag?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Blaze lands when <span class="tex">h=0</span>: the <span class="tex">t</span>-intercept. <code class="u5l6-m">2:zero</code>, with bounds on either side of the <b>right-hand</b> crossing, gives <span class="tex">t\approx10.7446</span>, so <span class="tex">t\approx\boldsymbol{10.74}</span> s.<br>Check: <span class="tex">h(10.74)=8+107.4-115.35\approx0.05\approx0</span> ✓<br><span class="u5l6-small">(The other zero, <span class="tex">t\approx-0.74</span>, is before launch: rejected.)</span></div></div></div>
-    <div class="part"><div class="pl">(e) How high above the ground is Blaze 2 seconds after launch? At what other time is Blaze at this same height again?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">At <span class="tex">t=2</span>: <span class="tex">h=8+20-4=\boldsymbol{24}</span> m.<br>Solve <span class="tex">8+10t-t^2=24</span>: <span class="tex">t^2-10t+16=0\Rightarrow(t-2)(t-8)=0</span>, so <span class="tex">t=2</span> or <span class="tex">t=8</span>.<br>Blaze is back at 24 m at <b><span class="tex">t=8</span> s</b>: the two times are symmetric about the vertex at <span class="tex">t=5</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">g(-1)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">g(-1)=5-(-1)=5+1=\boldsymbol{6}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">f(0)-g(0)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(0)=(0)^2+3=3</span> and <span class="tex">g(0)=5-0=5</span>,<br>so <span class="tex">f(0)-g(0)=3-5=\boldsymbol{-2}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">f(-3)</span> the same as <span class="tex">-f(3)</span>?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">f(-3)=12</span> (the input is −3), but <span class="tex">-f(3)=-(9+3)=-12</span> (the output of <span class="tex">f(3)</span>, made negative).</div></div></div>
   </div>
-  <div class="parts c2">
-    <div class="part u5l6-s2"><div class="pl">(f) State an appropriate domain and range for this relation.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Using the landing time from (d), with time and height both continuous:<br><span class="tex">D=\{t\mid 0\le t\le10.74,\ t\in\mathbb{R}\}</span>, &nbsp;&nbsp; <span class="tex">R=\{h\mid 0\le h\le33,\ h\in\mathbb{R}\}</span></div></div></div>
-    <div class="part think u5l6-s2"><div class="pl"><span class="think-tag">Think</span> Blaze starts at 8 m. Why does the range start at 0 and not at 8?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The range is every height Blaze <b>actually reaches</b>, lowest to highest. After the top (33 m), Blaze falls past the platform height all the way down to the airbag at ground level, 0 m. The starting value isn’t the smallest value.</div></div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Part (c) on the calculator.</b> Bracket the negative: <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 12. Leave the brackets out and the calculator squares only the 3: it gives −6.</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 3 ) x² + 3 =">With brackets</button><button class="pill" data-keys="(−) 3 x² + 3 =">Without</button></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. Which tool?">
-  <h3 class="sub">Which calculator tool answers the question?</h3>
-  <p>Read what the question <b>gives</b> and what it <b>asks for</b>. An input given means trace or value; an output given means intersect; “zero”, “lands” or “worth $0” means zero; “greatest” or “least” means maximum or minimum.</p>
-  <div class="explainer" data-explainer="whichTool"></div>
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>The same function asked for in three ways</h3></div>
+  <p class="q">Consider the function <span class="tex">f</span> defined by <span class="tex">f(x)=4x^3-3x</span>, <span class="tex">x\in\mathbb{R}</span>. Determine each of the following.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">f(-2)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(-2)=4(-2)^3-3(-2)</span><br><span class="tex">=4(-8)+6=-32+6=\boldsymbol{-26}</span></div></div></div>
+    <div class="part"><div class="pl">(b) the value of <span class="tex">f</span> when <span class="tex">x=3</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(3)=4(3)^3-3(3)</span><br><span class="tex">=4(27)-9=108-9=\boldsymbol{99}</span></div></div></div>
+    <div class="part"><div class="pl">(c) the image of 5 under <span class="tex">f</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(5)=4(5)^3-3(5)</span><br><span class="tex">=500-15=\boldsymbol{485}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (c) and (a).</b> <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>5</kbd><kbd>^</kbd><kbd>3</kbd><kbd>−</kbd><kbd>3</kbd><kbd>×</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 485. For (a), put <span class="tex">(-2)</span> in brackets in both places.</div>
+    <div class="pill-col"><button class="pill" data-keys="4 × 5 ^ 3 − 3 × 5 =">Part (c)</button><button class="pill" data-keys="4 × ( (−) 2 ) ^ 3 − 3 × ( (−) 2 ) =">Part (a)</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Substituting into a linear function</h3></div>
+  <p class="q">Consider the linear function <span class="tex">g(x)=5x-2</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) an expression for <span class="tex">g(a)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Replace <span class="tex">x</span> with <span class="tex">a</span>: <span class="tex">g(a)=\boldsymbol{5a-2}</span></div></div></div>
+    <div class="part"><div class="pl">(b) an expression for <span class="tex">g(3t)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">g(3t)=5(3t)-2=\boldsymbol{15t-2}</span></div></div></div>
+    <div class="part"><div class="pl">(c) an expression for <span class="tex">g(a+1)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">g(a+1)=5(a+1)-2</span><br><span class="tex">=5a+5-2=\boldsymbol{5a+3}</span></div></div></div>
+    <div class="part"><div class="pl">(d) Solve <span class="tex">g(x)=18</span>.</div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5x-2=18</span><br><span class="tex">5x=20</span><br><span class="tex">x=\boldsymbol{4}</span></div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. An expression as the input">
+  <h3 class="sub">An expression as the input (Example 4 check)</h3>
+  <p>An expression goes into the slot exactly like a number: <b>whole</b>, and <b>in brackets</b>. Then check your answer by putting a number in for the letter: both forms must agree.</p>
+  <div class="explainer" data-explainer="linearExpr"></div>
+</section>
+
+<section class="card" data-ink="s3d" data-section="3. Forwards and backwards on the graph">
+  <h3 class="sub">Forwards and backwards on the graph</h3>
+  <p>On the graph of <span class="tex">y=f(x)</span>, <b>evaluating</b> <span class="tex">f(a)</span> starts on the horizontal axis: up to the graph, across to the output. <b>Solving</b> <span class="tex">f(x)=b</span> starts on the vertical axis: across to the graph, down to the input. A slanted line is met once; a curve can be met more than once.</p>
+  <div class="explainer" data-explainer="graphFB"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Going backwards: solving <span class="tex">f(x)=k</span></h3></div>
+  <p class="q">Consider the function <span class="tex">f(x)=x^2-7</span>, <span class="tex">x\in\mathbb{R}</span>.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Evaluate <span class="tex">f(5)</span>.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">f(5)=(5)^2-7</span><br><span class="tex">=25-7=\boldsymbol{18}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the equation <span class="tex">f(x)=29</span>.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2-7=29</span><br><span class="tex">x^2=36</span><br><span class="tex">x=\pm\sqrt{36}=\boldsymbol{\pm6}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Solve <span class="tex">f(t)=38</span>, where <span class="tex">t&gt;0</span>. Give your answer in simplest radical form.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">t^2-7=38</span><br><span class="tex">t^2=45</span><br><span class="tex">t=\pm\sqrt{45}=\pm\sqrt{9\cdot5}=\pm3\sqrt5</span><br>Since <span class="tex">t&gt;0</span>, <span class="tex">t=\boldsymbol{3\sqrt5}</span></div></div></div>
+    <div class="part think span3"><div class="pl"><span class="think-tag">Think</span> Why does <span class="tex">f(x)=29</span> have <b>two</b> answers, while <span class="tex">g(x)=18</span> in Example 4 had only one?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Undoing a <b>square</b> gives two numbers: <span class="tex">6^2</span> and <span class="tex">(-6)^2</span> are both 36 (two inputs, one output, still a function). A linear function with a non-zero slope, like <span class="tex">g</span>, never gives two inputs the same output, so going backwards gives exactly one answer.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Is <span class="tex">\sqrt{45}</span> really <span class="tex">3\sqrt5</span>?</b> Both decimals should match: <span class="keys"><kbd>√</kbd><kbd>4</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>√</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> both give 6.708203932. (The radical form is the exact answer.)</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 45 =">√45</button><button class="pill" data-keys="3 × √ 5 =">3√5</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Extension ================= -->
+<section class="card u5l6-extcard" data-ink="s4" data-section="4. Extension: Mapping Notation">
+  <div class="sec-h"><span class="badge">4</span><h2>Extension: Mapping Notation and Substituting Expressions</h2></div>
+  <p class="u5l6-beyond"><span class="u5l6-ext">Extension</span> <i>This section goes beyond the Math 10C outcomes.</i></p>
+  <div class="def gray"><b>Mapping notation.</b> Some books write a function as a <b>mapping</b>: <span class="tex">f: x\to 3x+1</span> (“<span class="tex">f</span> maps <span class="tex">x</span> to <span class="tex">3x+1</span>”), so <span class="tex">f: 4\to 13</span> means the same as <span class="tex">f(4)=13</span>.</div>
+  <div class="u5l6-2way three">
+    <div class="hd">mapping notation</div><div class="hd">function notation</div><div class="hd">equation of the graph</div>
+    <div><span class="tex">f: x\to 3x+1</span></div><div><span class="tex">f(x)=3x+1</span></div><div><span class="tex">y=3x+1</span></div>
+    <div><span class="tex">f: 4\to 13</span></div><div><span class="tex">f(4)=13</span></div><div><span class="tex">y=13</span></div>
+  </div>
+  <div class="explainer" data-explainer="mapNote"></div>
+</section>
+
+<section class="card u5l6-extcard" data-ink="s4b" data-section="4. Extension: Substituting expressions">
+  <h3 class="sub"><span class="u5l6-ext">Extension</span> Substituting an expression into a non-linear function</h3>
+  <div class="def gray">To find <span class="tex">f(3x)</span> or <span class="tex">f(x+2)</span>, replace every <span class="tex">x</span> in the formula with the <b>entire</b> expression, <b>in parentheses</b>, then simplify.</div>
+  <div class="explainer" data-explainer="nonlinearSub"></div>
+</section>
+
+<section class="card example u5l6-extcard" data-ink="ex6" data-section="Example 6 (Extension)">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3><span class="u5l6-ext">Extension</span> Expressions in a cubic function</h3></div>
+  <p class="q">For <span class="tex">f(x)=4x^3-3x</span> from Example 3, determine:</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) an expression for <span class="tex">f(a)</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Replace <span class="tex">x</span> with <span class="tex">a</span>: <span class="tex">f(a)=\boldsymbol{4a^3-3a}</span></div></div></div>
+    <div class="part"><div class="pl">(b) an expression for <span class="tex">f(3x)</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Replace <span class="tex">x</span> with <span class="tex">3x</span>:<br><span class="tex">f(3x)=4(3x)^3-3(3x)=4(27x^3)-9x=\boldsymbol{108x^3-9x}</span></div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card example u5l6-extcard" data-ink="ex7" data-section="Example 7 (Extension)">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3><span class="u5l6-ext">Extension</span> Substituting a binomial</h3></div>
+  <p class="q">If <span class="tex">P(x)=3x^2-5x+2</span>, determine a simplified expression for <span class="tex">P(x+2)</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Replace every <span class="tex">x</span> with <span class="tex">(x+2)</span>: <span class="tex">P(x+2)=3(x+2)^2-5(x+2)+2</span><br>Since <span class="tex">(x+2)^2=x^2+4x+4</span>, &nbsp; <span class="tex">3(x+2)^2=3x^2+12x+12</span> and <span class="tex">-5(x+2)=-5x-10</span>.<br><span class="tex">P(x+2)=3x^2+12x+12-5x-10+2=\boldsymbol{3x^2+7x+4}</span></div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>A window that fits:</b> no negative time or height unless it’s real, and stop just past the biggest value that matters. <code class="u5l6-m">ZoomFit</code> is a start; then nudge. Kayak: <span class="tex">x{:}\,[0,16]</span>, <span class="tex">y{:}\,[0,3200]</span>.</div>
-    <div><b>Intercepts tell the story:</b> set the other variable to 0. <span class="tex">V</span>-intercept <span class="tex">(0,\ 3000)</span>, the purchase price (start); <span class="tex">t</span>-intercept <span class="tex">(15,\ 0)</span>, worth $0 (end). A landing time is a zero.</div>
-    <div><b>Pick the tool:</b> given an input → <code class="u5l6-m">TRACE</code> / <code class="u5l6-m">1:value</code>; given an output → <span class="tex">Y_2</span> + <code class="u5l6-m">5:intersect</code>; output 0 → <code class="u5l6-m">2:zero</code>; highest → <code class="u5l6-m">4:maximum</code>. A parabola is symmetric about its vertex: <span class="tex">h(2)=h(8)=24</span>.</div>
-    <div><b>Math answer vs makes sense:</b> the equation goes on forever; keep the piece the situation uses. <span class="tex">D=\{t\mid 0\le t\le10.74,\ t\in\mathbb{R}\}</span>, <span class="tex">R=\{h\mid 0\le h\le33,\ h\in\mathbb{R}\}</span>, lowest to highest output. Reject <span class="tex">t\approx-0.74</span>.</div>
+    <div><b>Read it:</b> <span class="tex">f(4)=13</span> is “<span class="tex">f</span> of 4 is 13”: name <span class="tex">f</span>, input 4, output 13. It is <b>not</b> <span class="tex">f</span> times 4. The point <span class="tex">(4,\ 13)</span> is on the graph.</div>
+    <div><b>Represent it:</b> a table, an arrow diagram, ordered pairs, a graph. Inputs (independent) go on the horizontal axis, outputs (dependent) on the vertical. The outputs form the <b>range</b>.</div>
+    <div><b>Evaluate = forwards:</b> put the input into <b>every</b> <span class="tex">x</span>, <b>in brackets</b>: <span class="tex">f(-3)=(-3)^2+3=12</span>; <span class="tex">g(a+1)=5(a+1)-2=5a+3</span>.</div>
+    <div><b>Solve = backwards:</b> you know the output. Set the formula equal to it and solve: <span class="tex">5x-2=18</span> gives <span class="tex">x=4</span>. A square can give two answers: <span class="tex">x^2-7=29</span> gives <span class="tex">x=\pm6</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u5l6">
-    <div><div class="kicker">Your turn</div><b>Assignment 6 — Exploring Real-World Relations With a Graphing Calculator</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 6 — Function Notation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
-  <a class="assign next-l" href="../l7a/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 7A — What Is a Function?</b><div class="muted">Each speed gives exactly <b>one</b> braking distance: the function test in every representation, and the vertical line test</div></div><span class="arrow">→</span>
+  <a class="assign next-l" href="../l7/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 7 — Function Notation: Graphs, Conversions, and Real-World Models</b><div class="muted">Converting between <span class="tex">y=\ldots</span> and <span class="tex">f(x)=\ldots</span>, reading <span class="tex">f(a)</span> and solving <span class="tex">f(x)=b</span> off a graph, and models in context</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -274,7 +383,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l6.js';
-  boot({ key: 'u5l6', homeHref: '../../', title: '5.6 Real-World Relations' });
+  boot({ key: 'u5l6', homeHref: '../../', title: '5.6 Function Notation' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

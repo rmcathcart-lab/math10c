@@ -1,831 +1,562 @@
-/* Math 10C · Unit 1 · Lesson 3 — Rational Numbers, Irrational Numbers, and Decimal Patterns (AN2)
- * Assignment questions 1–12 (u1_L03.tex) and the Lesson 3 Extra Practice (u1_EP03.tex).
- * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's number is one
- * of the possible values) and changes the numbers. Repeating decimals keep short blocks (1–3 digits, leads of 0–2
- * digits) so they can be typed into a calculator, like the booklet's. Levels: LIM BEG EMG PRG ADV MAS. */
+/* Math 10C · Unit 1 · Lesson 3 — Perfect Squares and Perfect Cubes (AN1)
+ * Assignment questions 1–14 (u1_L03.tex) and the Lesson 3 Extra Practice (u1_EP03.tex). Questions 1–3, 4(a), 10–12 and
+ * Extra practice 1–4 and 8 were part of the old Lesson 2 (GCF, LCM, and Perfect Powers).
+ * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's numbers are one
+ * of the possible values) and changes the numbers. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
-  var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, P = K.P, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
+  var HW = root.HW, nt = HW.nt, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, P = K.P;
 
   /* ---------- number helpers ---------- */
-  var gcd = ex.gcd, norm = ex.norm;
-  function isSq(n) { var s = Math.round(Math.sqrt(n)); return s * s === n; }
-  function nonSquares(a, b) { var o = []; for (var i = a; i <= b; i++) if (!isSq(i)) o.push(i); return o; }
-  function coprimeTo(q, lo, hi) { var o = []; for (var i = lo; i <= hi; i++) if (gcd(i, q) === 1) o.push(i); return o; }
-  function rTex(fr) { return ex.texRat(norm(fr[0], fr[1])); }                       // \frac{p}{q}
-  function dTex(p, q) { var r = norm(p, q); if (r[1] === 1) return String(r[0]); return (r[0] < 0 ? '-' : '') + '\\dfrac{' + F(Math.abs(r[0])) + '}{' + F(r[1]) + '}'; }
-  function split25(q) { var a = 0, b = 0; while (q % 2 === 0) { q /= 2; a++; } while (q % 5 === 0) { q /= 5; b++; } return { a: a, b: b, m: q }; }
-  function period(m) { if (m === 1) return 0; var k = 1, x = 10 % m; while (x !== 1 && k < 200) { x = x * 10 % m; k++; } return k; }
-  function terminates(p, q) { var r = norm(p, q); return split25(r[1]).m === 1; }
-  function texFacs(n) { return n === 1 ? '1' : K.fac(n); }
-  /* first n decimal places of an irrational x, chopped (not rounded), for "x = 3.141592…" */
-  function cut(x, n) { var f = Math.pow(10, n); return (x < 0 ? '-' : '') + (Math.floor(Math.abs(x) * f) / f).toFixed(n); }
-  function badDen(q) { return HW.nt.isPrime(q) ? t(q) + ' is a prime other than 2 and 5' : t(q + '=' + texFacs(q)) + ' has a prime factor other than 2 and 5'; }
-  /* decimal digits of |p/q|: { ip, lead, block } (block '' when it terminates) */
-  function decParts(p, q) {
-    var r = norm(Math.abs(p), q), ip = Math.floor(r[0] / r[1]), rem = r[0] % r[1], digs = '', seen = {};
-    while (rem && seen[rem] == null && digs.length < 80) { seen[rem] = digs.length; rem *= 10; digs += Math.floor(rem / r[1]); rem %= r[1]; }
-    if (!rem) return { ip: ip, lead: digs, block: '' };
-    return { ip: ip, lead: digs.slice(0, seen[rem]), block: digs.slice(seen[rem]) };
-  }
-  /* first n decimal places of |p/q| as a string like "0.58333333" */
-  function digitsOf(p, q, n) {
-    var r = norm(Math.abs(p), q), ip = Math.floor(r[0] / r[1]), rem = r[0] % r[1], s = '';
-    for (var i = 0; i < n; i++) { rem *= 10; s += Math.floor(rem / r[1]); rem %= r[1]; }
-    return ip + '.' + s;
-  }
-  /* repeating decimal I.lead(block) */
-  function repTex(I, lead, block, neg) { return (neg ? '-' : '') + I + '.' + lead + (block ? '\\overline{' + block + '}' : ''); }
-  function repVal(I, lead, block, neg) { var x = block ? ex.repRat(I + '.' + lead, block) : norm(Number(I + lead), Math.pow(10, lead.length)); return neg ? [-x[0], x[1]] : x; }
-  function minPeriod(s) { for (var d = 1; d < s.length; d++) if (s.length % d === 0 && new Array(s.length / d + 1).join(s.slice(0, d)) === s) return d; return s.length; }
-  function canonical(lead, block) {
-    if (!block || /^0+$/.test(block) || /^9+$/.test(block)) return false;
-    if (minPeriod(block) !== block.length) return false;
-    return !lead || lead.charAt(lead.length - 1) !== block.charAt(block.length - 1);
-  }
-  function digitsStr(r, len) { var s = ''; for (var i = 0; i < len; i++) s += r.int(0, 9); return s; }
-  function randBlock(r, len, lead, firstNonZero) {
-    for (var i = 0; i < 300; i++) { var b = digitsStr(r, len); if (firstNonZero && b.charAt(0) === '0') continue; if (canonical(lead || '', b)) return b; }
-    return len === 1 ? '3' : len === 2 ? '27' : '312';
-  }
-  /* "0.234\,234\,234\ldots" */
-  function dotsTex(I, block, reps, neg) { var g = []; for (var i = 0; i < reps; i++) g.push(block); return (neg ? '-' : '') + I + '.' + g.join('\\,') + '\\ldots'; }
-  /* a digit string with growing runs: stem + c^k0, stem + c^(k0+1), ... then the start of the next group */
-  function growTex(I, stem, c, k0, spaced, tail) {
-    var g = [];
-    for (var k = k0; k < k0 + 3; k++) g.push(stem + new Array(k + 1).join(c));
-    return I + '.' + g.join(spaced ? '\\,' : '') + (spaced ? '\\,' : '') + (tail == null ? stem : tail) + '\\ldots';
-  }
-  function randGrow(r) { // { stem, c, k0, tex }
-    var c = String(r.int(1, 9)), stem;
-    do { stem = String(r.int(1, 9)) + String(r.int(0, 9)); } while (stem.charAt(1) === c || stem.charAt(0) === c);
-    return { stem: stem, c: c, k0: r.int(1, 2), tail: r.chance(0.5) ? stem : stem.charAt(0) };
-  }
-  /* the algebraic method for I.lead(block): c·x = n where c = 10^(L+B) − 10^L */
-  function repInfo(I, lead, block, neg) {
-    var L = lead.length, B = block.length, x = ex.repRat(I + '.' + lead, block);
-    var hi = Math.pow(10, L + B), lo = Math.pow(10, L), c = hi - lo, n = Number(String(I) + lead + block) - Number(String(I) + lead);
-    var g = gcd(n, c);
-    return { I: I, lead: lead, block: block, neg: !!neg, L: L, B: B, ax: x, x: neg ? [-x[0], x[1]] : x, hi: hi, lo: lo, c: c, n: n, g: g,
-      tex: repTex(I, lead, block, neg), absTex: repTex(I, lead, block, false) };
-  }
-  function shiftTex(R, k) { // k = 10^L (block just right of the point) or 10^(L+B) (block left of it); the block itself is unchanged
-    return F(Number(String(R.I) + R.lead + (k === R.hi ? R.block : ''))) + '.\\overline{' + R.block + '}';
-  }
-  function algebraSol(R) {
-    var s = (R.neg ? 'Work with ' + t('x=' + R.absTex) + ' and put the negative sign back at the end.<br>' : 'Let ' + t('x=' + R.absTex) + '.<br>');
-    s += 'The block ' + t(R.block) + ' has ' + R.B + ' digit' + (R.B > 1 ? 's' : '') + (R.L ? ' and ' + R.L + ' digit' + (R.L > 1 ? 's' : '') + ' come' + (R.L > 1 ? '' : 's') + ' before it' : '') + '.<br>';
-    s += t(F(R.hi) + 'x=' + shiftTex(R, R.hi)) + ' &nbsp;(block left of the point)<br>';
-    s += (R.lo > 1 ? t(F(R.lo) + 'x=' + shiftTex(R, R.lo)) + ' &nbsp;(block just right of the point)<br>' : t('x=' + R.absTex) + '<br>');
-    s += 'Subtract: ' + t(F(R.c) + 'x=' + F(R.n)) + ', so ' + t('x=\\frac{' + F(R.n) + '}{' + F(R.c) + '}' + (R.g > 1 ? '=' + rTex(R.ax) : '')) + (R.g > 1 ? ' (divide the top and bottom by ' + t(R.g) + ')' : '') + '.';
-    if (R.neg) s += '<br>So ' + t(R.tex + '=' + rTex(R.x)) + '.';
-    return s;
-  }
-  function calcString(R) { var s = String(R.I) + '.' + R.lead; while (s.length < 13) s += R.block; return (R.neg ? '-' : '') + s; }
-  function isNinesZeros(c) { return /^9+0*$/.test(String(c)); }
-  /* a typed mixed number like 2\frac{1}{6} parses as 2×(1/6); catch it before the fraction checker sees it */
-  function mixedValue(resp) {
-    var pr = ex.parse(resp); if (!pr.ok) return null;
-    var a = pr.ast, sg = 1; while (a.t === 'neg' || a.t === 'paren') { if (a.t === 'neg') sg = -sg; a = a.a; }
-    if (a.t !== 'mul' || !a.imp) return null;
-    var w = a.a; if (w.t === 'neg') { sg = -sg; w = w.a; }
-    if (w.t === 'num' && !w.dec && a.b.t === 'div' && a.b.frac && a.b.a.t === 'num' && a.b.b.t === 'num' && !a.b.a.dec && !a.b.b.dec) return sg * (w.v + a.b.a.v / a.b.b.v);
-    return null;
-  }
-  function mixedGuard(check, fr) {
-    var T = fr[0] / fr[1];
+  function sortN(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+  function fromExps(ps, es) { return ps.reduce(function (m, p, i) { return m * Math.pow(p, es[i]); }, 1); }
+  function texE(ps, es) { return HW.texFactors(ps.map(function (p, i) { return [p, es[i]]; }).filter(function (pe) { return pe[1] > 0; })); }
+  function plainFac(n) { return nt.factor(n).map(function (pe) { return pe[1] > 1 ? pe[0] + '^' + pe[1] : String(pe[0]); }).join(' × '); }
+  function eqv(n) { var f = K.fac(n); return f === String(n) ? F(n) : f + '=' + F(n); }
+  function find(r, gen, test, fallback) { for (var i = 0; i < 800; i++) { var v = gen(); if (test(v)) return v; } return fallback; }
+  function intRoot(n, k) { var r = Math.round(Math.pow(n, 1 / k)); for (var d = -1; d <= 1; d++) if (r + d >= 0 && Math.pow(r + d, k) === n) return r + d; return null; }
+  function rad(n) { return nt.distinctPrimes(n).reduce(function (m, p) { return m * p; }, 1); }
+  function normX(s) { return String(s == null ? '' : s).replace(/(\d)\s*[xX]\s*(?=\d)/g, '$1*'); }
+  function pw(k) { return k === 2 ? 'square' : 'cube'; }
+  function rootTex(k, inner) { return (k === 2 ? '\\sqrt{' : '\\sqrt[3]{') + inner + '}'; }
+  function kind(n) { var f = nt.factor(n), sq = f.every(function (pe) { return pe[1] % 2 === 0; }), cu = f.every(function (pe) { return pe[1] % 3 === 0; }); return sq && cu ? 'both' : sq ? 'square' : cu ? 'cube' : 'neither'; }
+
+  /* ---------- small checkers (plain-text boxes) ---------- */
+  function prodChk(n, exp) { // n as a product of primes, typed in a plain box ("2^3 * 3", "2x2x2x3" also fine)
+    var c = K.product(n, exp || 'either');
     return function (resp) {
-      var mv = mixedValue(resp);
-      if (mv != null && ex.eq(mv, T)) return form('mixed', 'Right value — now write it as an improper fraction, like ' + t('\\frac{13}{6}') + ', not a mixed number.');
-      if (mv != null) return wrong('value', 'Check your answer — it doesn’t equal the decimal. (Write it as an improper fraction, like ' + t('\\frac{13}{6}') + '.)');
-      return check(resp);
+      var s = normX(resp), pn = HW.parse.number(s);
+      if (pn.ok && pn.value === n && !nt.isPrime(n)) return form('not-factored', 'Write ' + t(F(n)) + ' as a product of primes, like ' + t('2^{3}\\times 3') + '.');
+      return c(s);
+    };
+  }
+  function expChk(target, diag) { // a value in exponent form (product of prime powers)
+    var c = K.product(target, 'required');
+    return function (resp) {
+      var s = normX(resp), pn = HW.parse.number(s);
+      if (pn.ok && pn.value === target && !nt.isPrime(target)) return form('as-number', 'Right value — now write it in <b>exponent form</b>, as a product of prime powers.');
+      var p = HW.parse.product(s);
+      if (p.ok && p.value !== target && diag && p.factors.every(function (pe) { return nt.isPrime(pe[0]); })) { var h = diag(p.value); if (h) return wrong(h.code, h.hint); }
+      return c(s);
+    };
+  }
+  function valChk(target, diag) { // a whole number, or any product equal to it
+    return function (resp) {
+      var s = normX(resp), pn = HW.parse.number(s), v = null;
+      if (pn.ok) v = pn.value; else { var p = HW.parse.product(s); if (p.ok) v = p.value; else return form(pn.code === 'empty' ? 'empty' : 'notnumber', pn.code === 'empty' ? 'Type your answer first.' : 'Type a whole number (or a product such as ' + t('2^{2}\\times 3') + ').'); }
+      if (v === target) return ok();
+      var h = diag ? diag(v) : null;
+      return h ? wrong(h.code, h.hint) : wrong('value', null);
+    };
+  }
+  function isNo(s) { return /^(no|none|nope|not|neither|n\/a|n|-+|—|x)(\s.*|\.)?$/.test(s); }
+  function isYes(s) { return /^(yes|y|yep)\b/.test(s); }
+  /* the k-th root (or "none" when the number isn't a perfect k-th power) */
+  function rootOrNone(root, k, nTex, diag) {
+    var word = pw(k), vc = root != null ? valChk(root, diag) : null;
+    return function (resp) {
+      var s = String(resp == null ? '' : resp).trim().toLowerCase();
+      if (!s) return form('empty', 'Type the ' + word + ' root, or <b>none</b> if it is not a perfect ' + word + '.');
+      if (isNo(s)) return root == null ? ok() : wrong('said-not-perfect', 'Look at the exponents in the prime factorization: are they all ' + (k === 2 ? 'even' : 'multiples of ' + t('3')) + '? Then ' + t(nTex) + ' <b>is</b> a perfect ' + word + '.');
+      if (isYes(s)) return root != null ? form('yes-root', 'Right, it is a perfect ' + word + ' — now type the ' + word + ' root itself.') : wrong('said-perfect', 'Check the exponents in the prime factorization: are they <b>all</b> ' + (k === 2 ? 'even' : 'multiples of ' + t('3')) + '?');
+      if (root == null) {
+        var s2 = normX(s), pn = HW.parse.number(s2), pp = HW.parse.product(s2);
+        if (!pn.ok && !pp.ok) return form('notnumber', 'Type a number, or <b>none</b>.');
+        var v = pn.ok ? pn.value : pp.value, big = Math.pow(v, k);
+        return wrong('said-perfect', (v % 1 ? 'A decimal root means the number is <b>not</b> a perfect ' + word + '. ' : (big < 1e12 ? t(F(v) + '^{' + k + '}=' + F(big)) + ', not ' + t(nTex) + '. ' : '')) + 'Look at the exponents in the prime factorization: are they all ' + (k === 2 ? 'even' : 'multiples of ' + t('3')) + '? If not, there is no whole-number ' + word + ' root — type <b>none</b>.');
+      }
+      return vc(s);
+    };
+  }
+  function rootDiag(n, k) { // common slips when taking a square / cube root of n
+    var word = pw(k);
+    return function (v) {
+      if (v === n / k) return { code: 'divided-by-index', hint: 'A ' + word + ' root isn’t ' + (k === 2 ? 'half' : 'a third') + ' of the number. Split the prime factors into ' + (k === 2 ? 'two' : 'three') + ' identical groups and multiply one group.' };
+      if (v === rad(n) && v !== intRoot(n, k)) return { code: 'each-prime-once', hint: 'You used each prime once. Divide each <b>exponent</b> by ' + t(k) + ' instead — a prime with a bigger exponent appears more than once in the root.' };
+      if (k === 3 && v === intRoot(n, 2)) return { code: 'used-square-root', hint: 'That’s the <b>square</b> root. For the cube root, divide each exponent by ' + t('3') + '.' };
+      if (k === 2 && v === intRoot(n, 3)) return { code: 'used-cube-root', hint: 'That’s the <b>cube</b> root. For the square root, divide each exponent by ' + t('2') + '.' };
+      if (v > 0 && v % 1 === 0 && Math.pow(v, k) < 1e12) return { code: 'root-value', hint: t(F(v) + '^{' + k + '}=' + F(Math.pow(v, k))) + ', not ' + t(F(n)) + '. Divide each exponent in the prime factorization by ' + t(k) + '.' };
+      return null;
     };
   }
 
   /* ---------- reusable part makers ---------- */
-  var COMBOS = [
-    { id: 'NT', html: 'non-repeating, terminating' },
-    { id: 'RN', html: 'repeating, non-terminating' },
-    { id: 'NN', html: 'non-repeating, non-terminating' },
-    { id: 'RT', html: 'repeating, terminating' }];
-  /* Q1: kind 'NT' | 'RN' | 'NN'; why = { NT, RN, NN } hints for the two wrong possible combos */
-  function patternPart(r, tex, kind, why, sol, text) {
-    var opts = COMBOS.map(function (c) {
-      return { html: c.html, right: c.id === kind, code: 'said-' + c.id, why: c.id === kind ? null : c.id === 'RT' ? 'That combination never happens: a decimal that stops can’t also repeat forever.' : why[c.id] };
-    });
-    var p = P.mc(r, t(tex), opts, sol, ['Find the decimal (divide, or use your calculator). Does it stop? If not, does one block of digits repeat?'], text, true);
-    p.input.columns = 2;
+  function productPart(n, exp) {
+    return { prompt: t(F(n)), input: { type: 'math', before: t(F(n) + '=') }, check: K.product(n, exp || 'either'), key: K.fac(n),
+      answer: t(F(n) + '=' + K.fac(n)), text: 'product of primes: ' + n,
+      solution: 'Divide by the smallest prime each time:' + K.ladderSolution(n) + t(F(n) + '=' + K.exp(n) + '=' + K.fac(n)),
+      hints: ['Start with the smallest prime that divides ' + t(F(n)) + ' and keep dividing until you reach ' + t('1') + '.', 'Check: multiply your primes back together on your calculator — do you get ' + t(F(n)) + '?'] };
+  }
+  /* perfect square / cube test: factorization box + root box ("none" if not perfect) */
+  function powerTestPart(n, k) {
+    var word = pw(k), root = intRoot(n, k), f = nt.factor(n), rt = rootTex(k, F(n)), test = k === 2 ? 'even' : 'a multiple of ' + t('3');
+    var bad = f.filter(function (pe) { return pe[1] % k; })[0];
+    var fields = [{ name: 'Prime factorization', before: t(F(n) + '='), mode: 'math', wide: true },
+      { name: word === 'square' ? 'Square root' : 'Cube root', before: t(rt + '='), mode: 'text', placeholder: 'number, or none' }];
+    var keys = [plainFac(n), root != null ? String(root) : 'none'];
+    var sol = t(F(n) + '=' + K.fac(n)) + '.<br>' + (root != null
+      ? 'Every exponent is ' + test + ', so the factors split into ' + (k === 2 ? 'two' : 'three') + ' identical groups: ' + t(F(n)) + ' <b>is</b> a perfect ' + word + '.<br>' + (k === 2 ? 'Halve' : 'Divide') + ' each exponent' + (k === 3 ? ' by ' + t('3') : '') + ': ' + t(rt + '=' + (function (rf) { return rf === String(root) ? '' : rf + '='; })(HW.texFactors(f.map(function (pe) { return [pe[0], pe[1] / k]; }))) + F(root)) + '. (Calculator: ' + t(rt + '=' + F(root)) + ' ✓)'
+      : 'The exponent of ' + t(bad[0]) + ' is ' + t(bad[1]) + ', which is not ' + test + ', so the factors can’t split into ' + (k === 2 ? 'two' : 'three') + ' identical groups: ' + t(F(n)) + ' is <b>not</b> a perfect ' + word + '.<br>Calculator check: ' + t(rt + '\\approx ' + K.roundTo(Math.pow(n, 1 / k), 2).toFixed(2)) + ', not a whole number.');
+    var p = P.fields('Is ' + t(F(n)) + ' a perfect ' + word + '? Write its prime factorization, then give ' + t(rt) + ' — or type <b>none</b> if it is not a perfect ' + word + '.', fields,
+      [prodChk(n, 'either'), rootOrNone(root, k, F(n), rootDiag(n, k))], keys,
+      t(F(n) + '=' + K.fac(n)) + '<br>' + (root != null ? 'Perfect ' + word + ': ' + t(rt + '=' + F(root)) : 'Not a perfect ' + word + '.'), sol,
+      ['Factor ' + t(F(n)) + ' into primes and look at the exponents.', 'A perfect ' + word + ' has every exponent ' + test + '. ' + (k === 2 ? 'Halve' : 'Divide') + ' each exponent' + (k === 3 ? ' by 3' : '') + ' to get the root.'],
+      'perfect ' + word + '? ' + n);
+    p.good = root != null ? [[nt.primeList(n).join('x'), String(root)], [plainFac(n), K.fac(root) === String(root) ? String(root) : plainFac(root)]] : [[plainFac(n), 'no'], [plainFac(n), 'not a perfect ' + word]];
+    p.bad = root != null ? [[plainFac(n), 'no'], [plainFac(n), String(root + 1)], [plainFac(n), String(rad(n))]].filter(function (b) { return b[1] !== String(root); }) : [[plainFac(n), String(Math.round(Math.pow(n, 1 / k)))], [plainFac(n), 'yes']];
     return p;
   }
-  /* repeating decimal -> fraction (calculator method), with diagnoses for the usual slips */
-  function repDiag(R) {
-    var trunc = norm(Number(R.I + R.lead + R.block) * (R.neg ? -1 : 1), Math.pow(10, R.L + R.B));
-    var whole = R.lead ? ex.repRat(R.I + '.', R.lead + R.block) : null;
-    var noInt = R.I ? [R.ax[0] - R.I * R.ax[1], R.ax[1]] : null;
+  /* square, cube, both or neither for a whole number: factorization + square root + cube root ("none" where it isn't whole) */
+  function sqCubeNumPart(n) {
+    var f = nt.factor(n), sr = intRoot(n, 2), cr = intRoot(n, 3), lab = kind(n);
+    var label = { both: 'Both', square: 'Perfect square only', cube: 'Perfect cube only', neither: 'Neither' }[lab];
+    var odd = f.filter(function (pe) { return pe[1] % 2; })[0], non3 = f.filter(function (pe) { return pe[1] % 3; })[0];
+    var half = function (k) { return HW.texFactors(f.map(function (pe) { return [pe[0], pe[1] / k]; })); };
+    var fields = [{ name: 'Prime factorization', before: t(F(n) + '='), mode: 'math', wide: true },
+      { name: 'Square root', before: t('\\sqrt{' + F(n) + '}='), mode: 'text', placeholder: 'number, or none' },
+      { name: 'Cube root', before: t('\\sqrt[3]{' + F(n) + '}='), mode: 'text', placeholder: 'number, or none' }];
+    var sol = t(F(n) + '=' + K.fac(n)) + '.<br><b>Square?</b> ' + (sr != null ? 'Every exponent is even: ' + t('\\sqrt{' + F(n) + '}=' + (half(2) === String(sr) ? '' : half(2) + '=') + F(sr)) + '.' : 'The exponent ' + t(odd[1]) + ' on ' + t(odd[0]) + ' is odd, so it is <b>not</b> a perfect square.') +
+      '<br><b>Cube?</b> ' + (cr != null ? 'Every exponent is a multiple of ' + t('3') + ': ' + t('\\sqrt[3]{' + F(n) + '}=' + (half(3) === String(cr) ? '' : half(3) + '=') + F(cr)) + '.' : 'The exponent ' + t(non3[1]) + ' on ' + t(non3[0]) + ' is not a multiple of ' + t('3') + ', so it is <b>not</b> a perfect cube.') +
+      '<br><b>' + label + '</b>.';
+    var p = P.fields('Is ' + t(F(n)) + ' a perfect square, a perfect cube, both, or neither? Write its prime factorization, then give each root that is a whole number — type <b>none</b> for a root that isn’t.', fields,
+      [prodChk(n, 'either'), rootOrNone(sr, 2, F(n), rootDiag(n, 2)), rootOrNone(cr, 3, F(n), rootDiag(n, 3))],
+      [plainFac(n), sr != null ? String(sr) : 'none', cr != null ? String(cr) : 'none'],
+      t(F(n) + '=' + K.fac(n)) + ': <b>' + label + '</b>' + (sr != null ? '; ' + t('\\sqrt{' + F(n) + '}=' + F(sr)) : '') + (cr != null ? '; ' + t('\\sqrt[3]{' + F(n) + '}=' + F(cr)) : ''), sol,
+      ['Factor ' + t(F(n)) + ' and look only at the exponents.', 'All even ⇒ perfect square. All multiples of ' + t('3') + ' ⇒ perfect cube. Both ⇒ every exponent a multiple of ' + t('6') + '.'],
+      'square/cube/both/neither: ' + n);
+    p.bad = [[plainFac(n), sr != null ? 'none' : String(Math.round(Math.sqrt(n))), cr != null ? 'none' : String(Math.round(Math.cbrt(n)))], [plainFac(n), sr != null ? String(sr + 1) : 'none', cr != null ? String(cr + 1) : 'none']]
+      .filter(function (b) { return b[1] !== p.key[1] || b[2] !== p.key[2]; });
+    return p;
+  }
+  /* exponent form + whole number in two boxes */
+  function expNumPart(prompt, target, lab, diag, sol, hints, text, after) {
+    var fields = [{ name: 'Exponent form', label: 'Exponent form', before: t('\\text{' + lab + '}='), mode: 'math', wide: true, after: after },
+      { name: 'Whole number', label: 'Whole number', before: t('\\text{' + lab + '}='), after: after }];
+    var p = P.fields(prompt, fields, [expChk(target, diag), K.number(target, diag)], [plainFac(target), String(target)], lab + ' ' + t('=' + eqv(target)) + (after ? ' ' + after : ''), sol, hints, text);
+    if (!nt.isPrime(target)) p.bad = [[String(target), String(target)]];
+    return p;
+  }
+  /* smallest multiplier / divisor to reach a perfect k-th power */
+  function multFor(n, k) { return nt.factor(n).reduce(function (m, pe) { return m * Math.pow(pe[0], (k - pe[1] % k) % k); }, 1); }
+  function divFor(n, k) { return nt.factor(n).reduce(function (m, pe) { return m * Math.pow(pe[0], pe[1] % k); }, 1); }
+  function multDiag(n, k) {
+    var word = pw(k), m = multFor(n, k), test = k === 2 ? 'even' : 'a multiple of ' + t('3');
     return function (v) {
-      if (ex.eq(Math.abs(v), Math.abs(trunc[0] / trunc[1])) && (v < 0) === R.neg) return { code: 'as-terminating', hint: 'That fraction is the <b>terminating</b> decimal ' + t(F(Math.abs(trunc[0] / trunc[1])).toString()) + '. The bar means the block keeps repeating forever. Type the repeats several times into your calculator, like ' + t(calcString(R)) + ', before converting.' };
-      if (whole && ex.eq(Math.abs(v), whole[0] / whole[1])) return { code: 'bar-all', hint: 'Only the digits under the bar repeat: ' + t(R.absTex) + ' is ' + t(digitsOf(R.ax[0], R.ax[1], 8) + '\\ldots') + ', not ' + t(digitsOf(whole[0], whole[1], 8) + '\\ldots') + '.' };
-      if (noInt && ex.eq(Math.abs(v), noInt[0] / noInt[1])) return { code: 'no-whole', hint: 'Don’t forget the whole-number part ' + t(R.I) + '.' };
+      if (!(v >= 1) || v % 1) return null;
+      var w = n * v;
+      if (intRoot(w, k) != null) return v === n ? { code: 'times-itself', hint: 'Multiplying by the number itself does give a perfect ' + word + ', but not with the <b>smallest</b> multiplier. Raise each exponent only as far as the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + '.' } : { code: 'not-smallest', hint: t(F(n) + '\\times ' + F(v)) + ' is a perfect ' + word + ', but a <b>smaller</b> multiplier works. Raise each exponent only as far as the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ' — nothing more.' };
+      if (k === 3 && intRoot(w, 2) != null) return { code: 'made-square', hint: 'That makes a perfect <b>square</b>, but you need a perfect <b>cube</b>: every exponent must reach a multiple of ' + t('3') + '.' };
+      if (k === 2 && intRoot(w, 3) != null) return { code: 'made-cube', hint: 'That makes a perfect <b>cube</b>, but you need a perfect <b>square</b>: every exponent must be even.' };
+      if (m % v === 0) return { code: 'missed-prime', hint: 'Not quite: after multiplying by ' + t(F(v)) + ', some exponent is still not ' + test + '. Check every prime.' };
       return null;
     };
   }
-  function calcPart(R, text) {
-    var p = P.fraction(t(R.tex), R.x, { diag: repDiag(R) },
-      'Calculator: type ' + t(calcString(R)) + ' and use the decimal-to-fraction command (►Frac): ' + t(R.tex + '=' + rTex(R.x)) + '.<br>Check: ' + t(rTex(R.x)) + ' divides out to ' + t((R.neg ? '-' : '') + digitsOf(R.ax[0], R.ax[1], 8) + '\\ldots') + ' ✓<br><i>Or by algebra</i>' + (R.neg ? ' (on ' + t(R.absTex) + ', then put the sign back)' : '') + ': ' + t(F(R.hi) + 'x-' + (R.lo > 1 ? F(R.lo) : '') + 'x=' + F(R.c) + 'x=' + F(R.n)) + ', so ' + t('x=\\frac{' + F(R.n) + '}{' + F(R.c) + '}' + (R.g > 1 ? '=' + rTex(R.ax) : '')) + '.',
-      ['Type the decimal into a calculator with the repeating block written out several times (e.g. ' + t(calcString(R)) + '), then convert it to a fraction. (If your calculator won’t convert it, use the algebraic method from the lesson.)', 'Give an improper fraction in lowest terms — not a mixed number or a decimal.'], text || 'repeating to fraction ' + R.tex);
-    p.check = mixedGuard(p.check, R.x);
-    p.good = [(R.x[0] < 0 ? '-' : '') + Math.abs(R.x[0]) + '/' + R.x[1]];
-    var bad = [String(R.I + '.' + R.lead + R.block)];
-    if (R.I) bad.push((R.neg ? '-' : '') + R.I + '\\frac{' + (R.ax[0] - R.I * R.ax[1]) + '}{' + R.ax[1] + '}');
-    if (R.x[1] > 1) bad.push(rTex([R.x[1], R.x[0]]));
-    p.bad = bad;
-    return p;
-  }
-  /* algebraic method: three boxes "c x = n, so x = p/q" */
-  function algebraPart(R, text) {
-    var X = R.x, labels = ['After subtracting', 'Right side', 'Answer'];
-    var fr = mixedGuard(K.fraction(X, { diag: repDiag(R) }), X);
-    function num(s) { var a = K.read(s); if (a.res) return null; return ex.rat(a.ast); }
-    var check = function (resp) {
-      resp = resp || [];
-      var filled = [0, 1, 2].filter(function (i) { return resp[i] != null && String(resp[i]).trim() !== ''; });
-      if (!filled.length) return form('empty', 'Fill in the boxes: the equation you get after subtracting, then the fraction.');
-      if (filled.length < 3) return form('incomplete', 'Fill in all three boxes (the number in front of ' + t('x') + ', the right side, and the fraction).');
-      var cp = HW.parse.number(resp[0]);
-      if (!cp.ok || cp.value <= 0 || cp.value % 1) return form('coef', '<b>' + labels[0] + ':</b> the first box is the whole number in front of ' + t('x') + ' after you subtract, e.g. ' + t('90') + '.');
-      var c = cp.value, n = num(resp[1]);
-      if (!n) return form('rhs', '<b>' + labels[1] + ':</b> type the number on the right side of the equation.');
-      var eqPos = n[0] * X[1] === c * X[0] * n[1], eqAbs = R.neg && n[0] * X[1] === -c * X[0] * n[1];
-      if (!isNinesZeros(c)) {
-        if (c === R.hi || c === R.lo || /^10*$/.test(String(c))) return wrong('no-subtract', '<b>' + labels[0] + ':</b> subtract the two equations so the repeating tails cancel. The number in front of ' + t('x') + ' will look like ' + t('9') + ', ' + t('99') + ', ' + t('90') + ' or ' + t('990') + '.');
-        return wrong('coef-form', '<b>' + labels[0] + ':</b> after subtracting, the number in front of ' + t('x') + ' is one power of ' + t('10') + ' minus another, like ' + t('99') + ' or ' + t('990') + '. Check which powers of 10 you used.');
-      }
-      if (!eqPos && !eqAbs) {
-        if ((c * R.ax[0]) % R.ax[1] !== 0) return wrong('tails', '<b>' + labels[1] + ':</b> with that subtraction the repeating tails don’t line up, so they don’t cancel. Use one multiplier that moves the block left of the point and one that puts it just right of the point.');
-        return wrong('rhs', '<b>' + labels[1] + ':</b> check your subtraction. Line up the two equations — the repeating tails cancel completely, leaving a whole number on the right.');
-      }
-      var res = fr(resp[2]);
-      if (res.v !== 'correct') return { v: res.v, code: res.code, hint: '<b>' + labels[2] + ':</b> ' + (res.hint || 'Divide both sides by ' + t(F(c)) + ' and reduce.') };
-      return ok();
-    };
-    var key = [String(R.c), String(R.neg ? -R.n : R.n), (X[0] < 0 ? '-' : '') + Math.abs(X[0]) + '/' + X[1]];
-    var good = [[String(R.c), String(R.n), key[2]]];
-    if (R.L === 0 && R.B <= 2) { var c2 = Math.pow(10, 2 * R.B) - 1; good.push([String(c2), String(c2 / R.c * R.n * (R.neg ? -1 : 1)), key[2]]); }
-    var bad = [[String(R.c), String(R.n + 1), key[2]], [String(R.hi), String(R.n), key[2]], [key[0], key[1], (Math.abs(R.n)) + '/' + R.c + (R.neg ? '' : '0')]];
-    if (R.g > 1) bad.push([key[0], key[1], (R.neg ? '-' : '') + R.n + '/' + R.c]);
-    return { prompt: t(R.tex), input: { type: 'fields', fields: [
-        { label: 'Subtract:', after: t('x'), name: labels[0] }, { before: t('='), name: labels[1], wide: true, mode: 'text' }, { label: 'So', before: t('x='), wide: true, name: labels[2], mode: 'math', keys: 'fraction' }] },
-      check: check, key: key, answer: t(F(R.c) + 'x=' + F(R.neg ? -R.n : R.n)) + ', so ' + t('x=' + rTex(X)), solution: algebraSol(R), good: good, bad: bad,
-      hints: ['Write ' + t('x=' + R.tex) + '. Multiply by the power of 10 that moves the whole block left of the decimal point' + (R.L ? ', and by the power of 10 that puts the block just right of the point' : '') + '. Subtract.', 'Type the fraction as e.g. ' + t('11/15') + '. Reduce it to lowest terms.'],
-      text: text || 'algebraic method ' + R.tex };
-  }
-  /* numerical response: 0.d(ef) -> a/b, value of b − a */
-  function nrRepPart(r) {
-    var d, blk, R;
-    for (var i = 0; i < 500; i++) {
-      d = String(r.int(1, 9)); blk = randBlock(r, 2, d);
-      R = repInfo(0, d, blk);
-      if (R.g > 1 && R.ax[1] - R.ax[0] > 0) break;
-    }
-    var a = R.ax[0], b = R.ax[1], ans = b - a;
-    var wrongs = [];
-    wrongs.push({ v: R.c - R.n, code: 'unreduced', hint: 'Reduce ' + t('\\frac{' + R.n + '}{' + R.c + '}') + ' to simplest form first, then subtract.' });
-    var w1 = norm(Number(d + blk), 999); wrongs.push({ v: w1[1] - w1[0], code: 'bar-all', hint: 'Only ' + t(blk) + ' repeats — the ' + t(d) + ' appears once. ' + t(R.tex) + ' is ' + t(digitsOf(a, b, 7) + '\\ldots') + ', not ' + t('0.' + d + blk + d + blk + '\\ldots') + '.' });
-    var w2 = norm(Number(d + blk), 990); wrongs.push({ v: w2[1] - w2[0], code: 'no-lead-subtract', hint: 'Check the subtraction: ' + t(F(R.hi) + 'x-' + R.lo + 'x') + ' gives ' + t(d + blk + '-' + d) + ' on the right side, not ' + t(d + blk) + '.' });
-    wrongs.push({ v: a - b, code: 'a-b', hint: 'You found ' + t('a-b') + '. The question asks for ' + t('b-a') + '.' });
-    return P.nr('When the repeating decimal ' + t(R.tex) + ' is converted to a rational number in simplest form ' + t('\\dfrac{a}{b}') + ', the value of ' + t('b-a') + ' is ________.', ans, function (v) {
-      for (var j = 0; j < wrongs.length; j++) if (v === wrongs[j].v && wrongs[j].v !== ans) return { code: wrongs[j].code, hint: wrongs[j].hint };
+  function multPart(n, k, nTex) {
+    var word = pw(k), m = multFor(n, k), N = n * m, rt = intRoot(N, k);
+    var rdiag = function (v) {
+      if (v === N / k) return { code: 'divided-by-index', hint: 'A ' + word + ' root isn’t ' + (k === 2 ? 'half' : 'a third') + ' of the number. Divide each exponent by ' + t(k) + '.' };
+      if (v === rad(N) && v !== rt) return { code: 'each-prime-once', hint: 'Divide each <b>exponent</b> by ' + t(k) + ' — a prime with a bigger exponent appears more than once in the root.' };
+      if (v === intRoot(n, k)) return { code: 'root-value', hint: 'That’s the root of the original number. Take the root of the <b>result</b> (after multiplying).' };
       return null;
-    }, algebraSol(R) + '<br>So ' + t('a=' + a) + ', ' + t('b=' + b) + ' and ' + t('b-a=' + b + '-' + a + '=' + ans) + '.',
-    ['Convert ' + t(R.tex) + ' to a fraction (calculator or algebra), reduce it, then subtract.', 'One digit comes before the repeating block, so use ' + t('1000x') + ' and ' + t('10x') + '.'], 'b−a for ' + R.tex);
-  }
-  /* rational number strictly between lo and hi */
-  function betweenPart(loTex, lo, hiTex, hi, text) {
-    var key = null;
-    for (var dp = 1; dp < 6 && key == null; dp++) { var f = Math.pow(10, dp), c = Math.floor(lo * f) + 1; if (c / f < hi) key = (c / f).toFixed(dp); }
-    var check = function (resp) {
-      var a = K.read(resp); if (a.res) return a.res;
-      var v = a.val, rt = ex.rat(a.ast);
-      if (!rt && v > lo && v < hi && Math.abs(v * 1e6 - Math.round(v * 1e6)) < 1e-6) return form('as-decimal', 'That works out to ' + t(F(Math.round(v * 1e6) / 1e6)) + ', which is rational. Type it as a decimal or a fraction.');
-      if (!rt) return wrong('irrational-answer', 'That number has a root or ' + t('\\pi') + ' in it. Give a rational number — a terminating decimal or a fraction.');
-      if (v > lo && v < hi) return ok();
-      if (Math.abs(v - lo) < 1e-3 || Math.abs(v - hi) < 1e-3) return wrong('endpoint', 'That’s (about) one of the two numbers themselves. Find one strictly <b>between</b> them.');
-      return wrong('not-between', t(String(v).length > 10 ? v.toFixed(4) : v) + ' isn’t between them. Find a decimal for each number first.');
     };
-    return { prompt: 'Give a rational number between ' + t(loTex) + ' and ' + t(hiTex) + '.', input: { type: 'math', keys: 'fraction' }, check: check, key: key,
-      answer: t(key) + ' (any rational number strictly between them)', good: [String(((lo + hi) / 2).toFixed(6))], bad: [loTex, hiTex, '0'],
-      solution: t(loTex + '=' + cut(lo, 7) + '\\ldots') + ' and ' + t(hiTex + '=' + cut(hi, 7) + '\\ldots') + '. A terminating decimal between them, such as ' + t(key) + ', is rational: ' + t(cut(lo, 5) + '\\ldots<' + key + '<' + cut(hi, 5) + '\\ldots') + '.',
-      hints: ['Find a decimal for each number with your calculator.', 'Any terminating decimal between the two values is rational.'], text: text };
-  }
-  /* SVG number line 0..max with labelled points (plain-text labels) */
-  function numberLine(pts, max) {
-    var W = 520, pad = 18, sc = (W - 2 * pad) / max, s = '<svg viewBox="0 0 ' + W + ' 96" width="100%" style="max-width:520px" role="img" aria-label="number line">';
-    s += '<line x1="' + pad + '" y1="62" x2="' + (W - 6) + '" y2="62" stroke="currentColor" stroke-width="1.5"/>';
-    for (var i = 0; i <= max; i++) { var x = pad + i * sc; s += '<line x1="' + x + '" y1="57" x2="' + x + '" y2="67" stroke="currentColor"/><text x="' + x + '" y="82" font-size="11" text-anchor="middle" fill="currentColor">' + i + '</text>'; }
-    pts.forEach(function (p, j) {
-      var x = pad + p.v * sc, y = [40, 26, 12][j % 3];
-      s += '<line x1="' + x + '" y1="' + (y + 3) + '" x2="' + x + '" y2="60" stroke="#c0392b" stroke-width="0.8"/><circle cx="' + x + '" cy="62" r="3.5" fill="#c0392b"/><text x="' + x + '" y="' + y + '" font-size="12" text-anchor="middle" fill="#c0392b">' + p.label + '</text>';
-    });
-    return s + '</svg>';
-  }
-  function mcTextFix(p, text) { p.text = text; return p; }
-
-  /* ---------- Question 5 items (shared) ---------- */
-  var SQ_DEC = [[4, 2], [9, 3], [16, 4], [25, 5], [36, 6], [49, 7], [64, 8], [81, 9]];       // 0.00kk = (0.0k)^2
-  var MIXED_SQ = [[36, 25, 6, 5], [49, 36, 7, 6], [25, 16, 5, 4], [16, 9, 4, 3], [64, 49, 8, 7], [81, 64, 9, 8], [49, 25, 7, 5], [121, 100, 11, 10]]; // c²/b² between 1 and 2... as mixed numbers
-  var QUAD = [[16, 625, 2, 5], [1, 16, 1, 2], [16, 81, 2, 3], [81, 256, 3, 4], [1, 81, 1, 3], [81, 625, 3, 5], [1, 625, 1, 5]];
-  function q5Items(r) {
-    var it = {};
-    var d = r.pick([2, 4, 5, 6, 8]);
-    it.a = { tex: '0.' + d, val: norm(d, 10), sol: t('0.' + d + '=\\frac{' + d + '}{10}' + (gcd(d, 10) > 1 ? '=' + rTex([d, 10]) : '')) + '. It terminates, so it is rational.', why: t('0.' + d) + ' terminates, so it is ' + t('\\frac{' + d + '}{10}') + ' — rational.', diag: null };
-    var b = r.pick([3, 4, 5, 6, 7, 8, 9]);
-    it.b = { tex: '\\sqrt{\\dfrac{1}{' + b * b + '}}', val: [1, b], sol: t('1^{2}=1') + ' and ' + t(b + '^{2}=' + b * b) + ', so ' + t('\\sqrt{\\frac{1}{' + b * b + '}}=\\frac{1}{' + b + '}') + '. Rational.', why: t('1') + ' and ' + t(b * b) + ' are both perfect squares, so the root is exactly ' + t('\\frac{1}{' + b + '}') + '.',
-      diag: function (v) { if (ex.eq(v, 1 / (b * b))) return { code: 'no-root', hint: 'That’s the number under the root. Take the square root of the top and the bottom.' }; return null; } };
-    var sq = r.pick(SQ_DEC), cTex = '0.00' + (sq[0] < 10 ? '0' : '') + sq[0];
-    it.c = { tex: '\\sqrt{' + cTex + '}', val: norm(sq[1], 100), sol: t('0.0' + sq[1] + '\\times 0.0' + sq[1] + '=' + cTex) + ', so ' + t('\\sqrt{' + cTex + '}=0.0' + sq[1] + '=' + rTex([sq[1], 100])) + '. Rational.', why: t('0.0' + sq[1] + '^{2}=' + cTex) + ', so ' + t('\\sqrt{' + cTex + '}') + ' is exactly ' + t('0.0' + sq[1]) + '.',
-      diag: function (v) { if (ex.eq(v, sq[1] / 10)) return { code: 'dec-place', hint: 'Check: ' + t('(0.' + sq[1] + ')^{2}=' + (sq[0] / 100)) + ', not ' + t(cTex) + '. Watch the decimal places.' }; if (ex.eq(v, sq[0] / 10000)) return { code: 'no-root', hint: 'That’s the number under the root. Take its square root.' }; return null; } };
-    var dn = r.pick(nonSquares(51, 99));
-    it.d = { tex: '-\\sqrt{' + dn + '}', val: null, sol: t(dn) + ' is not a perfect square (' + t(Math.floor(Math.sqrt(dn)) + '^{2}=' + Math.pow(Math.floor(Math.sqrt(dn)), 2)) + ', ' + t(Math.ceil(Math.sqrt(dn)) + '^{2}=' + Math.pow(Math.ceil(Math.sqrt(dn)), 2)) + '), so ' + t('-\\sqrt{' + dn + '}=-' + cut(Math.sqrt(dn), 6) + '\\ldots') + ' never stops or repeats. Irrational.', why: t(dn) + ' is not a perfect square, so its square root never stops and never repeats — irrational. (The negative sign doesn’t change that.)' };
-    var e = r.int(1, 8);
-    it.e = { tex: '-0.\\overline{' + e + '}', val: norm(-e, 9), sol: t('-0.\\overline{' + e + '}=-0.' + e + e + e + e + '\\ldots') + ' repeats, so it is rational: ' + t('-\\frac{' + e + '}{9}' + (gcd(e, 9) > 1 ? '=' + rTex([-e, 9]) : '')) + '.', why: 'The digit ' + t(e) + ' repeats forever, and every repeating decimal is a fraction — rational.',
-      diag: function (v) { if (ex.eq(v, -e / 10)) return { code: 'as-terminating', hint: t('-\\frac{' + e + '}{10}=-0.' + e) + ' stops. The bar means the ' + t(e) + ' repeats forever: type ' + t('-0.' + e + e + e + e + e + e + e + e + e + e) + ' into your calculator and convert.' }; return null; } };
-    var ms = r.pick(MIXED_SQ), mixTex = '1\\tfrac{' + (ms[0] - ms[1]) + '}{' + ms[1] + '}';
-    it.f = { tex: '-\\sqrt{1\\dfrac{' + (ms[0] - ms[1]) + '}{' + ms[1] + '}}', val: [-ms[2], ms[3]], sol: t(mixTex + '=\\frac{' + ms[0] + '}{' + ms[1] + '}') + ', and ' + t('\\sqrt{\\frac{' + ms[0] + '}{' + ms[1] + '}}=\\frac{' + ms[2] + '}{' + ms[3] + '}') + ', so the number is ' + t('-\\frac{' + ms[2] + '}{' + ms[3] + '}') + '. Rational.', why: 'Change ' + t(mixTex) + ' to ' + t('\\frac{' + ms[0] + '}{' + ms[1] + '}') + ' first: both parts are perfect squares, so the root is exactly ' + t('\\frac{' + ms[2] + '}{' + ms[3] + '}') + '.',
-      diag: function (v) { if (ex.eq(v, -ms[0] / ms[1])) return { code: 'no-root', hint: 'That’s the number under the root, as an improper fraction. Now take the square root of the top and the bottom.' }; return null; } };
-    var gI = r.int(2, 9), gB = randBlock(r, 3, ''), gR = repInfo(gI, '', gB);
-    it.g = { tex: dotsTex(gI, gB, 3), val: gR.x, R: gR, sol: 'The block ' + t(gB) + ' repeats, so it is rational. ' + t('1000x=' + F(gR.hi * gI + Number(gB)) + '.\\overline{' + gB + '}') + ', so ' + t('999x=' + F(gR.n)) + ' and ' + t('x=\\frac{' + F(gR.n) + '}{999}' + (gR.g > 1 ? '=' + rTex(gR.x) : '')) + '.', why: 'The block ' + t(gB) + ' copies itself forever. Every repeating decimal is a fraction — rational.',
-      diag: function (v) { if (ex.eq(v, Number(gI + '.' + gB))) return { code: 'as-terminating', hint: 'That fraction equals the terminating decimal ' + t(gI + '.' + gB) + '. The block repeats forever — type ' + t(calcString(gR)) + ' into your calculator.' }; if (ex.eq(v, Number(gB) / 999)) return { code: 'no-whole', hint: 'Don’t forget the whole-number part ' + t(gI) + '.' }; return null; } };
-    var gw = randGrow(r), hI = r.int(1, 9);
-    it.h = { tex: growTex(hI, gw.stem, gw.c, gw.k0, true, gw.tail), val: null, sol: 'Between the copies of ' + t(gw.stem) + ' the run of ' + t(gw.c) + '’s keeps getting longer, so no fixed block ever repeats and the digits never stop. Irrational.', why: 'Look closely: the run of ' + t(gw.c) + '’s gets longer each time, so no single block repeats. Never stopping and never repeating means irrational.' };
-    var qd = r.pick(QUAD);
-    it.i = { tex: '\\sqrt{\\sqrt{\\dfrac{' + qd[0] + '}{' + qd[1] + '}}}', val: [qd[2], qd[3]], sol: 'Inside first: ' + t('\\sqrt{\\frac{' + qd[0] + '}{' + qd[1] + '}}=\\frac{' + qd[2] * qd[2] + '}{' + qd[3] * qd[3] + '}') + ', then ' + t('\\sqrt{\\frac{' + qd[2] * qd[2] + '}{' + qd[3] * qd[3] + '}}=\\frac{' + qd[2] + '}{' + qd[3] + '}') + '. Rational.', why: 'Work from the inside out: ' + t('\\sqrt{\\frac{' + qd[0] + '}{' + qd[1] + '}}=\\frac{' + qd[2] * qd[2] + '}{' + qd[3] * qd[3] + '}') + ', and that is a perfect square too.',
-      diag: function (v) { if (ex.eq(v, qd[2] * qd[2] / (qd[3] * qd[3]))) return { code: 'one-root', hint: 'You took one square root. There are two — take the square root again.' }; if (ex.eq(v, qd[0] / qd[1])) return { code: 'no-root', hint: 'That’s the number under the roots. Take the square root twice.' }; return null; } };
-    return it;
-  }
-  function q5FracPart(sh, id, level, hints) {
-    var x = sh[id];
-    var p = P.fraction('Write ' + t(x.tex) + ' as a fraction in simplest form.', x.val, { diag: x.diag || null }, x.sol,
-      hints || ['Simplify the number first (take any square roots), then write it as a fraction.'], 'Q5 fraction ' + x.tex.replace(/\\[a-z]+/g, ''));
-    p.input.before = t(x.tex + '=');
-    p.check = mixedGuard(p.check, x.val);
-    p.good = [(x.val[0] < 0 ? '-' : '') + Math.abs(x.val[0]) + '/' + x.val[1]];
+    var fN = nt.factor(n), fNN = nt.factor(N);
+    var p = P.fields(nTex,
+      [{ name: 'Multiplier', label: 'Multiply by' }, { name: (k === 2 ? 'Square' : 'Cube') + ' root', label: (k === 2 ? 'Square' : 'Cube') + ' root of the result', mode: 'math' }],
+      [K.number(m, multDiag(n, k)), valChk(rt, rdiag)], [String(m), String(rt)],
+      'Multiply by ' + t(F(m)) + '; ' + t(rootTex(k, F(N)) + '=' + F(rt)),
+      (nTex.indexOf('times') < 0 ? t(F(n) + '=' + K.fac(n)) + '. ' : '') + 'Raise each exponent to the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ': ' +
+        fN.filter(function (pe) { return pe[1] % k; }).map(function (pe) { return t(pe[0] + '^{' + pe[1] + '}\\to ' + pe[0] + '^{' + (pe[1] + (k - pe[1] % k)) + '}'); }).join(', ') + '.<br>Multiply by ' + t(eqv(m)) + '. Result: ' + t(HW.texFactors(fNN) + (N < 1e9 ? '=' + F(N) : '')) + '.<br>' + (k === 2 ? 'Square' : 'Cube') + ' root: ' + t(HW.texFactors(fNN.map(function (pe) { return [pe[0], pe[1] / k]; })) + '=' + F(rt)) + '.',
+      ['Look at the exponents in the prime factorization. Which ones are not ' + (k === 2 ? 'even' : 'a multiple of ' + t('3')) + '?', 'Bring each of those up to the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ' — and no further.'],
+      'multiply to perfect ' + word + ': ' + n);
+    p.bad = [[String(n), String(rt)], [String(m * 2 === n ? m * 3 : m * 2), String(rt)]];
     return p;
   }
-
-  /* ---------- Extra practice 12 rows ---------- */
-  function e12Rows(r, kinds) {
-    var make = {
-      sq: function () { var k = r.int(2, 12); return { tex: '\\sqrt{' + k * k + '}', rat: true, why: t(k * k + '=' + k + '^{2}') + ', so ' + t('\\sqrt{' + k * k + '}=' + k) + ' — rational.' }; },
-      nsq: function () { var s = r.int(2, 4), f = r.pick([2, 3, 5, 6, 7]), n = s * s * f; return { tex: '\\sqrt{' + n + '}', rat: false, why: t('\\sqrt{' + n + '}=' + s + '\\sqrt{' + f + '}') + ': ' + t(n) + ' is not a perfect square, so it is irrational.' }; },
-      pipi: function () { var k = r.pick([1, 2, 3]); return { tex: '\\dfrac{' + (k > 1 ? k : '') + '\\pi}{\\pi}', rat: true, why: 'Simplify first: the ' + t('\\pi') + '’s cancel, leaving ' + t(k) + ' — rational.' }; },
-      prod: function () { var pr = r.pick([[2, 8], [3, 12], [2, 18], [5, 20], [3, 27], [2, 32]]); return { tex: '\\sqrt{' + pr[0] + '}\\times\\sqrt{' + pr[1] + '}', rat: true, why: t('\\sqrt{' + pr[0] + '}\\times\\sqrt{' + pr[1] + '}=\\sqrt{' + pr[0] * pr[1] + '}=' + Math.sqrt(pr[0] * pr[1])) + ' — rational, even though each factor is irrational.' }; },
-      sqfr: function () { var ab = r.pick([[3, 5], [2, 7], [4, 9], [5, 6], [3, 8], [7, 10]]); return { tex: '\\sqrt{\\dfrac{' + ab[0] * ab[0] + '}{' + ab[1] * ab[1] + '}}', rat: true, why: 'Top and bottom are perfect squares: the root is ' + t('\\frac{' + ab[0] + '}{' + ab[1] + '}') + ' — rational.' }; },
-      negdec: function () { var k = r.pick([2, 3, 4, 5, 6, 7, 8, 9]); return { tex: '-\\sqrt{' + (k * k / 100) + '}', rat: true, why: t('0.' + k + '^{2}=' + (k * k / 100)) + ', so the number is ' + t('-0.' + k) + ' — rational.' }; },
-      rep: function () { var bl = randBlock(r, 2, ''), fr = norm(Number(bl), 99); return { tex: '0.\\overline{' + bl + '}', rat: true, why: 'It repeats: ' + t('0.\\overline{' + bl + '}=' + rTex(fr)) + ' — rational.' }; },
-      pihalf: function () { var v = r.pick(['\\dfrac{\\pi}{2}', '\\dfrac{\\pi}{3}', '2\\pi', '\\pi+1']); return { tex: v, rat: false, why: 'Halving, doubling or adding to ' + t('\\pi') + ' can’t make its digits stop or repeat — irrational.' }; },
-      grow: function () { var g = r.chance(0.5) ? { tex: growTex(0, '1', '2', 1, false, '1'), c: '2' } : { tex: growTex(0, '1', '0', 1, false, '1'), c: '0' }; return { tex: g.tex, rat: false, why: 'The runs of ' + t(g.c) + '’s keep growing, so no fixed block ever repeats — irrational.' }; },
-      sum: function () { var n = r.pick([2, 3, 5, 7]); return { tex: '\\sqrt{' + n + '}+\\sqrt{' + n + '}', rat: false, why: t('\\sqrt{' + n + '}+\\sqrt{' + n + '}=2\\sqrt{' + n + '}') + ', which is irrational.' }; }
+  function divPart(n, k) {
+    var word = pw(k), d = divFor(n, k), N = n / d, rt = intRoot(N, k), test = k === 2 ? 'even' : 'a multiple of ' + t('3');
+    var ddiag = function (v) {
+      if (!(v >= 1) || v % 1) return null;
+      if (n % v) return { code: 'not-divisor', hint: t(F(n) + '\\div ' + F(v)) + ' isn’t a whole number. Remove only prime factors that ' + t(F(n)) + ' actually has.' };
+      var w = n / v;
+      if (intRoot(w, k) != null) return { code: 'not-smallest', hint: t(F(n) + '\\div ' + F(v) + '=' + F(w)) + ' is a perfect ' + word + ', but you removed more than you had to. Lower each exponent only to the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ' below it.' };
+      if (k === 3 && intRoot(w, 2) != null) return { code: 'made-square', hint: 'That leaves a perfect <b>square</b>, but you need a perfect <b>cube</b>.' };
+      if (k === 2 && intRoot(w, 3) != null) return { code: 'made-cube', hint: 'That leaves a perfect <b>cube</b>, but you need a perfect <b>square</b>.' };
+      return null;
     };
-    return kinds.map(function (k, i) { var o = make[k](); o.id = 'r' + i; return o; });
-  }
-  /* plain-text label for the teacher log: \dfrac{\pi}{2} -> π/2, 0.\overline{07} -> 0.(07) repeating, \sqrt{\dfrac{9}{25}} -> √(9/25) */
-  function plainTex(s) {
-    s = s.replace(/\\pi/g, 'π').replace(/\\times/g, '×').replace(/\\ldots/g, '…').replace(/\\,/g, '').replace(/\\overline\{(\d+)\}/g, '($1) repeating');
-    s = s.replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2');
-    return s.replace(/\\sqrt\{([^{}]*)\}/g, function (m, a) { return /^[\d.]+$/.test(a) ? '√' + a : '√(' + a + ')'; });
-  }
-  function ratGrid(r, rows, text) {
-    var shown = r.shuffle(rows), want = {};
-    rows.forEach(function (x) { want[x.id] = x.rat ? 'Q' : 'I'; });
-    var byId = {}; rows.forEach(function (x) { byId[x.id] = x; });
-    var p = P.grid('Classify each number as rational or irrational.', shown.map(function (x) { return { id: x.id, html: t(x.tex), label: plainTex(x.tex) }; }),
-      [{ id: 'Q', html: 'Rational', label: 'Rational' }, { id: 'I', html: 'Irrational', label: 'Irrational' }], want,
-      { why: function (rowId) { return { code: byId[rowId].rat ? 'said-irrational' : 'said-rational', hint: 'Look again at ' + t(byId[rowId].tex) + '. ' + (byId[rowId].rat ? 'Simplify it first.' : 'Can it be written as a ratio of integers?') }; } },
-      rows.map(function (x) { return t(x.tex) + ': ' + x.why; }).join('<br>'), ['Simplify each number first, then decide: a ratio of integers (or a decimal that stops or repeats) is rational.'], text);
+    var fN = nt.factor(n), fR = nt.factor(N);
+    var p = P.fields('Find the smallest whole number ' + t(F(n)) + ' can be <b>divided</b> by to leave a perfect ' + word + ', and give the ' + word + ' root.',
+      [{ name: 'Divisor', label: 'Divide by' }, { name: (k === 2 ? 'Square' : 'Cube') + ' root', label: (k === 2 ? 'Square' : 'Cube') + ' root', mode: 'text', placeholder: 'number' }],
+      [K.number(d, ddiag), valChk(rt, null)], [String(d), String(rt)],
+      'Divide by ' + t(F(d)) + '; ' + t(rootTex(k, F(N)) + '=' + F(rt)),
+      t(F(n) + '=' + K.fac(n)) + '. Lower each exponent that isn’t ' + test + ' to the one just below it: ' + fN.filter(function (pe) { return pe[1] % k; }).map(function (pe) { return t(pe[0] + '^{' + pe[1] + '}\\to ' + pe[0] + '^{' + (pe[1] - pe[1] % k) + '}'); }).join(', ') + '.<br>Divide by ' + t(eqv(d)) + ': ' + t(F(n) + '\\div ' + F(d) + '=' + F(N) + '=' + HW.texFactors(fR)) + '.<br>' + (k === 2 ? 'Square' : 'Cube') + ' root: ' + t(HW.texFactors(fR.map(function (pe) { return [pe[0], pe[1] / k]; })) + '=' + F(rt)) + '.',
+      ['Factor ' + t(F(n)) + ' and look for exponents that are not ' + test + '.', 'Remove just enough of each of those primes.'], 'divide to perfect ' + word + ': ' + n);
+    p.bad = [[String(n), '1'], [String(d), String(N)]];
     return p;
   }
 
   HW.addCodes({
-    'mc-said-NT': 'Said non-repeating & terminating', 'mc-said-RN': 'Said repeating & non-terminating', 'mc-said-NN': 'Said non-repeating & non-terminating', 'mc-said-RT': 'Said repeating & terminating (impossible)',
-    'as-terminating': 'Treated a repeating decimal as terminating', 'bar-all': 'Repeated the digits before the bar too', 'no-whole': 'Lost the whole-number part',
-    'no-root': 'Forgot to take the square root', 'one-root': 'Took only one of two roots', 'dec-place': 'Decimal-place slip in a root',
-    'coef-inside': 'Read k√m as √(k·m)', 'root-small': 'Placed √0.a at 0.a', 'no-subtract': 'Didn’t subtract the equations', 'coef-form': 'Wrong multipliers (algebraic method)', tails: 'Repeating tails don’t cancel', rhs: 'Subtraction error (algebraic method)',
-    unreduced: 'Didn’t reduce before b − a', 'not-reduced': 'Applied the denominator test before reducing', 'den-test': 'Misread the denominator test', swap: 'Swapped nines and zeros', 'no-zeros': 'Left out the zeros for the lead', close: 'Treated 0.(9) as less than 1', 'real-value': 'Ignored the bar placement', screen: 'Confused screen size with block length', 'no-lead-subtract': 'Forgot to subtract the lead', 'a-b': 'Found a − b', 'said-irrational': 'Called a rational number irrational', 'said-rational': 'Called an irrational number rational',
-    mixed: 'Wrote a mixed number', 'irrational-answer': 'Gave an irrational number', endpoint: 'Gave an endpoint', 'not-between': 'Number not between', 'not-multiple': 'Numerator doesn’t cancel the bad prime',
-    'sum-lead': 'Added a and b instead of taking the larger', 'max-block': 'Gave the maximum block length, not the actual', 'n-not-n-1': 'Counted n remainders instead of n − 1'
+    'not-factored': 'Didn’t write the prime factorization', 'as-number': 'Gave a number instead of exponent form', 'said-not-perfect': 'Said not a perfect square/cube (it is)',
+    'said-perfect': 'Said it is a perfect square/cube (it isn’t)', 'yes-root': 'Said yes without giving the root', 'divided-by-index': 'Halved / divided by 3 instead of taking the root',
+    'each-prime-once': 'Root: used each prime once (didn’t divide the exponents)', 'used-square-root': 'Gave the square root instead of the cube root', 'used-cube-root': 'Gave the cube root instead of the square root',
+    'root-value': 'Wrong root', 'times-itself': 'Multiplied by the number itself (not smallest)', 'not-smallest': 'Works, but not the smallest', 'made-square': 'Made a square instead of a cube',
+    'made-cube': 'Made a cube instead of a square', 'missed-prime': 'Missed a prime with the wrong exponent', 'not-divisor': 'Divisor doesn’t divide the number',
+    'halved': 'Halved instead of square root', 'perimeter': 'Used the perimeter', 'area': 'Gave the area', 'two-sides': 'Used only two sides', 'side-only': 'Gave one side only',
+    'divided-3': 'Divided by 3 instead of cube root', 'square-root': 'Used the square root instead of cube root', 'squared': 'Took two of each prime instead of one',
+    'square-only': 'Square, but not a cube (needed both)', 'cube-only': 'Cube, but not a square (needed both)', 'exp-halved': 'Halved the exponents instead of doubling', 'exp-added': 'Added to the exponents instead of multiplying',
+    'exp-same': 'Left the exponents unchanged', 'used-sqrt-for-cube': 'Halved the exponents for a cube'
   });
 
   HW.defineLesson({
-    id: 'u1l3', unit: 1, num: '3', title: 'Rational Numbers, Irrational Numbers, and Decimal Patterns', outcome: 'AN2',
-    blurb: 'Decimals that stop, repeat, or wander forever — sorting rational from irrational numbers, ordering irrational numbers, and turning repeating decimals back into fractions.',
+    id: 'u1l3', unit: 1, num: '3', title: 'Perfect Squares and Perfect Cubes', outcome: 'AN1',
+    blurb: 'Use prime factorization to test for perfect squares and perfect cubes, find square and cube roots, and build perfect squares and cubes.',
     questions: [
-      { num: '1', section: 'Part A — Decimal patterns: rational or irrational?', stem: 'State whether the decimal equivalent of the number is <b>repeating</b> or <b>non-repeating</b>, and whether it is <b>terminating</b> or <b>non-terminating</b>.', parts: [
-        { id: '1a', level: 'LIM', make: function (r) {
-          var q = r.pick([4, 8, 5, 20, 25, 16, 40]), p = r.pick(coprimeTo(q, 1, q - 1));
-          return patternPart(r, '\\dfrac{' + p + '}{' + q + '}', 'NT', { RN: 'Divide ' + t(p + '\\div ' + q) + ': it stops. A decimal that stops is terminating.', NN: 'Divide ' + t(p + '\\div ' + q) + ' — the decimal stops, so it terminates.' },
-            t('\\frac{' + p + '}{' + q + '}=' + K.decTex([p, q])) + '; ' + t(q + '=' + texFacs(q)) + ' has only 2s and 5s, so it stops. <b>Non-repeating, terminating.</b>', 'pattern of ' + p + '/' + q);
+      { num: '1', section: 'Part A — Perfect Squares', stem: 'In each case use prime factorization to determine whether the number is a perfect square. If it is a perfect square, state its square root. (Verify with a calculator.)', parts: [
+        { id: '1a', level: 'PRG', make: function (r) { var k = r.pick([18, 20, 28, 45, 50, 44, 52, 63]); return powerTestPart(k * k, 2); } },
+        { id: '1b', level: 'PRG', make: function (r) { var k = r.pick([30, 42, 66, 70, 78]); return powerTestPart(k * k, 2); } },
+        { id: '1c', level: 'PRG', make: function (r) { return powerTestPart(r.pick([686, 250, 375, 1029, 2662, 1715]), 2); } },
+        { id: '1d', level: 'PRG', make: function (r) { return powerTestPart(r.pick([1050, 1470, 1350, 1575, 1176, 2450]), 2); } }] },
+      { num: '2', section: 'Part B — Perfect Cubes', stem: function (sh) { return 'Consider the number ' + t(F(sh.n)) + '.'; },
+        shared: function (r) { var k = r.pick([45, 63, 50, 75, 98, 44, 52, 99, 28, 36]); return { k: k, n: k * k * k }; },
+        parts: [
+          { id: '2a', level: 'BEG', make: function (r, sh) {
+            var n = sh.n, k = sh.k, s = Math.round(Math.sqrt(n));
+            return P.number('Use a calculator to find the cube root of ' + t(F(n)) + '.', k, function (v) {
+              if (Math.abs(v - Math.sqrt(n)) < 1 || v === s) return { code: 'square-root', hint: 'That’s the <b>square</b> root. Use the cube root: on the TI-30XIIS type ' + t('3') + ', then ' + t('\\sqrt[x]{\\ }') + ' (2nd of ' + t('\\wedge') + '), then the number.' };
+              if (v === n / 3) return { code: 'divided-3', hint: 'A cube root isn’t a third of the number. It is the number that, multiplied by itself three times, gives ' + t(F(n)) + '.' };
+              return null;
+            }, t('\\sqrt[3]{' + F(n) + '}=' + k) + '. Check: ' + t(k + '\\times ' + k + '\\times ' + k + '=' + F(n)) + '.', ['Use the cube-root key, not the square-root key.'], 'cube root of ' + n, { before: t('\\sqrt[3]{' + F(n) + '}=') });
+          } },
+          { id: '2b1', sub: 'b i', level: 'EMG', make: function (r, sh) { var p = productPart(sh.n, 'required'); p.prompt = 'Write ' + t(F(sh.n)) + ' as a product of primes in exponent form.'; return p; } },
+          { id: '2b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
+            var n = sh.n, k = sh.k, f = nt.factor(n), fk = HW.texFactors(nt.factor(k)), exps = f.map(function (pe) { return pe[1]; }), sum = nt.sum(exps), mx = Math.max.apply(null, exps);
+            return P.mc(r, 'Which statement explains how the prime factorization ' + t(F(n) + '=' + K.fac(n)) + ' shows that ' + t(F(n)) + ' is a perfect cube, and confirms the cube root?', [
+              { html: 'Every exponent (' + t(exps.join(',\\ ')) + ') is a multiple of ' + t('3') + ', so the primes split into three identical groups. One group is ' + t(fk + (fk === String(k) ? '' : '=' + k)) + ', the cube root.', right: true },
+              { html: 'The exponents add up to ' + t(sum) + ', a multiple of ' + t('3') + ', so it is a perfect cube with cube root ' + t(k) + '.', why: 'Adding the exponents doesn’t test for a cube: ' + t('18=2\\times 3^{2}') + ' has exponents adding to ' + t('3') + ', but ' + t('18') + ' is not a perfect cube. <b>Each</b> exponent must be a multiple of ' + t('3') + '.' },
+              { html: 'The largest exponent, ' + t(mx) + ', is a multiple of ' + t('3') + ', so it is a perfect cube with cube root ' + t(k) + '.', why: 'Every exponent must be a multiple of ' + t('3') + ', not just the largest: ' + t('24=2^{3}\\times 3') + ' is not a perfect cube.' },
+              { html: 'Every exponent is a multiple of ' + t('3') + ', so the cube root is ' + t(F(n) + '\\div 3' + (n % 3 ? '\\approx ' + F(Math.round(n / 3 * 100) / 100) : '=' + F(n / 3))) + '.', why: 'Right test, wrong root: a cube root isn’t a third of the number. Divide each <b>exponent</b> by ' + t('3') + ' instead.' }],
+              t(F(n) + '=' + K.fac(n)) + '. Every exponent is a multiple of ' + t('3') + ', so the factors group into three matching triples and ' + t(F(n)) + ' is a perfect cube. Dividing each exponent by ' + t('3') + ': ' + t('\\sqrt[3]{' + F(n) + '}=' + fk + (fk === String(k) ? '' : '=' + k)) + ', which matches the calculator. ✓',
+              ['For a perfect cube, what must be true of <b>every</b> exponent?'], 'explain perfect cube ' + n);
+          } }] },
+      { num: '3', stem: 'In each case use prime factorization to determine whether the number is a perfect cube. If it is, state its cube root. (Verify with a calculator.)', parts: [
+        { id: '3a', level: 'PRG', make: function (r) { return powerTestPart(r.pick([512, 729, 4096, 15625]), 3); } },
+        { id: '3b', level: 'PRG', make: function (r) { return powerTestPart(r.pick([2197, 4913, 6859, 12167]), 3); } },
+        { id: '3c', level: 'PRG', make: function (r) { return powerTestPart(r.pick([1024, 256, 625, 2401, 6561]), 3); } },
+        { id: '3d', level: 'PRG', make: function (r) { return powerTestPart(r.pick([3025, 1225, 5929, 4225, 8281, 1089]), 3); } }] },
+      { num: '4', section: 'Part C — Square, Cube, Both, or Neither?', stem: '', parts: [
+        { id: '4a', level: 'PRG', make: function (r) {
+          var ex = r.pick([[64, '2^{6}', 8, 4], [729, '3^{6}', 27, 9], [4096, '2^{12}', 64, 16], [15625, '5^{6}', 125, 25], [46656, '2^{6}\\times 3^{6}', 216, 36]]);
+          return P.mc(r, 'How could you use prime factorization to determine whether a whole number is <i>both</i> a perfect square and a perfect cube?', [
+            { html: 'Find the prime factorization. The number is both exactly when <b>every</b> exponent is a multiple of ' + t('6') + ' (a multiple of both ' + t('2') + ' and ' + t('3') + ').', right: true },
+            { html: 'Find the prime factorization. The number is both when every exponent is even.', why: 'Even exponents only make a perfect <b>square</b>: ' + t('4=2^{2}') + ' is a square but not a cube.' },
+            { html: 'Find the prime factorization. The number is both when every exponent is a multiple of ' + t('2') + ' <b>or</b> a multiple of ' + t('3') + '.', why: '“Or” isn’t enough: ' + t('108=2^{2}\\times 3^{3}') + ' has one of each, and it is neither a square nor a cube.' },
+            { html: 'Find the prime factorization. The number is both when the exponents add up to a multiple of ' + t('6') + '.', why: t('486=2\\times 3^{5}') + ' has exponents adding to ' + t('6') + ', but it is neither a square nor a cube. Look at each exponent on its own.' }],
+            'A perfect square needs every exponent to be a multiple of ' + t('2') + '; a perfect cube needs every exponent to be a multiple of ' + t('3') + '. Both at once means every exponent is a multiple of ' + t('6') + '. Example: ' + t(F(ex[0]) + '=' + ex[1]) + ', so ' + t('\\sqrt{' + F(ex[0]) + '}=' + ex[2]) + ' and ' + t('\\sqrt[3]{' + F(ex[0]) + '}=' + ex[3]) + '.',
+            ['What must the exponents be for a square? For a cube? What number is a multiple of both?'], 'explain square and cube');
         } },
-        { id: '1b', level: 'LIM', make: function (r) {
-          var bl = randBlock(r, r.pick([3, 3, 2]), '', true), tex = dotsTex(0, bl, bl.length === 2 ? 4 : 3);
-          return patternPart(r, tex, 'RN', { NT: 'The “…” means it keeps going, so it doesn’t terminate.', NN: 'Look at the digits: the block ' + t(bl) + ' copies itself again and again. That’s repeating.' },
-            'The block ' + t(bl) + ' copies itself forever: ' + t(tex + '=0.\\overline{' + bl + '}') + '. <b>Repeating, non-terminating.</b>', 'pattern of 0.' + bl + '…');
-        } },
-        { id: '1c', level: 'LIM', make: function (r) {
-          var q = r.pick([11, 3, 7, 9]), p = r.pick(coprimeTo(q, 1, q - 1));
-          return patternPart(r, '-\\dfrac{' + p + '}{' + q + '}', 'RN', { NT: 'Divide ' + t(p + '\\div ' + q) + ' on your calculator: it never stops. (' + t(q) + ' is not built from 2s and 5s.)', NN: 'Divide it out: ' + t(K.decTex([-p, q])) + '. A block repeats. (The negative sign doesn’t change the pattern.)' },
-            t('-\\frac{' + p + '}{' + q + '}=' + K.decTex([-p, q])) + '; ' + badDen(q) + ', so the decimal never stops but repeats. <b>Repeating, non-terminating.</b>', 'pattern of -' + p + '/' + q);
-        } },
-        { id: '1d', level: 'BEG', make: function (r) {
-          var b = r.pick([3, 6, 9, 12, 7]), a = r.pick(coprimeTo(b, 1, b - 1));
-          return patternPart(r, '\\sqrt{\\dfrac{' + a * a + '}{' + b * b + '}}', 'RN', { NN: 'Both ' + t(a * a) + ' and ' + t(b * b) + ' are perfect squares, so the root simplifies to the fraction ' + t('\\frac{' + a + '}{' + b + '}') + '. What does its decimal do?', NT: 'Simplify the root to ' + t('\\frac{' + a + '}{' + b + '}') + ', then divide. Does it stop?' },
-            t('\\sqrt{\\frac{' + a * a + '}{' + b * b + '}}=\\frac{' + a + '}{' + b + '}=' + K.decTex([a, b])) + '; ' + badDen(b) + '. <b>Repeating, non-terminating.</b>', 'pattern of sqrt(' + a * a + '/' + b * b + ')');
-        } },
-        { id: '1e', level: 'LIM', make: function (r) {
-          var n = r.pick(nonSquares(11, 99));
-          return patternPart(r, '-\\sqrt{' + n + '}', 'NN', { NT: t('-\\sqrt{' + n + '}=-' + cut(Math.sqrt(n), 8) + '\\ldots') + ' — the calculator only shows the first digits. ' + t(n) + ' isn’t a perfect square, so the digits never stop.', RN: 'No block of digits repeats: ' + t(n) + ' isn’t a perfect square, so ' + t('\\sqrt{' + n + '}') + ' is irrational.' },
-            t(n) + ' is not a perfect square, so ' + t('-\\sqrt{' + n + '}=-' + cut(Math.sqrt(n), 6) + '\\ldots') + ' is irrational. <b>Non-repeating, non-terminating.</b>', 'pattern of -sqrt' + n);
-        } },
-        { id: '1f', level: 'BEG', make: function (r) {
-          var k = r.pick([2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]), v = k * k / 100, rt = k / 10;
-          return patternPart(r, '\\sqrt{' + v + '}', 'NT', { NN: 'Check: ' + t(rt + '\\times ' + rt + '=' + v) + '. So ' + t('\\sqrt{' + v + '}') + ' is exactly ' + t(rt) + ' — not every square root is irrational.', RN: 'Check: ' + t(rt + '^{2}=' + v) + ', so ' + t('\\sqrt{' + v + '}=' + rt) + '. Does that repeat?' },
-            t(rt + '^{2}=' + v) + ', so ' + t('\\sqrt{' + v + '}=' + rt) + '. <b>Non-repeating, terminating.</b>', 'pattern of sqrt' + v);
-        } },
-        { id: '1g', level: 'LIM', make: function (r) {
-          var q = r.pick([8, 4, 5, 16, 20, 25]), p = r.pick(coprimeTo(q, 1, q - 1)), w = r.int(1, 9), imp = w * q + p;
-          return patternPart(r, '-' + w + '\\dfrac{' + p + '}{' + q + '}', 'NT', { RN: t(w + '\\frac{' + p + '}{' + q + '}=' + K.decTex([imp, q])) + ' stops. A decimal that stops is terminating and doesn’t repeat.', NN: 'Divide ' + t(p + '\\div ' + q) + ' — it stops, so it terminates.' },
-            t('-' + w + '\\frac{' + p + '}{' + q + '}=' + K.decTex([-imp, q])) + '; ' + t(q + '=' + texFacs(q)) + ' has only 2s and 5s. <b>Non-repeating, terminating.</b>', 'pattern of -' + w + ' ' + p + '/' + q);
-        } },
-        { id: '1h', level: 'LIM', make: function (r) {
-          var v = r.pick([['\\pi', Math.PI], ['\\pi', Math.PI], ['2\\pi', 2 * Math.PI], ['\\dfrac{\\pi}{2}', Math.PI / 2], ['-\\pi', -Math.PI]]);
-          return patternPart(r, v[0], 'NN', { NT: 'Your calculator rounds ' + t('\\pi') + ' to fit the screen. Its digits really go on forever.', RN: t('\\pi') + '’s digits never settle into a repeating block. (' + t('\\frac{22}{7}=3.\\overline{142857}') + ' repeats, but it’s only an approximation of ' + t('\\pi') + '.)' },
-            t(v[0] + '=' + cut(v[1], 6) + '\\ldots') + ': the digits of ' + t('\\pi') + ' never stop and never repeat, and doubling, halving or negating can’t change that. <b>Non-repeating, non-terminating.</b>', 'pattern of ' + v[0]);
+        { id: '4b', level: 'ADV', make: function (r) {
+          var p = r.pick([2, 3, 2, 3, 5, 6]), ans = Math.pow(p, 6), sq = Math.pow(p, 2), cu = Math.pow(p, 3);
+          var pf = nt.factor(p), what = p === 6 ? 'divisible by ' + t('6') : 'divisible by ' + t(p);
+          return P.number('Find the smallest whole number greater than ' + t('1') + ' that is <b>both</b> a perfect square and a perfect cube and is ' + what + '.', ans, function (v) {
+            if (v === sq || (v > 1 && intRoot(v, 2) != null && intRoot(v, 3) == null)) return { code: 'square-only', hint: t(F(v)) + ' is a perfect square, but not a perfect cube. Both at once needs every exponent to be a multiple of ' + t('6') + '.' };
+            if (v === cu || (v > 1 && intRoot(v, 3) != null && intRoot(v, 2) == null)) return { code: 'cube-only', hint: t(F(v)) + ' is a perfect cube, but not a perfect square. Both at once needs every exponent to be a multiple of ' + t('6') + '.' };
+            if (v > ans && intRoot(v, 6) != null) return { code: 'not-smallest', hint: t(F(v)) + ' is both, but a smaller one works. Use the smallest exponent that is a multiple of ' + t('6') + '.' };
+            return null;
+          }, 'Both a square and a cube ⇒ every exponent is a multiple of ' + t('6') + '. ' + (p === 6 ? 'It must contain both ' + t('2') + ' and ' + t('3') + '; the smallest is ' + t('2^{6}\\times 3^{6}=' + F(ans)) : 'It must contain ' + t(p) + '; the smallest is ' + t(p + '^{6}=' + F(ans))) + '. (' + t('\\sqrt{' + F(ans) + '}=' + F(Math.pow(p, 3))) + ', ' + t('\\sqrt[3]{' + F(ans) + '}=' + F(Math.pow(p, 2))) + ')',
+            ['Both a square and a cube: every exponent must be a multiple of what number?', 'Use the smallest such exponent on ' + (pf.length > 1 ? 'each prime' : t(p)) + '.'], 'smallest square and cube with ' + p);
         } }] },
-      { num: '2', stem: 'Classify the statement as <b>true</b> or <b>false</b>.', parts: [
-        { id: '2a', level: 'LIM', make: function (r) {
-          var d = r.pick(['0.375', '0.48', '2.125', '0.06', '1.75']), fr = norm(Math.round(Number(d) * 1000), 1000);
-          return P.tf(r, r.pick(['Every terminating decimal can be expressed as a fraction.', 'Any decimal that stops, such as ' + t(d) + ', can be written as a fraction.']), true,
-            'Try it: ' + t(d + '=' + rTex(fr)) + '. A terminating decimal is a whole number of tenths, hundredths, thousandths, …',
-            '<b>True.</b> A terminating decimal is a whole number of tenths, hundredths, thousandths, …, so it is a fraction: e.g. ' + t(d + '=' + rTex(fr)) + '.', [], 'T/F terminating → fraction');
-        } },
-        { id: '2b', level: 'BEG', make: function (r) {
-          var bl = randBlock(r, 2, ''), fr = norm(Number(bl), 99);
-          return P.tf(r, r.pick(['A decimal that repeats forever can never be written as a fraction.', 'A repeating decimal such as ' + t('0.\\overline{' + bl + '}') + ' cannot be written as a fraction.']), false,
-            'Check on your calculator: ' + t('0.\\overline{' + bl + '}=' + rTex(fr)) + '. Every repeating decimal can be turned into a fraction.',
-            '<b>False.</b> Every repeating decimal converts to a fraction, e.g. ' + t('0.\\overline{' + bl + '}=\\frac{' + Number(bl) + '}{99}' + (fr[1] !== 99 ? '=' + rTex(fr) : '')) + '.', [], 'T/F repeating → not fraction');
-        } },
-        { id: '2c', level: 'BEG', make: function (r) {
-          var ex1 = r.pick([[1, 3], [2, 3], [1, 6], [5, 11], [4, 9]]);
-          return P.tf(r, r.pick(['The only decimals that can be written as fractions are ones that terminate.', 'If a decimal can be written as a fraction, then it must terminate.']), false,
-            'Think of ' + t(rTex(ex1) + '=' + K.decTex(ex1)) + ': it’s a fraction, but its decimal doesn’t terminate.',
-            '<b>False.</b> Repeating decimals are fractions too: ' + t(rTex(ex1) + '=' + K.decTex(ex1)) + '.', [], 'T/F only terminating are fractions');
-        } },
-        { id: '2d', level: 'BEG', make: function (r) {
-          return P.tf(r, r.pick(['Every rational number is either a terminating decimal or a repeating decimal.', 'When a fraction is written as a decimal, the decimal either terminates or repeats.']), true,
-            'Divide any fraction, e.g. ' + t('\\frac{3}{8}=0.375') + ' or ' + t('\\frac{5}{6}=0.8\\overline{3}') + '. In long division the remainders either reach 0 (it stops) or come back (it repeats).',
-            '<b>True.</b> When you divide, the remainder either becomes ' + t('0') + ' (the decimal terminates) or a remainder comes back (the decimal repeats). Rational numbers are exactly the decimals that terminate or repeat.', [], 'T/F rational = terminating or repeating');
-        } },
-        { id: '2e', level: 'LIM', make: function (r) {
-          return P.tf(r, r.pick(['A single decimal number can be both repeating and non-repeating at the same time.', 'Some decimals are both repeating and non-repeating.']), false,
-            '“Non-repeating” means “not repeating”. A decimal either has a block that repeats forever or it doesn’t — it can’t be both.',
-            '<b>False.</b> A decimal is one or the other: either a block repeats forever or it doesn’t.', [], 'T/F both repeating and non-repeating');
-        } },
-        { id: '2f', level: 'LIM', make: function (r) {
-          return P.tf(r, r.pick(['The number ' + t('\\pi') + ' is irrational.', 'The number ' + t('\\pi') + ' is irrational, even though ' + t('\\frac{22}{7}') + ' and ' + t('3.14') + ' are close to it.']), true,
-            t('\\frac{22}{7}=3.\\overline{142857}') + ' and ' + t('3.14') + ' are only approximations. ' + t('\\pi=3.14159265\\ldots') + ' never stops and never repeats.',
-            '<b>True.</b> ' + t('\\pi=3.14159265\\ldots') + ' never terminates and never repeats. ' + t('\\frac{22}{7}') + ' and ' + t('3.14') + ' are rational approximations, not ' + t('\\pi') + ' itself.', [], 'T/F pi irrational');
+      { num: '5', stem: 'Decide whether each number is a perfect square, a perfect cube, both, or neither. State each root that is a whole number.', parts: [
+        { id: '5a', level: 'EMG', make: function (r) { return sqCubeNumPart(r.pick([256, 400, 324, 196, 1024, 576, 2500])); } },
+        { id: '5b', level: 'EMG', make: function (r) { return sqCubeNumPart(r.pick([1331, 216, 2744, 3375, 512, 1000, 2197])); } },
+        { id: '5c', level: 'PRG', make: function (r) { return sqCubeNumPart(r.pick([15625, 4096, 729, 64, 46656])); } },
+        { id: '5d', level: 'EMG', make: function (r) { return sqCubeNumPart(r.pick([1800, 1200, 72, 108, 250, 1350, 2400])); } }] },
+      { num: '6', section: 'Part D — Making Perfect Squares and Perfect Cubes', stem: 'Find the smallest whole number each must be multiplied by to give a perfect square, and state the square root of the result.', parts: [
+        { id: '6a', level: 'EMG', make: function (r) { var n = r.pick([18, 12, 20, 28, 45, 50, 75, 8]); return multPart(n, 2, t(F(n))); } },
+        { id: '6b', level: 'EMG', make: function (r) { var n = r.pick([245, 147, 363, 175, 99, 117, 539]); return multPart(n, 2, t(F(n))); } },
+        { id: '6c', level: 'PRG', make: function (r) { var n = r.pick([600, 1176, 540, 280, 360, 2400]); return multPart(n, 2, t(F(n))); } }] },
+      { num: '7', stem: 'Find the smallest whole number each must be multiplied by to give a perfect cube, and state the cube root of the result.', parts: [
+        { id: '7a', level: 'EMG', make: function (r) { var n = r.pick([32, 4, 16, 9, 25, 81, 243]); return multPart(n, 3, t(F(n))); } },
+        { id: '7b', level: 'PRG', make: function (r) { var n = r.pick([1323, 1125, 392, 675, 1080, 864]); return multPart(n, 3, t(F(n))); } },
+        { id: '7c', level: 'PRG', make: function (r) { var n = r.pick([500, 108, 250, 1372, 3087]); return multPart(n, 3, t(F(n))); } }] },
+      { num: '8', section: 'Part E — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '8', level: 'PRG', make: function (r) {
+          var pq = r.pick([[2, 3], [2, 3], [2, 5], [3, 5], [5, 7], [2, 7]]), e2 = r.pick([6, 6, 12]), want = r.pick(['square', 'square', 'cube']);
+          var cat = function (a) { return a % 6 === 0 ? 'both' : a % 2 === 0 ? 'square' : a % 3 === 0 ? 'cube' : 'neither'; };
+          var pool = { square: [2, 4, 8, 10], cube: [3, 9, 15], both: [6, 12], neither: [1, 5, 7] };
+          var ans = r.pick(pool[want]), other = want === 'square' ? 'cube' : 'square';
+          var opts = [ans, r.pick(pool.both), r.pick(pool[other])];
+          var fourth = find(r, function () { return r.pick(want === 'square' ? pool.cube.concat(pool.neither) : pool.square.concat(pool.neither)); }, function (a) { return opts.indexOf(a) < 0; }, 1);
+          opts.push(fourth);
+          var nTex = function (a) { return pq[0] + '^{' + a + '}\\times ' + pq[1] + '^{' + e2 + '}'; };
+          var why = function (a) { var c = cat(a); return t(nTex(a)) + ' is ' + (c === 'both' ? '<b>both</b> a square and a cube (' + t(a) + ' is a multiple of ' + t('6') + ')' : c === 'neither' ? '<b>neither</b> (' + t(a) + ' is odd and not a multiple of ' + t('3') + ')' : 'a perfect ' + c + ' only') + '.'; };
+          var desc = want === 'square' ? 'a perfect square but <i>not</i> a perfect cube' : 'a perfect cube but <i>not</i> a perfect square';
+          return P.mc(r, 'The prime factorization of a whole number is ' + t(pq[0] + '^{a}\\times ' + pq[1] + '^{' + e2 + '}') + '. For the number to be ' + desc + ', the value of ' + t('a') + ' could be',
+            sortN(opts).map(function (a) { return { html: t(a), right: a === ans, why: a === ans ? null : why(a) }; }),
+            'The exponent ' + t(e2) + ' is already a multiple of ' + t('6') + ', so only ' + t('a') + ' matters. ' + (want === 'square' ? 'A square needs ' + t('a') + ' even; to avoid a cube, ' + t('a') + ' must <b>not</b> be a multiple of ' + t('3') : 'A cube needs ' + t('a') + ' to be a multiple of ' + t('3') + '; to avoid a square, ' + t('a') + ' must be <b>odd</b>') + '. Only ' + t('a=' + ans) + ' does both.<br>' + sortN(opts).filter(function (a) { return a !== ans; }).map(why).join('<br>'),
+            ['Square: every exponent even. Cube: every exponent a multiple of ' + t('3') + '.'], 'MC exponent a, ' + want, true);
         } }] },
-      { num: '3', stem: 'Is the number rational or irrational? Choose the answer with the correct reason.', parts: [
-        { id: '3a', level: 'LIM', make: function (r) {
-          var q = r.pick([4, 8, 5, 2, 20]), p = r.pick(coprimeTo(q, q + 1, 3 * q)), dec = K.decTex([-p, q]);
-          return P.mc(r, t('-\\dfrac{' + p + '}{' + q + '}'), [
-            { html: '<b>Rational</b> — it is a ratio of two integers (it equals the terminating decimal ' + t(dec) + ').', right: true },
-            { html: '<b>Irrational</b> — a negative number can’t be rational.', why: 'Rational numbers can be negative: ' + t('-' + p + '\\div ' + q) + ' is still a ratio of integers.' },
-            { html: '<b>Irrational</b> — it isn’t a whole number.', why: 'Rational doesn’t mean whole: any ratio of two integers is rational.' },
-            { html: '<b>Rational</b> — because it is negative.', why: 'Right classification, wrong reason: being negative has nothing to do with it. What makes it rational?' }],
-            t('-\\frac{' + p + '}{' + q + '}') + ' is already a ratio of integers, and ' + t(q + '=' + texFacs(q)) + ', so it is also the terminating decimal ' + t(dec) + '. <b>Rational.</b>', ['Rational means it can be written as a ratio of two integers.'], 'rational? -' + p + '/' + q);
-        } },
-        { id: '3b', level: 'LIM', make: function (r) {
-          var bl = randBlock(r, 3, ''), fr = norm(Number(bl), 999), nd = bl.split('').filter(function (c, j, a) { return a.indexOf(c) === j; }).length;
-          return P.mc(r, t('0.\\overline{' + bl + '}'), [
-            { html: '<b>Rational</b> — the block ' + t(bl) + ' repeats forever, and every repeating decimal can be written as a fraction.', right: true },
-            { html: '<b>Irrational</b> — the decimal never ends.', why: 'Never ending isn’t enough. Irrational decimals never end <b>and never repeat</b>. This one repeats.' },
-            { html: '<b>Irrational</b> — it can’t be shown exactly on a calculator.', why: 'Lots of fractions, like ' + t('\\frac{1}{3}') + ', don’t fit on a calculator screen. What matters is whether a block repeats.' },
-            { html: '<b>Rational</b> — it uses only ' + ['', 'one digit', 'two different digits', 'three different digits'][nd] + '.', why: 'Right classification, wrong reason: the number of different digits doesn’t matter. What matters is that the block repeats.' }],
-            'The block ' + t(bl) + ' repeats forever, and every repeating decimal is a fraction: ' + t('0.\\overline{' + bl + '}=\\frac{' + Number(bl) + '}{999}' + (fr[1] !== 999 ? '=' + rTex(fr) : '')) + '. <b>Rational.</b>', ['Does a fixed block of digits repeat? Repeating decimals can always be written as fractions.'], 'rational? 0.(' + bl + ')');
-        } },
-        { id: '3c', level: 'LIM', make: function (r) {
-          var k = r.int(11, 20), n = k * k;
-          return P.mc(r, t('\\sqrt{' + n + '}'), [
-            { html: '<b>Rational</b> — ' + t(n + '=' + k + '^{2}') + ', so ' + t('\\sqrt{' + n + '}=' + k) + ', an integer.', right: true },
-            { html: '<b>Irrational</b> — square roots are always irrational.', why: 'Only square roots of numbers that aren’t perfect squares are irrational. Try ' + t(k + '\\times ' + k) + '.' },
-            { html: '<b>Irrational</b> — ' + t(n) + ' is not a perfect square.', why: 'Check on your calculator: ' + t('\\sqrt{' + n + '}') + ' comes out exactly. What is ' + t(k + '^{2}') + '?' },
-            { html: '<b>Rational</b> — because ' + t(n) + ' is ' + (n % 2 ? 'odd' : 'even') + '.', why: 'Right classification, wrong reason: odd or even doesn’t matter (' + t('\\sqrt{' + (n % 2 ? 3 : 2) + '}') + ' is irrational). Is ' + t(n) + ' a perfect square?' }],
-            t(n + '=' + k + '^{2}') + ', so ' + t('\\sqrt{' + n + '}=' + k) + ', a whole number. <b>Rational.</b>', ['Is ' + t(n) + ' a perfect square?'], 'rational? sqrt' + n);
-        } },
-        { id: '3d', level: 'BEG', make: function (r) {
-          var g = randGrow(r), tex = growTex(0, g.stem, g.c, g.k0 + 1, true, g.stem.charAt(0));
-          return P.mc(r, t(tex), [
-            { html: '<b>Irrational</b> — the run of ' + t(g.c) + '’s keeps growing, so no fixed block ever repeats, and the decimal never ends.', right: true },
-            { html: '<b>Rational</b> — the digits follow a pattern.', why: 'A pattern isn’t the same as a repeating block. Is there one fixed block that copies itself forever?' },
-            { html: '<b>Rational</b> — the digits ' + t(g.stem.split('').join(',\\ ') + ',\\ ' + g.c) + ' keep repeating.', why: 'Look at the groups: each one has one more ' + t(g.c) + ' than the last, so they are never the same block twice.' },
-            { html: '<b>Irrational</b> — it has too many digits to write as a fraction.', why: 'Right classification, wrong reason: ' + t('0.\\overline{3}') + ' has infinitely many digits and is ' + t('\\frac{1}{3}') + '. The reason is that no block repeats.' }],
-            'Each group has one more ' + t(g.c) + ' than the one before, so no fixed block repeats, and the digits never stop. <b>Irrational.</b>', ['Compare the groups of digits. Are they the same block every time?'], 'rational? growing pattern');
-        } }] },
-      { num: '4', section: 'Part B — Ordering and calculator conversions', stem: 'Place the irrational numbers in order on a number line, from least to greatest. (' + t('3\\sqrt{8}') + ' means ' + t('3\\times\\sqrt{8}') + '.)', parts: [
-        { id: '4', level: 'EMG', make: function (r) {
-          var it, vals;
-          for (var g = 0; g < 500; g++) {
-            var a = r.int(1, 9), b = r.pick(nonSquares(3, 12)), c = r.pick(nonSquares(13, 35)), d = r.pick(nonSquares(40, 99));
-            var ks = r.sample([2, 3, 4], 2), e = [ks[0], 0], f = [ks[1], 0];
-            [e, f].forEach(function (km) { var opts = nonSquares(5, 60).filter(function (m) { var v = km[0] * Math.sqrt(m); return v > 9.5 && v < 15 && !isSq(m); }); km[1] = r.pick(opts); });
-            it = [{ id: 'a', tex: '\\sqrt{0.' + a + '}', v: Math.sqrt(a / 10), mis: Math.sqrt(a / 10), plain: '√0.' + a },
-              { id: 'b', tex: '\\sqrt{' + b + '}', v: Math.sqrt(b), mis: Math.sqrt(b), plain: '√' + b },
-              { id: 'c', tex: '\\sqrt{' + c + '}', v: Math.sqrt(c), mis: Math.sqrt(c), plain: '√' + c },
-              { id: 'd', tex: '\\sqrt{' + d + '}', v: Math.sqrt(d), mis: Math.sqrt(d), plain: '√' + d },
-              { id: 'e', tex: e[0] + '\\sqrt{' + e[1] + '}', v: e[0] * Math.sqrt(e[1]), mis: Math.sqrt(e[0] * e[1]), plain: e[0] + '√' + e[1], km: e },
-              { id: 'f', tex: f[0] + '\\sqrt{' + f[1] + '}', v: f[0] * Math.sqrt(f[1]), mis: Math.sqrt(f[0] * f[1]), plain: f[0] + '√' + f[1], km: f }];
-            vals = it.map(function (x) { return x.v; }).sort(function (x, y) { return x - y; });
-            var okGap = true; for (var j = 1; j < vals.length; j++) if (vals[j] - vals[j - 1] < 0.8) okGap = false;
-            if (okGap) break;
-          }
-          /* number placement on the booklet's 0–15 line: order first, then each point within 0.4 (points are ≥ 0.8 apart) */
-          var sorted = it.slice().sort(function (x, y) { return x.v - y.v; }), byId = {}, targets = {}, hintOf = {}, TOL = 0.4;
-          it.forEach(function (x) { byId[x.id] = x; targets[x.id] = x.v; });
-          it.forEach(function (x) {
-            if (x.km) { var L = Math.floor(Math.sqrt(x.km[1])); hintOf[x.id] = t(x.tex) + ' means ' + t(x.km[0] + '\\times\\sqrt{' + x.km[1] + '}') + ': ' + t('\\sqrt{' + x.km[1] + '}') + ' is between ' + t(L) + ' and ' + t(L + 1) + ', so ' + t(x.tex) + ' is between ' + t(x.km[0] * L) + ' and ' + t(x.km[0] * (L + 1)) + '.'; return; }
-            if (x.id === 'a') { var d = Math.floor(x.v * 10) / 10, sq = function (u) { return String(Math.round(u * u * 100) / 100); }; hintOf.a = t(x.tex) + ' is between ' + t('\\sqrt{' + sq(d) + '}=' + d) + ' and ' + t('\\sqrt{' + sq(d + 0.1) + '}=' + String(Math.round((d + 0.1) * 10) / 10)) + ' — a square root of a number less than ' + t('1') + ' is <b>bigger</b> than the number.'; return; }
-            var m = Number(x.tex.replace(/[^0-9]/g, '')), lo = Math.floor(Math.sqrt(m)); hintOf[x.id] = t(x.tex) + ' is between ' + t('\\sqrt{' + lo * lo + '}=' + lo) + ' and ' + t('\\sqrt{' + (lo + 1) * (lo + 1) + '}=' + (lo + 1)) + '.';
-          });
-          var shown = r.shuffle(it); // list them out of order, as the booklet does (a–d are generated in increasing order)
-          var inp = { min: 0, max: 15, step: 1, labels: 1, items: shown.map(function (x) { return { id: x.id, tex: x.tex }; }) };
-          var p = P.numplace('Place ' + shown.map(function (x, i) { return t(x.tex + (i < shown.length - 1 ? ',' : '')); }).join(' ') + ' on the number line.', inp, targets,
-            'Approximate each value: ' + sorted.map(function (x) { return t(x.tex + (x.km ? '=' + x.km[0] + '(' + cut(Math.sqrt(x.km[1]), 3) + '\\ldots)' : '') + '\\approx ' + x.v.toFixed(3)); }).join(', ') + '.<br>' +
-            numberLine(sorted.map(function (x) { return { v: x.v, label: x.plain }; }), 15) + '<br>' + t(sorted.map(function (x) { return x.tex; }).join('<')),
-            ['Use your calculator to find a decimal for each number, then place it between the right whole numbers.', 'For ' + t('k\\sqrt{m}') + ', find ' + t('\\sqrt{m}') + ' and multiply by ' + t('k') + '.'], 'place ' + it.map(function (x) { return x.plain; }).join(', ') + ' on a number line',
-            { tol: TOL, hints: hintOf });
-          /* k√m read as √(k·m): the classic slip — diagnose it from the position of e or f */
-          var base = p.check, misKey = {};
-          it.forEach(function (x) { misKey[x.id] = p.key[x.id]; });
-          ['e', 'f'].forEach(function (id) { misKey[id] = Math.round(byId[id].mis * 10) / 10; });
-          p.check = function (resp) {
-            resp = resp || {};
-            for (var q = 0; q < 2; q++) {
-              var x = byId[['e', 'f'][q]];
-              if (resp[x.id] != null && Math.abs(resp[x.id] - x.mis) <= TOL && Math.abs(x.v - x.mis) > 2 * TOL) return wrong('coef-inside', 'It looks like you treated ' + t(x.tex) + ' as ' + t('\\sqrt{' + x.km[0] * x.km[1] + '}') + '. ' + t(x.tex) + ' means ' + t(x.km[0] + '\\times\\sqrt{' + x.km[1] + '}') + ' — find the root first, then multiply.');
-            }
-            /* √0.a placed at 0.a: a square root of a number between 0 and 1 is bigger than the number */
-            for (var q2 = 0; q2 < it.length; q2++) {
-              var y = it[q2], sq = y.v * y.v;
-              if (!y.km && y.v < 1 && resp[y.id] != null && Math.abs(resp[y.id] - sq) <= 0.06 && Math.abs(y.v - sq) > 0.1) return wrong('root-small', t(y.tex) + ' is not ' + t(String(Math.round(sq * 100) / 100)) + '. For a number between ' + t('0') + ' and ' + t('1') + ', the square root is <b>bigger</b> than the number (' + t('0.5^{2}=0.25') + ', so ' + t('\sqrt{0.25}=0.5') + ').');
-            }
-            return base(resp);
-          };
-          p.bad = (p.bad || []).concat([misKey]);
+      { num: '9', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: '9', level: 'EMG', make: function (r) {
+          var v = find(r, function () { var s = r.pick([2, 3, 6, 7, 14, 10, 12, 21]), m = r.pick([15, 6, 10, 21, 14, 35, 33, 22, 30]); return { n: s * s * m, m: m }; },
+            function (v) { return multFor(v.n, 2) === v.m && v.n >= 1000 && v.n <= 9999; }, { n: 2940, m: 15 });
+          var n = v.n, m = v.m, N = n * m, d = multDiag(n, 2);
+          var p = P.nr('The smallest whole number that ' + t(F(n)) + ' must be multiplied by to give a perfect square is ________.', m, function (x) {
+            if (x === m * m) return { code: 'squared', hint: 'Each odd exponent needs just <b>one</b> more of its prime.' };
+            return d(x);
+          }, t(F(n) + '=' + K.fac(n)) + '. The odd exponents are on ' + nt.factor(m).map(function (pe) { return t(pe[0]); }).join(' and ') + ', so each needs one more. Multiply by ' + t(eqv(m)) + ': ' + t(F(n) + '\\times ' + m + '=' + F(N) + '=' + intRoot(N, 2) + '^{2}') + '. Answer: ' + t(m),
+            ['Factor ' + t(F(n)) + ' and find the exponents that are odd.'], 'NR square multiplier ' + n);
+          p.bad = [String(n), String(m * m)];
           return p;
         } }] },
-      { num: '5', stem: 'Identify each number as rational or irrational. Use a calculator to convert the rational numbers to fractions in simplest form.',
-        shared: function (r) { return q5Items(r); },
+      { num: '10', section: 'Part F — Problem Solving', stem: 'Use prime factorization to explain.', parts: [
+        { id: '10a', level: 'BEG', make: function (r) {
+          var names = r.pick([['Sam', 'Jada'], ['Sam', 'Jada'], ['Eli', 'Mira'], ['Owen', 'Priya']]), sq = r.pick([36, 49, 64, 81, 100, 121, 144, 196, 225]), non = r.pick([20, 18, 45, 50, 72, 98, 75, 48, 28, 63, 80, 12]);
+          var firstSq = r.chance(0.5), nA = firstSq ? sq : non, nB = firstSq ? non : sq, A = names[0], B = names[1], sqN = firstSq ? A : B, nonN = firstSq ? B : A, k = Math.sqrt(sq);
+          var odd = nt.factor(non).filter(function (pe) { return pe[1] % 2; })[0];
+          var whyNon = t(non + '=' + K.fac(non)) + ': the exponent of ' + t(odd[0]) + ' is odd, so the tiles can’t pair up into a square. ' + nonN + ' can only make rectangles.';
+          var whySq = t(sq + '=' + K.fac(sq)) + ': every exponent is even, so ' + sqN + ' can make a ' + t(k + '\\times ' + k) + ' square.';
+          return P.mc(r, A + ' has ' + t(nA) + ' square tiles and ' + B + ' has ' + t(nB) + '. Who can arrange <b>all</b> of their tiles into one solid square?', [
+            { html: 'Only ' + A, right: A === sqN, why: A === sqN ? null : whyNon },
+            { html: 'Only ' + B, right: B === sqN, why: B === sqN ? null : whyNon },
+            { html: 'Both of them', why: whyNon },
+            { html: 'Neither of them', why: whySq }],
+            'A solid square needs a perfect-square number of tiles: every exponent in the prime factorization must be even.<br>' + whySq + '<br>' + whyNon + '<br>So only <b>' + sqN + '</b> can.',
+            ['Factor both numbers. Is every exponent even?'], 'who can make a square: ' + nA + ', ' + nB, true);
+        } },
+        { id: '10b', level: 'BEG', make: function (r) {
+          var c = r.pick([64, 125, 216, 343, 512, 729, 1000]), nc = r.pick([72, 48, 96, 108, 144, 200, 128, 250, 36]), rowsN = r.shuffle([c, nc]);
+          function why(n) { var f = nt.factor(n), b = f.filter(function (pe) { return pe[1] % 3; })[0]; return b ? t(F(n) + '=' + K.fac(n)) + ': the exponent of ' + t(b[0]) + ' isn’t a multiple of ' + t('3') + ', so it is not a perfect cube.' : t(F(n) + '=' + K.fac(n)) + ': every exponent is a multiple of ' + t('3') + ', so it makes a ' + t(intRoot(n, 3) + '\\times ' + intRoot(n, 3) + '\\times ' + intRoot(n, 3)) + ' cube.'; }
+          var want = {}; rowsN.forEach(function (n, i) { want['r' + i] = n === c ? 'yes' : 'no'; });
+          return P.grid('Can each number of sugar cubes be stacked into one solid cube?', rowsN.map(function (n, i) { return { id: 'r' + i, html: t(F(n)) + ' cubes', label: n + ' cubes' }; }),
+            [{ id: 'yes', html: 'Yes', label: 'Yes' }, { id: 'no', html: 'No', label: 'No' }], want,
+            { tries: 2, count: false, why: function (row) { return { code: 'row', hint: why(rowsN[Number(row.slice(1))]) }; } },
+            'A solid cube needs a perfect-cube number of sugar cubes: every exponent in the prime factorization must be a multiple of ' + t('3') + '.<br>' + rowsN.map(why).join('<br>'),
+            ['Factor each number. Is every exponent a multiple of ' + t('3') + '?'], 'cube stacking: ' + rowsN.join(', '));
+        } }] },
+      { num: '11', stem: function (sh) { return 'A square garden has an area of ' + t(F(sh.n) + '\\text{ m}^{2}') + '.'; },
+        shared: function (r) { var k = r.pick([42, 30, 66, 70, 78, 60, 84, 90]); return { k: k, n: k * k }; },
         parts: [
-          { id: '5', sub: 'a–i', level: 'EMG', make: function (r, sh) {
-            var keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], want = {};
-            keys.forEach(function (k) { want[k] = sh[k].val ? 'Q' : 'I'; });
-            var rows = r.shuffle(keys).map(function (k) { return { id: k, html: t(sh[k].tex), label: '(' + k + ')' }; });
-            return P.grid('Identify each number as <b>rational</b> or <b>irrational</b>.', rows, [{ id: 'Q', html: 'Rational', label: 'Rational' }, { id: 'I', html: 'Irrational', label: 'Irrational' }], want,
-              { why: function (k) { return { code: sh[k].val ? 'said-irrational' : 'said-rational', hint: 'Look again at ' + t(sh[k].tex) + '. ' + sh[k].why }; } },
-              keys.map(function (k) { return t(sh[k].tex) + ': <b>' + (sh[k].val ? 'rational' : 'irrational') + '</b>.'; }).join('<br>'),
-              ['Simplify each number first (take the roots). A number that stops or repeats, or is a ratio of integers, is rational.'], 'Q5 rational/irrational grid');
+          { id: '11a', level: 'EMG', make: function (r, sh) {
+            var n = sh.n, k = sh.k;
+            var p = P.number('Use prime factorization to find the side length of the garden.', k, function (v) {
+              if (v === n / 2) return { code: 'halved', hint: 'The side length is the <b>square root</b> of the area, not half of it.' };
+              if (v === n / 4) return { code: 'perimeter', hint: 'Dividing by ' + t('4') + ' would work for a <b>perimeter</b>. For an area, take the <b>square root</b>.' };
+              if (v === rad(n) && v !== k) return { code: 'each-prime-once', hint: 'You used each prime once. Halve each <b>exponent</b> in the prime factorization instead.' };
+              return null;
+            }, 'Side ' + t('=\\sqrt{' + F(n) + '}') + '. ' + t(F(n) + '=' + K.fac(n)) + ' (every exponent even), so ' + t('\\sqrt{' + F(n) + '}=' + HW.texFactors(nt.factor(k)) + '=' + k) + '. <b>' + k + ' m</b>',
+            ['A square’s area is side × side, so the side is the square root of the area.', 'Factor ' + t(F(n)) + ' and halve each exponent.'], 'garden side ' + n, { after: 'm' });
+            p.bad = [String(n / 2)];
+            return p;
           } },
-          { id: '5a', sub: 'a', level: 'LIM', make: function (r, sh) { return q5FracPart(sh, 'a', 'BEG'); } },
-          { id: '5b', sub: 'b', level: 'BEG', make: function (r, sh) { return q5FracPart(sh, 'b', 'EMG'); } },
-          { id: '5c', sub: 'c', level: 'BEG', make: function (r, sh) { return q5FracPart(sh, 'c', 'EMG'); } },
-          { id: '5e', sub: 'e', level: 'BEG', make: function (r, sh) { return q5FracPart(sh, 'e', 'EMG', ['Type the repeating decimal into your calculator with many repeats, then convert it to a fraction.']); } },
-          { id: '5f', sub: 'f', level: 'EMG', make: function (r, sh) { return q5FracPart(sh, 'f', 'PRG', ['Change the mixed number to an improper fraction first, then take the square root of the top and the bottom.']); } },
-          { id: '5g', sub: 'g', level: 'EMG', make: function (r, sh) { return q5FracPart(sh, 'g', 'PRG', ['Type the decimal with the block repeated several times (e.g. ' + t(calcString(sh.g.R)) + ') and convert it to a fraction.']); } },
-          { id: '5i', sub: 'i', level: 'EMG', make: function (r, sh) { return q5FracPart(sh, 'i', 'ADV', ['Work from the inside out: take the inner square root first.']); } }] },
-      { num: '6', stem: 'Use a calculator to convert the repeating decimal to an improper fraction in simplest form.', parts: [
-        { id: '6a', level: 'BEG', make: function (r) { return calcPart(repInfo(0, '', String(r.int(1, 8)))); } },
-        { id: '6b', level: 'BEG', make: function (r) { return calcPart(repInfo(0, '', randBlock(r, 2, '', true))); } },
-        { id: '6c', level: 'EMG', make: function (r) { var l = String(r.int(1, 8)); return calcPart(repInfo(r.int(1, 5), l, randBlock(r, 1, l))); } },
-        { id: '6d', level: 'EMG', make: function (r) { return calcPart(repInfo(0, '', randBlock(r, 3, '', true))); } },
-        { id: '6e', level: 'EMG', make: function (r) { var l = String(r.int(0, 9)) + String(r.int(1, 9)); return calcPart(repInfo(r.int(1, 9), l, randBlock(r, 2, l), true)); } }] },
-      { num: '7', stem: '<i>(Extension)</i> Use the algebraic procedure to convert the repeating decimal to a fraction in simplest form. Fill in the equation you get after subtracting, then the answer.', parts: [
-        { id: '7a', level: 'BEG', make: function (r) { return algebraPart(repInfo(0, '', String(r.int(1, 8)))); } },
-        { id: '7b', level: 'BEG', make: function (r) { return algebraPart(repInfo(0, '', randBlock(r, 2, '', true))); } },
-        { id: '7c', level: 'PRG', make: function (r) { var l = String(r.int(1, 9)); return algebraPart(repInfo(0, l, randBlock(r, 1, l))); } }] },
-      { num: '8', stem: '<i>(Extension)</i> Use the algebraic procedure to convert the repeating decimal to an improper fraction in simplest form. Fill in the equation you get after subtracting, then the answer.', parts: [
-        { id: '8a', level: 'ADV', make: function (r) { var b = r.chance(0.5) ? '0' + r.int(1, 8) : randBlock(r, 2, '0', true); return algebraPart(repInfo(r.int(1, 9), '0', b)); } },
-        { id: '8b', level: 'PRG', make: function (r) { return algebraPart(repInfo(r.int(1, 9), '', randBlock(r, 3, '', true), true)); } },
-        { id: '8c', level: 'PRG', make: function (r) { var l = String(r.int(1, 9)) + String(r.int(1, 9)); return algebraPart(repInfo(r.int(1, 9), l, randBlock(r, 1, l))); } }] },
-      { num: '9', section: 'Part C — Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '9', level: 'BEG', make: function (r) {
-          var q = r.pick([12, 6, 15, 18, 22, 24, 30, 36, 44, 45, 60]), p = r.pick(coprimeTo(q, 1, q - 1)), dec = K.decTex([p, q]), m = split25(q).m;
-          return P.mc(r, 'The decimal number representing ' + t('\\dfrac{' + p + '}{' + q + '}') + ' is', [
-            { html: 'terminating and repeating', why: 'That combination can’t happen: a decimal that stops can’t also repeat forever.' },
-            { html: 'terminating and non-repeating', why: 'Divide ' + t(p + '\\div ' + q) + ' — does it stop? ' + t(q + '=' + texFacs(q)) + ' has the prime ' + t(nt0(m)) + ', which isn’t 2 or 5.' },
-            { html: 'non-terminating and repeating', right: true },
-            { html: 'non-terminating and non-repeating', why: t('\\frac{' + p + '}{' + q + '}') + ' is a fraction, so it is rational — its decimal must repeat. Look at the digits: ' + t(digitsOf(p, q, 8) + '\\ldots') + '.' }],
-            t(q + '=' + texFacs(q)) + '. The prime ' + t(nt0(m)) + ' is not 2 or 5, so the decimal never ends — but ' + t('\\frac{' + p + '}{' + q + '}') + ' is rational, so it repeats: ' + t('\\frac{' + p + '}{' + q + '}=' + dec) + '.', ['Factor the denominator. Then remember: every fraction is rational, so its decimal terminates or repeats.'], 'MC pattern of ' + p + '/' + q, true);
+          { id: '11b', level: 'EMG', make: function (r, sh) {
+            var k = sh.k;
+            return P.number('How much fencing is needed to enclose it?', 4 * k, function (v) {
+              if (v === sh.n) return { code: 'area', hint: 'That’s the area. Fencing goes around the <b>outside</b>: the perimeter.' };
+              if (v === 2 * k) return { code: 'two-sides', hint: 'A square has <b>four</b> equal sides.' };
+              if (v === k) return { code: 'side-only', hint: 'That’s one side. The fence goes all the way around.' };
+              return null;
+            }, 'Perimeter ' + t('=4\\times ' + k + '=' + 4 * k) + '. <b>' + 4 * k + ' m</b> of fencing.', ['Fencing goes around all four sides.'], 'fencing for ' + sh.n, { after: 'm' });
+          } }] },
+      { num: '12', stem: '', parts: [
+        { id: '12', level: 'EMG', make: function (r) {
+          var k = r.pick([14, 12, 15, 18, 21, 22, 20, 24]), n = k * k * k;
+          var p = P.number('A cube-shaped storage box has a volume of ' + t(F(n) + '\\text{ cm}^{3}') + '. Use prime factorization to find the length of each edge.', k, function (v) {
+            if (v === n / 3) return { code: 'divided-3', hint: 'The edge is the <b>cube root</b> of the volume, not a third of it.' };
+            if (v === Math.round(Math.sqrt(n)) || Math.abs(v - Math.sqrt(n)) < 0.5) return { code: 'square-root', hint: 'That’s close to the <b>square</b> root. A cube’s volume is edge × edge × edge, so take the <b>cube</b> root.' };
+            if (v === rad(n) && v !== k) return { code: 'each-prime-once', hint: 'Divide each <b>exponent</b> in the prime factorization by ' + t('3') + '.' };
+            return null;
+          }, 'Edge ' + t('=\\sqrt[3]{' + F(n) + '}') + '. ' + t(F(n) + '=' + K.fac(n)) + ' (every exponent a multiple of 3), so ' + t('\\sqrt[3]{' + F(n) + '}=' + HW.texFactors(nt.factor(k)) + '=' + k) + '. <b>' + k + ' cm</b>. Check: ' + t(k + '^{3}=' + F(n)) + ' ✓',
+          ['Volume of a cube = edge × edge × edge.', 'Factor ' + t(F(n)) + ' and divide each exponent by ' + t('3') + '.'], 'cube edge ' + n, { after: 'cm' });
+          p.bad = [String(Math.round(n / 3))];
+          return p;
         } }] },
-      { num: '10', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '10', level: 'BEG', make: function (r) {
-          var decs = ['0.045', '0.4', '0.9', '0.016', '1.6', '0.08', '0.5', '2.5', '0.009', '0.12', '0.18'];
-          var ir = r.pick(decs), right = r.chance(0.8) ? { html: t('\\sqrt{' + ir + '}'), right: true } : { html: t(growTex(0, '1', '0', 1, false, '1')), right: true };
-          var k = r.int(11, 19), sqd = r.pick([[0.49, 0.7], [1.44, 1.2], [0.0036, 0.06], [0.81, 0.9], [2.25, 1.5]]), p9 = r.pick([[7, 9], [5, 9], [4, 11], [3, 7], [5, 7]]), td = r.pick(['2.71', '3.14', '1.41', '1.73']), bl = randBlock(r, 2, '');
-          var pool = [
-            { html: t('\\sqrt{' + k * k + '}'), why: t(k * k + '=' + k + '^{2}') + ', so ' + t('\\sqrt{' + k * k + '}=' + k) + ' — rational.' },
-            { html: t('\\dfrac{' + p9[0] + '}{' + p9[1] + '}'), why: 'It’s already a ratio of integers (its decimal ' + t(K.decTex(p9)) + ' repeats) — rational.' },
-            { html: t(td), why: t(td) + ' terminates, so it is ' + t('\\frac{' + Math.round(Number(td) * 100) + '}{100}') + ' — rational. (It may be close to an irrational number, but it isn’t one.)' },
-            { html: t('\\sqrt{' + sqd[0] + '}'), why: t(sqd[1] + '^{2}=' + sqd[0]) + ', so ' + t('\\sqrt{' + sqd[0] + '}=' + sqd[1]) + ' — rational.' },
-            { html: t('\\dfrac{22}{7}'), why: t('\\frac{22}{7}') + ' is a ratio of integers — rational. It is only an approximation of ' + t('\\pi') + '.' },
-            { html: t('0.\\overline{' + bl + '}'), why: 'It repeats, so it is the fraction ' + t(rTex(norm(Number(bl), 99))) + ' — rational.' }];
-          var opts = r.sample(pool, 3).concat([right]);
-          return P.mc(r, 'Which of the following is an irrational number?', opts,
-            (right.html.indexOf('sqrt') >= 0 ? t(ir + '=' + rTex(norm(Math.round(Number(ir) * 1000), 1000))) + ', which is not a ratio of two perfect squares, so ' + t('\\sqrt{' + ir + '}=' + cut(Math.sqrt(Number(ir)), 6) + '\\ldots') + ' never stops or repeats: <b>irrational</b>.' : 'The runs of zeros keep growing, so no block repeats: <b>irrational</b>.') + ' The others are all rational: each one terminates, repeats, or simplifies to a ratio of integers.',
-            ['Simplify each option. Which one can’t be written as a ratio of integers?'], 'MC which is irrational');
-        } }] },
-      { num: '11', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '11', level: 'EMG', make: function (r) {
-          var I = r.int(1, 9);
-          return P.mc(r, t(I + '.\\overline{9}') + ' is equal to', [
-            { html: t('\\dfrac{' + (10 * I + 9) + '}{10}'), why: t('\\frac{' + (10 * I + 9) + '}{10}=' + I + '.9') + ' stops after one 9. The bar means the 9s go on forever.' },
-            { html: t('\\dfrac{' + (100 * I + 99) + '}{100}'), why: t('\\frac{' + (100 * I + 99) + '}{100}=' + I + '.99') + ' stops after two 9s. Try the algebraic method: ' + t('10x-x') + '.' },
-            { html: t(I + '.9'), why: t(I + '.9') + ' is a terminating decimal. The bar means the 9s never stop.' },
-            { html: t(I + 1), right: true }],
-            'Let ' + t('x=' + I + '.999\\ldots') + '. Then ' + t('10x=' + (10 * I + 9) + '.999\\ldots') + '. Subtract: ' + t('9x=' + (9 * I + 9)) + ', so ' + t('x=' + (I + 1)) + ' exactly. The other options all stop after a few 9s.', ['Use the algebraic method: ' + t('x=' + I + '.\\overline{9}') + ', ' + t('10x=?') + ', subtract.'], 'MC ' + I + '.(9)', true);
-        } }] },
-      { num: '12', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '12', level: 'EMG', make: function (r) { return nrRepPart(r); } }] }
+      { num: '13', stem: function (sh) { return 'Squaring and cubing ' + t(sh.k) + '.'; },
+        shared: function (r) { return { k: r.pick([28, 28, 12, 20, 18, 45, 50, 44, 63, 52, 75]) }; },
+        parts: [
+          { id: '13a', level: 'BEG', make: function (r, sh) { var p = productPart(sh.k, 'required'); p.prompt = 'Write ' + t(sh.k) + ' as a product of prime factors in exponent form.'; return p; } },
+          { id: '13b', level: 'EMG', make: function (r, sh) {
+            var k = sh.k, f = nt.factor(k), k2 = k * k, k3 = k * k * k;
+            var dg = function (pow) {
+              return function (v) {
+                if (v === k) return { code: 'exp-same', hint: 'That’s ' + t(k) + ' itself. ' + (pow === 2 ? 'Squaring' : 'Cubing') + ' writes every prime factor down ' + (pow === 2 ? 'twice' : 'three times') + '.' };
+                var alt = f.reduce(function (m, pe) { return m * Math.pow(pe[0], pe[1] + pow); }, 1);
+                if (v === alt) return { code: 'exp-added', hint: 'You added ' + t(pow) + ' to each exponent. ' + (pow === 2 ? 'Squaring <b>doubles</b>' : 'Cubing <b>triples</b>') + ' every exponent.' };
+                if (pow === 3 && v === k2) return { code: 'exp-halved', hint: 'That’s the square. For the cube, multiply every exponent by ' + t('3') + '.' };
+                return null;
+              };
+            };
+            var fl = [{ name: t(k + '^{2}'), before: t(k + '^{2}='), mode: 'math', wide: true }, { name: t(k + '^{3}'), before: t(k + '^{3}='), mode: 'math', wide: true }];
+            return P.fields('Without multiplying anything out, write ' + t(k + '^{2}') + ' and ' + t(k + '^{3}') + ' in exponent form.', fl, [expChk(k2, dg(2)), expChk(k3, dg(3))], [plainFac(k2), plainFac(k3)],
+              t(k + '^{2}=' + K.fac(k2)) + ', ' + t(k + '^{3}=' + K.fac(k3)),
+              t(k + '=' + K.fac(k)) + '.<br>' + t(k + '^{2}=(' + K.fac(k) + ')\\times(' + K.fac(k) + ')=' + K.fac(k2)) + ' (' + t('=' + F(k2)) + '): every exponent doubles.<br>' + t(k + '^{3}=' + K.fac(k3)) + ' (' + t('=' + F(k3)) + '): every exponent triples.',
+              ['Write ' + t(k) + ' in exponent form first.', 'Squaring writes every prime factor down twice; cubing, three times.'], 'square and cube in exponent form: ' + k);
+          } },
+          { id: '13c', level: 'PRG', make: function (r, sh) {
+            return P.mc(r, 'Which explains why the square of <i>any</i> whole number has only even exponents in its prime factorization?', [
+              { html: 'Squaring writes each prime factor down twice, so every exponent is <b>doubled</b> — and double a whole number is always even.', right: true },
+              { html: 'Squaring adds ' + t('2') + ' to every exponent, and adding ' + t('2') + ' keeps it even.', why: 'Squaring <b>doubles</b> each exponent; it doesn’t add ' + t('2') + '. (' + t(sh.k + '=' + K.fac(sh.k)) + ' but ' + t(sh.k + '^{2}=' + K.fac(sh.k * sh.k)) + '.) Adding ' + t('2') + ' to an odd exponent would leave it odd.' },
+              { html: 'Every whole number already has only even exponents.', why: t(sh.k + '=' + K.fac(sh.k)) + ' has an odd exponent.' },
+              { html: 'A square number is always even.', why: t('9=3^{2}') + ' is a square and is odd. It is the <b>exponents</b> that are even, not the number.' }],
+              'If ' + t('n=p^{a}\\times q^{b}\\times\\cdots') + ', then ' + t('n^{2}=n\\times n=p^{2a}\\times q^{2b}\\times\\cdots') + ': every exponent is doubled, so every exponent is even. Example: ' + t(sh.k + '^{2}=' + K.fac(sh.k * sh.k)) + '.',
+              ['Compare ' + t(sh.k) + ' and ' + t(sh.k + '^{2}') + ' in exponent form. What happened to each exponent?'], 'why square exponents are even');
+          } }] },
+      { num: '14', stem: 'Work from the exponents.', parts: [
+        { id: '14a', level: 'PRG', make: function (r) {
+          var v = find(r, function () { var ps = r.pick([[2, 3, 5], [2, 3, 7], [2, 5, 7], [3, 5, 7]]), es = ps.map(function () { return r.pick([2, 2, 4, 6]); }); return { ps: ps, es: es, s: fromExps(ps, es.map(function (e) { return e / 2; })) }; },
+            function (v) { return v.s >= 20 && v.s <= 2000; }, { ps: [2, 3, 5], es: [4, 2, 2], s: 60 });
+          var A = fromExps(v.ps, v.es), s = v.s, nTex = texE(v.ps, v.es);
+          return expNumPart('A square has an area of ' + t(nTex + '\\text{ cm}^{2}') + '. Find its side length in exponent form and as a whole number.', s, 'side', function (x) {
+            if (x === A / 2) return { code: 'halved', hint: 'Halve the <b>exponents</b>, not the area.' };
+            if (x === A) return { code: 'area', hint: 'That’s the area. The side is its square root.' };
+            if (x === rad(A) && x !== s) return { code: 'each-prime-once', hint: 'Halve each exponent — don’t just use each prime once.' };
+            return null;
+          }, 'Side ' + t('=\\sqrt{' + nTex + '}') + ': halve each exponent. ' + t('\\text{side}=' + texE(v.ps, v.es.map(function (e) { return e / 2; })) + '=' + F(s)) + ' cm.',
+          ['A square’s side is the square root of its area.', 'Halve each exponent.'], 'square side from exponents', 'cm');
+        } },
+        { id: '14b', level: 'PRG', make: function (r) {
+          var v = find(r, function () { var ps = r.pick([[2, 3], [2, 3], [2, 5], [3, 5], [2, 7]]), es = ps.map(function () { return r.pick([3, 6, 9]); }); return { ps: ps, es: es, e: fromExps(ps, es.map(function (x) { return x / 3; })) }; },
+            function (v) { return v.e >= 12 && v.e <= 1000 && v.es[0] !== v.es[1]; }, { ps: [2, 3], es: [9, 6], e: 72 });
+          var Vol = fromExps(v.ps, v.es), e = v.e, nTex = texE(v.ps, v.es), sqrtE = v.es.every(function (x) { return x % 2 === 0; }) ? fromExps(v.ps, v.es.map(function (x) { return x / 2; })) : null;
+          return expNumPart('A cube has a volume of ' + t(nTex + '\\text{ cm}^{3}') + '. Find its edge length in exponent form and as a whole number.', e, 'edge', function (x) {
+            if (sqrtE != null && x === sqrtE) return { code: 'used-sqrt-for-cube', hint: 'You halved the exponents. A cube’s edge is the <b>cube</b> root: divide each exponent by ' + t('3') + '.' };
+            if (x === Vol / 3) return { code: 'divided-3', hint: 'Divide the <b>exponents</b> by ' + t('3') + ', not the volume.' };
+            if (x === rad(Vol) && x !== e) return { code: 'each-prime-once', hint: 'Divide each exponent by ' + t('3') + ' — don’t just use each prime once.' };
+            return null;
+          }, 'Edge ' + t('=\\sqrt[3]{' + nTex + '}') + ': divide each exponent by ' + t('3') + '. ' + t('\\text{edge}=' + texE(v.ps, v.es.map(function (x) { return x / 3; })) + '=' + F(e)) + ' cm.',
+          ['A cube’s edge is the cube root of its volume.', 'Divide each exponent by ' + t('3') + '.'], 'cube edge from exponents', 'cm');
+        } }] }
     ],
     extra: [
-      { num: '1', section: 'Extra practice A — The denominator test', stem: 'A fraction <b>in lowest terms</b> terminates exactly when its denominator is built from 2s and 5s alone. <b>Reduce first</b>, factor the new denominator, then predict. Don’t divide yet.', parts: [
-        { id: 'e1', level: 'EMG', make: function (r) {
-          var specs = [
-            { p: r.pick([7, 3, 9, 11]), q: r.pick([40, 16, 25]) },
-            (function () { var b = r.pick([[5, 8], [3, 8], [7, 20], [1, 4]]), k = r.pick([3, 7, 9]); return { p: b[0] * k, q: b[1] * k }; })(),
-            { p: r.pick([13, 7, 11, 17]), q: r.pick([60, 12, 30]) },
-            (function () { var b = r.pick([[3, 5], [2, 5], [1, 2], [3, 4]]), k = r.pick([14, 7, 21, 6]); return { p: b[0] * k, q: b[1] * k }; })(),
-            { p: r.pick([9, 5, 3, 11]), q: r.pick([56, 28, 14]) },
-            (function () { var b = r.pick([[2, 15], [1, 6], [5, 12], [4, 15]]), k = r.pick([11, 7, 13]); return { p: b[0] * k, q: b[1] * k }; })()];
-          var rows = [], want = {}, sols = [];
-          specs.forEach(function (s, i) {
-            var rd = norm(s.p, s.q), term = split25(rd[1]).m === 1, id = 'r' + i;
-            rows.push({ id: id, html: t('\\dfrac{' + s.p + '}{' + s.q + '}'), label: s.p + '/' + s.q, s: s, rd: rd, term: term });
-            want[id] = term ? 'T' : 'R';
-          });
-          var byId = {}; rows.forEach(function (x) { byId[x.id] = x; });
-          var shown = r.shuffle(rows);
-          return P.grid('Predict whether each fraction terminates or repeats.', shown.map(function (x) { return { id: x.id, html: x.html, label: x.label }; }), [{ id: 'T', html: 'Terminates', label: 'Terminates' }, { id: 'R', html: 'Repeats', label: 'Repeats' }], want,
-            { why: function (id) { var x = byId[id], red = x.rd[1] !== x.s.q; return { code: red ? 'not-reduced' : 'den-test', hint: red ? 'Reduce ' + t('\\frac{' + x.s.p + '}{' + x.s.q + '}') + ' first — the test is about the <b>reduced</b> denominator.' : 'Factor the denominator of ' + t('\\frac{' + x.s.p + '}{' + x.s.q + '}') + ': is it only 2s and 5s?' }; } },
-            rows.map(function (x) { return t('\\frac{' + x.s.p + '}{' + x.s.q + '}' + (x.rd[1] !== x.s.q ? '=' + rTex(x.rd) : '')) + ': ' + t(x.rd[1] + '=' + texFacs(x.rd[1])) + ' → <b>' + (x.term ? 'terminates' : 'repeats') + '</b>'; }).join('<br>'),
-            ['Reduce each fraction, then factor the new denominator. Only 2s and 5s → terminates.'], 'denominator test');
-        } }] },
-      { num: '2', stem: 'Confirm by dividing. Write the decimal exactly, with the bar over the repeating block <b>only</b>.', parts: [
-        { id: 'e2a', level: 'BEG', make: function (r) { var b = r.pick([[5, 8], [3, 8], [7, 16], [9, 20], [3, 40]]), k = r.pick([3, 7, 9]); return decPart(b[0] * k, b[1] * k); } },
-        { id: 'e2b', level: 'EMG', make: function (r) { var q = r.pick([60, 12, 30, 15]); return decPart(r.pick(coprimeTo(q, 1, q - 1)), q); } },
-        { id: 'e2c', level: 'PRG', make: function (r) { var q = r.pick([56, 28, 14, 35]); return decPart(r.pick(coprimeTo(q, 1, q - 1)), q); } },
-        { id: 'e2d', level: 'EMG', make: function (r) { var b = r.pick([[2, 15], [1, 6], [5, 12], [4, 15], [1, 12]]), k = r.pick([11, 7, 13]); return decPart(b[0] * k, b[1] * k); } }] },
-      { num: '3', stem: 'This denominator contains a prime other than 2 or 5, so <i>most</i> numerators give a repeating decimal. Find a whole-number numerator ' + t('k') + ' (between ' + t('0') + ' and the denominator) that makes the fraction <b>terminate</b>.', parts: [
-        { id: 'e3a', level: 'PRG', make: function (r) { return kPart(r.pick([90, 18, 36, 180])); } },
-        { id: 'e3b', level: 'PRG', make: function (r) { return kPart(r.pick([70, 14, 28, 35, 140])); } },
-        { id: 'e3c', level: 'PRG', make: function (r) { return kPart(r.pick([24, 12, 48, 15, 30])); } },
-        { id: 'e3d', level: 'PRG', make: function (r) { return kPart(r.pick([45, 72, 225])); } }] },
-      { num: '4', stem: 'A denominator with a prime other than ' + t('2') + ' or ' + t('5') + ' (such as ' + t('\\dfrac{k}{18}') + ' or ' + t('\\dfrac{k}{140}') + ') can still give a terminating decimal, but only when the numerator is a multiple of something.', parts: [
-        { id: 'e4', level: 'PRG', make: function (r) {
-          var d = r.pick([60, 140, 90, 120, 66, 84]), s = split25(d), m = s.m, tw = d / m;
-          return P.mc(r, 'For the denominator ' + t(d + '=' + texFacs(d)) + ', which numerators ' + t('k') + ' make ' + t('\\dfrac{k}{' + d + '}') + ' terminate?', [
-            { html: 'Multiples of ' + t(m) + ' — the part of ' + t(d) + ' left after removing every 2 and 5 — because then all of ' + t(m) + ' cancels when you reduce.', right: true },
-            { html: 'Multiples of ' + t(tw) + ', so the 2s and 5s cancel.', why: 'The 2s and 5s were never the problem. Try ' + t('k=' + tw) + ': ' + t('\\frac{' + tw + '}{' + d + '}=' + rTex([tw, d])) + ' — does that terminate?' },
-            { html: 'Any factor of ' + t(d) + '.', why: 'Try ' + t('k=2') + ': ' + t('\\frac{2}{' + d + '}=' + rTex([2, d])) + '. The reduced denominator still has a prime other than 2 or 5.' },
-            { html: 'Only multiples of 10.', why: 'Try ' + t('k=10') + ': ' + t('\\frac{10}{' + d + '}=' + rTex([10, d])) + '. Which primes are left in the denominator?' }],
-            'Write ' + t(d + '=' + tw + '\\times ' + m) + ', where ' + t(m) + ' has no 2s or 5s. Reducing ' + t('\\frac{k}{' + d + '}') + ' only cancels factors that ' + t('k') + ' shares with ' + t(d) + '. If ' + t('k') + ' is a multiple of ' + t(m) + ', all of ' + t(m) + ' cancels and only 2s and 5s are left, so it terminates. Otherwise some prime of ' + t(m) + ' survives and it repeats.',
-            ['Which primes in the denominator cause a repeating decimal? What must happen to them?'], 'rule for terminating k/' + d);
-        } }] },
-      { num: '5', section: 'Extra practice B — How long is the repeating block?', stem: 'When you long-divide by ' + t('n') + ', the only possible remainders are ' + t('1, 2, \\ldots, n-1') + '. As soon as a remainder repeats, the digits repeat — so the block is <b>at most</b> ' + t('n-1') + ' digits long. State the maximum, then divide and record the actual length of the block.', parts: [
-        { id: 'e5a', level: 'BEG', make: function (r) { return blockLenPart(r.pick([[1, 9], [2, 9], [4, 9], [1, 3], [2, 3]])); } },
-        { id: 'e5b', level: 'EMG', make: function (r) { return blockLenPart(r.pick([[1, 11], [3, 11], [5, 11], [1, 33]])); } },
-        { id: 'e5c', level: 'EMG', make: function (r) { return blockLenPart(r.pick([[1, 7], [2, 7], [3, 7], [5, 7]])); } },
-        { id: 'e5d', level: 'EMG', make: function (r) { return blockLenPart(r.pick([[1, 13], [2, 13], [5, 13], [1, 27], [1, 37], [1, 41]])); } }] },
-      { num: '6', stem: 'Write the fraction as a repeating decimal, using ' + t('\\dfrac{1}{7}=0.\\overline{142857}') + ' as a starting point.',
-        shared: function (r) { var ks = r.shuffle([2, 3, 4, 5, 6]), abc = ks.slice(0, 3).sort(); return abc.concat([ks[3]]); },
+      { num: '1', section: 'Extra practice A — Perfect squares and cubes from the exponents', stem: 'A number is a perfect square exactly when every exponent in its prime factorization is even, and a perfect cube exactly when every exponent is a multiple of ' + t('3') + '. Decide: square, cube, both, or neither? Give each root that exists (exponent form is fine); type <b>none</b> for a root that isn’t a whole number.', parts: [
+        { id: 'e1a', level: 'EMG', make: function (r) { return sqCubePart(r, function (es) { return es.every(function (e) { return e % 2 === 0; }) && es.some(function (e) { return e % 3; }); }, [2, 4, 6, 8], [6, 4]); } },
+        { id: 'e1b', level: 'EMG', make: function (r) { return sqCubePart(r, function (es) { return es.every(function (e) { return e % 3 === 0; }) && es.some(function (e) { return e % 2; }); }, [3, 6, 9], [9, 3]); } },
+        { id: 'e1c', level: 'PRG', make: function (r) { return sqCubePart(r, function (es) { return es.every(function (e) { return e % 6 === 0; }); }, [6, 12], [6, 12]); } },
+        { id: 'e1d', level: 'EMG', make: function (r) { return sqCubePart(r, function (es) { return es.some(function (e) { return e % 2; }) && es.some(function (e) { return e % 3; }); }, [1, 2, 3, 4], [4, 3, 2], 3); } }] },
+      { num: '2', section: 'Extra practice B — Making perfect squares and perfect cubes', stem: 'Find the <b>smallest whole number</b> each must be multiplied by to give a perfect square, and state the square root of the result. (Raise each odd exponent to the next even number — nothing more.)', parts: [
+        { id: 'e2a', level: 'PRG', make: function (r) {
+          var v = find(r, function () { var ps = r.pick([[2, 3, 7], [2, 3, 5], [2, 5, 7], [3, 5, 7]]), es = r.shuffle([r.pick([1, 3, 5]), r.pick([1, 3, 5]), r.pick([2, 4])]); return { ps: ps, es: es, n: fromExps(ps, es) }; }, function (v) { return v.n >= 1000 && v.n * multFor(v.n, 2) <= 5e6; }, { ps: [2, 3, 7], es: [3, 5, 2], n: 95256 });
+          return multPart(v.n, 2, t(texE(v.ps, v.es)));
+        } },
+        { id: 'e2b', level: 'ADV', make: function (r) { var n = r.pick([540, 1350, 600, 1500, 2160]); return multPart(n, 2, t(F(n))); } },
+        { id: 'e2c', level: 'PRG', make: function (r) { var n = r.pick([1176, 1512, 980, 1960, 2058, 392]); return multPart(n, 2, t(F(n))); } }] },
+      { num: '3', stem: 'Now find the smallest whole number each must be multiplied by to give a perfect <b>cube</b>, and state the cube root of the result.', parts: [
+        { id: 'e3a', level: 'PRG', make: function (r) {
+          var v = find(r, function () { var ps = r.pick([[2, 3, 7], [2, 3, 5], [2, 5, 7]]), es = r.shuffle([3, r.pick([4, 5]), r.pick([1, 2])]); return { ps: ps, es: es, n: fromExps(ps, es) }; }, function (v) { return v.n * multFor(v.n, 3) <= 3e7; }, { ps: [2, 3, 7], es: [3, 5, 2], n: 95256 });
+          return multPart(v.n, 3, t(texE(v.ps, v.es)));
+        } },
+        { id: 'e3b', level: 'MAS', make: function (r) { var n = r.pick([540, 1350, 600, 1500, 2160]); return multPart(n, 3, t(F(n))); } },
+        { id: 'e3c', level: 'ADV', make: function (r) { var n = r.pick([2205, 1575, 2450, 980, 1100]); return multPart(n, 3, t(F(n))); } }] },
+      { num: '4', stem: function (sh) { return 'Dividing works the same way — strip off just enough to leave the exponents where you need them.'; },
+        shared: function (r) { var pq = r.pick([[2, 5], [2, 5], [2, 3], [3, 2], [2, 7], [5, 2], [3, 5]]); return { p: pq[0], q: pq[1], n: Math.pow(pq[0], 4) * Math.pow(pq[1], 3) }; },
         parts: [
-        { id: 'e6a', level: 'BEG', make: function (r, sh) { return sevenPart(sh[0]); } },
-        { id: 'e6b', level: 'BEG', make: function (r, sh) { return sevenPart(sh[1]); } },
-        { id: 'e6c', level: 'BEG', make: function (r, sh) { return sevenPart(sh[2]); } },
-        { id: 'e6d', level: 'EMG', make: function (r, sh) {
-          var k = sh[3], p = sevenPart(k);
-          p.prompt = 'Every block for sevenths uses the same six digits ' + t('1,4,2,8,5,7') + ' in the same cyclic order — only the starting digit moves. Use the pattern to write ' + t('\\dfrac{' + k + '}{7}') + ' without dividing.';
-          p.solution = t('\\frac{' + k + '}{7}') + ' is a little more than ' + t(Math.floor(k / 7 * 10) / 10) + ', so start the cycle ' + t('142857') + ' at the ' + t(String(Math.floor(k / 7 * 10))) + ': ' + t('\\frac{' + k + '}{7}=' + K.decTex([k, 7])) + '.';
-          p.hints = ['Estimate first: ' + t('\\frac{' + k + '}{7}\\approx ' + (k / 7).toFixed(1)) + '. Which digit of ' + t('142857') + ' should the cycle start at?'];
-          return p;
-        } }] },
-      { num: '7', stem: function (sh) { return 'When the reduced denominator has <b>both</b> kinds of prime factor, the decimal has a non-repeating lead followed by a repeating block. Split the denominator as ' + t('d=(2^{a}5^{b})\\times m') + '. The lead is the <b>larger</b> of ' + t('a') + ' and ' + t('b') + ', and the block comes from ' + t('m') + '. The fractions: ' + sh.map(function (f) { return t('\\dfrac{' + f[0] + '}{' + f[1] + '}'); }).join(', ') + '.'; },
-        shared: function (r) {
-          var qs = [r.pick([12, 75]), r.pick([30, 6, 15]), r.pick([22, 55]), r.pick([56, 28, 35])];
-          return qs.map(function (q) { return [r.pick(coprimeTo(q, 1, q - 1)), q]; });
-        },
-        parts: [
-          { id: 'e7a', level: 'EMG', make: function (r, sh) { return leadPart(sh[0]); } },
-          { id: 'e7b', level: 'EMG', make: function (r, sh) { return leadPart(sh[1]); } },
-          { id: 'e7c', level: 'EMG', make: function (r, sh) { return leadPart(sh[2]); } },
-          { id: 'e7d', level: 'PRG', make: function (r, sh) { return leadPart(sh[3]); } },
-          { id: 'e7e', level: 'PRG', make: function (r, sh) { var p = decPart(sh[3][0], sh[3][1]); p.prompt = 'Now divide and write ' + t('\\dfrac{' + sh[3][0] + '}{' + sh[3][1] + '}') + ' as a decimal with the bar in the right place.'; return p; } }] },
-      { num: '8', section: 'Extra practice C — Turning a repeating decimal back into a fraction', stem: 'Use the algebraic method: let ' + t('x') + ' be the decimal, multiply by the power of 10 that shifts the block left of the point, subtract, and solve. Give the answer in lowest terms.', parts: [
-        { id: 'e8a', level: 'BEG', make: function (r) { return algebraPart(repInfo(0, '', String(r.int(1, 8)))); } },
-        { id: 'e8b', level: 'EMG', make: function (r) { var b; do { b = randBlock(r, 2, '', true); } while (gcd(Number(b), 99) === 1); return algebraPart(repInfo(0, '', b)); } },
-        { id: 'e8c', level: 'EMG', make: function (r) { var b; do { b = randBlock(r, 3, '', true); } while (gcd(Number(b), 999) < 9); return algebraPart(repInfo(0, '', b)); } }] },
-      { num: '9', stem: 'These have a <b>non-repeating lead</b> after the decimal point, so you need two multiples of ' + t('x') + ': one with the block left of the point and one with the block just right of it. Subtract those two.', parts: [
-        { id: 'e9a', level: 'PRG', make: function (r) { var l = String(r.int(1, 9)) + String(r.int(1, 9)); return algebraPart(repInfo(0, l, randBlock(r, 1, l))); } },
-        { id: 'e9b', level: 'PRG', make: function (r) { var l = String(r.int(1, 9)); return algebraPart(repInfo(0, l, randBlock(r, 2, l, true))); } },
-        { id: 'e9c', level: 'ADV', make: function (r) { var l = String(r.int(1, 9)); return algebraPart(repInfo(r.int(1, 5), l, randBlock(r, 2, l, true))); } }] },
-      { num: '10', stem: 'Same method, watching the sign and the whole-number part. Give the answer as an improper fraction in lowest terms.', parts: [
-        { id: 'e10a', level: 'ADV', make: function (r) { var l = String(r.int(1, 9)); return algebraPart(repInfo(r.int(1, 9), l, randBlock(r, 1, l), true)); } },
-        { id: 'e10b', level: 'EMG', make: function (r) { return algebraPart(repInfo(r.int(1, 9), '', randBlock(r, 3, '', true))); } }] },
-      { num: '11', stem: 'When a decimal has a non-repeating lead, subtracting the two multiples of ' + t('x') + ' leaves a number like ' + t('990x') + ' or ' + t('900x') + ' on the left side.', parts: [
-        { id: 'e11a', level: 'PRG', make: function (r) {
-          return P.mc(r, 'A decimal has ' + t('p') + ' non-repeating digits after the point, then a repeating block of ' + t('q') + ' digits. What is the number in front of ' + t('x') + ' after subtracting?', [
-            { html: t('10^{p+q}-10^{p}') + ': ' + t('q') + ' nines followed by ' + t('p') + ' zeros', right: true },
-            { html: t('p') + ' nines followed by ' + t('q') + ' zeros', why: 'Test it on ' + t('0.16\\overline{3}') + ' (' + t('p=2') + ', ' + t('q=1') + '): the subtraction gave ' + t('900x') + '. How many nines and zeros is that?' },
-            { html: t('10^{p+q}-1') + ': ' + t('p+q') + ' nines', why: 'That works only when there is no lead (' + t('p=0') + '). For ' + t('0.4\\overline{27}') + ' you got ' + t('990x') + ', not ' + t('999x') + '.' },
-            { html: t('10^{q}-10^{p}'), why: 'Test it on ' + t('0.4\\overline{27}') + ' (' + t('p=1') + ', ' + t('q=2') + '): ' + t('10^{2}-10^{1}=90') + ', but the subtraction gave ' + t('990x') + '.' }],
-            t('10^{p+q}x') + ' moves the block left of the point and ' + t('10^{p}x') + ' puts it just right of the point, so their tails cancel. ' + t('10^{p+q}-10^{p}=10^{p}(10^{q}-1)') + ': ' + t('10^{q}-1') + ' is ' + t('q') + ' nines (one per block digit) and ' + t('10^{p}') + ' adds ' + t('p') + ' zeros (one per lead digit). Check: ' + t('p=1,\\ q=2') + ' gives ' + t('990') + '; ' + t('p=2,\\ q=1') + ' gives ' + t('900') + '.',
-            ['Test each rule on ' + t('0.4\\overline{27}') + ' (which gave ' + t('990x') + ') and ' + t('0.16\\overline{3}') + ' (which gave ' + t('900x') + ').'], 'multiplier rule');
-        } },
-        { id: 'e11b', level: 'EMG', make: function (r) {
-          var L = r.int(1, 3), B = r.int(1, 3), lead = digitsStr(r, L), R = repInfo(0, lead, randBlock(r, B, lead, true));
-          return P.number('Without doing the subtraction: for ' + t('x=' + R.tex) + ', what number is in front of ' + t('x') + ' after subtracting?', R.c, function (v) {
-            var rev = Math.pow(10, L + B) - Math.pow(10, B); if (v === rev && rev !== R.c) return { code: 'swap', hint: 'Nines for the <b>repeating</b> digits (' + B + ') and zeros for the <b>non-repeating</b> digits (' + L + ').' };
-            if (v === Math.pow(10, L + B) - 1) return { code: 'no-zeros', hint: 'There are non-repeating digits before the block, so the answer ends in zeros — one per lead digit.' };
-            return null;
-          }, 'The lead has ' + L + ' digit' + (L > 1 ? 's' : '') + ' and the block has ' + B + ', so the number is ' + B + ' nine' + (B > 1 ? 's' : '') + ' followed by ' + L + ' zero' + (L > 1 ? 's' : '') + ': ' + t(F(R.hi) + '-' + F(R.lo) + '=' + F(R.c)) + '.', ['One nine for each repeating digit, then one zero for each non-repeating digit.'], 'multiplier for ' + R.tex);
-        } }] },
-      { num: '12', section: 'Extra practice D — Rational or irrational?', stem: 'Several of these are traps — <b>simplify first</b>, then decide.', parts: [
-        { id: 'e12a', level: 'EMG', make: function (r) { return ratGrid(r, e12Rows(r, ['sq', 'nsq', 'pipi', 'prod', 'sqfr']), 'traps grid 1'); } },
-        { id: 'e12b', level: 'EMG', make: function (r) { return ratGrid(r, e12Rows(r, ['negdec', 'rep', 'pihalf', 'grow', 'sum']), 'traps grid 2'); } }] },
-      { num: '13', stem: 'Decide whether the statement is <i>always</i>, <i>sometimes</i> or <i>never</i> true.', parts: [
-        { id: 'e13a', level: 'PRG', make: function (r) {
-          var n = r.pick([2, 3, 5, 7]);
-          return P.mc(r, 'The <b>sum</b> of two irrational numbers is irrational.', [
-            { html: 'Always', why: 'Try ' + t('\\sqrt{' + n + '}+(-\\sqrt{' + n + '})') + '.' }, { html: 'Sometimes', right: true }, { html: 'Never', why: 'Try ' + t('\\sqrt{' + n + '}+\\sqrt{' + n + '}') + '.' }],
-            '<b>Sometimes.</b> Holds: ' + t('\\sqrt{' + n + '}+\\sqrt{' + n + '}=2\\sqrt{' + n + '}') + ' (irrational). Fails: ' + t('\\sqrt{' + n + '}+(-\\sqrt{' + n + '})=0') + ' (rational).', ['Look for one example where it works and one where it doesn’t.'], 'sum of irrationals', true);
-        } },
-        { id: 'e13b', level: 'EMG', make: function (r) {
-          var n = r.pick([2, 3, 5, 7]), m = r.pick([2, 3, 5, 6, 7].filter(function (x) { return x !== n; })), s = r.pick([[2, 7], [3, 6], [5, 11], [2, 14], [3, 13]]);
-          return P.mc(r, 'Which pair of irrational numbers has a <b>rational</b> sum?', [
-            { html: t('\\sqrt{' + n + '}') + ' and ' + t('-\\sqrt{' + n + '}'), right: true },
-            { html: t('\\sqrt{' + n + '}') + ' and ' + t('\\sqrt{' + n + '}'), why: t('\\sqrt{' + n + '}+\\sqrt{' + n + '}=2\\sqrt{' + n + '}') + ', which is irrational.' },
-            { html: t('\\sqrt{' + s[0] + '}') + ' and ' + t('\\sqrt{' + s[1] + '}'), why: 'Careful: ' + t('\\sqrt{' + s[0] + '}+\\sqrt{' + s[1] + '}\\neq\\sqrt{' + (s[0] + s[1]) + '}') + '. Check on your calculator: ' + t('\\sqrt{' + s[0] + '}+\\sqrt{' + s[1] + '}\\approx ' + (Math.sqrt(s[0]) + Math.sqrt(s[1])).toFixed(4)) + '.' },
-            { html: t('\\pi') + ' and ' + t('\\sqrt{' + m + '}'), why: t('\\pi+\\sqrt{' + m + '}=' + cut(Math.PI + Math.sqrt(m), 4) + '\\ldots') + ' — nothing cancels.' }],
-            t('\\sqrt{' + n + '}+(-\\sqrt{' + n + '})=0') + ', which is rational. (Roots don’t add like that: ' + t('\\sqrt{a}+\\sqrt{b}\\neq\\sqrt{a+b}') + '.)', ['Look for a pair where the irrational parts cancel.'], 'example rational sum');
-        } },
-        { id: 'e13c', level: 'PRG', make: function (r) {
-          var n = r.pick([2, 3, 5]);
-          return P.mc(r, 'The <b>product</b> of two irrational numbers is irrational.', [
-            { html: 'Always', why: 'Try ' + t('\\sqrt{' + n + '}\\times\\sqrt{' + n + '}') + '.' }, { html: 'Sometimes', right: true }, { html: 'Never', why: 'Try ' + t('\\sqrt{2}\\times\\sqrt{3}') + '.' }],
-            '<b>Sometimes.</b> Holds: ' + t('\\sqrt{2}\\times\\sqrt{3}=\\sqrt{6}') + ' (irrational). Fails: ' + t('\\sqrt{' + n + '}\\times\\sqrt{' + n + '}=' + n) + ' (rational).', ['Look for one example where it works and one where it doesn’t.'], 'product of irrationals', true);
-        } },
-        { id: 'e13d', level: 'EMG', make: function (r) {
-          var pr = r.pick([[2, 8], [3, 12], [2, 18], [5, 20], [3, 27]]), q = r.pick([[2, 3], [2, 5], [3, 5], [3, 7]]), s = r.pick([[2, 7], [3, 6], [5, 11]]);
-          return P.mc(r, 'Which pair of irrational numbers has a <b>rational</b> product?', [
-            { html: t('\\sqrt{' + pr[0] + '}') + ' and ' + t('\\sqrt{' + pr[1] + '}'), right: true },
-            { html: t('\\sqrt{' + q[0] + '}') + ' and ' + t('\\sqrt{' + q[1] + '}'), why: t('\\sqrt{' + q[0] + '}\\times\\sqrt{' + q[1] + '}=\\sqrt{' + q[0] * q[1] + '}') + ', and ' + t(q[0] * q[1]) + ' is not a perfect square.' },
-            { html: t('\\sqrt{' + s[0] + '}') + ' and ' + t('\\sqrt{' + s[1] + '}'), why: t('\\sqrt{' + s[0] + '}\\times\\sqrt{' + s[1] + '}=\\sqrt{' + s[0] * s[1] + '}') + '. (Their <i>sum</i> under one root would be ' + t(s[0] + s[1]) + ', but that’s not how products work.)' },
-            { html: t('\\pi') + ' and ' + t('\\sqrt{' + pr[0] + '}'), why: 'Nothing cancels the ' + t('\\pi') + '.' }],
-            t('\\sqrt{' + pr[0] + '}\\times\\sqrt{' + pr[1] + '}=\\sqrt{' + pr[0] * pr[1] + '}=' + Math.sqrt(pr[0] * pr[1])) + ', which is rational.', ['Multiply under one root: ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '. When is that a whole number?'], 'example rational product');
-        } }] },
-      { num: '14', stem: 'The sum of a rational number and an irrational number is <i>always</i> irrational.', parts: [
-        { id: 'e14', level: 'PRG', make: function (r) {
-          return P.mc(r, 'Suppose ' + t('r') + ' is rational, ' + t('s') + ' is irrational, and ' + t('r+s') + ' came out rational. Which argument shows this can’t happen?', [
-            { html: 'Then ' + t('s=(r+s)-r') + ' would be a difference of two rational numbers, which is rational — but ' + t('s') + ' is irrational. Contradiction.', right: true },
-            { html: 'Try an example: ' + t('1+\\sqrt{2}=2.414\\ldots') + ' is irrational, so it can never happen.', why: 'One example can’t show something is <b>always</b> true. You need an argument that works for every ' + t('r') + ' and ' + t('s') + '.' },
-            { html: 'Adding a rational number can’t change the decimal digits of ' + t('s') + '.', why: 'Adding does change digits (' + t('\\sqrt{2}+0.3') + '). The proof uses ' + t('s=(r+s)-r') + '.' },
-            { html: 'Irrational numbers are bigger than rational numbers, so the sum stays irrational.', why: 'Size has nothing to do with it: ' + t('\\sqrt{2}<5') + '.' }],
-            'If ' + t('r+s=t') + ' were rational, then ' + t('s=t-r') + '. A difference of rationals is rational: ' + t('\\frac{a}{b}-\\frac{c}{d}=\\frac{ad-bc}{bd}') + '. So ' + t('s') + ' would be rational — but it isn’t. So ' + t('r+s') + ' must be irrational.', ['Use the hint ' + t('s=(r+s)-r') + '. What kind of number is a difference of two rationals?'], 'proof rational + irrational');
-        } }] },
-      { num: '15', stem: 'Between any two different numbers there is always a rational number.', parts: [
-        { id: 'e15a', level: 'EMG', make: function (r) { var n = r.pick(nonSquares(5, 30).filter(function (x) { return !isSq(x + 1); })); return betweenPart('\\sqrt{' + n + '}', Math.sqrt(n), '\\sqrt{' + (n + 1) + '}', Math.sqrt(n + 1), 'rational between √' + n + ' and √' + (n + 1)); } },
-        { id: 'e15b', level: 'EMG', make: function (r) { var v = r.pick([['\\pi', Math.PI, '\\sqrt{10}', Math.sqrt(10)], ['2\\pi', 2 * Math.PI, '\\sqrt{40}', Math.sqrt(40)], ['\\sqrt{2.4}', Math.sqrt(2.4), '\\dfrac{\\pi}{2}', Math.PI / 2]]); return betweenPart(v[0], v[1], v[2], v[3], 'rational between ' + v[0] + ' and ' + v[2]); } }] },
-      { num: '16', section: 'Extra practice E — Error analysis and challenge', stem: function (sh) { return 'Amira divides ' + t(sh[0] + '\\div ' + sh[1]) + ' on her calculator and the display reads ' + t((sh[0] / sh[1]).toFixed(10)) + '. She writes: “The digits never repeat on the screen, so ' + t('\\frac{' + sh[0] + '}{' + sh[1] + '}') + ' is irrational.”'; },
-        shared: function (r) { var n = r.pick([17, 19, 23]); return [r.pick(coprimeTo(n, 2, n - 1)), n]; },
-        parts: [
-          { id: 'e16a', level: 'EMG', make: function (r, sh) {
-            return P.mc(r, 'What is wrong with her reasoning?', [
-              { html: t('\\frac{' + sh[0] + '}{' + sh[1] + '}') + ' is a ratio of two integers, so it is rational whatever the screen shows — the repeating block is just longer than the display.', right: true },
-              { html: 'Nothing: if no repeat shows in ten digits, the number is irrational.', why: 'A calculator shows only about ten digits. A fraction’s block can be longer than that.' },
-              { html: 'She should round to ' + t((sh[0] / sh[1]).toFixed(2)) + ', which terminates, so it’s rational.', why: 'Rounding gives a different number. The reason it’s rational is that it is a fraction.' },
-              { html: 'Her calculator is broken: every fraction repeats within ten digits.', why: 'Blocks can be long: ' + t('\\frac{1}{' + sh[1] + '}') + '’s block is ' + period(sh[1]) + ' digits.' }],
-              t('\\frac{' + sh[0] + '}{' + sh[1] + '}') + ' is a ratio of two integers with a non-zero denominator — that is the definition of rational. The screen shows only the first ten decimal places; its block is ' + t(period(sh[1])) + ' digits long, so the repeat never appears on screen: ' + t('\\frac{' + sh[0] + '}{' + sh[1] + '}=' + K.decTex(sh)) + '.', ['What is the definition of a rational number? Is ' + t('\\frac{' + sh[0] + '}{' + sh[1] + '}') + ' one?'], 'Amira error');
-          } },
-          { id: 'e16b', level: 'BEG', make: function (r, sh) {
-            var n = sh[1];
-            return P.number('When you divide by ' + t(n) + ', how many different non-zero remainders are possible? (That is the longest the repeating block can be.)', n - 1, function (v) {
-              if (v === n) return { code: 'n-not-n-1', hint: 'The remainder is always less than ' + t(n) + ', and it is never ' + t('0') + ' here (' + t(n) + ' has no factor 2 or 5). So the possible remainders are ' + t('1') + ' to ' + t(n - 1) + '.' };
-              if (v === 10) return { code: 'screen', hint: 'That’s the screen size, not a property of the fraction. Think about the possible remainders.' };
+          { id: 'e4a', level: 'PRG', make: function (r, sh) { return divPart(sh.n, 2); } },
+          { id: 'e4b', level: 'PRG', make: function (r, sh) { return divPart(sh.n, 3); } },
+          { id: 'e4c', level: 'MAS', make: function (r) {
+            var n = r.pick([72, 108, 200, 48, 500, 98]), m = multFor(n, 6), s2 = multFor(n, 2), s3 = multFor(n, 3), N = n * m;
+            return P.number('Find the smallest whole number ' + t(n) + ' must be <b>multiplied</b> by to give a number that is <i>both</i> a perfect square and a perfect cube.', m, function (v) {
+              if (v === s2) return { code: 'made-square', hint: t(n + '\\times ' + v) + ' is a perfect square, but not a perfect cube. Both at once needs every exponent to be a multiple of ' + t('6') + '.' };
+              if (v === s3) return { code: 'made-cube', hint: t(n + '\\times ' + v) + ' is a perfect cube, but not a perfect square. Both at once needs every exponent to be a multiple of ' + t('6') + '.' };
+              if (v > 0 && v % 1 === 0 && intRoot(n * v, 6) != null) return { code: 'not-smallest', hint: 'That works, but it isn’t the smallest. Raise each exponent only to the next multiple of ' + t('6') + '.' };
               return null;
-            }, 'The remainders can only be ' + t('1, 2, \\ldots, ' + (n - 1)) + ' (never ' + t('0') + ', because ' + t(n) + ' has no factor 2 or 5). So within ' + t(n - 1) + ' steps a remainder must come back, and the digits repeat from there. For ' + t('\\frac{' + sh[0] + '}{' + n + '}') + ' the block really is ' + t(period(n)) + ' digits — too long for a ten-digit screen.', ['A remainder is always smaller than the number you divide by.'], 'max block for /' + n);
+            }, t(n + '=' + K.fac(n)) + '. Square <b>and</b> cube means every exponent must be a multiple of ' + t('6') + '. ' + nt.factor(n).map(function (pe) { return t(pe[0] + '^{' + pe[1] + '}\\to ' + pe[0] + '^{6}') + ' needs ' + t(pe[0] + (6 - pe[1] > 1 ? '^{' + (6 - pe[1]) + '}' : '')); }).join('; ') + '.<br>Multiply by ' + t(eqv(m)) + ': ' + t(n + '\\times ' + F(m) + '=' + F(N) + '=' + K.fac(N)) + ' (square root ' + t(F(intRoot(N, 2))) + ', cube root ' + t(F(intRoot(N, 3))) + ').',
+            ['For both a square and a cube, every exponent must be a multiple of what number?'], 'multiply to square and cube: ' + n, { before: t(n + '\\times') });
           } }] },
-      { num: '17', stem: function (sh) { var pr = decParts(sh[0], sh[1]); return 'Devon divides and gets ' + t('\\frac{' + sh[0] + '}{' + sh[1] + '}=' + digitsOf(sh[0], sh[1], pr.lead.length + 3) + '\\ldots') + ', then writes the answer as ' + t('0.\\overline{' + pr.lead + pr.block + '}') + '.'; },
-        shared: function (r) { return r.pick([[7, 12], [5, 12], [1, 6], [5, 6], [11, 30], [7, 15], [13, 15], [1, 12], [11, 12]]); },
+      { num: '5', section: 'Extra practice C — Reasoning with exponents', stem: 'Decide whether each statement is <b>always true</b> or <b>not always true</b>.', parts: [
+        { id: 'e5', level: 'PRG', make: function (r) {
+          var S = [
+            { s: 'The product of two perfect squares is a perfect square.', a: true, w: 'Multiplying adds the exponents, and even + even = even: ' + t('4\\times 9=36=6^{2}') + '.' },
+            { s: 'The product of two perfect cubes is a perfect cube.', a: true, w: 'Multiplying adds the exponents, and two multiples of ' + t('3') + ' add to a multiple of ' + t('3') + ': ' + t('8\\times 27=216=6^{3}') + '.' },
+            { s: 'The sum of two perfect squares is a perfect square.', a: false, w: t('4+9=13') + ' is not a perfect square. Adding numbers doesn’t add their exponents.' },
+            { s: 'The sum of two perfect cubes is a perfect cube.', a: false, w: t('1+8=9') + ' is not a perfect cube.' },
+            { s: 'If ' + t('n') + ' is a perfect cube, then ' + t('8n') + ' is a perfect cube.', a: true, w: t('8=2^{3}') + ' adds ' + t('3') + ' to the exponent of ' + t('2') + ', which keeps it a multiple of ' + t('3') + '.' },
+            { s: 'If ' + t('n') + ' is a perfect cube, then ' + t('27n') + ' is a perfect cube.', a: true, w: t('27=3^{3}') + ' adds ' + t('3') + ' to the exponent of ' + t('3') + ', which keeps it a multiple of ' + t('3') + '.' },
+            { s: 'If ' + t('n') + ' is a perfect square, then ' + t('4n') + ' is a perfect square.', a: true, w: t('4=2^{2}') + ' adds ' + t('2') + ' to the exponent of ' + t('2') + ', which keeps it even.' },
+            { s: 'If ' + t('n') + ' is a perfect square, then ' + t('2n') + ' is a perfect square.', a: false, w: 'The exponent of ' + t('2') + ' in ' + t('n') + ' is even, so in ' + t('2n') + ' it is odd: ' + t('n=9,\\ 2n=18') + '.' },
+            { s: 'If ' + t('n') + ' is a perfect square, then ' + t('3n') + ' is a perfect square.', a: false, w: 'The exponent of ' + t('3') + ' becomes odd: ' + t('n=4,\\ 3n=12') + '.' },
+            { s: 'If ' + t('n') + ' is a perfect cube, then ' + t('2n') + ' is a perfect cube.', a: false, w: 'The exponent of ' + t('2') + ' is no longer a multiple of ' + t('3') + ': ' + t('n=27,\\ 2n=54') + '.' }];
+          var rows = find(r, function () { return r.sample(S, 4); }, function (v) { var k = v.filter(function (x) { return x.a; }).length; return k >= 1 && k <= 3; }, [S[0], S[2], S[4], S[7]]);
+          var want = {}; rows.forEach(function (x, i) { want['r' + i] = x.a ? 'yes' : 'no'; });
+          return P.grid('Always true, or not always true?', rows.map(function (x, i) { return { id: 'r' + i, html: x.s, label: 'statement ' + (i + 1) }; }),
+            [{ id: 'yes', html: 'Always true', label: 'Always true' }, { id: 'no', html: 'Not always', label: 'Not always true' }], want,
+            { tries: 2, count: false, why: function (row) { return { code: 'row', hint: rows[Number(row.slice(1))].w }; } },
+            rows.map(function (x) { return x.s + ' <b>' + (x.a ? 'Always true.' : 'Not always true.') + '</b> ' + x.w; }).join('<br>'),
+            ['Think about what happens to the <b>exponents</b>. For “not always”, one counterexample is enough.'], 'always true? squares and cubes');
+        } }] },
+      { num: '6', stem: function (sh) { return 'The number ' + t(sh.k) + ' is a perfect square.'; },
+        shared: function (r) { return { k: r.pick([36, 36, 100, 4, 9, 196, 144, 225]) }; },
         parts: [
-          { id: 'e17a', level: 'BEG', make: function (r, sh) {
-            var pr = decParts(sh[0], sh[1]), devon = pr.lead + pr.block, s = ''; while (s.length < 8) s += devon; s = '0.' + s.slice(0, 8);
-            var real = digitsOf(sh[0], sh[1], 8);
-            return { prompt: 'Write the first eight decimal places of the number Devon’s notation ' + t('0.\\overline{' + devon + '}') + ' actually means.', input: { type: 'number' }, key: s, answer: t(s), text: 'Devon notation ' + devon,
-              check: K.number(Number(s), function (v) { if (Math.abs(v - Number(real)) < 1e-9) return { code: 'real-value', hint: 'That’s ' + t('\\frac{' + sh[0] + '}{' + sh[1] + '}') + ' itself. Devon’s bar is over ' + t(devon) + ', so the <b>whole</b> block ' + t(devon) + ' repeats.' }; return null; }),
-              solution: 'The bar says the whole block ' + t(devon) + ' repeats: ' + t('0.\\overline{' + devon + '}=' + s + '\\ldots') + ' — a different number from ' + t('\\frac{' + sh[0] + '}{' + sh[1] + '}=' + real + '\\ldots') + '.', hints: ['Write the block ' + t(devon) + ' again and again after the decimal point.'], bad: [real] };
+          { id: 'e6a', level: 'EMG', make: function (r, sh) {
+            var k = sh.k, k3 = k * k * k;
+            return P.fields('Write ' + t(k + '^{3}') + ' in exponent form, without multiplying it out.', [{ name: t(k + '^{3}'), before: t(k + '^{3}='), mode: 'math', wide: true }], [expChk(k3, null)], [plainFac(k3)], t(k + '^{3}=' + K.fac(k3)),
+              t(k + '=' + K.fac(k)) + '. Cubing triples every exponent: ' + t(k + '^{3}=' + K.fac(k3)) + ' (' + t('=' + F(k3)) + ').', ['Write ' + t(k) + ' in exponent form, then triple every exponent.'], 'cube of a square: ' + k);
           } },
-          { id: 'e17b', level: 'BEG', make: function (r, sh) {
-            var p = decPart(sh[0], sh[1]); p.prompt = 'Write ' + t('\\dfrac{' + sh[0] + '}{' + sh[1] + '}') + ' with the bar in the correct place.';
-            p.solution += ' Rule: the bar goes over the repeating block only — the digits before it appear once and never return.';
-            return p;
+          { id: 'e6b', level: 'PRG', make: function (r, sh) {
+            var k = sh.k, k3 = k * k * k, s = intRoot(k3, 2);
+            var fl = [{ name: 'Square root', before: t('\\sqrt{' + k + '^{3}}='), mode: 'math' }, { name: 'Cube root', before: t('\\sqrt[3]{' + k + '^{3}}='), mode: 'math' }];
+            return P.fields(t(k + '^{3}') + ' is both a perfect square and a perfect cube. State both roots.', fl, [valChk(s, rootDiag(k3, 2)), valChk(k, rootDiag(k3, 3))], [String(s), String(k)],
+              t('\\sqrt{' + k + '^{3}}=' + F(s)) + ', ' + t('\\sqrt[3]{' + k + '^{3}}=' + k),
+              t(k + '^{3}=' + K.fac(k3)) + ': every exponent is a multiple of ' + t('6') + ', so it is both.<br>Square root: halve the exponents, ' + t(HW.texFactors(nt.factor(s)) + '=' + F(s)) + '. Cube root: divide them by ' + t('3') + ', ' + t(HW.texFactors(nt.factor(k)) + '=' + k) + '.',
+              ['Halve the exponents for the square root; divide them by ' + t('3') + ' for the cube root.'], 'roots of a sixth power');
+          } },
+          { id: 'e6c', level: 'PRG', make: function (r) {
+            return P.mc(r, 'Why is the cube of <i>any</i> perfect square both a perfect square and a perfect cube?', [
+              { html: 'A perfect square has only even exponents. Cubing multiplies each by ' + t('3') + ', and three times an even number is a multiple of ' + t('6') + '.', right: true },
+              { html: 'Cubing adds ' + t('3') + ' to each exponent, so they become multiples of ' + t('3') + '.', why: 'Cubing <b>multiplies</b> each exponent by ' + t('3') + '; it doesn’t add ' + t('3') + '.' },
+              { html: 'Every cube is also a square.', why: t('8=2^{3}') + ' is a cube but not a square.' },
+              { html: 'A perfect square has exponents that are multiples of ' + t('6') + ' already.', why: t('4=2^{2}') + ': the exponent ' + t('2') + ' is even, not a multiple of ' + t('6') + '. It is the cubing that makes it a multiple of ' + t('6') + '.' }],
+              'A perfect square has every exponent even. Cubing triples every exponent, and ' + t('3\\times') + ' an even number is a multiple of both ' + t('2') + ' and ' + t('3') + ' — a multiple of ' + t('6') + '. So the cube is both a square and a cube.',
+              ['What does cubing do to each exponent? What kind of exponents does a perfect square have?'], 'cube of a square is both');
           } }] },
-      { num: '18', stem: 'Show that ' + t('0.\\overline{9}=1') + ' exactly — not just “very close to 1”.', parts: [
-        { id: 'e18a', level: 'EMG', make: function (r) {
-          var v = r.pick([['0', ''], ['0', ''], ['1', ''], ['2', ''], ['0', '4'], ['0', '2']]), R = repInfo(Number(v[0]), v[1], '9'), val = R.ax[0] / R.ax[1];
-          return P.number('Run the algebraic method on ' + t('x=' + R.tex) + '. What exact value of ' + t('x') + ' do you get?', val, function (w) {
-            if (w < val && w > val - 0.2) return { code: 'close', hint: 'Follow the algebra exactly: ' + t(F(R.hi) + 'x-' + (R.lo > 1 ? R.lo : '') + 'x') + ' — the 9s cancel completely. What is ' + t('x') + '?' };
+      { num: '7', section: 'Extra practice D — Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e7', level: 'ADV', make: function (r) {
+          var v = find(r, function () { var es = [r.pick([4, 5]), r.pick([4, 5]), r.pick([1, 2])]; return { es: es, n: fromExps([2, 3, 5], es) }; }, function () { return true; }, { es: [5, 4, 1], n: 12960 });
+          var es = v.es, n = v.n, d = divFor(n, 3), d2 = divFor(n, 2), part = Math.pow(2, es[0] % 3) * Math.pow(3, es[1] % 3), dbl = 2 * d;
+          var opts = [d, part, d2, dbl].filter(function (x, i, a) { return a.indexOf(x) === i && x > 1; });
+          var extra = [d * 3, d * 5, part * 2, d / 5].filter(function (x) { return x % 1 === 0 && x > 1 && opts.indexOf(x) < 0; });
+          while (opts.length < 4 && extra.length) opts.push(extra.shift());
+          var nTex = texE([2, 3, 5], es), why = function (x) {
+            if (n % x) return t(F(x)) + ' doesn’t divide the number.';
+            var w = n / x;
+            return 'Dividing by ' + t(F(x)) + ' leaves ' + t(K.fac(w) + (w < 1e6 ? '=' + F(w) : '')) + (intRoot(w, 3) != null ? ', a cube — but you removed more than you had to.' : intRoot(w, 2) != null ? ', a perfect <b>square</b>, not a cube.' : ', which is not a perfect cube.');
+          };
+          return P.mc(r, 'The smallest whole number that ' + t(nTex) + ' must be <i>divided</i> by to leave a perfect cube is',
+            sortN(opts).map(function (x) { return { html: t(F(x)), right: x === d, why: x === d ? null : why(x) }; }),
+            'Lower each exponent to the multiple of ' + t('3') + ' just below it: ' + [2, 3, 5].map(function (p, i) { return t(p + '^{' + es[i] + '}\\to ' + p + '^{' + (es[i] - es[i] % 3) + '}'); }).join(', ') + '.<br>Divide by ' + t(eqv(d)) + ': the result is ' + t(K.fac(n / d) + '=' + F(n / d) + '=' + intRoot(n / d, 3) + '^{3}') + '.',
+            ['For a cube, every exponent must be a multiple of ' + t('3') + '. How much of each prime must go?'], 'MC divide to a cube', true);
+        } }] },
+      { num: '8', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e8', level: 'ADV', make: function (r) {
+          var v = find(r, function () { var b = r.pick([2, 2, 3, 5]), pq = sortN(r.sample([3, 5, 7, 11, 13].filter(function (x) { return x !== b; }), 2)); return { b: b, p: pq[0], q: pq[1], n: b * b * b * pq[0] * pq[0] * pq[1] * pq[1] }; },
+            function (v) { return v.n <= 99999 && v.p * v.q <= 999; }, { b: 2, p: 3, q: 7, n: 3528 });
+          var n = v.n, m = v.p * v.q, N = n * m;
+          return P.nr('The smallest whole number that ' + t(F(n)) + ' must be multiplied by to give a perfect cube is ________. (Record your answer as a three-digit number.)', m, function (x) {
+            if (x === m * m) return { code: 'squared', hint: 'You need just <b>one</b> more of each prime with exponent ' + t('2') + ', to reach ' + t('3') + '.' };
+            if (x === m * v.b) return { code: 'not-smallest', hint: t(v.b + '^{3}') + ' is already a cube — leave it alone.' };
+            if (x > 0 && x % 1 === 0 && intRoot(n * x, 3) != null) return { code: 'not-smallest', hint: 'That makes a cube, but a smaller multiplier works. Raise each exponent only to the next multiple of ' + t('3') + '.' };
+            if (x > 1 && m % x === 0) return { code: 'missed-prime', hint: 'Not quite: after multiplying by ' + t(x) + ', some exponent is still not a multiple of ' + t('3') + '. Check every prime.' };
+            if (x > 0 && x % 1 === 0 && intRoot(n * x, 2) != null) return { code: 'made-square', hint: 'That makes a perfect <b>square</b>. For a cube, every exponent must be a multiple of ' + t('3') + '.' };
             return null;
-          }, algebraSol(R) + ' So ' + t(R.tex + '=' + val) + ' exactly.', ['Let ' + t('x=' + R.tex) + ', multiply by ' + t(R.hi) + ', subtract and solve.'], 'algebra on ' + R.tex);
-        } },
-        { id: 'e18b', level: 'BEG', make: function (r) {
-          var f = r.pick([[3, '3'], [9, '1']]);
-          return P.mc(r, 'Start with ' + t('\\frac{1}{' + f[0] + '}=0.\\overline{' + f[1] + '}') + ' and multiply both sides by ' + t(f[0]) + '. What does that show?', [
-            { html: t('1=0.\\overline{9}') + ', exactly.', right: true },
-            { html: t('1\\approx 0.\\overline{9}') + ', but they are not exactly equal.', why: t('\\frac{1}{' + f[0] + '}=0.\\overline{' + f[1] + '}') + ' is exact, so multiplying both sides by ' + t(f[0]) + ' gives an exact equation.' },
-            { html: t('0.\\overline{9}=0.9') + '.', why: t(f[0] + '\\times 0.' + f[1] + f[1] + f[1] + '\\ldots=0.999\\ldots') + ': every digit becomes a 9, forever.' },
-            { html: 'Nothing — you can’t multiply a repeating decimal.', why: 'Multiply digit by digit: ' + t(f[0] + '\\times 0.' + f[1] + f[1] + f[1] + '\\ldots=0.999\\ldots') + '.' }],
-            t(f[0] + '\\times\\frac{1}{' + f[0] + '}=1') + ' and ' + t(f[0] + '\\times 0.' + f[1] + f[1] + f[1] + '\\ldots=0.999\\ldots') + ', so ' + t('1=0.\\overline{9}') + '.', ['What is ' + t(f[0] + '\\times\\frac{1}{' + f[0] + '}') + '? What is ' + t(f[0] + '\\times 0.' + f[1] + f[1] + f[1] + '\\ldots') + '?'], '1/3 argument');
-        } },
-        { id: 'e18c', level: 'PRG', make: function (r) {
-          return P.mc(r, 'If ' + t('0.\\overline{9}') + ' were <b>less</b> than ' + t('1') + ', some number would fit strictly between them. Why can’t any number fit?', [
-            { html: 'The gap ' + t('1-0.\\overline{9}') + ' is smaller than ' + t('0.1') + ', ' + t('0.01') + ', ' + t('0.001') + ', … — smaller than every positive number — so the gap is ' + t('0') + '.', right: true },
-            { html: 'Because ' + t('0.\\overline{9}') + ' rounds to ' + t('1') + '.', why: 'Rounding changes a number. The claim is that they are <i>exactly</i> equal.' },
-            { html: 'Because the gap is ' + t('0.\\overline{0}1') + ', which is too small to matter.', why: t('0.\\overline{0}1') + ' isn’t a number: the 0s go on forever, so the 1 never arrives.' },
-            { html: 'Because there are no numbers between any two decimals.', why: 'Between ' + t('0.9') + ' and ' + t('1') + ' there is ' + t('0.95') + '. Why doesn’t that happen here?' }],
-            'For every decimal place, ' + t('0.\\overline{9}') + ' is within ' + t('0.1') + ', ' + t('0.01') + ', ' + t('0.001') + ', … of ' + t('1') + '. A positive gap would have to be smaller than all of these, which is impossible, so the gap is ' + t('0') + ': ' + t('0.\\overline{9}') + ' and ' + t('1') + ' are two names for the same number.', ['How far is ' + t('0.9999') + ' from ' + t('1') + '? ' + t('0.999999') + '?'], 'nothing between 0.(9) and 1');
-        } }] },
-      { num: '19', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e19', level: 'EMG', make: function (r) {
-          var pool = [3, 6, 9, 11, 22, 33, 27, 37, 7, 13, 14, 21, 12, 15], pick, lens;
-          for (var i = 0; i < 300; i++) { pick = r.sample(pool, 4); lens = pick.map(function (q) { return decParts(1, q).block.length; }); var mx = Math.max.apply(null, lens); if (lens.filter(function (x) { return x === mx; }).length === 1 && Math.max.apply(null, pick) !== pick[lens.indexOf(mx)]) break; pick = null; }
-          if (!pick) { pick = [6, 11, 13, 22]; lens = pick.map(function (q) { return decParts(1, q).block.length; }); }
-          var max = Math.max.apply(null, lens);
-          var opts = pick.map(function (q, j) { return { html: t('\\dfrac{1}{' + q + '}'), right: lens[j] === max, why: lens[j] === max ? null : t('\\frac{1}{' + q + '}=' + K.decTex([1, q])) + ': a ' + lens[j] + '-digit block.' + (q > pick[lens.indexOf(max)] ? ' A bigger denominator doesn’t always mean a longer block.' : ' Is that the longest? Check the others.') }; });
-          return P.mc(r, 'Which fraction has the <b>longest</b> repeating block?', opts,
-            pick.map(function (q, j) { return t('\\frac{1}{' + q + '}=' + K.decTex([1, q])) + ': ' + lens[j] + '-digit block'; }).join('<br>'), ['Divide each one and count the digits under the bar.'], 'longest block');
-        } }] },
-      { num: '20', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e20', level: 'EMG', make: function (r) { return nrRepPart(r); } }] }
+          }, t(F(n) + '=' + K.fac(n)) + '. Raise each exponent to a multiple of ' + t('3') + ': ' + t(v.b + '^{3}') + ' is fine, ' + t(v.p + '^{2}\\to ' + v.p + '^{3}') + ' and ' + t(v.q + '^{2}\\to ' + v.q + '^{3}') + ' each need one more. Multiply by ' + t(v.p + '\\times ' + v.q + '=' + m) + ': ' + t(F(n) + '\\times ' + m + '=' + F(N) + '=' + intRoot(N, 3) + '^{3}') + '. Answer: ' + t((m < 100 ? '0' : '') + m),
+          ['Factor ' + t(F(n)) + ' and look for exponents that aren’t multiples of ' + t('3') + '.'], 'NR cube multiplier ' + n);
+        } }] }
     ]
   });
 
-  /* ---------- part makers that need the helpers above ---------- */
-  function nt0(m) { return HW.nt.distinctPrimes(m).join(', '); }
-  function decPart(p, q) {
-    var rd = norm(p, q), red = rd[1] !== q, s = split25(rd[1]);
-    var p0 = P.repeating(t('\\dfrac{' + p + '}{' + q + '}'), rd, {},
-      (red ? t('\\frac{' + p + '}{' + q + '}=' + rTex(rd)) + '. ' : '') + t(rd[0] + '\\div ' + rd[1] + '=' + (s.m === 1 ? K.decTex(rd) : digitsOf(rd[0], rd[1], Math.min(12, (decParts(rd[0], rd[1]).lead.length + decParts(rd[0], rd[1]).block.length) * 2 + 1)) + '\\ldots')) + (s.m === 1 ? ' — the remainder reaches 0, so it stops.' : ' — the block ' + t(decParts(rd[0], rd[1]).block) + ' repeats.') + ' So ' + t('\\frac{' + p + '}{' + q + '}=' + K.decTex(rd)) + '.',
-      ['Reduce first, then divide (long division or calculator).', 'Put the bar over the repeating block only — the digits before it are written once.'], 'decimal of ' + p + '/' + q);
-    if (s.m !== 1) { var pr = decParts(rd[0], rd[1]); p0.bad = ['0.' + pr.lead + pr.block, '0.\\overline{' + pr.lead + pr.block + '}']; if (!pr.lead) p0.bad = ['0.' + pr.block]; }
-    return p0;
-  }
-  function kPart(d) {
-    var s = split25(d), m = s.m;
-    return { prompt: t('\\dfrac{k}{' + d + '}'), input: { type: 'number', before: t('k=') }, key: String(m), answer: 'any multiple of ' + t(m) + ' less than ' + t(d) + ', e.g. ' + t('k=' + m), text: 'terminating k/' + d,
-      check: function (resp) {
-        var pn = HW.parse.number(resp);
-        if (!pn.ok) return form(pn.code === 'empty' ? 'empty' : 'notnumber', 'Enter one whole number for ' + t('k') + '.');
-        var k = pn.value;
-        if (k % 1 || k <= 0 || k >= d) return form('range', t('k') + ' must be a whole number between ' + t('0') + ' and ' + t(d) + '.');
-        var rd = norm(k, d);
-        if (split25(rd[1]).m === 1) return ok();
-        return wrong('not-multiple', t('\\frac{' + k + '}{' + d + '}=' + rTex(rd)) + ', and ' + t(rd[1] + '=' + texFacs(rd[1])) + ' still has a prime other than 2 or 5. Which factor of ' + t(d) + ' has to cancel?');
-      },
-      solution: t(d + '=' + texFacs(d)) + '. The part with no 2s or 5s is ' + t(m) + ', so ' + t('k') + ' must be a multiple of ' + t(m) + ' to cancel it. For example ' + t('\\frac{' + m + '}{' + d + '}=' + rTex([m, d]) + '=' + K.decTex([m, d])) + ' ✓ (any multiple of ' + t(m) + ' works).',
-      hints: ['Factor ' + t(d) + '. Which prime factor makes the decimal repeat? Choose ' + t('k') + ' so that it cancels.'], good: [String(2 * m < d ? 2 * m : m)], bad: ['1', String(d / m), String(m === 3 ? 1 : 3)] };
-  }
-  function blockLenPart(f) {
-    var n = f[1], len = decParts(f[0], n).block.length;
-    var max = { name: 'Maximum', label: 'Maximum:', after: 'digits' }, act = { name: 'Actual', label: 'Actual block:', after: 'digits' };
-    var cm = K.number(n - 1, function (v) { if (v === n) return { code: 'n-not-n-1', hint: 'The remainders can only be ' + t('1') + ' to ' + t(n - 1) + ' — there are ' + t(n - 1) + ' of them.' }; return null; });
-    var ca = K.number(len, function (v) { if (v === n - 1 && len !== n - 1) return { code: 'max-block', hint: 'That’s the maximum. Now divide and count the digits that actually repeat.' }; return null; });
-    return P.fields(t('\\dfrac{' + f[0] + '}{' + n + '}'), [max, act], [cm, ca], [String(n - 1), String(len)], 'Maximum ' + t(n - 1) + ', actual ' + t(len) + ' (' + t('\\frac{' + f[0] + '}{' + n + '}=' + K.decTex(f)) + ')',
-      'Maximum: ' + t(n + '-1=' + (n - 1)) + '. Dividing: ' + t('\\frac{' + f[0] + '}{' + n + '}=' + K.decTex(f)) + ', so the block is ' + t(len) + ' digit' + (len > 1 ? 's' : '') + ' long' + (len === n - 1 ? ' — it reaches the maximum.' : '.'),
-      ['The maximum is one less than the denominator.', 'Divide on your calculator and count the digits in the block that repeats.'], 'block length ' + f[0] + '/' + n);
-  }
-  function sevenPart(k) {
-    var p = P.repeating(t('\\dfrac{' + k + '}{7}'), [k, 7], {}, t('\\frac{' + k + '}{7}=' + k + '\\times 0.142857\\,142857\\ldots=' + digitsOf(k, 7, 12) + '\\ldots') + ', so ' + t('\\frac{' + k + '}{7}=' + K.decTex([k, 7])) + '.',
-      ['Multiply ' + t('0.142857\\,142857\\ldots') + ' by ' + t(k) + ', or divide ' + t(k + '\\div 7') + '.', 'The block has six digits; put the bar over all six.'], k + '/7 from 1/7');
-    p.bad = ['0.' + decParts(k, 7).block, '0.\\overline{' + String(142857 * k).slice(0, 6) + '}'];
-    if (p.bad[1] === '0.\\overline{' + decParts(k, 7).block + '}') p.bad.pop();
+  /* ---------- part makers used by the extras ---------- */
+  function sqCubePart(r, cond, pool, fallback, nPrimes) {
+    var v = find(r, function () { var ps = sortN(r.sample([2, 3, 5, 7], nPrimes || 2)), es = ps.map(function () { return r.pick(pool); }); return { ps: ps, es: es }; },
+      function (v) { return cond(v.es) && fromExps(v.ps, v.es) < 1e15; }, { ps: fallback.length === 3 ? [2, 3, 5] : fallback[0] === 9 ? [2, 5] : [2, 3], es: fallback });
+    var ps = v.ps, es = v.es, nTex = texE(ps, es), sq = es.every(function (e) { return e % 2 === 0; }), cu = es.every(function (e) { return e % 3 === 0; });
+    var sr = sq ? fromExps(ps, es.map(function (e) { return e / 2; })) : null, cr = cu ? fromExps(ps, es.map(function (e) { return e / 3; })) : null;
+    var srTex = sq ? texE(ps, es.map(function (e) { return e / 2; })) : null, crTex = cu ? texE(ps, es.map(function (e) { return e / 3; })) : null;
+    var d2 = function (val) { return cr != null && val === cr ? { code: 'used-cube-root', hint: 'That’s the <b>cube</b> root. For the square root, divide each exponent by ' + t('2') + '.' } : null; };
+    var d3 = function (val) { return sr != null && val === sr ? { code: 'used-square-root', hint: 'That’s the <b>square</b> root. For the cube root, divide each exponent by ' + t('3') + '.' } : null; };
+    var label = sq && cu ? 'both' : sq ? 'perfect square only' : cu ? 'perfect cube only' : 'neither';
+    var p = P.fields(t(nTex), [{ name: 'Square root', label: 'Square root', mode: 'math', none: true, wide: true }, { name: 'Cube root', label: 'Cube root', mode: 'math', none: true, wide: true }],
+      [rootOrNone(sr, 2, nTex, d2), rootOrNone(cr, 3, nTex, d3)], [sq ? srTex.replace(/\^\{(\d+)\}/g, '^$1').replace(/\\times /g, ' × ') : 'none', cu ? crTex.replace(/\^\{(\d+)\}/g, '^$1').replace(/\\times /g, ' × ') : 'none'],
+      '<b>' + label.charAt(0).toUpperCase() + label.slice(1) + '</b>' + (sq ? '; square root ' + t(srTex + (sr < 1e7 ? '=' + F(sr) : '')) : '') + (cu ? '; cube root ' + t(crTex + (cr < 1e7 ? '=' + F(cr) : '')) : ''),
+      'Exponents: ' + t(es.join(',\\ ')) + '.<br>' + (sq ? 'All even ⇒ perfect square; square root ' + t(srTex + (sr < 1e7 ? '=' + F(sr) : '')) + '.' : 'Not all even (' + t(es.filter(function (e) { return e % 2; })[0]) + ' is odd) ⇒ not a square.') + '<br>' + (cu ? 'All multiples of ' + t('3') + ' ⇒ perfect cube; cube root ' + t(crTex + (cr < 1e7 ? '=' + F(cr) : '')) + '.' : 'Not all multiples of ' + t('3') + ' (' + t(es.filter(function (e) { return e % 3; })[0]) + ') ⇒ not a cube.') + '<br><b>' + label.charAt(0).toUpperCase() + label.slice(1) + '</b>.',
+      ['Square: is every exponent even? Cube: is every exponent a multiple of ' + t('3') + '?', 'To take a root, divide each exponent by ' + t('2') + ' (square) or ' + t('3') + ' (cube).'], 'square/cube from exponents: ' + label);
+    p.bad = [[sq ? 'none' : '2', cu ? 'none' : '2'], [sq ? String(sr + 1) : 'none', cu ? String(cr + 1) : 'none']].filter(function (b) { return !(b[0] === p.key[0] && b[1] === p.key[1]); });
+    if (sq && sr < 1e9) p.good = [[String(sr), p.key[1]]];
     return p;
-  }
-  function leadPart(f) {
-    var rd = norm(f[0], f[1]), s = split25(rd[1]), lead = Math.max(s.a, s.b), blk = period(s.m);
-    var cl = K.number(lead, function (v) { if (v === s.a + s.b && s.a && s.b && v !== lead) return { code: 'sum-lead', hint: 'The lead is the <b>larger</b> of ' + t('a') + ' and ' + t('b') + ', not their sum.' }; return null; });
-    var cb = K.number(blk, function (v) { if (v === s.m - 1 && blk !== s.m - 1) return { code: 'max-block', hint: 'That’s the most it could be. The block of ' + t('\\frac{1}{' + s.m + '}') + ' is shorter — divide and count.' }; return null; });
-    return P.fields(t('\\dfrac{' + f[0] + '}{' + f[1] + '}'), [{ name: 'Lead', label: 'Lead:', after: 'digits' }, { name: 'Block', label: 'Block:', after: 'digits' }], [cl, cb], [String(lead), String(blk)],
-      'lead ' + t(lead) + ', block ' + t(blk) + ' (' + t('\\frac{' + f[0] + '}{' + f[1] + '}=' + K.decTex(rd)) + ')',
-      t(rd[1] + '=' + texFacs(rd[1])) + ': ' + t('a=' + s.a + ',\\ b=' + s.b + ',\\ m=' + s.m) + '. Lead ' + t('=\\max(a,b)=' + lead) + '; ' + t('\\frac{1}{' + s.m + '}=' + K.decTex([1, s.m])) + ' gives a ' + blk + '-digit block. Check: ' + t('\\frac{' + f[0] + '}{' + f[1] + '}=' + K.decTex(rd)) + '.',
-      ['Factor the denominator into ' + t('2^{a}5^{b}\\times m') + '.', 'The lead is the larger of ' + t('a') + ' and ' + t('b') + '; the block has the same length as the block of ' + t('\\frac{1}{m}') + '.'], 'lead/block of ' + f[0] + '/' + f[1]);
   }
 })(window);

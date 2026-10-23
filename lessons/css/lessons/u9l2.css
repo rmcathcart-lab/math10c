@@ -1,6 +1,6 @@
 /* Math 10C · Unit 9 · Lesson 2 — Trig Ratios: Calculator Values and Angle Patterns: styles used only on this page (prefix u9l2-).
  * Unit 9 colours: opposite purple, adjacent amber, hypotenuse blue, reference-angle arc red, tangent green.
- * Extension parts use the slate "Extension" pill of Unit 6 Lesson 6. */
+ * Extension parts use the slate "Extension" pill of Unit 6 Lesson 5. */
 :root { --u9l2-opp: #7b4fc4; --u9l2-adj: #c27a0e; --u9l2-hyp: #1f5bd6; --u9l2-ang: #c93a33; --u9l2-tan: #12805a; --u9l2-ext: #5d6475; }
 
 .ex-cap { min-height: 120px; }

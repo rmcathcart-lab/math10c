@@ -1,5 +1,6 @@
-/* Math 10C · Unit 2 · Lesson 3 — Negative Exponents (AN3)
- * Assignment questions 1–17 (u2_L03.tex) and all of the Lesson 3 Extra Practice (u2_EP03.tex, Q1–20).
+/* Math 10C · Unit 2 · Lesson 3 — Negative Exponents and Scientific Notation (AN3)
+ * Assignment questions 1–21 (u2_L03.tex; 18–21 are scientific notation) and all of the Lesson 3 Extra Practice
+ * (u2_EP03.tex, Q1–23; Part G, Q21–23, is scientific notation).
  * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's numbers are one
  * of the possible values) and changes the numbers. Answers with variables are checked with K.expo (positive-exponent
  * form); exact values with a local fraction checker. Answers are built with a small monomial engine (M, mm, md, mp)
@@ -216,9 +217,185 @@
     }, sol, [H.sign, H.neg], 'evaluate ' + tex);
   }
 
+  /* ---------- scientific notation (Questions 18–21, Extra practice G) ----------
+   * Condensed from the old Lesson 2.4 assignment. All arithmetic is exact on decimals { m: integer, e: integer }
+   * (value m × 10^e), so keys never show float noise. Local checkers, because K.sci / K.number compare with an
+   * absolute tolerance that accepts wrong answers for numbers smaller than about 10^-8. */
+  var SN = (function () {
+    function P10(k) { return Math.pow(10, k); }
+    function D(m, e) { if (m === 0) return { m: 0, e: 0 }; while (m % 10 === 0) { m /= 10; e++; } return { m: m, e: e }; }
+    function dec(s) { s = String(s).replace(/\s|\\,/g, ''); var sg = s[0] === '-'; if (sg) s = s.slice(1); var p = s.split('.'), fr = p[1] || ''; var m = Number((p[0] || '0') + fr); return D(sg ? -m : m, -fr.length); }
+    function val(d) { return Number(d.m + 'e' + d.e); }
+    function nd(d) { return String(Math.abs(d.m)).length; }
+    function sN(d) { return d.m === 0 ? 0 : d.e + nd(d) - 1; }
+    function mul(a, b) { return D(a.m * b.m, a.e + b.e); }
+    function div(a, b) { for (var k = 0; k <= 12; k++) { var n = a.m * P10(k); if (!Number.isSafeInteger(n)) return null; if (n % b.m === 0) return D(n / b.m, a.e - b.e - k); } return null; }
+    function add(a, b) { var e = Math.min(a.e, b.e); return D(a.m * P10(a.e - e) + b.m * P10(b.e - e), e); }
+    function sh(a, k) { return { m: a.m, e: a.e + k }; }
+    function coef(d) { return D(d.m, -(nd(d) - 1)); }
+    function inRange(c) { var v = Math.abs(val(c)); return v >= 1 && v < 10; }
+    function std(d) {
+      if (d.m === 0) return '0';
+      var s = String(Math.abs(d.m)), sg = d.m < 0 ? '-' : '';
+      if (d.e >= 0) return sg + s + '0'.repeat(d.e);
+      var pos = s.length + d.e;
+      return pos > 0 ? sg + s.slice(0, pos) + '.' + s.slice(pos) : sg + '0.' + '0'.repeat(-pos) + s;
+    }
+    function stdTex(d) {
+      var s = std(d), sg = ''; if (s[0] === '-') { sg = '-'; s = s.slice(1); }
+      var p = s.split('.'), i = p[0], out = '';
+      if (i.length >= 4) while (i.length > 3) { out = '\\,' + i.slice(-3) + out; i = i.slice(0, -3); }
+      return sg + i + out + (p[1] ? '.' + p[1] : '');
+    }
+    function stdPlain(d) { return stdTex(d).replace(/\\,/g, ' '); }
+    function sciT(d) { return std(coef(d)) + '\\times 10^{' + sN(d) + '}'; }
+    function sciPlain(d) { return std(coef(d)) + ' × 10^' + sN(d); }
+    function pt(c, p) { return stdTex(c) + '\\times 10^{' + p + '}'; }
+    function par(n) { return n < 0 ? '(' + n + ')' : String(n); }
+    function S(m, n) { return D(m, n - (String(m).length - 1)); }        // digits m with the point after the first digit, × 10^n
+    function relEq(a, b, tol) { return isFinite(a) && isFinite(b) && Math.abs(a - b) <= (tol || 1e-9) * Math.max(Math.abs(a), Math.abs(b)); }
+    function mant(r, sig) { if (sig === 1) return r.int(1, 9); var s = String(r.int(1, 9)); for (var i = 1; i < sig - 1; i++) s += r.int(0, 9); return Number(s + r.int(1, 9)); }
+    function nz(r, lo, hi) { var v; do { v = r.int(lo, hi); } while (v % 10 === 0); return v; }
+    function find(r, gen, okf, fallback) { if (fallback && r.chance(0.12)) return fallback; for (var i = 0; i < 600; i++) { var v = gen(); if (v && okf(v)) return v; } return fallback; }
+
+    function cands(list) {
+      return function (v) {
+        for (var i = 0; i < list.length; i++) { var c = list[i]; if (c && c[0] != null && relEq(v, typeof c[0] === 'number' ? c[0] : val(c[0]))) return { code: c[1], hint: c[2] }; }
+        return null;
+      };
+    }
+    var LETTER_X = /\d\s*[xX]\s*\d/;
+    function letterX(resp) { return LETTER_X.test(String(resp || '')) ? form('letter-x', 'For “times”, use the ' + t('\\times') + ' key (or type <code>*</code>) — the letter x reads as a variable.') : null; }
+    function sciChk(x) {
+      var X = typeof x === 'number' ? x : val(x), base = K.sci(X, {});
+      return function (resp, diag) {
+        var lx = letterX(resp); if (lx) return lx;
+        var a = K.read(resp); if (a.res) return a.res;
+        if (relEq(a.val, X)) return base(resp);
+        var h = diag ? diag(a.val, a.ast) : null;
+        if (h) return wrong(h.code || 'diag', h.hint);
+        if (relEq(-a.val, X)) return wrong('sign', 'Check the sign.');
+        var q = a.val / X, lg = Math.log10(Math.abs(q));
+        if (q > 0 && Math.abs(lg - Math.round(lg)) < 1e-9 && Math.round(lg) !== 0) return wrong('power-off', 'The digits are right, but the power of ' + t('10') + ' is off by ' + t(Math.abs(Math.round(lg))) + '. Count how many places the decimal point moves, and in which direction.');
+        return wrong('value', null);
+      };
+    }
+    function stdChk(d) {
+      var n = sN(d), X = val(d);
+      return function (resp) {
+        var raw = String(resp == null ? '' : resp), p = HW.parse.number(raw);
+        if (!p.ok) {
+          if (p.code === 'empty') return form('empty', 'Type your answer first.');
+          var a = K.read(raw);
+          if (!a.res && relEq(a.val, X)) return form('not-standard', 'Right value — now write it in <b>standard notation</b>: all the digits, with no power of ' + t('10') + '.');
+          return form('notnumber', 'Write the number in standard notation: digits and a decimal point only, no power of ' + t('10') + '.');
+        }
+        var g = dec(HW.parse.plain(raw).replace(/\s+/g, '').replace(/,(?=\d{3}(\D|$))/g, '').replace(/[()]/g, ''));
+        if (g.m === d.m && g.e === d.e) return ok();
+        if (g.m === -d.m && g.e === d.e) return wrong('sign', 'Check the sign.');
+        if (g.m === d.m) {
+          var gn = sN(g);
+          if (n !== 0 && (gn === -n || (n < 0) !== (gn < 0))) return wrong('direction', n < 0 ? 'A <b>negative</b> exponent makes the number small: move the decimal point to the <b>left</b> (the answer is less than ' + t('1') + ').' : 'A <b>positive</b> exponent makes the number big: move the decimal point to the <b>right</b>.');
+          return wrong('places', 'The digits are right, but the decimal point is ' + Math.abs(gn - n) + ' place' + (Math.abs(gn - n) === 1 ? '' : 's') + ' off. Move it exactly ' + t(Math.abs(n)) + ' place' + (Math.abs(n) === 1 ? '' : 's') + ' — count the hops one at a time.');
+        }
+        return wrong('value', null);
+      };
+    }
+    function sciPart(prompt, d, diag, sol, hints, text) {
+      var key = sciT(d), chk = sciChk(d);
+      var p = P.math(prompt, function (resp) { return chk(resp, diag); }, key, sol, hints, text, { keys: 'sci' });
+      p.good = [key.replace(/\\times 10\^\{(-?\d+)\}/, ' × 10^$1')];
+      p.bad = [];
+      return p;
+    }
+    var SCI_HINTS = ['Move the decimal point until exactly one non-zero digit is in front of it. That gives the coefficient ' + t('a') + ', with ' + t('1\\le a<10') + '.',
+      'Count the places you moved: that is the exponent. A big number gives a positive exponent; a number less than 1 gives a negative one.'];
+    var STD_HINTS = ['The exponent tells you how many places to move the decimal point.',
+      'Positive exponent: move it to the <b>right</b> (a big number). Negative exponent: move it to the <b>left</b> (a number less than ' + t('1') + '). Fill the empty places with zeros.'];
+    function moveWords(d) { var n = sN(d); return t(Math.abs(n)) + ' place' + (Math.abs(n) === 1 ? '' : 's') + ' ' + (n >= 0 ? 'left' : 'right'); }
+    function expSign(d) {
+      var n = sN(d); if (!n) return null;
+      return [sh(d, -2 * n), 'exp-sign', n > 0 ? 'Your exponent is negative, but ' + t(stdTex(d)) + ' is <b>bigger</b> than ' + t('1') + ', so its exponent is positive.' : 'Your exponent is positive, but ' + t(stdTex(d)) + ' is <b>less</b> than ' + t('1') + ', so its exponent is negative.'];
+    }
+    /* standard -> scientific */
+    function toSci(d) {
+      var n = sN(d);
+      return sciPart(t(stdTex(d)), d, cands([expSign(d), [sh(d, n >= 0 ? 1 : -1), 'counted-digits', 'Count the <b>hops</b> the decimal point makes to sit just after the first non-zero digit (' + t(std(coef(d))) + ') — not the number of digits.']]),
+        'Move the decimal point ' + moveWords(d) + ' to get ' + t(std(coef(d))) + ', so the exponent is ' + t(n) + ':<br>' + t(stdTex(d) + '=' + sciT(d)) + '.',
+        SCI_HINTS, 'to scientific notation: ' + std(d));
+    }
+    /* scientific -> standard */
+    function toStd(d) {
+      var n = sN(d);
+      var p = { prompt: t(sciT(d)), input: { type: 'number' }, check: stdChk(d), key: std(d), answer: t(stdTex(d)),
+        solution: (n >= 0 ? 'The exponent is positive: move the decimal point ' + t(n) + ' place' + (n === 1 ? '' : 's') + ' <b>right</b>.' : 'The exponent is negative: move the decimal point ' + t(-n) + ' place' + (n === -1 ? '' : 's') + ' <b>left</b>.') + '<br>' + t(sciT(d) + '=' + stdTex(d)) + '.',
+        hints: STD_HINTS, text: 'to standard notation: ' + sciPlain(d) };
+      p.good = [stdPlain(d)];
+      p.bad = [std(sh(d, 1)), std(sh(d, -1))];
+      if (n !== 0) p.bad.push(std(sh(d, -2 * n)));
+      return p;
+    }
+    /* multiply / divide two numbers a × 10^p.  A, B = { c: D, p: int }, op 'mul' | 'div' | 'frac' */
+    function cTex(A) { return pt(A.c, A.p); }
+    function opTex(A, B, op) { return op === 'mul' ? '(' + cTex(A) + ')(' + cTex(B) + ')' : op === 'frac' ? '\\dfrac{' + cTex(A) + '}{' + cTex(B) + '}' : '(' + cTex(A) + ')\\div(' + cTex(B) + ')'; }
+    function opRes(A, B, op) { var m = op === 'mul'; var C = m ? mul(A.c, B.c) : div(A.c, B.c); var E = m ? A.p + B.p : A.p - B.p; return { C: C, E: E, R: sh(C, E) }; }
+    function opSol(A, B, op) {
+      var o = opRes(A, B, op), m = op === 'mul';
+      return 'Coefficients: ' + t(stdTex(A.c) + (m ? '\\times ' : '\\div ') + stdTex(B.c) + '=' + stdTex(o.C)) + '. Exponents: ' + t(m ? A.p + '+' + par(B.p) + '=' + o.E : A.p + '-' + par(B.p) + '=' + o.E) + '.<br>'
+        + (inRange(o.C) ? t(pt(o.C, o.E)) + ' — already in range: <b>' + t(sciT(o.R)) + '</b>.'
+          : t(pt(o.C, o.E)) + '; ' + t(stdTex(o.C)) + ' is not between ' + t('1') + ' and ' + t('10') + '. ' + t(stdTex(o.C) + '=' + sciT(o.C)) + ', so the result is <b>' + t(sciT(o.R)) + '</b>.');
+    }
+    function opDiag(A, B, op) {
+      var o = opRes(A, B, op), m = op === 'mul', list = [];
+      if (!inRange(o.C)) { var k = sN(o.C); list.push([sh(o.R, -2 * k), 'renorm-dir', k > 0 ? 'Fixing the coefficient: ' + t(stdTex(o.C) + '\\to ' + std(coef(o.C))) + ' makes it smaller, so the exponent must go <b>up</b> by ' + t(k) + ', not down.' : 'Fixing the coefficient: ' + t(stdTex(o.C) + '\\to ' + std(coef(o.C))) + ' makes it bigger, so the exponent must go <b>down</b> by ' + t(-k) + ', not up.']); }
+      if (m) {
+        list.push([sh(add(A.c, B.c), o.E), 'add-coef', 'The coefficients are <b>multiplied</b>, not added: ' + t(stdTex(A.c) + '\\times ' + stdTex(B.c)) + '.']);
+        list.push([sh(o.C, A.p * B.p), 'mult-exp', 'Product law: <b>add</b> the exponents (' + t('10^{m}\\times 10^{n}=10^{m+n}') + '), don’t multiply them.']);
+        list.push([sh(o.C, A.p - B.p), 'sub-exp', 'When you multiply, <b>add</b> the exponents: ' + t(A.p + '+' + par(B.p)) + '.']);
+      } else {
+        list.push([sh(o.C, A.p + B.p), 'div-add-exp', 'Quotient law: <b>subtract</b> the exponents (top minus bottom): ' + t(A.p + '-' + par(B.p)) + '.' + (B.p < 0 ? ' Subtracting a negative is adding.' : '')]);
+        var fl = div(B.c, A.c); if (fl) list.push([sh(fl, o.E), 'flip-ratio', 'Divide the coefficients in the right order: ' + t(stdTex(A.c) + '\\div ' + stdTex(B.c)) + '.']);
+        list.push([sh(mul(A.c, B.c), o.E), 'mult-coef', 'This is a division — divide the coefficients: ' + t(stdTex(A.c) + '\\div ' + stdTex(B.c)) + '.']);
+      }
+      return cands(list.filter(function (c) { return c[0] && !relEq(val(c[0]), val(o.R)); }));
+    }
+    var OP_HINTS = ['Work with the coefficients and the powers of ' + t('10') + ' separately: multiply (or divide) the coefficients, add (or subtract) the exponents.',
+      'Finish by checking the coefficient: if it isn’t at least ' + t('1') + ' and less than ' + t('10') + ', move the decimal point and adjust the exponent.'];
+    function opPart(A, B, op) {
+      var o = opRes(A, B, op);
+      var p = sciPart(t(opTex(A, B, op)), o.R, opDiag(A, B, op), opSol(A, B, op), OP_HINTS, (op === 'mul' ? 'multiply ' : 'divide ') + opTex(A, B, op).replace(/\\times 10\^\{(-?\d+)\}/g, 'e$1').replace(/\\[a-z]+|[{}\\]/g, ''));
+      if (!inRange(o.C)) p.bad.push(stdTex(o.C) + '\\times10^{' + o.E + '}');
+      return p;
+    }
+    function c1(r) { return D(r.int(2, 9), 0); }
+    function c2(r) { return D(nz(r, 11, 99), -1); }
+    function A_(c, p) { return { c: typeof c === 'string' ? dec(c) : c, p: p }; }
+    /* light-travel time, a + n (numerical response) */
+    function lightNR(r) {
+      var c = r.int(4, 9), m = r.int(1, 4); if (r.chance(0.15)) { c = 8; m = 1; }
+      var dist = sh(D(3 * c, 0), m + 8), dm = sN(dist), what = ['A space probe', 'A space probe', 'A spacecraft', 'A distant probe'][m - 1], sig = ['a radio signal', 'a radio signal', 'a laser pulse', 'a radio signal'][m - 1];
+      var ans = c + m, a0 = std(div(coef(dist), D(3, 0)));
+      return P.nr('The speed of light is ' + t('3\\times 10^{8}') + ' m/s. ' + what + ' is ' + t(sciT(dist)) + ' m from Earth. If the time, in seconds, for ' + sig + ' to travel this distance is expressed in scientific notation in the form ' + t('a\\times 10^{n}') + ', the value of ' + t('a+n') + ' is ________.', ans, function (v) {
+        if (Math.abs(v - (Number(a0) + m + 1)) < 1e-9) return { code: 'no-renorm', hint: 'Check the coefficient: ' + t(std(coef(dist)) + '\\div 3=' + a0) + ' is less than ' + t('1') + ', so fix it before you read off ' + t('a') + ' and ' + t('n') + '.' };
+        if (v === c + m + 1) return { code: 'renorm-dir', hint: 'When the coefficient goes from ' + t(a0) + ' up to ' + t(c) + ', the exponent must go <b>down</b> by ' + t('1') + '.' };
+        var mu = 3 * val(coef(dist)), me = dm + 8 + (mu >= 10 ? 1 : 0), ma = mu >= 10 ? mu / 10 : mu;
+        if (Math.abs(v - (ma + me)) < 1e-6) return { code: 'mult-coef', hint: 'Time = distance ÷ speed. Divide, don’t multiply.' };
+        return null;
+      }, 'Time ' + t('=') + ' distance ' + t('\\div') + ' speed ' + t('=\\dfrac{' + sciT(dist) + '}{3\\times 10^{8}}=' + a0 + '\\times 10^{' + (dm - 8) + '}=' + c + '\\times 10^{-1}\\times 10^{' + (dm - 8) + '}=' + c + '\\times 10^{' + m + '}') + ' s.<br>So ' + t('a=' + c) + ', ' + t('n=' + m) + ' and ' + t('a+n=' + ans) + '.',
+      ['Time = distance ÷ speed. Divide the coefficients and subtract the exponents.', 'Make sure the coefficient is between ' + t('1') + ' and ' + t('10') + ' before you read off ' + t('a') + ' and ' + t('n') + '.'], 'light travel time a+n');
+    }
+    return { D: D, S: S, mul: mul, div: div, nd: nd, val: val, inRange: inRange, mant: mant, nz: nz, find: find, c1: c1, c2: c2, A_: A_, toSci: toSci, toStd: toStd, opPart: opPart, lightNR: lightNR };
+  })();
+  HW.addCodes({
+    'exp-sign': 'Exponent has the wrong sign (scientific notation)', 'counted-digits': 'Counted digits instead of places moved', direction: 'Moved the decimal point the wrong way', places: 'Decimal point moved the wrong number of places',
+    'not-standard': 'Not written in standard notation', 'renorm-dir': 'Fixed the coefficient but moved the exponent the wrong way', 'add-coef': 'Added the coefficients instead of multiplying',
+    'sub-exp': 'Subtracted exponents when multiplying', 'div-add-exp': 'Added exponents when dividing', 'mult-coef': 'Multiplied the coefficients when dividing', 'flip-ratio': 'Divided the wrong way round',
+    'no-renorm': 'Coefficient not between 1 and 10', 'letter-x': 'Typed the letter x for times'
+  });
+
   HW.defineLesson({
-    id: 'u2l3', unit: 2, num: '3', title: 'Negative Exponents', outcome: 'AN3',
-    blurb: 'Extending the exponent laws past zero: a negative exponent means a reciprocal — for numbers, variables, coefficients and fractional bases.',
+    id: 'u2l3', unit: 2, num: '3', title: 'Negative Exponents and Scientific Notation', outcome: 'AN3',
+    blurb: 'Extending the exponent laws past zero: a negative exponent means a reciprocal — for numbers, variables, coefficients and fractional bases. Then negative powers of 10 give scientific notation, multiplied and divided with the exponent laws.',
     questions: [
       { num: '1', section: 'Part A — The negative exponent law', stem: 'Write the following with positive exponents.', parts: [
         { id: '1a', level: 'LIM', make: function (r) { return negVarPart(r.pick(['x', 'x', 'a', 'b', 'm', 'n', 'p', 't', 'w', 'z']), r.int(2, 9)); } },
@@ -671,7 +848,23 @@
           var opts = [0, 1, 2].map(function (i) { return { html: nm[i] + ') only', right: tr === i, why: tr === i ? null : 'Check statement ' + nm[i] + ') again: ' + S[i].why }; });
           opts.push({ html: 'none of the statements are true', right: tr < 0, why: tr < 0 ? null : 'Statement ' + nm[tr] + ') is true: ' + t(S[tr].tf) + '.' });
           return P.mc(r, 'Which of the following statements are true?' + stmt, opts, verdict + '<br>Answer: <b>' + (tr < 0 ? 'none of the statements are true' : nm[tr] + ') only') + '</b>.', [H.only, H.coef], 'MC which are true', true);
-        } }] }
+        } }] },
+      { num: '18', section: 'Part E — Scientific notation', stem: 'Express each number in scientific notation, ' + t('a\\times 10^{n}') + ' with ' + t('1\\le a<10') + '.', parts: [
+        { id: '18a', level: 'BEG', make: function (r) { return SN.toSci(r.chance(0.15) ? SN.D(825, 4) : SN.S(SN.mant(r, 3), r.int(5, 7))); } },
+        { id: '18b', level: 'BEG', make: function (r) { return SN.toSci(r.chance(0.15) ? SN.D(41, -6) : SN.S(SN.mant(r, 2), -r.int(4, 6))); } }] },
+      { num: '19', stem: 'Express the number in standard notation.', parts: [
+        { id: '19', level: 'BEG', make: function (r) { return SN.toStd(r.chance(0.15) ? SN.D(562, -10) : SN.S(SN.mant(r, 3), -r.int(6, 9))); } }] },
+      { num: '20', stem: 'Evaluate and write each result in scientific notation.', parts: [
+        { id: '20a', level: 'EMG', make: function (r) {
+          var v = SN.find(r, function () { return [SN.A_(SN.c2(r), r.int(4, 8)), SN.A_(r.chance(0.7) ? SN.c2(r) : SN.c1(r), -r.int(1, 4))]; }, function (v) { var C = SN.mul(v[0].c, v[1].c); return SN.inRange(C) && SN.nd(C) <= 2 && v[0].p + v[1].p >= 1; }, [SN.A_('2.4', 6), SN.A_('3.5', -2)]);
+          return SN.opPart(v[0], v[1], 'mul');
+        } },
+        { id: '20b', level: 'EMG', make: function (r) {
+          var v = SN.find(r, function () { var Q = r.chance(0.5) ? SN.c1(r) : SN.c2(r), B = SN.c2(r), A = SN.mul(Q, B); return [SN.A_(A, r.int(6, 9)), SN.A_(B, r.int(2, 4))]; }, function (v) { return SN.inRange(v[0].c) && SN.nd(v[0].c) <= 2 && SN.val(v[1].c) < 5 && SN.nd(SN.div(v[0].c, v[1].c)) <= 2; }, [SN.A_('4.5', 7), SN.A_('1.5', 3)]);
+          return SN.opPart(v[0], v[1], 'div');
+        } }] },
+      { num: '21', stem: '<i>(Numerical Response)</i>', parts: [{ id: '21', level: 'PRG', make: function (r) { return SN.lightNR(r); } }] }
+
     ],
     extra: [
       { num: '1', section: 'Extra practice A — Sign or placement?', stem: function (sh) { return 'A negative exponent and a negative sign are two different things. Decide what the exponent is attached to — the whole base, or only the number after the minus sign — then evaluate exactly.'; },
@@ -1081,7 +1274,18 @@
             if (v === P3 + Q3) return { code: 'value', hint: 'The question asks for ' + t('p-q') + ', not ' + t('p+q') + '.' };
             return null;
           }, t('\\left(\\frac{' + a + '}{' + b + '}\\right)^{-3}=\\left(\\frac{' + b + '}{' + a + '}\\right)^{3}=\\frac{' + P3 + '}{' + Q3 + '}') + ' (already in lowest terms), so ' + t('p-q=' + P3 + '-' + Q3 + '=' + ans) + '.', [H.flip], 'NR (' + a + '/' + b + ')^-3 p-q');
-        } }] }
+        } }] },
+      { num: '21', section: 'Extra practice G — Scientific notation', stem: 'Write each number in scientific notation. Keep every significant figure — nothing here is rounded.', parts: [
+        { id: 'e21a', level: 'BEG', make: function (r) { return SN.toSci(r.chance(0.15) ? SN.D(304, -8) : SN.S(Number(r.int(1, 9) + '0' + r.int(1, 9)), -r.int(5, 7))); } },
+        { id: 'e21b', level: 'BEG', make: function (r) { return SN.toSci(r.chance(0.15) ? SN.D(407, 12) : SN.S(Number(r.int(1, 9) + '0' + r.int(1, 9)), r.int(12, 14))); } },
+        { id: 'e21c', level: 'BEG', make: function (r) { return SN.toSci(r.chance(0.15) ? SN.D(5, -2) : SN.S(r.int(1, 9), -r.int(1, 3))); } }] },
+      { num: '22', stem: 'Write each number in standard notation. Watch the negative exponent — it moves the decimal point the other way.', parts: [
+        { id: 'e22a', level: 'BEG', make: function (r) { return SN.toStd(r.chance(0.15) ? SN.D(706, -9) : SN.S(Number(r.int(1, 9) + '0' + r.int(1, 9)), -r.int(5, 7))); } },
+        { id: 'e22b', level: 'BEG', make: function (r) { return SN.toStd(r.chance(0.15) ? SN.D(9003, 2) : SN.S(Number(r.int(1, 9) + '00' + r.int(1, 9)), r.int(4, 6))); } }] },
+      { num: '23', stem: 'Multiply or divide, then check that the coefficient satisfies ' + t('1\\le a<10') + '. Write each result in scientific notation.', parts: [
+        { id: 'e23a', level: 'PRG', make: function (r) { var v = SN.find(r, function () { return [SN.A_(SN.c1(r), -r.int(2, 6)), SN.A_(SN.c1(r), -r.int(5, 10))]; }, function (v) { return v[0].c.m * v[1].c.m >= 10 && (v[0].c.m * v[1].c.m) % 10 !== 0; }, [SN.A_('6', -4), SN.A_('8', -9)]); return SN.opPart(v[0], v[1], 'mul'); } },
+        { id: 'e23b', level: 'PRG', make: function (r) { var v = SN.find(r, function () { var Q = SN.D(r.int(1, 9), -1), B = SN.c1(r); return [SN.A_(SN.mul(Q, B), -r.int(3, 7)), SN.A_(B, r.int(1, 4))]; }, function (v) { return SN.inRange(v[0].c) && SN.nd(v[0].c) === 2; }, [SN.A_('3.6', -5), SN.A_('9', 2)]); return SN.opPart(v[0], v[1], 'div'); } },
+        { id: 'e23c', level: 'EMG', make: function (r) { var v = SN.find(r, function () { var Q = SN.c1(r), B = SN.c2(r); return [SN.A_(SN.mul(Q, B), r.int(8, 12)), SN.A_(B, -r.int(2, 5))]; }, function (v) { return SN.inRange(v[0].c) && SN.nd(v[0].c) === 2; }, [SN.A_('8.1', 11), SN.A_('2.7', -4)]); return SN.opPart(v[0], v[1], 'frac'); } }] }
     ]
   });
 

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Roots of Real Numbers · Math 10C 1.5</title>
-<meta name="description" content="Math 10C Unit 1 Lesson 5: square roots, cube roots and roots of any index, radical vocabulary, and the product and quotient rules. Write on it with an Apple Pencil.">
+<title>Classifying the Real Number System · Math 10C 1.5</title>
+<meta name="description" content="Math 10C Unit 1 Lesson 5: the real number system (N, W, I, Q, irrationals, R), estimating square roots and cube roots, and absolute value. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,315 +27,286 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 1 Number · Lesson 5</div>
-  <h1>Roots of Real Numbers</h1>
-  <p class="lede">A square root undoes squaring and a cube root undoes cubing. Today <b>every</b> power gets an undo button — fourth roots, fifth roots, seventh roots… We’ll name the parts of a radical, use the calculator’s <span class="tex">\sqrt[x]{\phantom{0}}</span> key, and find out which ways of combining radicals work — and which famous one doesn’t.</p>
+  <h1>Classifying the Real Number System</h1>
+  <p class="lede">Every number on the number line has a home. Today we sort numbers into <span class="tex">N</span>, <span class="tex">W</span>, <span class="tex">I</span>, <span class="tex">Q</span> and <span class="tex">\overline{Q}</span>, see why the sets sit inside each other, and use the perfect squares and cubes to estimate roots before the calculator does.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>evaluate square roots, cube roots and roots of any index, in my head or with prime factors</li>
-      <li>tell when a root is <b>not a real number</b> (an even index with a negative radicand)</li>
-      <li>use the TI-30XIIS <span class="tex">\sqrt[x]{\phantom{0}}</span> key to evaluate a root exactly or to the nearest hundredth</li>
-      <li>name the <em>index</em>, the <em>radicand</em> and the <em>radical sign</em> of a radical</li>
-      <li>multiply and divide radicals with the product and quotient rules — and avoid the <span class="tex">\sqrt{a+b}</span> trap</li>
+      <li>list <b>every</b> set a number belongs to (<span class="tex">R, Q, \overline{Q}, I, W, N</span>), from largest to smallest</li>
+      <li>explain why a rational number’s decimal ends or repeats, and an irrational number’s never does</li>
+      <li>estimate a square root or cube root from the perfect squares or cubes on either side, then check it on the calculator</li>
+      <li>estimate a square root to one significant digit by grouping digits in pairs</li>
+      <li><span class="ext-tag">Extension</span> find an absolute value as a distance, and graph an absolute value inequality</li>
     </ul>
   </div>
   <div class="outcome"><b>AN2</b> Demonstrate an understanding of irrational numbers by representing, identifying and simplifying irrational numbers, and by ordering irrational numbers.</div>
-  <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Error or Not?" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Error or Not?</h2>
-  <p class="wf-rule">Six calculators, six roots. Some show a number. Some show <b class="red">ERROR</b>. <span class="muted">Tap a calculator to press ENTER.</span></p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Guess Who?" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Guess Who? Number Edition</h2>
+  <p class="wf-rule">I’m thinking of one of these <b>12 numbers</b>. You may only ask <b>yes / no</b> questions. <span class="muted">Tap a face to flip it down.</span></p></div>
   <div class="wf-grid"><div class="wf-main">
-  <div class="wc-row" id="wc-row">
-    <div class="wc-lab even">Even index</div>
-    <div class="wc-lab odd">Odd index</div>
-    <button class="wcalc" data-k="A" data-even="1" data-res="ERROR"><span class="wc-letter">A</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt{-9}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="B" data-res="−2"><span class="wc-letter">B</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[3]{-8}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="C" data-even="1" data-res="ERROR"><span class="wc-letter">C</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[4]{-16}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="D" data-res="−2"><span class="wc-letter">D</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[5]{-32}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="E" data-even="1" data-res="0"><span class="wc-letter">E</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt{0}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="F" data-res="-\tfrac{1}{2}" data-texres="1"><span class="wc-letter">F</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[3]{-\tfrac{1}{8}}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+  <div class="gw-board" id="gw"></div>
+  <div class="gw-tools">
+    <button class="pill" data-gw="values">Show what each face equals</button>
+    <button class="pill" data-gw="reset">Stand them all up</button>
   </div>
-  <div class="wc-ctl"><button class="pill" data-wc="all">Press ENTER on all six</button><button class="pill" data-wc="sort">Sort by index</button><button class="pill" data-wc="reset">Reset</button></div>
-  <div class="wc-note" id="wc-note"><b class="red">Even index</b> (A, C, E): a negative radicand gives ERROR — but zero is fine. <b class="teal">Odd index</b> (B, D, F): always a real answer.</div>
-  <div class="wq"><div class="q-num">1</div><div class="wq-body">What does screen <b>E</b> show? <div class="wq-a"><span class="tex">\sqrt{0}=0</span>, since <span class="tex">0\times0=0</span>. No error.</div></div><button class="reveal" data-wq>Answer</button></div>
-  <div class="wq"><div class="q-num">2</div><div class="wq-body">Screen <b>B</b>: <span class="tex">\square\times\square\times\square=-8</span>. What is <span class="tex">\square</span>? <div class="wq-a"><b>−2</b>, since <span class="tex">(-2)(-2)(-2)=-8</span>.</div></div><button class="reveal" data-wq>Answer</button></div>
-  <div class="wq"><div class="q-num">3</div><div class="wq-body">Screen <b>A</b>: can <em>any</em> number times itself make −9? Try 3, then try −3. <div class="wq-a"><b>No.</b> <span class="tex">3\times3=9</span> and <span class="tex">(-3)(-3)=9</span>. Same signs always multiply to a positive, so <span class="tex">\sqrt{-9}</span> is ERROR (not a real number).</div></div><button class="reveal" data-wq>Answer</button></div>
+  <div class="q-line"><div class="q-num">1</div><div class="gw-qtext"><b>Which two faces are negative?</b> <button class="pill small" data-gw="neg">Show</button> <span class="gw-ans" id="gw-a-neg"><span class="tex">-\sqrt{9} = -3</span> and <span class="tex">-7</span></span></div></div>
+  <div class="q-line"><div class="q-num">2</div><div class="gw-qtext"><b>Which two faces are the same number?</b> <button class="pill small" data-gw="same">Show</button> <span class="gw-ans" id="gw-a-same"><span class="tex">\sqrt{16}</span> and <span class="tex">\tfrac{12}{3}</span>: both are <b>4</b></span></div></div>
   </div><div class="wf-side">
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the six screens show <b class="red">ERROR</b>? <b>Guess first.</b> <span class="muted">Hands up for C… now D. Any switchers?</span></div></div>
+  <div class="q-line"><div class="q-num">3</div><div class="gw-qtext"><b>Find my mystery face from my answers.</b> <span class="muted">Tap each answer to flip down the faces it rules out.</span>
+    <div class="gw-qs">
+      <button class="gw-q" data-q="rat">Rational? <b>YES</b></button>
+      <button class="gw-q" data-q="int">Integer? <b>NO</b></button>
+      <button class="gw-q" data-q="gt">More than 0.3? <b>YES</b></button>
+      <button class="gw-q" data-q="ends">Decimal ends? <b>YES</b></button>
+    </div>
+    <div class="gw-result" id="gw-result"></div>
+  </div></div>
+  <div class="poll wf-poll" id="gw-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the 12 faces are secretly <b>integers</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 1</div>
-      <div class="opt right"><b>B</b> 2</div>
-      <div class="opt"><b>C</b> 5</div>
-      <div class="opt"><b>D</b> 6</div>
+      <div class="opt"><b>A</b> 2</div>
+      <div class="opt"><b>B</b> 3</div>
+      <div class="opt"><b>C</b> 4</div>
+      <div class="opt right"><b>D</b> 5</div>
     </div>
     <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B — two screens: A and C.</b> <span class="tex">\sqrt{-9}</span> and <span class="tex">\sqrt[4]{-16}</span> are ERROR: any real number to the 2nd or 4th power is ≥ 0. The other four work: <span class="tex">\sqrt[3]{-8}=-2</span>, <span class="tex">\sqrt[5]{-32}=-2</span> since <span class="tex">(-2)^5=-32</span>, <span class="tex">\sqrt{0}=0</span>, <span class="tex">\sqrt[3]{-\tfrac{1}{8}}=-\tfrac{1}{2}</span>.
-      <div class="small muted" style="margin-top:6px">The traps: <b>5</b> = “a negative under <em>any</em> root is an error”. <b>6</b> = “zero is an error too”. <b>1</b> = a 4th root behaves like a square root.</div>
-      <div class="wq"><div class="q-num">?</div><div class="wq-body"><b>Follow-up:</b> <span class="tex">\sqrt[6]{-64}</span> or <span class="tex">-\sqrt[6]{64}</span> — which one is an error? <div class="wq-a"><span class="tex">\sqrt[6]{-64}</span> is the error (even index, negative radicand). <span class="tex">-\sqrt[6]{64}=-2</span>: the negative is <b>outside</b> the radical.</div></div><button class="reveal" data-wq>Answer</button></div>
-    </div>
+    <div class="poll-ans"><b>D — five integers:</b> <span class="tex">\sqrt{16} = 4</span>, <span class="tex">-\sqrt{9} = -3</span>, <span class="tex">\tfrac{12}{3} = 4</span>, <span class="tex">0</span> and <span class="tex">-7</span>. Roots and fractions can <b>hide</b> integers, and 0 and negatives count too. Watch out: <span class="tex">\sqrt{\tfrac14}</span> isn’t irrational just because it has a root sign — it’s exactly <span class="tex">\tfrac12</span>.</div>
   </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Test C and D on the TI-30XIIS.</b> <span class="muted">Some phone apps show an error for <span class="tex">\sqrt[5]{-32}</span> even though the real answer is −2 — worth a quick chat.</span></div>
-    <button class="pill" data-keys="CLEAR 4 ˣ√ (−) 16 =">Screen C</button><button class="pill" data-keys="CLEAR 5 ˣ√ (−) 32 =">Screen D</button>
-  </div>
+  <p class="gw-play">Play a round: pick a secret face. Can a neighbour find it in 4 questions?</p>
   </div></div>
 </section>
 
-<!-- ================= 1. Recap ================= -->
-<section class="card" data-ink="s1" data-section="1. Recap from Lesson 4">
-  <div class="sec-h"><span class="badge">1</span><h2>Recap from Lesson 4</h2></div>
-  <div class="def"><span class="tex">\sqrt{\phantom{x}}</span> always means the <b>principal</b> (positive) square root.</div>
-  <div class="recap-2">
-    <div><div class="c2-h">The square roots of 36</div><div class="c2-b">6 and −6</div><div class="muted"><span class="tex">6^2=36</span> and <span class="tex">(-6)^2=36</span></div></div>
-    <div><div class="c2-h">The radical <span class="tex">\sqrt{36}</span></div><div class="c2-b"><span class="tex">\sqrt{36}=6</span></div><div class="muted"><b>only</b> the positive one</div></div>
-    <div><div class="c2-h">Cube roots</div><div class="c2-b"><span class="tex">\sqrt[3]{-8}=-2</span></div><div class="muted">every real number has exactly <b>one</b> cube root, negatives included: <span class="tex">(-2)^3=-8</span></div></div>
+<!-- ================= 1. The real number system ================= -->
+<section class="card" data-ink="s1" data-section="1. The Real Number System">
+  <div class="sec-h"><span class="badge">1</span><h2>The Real Number System</h2></div>
+  <p>Divide one integer by another and only two things can happen: the decimal <b>terminates</b>, or it settles into a block of digits that <b>repeats</b> forever. Either way it’s a <b>rational number</b> — built from a <em>ratio</em> of integers. Decimals that <b>never terminate and never repeat</b>, like <span class="tex">\pi</span> and <span class="tex">\sqrt{2}</span>, are <b>irrational numbers</b>. Together they fill every point on the number line: the <b>real numbers</b>.</p>
+  <div class="sets">
+    <div class="set-row n"><div class="sr-name">Natural numbers</div><div class="sr-def"><span class="tex">N = \{1, 2, 3, \ldots\}</span></div><div class="sr-eg">the counting numbers</div></div>
+    <div class="set-row w"><div class="sr-name">Whole numbers</div><div class="sr-def"><span class="tex">W = \{0, 1, 2, 3, \ldots\}</span></div><div class="sr-eg">the naturals and 0</div></div>
+    <div class="set-row i"><div class="sr-name">Integers</div><div class="sr-def"><span class="tex">I = \{\ldots, -2, -1, 0, 1, 2, \ldots\}</span></div><div class="sr-eg">wholes and their opposites</div></div>
+    <div class="set-row q"><div class="sr-name">Rational numbers</div><div class="sr-def"><span class="tex">Q = \left\{ \dfrac{a}{b},\ a, b \in I,\ b \neq 0 \right\}</span></div><div class="sr-eg">fractions, and decimals that terminate or repeat</div></div>
+    <div class="set-row qb"><div class="sr-name">Irrational numbers</div><div class="sr-def"><span class="tex">\overline{Q} = \{\text{non-terminating, non-repeating decimals}\}</span></div><div class="sr-eg"><span class="tex">\pi,\ \sqrt{2},\ \sqrt{11}</span></div></div>
+    <div class="set-row r"><div class="sr-name">Real numbers</div><div class="sr-def"><span class="tex">R = \{Q \text{ and } \overline{Q}\}</span></div><div class="sr-eg">every point on the number line</div></div>
   </div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch out.</b> <span class="tex">\sqrt{36}=\pm6</span> is <b>wrong</b>. If you want both, write <span class="tex">\pm\sqrt{36}=\pm6</span>.</div></div>
+  <div class="explainer" data-explainer="build"></div>
 </section>
 
-<!-- ================= 2. Roots of other degrees ================= -->
-<section class="card" data-ink="s2" data-section="2. Roots of Other Degrees">
-  <div class="sec-h"><span class="badge">2</span><h2>Roots of Other Degrees</h2></div>
-  <p>Square roots and cube roots extend naturally to a root of <b>any</b> whole-number degree. Complete each statement. <span class="muted">(Tap a blank to fill it.)</span></p>
-  <div class="deg-grid">
-    <div class="deg"><div class="deg-eq tex">3\times3=9</div>so a square root of 9 is <button class="blank" data-a="3"></button>, or <span class="tex">\sqrt{9}=</span> <button class="blank" data-a="3"></button></div>
-    <div class="deg"><div class="deg-eq tex">4\times4\times4=64</div>so the cube root of 64 is <button class="blank" data-a="4"></button>, or <span class="tex">\sqrt[3]{64}=</span> <button class="blank" data-a="4"></button></div>
-    <div class="deg"><div class="deg-eq tex">3\times3\times3\times3=81</div>so a fourth root of 81 is <button class="blank" data-a="3"></button>, or <span class="tex">\sqrt[4]{81}=</span> <button class="blank" data-a="3"></button></div>
-    <div class="deg"><div class="deg-eq tex">2\times2\times2\times2\times2\times2\times2=128</div>so <button class="blank wide" data-tex="\sqrt[7]{128}=2"></button> <button class="pill small" data-fillall>Fill all</button></div>
-  </div>
-  <p class="small muted">−3 is also a square root of 9 and a fourth root of 81, but the radical sign means the positive one. Seven factors of 2 means the index is 7.</p>
-  <div class="explainer" data-explainer="machine"></div>
-</section>
-
-<section class="card" data-ink="s2b" data-section="2. Roots from prime factors">
-  <h3 class="sub">Can’t see it? Use prime factors</h3>
-  <p>Write the radicand as a product of primes (Lesson 1!). Make <b>groups the size of the index</b> — groups of 4 for a fourth root. <b>One prime from each group</b> comes out. A prime left over means the radicand is <b>not</b> a perfect power.</p>
-  <div class="explainer" data-explainer="groups"></div>
-  <div class="pw-wrap">
-    <div class="pw-h"><b>Powers worth knowing</b> <span class="muted small">tap a box to reveal it</span><button class="pill small" data-pw="all">Show all</button><button class="pill small" data-pw="none">Hide all</button></div>
-    <div class="pw" id="pw"></div>
+<section class="card" data-ink="s1b" data-section="1. Why fractions end or repeat">
+  <h3 class="sub">Rational or irrational? Look at the decimal</h3>
+  <p>Why can a fraction’s decimal <b>only</b> end or repeat? Watch the <b>remainders</b> in the long division.</p>
+  <div class="explainer" data-explainer="remainders"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>A pattern isn’t a repeat.</b> <span class="tex">1.010\,010\,001\ldots</span> has a pattern, but no block of digits repeats, so it’s <b>irrational</b>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Close to π isn’t π.</b> <span class="tex">\tfrac{22}{7} = 3.\overline{142857}</span> repeats, so it’s <b>rational</b>. <span class="tex">\pi</span> never repeats.</div></div>
   </div>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. Negative radicands">
-  <h3 class="sub">Negative radicands: odd index or even index?</h3>
-  <div class="def-grid">
-    <div class="def"><b>Odd index</b> (3, 5, 7, …) — a negative radicand is fine. The root is <b>negative</b>.<div class="eg"><span class="tex">\sqrt[5]{-32}=-2</span> because <span class="tex">(-2)^5=-32</span></div></div>
-    <div class="def no"><b>Even index</b> (2, 4, 6, …) — a negative radicand has <b>no real root</b>: it’s <b>not possible</b> in the real numbers.<div class="eg"><span class="tex">\sqrt[4]{-16}</span>: not a real number</div></div>
-  </div>
-  <div class="explainer" data-explainer="signs"></div>
+<section class="card" data-ink="s1c" data-section="1. The sorting machine">
+  <h3 class="sub">The sorting machine</h3>
+  <p>Each set sits <b>inside</b> the next: every natural number is whole, every whole number is an integer, every integer is rational. The irrationals sit <b>beside</b> the rationals — no number is both. To sort a number, <b>simplify it first</b>, then test from the outside in.</p>
+  <div class="explainer" data-explainer="sorter"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A root sign doesn’t make a number irrational.</b> <span class="tex">\sqrt{9} = 3</span>, <span class="tex">\sqrt{\tfrac14} = \tfrac12</span> and <span class="tex">\sqrt[3]{-8} = -2</span> are all rational. Only roots that don’t come out exactly, like <span class="tex">\sqrt{10}</span>, are irrational.</div></div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> There is exactly <b>one</b> number in <span class="tex">W</span> that is not in <span class="tex">N</span>. Which one? And why is no number in both <span class="tex">Q</span> and <span class="tex">\overline{Q}</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>0</b> is whole but not natural. A decimal can’t both repeat (or end) <b>and</b> never repeat, so <span class="tex">Q</span> and <span class="tex">\overline{Q}</span> never overlap.</div></div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Evaluating radicals mentally</h3></div>
-  <p class="q">Mentally evaluate, where possible, using the real number system.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{121}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">11\times11=121</span><br><b>= 11</b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt[3]{-125}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-5)^3=-125</span><br><b>= −5</b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\sqrt[4]{6\,561}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">9^2=81</span> and <span class="tex">81^2=6\,561</span>, so <span class="tex">9^4=6\,561</span><br><b>= 9</b></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">\sqrt[5]{\dfrac{1}{243}}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3^5=243</span>, so <span class="tex">\left(\tfrac{1}{3}\right)^5=\tfrac{1}{243}</span><br><b>= <span class="tex">\tfrac{1}{3}</span></b></div></div></div>
-    <div class="part"><div class="pl">(e) <span class="tex">\sqrt[4]{-81}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Index 4 is even and the radicand is negative.<br><b>Not possible</b> (not a real number)</div></div></div>
-    <div class="part"><div class="pl">(f) <span class="tex">3\sqrt[3]{8}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[3]{8}=2</span> since <span class="tex">2^3=8</span>; <span class="tex">3\times2</span><br><b>= 6</b></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Naming every set a number belongs to</h3></div>
+  <p class="q"><b>(a)</b> For each number below, list <b>every</b> set (from <span class="tex">N, W, I, Q, \overline{Q}, R</span>) that it belongs to, ordered from the <b>largest</b> set to the <b>smallest</b> set.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(i) <span class="tex">12</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A positive whole count, and <span class="tex">12 = \tfrac{12}{1}</span>.<br><span class="tex">\boldsymbol{R,\ Q,\ I,\ W,\ N}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">\dfrac{5}{9}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A ratio of two integers, but not a whole count.<br><span class="tex">\boldsymbol{R,\ Q}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">\sqrt{11}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">11 isn’t a perfect square (<span class="tex">3^2 = 9,\ 4^2 = 16</span>): never ends, never repeats.<br><span class="tex">\boldsymbol{R,\ \overline{Q}}</span></div></div></div>
+    <div class="part"><div class="pl">(iv) <span class="tex">-8</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Negative, so not natural or whole — but still an integer.<br><span class="tex">\boldsymbol{R,\ Q,\ I}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> (e) is not possible. What about <span class="tex">-\sqrt[4]{81}</span>?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-\sqrt[4]{81}=-3</span>. The negative is <b>outside</b> the radical: find <span class="tex">\sqrt[4]{81}=3</span> first, then take the opposite.</div></div></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Explain why <span class="tex">12</span> belongs to five different number sets, while <span class="tex">-12</span> belongs to only three.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">12 is positive, so it passes the natural and whole tests as well as being an integer, rational and real: <b>five</b> sets. −12 is negative, so it fails the natural and whole tests; it is still an integer, rational and real: <b>three</b> sets (<span class="tex">R, Q, I</span>).</div></div></div>
+  </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<!-- ================= 3. Calculator ================= -->
-<section class="card" data-ink="s3" data-section="3. Radicals on the Calculator">
-  <div class="sec-h"><span class="badge">3</span><h2>Evaluating Radicals with a Calculator</h2></div>
-  <p>The <span class="tex">\sqrt[x]{\phantom{0}}</span> (<i>x</i>th root) key evaluates a radical of any index. On the TI-30XIIS it is the <b>2nd function of <kbd>^</kbd></b>. Key the <b>index first</b>, then <kbd>2nd</kbd><kbd>^</kbd>, then the <b>radicand</b>, then <kbd>ENTER</kbd>.</p>
+<!-- ================= 2. Square roots ================= -->
+<section class="card" data-ink="s2" data-section="2. Square Roots">
+  <div class="sec-h"><span class="badge">2</span><h2>Square Roots</h2></div>
+  <div class="def">Every positive real number has <b>two</b> square roots, one positive and one negative. The positive one is the <b>principal square root</b>, and it’s what the symbol <span class="tex">\sqrt{\ \ }</span> always means.<div class="eg">The square roots of 49 are 7 and −7, but <span class="tex">\sqrt{49} = 7</span> <u>only</u>.</div></div>
+  <div class="def-grid">
+    <div class="def"><b>Perfect square</b> → rational root<div class="eg"><span class="tex">\sqrt{36} = 6 \qquad \sqrt{0.25} = 0.5</span></div></div>
+    <div class="def amber"><b>Not a perfect square</b> → irrational root<div class="eg"><span class="tex">\sqrt{23} = 4.795\,831\,5\ldots \qquad -\sqrt{23}</span></div></div>
+  </div>
+  <div class="pow-fill">
+    <div><b>Know your perfect squares</b> <span class="muted">— they’re how we estimate. Tap a blank to fill it.</span> <button class="pill small" data-fillall="sq">Fill all</button></div>
+    <div class="pow-grid" id="sq-grid"></div>
+  </div>
+  <div class="explainer" data-explainer="tiles"></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b><span class="tex">\sqrt[5]{161\,051}</span>:</b> <span class="keys"><kbd>5</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>6</kbd><kbd>1</kbd><kbd>0</kbd><kbd>5</kbd><kbd>1</kbd><kbd>ENTER</kbd></span> shows <b>11</b>. <span class="muted small">(TI-83/84: index, then <kbd>MATH</kbd> → 5: <span class="tex">\sqrt[x]{\phantom{0}}</span>, then the radicand.)</span></div>
-    <button class="pill" data-keys="CLEAR 5 ˣ√ 161051 =">Show me</button>
+    <div><b>Check it on the calculator.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>5</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives <span class="tex">\sqrt{53} = 7.280\ldots</span> ≈ 7.3. Estimate <b>first</b>, so you’ll notice a typing mistake.</div>
+    <button class="pill" data-keys="√ 53 =">Show me</button>
   </div>
   <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Index first!</b> Keyed the other way round, <kbd>161051</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>5</kbd> finds the 161 051st root of 5 ≈ 1.00001.</div></div>
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Negative radicand?</b> Use the <kbd>(−)</kbd> key, not <kbd>−</kbd>: <kbd>7</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(−)</kbd><kbd>128</kbd>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b><span class="tex">\sqrt{49} = 7</span>, not ±7.</b> The symbol means the principal (positive) root. “The square roots of 49” are 7 and −7.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b><span class="tex">-\sqrt{7}</span> isn’t <span class="tex">\sqrt{-7}</span>.</b> <span class="tex">-\sqrt{7} \approx -2.6</span> is real. No real number squares to −7, so <span class="tex">\sqrt{-7}</span> isn’t real.</div></div>
   </div>
-  <div class="explainer" data-explainer="calckeys"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Estimating expressions">
+  <h3 class="sub">Estimating a whole expression</h3>
+  <p>Replace each root with its whole-number estimate, work out the arithmetic, then compare with the calculator. Work <b>inside out</b> when roots are nested.</p>
+  <div class="explainer" data-explainer="exprSq"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Type it as written.</b> The calculator opens a bracket after <kbd>√</kbd>, so close it before you go on: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>2</kbd><kbd>0</kbd><kbd>)</kbd><kbd>+</kbd><kbd>4</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>4</kbd><kbd>1</kbd><kbd>)</kbd><kbd>ENTER</kbd></span></div>
+    <button class="pill" data-keys="3 √ 20 ) + 4 √ 41 ) =">Show me</button>
+  </div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Using the <span class="tex">\sqrt[x]{\phantom{0}}</span> key</h3></div>
-  <p class="q"><b>(a)</b> Use a calculator to evaluate each of the following <b>exactly</b>.</p>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Estimating square roots mentally</h3></div>
+  <p class="q">For each of the following, <b>(i)</b> estimate the value mentally, to the nearest whole number; <b>(ii)</b> use a calculator to find the decimal approximation to the nearest tenth, and decide whether the mental estimate in (i) was reasonable.</p>
   <div class="parts c4">
-    <div class="part"><div class="pl">(i) <span class="tex">\sqrt[5]{243}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3^5=243</span><br><b>= 3</b></div></div></div>
-    <div class="part"><div class="pl">(ii) <span class="tex">\sqrt[7]{-128}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-2)^7=-128</span>; index 7 is odd<br><b>= −2</b></div></div></div>
-    <div class="part"><div class="pl">(iii) <span class="tex">-2\sqrt[4]{10\,000}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[4]{10\,000}=10</span>; <span class="tex">-2\times10</span><br><b>= −20</b></div></div></div>
-    <div class="part"><div class="pl">(iv) <span class="tex">\sqrt[3]{\dfrac{64}{27}}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4^3=64</span>, <span class="tex">3^3=27</span><br><b>= <span class="tex">\tfrac{4}{3}</span></b></div></div></div>
-  </div>
-  <p class="q"><b>(b)</b> Use a calculator to evaluate each of the following to the <b>nearest hundredth</b>.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(i) <span class="tex">\sqrt[5]{200}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[5]{200}=2.8853\ldots</span><br><b>≈ 2.89</b></div></div></div>
-    <div class="part"><div class="pl">(ii) <span class="tex">\sqrt[6]{0.7}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[6]{0.7}=0.9422\ldots</span><br><b>≈ 0.94</b></div></div></div>
-    <div class="part"><div class="pl">(iii) <span class="tex">\dfrac{3}{4}\sqrt[4]{500}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[4]{500}=4.7287\ldots</span>; <span class="tex">\tfrac{3}{4}\times4.7287\ldots=3.5465\ldots</span><br><b>≈ 3.55</b></div></div></div>
+    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{53}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">49 = 7^2,\ 64 = 8^2</span>; 53 is close to 49: <b>≈ 7</b><br>(ii) <span class="tex">\sqrt{53} = 7.28\ldots \approx \mathbf{7.3}</span><br>Reasonable.</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">3\sqrt{20} + 4\sqrt{41}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">\sqrt{20} \approx 4,\ \sqrt{41} \approx 6</span>: <span class="tex">3(4) + 4(6) = </span><b>36</b><br>(ii) <span class="tex">13.42 + 25.61 \approx \mathbf{39.0}</span><br>A little low, but the right size.</div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">-\sqrt{7}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">\sqrt{7}</span> is between 2 and 3, nearer 3: <b>≈ −3</b><br>(ii) <span class="tex">\sqrt{7} = 2.6458\ldots</span>, so <span class="tex">-\sqrt{7} \approx \mathbf{-2.6}</span><br>Reasonably close.</div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\sqrt{\sqrt{150}}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">\sqrt{150} \approx 12</span>, then <span class="tex">\sqrt{12} \approx</span> <b>3</b><br>(ii) <span class="tex">\sqrt{150} = 12.247</span>, <span class="tex">\sqrt{12.247} \approx \mathbf{3.5}</span><br>Reasonable.</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Show each one on the calculator.</b> <span class="muted small">For (a)(iv), <kbd>2nd</kbd><kbd>F◂▸D</kbd> turns 1.333333333 into the fraction 4┘3.</span>
-      <div class="ck-pills" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
-        <button class="chip" data-keys="CLEAR 5 ˣ√ 243 =">(a)(i)</button>
-        <button class="chip" data-keys="CLEAR 7 ˣ√ (−) 128 =">(a)(ii)</button>
-        <button class="chip" data-keys="CLEAR (−) 2 × 4 ˣ√ 10000 =">(a)(iii)</button>
-        <button class="chip" data-keys="CLEAR 3 ˣ√ ( 64 ÷ 27 ) = F◂▸D">(a)(iv)</button>
-        <button class="chip" data-keys="CLEAR 5 ˣ√ 200 =">(b)(i)</button>
-        <button class="chip" data-keys="CLEAR 6 ˣ√ 0.7 =">(b)(ii)</button>
-        <button class="chip" data-keys="CLEAR 3 ÷ 4 × 4 ˣ√ 500 =">(b)(iii)</button>
-      </div></div>
+    <div><b>A root of a root.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>5</kbd><kbd>0</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">\sqrt{\sqrt{150}} = 3.4996\ldots</span></div>
+    <button class="pill" data-keys="√ √ 150 ) ) =">Show me</button>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- sources: https://en.wikipedia.org/wiki/YBC_7289 (c. 1800–1600 BCE, Yale Babylonian Collection, probably a student's tablet; 30, 1;24,51,10 ≈ 1.41421296, 42;25,35)
-     https://isaw.nyu.edu/exhibitions/before-pythagoras/items/ybc-7289 (NYU ISAW "Before Pythagoras": Old Babylonian, 19th–17th century BCE, southern Mesopotamia; square, diagonals, √2 along a diagonal)
-     https://myslu.stlawu.edu/~dmel/mesomath/tablets/YBC7289 (Melville, St. Lawrence Univ.: round school tablet; 30 by a side, 1,24,51,10 along a diagonal, 42,25,35 below it)
-     arithmetic checked: 1 + 24/60 + 51/60² + 10/60³ = 1.4142129629…, √2 = 1.4142135623…, difference ≈ 0.0000006 -->
-<!-- ================= Math History box (brown) ================= -->
-<section class="card history" data-ink="hist" data-section="Math History: √2 on a clay tablet">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">c. 1800–1600 BCE · Mesopotamia</span></div>
-  <div class="hist-grid">
-    <div class="hist-text">
-      <h3 class="hist-title">√2 on a 3&nbsp;700-year-old tablet</h3>
-      <p>This small clay tablet, <b>YBC 7289</b>, was made in Mesopotamia (now Iraq), probably by a student. It shows a <b>square</b> and its <b>diagonals</b>. Today it is at Yale University.</p>
-      <p>The Babylonians counted in <b>base 60</b>. Along a diagonal the student wrote <span class="tex">\sqrt2</span> as 1;&nbsp;24,&nbsp;51,&nbsp;10, which means <span class="u1l5h-nw"><span class="tex">1+\frac{24}{60}+\frac{51}{60^2}+\frac{10}{60^3}</span>.</span></p>
-      <div class="part hist-q"><div class="pl">Evaluate <span class="tex">1+\frac{24}{60}+\frac{51}{3600}+\frac{10}{216\,000}</span> and compare it with <span class="tex">\sqrt2</span>. How close is it?</div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">1.414&#8239;212&#8239;96… and <span class="tex">\sqrt2=1.414\,213\,56\ldots</span> match to <b>5 decimal places</b>. The difference is only about 0.000&#8239;000&#8239;6: <b>less than one millionth</b>.</div></div></div>
-    </div>
-    <figure class="hist-anim">
-      <svg id="u1l5-hist" viewBox="0 0 600 300" role="img" aria-label="The round tablet: a square with its diagonals, the side marked 30 and base-60 numbers along a diagonal. The base-60 number 1; 24, 51, 10 is added up as 1 + 24/60 + 51/60² + 10/60³ = 1.41421296…, which matches √2 = 1.41421356… to 5 decimal places."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">The side is marked 30. The number under the diagonal, 42; 25, 35 ≈ 42.426, is 30 × √2: the diagonal of that square.</p>
-    </figure>
+<section class="card" data-ink="s2c" data-section="2. One significant digit">
+  <h3 class="sub">Estimating to one significant digit</h3>
+  <p>For a very large (or very small) number, group its digits in <b>pairs</b>, starting from the <b>decimal point</b> and going both ways. <b>Each pair gives one digit</b> of the square root.</p>
+  <div class="pairs-demo">
+    <div class="pd-eg"><span class="rt">√</span><span class="pr">4</span><span class="pr">00</span><span class="pr">00</span><span class="eq">=</span><span class="pr r">2</span><span class="pr r">0</span><span class="pr r">0</span></div>
+    <div class="pd-eg"><span class="rt">√</span><span class="pr">0</span><span class="pt">.</span><span class="pr">00</span><span class="pr">04</span><span class="eq">=</span><span class="pr r">0</span><span class="pt">.</span><span class="pr r">0</span><span class="pr r">2</span></div>
+    <div class="muted">each pair → one digit of the root · the decimal point stays put</div>
   </div>
-</section>
-
-<!-- ================= 4. Vocabulary ================= -->
-<section class="card" data-ink="s4" data-section="4. Radical Vocabulary">
-  <div class="sec-h"><span class="badge">4</span><h2>Radical Vocabulary</h2></div>
-  <div class="def">Any expression <span class="tex">\sqrt[n]{x}</span>, where <span class="tex">n\in N</span> and <span class="tex">n\ge2</span>, is a <b>radical</b>: <span class="tex">\sqrt{19}</span>, <span class="tex">\sqrt[3]{54}</span>, <span class="tex">\sqrt[5]{7}</span>, <span class="tex">\sqrt[6]{2\,000\,000}</span>.
-    <div class="eg"><span class="tex">\sqrt{\phantom{x}}</span> is the <b>radical sign</b>, <i>x</i> is the <b>radicand</b>, and <i>n</i> is the <b>index</b>: how many times the root is used as a <b>factor</b> to make <i>x</i>.</div></div>
-  <div class="explainer" data-explainer="anatomy"></div>
-  <div class="tip-row">
-    <div class="def amber" style="margin:14px 0 0"><b>If the index is even, the radicand must be non-negative</b>, or the radical is not a real number.</div>
-    <div class="def gray" style="margin:14px 0 0">No index written? It’s <b>2</b>: <span class="tex">\sqrt{85}=\sqrt[2]{85}</span>. A number in front, like the 4 in <span class="tex">4\sqrt[5]{7}</span>, is a <b>coefficient</b> that multiplies.</div>
-  </div>
+  <div class="explainer" data-explainer="pairs"></div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Naming the index and the radicand</h3></div>
-  <p class="q">Identify the index and the radicand in each of the following.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt[7]{200}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Index <b>= 7</b><br>Radicand <b>= 200</b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{85}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No index written, so it’s 2.<br>Index <b>= 2</b>, radicand <b>= 85</b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">4\sqrt[5]{-\dfrac{1}{9}}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The 4 is a coefficient, not part of the radical.<br>Index <b>= 5</b>, radicand <b>= <span class="tex">-\tfrac{1}{9}</span></b></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Estimating to one significant digit</h3></div>
+  <p class="q">Estimate each square root to one significant digit.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{7\,340}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Pairs <span class="tex">73\ 40</span>: two digits. 73 is near <span class="tex">81 = 9^2</span>.<br><span class="tex">\sqrt{7\,340} = 85.67\ldots \approx \mathbf{90}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{51\,234.6}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Groups <span class="tex">5\ 12\ 34\,.6</span>: three digits. 5 is near <span class="tex">4 = 2^2</span>.<br><span class="tex">\sqrt{51\,234.6} = 226.35\ldots \approx \mathbf{200}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\sqrt{0.005\,12}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">0.005\,12 = 51.2 \times 10^{-4}</span>, <span class="tex">\sqrt{51.2} \approx 7</span><br><span class="tex">\approx 7 \times 10^{-2} = \mathbf{0.07}</span> <span class="muted">(calc: 0.0716)</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\sqrt{0.051\,2}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">0.051\,2 = 5.12 \times 10^{-2}</span>, <span class="tex">\sqrt{5.12} \approx 2</span><br><span class="tex">\approx 2 \times 10^{-1} = \mathbf{0.2}</span> <span class="muted">(calc: 0.2263)</span></div></div></div>
   </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Pair from the decimal point, not from the left.</b> 51 234.6 groups as <b>5 | 12 | 34 . 6</b>, so its root starts with √5 ≈ 2, not √51 ≈ 7.</div></div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<!-- ================= 5. Products and quotients ================= -->
-<section class="card" data-ink="s5" data-section="5. Products and Quotients">
-  <div class="sec-h"><span class="badge">5</span><h2>Combining Radicals: Products and Quotients</h2></div>
-  <p>Using 16 and 9 — <b>which of these are true?</b> <span class="muted">Tap one to check it.</span></p>
-  <div class="pq-grid">
-    <button class="pq yes"><span class="tag">TRUE</span><span class="tex">\sqrt{16}\times\sqrt{9}\;\overset{?}{=}\;\sqrt{16\times9}</span><span class="pq-c"><span class="tex">4\times3=12</span> and <span class="tex">\sqrt{144}=12</span></span></button>
-    <button class="pq no"><span class="tag">FALSE</span><span class="tex">\sqrt{16}+\sqrt{9}\;\overset{?}{=}\;\sqrt{16+9}</span><span class="pq-c"><span class="tex">4+3=7</span> but <span class="tex">\sqrt{25}=5</span></span></button>
-    <button class="pq yes"><span class="tag">TRUE</span><span class="tex">\sqrt{16}\div\sqrt{9}\;\overset{?}{=}\;\sqrt{16\div9}</span><span class="pq-c"><span class="tex">4\div3=\tfrac{4}{3}</span> and <span class="tex">\sqrt{\tfrac{16}{9}}=\tfrac{4}{3}</span></span></button>
-    <button class="pq no"><span class="tag">FALSE</span><span class="tex">\sqrt{16}-\sqrt{9}\;\overset{?}{=}\;\sqrt{16-9}</span><span class="pq-c"><span class="tex">4-3=1</span> but <span class="tex">\sqrt{7}\approx2.65</span></span></button>
+<!-- ================= 3. Cube roots ================= -->
+<section class="card" data-ink="s3" data-section="3. Cube Roots">
+  <div class="sec-h"><span class="badge">3</span><h2>Cube Roots</h2></div>
+  <div class="def">Every real number — positive <b>or negative</b> — has exactly <b>one</b> cube root, written <span class="tex">\sqrt[3]{\ \ }</span>.<div class="eg">The cube root of a <b>perfect cube</b> is rational: <span class="tex">\sqrt[3]{8\,000} = 20,\ \ \sqrt[3]{-64} = -4</span>. Otherwise it’s irrational, like <span class="tex">\sqrt[3]{15}</span>.</div></div>
+  <div class="pow-fill">
+    <div><b>Know your perfect cubes</b> <span class="muted">— tap a blank to fill it.</span> <button class="pill small" data-fillall="cb">Fill all</button></div>
+    <div class="pow-grid cubes" id="cb-grid"></div>
   </div>
-  <div class="rule-grid">
-    <div class="def"><b>(i) Products and quotients — YES.</b> The root of a product (or quotient) is the product (or quotient) of the roots.
-      <div class="eg"><span class="tex">\sqrt{a}\times\sqrt{b}=\sqrt{ab}</span>, &nbsp;<span class="tex">a,b\ge0</span><br><span class="tex">\dfrac{\sqrt{a}}{\sqrt{b}}=\sqrt{\dfrac{a}{b}}</span>, &nbsp;<span class="tex">a\ge0,\ b&gt;0</span></div></div>
-    <div class="def no"><b>(ii) Sums and differences — NO.</b> The sum (or difference) of the roots is <b>not</b> the root of the sum (or difference).
-      <div class="eg"><span class="tex">\sqrt{a}+\sqrt{b}\ne\sqrt{a+b}</span><br><span class="tex">\sqrt{a}-\sqrt{b}\ne\sqrt{a-b}</span></div></div>
+  <div class="explainer" data-explainer="cubes"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube roots on the calculator.</b> Type the <b>index first</b>: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">\sqrt[3]{30} = 3.107\ldots</span></div>
+    <button class="pill" data-keys="3 ˣ√ 30 =">Show me</button>
   </div>
-  <div class="explainer" data-explainer="area"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Negatives work too.</b> Use the <kbd>(−)</kbd> key, not <kbd>−</kbd>: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(−)</kbd><kbd>6</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">-4</span>.</div>
+    <button class="pill" data-keys="3 ˣ√ (−) 64 =">Show me</button>
+  </div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Square root vs cube root.</b> <span class="tex">\sqrt{-64}</span> isn’t real, but <span class="tex">\sqrt[3]{-64} = -4</span> because <span class="tex">(-4)^3 = -64</span>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Use the cube table.</b> <span class="tex">\sqrt[3]{50}</span> is between 3 and 4 (27 and 64) — not 7! That’s <span class="tex">\sqrt{50}</span>.</div></div>
+  </div>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. The sum trap">
-  <h3 class="sub">Why sums don’t work</h3>
-  <div class="explainer" data-explainer="trap"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch out.</b> “Square root of each piece” only works when the pieces are <b>multiplied or divided</b>. <span class="tex">\sqrt{9+16}</span> is <span class="tex">\sqrt{25}=5</span>, not <span class="tex">3+4=7</span>. Add (or subtract) <b>inside first</b>.</div></div>
+<section class="card" data-ink="s3b" data-section="3. Estimating with cube roots">
+  <h3 class="sub">Estimating expressions with cube roots</h3>
+  <p>Same plan as before: estimate each root from the perfect squares <b>or cubes</b> on either side, do the arithmetic, then check. Read the index carefully — <span class="tex">\sqrt{50}</span> and <span class="tex">\sqrt[3]{50}</span> are very different numbers.</p>
+  <div class="explainer" data-explainer="exprCb"></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>True or false</h3></div>
-  <p class="q">State whether each statement is true or false.</p>
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Estimating cube roots mentally</h3></div>
+  <p class="q">For each of the following, <b>(i)</b> estimate the value mentally, to the nearest whole number; <b>(ii)</b> use a calculator to find the decimal approximation to the nearest tenth, and decide whether the mental estimate in (i) was reasonable.</p>
   <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{4}\times\sqrt{11}=\sqrt{44}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Product rule: <span class="tex">\sqrt{4\times11}=\sqrt{44}</span><br><b>True</b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\dfrac{\sqrt{63}}{\sqrt{7}}=\sqrt{8}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{\tfrac{63}{7}}=\sqrt{9}=3</span>, but <span class="tex">\sqrt{8}\approx2.83</span><br><b>False</b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\sqrt{25+16}=\sqrt{25}+\sqrt{16}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{41}\approx6.40</span>, but <span class="tex">5+4=9</span><br><b>False</b></div></div></div>
+    <div class="part"><div class="pl">(a) <span class="tex">\sqrt[3]{30}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">27 = 3^3,\ 64 = 4^3</span>; 30 is very close to 27: <b>≈ 3</b><br>(ii) <span class="tex">\sqrt[3]{30} = 3.107\ldots \approx \mathbf{3.1}</span><br>An excellent estimate.</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\sqrt[3]{150}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">125 = 5^3,\ 216 = 6^3</span>; 150 is closer to 125: <b>≈ 5</b><br>(ii) <span class="tex">\sqrt[3]{150} = 5.313\ldots \approx \mathbf{5.3}</span><br>A good estimate.</div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">5\sqrt{50} - 5\sqrt[3]{50}</span></div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) <span class="tex">\sqrt{50} \approx 7,\ \sqrt[3]{50} \approx 4</span>: <span class="tex">35 - 20 = </span><b>15</b><br>(ii) <span class="tex">35.355 - 18.420 \approx \mathbf{16.9}</span><br>In the right range.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (c) in one go.</b> <span class="keys"><kbd>5</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>5</kbd><kbd>0</kbd><kbd>)</kbd><kbd>−</kbd><kbd>5</kbd><kbd>×</kbd><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>5</kbd><kbd>0</kbd><kbd>ENTER</kbd></span></div>
+    <button class="pill" data-keys="5 √ 50 ) − 5 × 3 ˣ√ 50 =">Show me</button>
   </div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5c" data-section="5. True or false checker">
-  <h3 class="sub">Check both sides</h3>
-  <p>To test a radical statement, work out each side on its own. Use a rule only if it really applies — then compare.</p>
-  <div class="explainer" data-explainer="tf"></div>
+<!-- ================= 4. Absolute value ================= -->
+<section class="card" data-ink="s4" data-section="4. Extension: Absolute Value">
+  <div class="sec-h"><span class="badge">4</span><h2>Extension — Absolute Value</h2></div>
+  <div class="def">The <b>absolute value</b> of a real number is the principal square root of its square. Geometrically, <span class="tex">\lvert a \rvert</span> is the <b>distance</b> of <span class="tex">a</span> from 0.<div class="eg"><span class="tex">\lvert 8 \rvert = \sqrt{(8)^2} = \sqrt{64} = 8 \qquad \lvert -8 \rvert = \sqrt{(-8)^2} = \sqrt{64} = 8</span></div></div>
+  <div class="explainer" data-explainer="absval"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The bars only act on what’s inside them.</b> <span class="tex">\lvert -10 \rvert = 10</span>, but <span class="tex">-\lvert -10 \rvert = -10</span>: the minus sign outside still applies.</div></div>
 </section>
 
-<section class="card" data-ink="s5d" data-section="5. Join and split">
-  <h3 class="sub">Join into one radical — or split into two</h3>
-  <div class="methods">
-    <div class="method"><div class="m-h">Join</div>Multiply (or divide) the radicands under <b>one</b> radical sign.<div class="tex display">\sqrt{2}\times\sqrt{8}=\sqrt{16}</div></div>
-    <div class="method"><div class="method-or">or</div></div>
-    <div class="method"><div class="m-h">Split</div>Write the radicand as a <b>factor pair</b>, one radical each.<div class="tex display">\sqrt{50}=\sqrt{25}\times\sqrt{2}</div></div>
+<section class="card" data-ink="s4b" data-section="4. Graphing |x| inequalities">
+  <h3 class="sub">Graphing absolute value inequalities</h3>
+  <p>To graph <span class="tex">\lvert a \rvert \lt 3,\ a \in R</span>, we need every point <b>less than 3 units from 0</b>. The endpoints themselves aren’t included, so they’re <b>open</b>.</p>
+  <div class="explainer" data-explainer="ineq"></div>
+  <div class="read-graph">
+    <div><b>Between</b> the points → <span class="tex">\lvert x \rvert \lt k</span> or <span class="tex">\lvert x \rvert \le k</span></div>
+    <div><b>Outside</b> the points → <span class="tex">\lvert x \rvert \gt k</span> or <span class="tex">\lvert x \rvert \ge k</span></div>
+    <div><b>Open circle</b> → <span class="tex">\lt</span> or <span class="tex">\gt</span> &nbsp; <b>Solid dot</b> → <span class="tex">\le</span> or <span class="tex">\ge</span></div>
   </div>
-  <div class="explainer" data-explainer="joinsplit"></div>
 </section>
 
 <section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Writing a product or quotient as a single radical</h3></div>
-  <p class="q">Write the following as a single radical in the form <span class="tex">\sqrt{x}</span>.</p>
-  <div class="parts c4">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{12}\times\sqrt{3}</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{12\times3}</span><br><b>= <span class="tex">\sqrt{36}</span></b> (which is 6)</div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{11}\times\sqrt{5}</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{11\times5}</span><br><b>= <span class="tex">\sqrt{55}</span></b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{\sqrt{72}}{\sqrt{8}}</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{\tfrac{72}{8}}</span><br><b>= <span class="tex">\sqrt{9}</span></b> (which is 3)</div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">\dfrac{\sqrt{\sqrt{256}}}{\sqrt{2}}</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{256}=16</span>; <span class="tex">\tfrac{\sqrt{16}}{\sqrt{2}}=\sqrt{\tfrac{16}{2}}</span><br><b>= <span class="tex">\sqrt{8}</span></b> (which is <span class="tex">2\sqrt{2}</span>)</div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Absolute value and its graphs</h3></div>
+  <p class="q">Evaluate each of the following.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">\lvert -9 \rvert + \lvert 9 \rvert</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\lvert -9 \rvert = 9</span> and <span class="tex">\lvert 9 \rvert = 9</span><br><span class="tex">9 + 9 = \mathbf{18}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\lvert 2 - 9 \rvert</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Inside the bars first: <span class="tex">2 - 9 = -7</span><br><span class="tex">\lvert -7 \rvert = \mathbf{7}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">-\lvert -\sqrt{100} \rvert</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-\sqrt{100} = -10</span> and <span class="tex">\lvert -10 \rvert = 10</span><br><span class="tex">-\lvert -\sqrt{100} \rvert = \mathbf{-10}</span></div></div></div>
+  </div>
+  <p class="q">State the absolute value inequality represented by each graph.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d)</div><div class="nl-fig" data-nl="-5,5,closed,between"></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solid dots at −5 and 5, shaded between: every point within 5 units of 0, endpoints included.<br><span class="tex">\boldsymbol{\lvert x \rvert \le 5}</span></div></div></div>
+    <div class="part"><div class="pl">(e)</div><div class="nl-fig" data-nl="-6,6,open,outside"></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Open circles at −6 and 6, shaded outward: every point <em>more than</em> 6 units from 0.<br><span class="tex">\boldsymbol{\lvert x \rvert \gt 6}</span></div></div></div>
   </div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
-</section>
-
-<section class="card example" data-ink="ex6" data-section="Example 6">
-  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Splitting a radical into a product</h3></div>
-  <p class="q">Express as a product of two radicals.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{85}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">85=5\times17</span> (no perfect square)<br><b>= <span class="tex">\sqrt{5}\times\sqrt{17}</span></b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{98}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">98=49\times2</span>, and 49 is a perfect square<br><b>= <span class="tex">\sqrt{49}\times\sqrt{2}</span></b> (which is <span class="tex">7\sqrt{2}</span>)</div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\sqrt{32}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">32=16\times2</span>, and 16 is a perfect square<br><b>= <span class="tex">\sqrt{16}\times\sqrt{2}</span></b> (which is <span class="tex">4\sqrt{2}</span>)</div></div></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> <span class="tex">\sqrt{98}=\sqrt{7}\times\sqrt{14}</span> is also correct. Why is <span class="tex">\sqrt{49}\times\sqrt{2}</span> the most useful split?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{49}=7</span> is a whole number, so <span class="tex">\sqrt{98}=7\sqrt{2}</span> — a simpler way to write it. That’s Lesson 6!</div></div></div>
-  <div class="space" id="ex6-space"></div>
-  <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><span class="tex">\sqrt[n]{x}</span> asks: what number, used as a <b>factor n times</b>, makes <i>x</i>? <span class="tex">\sqrt[5]{32}=2</span> since <span class="tex">2^5=32</span>.</div>
-    <div><b>Even index:</b> the radicand must be ≥ 0, and the answer is the positive (principal) root. <b>Odd index:</b> negatives are fine — the root is negative.</div>
-    <div><b>TI-30XIIS:</b> index, <kbd>2nd</kbd><kbd>^</kbd>, radicand, <kbd>ENTER</kbd>. Use <kbd>(−)</kbd> for a negative. Round only at the end.</div>
-    <div><span class="tex">\sqrt{a}\times\sqrt{b}=\sqrt{ab}</span> and <span class="tex">\tfrac{\sqrt{a}}{\sqrt{b}}=\sqrt{\tfrac{a}{b}}</span> — but <span class="tex">\sqrt{a+b}\ne\sqrt{a}+\sqrt{b}</span>.</div>
+    <div>The sets <b>nest</b>: <span class="tex">N</span> inside <span class="tex">W</span> inside <span class="tex">I</span> inside <span class="tex">Q</span> inside <span class="tex">R</span>. <span class="tex">\overline{Q}</span> sits beside <span class="tex">Q</span>; together they make <span class="tex">R</span>.</div>
+    <div><b>Rational</b> decimals terminate or repeat. <b>Irrational</b> decimals never end and never repeat. Simplify first: <span class="tex">\sqrt{9} = 3</span> is rational.</div>
+    <div><b>Estimate a root</b> from the perfect squares or cubes on either side, then check on the calculator. <span class="tex">\sqrt{\ \ }</span> means the positive root; every number has one cube root.</div>
+    <div><b>One significant digit:</b> pair digits from the decimal point. <b>Absolute value</b> is distance from 0, so it’s never negative.</div>
   </div>
-  <a class="assign" href="../../../#/lesson/u1l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — Roots of Real Numbers</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
-  </a>
-  <a class="assign next" href="../l6a/">
-    <div><div class="kicker">Next lesson</div><b>6A — Entire and Mixed Radicals</b><div class="muted">Try it: put <span class="tex">\sqrt{12}</span> and <span class="tex">2\sqrt{3}</span> into your calculator. Both give 3.4641… Why?</div></div><span class="arrow">→</span>
-  </a>
+  <div class="sum-links">
+    <a class="assign" href="../../../#/lesson/u1l5">
+      <div><div class="kicker">Your turn</div><b>Assignment 5 — Classifying the Real Number System</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    </a>
+    <a class="assign next" href="../l6/">
+      <div><div class="kicker">Next lesson</div><b>1.6 Roots of Real Numbers</b><div class="muted">Square roots, cube roots and roots of any index</div></div><span class="arrow">→</span>
+    </a>
+  </div>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
 
@@ -344,7 +315,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l5.js';
-  boot({ key: 'u1l5', homeHref: '../../', title: '1.5 Roots of Real Numbers' });
+  boot({ key: 'u1l5', homeHref: '../../', title: '1.5 Classifying the Real Number System' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

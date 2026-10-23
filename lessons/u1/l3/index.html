@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rational and Irrational Numbers · Math 10C 1.3</title>
-<meta name="description" content="Math 10C Unit 1 Lesson 3: repeating and terminating decimals, rational and irrational numbers, ordering irrationals, and converting repeating decimals to fractions. Write on it with an Apple Pencil.">
+<title>Perfect Squares and Cubes · Math 10C 1.3</title>
+<meta name="description" content="Math 10C Unit 1 Lesson 3: perfect squares and perfect cubes from prime factorization — square roots, cube roots, the smallest multiplier, and sides of squares and cubes. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,342 +27,265 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 1 Number · Lesson 3</div>
-  <h1>Rational Numbers, Irrational Numbers, and Decimal Patterns</h1>
-  <p class="lede">Some decimals arrive: they stop, or they settle into a block that repeats forever. Others wander forever without a pattern. Today we sort the two, put irrational numbers in order, and turn a repeating decimal back into a fraction.</p>
+  <h1>Perfect Squares and Perfect Cubes</h1>
+  <p class="lede">Write a number as a product of primes and its exponents tell you at a glance whether it is a perfect square or a perfect cube — and hand you its square root or cube root. Today we see why that works, and put it to use.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>describe a decimal as <em>repeating</em> or <em>non-repeating</em>, and <em>terminating</em> or <em>non-terminating</em></li>
-      <li>use a fraction’s denominator to predict whether its decimal terminates</li>
-      <li>classify a number as rational or irrational and give a reason</li>
-      <li>order irrational numbers on a number line by estimating them</li>
-      <li>convert a repeating decimal to a fraction with a calculator (and with algebra — extension)</li>
+      <li>use prime factorization to decide whether a number is a <b>perfect square</b> or a <b>perfect cube</b>, and explain why the exponents must be even or multiples of 3</li>
+      <li>find a <b>square root</b> or <b>cube root</b> from the prime factorization, and check it on the calculator</li>
+      <li>decide whether a number is a square, a cube, <b>both</b>, or neither</li>
+      <li>find the <b>smallest multiplier</b> that makes a perfect square or cube, and the side of a square or cube from its area or volume</li>
     </ul>
   </div>
-  <div class="outcome"><b>AN2</b> Demonstrate an understanding of irrational numbers by representing, identifying and simplifying irrational numbers, and by ordering irrational numbers.</div>
+  <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Cyclic Number" style="--wf-side: 310px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Cyclic Number 142857</h2>
-  <p class="wf-rule">Divide by 7 and the same six digits go round and round, like a clock. <b>Same digits, same order</b> — each fraction just starts at a different spot on the clock.</p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Locker Problem" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Locker Problem</h2>
+  <p class="wf-rule"><b>100 closed lockers, 100 students.</b> Student 1 <b>toggles</b> every locker, Student 2 every 2nd one, Student 3 every 3rd one, …, Student 100 just #100. <span class="muted">(Toggle = open it if it’s closed, close it if it’s open.)</span></p></div>
   <div class="wf-grid"><div class="wf-main">
-  <div class="cy-top">
-    <div class="cy-clockcol">
-      <div id="cy-clock" class="cy-clock"></div>
-      <div class="cy-chips no-ink" id="cy-chips"></div>
-      <div class="cy-read" id="cy-read">Tap a fraction to spin the clock.</div>
+
+  <div class="lk-box">
+    <div class="lockers" id="lockers"></div>
+    <div class="lk-bar no-ink">
+      <div class="lk-status" id="lk-status"></div>
+      <button class="exb" type="button" data-lk="reset" title="All closed again" aria-label="Close every locker"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+      <button class="exb next" type="button" data-lk="next">Next student <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="exb" type="button" data-lk="all">All 100 <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
     </div>
-    <div class="cy-table">
-      <div class="cy-row"><span class="tex">\dfrac{1}{7}=</span><span class="cy-dec">0.<b>142857</b>&thinsp;142857&thinsp;142…</span></div>
-      <div class="cy-row"><span class="tex">\dfrac{2}{7}=</span><span class="cy-dec">0.<b>285714</b>&thinsp;285714&thinsp;285…</span></div>
-      <div class="cy-row"><span class="tex">\dfrac{3}{7}=</span><span class="cy-dec">0.<b>428571</b>&thinsp;428571&thinsp;428…</span></div>
-      <div class="cy-row"><span class="tex">\dfrac{4}{7}=</span><span class="cy-dec">0.<span class="cy-blanks"><button class="blank" data-a="5"></button><button class="blank" data-a="7"></button><button class="blank" data-a="1"></button><button class="blank" data-a="4"></button><button class="blank" data-a="2"></button><button class="blank" data-a="8"></button></span>…</span></div>
-    </div>
+    <div class="lk-hist" id="lk-hist"></div>
   </div>
-  <div class="cy-qcol">
-      <div class="q-line"><div class="q-num">1</div><div>Use the clock to write <span class="tex">\dfrac{4}{7}</span> as a decimal. <span class="muted">(Tap the blanks, or tap <span class="tex">\dfrac{4}{7}</span> under the clock.)</span></div></div>
-      <div class="q-line"><div class="q-num">2</div><div>Predict <b>142857 × 3</b> <em>without</em> multiplying.
-        <div class="cy-ans" id="cy-a2"><button class="pill small" data-toggle="cy-a2">Reveal</button><span><b>428571</b> — it’s the <span class="tex">\dfrac37</span> row, because <span class="tex">3\times\dfrac17=\dfrac37</span>.</span></div></div></div>
-      <div class="q-line"><div class="q-num">3</div><div>In <span class="tex">\dfrac17</span>, what is the <b>7th</b> digit after the decimal point? The <b>12th</b>?
-        <div class="cy-ans" id="cy-a3"><button class="pill small" data-toggle="cy-a3">Reveal</button><span><b>7th: 1</b> (the block starts over) &nbsp; <b>12th: 7</b> (end of the 2nd block)</span></div></div></div>
-      <div class="cy-strip" id="cy-strip"></div>
+  <div class="wq">
+    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>Which students touch locker 12?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Students <b>1, 2, 3, 4, 6, 12</b> — exactly the <b>factors</b> of 12.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>Does locker 12 end open or closed?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>Closed.</b> 6 toggles: open, closed, open, closed, open, closed.</div></div></div>
   </div>
+
   </div><div class="wf-side">
-  <div class="cy-bet">
-    <div><b>Bet a neighbour:</b> what is <b>142857 × 7</b>? Both predict, <b>then</b> check.</div>
-    <button class="pill" data-keys="142857 × 7 =">Show me</button><button class="pill" data-toggle="cy-a4">Why?</button>
-    <div class="cy-ans" id="cy-a4"><span><b>999 999.</b> Because <span class="tex">7\times\dfrac17=\dfrac77=1</span>, and <span class="tex">1=0.999999\ldots</span> So <span class="tex">\dfrac17=0.\overline{142857}</span> is <b>repeating</b>, <b>non-terminating</b> — and still a fraction.</span></div>
+
+  <div class="wq wq-side">
+    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>Which students touch locker 9? Is it open or closed at the end?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Students <b>1, 3, 9</b>. Three toggles, so it ends <b>open</b>.</div></div></div>
   </div>
-    <div class="poll cy-poll wf-poll">
-      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>100th</b> digit after the decimal point in <span class="tex">\dfrac{1}{7}</span>? <b>Guess first.</b></div></div>
-      <div class="poll-opts cy-opts">
-        <div class="opt"><b>A</b> 1</div>
-        <div class="opt"><b>B</b> 2</div>
-        <div class="opt"><b>C</b> 7</div>
-        <div class="opt right"><b>D</b> 8</div>
-      </div>
-      <button class="pill" data-poll>Reveal</button>
-      <button class="pill" id="cy-count">Count to 100 on the clock</button>
-      <div class="poll-ans"><b>D — 8.</b> The block has 6 digits. <b>100 = 16 × 6 + 4</b>: sixteen full trips round the clock (96 digits), then 4 more: 1, 4, 2, <b>8</b>.
-        <div class="muted small">Traps: A — “100 is round, so it starts over”; B — counting 3 instead of 4; C — the end of a block is at 96, not 100.</div></div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> After all 100 students have had a turn, how many lockers are <b>open</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 50</div>
+      <div class="opt"><b>B</b> 25</div>
+      <div class="opt right"><b>C</b> 10</div>
+      <div class="opt"><b>D</b> 0</div>
     </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C — 10 lockers:</b> 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 (press <b>All 100</b> to watch). A locker ends open only if it’s toggled an <b>odd</b> number of times — it has an odd number of factors. Factors come in pairs (12 = 1 × 12 = 2 × 6 = 3 × 4), but a <b>perfect square</b> has one pair that is the same number twice (9 = 1 × 9 = 3 × 3), so it has an odd number of factors.
+      <div class="traps"><span><b>A (50)?</b> That’s just the picture after Student 2.</span><span><b>B (25)?</b> There are 25 primes up to 100 — but a prime has exactly 2 factors, so it ends <b>closed</b>.</span><span><b>D (0)?</b> Not everything gets flipped back!</span></div>
+    </div>
+  </div>
   </div></div>
 </section>
 
-<!-- ================= 1. Starter ================= -->
-<section class="card" data-ink="s1" data-section="1. Starter: Where does the decimal lead?">
-  <div class="sec-h"><span class="badge">1</span><h2>Starter: Where Does the Decimal Lead?</h2></div>
-  <p>Convert each number to a decimal (long division or calculator) and <b>circle</b> the words that describe the pattern you get.</p>
+<!-- ================= starter ================= -->
+<section class="card example" data-ink="start" data-section="Starter: 12, 12², 12³">
+  <div class="ex-head"><span class="ex-tag">Starter</span><h3>Back to prime factors</h3></div>
+  <p class="q">Write each number as a product of prime factors in exponent form.</p>
   <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{3}</span> is</div>
-      <div class="circs"><button class="circ" data-g="a1">repeating</button><span>/</span><button class="circ" data-g="a1" data-right>non-repeating</button><span class="circ-and2">and</span></div>
-      <div class="circs"><button class="circ" data-g="a2">terminates</button><span>/</span><button class="circ" data-g="a2" data-right>does not terminate</button></div>
-      <div class="work" style="--h:170px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">3 is not a perfect square: <span class="tex">\sqrt3=1.7320508\ldots</span><br><b>non-repeating; does not terminate</b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\dfrac{17}{6}</span> is</div>
-      <div class="circs"><button class="circ" data-g="b1" data-right>repeating</button><span>/</span><button class="circ" data-g="b1">non-repeating</button><span class="circ-and2">and</span></div>
-      <div class="circs"><button class="circ" data-g="b2">terminates</button><span>/</span><button class="circ" data-g="b2" data-right>does not terminate</button></div>
-      <div class="work" style="--h:170px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{17}{6}=2.8\overline{3}</span>; 6 = 2 × 3 has a 3<br><b>repeating; does not terminate</b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{17}{4}</span> is</div>
-      <div class="circs"><button class="circ" data-g="c1">repeating</button><span>/</span><button class="circ" data-g="c1" data-right>non-repeating</button><span class="circ-and2">and</span></div>
-      <div class="circs"><button class="circ" data-g="c2" data-right>terminates</button><span>/</span><button class="circ" data-g="c2">does not terminate</button></div>
-      <div class="work" style="--h:170px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{17}{4}=4.25</span>; 4 = 2², only 2s<br><b>non-repeating; terminates</b></div></div></div>
+    <div class="part"><div class="pl">(a) 12</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>12 = 2<sup>2</sup> × 3</b></div></div></div>
+    <div class="part"><div class="pl">(b) 12<sup>2</sup> = 144</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>144 = 2<sup>4</sup> × 3<sup>2</sup></b></div></div></div>
+    <div class="part"><div class="pl">(c) 12<sup>3</sup> = 1 728</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>1 728 = 2<sup>6</sup> × 3<sup>3</sup></b></div></div></div>
   </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Compare the exponents in (a), (b) and (c). What happened to them?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Squaring <b>doubled</b> every exponent (2 → 4, 1 → 2); cubing <b>tripled</b> them (2 → 6, 1 → 3).</div></div></div>
+  <div class="space" id="start-space"></div>
+  <button class="more" data-more="start-space">+ More space</button>
+</section>
+
+<!-- ================= 1. Perfect squares ================= -->
+<section class="card" data-ink="s1" data-section="1. Perfect Squares">
+  <div class="sec-h"><span class="badge">1</span><h2>Prime Factorization of a Perfect Square</h2></div>
+  <div class="def">Numbers such as 1, 4, 9, 16, 25, 36, 49, … — each the square of a whole number — are <b>perfect squares</b>. <span class="tex">\sqrt{\phantom{0}}</span> means the positive, or <b>principal</b>, square root.</div>
+  <div class="def amber">Factor a perfect square into primes and <b>every prime appears an even number of times</b> — the prime factors pair up perfectly.</div>
+  <div class="concrete">
+    <div class="cc-text"><b>Concretely:</b> a perfect square is a number of square tiles that can be arranged into <b>one solid square</b>. 16 tiles make a 4 × 4 square, so 16 is a perfect square. 12 tiles only ever make rectangles (1 × 12, 2 × 6, 3 × 4), so 12 is not.</div>
+    <div class="cc-fig"><div class="tilefig" data-grid="4x4"></div><div class="cc-cap">16 = 4 × 4 <span class="ok">a square</span></div></div>
+    <div class="cc-fig"><div class="tilefig" data-grid="3x4"></div><div class="cc-cap">12 = 3 × 4 <span class="red">not a square</span></div></div>
+  </div>
+  <div class="def why"><b>Why even?</b> A perfect square is a whole number times itself, so its factorization writes every prime factor down <b>twice</b>: from the starter, 12<sup>2</sup> = (2<sup>2</sup> × 3) × (2<sup>2</sup> × 3) = 2<sup>4</sup> × 3<sup>2</sup>. Squaring <b>doubles</b> every exponent, and double a whole number is always even.</div>
+</section>
+
+<section class="card" data-ink="s1w" data-section="1. Why the exponents double">
+  <h3 class="sub">Squaring doubles every exponent; cubing triples it</h3>
+  <div class="explainer" data-explainer="powers"></div>
+</section>
+
+<section class="card" data-ink="s1p" data-section="1. Pairing up the primes">
+  <p>Three perfect squares, factored and paired up:</p>
+  <div class="pairs-list">
+    <div><span class="pl-n">4</span> = <span class="pr">2 × 2</span></div>
+    <div><span class="pl-n">100</span> = <span class="pr">2 × 2</span> × <span class="pr">5 × 5</span></div>
+    <div><span class="pl-n">144</span> = <span class="pr">2 × 2</span> × <span class="pr">2 × 2</span> × <span class="pr">3 × 3</span></div>
+    <div class="root"><span class="tex">\sqrt{4} = 2</span></div>
+    <div class="root"><span class="tex">\sqrt{100} = 2\times5 = 10</span></div>
+    <div class="root"><span class="tex">\sqrt{144} = 2\times2\times3 = 12</span></div>
+  </div>
+  <p class="small muted" style="text-align:center">Take <b>one</b> factor from each pair. If the prime factorization does <b>not</b> split into matching pairs, the number is not a perfect square.</p>
+  <div class="explainer" data-explainer="squares"></div>
   <div class="tip-row">
-    <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><b>17 ÷ 6</b> <span class="keys"><kbd>1</kbd><kbd>7</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> → 2.833333333. The screen runs out — the 3s don’t.</div>
-      <button class="pill" data-keys="17 ÷ 6 =">Show me</button>
-    </div>
-    <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><b>√3</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> → 1.732050808 — no pattern in sight.</div>
-      <button class="pill" data-keys="√ 3 =">Show me</button>
-    </div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>The square root is not half.</b> <span class="tex">\sqrt{144}</span> is 12, not 72. You halve the <b>exponents</b>: 144 = 2<sup>4</sup> × 3<sup>2</sup> → 2<sup>2</sup> × 3<sup>1</sup> = 12.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Even exponents, not even primes.</b> 9 = 3<sup>2</sup> is a perfect square. What matters is how many <b>times</b> each prime appears.</div></div>
   </div>
 </section>
 
-<!-- ================= 2. Terminology ================= -->
-<section class="card" data-ink="s2" data-section="2. Terminology">
-  <div class="sec-h"><span class="badge">2</span><h2>Terminology</h2></div>
-  <div class="def-grid">
-    <div class="def"><b>Repeating decimal</b> — a block of digits copies itself <b>forever</b>. Put a bar over the <b>repeating block only</b>.
-      <div class="eg"><span class="tex">0.414141\ldots=0.\overline{41}</span> &nbsp;&nbsp; <span class="tex">2.8333\ldots=2.8\overline{3}</span></div>
-      <div class="sub-def"><b>Non-repeating</b> — never falls into a repeating block.</div></div>
-    <div class="def amber"><b>Terminating decimal</b> — has a <b>finite</b> number of digits: it stops.
-      <div class="eg"><span class="tex">\dfrac14=0.25</span> &nbsp;&nbsp; <span class="tex">\dfrac{17}{4}=4.25</span></div>
-      <div class="sub-def"><b>Non-terminating</b> — the digits go on forever.</div></div>
+<section class="card" data-ink="s1c" data-section="1. Square roots on the calculator">
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Square root on the TI-30XIIS.</b> <span class="tex">\sqrt{\phantom{0}}</span> is the 2nd function of <kbd>x²</kbd>: <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>4</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 12. <span class="muted">A whole-number answer means a perfect square.</span></div>
+    <button class="pill" data-keys="√ 144 =">Show me</button>
   </div>
-  <p class="combo-h">Every decimal gets one label from each pair — but only <b>three</b> combinations ever happen:</p>
-  <div class="combo">
-    <div class="combo-corner"></div><div class="combo-col">Terminating</div><div class="combo-col">Non-terminating</div>
-    <div class="combo-row">Repeating</div>
-    <div class="combo-cell no"><b>✗ impossible</b><span class="cc-note">a decimal that stops can’t repeat forever</span></div>
-    <div class="combo-cell"><b>✓</b> <span class="tex">\dfrac{3}{11}=0.\overline{27}</span><span class="cc-note">like every repeating decimal</span></div>
-    <div class="combo-row">Non-repeating</div>
-    <div class="combo-cell"><b>✓</b> <span class="tex">0.68</span>, <span class="tex">\dfrac{17}{4}=4.25</span><span class="cc-note">stops</span></div>
-    <div class="combo-cell"><b>✓</b> <span class="tex">\sqrt{3}=1.7320508\ldots</span><span class="cc-note">forever, no block</span></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check it backwards.</b> Square the answer with <kbd>x²</kbd>: <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> should give back 144.</div>
+    <button class="pill" data-keys="12 x² =">Show me</button>
   </div>
-  <div class="def gray"><b>Reading “…”.</b> When a decimal ends in “…”, assume the digits keep going the way they are shown: a block that repeats keeps repeating forever, and digits that follow a <b>growing</b> pattern (or no pattern) never settle into a repeating block.</div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>The bar goes over the repeating block only.</b> <span class="tex">0.8333\ldots=0.8\overline{3}</span>, not <span class="tex">0.\overline{83}</span> (that would be 0.838383…).</div></div>
-</section>
-
-<section class="card" data-ink="s2b" data-section="2. Why fractions repeat">
-  <h3 class="sub">Why does a fraction always terminate or repeat?</h3>
-  <p>Divide one digit at a time and watch the <b>remainders</b>. Dividing by 7 can only leave a remainder of 0, 1, 2, 3, 4, 5 or 6 — so sooner or later we either get <b>0</b> (it stops) or a remainder <b>comes back</b> (and everything after it repeats).</p>
-  <div class="explainer" data-explainer="longdiv"></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Repeating or not, terminating or not</h3></div>
-  <p class="q">For each number, state whether its decimal form is <b>repeating</b> or <b>non-repeating</b>, and whether it is <b>terminating</b> or <b>non-terminating</b>.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\dfrac{1}{4}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac14=0.25</span>; 4 = 2², only 2s<br><b>non-repeating, terminating</b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\dfrac{3}{11}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{3}{11}=0.272727\ldots=0.\overline{27}</span><br><b>repeating, non-terminating</b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{5}{6}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac56=0.8333\ldots=0.8\overline{3}</span>; 6 = 2 × 3<br><b>repeating, non-terminating</b></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">0.68</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">It stops after two digits.<br><b>non-repeating, terminating</b></div></div></div>
-    <div class="part"><div class="pl">(e) <span class="tex">\sqrt{12}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">12 isn’t a perfect square: <span class="tex">\sqrt{12}=3.4641016\ldots</span><br><b>non-repeating, non-terminating</b></div></div></div>
-    <div class="part"><div class="pl">(f) <span class="tex">\sqrt{0.25}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">0.5 × 0.5 = 0.25, so <span class="tex">\sqrt{0.25}=0.5</span><br><b>non-repeating, terminating</b></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>A perfect square, two ways</h3></div>
+  <p class="q">Consider the number <b>15 876</b>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Use a calculator to find the square root of 15 876.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2nd x² 15 876 ENTER<br><b><span class="tex">\sqrt{15\,876} = 126</span></b></div></div></div>
+    <div class="part"><div class="pl">(b) <b>Explain</b> how the prime factorization of 15 876 shows that it must be a perfect square, and use it to verify your calculator answer.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">15 876 ÷ 2 ÷ 2 ÷ 3 ÷ 3 ÷ 3 ÷ 3 ÷ 7 ÷ 7 = 1, so 15 876 = 2<sup>2</sup> × 3<sup>4</sup> × 7<sup>2</sup>. Every exponent is even, so the primes pair up: a perfect square.<br><b><span class="tex">\sqrt{15\,876}</span> = 2 × 3<sup>2</sup> × 7 = 126</b> ✓ matches</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Part (a) on the calculator:</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>5</kbd><kbd>8</kbd><kbd>7</kbd><kbd>6</kbd><kbd>ENTER</kbd></span></div>
+    <button class="pill" data-keys="√ 15876 =">Show me</button>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<!-- ================= 3. Rational and irrational ================= -->
-<section class="card" data-ink="s3" data-section="3. Rational and Irrational">
-  <div class="sec-h"><span class="badge">3</span><h2>Rational and Irrational Numbers</h2></div>
-  <div class="def-grid">
-    <div class="def"><b>Rational number</b> — can be written as a ratio <span class="tex">\dfrac{a}{b}</span> of two integers (b ≠ 0). As a decimal it <b>terminates</b> or <b>repeats</b>.
-      <div class="eg"><span class="tex">\dfrac{19}{8}=2.375</span> &nbsp; <span class="tex">\dfrac{5}{11}=0.\overline{45}</span> &nbsp; <span class="tex">-11=-\dfrac{11}{1}</span></div></div>
-    <div class="def amber"><b>Irrational number</b> — can’t be written as a fraction of integers. Its decimal is <b>non-terminating and non-repeating</b>.
-      <div class="eg"><span class="tex">\sqrt{7}=2.6457513\ldots</span> &nbsp; <span class="tex">\pi=3.14159\ldots</span></div></div>
-  </div>
-  <div class="def gray"><b>Quick test for a fraction in lowest terms:</b> if the denominator’s prime factors are <b>only 2s and 5s</b>, the decimal terminates; otherwise it repeats. Either way, it’s <b>rational</b>.</div>
-  <div class="explainer" data-explainer="denoms"></div>
-</section>
-
-<section class="card" data-ink="s3b" data-section="3. Does it repeat?">
-  <h3 class="sub">Does it ever repeat? Wrap the digits and look for stripes</h3>
-  <p>Write the digits in rows. If a block repeats, some row length lines the block up and every column becomes a <b>single digit</b>. Irrational numbers never line up — no matter how long the rows.</p>
-  <div class="explainer" data-explainer="stripes"></div>
-  <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>A pattern isn’t a repeating block.</b> 7.12 112 1112 11112… has a pattern, but the groups keep <b>growing</b>, so no block ever repeats: <b>irrational</b>.</div></div>
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>The calculator screen ends — the number doesn’t.</b> √7 shows 2.645751311, but its digits go on forever without repeating.</div></div>
-  </div>
-</section>
-
-<section class="card" data-ink="s3c" data-section="3. Rational or irrational?">
-  <h3 class="sub">Rational or irrational? Ask one question at a time</h3>
-  <div class="explainer" data-explainer="flow"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>A root sign doesn’t make a number irrational.</b> <span class="tex">\sqrt{121}=11</span>, <span class="tex">\sqrt{2.89}=1.7</span> and <span class="tex">\sqrt{0.25}=0.5</span> are all rational. Only roots of <b>non-perfect squares</b> are irrational.</div></div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> People sometimes use <span class="tex">\dfrac{22}{7}</span> for π. Is <span class="tex">\dfrac{22}{7}</span> equal to π?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">\dfrac{22}{7}=3.\overline{142857}</span> repeats, so it’s <b>rational</b>. <span class="tex">\pi=3.14159\ldots</span> never repeats. They agree only to 3.14 — <span class="tex">\dfrac{22}{7}</span> is just <b>close</b> to π.</div></div></div>
-</section>
-
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Rational or irrational?</h3></div>
-  <p class="q">Classify each number as <b>rational</b> or <b>irrational</b> and give a short reason. For each rational number, use a calculator to write it as an <b>improper fraction in simplest form</b>.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">2.375</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">It terminates → <b>rational</b><br><span class="tex">2.375=\dfrac{2375}{1000}=\mathbf{\dfrac{19}{8}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{7}</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">7 isn’t a perfect square: <span class="tex">\sqrt7=2.6457513\ldots</span> never stops or repeats → <b>irrational</b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">1.512\,512\,512\ldots</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The block 512 repeats → <b>rational</b><br><span class="tex">1.\overline{512}=\mathbf{\dfrac{1511}{999}}</span> (already simplest)</div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">-\sqrt{121}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">121 = 11², so <span class="tex">-\sqrt{121}=-11</span> → <b>rational</b>, <span class="tex">\mathbf{-\dfrac{11}{1}}</span></div></div></div>
-    <div class="part"><div class="pl">(e) <span class="tex">\sqrt{2.89}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1.7 × 1.7 = 2.89, so <span class="tex">\sqrt{2.89}=1.7</span> → <b>rational</b>, <span class="tex">\mathbf{\dfrac{17}{10}}</span></div></div></div>
-    <div class="part"><div class="pl">(f) <span class="tex">-7.12\,112\,1112\,11112\ldots</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">12, 112, 1112, 11112, … the run of 1s keeps growing, so no block repeats → <b>irrational</b></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Testing for a perfect square</h3></div>
+  <p class="q">In each case, use prime factorization to decide whether the number is a perfect square. If it is, state its square root.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) 1 089</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 089 ÷ 3 = 363, ÷ 3 = 121, ÷ 11 = 11, ÷ 11 = 1<br>1 089 = 3<sup>2</sup> × 11<sup>2</sup> — both exponents even<br><b>perfect square: <span class="tex">\sqrt{1\,089}</span> = 3 × 11 = 33</b></div></div></div>
+    <div class="part"><div class="pl">(b) 2 028</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2 028 ÷ 2 = 1 014, ÷ 2 = 507, ÷ 3 = 169, ÷ 13 = 13, ÷ 13 = 1<br>2 028 = 2<sup>2</sup> × 3 × 13<sup>2</sup> — the 3 has no partner (odd exponent)<br><b>not a perfect square</b></div></div></div>
   </div>
-  <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><b>(a) as a fraction:</b> <span class="keys"><kbd>2</kbd><kbd>.</kbd><kbd>3</kbd><kbd>7</kbd><kbd>5</kbd><kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> → <b>19┘8</b>, which means <span class="tex">\dfrac{19}{8}</span>.</div>
-      <button class="pill" data-keys="2.375 = F◂▸D">Show me</button>
-    </div>
-    <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><b>(c) as a fraction:</b> fill the screen with the repeating block, <span class="keys"><kbd>1</kbd><kbd>.</kbd><kbd>5</kbd><kbd>1</kbd><kbd>2</kbd><kbd>5</kbd><kbd>1</kbd><kbd>2</kbd>…<kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> → <b>1511┘999</b>.</div>
-      <button class="pill" data-keys="1.512512512 = F◂▸D">Show me</button>
-    </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Back to the warm-up: why were the lockers left open exactly the perfect squares?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A locker is toggled once for each of its <b>factors</b>. Factors come in pairs, except a perfect square’s middle pair (6 × 6 for 36), which counts once. So only perfect squares have an <b>odd</b> number of factors and end <b>open</b>.</div></div></div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- sources: https://proofwiki.org/wiki/Archimedes%27_Limits_to_Value_of_Pi (Measurement of a Circle: 3 10/71 < π < 3 1/7, from 96-sided polygons)
-     https://en.wikipedia.org/wiki/Approximations_of_pi (Archimedes, 3rd century BCE; Zu Chongzhi's results not improved for close to a millennium)
-     https://mathshistory.st-andrews.ac.uk/Biographies/Zu_Chongzhi/ (MacTutor: Zu Chongzhi 429–501; 355/113 correct to 6 decimal places)
-     https://en.wikipedia.org/wiki/Zu_Chongzhi (most accurate value of π for over 900 years)
-     decimals checked by long division: 22/7 = 3.(142857), 223/71 = 3.140845…, 355/113 = 3.14159292… (repeating block of 112 digits) -->
-<!-- ================= Math History box (brown) ================= -->
-<section class="card history" data-ink="hist" data-section="Math History: π as a fraction">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">c. 250 BCE · c. 480 CE</span></div>
-  <div class="hist-grid">
-    <div class="hist-text">
-      <h3 class="hist-title">Chasing π with fractions</h3>
-      <p>Around 250 BCE, the Greek mathematician <b>Archimedes</b> trapped a circle between two shapes with <b>96 sides</b>, one inside it and one outside. That proved π is between <span class="tex">3\tfrac{10}{71}</span> and <span class="u1l3h-nw"><span class="tex">3\tfrac{1}{7}</span>.</span></p>
-      <p>About 700 years later in China, <b>Zu Chongzhi</b> found <span class="tex">\tfrac{355}{113}</span>, which matches π to <b>6 decimal places</b>. Nobody beat his work on π for about 900 years.</p>
-      <div class="part hist-q"><div class="pl">Write Archimedes’ two numbers as decimals. Which digits of π did he know for sure?</div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3\tfrac{10}{71}=3.1408\ldots</span> and <span class="tex">3\tfrac{1}{7}=3.\overline{142857}</span>. π is between them, so <b>π = 3.14…</b>: he knew the first <b>two decimal places</b>.</div></div></div>
-    </div>
-    <figure class="hist-anim">
-      <svg id="u1l3-hist" viewBox="0 0 600 300" role="img" aria-label="The decimals of π, 355/113 and 22/7 appear digit by digit. 22/7 matches π to 2 decimal places and repeats 142857; 355/113 matches π to 6 decimal places and repeats only after a block of 112 digits; π never repeats."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">Any fraction is rational, so its decimal must repeat. Even <span class="tex">\tfrac{355}{113}</span> repeats, but its block is 112 digits long. π never repeats.</p>
-    </figure>
+<!-- ================= 2. Perfect cubes ================= -->
+<section class="card" data-ink="s2" data-section="2. Perfect Cubes">
+  <div class="sec-h"><span class="badge">2</span><h2>Prime Factorization of a Perfect Cube</h2></div>
+  <div class="def"><b>Perfect cubes</b> of whole numbers include 1, 8, 27, 64, 125, …, with <b>cube roots</b> 1, 2, 3, 4, 5, …</div>
+  <div class="def amber">In the prime factorization of a perfect cube, <b>every prime factor appears a multiple of three times</b> — the factors group into matching <b>triples</b>.</div>
+  <div class="concrete">
+    <div class="cc-text"><b>Concretely:</b> a perfect cube is a number of small cubes that can be stacked into <b>one solid larger cube</b>. 27 cubes make a 3 × 3 × 3 cube, so 27 is a perfect cube. 18 cubes can’t be stacked into a solid cube (the best is a 3 × 3 × 2 box), so 18 is not.</div>
+    <div class="cc-fig"><div class="boxfig" data-box="3x3x3"></div><div class="cc-cap">27 = 3 × 3 × 3 <span class="ok">a cube</span></div></div>
+    <div class="cc-fig"><div class="boxfig" data-box="3x3x2"></div><div class="cc-cap">18 = 3 × 3 × 2 <span class="red">a box</span></div></div>
   </div>
+  <div class="def why"><b>Why multiples of 3?</b> Cubing writes every prime factor down <b>three</b> times: 12<sup>3</sup> = (2<sup>2</sup> × 3) × (2<sup>2</sup> × 3) × (2<sup>2</sup> × 3) = 2<sup>6</sup> × 3<sup>3</sup>. Every exponent <b>triples</b>.</div>
 </section>
 
-<section class="card" data-ink="s3d" data-section="3. Ordering irrationals">
-  <h3 class="sub">Ordering irrational numbers on a number line</h3>
-  <div class="methods l3-steps3">
-    <div class="method"><div class="m-h">1. Squeeze</div>Find the <b>perfect squares</b> on either side: <span class="tex">16&lt;19&lt;25</span>, so <span class="tex">4&lt;\sqrt{19}&lt;5</span>.</div>
-    <div class="method"><div class="m-h">2. Estimate</div>Closer to 16 than 25, so a bit <b>less than 4.5</b>. Check with the calculator: <span class="tex">\sqrt{19}\approx4.36</span>.</div>
-    <div class="method"><div class="m-h">3. Place</div>Mark each number between the right whole numbers, then read them <b>left to right</b>: smallest to largest.</div>
+<section class="card" data-ink="s2p" data-section="2. Grouping into triples">
+  <p>Three perfect cubes, factored and grouped into triples:</p>
+  <div class="pairs-list">
+    <div><span class="pl-n">8</span> = <span class="pr">2 × 2 × 2</span></div>
+    <div><span class="pl-n">125</span> = <span class="pr">5 × 5 × 5</span></div>
+    <div><span class="pl-n">1 000</span> = <span class="pr">2 × 2 × 2</span> × <span class="pr">5 × 5 × 5</span></div>
+    <div class="root"><span class="tex">\sqrt[3]{8} = 2</span></div>
+    <div class="root"><span class="tex">\sqrt[3]{125} = 5</span></div>
+    <div class="root"><span class="tex">\sqrt[3]{1\,000} = 2\times5 = 10</span></div>
   </div>
-  <div class="explainer" data-explainer="numline"></div>
-  <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Roots of numbers between 0 and 1 get bigger.</b> <span class="tex">\sqrt{0.3}\approx0.55</span> — <b>more</b> than 0.3, because 0.55 × 0.55 ≈ 0.30.</div></div>
-    <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><span class="tex">3\sqrt{8}</span> means <b>3 × √8</b>: <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> → 8.485…</div>
-      <button class="pill" data-keys="3 × √ 8 =">Show me</button>
-    </div>
+  <p class="small muted" style="text-align:center">Take <b>one</b> factor from each triple. If the prime factorization does not break into matching triples, the number is not a perfect cube.</p>
+  <div class="explainer" data-explainer="cubes"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube root on the TI-30XIIS.</b> Type the <b>3 first</b>, then <span class="tex">\sqrt[x]{\phantom{0}}</span> (2nd of <kbd>^</kbd>), then the number: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 10.</div>
+    <button class="pill" data-keys="3 ˣ√ 1000 =">Show me</button>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check it backwards.</b> Cube the answer: <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> should give back 1 000.</div>
+    <button class="pill" data-keys="10 ^ 3 =">Show me</button>
   </div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Ordering irrational numbers on a number line</h3></div>
-  <p class="q">Place the following irrational numbers, in order, on the number line below.</p>
-  <p class="q l3-list"><span><b>(a)</b> <span class="tex">\sqrt{19}</span></span> <span><b>(b)</b> <span class="tex">\pi</span></span> <span><b>(c)</b> <span class="tex">\sqrt{90}</span></span> <span><b>(d)</b> <span class="tex">3\sqrt{8}</span></span> <span><b>(e)</b> <span class="tex">\sqrt{0.3}</span></span> <span class="muted small">(<span class="tex">3\sqrt8</span> means <span class="tex">3\times\sqrt8</span>.)</span></p>
-  <div class="parts c1">
-    <div class="part"><div class="work l3-nlwork" style="--h:300px"><svg class="l3-nl" viewBox="0 0 1000 70" aria-hidden="true"></svg></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{0.3}\approx0.548,\ \pi\approx3.142,\ \sqrt{19}\approx4.359,\ 3\sqrt8\approx8.485,\ \sqrt{90}\approx9.487</span><br><b><span class="tex">\sqrt{0.3}&lt;\pi&lt;\sqrt{19}&lt;3\sqrt{8}&lt;\sqrt{90}</span></b> — that is (e), (b), (a), (d), (c)</div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Testing for a perfect cube</h3></div>
+  <p class="q">In each case, use prime factorization (a division ladder works well) to determine whether the number is a perfect cube. If it is, state its cube root.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) 5 832</div><div class="work" style="--h:400px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">5 832 ÷ 2 ÷ 2 ÷ 2 = 729, then ÷ 3 six times: 729 → 243 → 81 → 27 → 9 → 3 → 1<br>5 832 = 2<sup>3</sup> × 3<sup>6</sup> — both exponents are multiples of 3<br><b>perfect cube: <span class="tex">\sqrt[3]{5\,832}</span> = 2 × 3<sup>2</sup> = 18</b></div></div></div>
+    <div class="part"><div class="pl">(b) 39 304</div><div class="work" style="--h:400px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">39 304 ÷ 2 = 19 652, ÷ 2 = 9 826, ÷ 2 = 4 913, ÷ 17 = 289, ÷ 17 = 17, ÷ 17 = 1<br>39 304 = 2<sup>3</sup> × 17<sup>3</sup><br><b>perfect cube: <span class="tex">\sqrt[3]{39\,304}</span> = 2 × 17 = 34</b></div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check an estimate.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> gives √19 ≈ 4.358898944.</div>
-    <button class="pill" data-keys="√ 19 =">Show me</button>
+    <div><b>Check (a) on the calculator:</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>5</kbd><kbd>8</kbd><kbd>3</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> <span class="muted">— a whole number means a perfect cube.</span></div>
+    <button class="pill" data-keys="3 ˣ√ 5832 =">Show me</button>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<!-- ================= 4. Calculator method ================= -->
-<section class="card" data-ink="s4" data-section="4. Calculator Method">
-  <div class="sec-h"><span class="badge">4</span><h2>Repeating Decimal → Fraction: Calculator Method</h2></div>
-  <p>The TI-30XIIS has a <b>F◂▸D</b> key (fraction ◂▸ decimal). Type in <b>enough</b> repeated digits to fill the screen, and it recognizes the pattern and gives the exact fraction.</p>
-  <div class="l3-calc-how">
-    <div class="method"><div class="m-h">1. Fill the screen</div>Type the decimal with the block repeated until it’s 10 digits long: <b>0.4545454545</b></div>
-    <div class="method"><div class="m-h">2. ENTER, then F◂▸D</div>The answer flips from a decimal to a fraction.</div>
-    <div class="method l3-screen-m"><div class="m-h">3. Read the ┘</div><div class="l3-screen"><span>5┘11</span></div><div>means <span class="tex">\dfrac{5}{11}</span></div></div>
-  </div>
-  <div class="tip-row">
-    <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><span class="tex">0.\overline{45}</span>: <span class="keys"><kbd>.</kbd><kbd>4</kbd><kbd>5</kbd><kbd>4</kbd><kbd>5</kbd>…<kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> → <b>5┘11</b></div>
-      <button class="pill" data-keys="0.4545454545 = F◂▸D">Show me</button>
-    </div>
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Type enough digits!</b> Just 0.45 gives <b>9┘20</b> — that’s 0.45 exactly, not <span class="tex">0.\overline{45}</span>.</div>
-      <button class="pill" data-keys="0.45 = F◂▸D">Show me</button></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Mixed number on your screen?</b> If you see something like <b>2┘5┘6</b> (that’s <span class="tex">2\dfrac56</span>), press <span class="keys"><kbd>2nd</kbd><kbd>ab/c</kbd></span> (<b>d/e</b>) to switch to the improper fraction <b>17┘6</b>.</div>
-  </div>
+<section class="card" data-ink="s3" data-section="3. Square, Cube, Both?">
+  <div class="sec-h"><span class="badge">3</span><h2>Square, Cube, Both, or Neither?</h2></div>
+  <p>Write the number with exponents and look only at the <b>exponents</b>: all even → perfect square; all multiples of 3 → perfect cube; all multiples of <b>6</b> (even <i>and</i> multiples of 3) → <b>both</b>. For example 64 = 2<sup>6</sup>: <span class="tex">\sqrt{64} = 2^3 = 8</span> and <span class="tex">\sqrt[3]{64} = 2^2 = 4</span>.</p>
+  <div class="explainer" data-explainer="tester"></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Calculator conversions</h3></div>
-  <p class="q">Use a calculator to convert each repeating decimal to an <b>improper fraction in simplest form</b>.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">0.\overline{45}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Enter 0.4545454545, then F◂▸D:<br><span class="tex">0.\overline{45}=\mathbf{\dfrac{5}{11}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">2.8\overline{3}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Enter 2.833333333, then F◂▸D:<br><span class="tex">2.8\overline{3}=\mathbf{\dfrac{17}{6}}</span></div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>(b)</b> Only the 3 repeats: <span class="keys"><kbd>2</kbd><kbd>.</kbd><kbd>8</kbd><kbd>3</kbd><kbd>3</kbd><kbd>3</kbd>…<kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> → <b>17┘6</b>. Section 5 gets both answers <b>without</b> a calculator.</div>
-    <button class="pill" data-keys="2.833333333 = F◂▸D">Show me</button>
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Square, cube, both, or neither?</h3></div>
+  <p class="q">Decide whether each number is a perfect square, a perfect cube, both, or neither. State each root that is a whole number.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) 400</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">400 = 2<sup>4</sup> × 5<sup>2</sup><br>even, not multiples of 3<br><b>square only: <span class="tex">\sqrt{400}</span> = 2<sup>2</sup> × 5 = 20</b></div></div></div>
+    <div class="part"><div class="pl">(b) 216</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">216 = 2<sup>3</sup> × 3<sup>3</sup><br>multiples of 3, odd<br><b>cube only: <span class="tex">\sqrt[3]{216}</span> = 2 × 3 = 6</b></div></div></div>
+    <div class="part"><div class="pl">(c) 4 096</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">4 096 = 2<sup>12</sup><br>12 is a multiple of 6<br><b>both: <span class="tex">\sqrt{4\,096}</span> = 2<sup>6</sup> = 64, <span class="tex">\sqrt[3]{4\,096}</span> = 2<sup>4</sup> = 16</b></div></div></div>
+    <div class="part"><div class="pl">(d) 1 200</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 200 = 2<sup>4</sup> × 3 × 5<sup>2</sup><br>the 3 has exponent 1: odd, not a multiple of 3<br><b>neither</b></div></div></div>
   </div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<!-- ================= 5. Algebraic method ================= -->
-<section class="card" data-ink="s5" data-section="5. Algebraic Method (Extension)">
-  <div class="sec-h"><span class="badge">5</span><h2>Repeating Decimal → Fraction: Algebraic Method</h2><span class="l3-ext">Extension</span></div>
-  <div class="l3-algsteps">
-    <div><span>1</span>Let <b><i>x</i></b> equal the repeating decimal.</div>
-    <div><span>2</span>Identify the <b>repeating digits</b>.</div>
-    <div><span>3</span>Multiply both sides by the power of 10 that shifts the repeating block to the <b>left</b> of the decimal point.</div>
-    <div><span>4</span>If non-repeating digits sit right after the point, also multiply Step 1 by the power of 10 that puts the block <b>immediately right</b> of the point.</div>
-    <div><span>5</span><b>Subtract</b> Step 4 from Step 3 (or Step 1 from Step 3 if there’s no Step 4). The repeating tails <b>cancel</b>; solve for <i>x</i>.</div>
-  </div>
-  <div class="explainer" data-explainer="algebra"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>The tails only cancel if they line up.</b> Both decimals must have the <b>same digits after the point</b> — that’s why <span class="tex">2.8\overline{3}</span> uses 100<i>x</i> and 10<i>x</i>, not 100<i>x</i> and <i>x</i>.</div></div>
+<!-- ================= 4. Making a perfect square or cube ================= -->
+<section class="card" data-ink="s4" data-section="4. The smallest multiplier">
+  <div class="sec-h"><span class="badge">4</span><h2>Making a Perfect Square or a Perfect Cube</h2></div>
+  <p>When an exponent is odd, the number is not a perfect square — but multiplying by the right primes fixes it. For the <b>smallest</b> multiplier, raise each odd exponent to the <b>next</b> even number, and nothing more. (For a perfect cube, raise each exponent to the next multiple of 3.)</p>
+  <p class="display">50 = 2 × 5<sup>2</sup> &nbsp;→&nbsp; 50 × <b class="hl-m">2</b> = 100 = 2<sup>2</sup> × 5<sup>2</sup> = 10<sup>2</sup><span class="small muted">the 2 had no partner, so one more 2 is all it takes</span></p>
+  <div class="explainer" data-explainer="multiplier"></div>
 </section>
 
 <section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Finishing the procedure</h3></div>
-  <p class="q">A student is converting <span class="tex">3.0\overline{62}</span> to a fraction. Steps 1–4 are done; complete Step 5.</p>
-  <div class="parts c1">
-    <div class="part"><div class="l3-ex5">
-      <div class="l3-given">
-        <div><b>Step 1.</b> Let <span class="tex">x=3.0\overline{62}</span>.</div>
-        <div><b>Step 2.</b> The repeating digits are 62.</div>
-        <div><b>Step 3.</b> Move 62 left of the point: multiply by <span class="tex">10^3=1000</span><div class="l3-geq"><span class="tex">1000x=3062.\overline{62}</span></div></div>
-        <div><b>Step 4.</b> Move 62 to sit just right of the point: multiply by 10<div class="l3-geq"><span class="tex">10x=30.\overline{62}</span></div></div>
-      </div>
-      <div class="l3-s5"><div class="pl">Step 5. Subtract, and solve for <i>x</i>.</div><div class="work" style="--h:300px"></div></div>
-    </div>
-    <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The tails <span class="tex">.\overline{62}</span> line up and cancel: <span class="tex">1000x-10x=3062.\overline{62}-30.\overline{62}</span><br><span class="tex">990x=3032</span>, so <span class="tex">x=\dfrac{3032}{990}=\mathbf{\dfrac{1516}{495}}</span> (divide by 2). Check: 1516 ÷ 495 = 3.0626262… ✓</div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>The smallest multiplier</h3></div>
+  <p class="q">Consider the number <b>72</b>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Find the smallest whole number 72 must be multiplied by to give a perfect square, and state the square root of the result.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">72 = 2<sup>3</sup> × 3<sup>2</sup>: 2<sup>3</sup> → 2<sup>4</sup> needs one more 2<br><b>multiply by 2:</b> 72 × 2 = 144 = 2<sup>4</sup> × 3<sup>2</sup><br><b><span class="tex">\sqrt{144}</span> = 2<sup>2</sup> × 3 = 12</b></div></div></div>
+    <div class="part"><div class="pl">(b) Find the smallest whole number 72 must be multiplied by to give a perfect cube, and state the cube root of the result.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">72 = 2<sup>3</sup> × 3<sup>2</sup>: 2<sup>3</sup> is fine, 3<sup>2</sup> → 3<sup>3</sup> needs one more 3<br><b>multiply by 3:</b> 72 × 3 = 216 = 2<sup>3</sup> × 3<sup>3</sup><br><b><span class="tex">\sqrt[3]{216}</span> = 2 × 3 = 6</b></div></div></div>
   </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Smallest, not just any.</b> 72 × 72 is a perfect square too, but multiplying by the number itself is almost never the smallest multiplier. Fix only the exponents that need it.</div></div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<!-- ================= 5. Squares and cubes in geometry ================= -->
+<section class="card" data-ink="s5" data-section="5. Side lengths">
+  <div class="sec-h"><span class="badge">5</span><h2>Squares and Cubes in Geometry</h2></div>
+  <p>The area of a square is side × side, so the side length is <span class="tex">\sqrt{\text{area}}</span>. The volume of a cube is edge × edge × edge, so the edge length is <span class="tex">\sqrt[3]{\text{volume}}</span>. Prime factorization finds these roots exactly; the calculator checks them.</p>
+  <div class="explainer" data-explainer="sides"></div>
+</section>
+
 <section class="card example" data-ink="ex6" data-section="Example 6">
-  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>The algebraic method from scratch</h3></div>
-  <p class="q">Use the algebraic procedure to convert each of the following to a fraction in simplest form.</p>
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Side lengths from area and volume</h3></div>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">0.\overline{45}</span></div><div class="work" style="--h:380px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x=0.4545\ldots</span>; block of 2, so <span class="tex">100x=45.4545\ldots</span><br>Subtract <i>x</i>: <span class="tex">99x=45</span>, <span class="tex">x=\dfrac{45}{99}=\mathbf{\dfrac{5}{11}}</span> (divide by 9)</div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">2.8\overline{3}</span></div><div class="work" style="--h:380px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">100x=283.333\ldots</span>, <span class="tex">10x=28.333\ldots</span><br>Subtract: <span class="tex">90x=255</span>, <span class="tex">x=\dfrac{255}{90}=\mathbf{\dfrac{17}{6}}</span> (divide by 15). Matches Example 4.</div></div></div>
+    <div class="part"><div class="pl">(a) A square poster has an area of 3 136 cm<sup>2</sup>. Use prime factorization to find its side length.</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">3 136 = 2<sup>6</sup> × 7<sup>2</sup> (all exponents even)<br>side = <span class="tex">\sqrt{3\,136}</span> = 2<sup>3</sup> × 7<br><b>56 cm</b></div></div></div>
+    <div class="part"><div class="pl">(b) A cube-shaped block of ice has a volume of 3 375 cm<sup>3</sup>. Use prime factorization to find the length of each edge.</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">3 375 = 3<sup>3</sup> × 5<sup>3</sup> (all exponents multiples of 3)<br>edge = <span class="tex">\sqrt[3]{3\,375}</span> = 3 × 5<br><b>15 cm</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (b) on the calculator:</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>3</kbd><kbd>7</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 15.</div>
+    <button class="pill" data-keys="3 ˣ√ 3375 =">Show me</button>
   </div>
   <div class="space" id="ex6-space"></div>
   <button class="more" data-more="ex6-space">+ More space</button>
@@ -372,16 +295,16 @@
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div>Every decimal is <b>terminating</b>, <b>repeating</b>, or <b>neither</b> (non-terminating and non-repeating). The bar goes over the repeating block only: <span class="tex">2.8\overline{3}</span>.</div>
-    <div><b>Rational</b> = a fraction of integers = a decimal that terminates or repeats. Lowest-terms denominator of only 2s and 5s → it terminates.</div>
-    <div><b>Irrational</b> = never ends, never repeats: roots of non-perfect squares, π. Order them by <b>squeezing</b> between perfect squares.</div>
-    <div>Repeating decimal → fraction: <b>F◂▸D</b> on the calculator (fill the screen), or algebra: multiply by powers of 10 so the tails <b>cancel</b>.</div>
+    <div><b>Perfect square:</b> every exponent is <b>even</b> (squaring doubles them). Halve the exponents for the square root: <span class="tex">\sqrt{144} = \sqrt{2^4\times3^2} = 2^2\times3 = 12</span>.</div>
+    <div><b>Perfect cube:</b> every exponent is a <b>multiple of 3</b> (cubing triples them). Divide the exponents by 3: <span class="tex">\sqrt[3]{1\,000} = 2\times5 = 10</span>. <b>Both:</b> multiples of 6.</div>
+    <div><b>Smallest multiplier:</b> raise each odd exponent to the next even number (for a cube, the next multiple of 3) — nothing more. 72 = 2<sup>3</sup> × 3<sup>2</sup> → × 2 = 144.</div>
+    <div><b>Geometry:</b> side of a square = <span class="tex">\sqrt{\text{area}}</span>; edge of a cube = <span class="tex">\sqrt[3]{\text{volume}}</span>. 3 375 cm<sup>3</sup> = 3<sup>3</sup> × 5<sup>3</sup> → edge 15 cm.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Rational Numbers, Irrational Numbers, and Decimal Patterns</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Perfect Squares and Perfect Cubes</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
-  <a class="assign l3-next" href="../l4/">
-    <div><div class="kicker">Next lesson</div><b>1.4 Classifying the Real Number System</b></div><span class="arrow">→</span>
+  <a class="assign next-l" href="../l4/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Rational Numbers, Irrational Numbers, and Decimal Patterns</b></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -391,7 +314,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l3.js';
-  boot({ key: 'u1l3', homeHref: '../../', title: '1.3 Rational and Irrational Numbers' });
+  boot({ key: 'u1l3', homeHref: '../../', title: '1.3 Perfect Squares and Cubes' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

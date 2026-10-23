@@ -1,6 +1,6 @@
 /* Math 10C · Unit 8 · Lesson 6 — Systems of Linear Equations: Cumulative Review. Styles used only on this page.
  * Unit 8 colours: Eq. 1 / line 1 blue, Eq. 2 / line 2 amber, the solution purple. Example 4 adds Plan 3 green.
- * TI-84 pieces (screen text, keycaps) follow the look of Unit 5 Lesson 5. */
+ * No graphing calculator: every graph is drawn by hand; the TI-30XIIS (built in) does the decimal arithmetic. */
 :root { --u8l6-b: #1f5bd6; --u8l6-a: #b06a07; --u8l6-p: #7b4fc4; --u8l6-g: #12805a; }
 
 /* captions may run to four lines; reserve the room so nothing below an explainer moves while it plays */
@@ -13,11 +13,6 @@
 .u8l6-b { color: var(--u8l6-b); } .u8l6-a { color: var(--u8l6-a); } .u8l6-p { color: var(--u8l6-p); } .u8l6-g { color: var(--u8l6-g); }
 .u8l6-outs .outcome { margin-top: 6px; }
 .u8l6-gap { margin-top: 20px; }
-
-/* keycaps (graphing calculator) */
-kbd.u8l6-k2 { background: #3d86d6; box-shadow: 0 2px 0 #1f5aa0; }
-.u8l6-ti { display: inline-block; font: 800 12px var(--round); letter-spacing: .05em; text-transform: uppercase; color: #fff; background: #2b3038; border-radius: 6px; padding: 1px 7px; vertical-align: 2px; }
-code.u8l6-c { font: 600 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: #eef1f5; border-radius: 5px; padding: 0 5px; color: #1c2230; white-space: nowrap; }
 
 /* ---------------- warm-up ---------------- */
 .u8l6-mobfig { width: 960px; height: 300px; margin: 4px auto 6px; }
@@ -108,14 +103,11 @@ code.u8l6-c { font: 600 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace
 .u8l6-cost .n { font: 800 16px var(--round); }
 .u8l6-best { font: 800 20px var(--round); }
 
-/* TI-84 screen text */
-.u8l6-lcd { position: absolute; inset: 0; z-index: 5; background: #fff; border-radius: 6px; padding: 8px 16px; font: 600 22px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #14171c; white-space: pre; overflow: hidden; }
-.u8l6-ln { height: 1.5em; }
-.u8l6-inv { background: #14171c; color: #fff; padding: 0 2px; }
-.u8l6-hud { position: absolute; z-index: 4; font: 700 18px/1.3 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #14171c; background: rgba(255, 255, 255, .9); border-radius: 4px; padding: 0 5px; white-space: nowrap; pointer-events: none; }
-.u8l6-keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; overflow: hidden; }
-.u8l6-keys kbd { font-size: 17px; padding: 3px 9px; min-width: 32px; }
-.u8l6-kl { font: 800 14px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-right: 4px; }
+/* setEq explainer: the live x and the two y-values */
+.u8l6-sqx { font-size: 24px; font-family: var(--round); }
+.u8l6-sqx i { font-family: KaTeX_Math, serif; }
+.u8l6-sqy { font-size: 21px; background: #f8f6f1; border-radius: 10px; padding: 3px 10px; }
+.u8l6-sqn { font: 800 24px var(--round); }
 
 /* ---------------- examples ---------------- */
 .u8l6-ex4f { display: grid; grid-template-columns: 560px 1fr; gap: 18px; align-items: start; }

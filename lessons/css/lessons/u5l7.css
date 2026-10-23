@@ -1,0 +1,143 @@
+/* Math 10C · Unit 5 · Lesson 7 — Function Notation: Graphs, Conversions, and Real-World Models: styles for this page.
+ * Colour code: input / domain amber, output / range purple, the function teal, impossible values red. */
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.part.span2 { grid-column: span 2; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+h1 .katex { font-size: .92em; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.u5l7-cin { color: #b06d08; }
+.u5l7-cout { color: #7b4fc4; }
+.u5l7-cred { color: #c93a33; }
+.u5l7-cfix { color: #5d6573; }
+
+/* ---------------- warm-up ---------------- */
+.u5l7-thermo { margin: 4px 0 4px; }
+.u5l7-tsvg { display: block; }
+.u5l7-tnum { font: 800 18px var(--round); fill: #1e2d46; }
+.u5l7-tnum.u5l7-tf, .u5l7-tunit.u5l7-tf { fill: #1e6eb4; }
+.u5l7-tunit { font: 800 22px var(--round); fill: #1e2d46; }
+.u5l7-tland { font: 700 16px var(--font); fill: #1e2d46; }
+.u5l7-tctl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 2px 0 12px; font-size: 17px; }
+.u5l7-tread { margin-left: 10px; font-size: 20px; color: #1e6eb4; }
+.u5l7-rulebox { width: fit-content; margin: 0 auto 6px; background: #ffecb3; border: 2px solid #c88c14; border-radius: 10px; padding: 6px 18px; font-size: 24px; font-weight: 700; }
+.u5l7-wqa { margin-left: 50px; }
+.q-num.bonus { background: var(--brand2); }
+.poll-opts.u5l7-c4 { grid-template-columns: repeat(4, 1fr); }
+.u5l7-pa { display: grid; grid-template-columns: 1fr 340px; gap: 18px; align-items: start; }
+.u5l7-social { margin: 16px 0 0 !important; font-style: italic; color: var(--muted); font-size: 19px; }
+
+/* ---------------- section notes ---------------- */
+.u5l7-ntab { display: grid; grid-template-columns: 260px 260px; width: fit-content; margin: 0 auto 16px; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--line2); font-size: 22px; text-align: center; }
+.u5l7-ntab > div { padding: 8px 14px; background: #fff; }
+.u5l7-ntab > div:nth-child(odd) { border-right: 1.5px solid var(--line2); }
+.u5l7-ntab .u5l7-nh { background: #f3f2ee; font-weight: 800; font-size: 17px; color: var(--ink2); }
+.u5l7-axes2, .u5l7-fb { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.u5l7-axes2 .def, .u5l7-fb .def { margin-bottom: 16px; }
+.def.u5l7-defp { background: #f3eefb; border-left-color: #7b4fc4; }
+.u5l7-disp { text-align: center; font-size: 26px; margin: 0 0 14px; }
+.u5l7-note { background: #eef6f5; }
+.u5l7-note .tip-ic { background: var(--brand2); color: #fff; font-family: Georgia, serif; font-style: italic; }
+
+/* ---------------- example layouts ---------------- */
+.u5l7-ex2 { display: flex; gap: 18px; align-items: flex-start; }
+.u5l7-ex2 .work { flex: 1; }
+.u5l7-ansfig { display: flex; gap: 18px; align-items: flex-start; }
+.u5l7-ansfig > div:first-child { flex: 1; }
+.u5l7-ansfig .bk-tablebox { margin: 6px 0; }
+.u5l7-ansfig.u5l7-col { flex-direction: column; gap: 6px; }
+.part > [id^="u5l7-g-"], .u5l7-ex2 > [id^="u5l7-g-"], .u5l7-ansfig [id^="u5l7-a-"] { margin-top: 14px; }
+.u5l7-ex3top { display: grid; grid-template-columns: 430px 1fr; gap: 16px; align-items: start; margin-bottom: 14px; }
+.u5l7-ex3ab { margin: 0; }
+.u5l7-blanks { font-weight: 600; font-size: 19px; margin-top: 4px; line-height: 1.7; }
+.u5l7-stack { gap: 10px; }
+.u5l7-sub { display: flex; flex-direction: column; flex: 1; }
+.u5l7-sub + .u5l7-sub { border-top: 1.5px dashed #ddd6c6; padding-top: 8px; }
+
+/* ---------------- explainer pieces ---------------- */
+.u5l7-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 12px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.u5l7-ph { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.u5l7-line { font-size: 20px; line-height: 1.35; }
+.u5l7-line.u5l7-big { font-size: 26px; font-weight: 700; }
+.u5l7-count { font-size: 20px; color: #7b4fc4; }
+.u5l7-gpill { font-size: 18px; }
+.u5l7-say { background: #fff; border: 2px solid var(--brand2); border-radius: 12px; padding: 8px 14px; font-size: 20px; line-height: 1.45; box-sizing: border-box; box-shadow: 0 3px 10px rgba(0, 0, 0, .06); }
+.u5l7-read { font: 700 17px var(--round); background: #fff; border: 2px solid var(--line2); border-radius: 10px; padding: 2px 10px; white-space: nowrap; line-height: 1.4; }
+
+/* swap */
+.u5l7-sw > * { position: absolute; }
+.u5l7-row { display: flex; align-items: center; font-size: 40px; white-space: nowrap; }
+.u5l7-lhs { width: 210px; text-align: right; }
+.u5l7-eqs { width: 54px; text-align: center; }
+.u5l7-ntag { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.u5l7-repl { font-size: 19px; color: var(--brand); font-weight: 700; }
+.u5l7-leg { font-size: 20px; line-height: 1.6; }
+.u5l7-sw .u5l7-tg { position: relative; }
+.u5l7-sw.u5l7-tags .u5l7-tg::after { content: attr(data-tag); position: absolute; left: 50%; top: 100%; transform: translate(-50%, 4px); font: 800 14px/1 var(--round); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; animation: fadeUp .35s; }
+.u5l7-sw.u5l7-tags .u5l7-nm::after { color: var(--brand); }
+.u5l7-sw.u5l7-tags .u5l7-in::after { color: #b06d08; }
+.u5l7-sw.u5l7-tags .u5l7-out::after { color: #7b4fc4; }
+.u5l7-sw .u5l7-iv, .u5l7-sw .u5l7-in { transition: color .4s; }
+.u5l7-sw.u5l7-hot .u5l7-iv, .u5l7-sw.u5l7-hot .u5l7-in { color: #c27a0e; }
+
+/* machine */
+.u5l7-mach { border: 3px solid #1c2230; border-radius: 18px; background: #eef4fb; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; }
+.u5l7-mname { font-size: 30px; line-height: 1; }
+.u5l7-mrule { font: 700 19px var(--round); color: var(--ink2); margin-top: 4px; }
+.u5l7-mio { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; }
+.u5l7-marr { width: 46px; height: 0; border-top: 3px solid #1c2230; }
+.u5l7-marr::after { content: ""; position: absolute; right: -2px; top: -9px; border: 7.5px solid transparent; border-left: 11px solid #1c2230; border-right: 0; }
+.u5l7-mchip { background: #fff; border: 2.5px solid currentColor; border-radius: 12px; padding: 1px 10px; font-size: 24px; min-width: 30px; text-align: center; }
+.u5l7-msub { font-size: 24px; }
+
+/* candle */
+.u5l7-wax { background: linear-gradient(90deg, #f3e2bf, #fff9ea 45%, #e8d2a4); border: 2px solid #c9a86a; border-bottom: 0; border-radius: 6px 6px 0 0; box-sizing: border-box; }
+.u5l7-wick { background: #3a3026; border-radius: 2px; }
+.u5l7-flame { width: 22px; height: 32px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(ellipse at 50% 72%, #fff6c8 0 22%, #ffc23a 46%, #f07a12 78%); box-shadow: 0 0 18px 6px rgba(255, 190, 60, .45); transition: opacity .3s; }
+.u5l7-plate { background: #8a94a6; border-radius: 5px; }
+.u5l7-ruler { border-right: 2px solid #9aa0ab; }
+.u5l7-rt { position: absolute; left: 0; width: 18px; text-align: right; font: 700 13px var(--round); color: #6b7280; transform: translateY(-50%); }
+.u5l7-rt::after { content: ""; position: absolute; right: -6px; top: 50%; width: 6px; border-top: 2px solid #9aa0ab; }
+
+/* pool */
+.u5l7-tank { border: 3px solid #3a4254; border-top: 0; background: #fff; box-sizing: border-box; overflow: hidden; }
+.u5l7-water { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(#8cc0f2, #3f86d8); }
+
+/* cost */
+.u5l7-ztag { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .05em; color: #c27a0e; }
+.u5l7-bar { background: #fff; border: 2px solid var(--line2); border-radius: 6px; box-sizing: border-box; overflow: hidden; }
+.u5l7-bar > div { position: absolute; top: 0; }
+.u5l7-bfix { left: 0; background: #b9bfca; }
+.u5l7-bvar { background: #e8a01e; }
+.u5l7-blab { font-size: 19px; line-height: 1.3; }
+
+/* rocket */
+.u5l7-pad { background: #5d6573; border-radius: 3px; }
+.u5l7-rocket { width: 34px; height: 60px; transform-origin: 50% 50%; }
+.u5l7-rocket svg { display: block; }
+.u5l7-link { overflow: visible; }
+
+/* the stamps used in this lesson sit on a graph: keep them small */
+.ex-stage .bk-stamp.bk-sm { font-size: 18px; }
+
+/* ---------- one screen (main.lesson.screen): the thermometer across the top, Q1–Q3 left and the big one right below it ---------- */
+.wf .u5l7-thermo { margin: 0; display: flex; justify-content: center; }
+.wf .u5l7-tsvg { width: 850px; height: auto; }
+.wf .u5l7-tctl { margin: 0 0 4px; gap: 6px; font-size: 15.5px; }
+.wf .u5l7-tctl .pill.small { margin: 0; }
+.wf .u5l7-tread { font-size: 17px; }
+.wf .u5l7-rulebox { margin: 0 auto 4px; padding: 3px 14px; font-size: 19px; }
+.wf .u5l7-wqs .q-line { margin: 6px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l7-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l7-wqs .u5l7-wqa { margin: 2px 0 0 40px; }
+.wf .u5l7-wqs .bk-ans { margin: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 4px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l7-c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .wf-side .u5l7-pa { grid-template-columns: 1fr; }

@@ -3,7 +3,7 @@ Usage: python3 tests/apply_minw.py results.json   (only explainers with status '
 import json, re, sys
 res = json.load(open(sys.argv[1])); missing = []
 for r in res:
-    lid = 'u' + r['path'].replace('/l', 'l').lstrip('u')  # u2/l5a -> u2l5a
+    lid = 'u' + r['path'].replace('/l', 'l').lstrip('u')  # u2/l4 -> u2l4
     p = 'lessons/js/lessons/%s.js' % lid
     try: s = open(p).read()
     except FileNotFoundError: missing.append((p, '*')); continue

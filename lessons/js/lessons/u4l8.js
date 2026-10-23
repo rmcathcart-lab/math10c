@@ -1,6 +1,6 @@
 /* Math 10C · Unit 4 · Lesson 8 — Unit 4 Review: Factoring (AN5). The explainers, figures and widgets.
  * A review lesson laid out like the unit test. Four compact recap explainers carry the whole unit:
- *   flow   — the Lesson 6 checklist as a flowchart that lights up the path for each expression, with the work beside it
+ *   flow   — the Lesson 7 checklist as a flowchart that lights up the path for each expression, with the work beside it
  *   tiles  — a trinomial's tiles arranged into a rectangle (zero pairs added when needed); the sides are the factors
  *   box    — decomposition and the 2 × 2 area box for ax² + bx + c, and why the pair multiplies to ac
  *   bvals  — every middle term b that lets x² + bx + c factor (the factor-pair sums of c)

@@ -1,5 +1,6 @@
-/* Math 10C · Unit 6 · Lesson 1 — Measuring the Length of a Line Segment: styles used only on this page (prefix u6l1-).
- * Colours: run / horizontal = amber, rise / vertical = purple, the segment / hypotenuse = blue. */
+/* Math 10C · Unit 6 · Lesson 1 — Length, Distance, and Midpoint of a Line Segment: styles used only on this page
+ * (prefix u6l1-). Colours: run / horizontal amber, rise / vertical purple, segments / hypotenuse blue, midpoints red. */
+:root { --u6l1-run: #c27a0e; --u6l1-rise: #7b4fc4; --u6l1-seg: #1f5bd6; }
 
 .ex-cap { min-height: 128px; }
 .ex-cap .katex { font-size: 1.04em; }
@@ -10,75 +11,71 @@
 .pill-col { display: flex; flex-direction: column; gap: 6px; }
 .lesson .katex { white-space: nowrap; }
 h2 .katex, h3 .katex { font-size: .95em; }
-
-/* ---------------- hero: Extension / Foundation box ---------------- */
-.u6l1-xf { display: flex; gap: 16px; align-items: flex-start; background: #f3f2ee; border: 2px dashed #a5a9b3; border-radius: 14px; padding: 12px 18px; margin-top: 4px; font-size: 18px; color: var(--ink2); }
-.u6l1-xf-tag { flex: none; background: #5d6475; color: #fff; font: 800 14px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 7px; margin-top: 2px; text-align: center; line-height: 1.25; }
-.u6l1-xf p { margin: 0 0 6px; }
-.u6l1-xf p:last-child { margin-bottom: 0; }
-.u6l1-rf { display: inline-block; background: var(--brand); color: #fff; border-radius: 6px; padding: 0 7px; font-size: 14px; font-weight: 800; margin-right: 4px; }
+.u6l1-crun, .u6l1-ca { color: var(--u6l1-run); }
+.u6l1-crise, .u6l1-cp { color: var(--u6l1-rise); }
+.u6l1-cb { color: var(--u6l1-seg); }
+.u6l1-cr { color: var(--red); }
+.u6l1-cg { color: var(--ok); }
 
 /* ---------------- warm-up ---------------- */
-.u6l1-wfig { position: relative; width: 100%; height: 400px; border-radius: 14px; background: #fbfaf7; border: 1px solid var(--line2); overflow: hidden; }
-.u6l1-wfig > svg { position: absolute; left: 0; top: 0; }
-.u6l1-wview { transition: opacity .45s; }
-.u6l1-wbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 6px; }
-.u6l1-wt { font: 700 17px var(--round); fill: #1e2d46; }
-.u6l1-wt-b { font: 800 19px var(--round); fill: #1e2d46; }
-.u6l1-wt-r { font: 800 18px var(--round); fill: #c93a33; }
-.u6l1-wt-s { font: 600 15px var(--round); fill: #5b6475; }
-.u6l1-wt-a { font: 800 20px var(--round); fill: #c27a0e; }
-.u6l1-wt-p { font: 800 20px var(--round); fill: #7b4fc4; }
-.u6l1-wt-blue { font: 800 21px var(--round); fill: #1f5bd6; }
-.u6l1-wqs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 8px; }
-.u6l1-wqs .bk-wq { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 4px 12px 10px; }
-.u6l1-wa { margin: 4px 0 0 0; }
+.u6l1-wtop { display: grid; grid-template-columns: 560px 1fr; gap: 22px; align-items: start; }
+.u6l1-wfig { display: flex; flex-direction: column; gap: 10px; }
+.u6l1-wbtns { display: flex; gap: 8px; flex-wrap: wrap; }
+.u6l1-wqs .q-line { margin-top: 6px; }
+.u6l1-wa { margin: 0 0 8px 50px; }
+.u6l1-wa .pill.small { margin-left: 0; }
+.u6l1-poll4 .poll-opts { grid-template-columns: repeat(4, 1fr); }
 .u6l1-early { margin-top: 14px; }
 .u6l1-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u6l1-hlab { font: 800 22px var(--round); color: var(--ink); background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
+.u6l1-edgelab { font: 800 17px var(--round); color: var(--brand2); background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
 
-/* ---------------- static figures ---------------- */
+/* ---------------- section cards and static figures ---------------- */
+.u6l1-trio { grid-template-columns: 1.15fr 1fr 1fr; }
+.u6l1-vdef { border-left-color: #7b4fc4; background: #f3effb; }
 .u6l1-exrow { display: grid; grid-template-columns: 410px 1fr; gap: 20px; align-items: start; margin-bottom: 14px; }
 .u6l1-exrow .parts { margin-bottom: 0; }
 .u6l1-thm { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: center; background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 8px 18px; margin: 0 0 16px; font-size: 20px; }
 .u6l1-thm-eq { font-size: 26px; text-align: center; margin: 8px 0; }
-.u6l1-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 16px; }
-.u6l1-trio > div { border-radius: 12px; padding: 10px 14px; font-size: 18px; background: #fff; border: 2px solid var(--line2); }
-.u6l1-trio b.u6l1-h { color: var(--amber); }
-.u6l1-trio b.u6l1-v { color: #7b4fc4; }
-.u6l1-trio b.u6l1-d { color: #1f5bd6; }
-.u6l1-ansfig { margin-top: 8px; }
-.u6l1-abs { font-size: 24px; }
+.u6l1-trio .u6l1-thm-eq { font-size: 24px; margin: 6px 0 0; }
+.u6l1-formula { font-size: 20px; }
+.u6l1-disp { text-align: center; font-size: 26px; margin: 8px 0 6px; }
+.u6l1-s4row { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: center; margin-bottom: 8px; }
+.u6l1-s4row .def { margin: 0; }
+.u6l1-svgt { font: italic 700 24px "KaTeX_Math", Georgia, serif; fill: var(--ink); }
+.u6l1-svgm { fill: var(--red); }
+.u6l1-gridq { margin: 6px 0 4px; display: flex; justify-content: center; }
+.u6l1-ansfig { display: flex; justify-content: center; margin: 4px 0 8px; }
 
-/* ---------------- explainer pieces ---------------- */
+/* Example 7: the coffee-stained notes */
+.u6l1-notes { display: flex; gap: 26px; justify-content: center; margin: 4px 0 16px; font-size: 26px; }
+.u6l1-note { background: #fffdf4; border: 1px solid #e6dcc0; border-radius: 10px; padding: 6px 18px; box-shadow: 0 2px 6px rgba(0, 0, 0, .06); }
+.u6l1-blot { display: inline-block; position: relative; padding: 0 8px; border-radius: 50% 42% 55% 45%; background: radial-gradient(circle at 40% 45%, #8a5a2b 0 45%, #a8743f 60%, rgba(168, 116, 63, .55) 75%, transparent 77%); color: #fff; }
+.u6l1-blot2 { border-radius: 45% 55% 40% 60%; }
+
+/* ---------------- explainers ---------------- */
 .u6l1-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
 .u6l1-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u6l1-ph:empty { display: none; }
+.u6l1-ph .katex { text-transform: none; font-size: 1.25em; }
 .u6l1-line { font-size: 21px; line-height: 1.35; }
-.u6l1-sm { font-size: 19px; }
-.u6l1-big { font-size: 26px; }
-.u6l1-ca { color: var(--amber); }
-.u6l1-cp { color: #7b4fc4; }
-.u6l1-cb { color: #1f5bd6; }
-.u6l1-cr { color: var(--red); }
-.u6l1-cg { color: var(--ok); }
+.u6l1-big { font-size: 25px; font-weight: 700; }
+.u6l1-sm { font-size: 18px; }
+.u6l1-note { font-size: 18px; color: var(--ink2); }
+.u6l1-mute { color: var(--muted); font-size: 19px; }
+.u6l1-trun { color: var(--u6l1-run); }
+.u6l1-trise { color: var(--u6l1-rise); }
+.u6l1-boxed { align-self: center; margin-top: 8px; font-size: 23px; border: 3px solid var(--brand2); border-radius: 12px; padding: 6px 14px; background: var(--brand-soft); }
+.u6l1-nlh { font-size: 18px; margin-top: 2px; }
 .u6l1-rule { margin-top: auto; background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 8px 14px; font-size: 22px; line-height: 1.4; }
 .u6l1-hopn { font: 800 15px var(--round); }
-.u6l1-seglab { font: 800 20px var(--round); background: #fff; border-radius: 8px; padding: 0 6px; }
 .u6l1-pill { font: 800 17px var(--round); background: #fff; border: 2px solid currentColor; border-radius: 9px; padding: 0 6px; }
 .u6l1-sqlab { font-size: 22px; font-weight: 700; background: rgba(255, 255, 255, .82); border-radius: 8px; padding: 0 6px; }
 
-/* count table (countH / countV) */
+/* count table (lengths) */
 .u6l1-ct { display: grid; grid-template-columns: 58px 74px 1fr; gap: 4px 10px; align-items: baseline; font-size: 21px; }
 .u6l1-ct .u6l1-cth { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .u6l1-ct .u6l1-ctn { font-weight: 800; }
-
-/* readouts for the letters explainer */
-.u6l1-ro { display: flex; gap: 10px; }
-.u6l1-ro > div { flex: 1; font-size: 26px; background: #f6f5f1; border-radius: 12px; padding: 4px 12px; text-align: center; }
-.u6l1-ro b { font-family: var(--round); }
-
-/* whyAbs */
-.u6l1-absbig { font-size: 46px; text-align: center; }
-.u6l1-minus { display: inline-block; color: var(--red); }
 
 /* simplify tiles */
 .u6l1-tile { position: absolute; width: 84px; height: 84px; border-radius: 12px; background: #fff; border: 2px solid var(--line2); display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; transition: background .25s, border-color .25s, opacity .25s; }
@@ -90,40 +87,49 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u6l1-tq { position: absolute; width: 84px; text-align: center; font-size: 17px; line-height: 1.3; }
 .u6l1-steq { position: absolute; font-size: 30px; }
 
-/* pythagoras proof */
-.u6l1-pf-lab { font-size: 22px; font-weight: 700; }
-.ex-stage .bk-hoplab { font-size: 22px; font-weight: 700; }
+/* leg labels, count bubbles, flying labels and slots */
+.u6l1-legl { font: 800 20px var(--round); background: #fff; border: 2.5px solid currentColor; border-radius: 11px; padding: 0 8px; }
+.u6l1-lrun { color: var(--u6l1-run); }
+.u6l1-lrise { color: var(--u6l1-rise); }
+.u6l1-lhyp { color: var(--u6l1-seg); }
+.u6l1-tick { font: 800 14px var(--round); color: #fff; width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; padding: 0; }
+.u6l1-tick-r { background: var(--u6l1-run); }
+.u6l1-tick-u { background: var(--u6l1-rise); }
+.u6l1-fly { position: absolute; z-index: 20; font: 800 20px var(--round); background: #fff; border: 2.5px solid currentColor; border-radius: 11px; padding: 0 8px; white-space: nowrap; box-shadow: 0 6px 16px rgba(0, 0, 0, .18); }
+.u6l1-fline { font-size: 23px; }
+.u6l1-slot { display: inline-block; border: 2px dashed #b8b2a4; border-radius: 8px; padding: 0 4px; margin: 0 2px; transition: border-color .3s; }
+.u6l1-slot > .katex { opacity: 0; transition: opacity .3s; }
+.u6l1-slot.u6l1-filled { border-color: transparent; }
+.u6l1-slot.u6l1-filled > .katex { opacity: 1; }
+.u6l1-srun { color: var(--u6l1-run); }
+.u6l1-srise { color: var(--u6l1-rise); }
+.u6l1-axl { font-size: 22px; font-weight: 700; background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 4px; }
+.u6l1-hl { font: 800 19px var(--round); }
+.u6l1-mapl { font: 700 italic 16px var(--font); color: #5f7f56; }
+.u6l1-mapr { color: #3f7fb3; }
 
-/* ---------- one screen (main.lesson.screen): the room left; the setup and the buttons right; Q1–Q3 in a row, then
-   the big one ---------- */
-.wf .wf-head { margin-bottom: 8px; }
-.wf .u6l1-wfig { height: 270px; }
-.wf .wf-side .wf-rule { margin: 0 0 10px; font-size: 17px; line-height: 1.4; }
-.wf .u6l1-wt { font-size: 19px; }
-.wf .u6l1-wt-b { font-size: 21px; }
-.wf .u6l1-wt-s { font-size: 17px; }
-.wf .u6l1-wbtns { flex-direction: column; align-items: stretch; gap: 6px; margin: 0; }
-.wf .u6l1-wbtns .pill { font-size: 15px; padding: 7px 12px; }
-.wf .u6l1-wqs { gap: 10px; margin-top: 10px; }
-.wf .u6l1-wqs .bk-wq { padding: 0 10px 6px; }
-.wf .u6l1-wqs .q-line { font-size: 17px; margin: 8px 0 2px; gap: 9px; }
+/* Example 7 explainer note */
+.u6l1-pnote { display: flex; gap: 18px; justify-content: center; font-size: 22px; background: #fffdf4; border: 1px solid #e6dcc0; border-radius: 10px; padding: 6px 10px; }
+.u6l1-pnote .u6l1-blot { font-weight: normal; transition: background .4s; }
+.u6l1-blot.u6l1-wiped { background: #ffe9a8; color: var(--red); border-radius: 8px; }
+.u6l1-wbody { transform-box: fill-box; transform-origin: 50% 100%; }
+.u6l1-wdot, .u6l1-tower { transform-box: fill-box; transform-origin: center; }
+
+/* ---------- one screen (main.lesson.screen): the map + buttons left; Q1–Q3 and the big one right ---------- */
+.wf .u6l1-wfig { gap: 8px; margin-top: 4px; }
+.wf .u6l1-wbtns { gap: 6px; flex-wrap: nowrap; }
+.wf .u6l1-wbtns .pill { font-size: 14.5px; padding: 6px 11px; white-space: nowrap; }
+.wf .u6l1-wqs .q-line { font-size: 17px; margin: 6px 0 2px; gap: 10px; }
 .wf .u6l1-wqs .q-line .pill.small { padding: 2px 10px; }
+.wf .u6l1-wa { margin: 0 0 6px 40px; }
 .wf .u6l1-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-top: 2px; }
-.wf .wf-poll { margin-top: 10px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; padding: 2px 16px 12px; }
-.wf .wf-poll > .q-line, .wf .wf-poll > .poll-ans { grid-column: 1 / -1; }
-.wf .wf-poll > .q-line { margin: 10px 0 8px; }
-.wf .wf-poll .poll-opts { grid-template-columns: repeat(3, 1fr); margin: 0 0 0 34px; gap: 8px; }
-.wf .wf-poll .opt { padding: 5px 12px; }
-.wf .wf-poll > .pill { margin: 0; }
+.wf .wf-poll { margin-top: 8px; padding: 2px 14px 12px; }
+.wf .wf-poll > .q-line { font-size: 17px; margin: 8px 0 8px; }
+.wf .u6l1-poll4 .poll-opts { grid-template-columns: repeat(4, auto); justify-content: start; gap: 6px; margin: 0 0 8px; }
+.wf .wf-poll .opt { padding: 5px 10px; font-size: 16.5px; }
 .wf-poll:not(.revealed) .poll-ans { display: none; }
-.wf .u6l1-early { margin-top: 14px; }
-.wf .u6l1-wfig { height: 262px; }
-.wf .wf-poll > .q-line { font-size: 17px; margin: 8px 0 6px; }
-.wf .u6l1-wqs .bk-ans { line-height: 1.28; }
-.wf .wf-poll > .q-line { font-size: 16.5px; }
-.wf .wf-side .wf-rule { font-size: 16.5px; line-height: 1.36; margin-bottom: 8px; }
-.wf .u6l1-wbtns .pill { padding: 5px 12px; }
-.wf .u6l1-wfig { height: 272px; }
-/* Q1–Q3 and the big one are full-width rows of the grid (so the first screen ends with the grid) */
-.wf .wf-grid { row-gap: 10px; }
-.wf .wf-grid > .u6l1-wqs, .wf .wf-grid > .wf-poll { grid-column: 1 / -1; margin-top: 0; }
+.wf .wf-poll { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; align-items: center; }
+.wf .wf-poll > .q-line, .wf .wf-poll > .poll-ans { grid-column: 1 / -1; }
+.wf .u6l1-poll4 .poll-opts { margin: 0; }
+.wf .wf-poll > .pill { margin: 0; padding: 6px 14px; }
+.wf .wf-poll .opt { white-space: nowrap; padding: 5px 8px; }

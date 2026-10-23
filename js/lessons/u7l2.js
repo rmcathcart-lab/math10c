@@ -1122,7 +1122,7 @@
           }, function (o) { return o.ok && o.u !== 0 && o.v !== 0; });
         },
         parts: [
-          { id: 'e16a', sub: 'a', level: 'BEG', outcome: 'EXT', make: function (r, sh) {
+          { id: 'e16a', sub: 'a', level: 'BEG', outcome: 'RF7', make: function (r, sh) {
             var A = sh.A, Bp = sh.B, M = sh.M;
             return ptPart('Determine the midpoint ' + t('M') + ' of ' + t('AB') + '.', M,
               [[[sh.u, sh.v], 'u72-mid', 'Add the coordinates (don’t subtract): ' + t('M=\\left(\\frac{x_1+x_2}{2},\\ \\frac{y_1+y_2}{2}\\right)') + '.'], [[A[0] + Bp[0], A[1] + Bp[1]], 'u72-mid', 'Divide each sum by ' + t('2') + '.'], [[M[1], M[0]], 'pairs-flip', 'Your coordinates are in the wrong order: ' + t('x') + ' first.']],
@@ -1166,7 +1166,7 @@
             return numPart('The perpendicular bisector has equation ' + t(SI(m, b)) + '. Verify it: substitute ' + t('x=' + M[0]) + ' (the ' + t('x') + '-coordinate of the midpoint ' + t('M') + ') into it. What ' + t('y') + '-value does it give?', M[1], [[M[0], 'u72-pt-swap', 'That’s the ' + t('x') + '-value you substituted. Work out ' + t(SI(m, b)) + ' at ' + t('x=' + M[0]) + '.']],
               t('y=' + nT(m) + '\\left(' + M[0] + '\\right)+' + pT(b) + '=' + nT(fMul(m, M[0])) + '+' + pT(b) + '=' + M[1]) + ' ✓ — so ' + t('M' + ptT(M[0], M[1])) + ' is on the line.', ['Substitute ' + t('x=' + M[0]) + ' into ' + t(SI(m, b)) + ' and simplify.'], 'verify M on the bisector', { before: t('y=') });
           } },
-          { id: 'e16f', sub: 'f', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
+          { id: 'e16f', sub: 'f', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             var P = sh.P, A = sh.A, Bp = sh.B, N = Math.pow(P[0] - A[0], 2) + Math.pow(P[1] - A[1], 2), k = 1;
             for (var s = Math.floor(Math.sqrt(N)); s > 1; s--) if (N % (s * s) === 0) { k = s; break; }
             var spec = { k: k, n: 2, m: N / (k * k) }, rt = K.radTex(spec), eqR = k > 1 ? '=' + rt : '';
@@ -1179,7 +1179,7 @@
             p.bad = [[String(N), String(N)]].concat(spec.k > 1 ? [['\\sqrt{' + N + '}', rt]] : []);
             return p;
           } },
-          { id: 'e16g', sub: 'g', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
+          { id: 'e16g', sub: 'g', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             return mc(r, 'The point ' + t('P' + ptT(sh.P[0], sh.P[1])) + ' on the perpendicular bisector has ' + t('PA=PB') + '. That is a property every point of a perpendicular bisector has. Which sentence states it?', [
               { html: 'Every point on the perpendicular bisector of a segment is the same distance from the two endpoints of the segment.', right: true },
               { html: 'Every point on the perpendicular bisector is the midpoint of the segment.', why: 'Only one point — ' + t('M') + ' — is the midpoint. ' + t('P') + ' isn’t, yet ' + t('PA=PB') + '.' },

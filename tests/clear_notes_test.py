@@ -17,7 +17,7 @@ async def main():
         await ctx.add_init_script("""if (!sessionStorage.getItem('seeded')) { sessionStorage.setItem('seeded', '1');
           localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','settings');
           localStorage.setItem('ink:api', JSON.stringify('%s')); localStorage.setItem('ink:teacher', JSON.stringify('TEST01'));
-          localStorage.setItem('ink:u1l1:B', '{"v":1,"s":[]}'); localStorage.setItem('ink:u4l2', '{"v":1,"s":[]}'); localStorage.setItem('inkq:u1l1:B', '[]');
+          localStorage.setItem('ink:u1l1:B', '{"v":1,"s":[]}'); localStorage.setItem('ink:u4l3', '{"v":1,"s":[]}'); localStorage.setItem('inkq:u1l1:B', '[]');
           localStorage.setItem('ink:settings', '{"tool":"pen"}'); localStorage.setItem('ink:slots', '{}'); }""" % INK)
         pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))

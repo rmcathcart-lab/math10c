@@ -31,7 +31,7 @@ async def main():
         print(await a.evaluate("""() => { const def = { title: 'Exit slip 2.1', kind: 'exit', items: [{ l: 'u2l1', i: '1a' }, { l: 'u2l1', i: '2a' }] };
           HW.TestMode.loadResults = () => Promise.resolve([{ id: 'X1', kind: 'exit', title: 'Exit slip 2.1', def, marks: 'cc', launched: Date.now() }]);
           return JSON.stringify(HW.TestCore.summary(def, 'cc').levels); }"""))
-        print('AN2 levels:', await a.evaluate(FILL, ['u1l3', 10]))
+        print('AN2 levels:', await a.evaluate(FILL, ['u1l4', 10]))
         await a.evaluate("location.hash = '#/x'; location.hash = '#/'"); await a.wait_for_selector('.medal-pop', timeout=20000)
         m = await medals(a); print('now:', m)
         t = await a.inner_text('.medal-pop'); print('pop-up:', ' | '.join(t.split('\n')[:6]))

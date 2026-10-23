@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Difference of Squares · Math 10C 4.3</title>
-<meta name="description" content="Math 10C Unit 4 Lesson 3: factoring a difference of squares, A² − B² = (A − B)(A + B), as the zero-middle case of x² + bx + c; the cut-and-move picture; perfect-square checks; GCF first; why a sum of squares never factors; mental math and area applications. Write on it with an Apple Pencil.">
+<title>Factoring x² + bx + c · Math 10C 4.3</title>
+<meta name="description" content="Math 10C Unit 4 Lesson 3: factoring trinomials of the form x² + bx + c. Algebra tiles arranged into rectangles (with negative tiles and zero pairs), the sum–product rule, the signs table, common factors first, two-variable trinomials, and checking by expanding. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,271 +27,415 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 4 Factoring · Lesson 3</div>
-  <h1>Difference of Squares</h1>
-  <p class="lede">Take a square, cut a smaller square out of its corner, and the leftover L-shape slides together into a rectangle. That one picture is today’s whole lesson: <span class="tex">A^2-B^2=(A-B)(A+B)</span>. It is the trinomial <span class="tex">x^2+bx+c</span> with a middle coefficient of <span class="tex">0</span>, and it turns <span class="tex">58\times62</span> into mental math.</p>
+  <h1>Factoring Trinomials of the Form <span class="tex">x^2+bx+c</span></h1>
+  <p class="lede">In Unit 3, multiplying two binomials built a rectangle of algebra tiles. Today we run that picture <b>backwards</b>: arrange the tiles into a rectangle and read the factors off its sides. Then a shortcut that needs no tiles at all: two integers whose <b>product is <span class="tex">c</span></b> and whose <b>sum is <span class="tex">b</span></b>.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>explain why <span class="tex">x^2-k^2</span> factors as <span class="tex">(x-k)(x+k)</span>: the sum–product pair is <span class="tex">k</span> and <span class="tex">-k</span>, and the middle terms cancel</li>
-      <li>recognize a difference of squares: <b>both</b> terms perfect squares (square coefficients, even exponents) with a <b>minus</b> between them</li>
-      <li>factor <span class="tex">A^2-B^2</span> when <span class="tex">A</span> and <span class="tex">B</span> are numbers, variables or monomials, and check by expanding</li>
-      <li>remove a <b>greatest common factor first</b>, and explain why a <b>sum</b> of squares never factors</li>
-      <li>use the pattern for mental math and for area problems</li>
+      <li>model <span class="tex">x^2+bx+c</span> with algebra tiles and arrange the tiles into a rectangle, adding <b>zero pairs</b> when needed</li>
+      <li>explain why the two numbers in <span class="tex">(x+p)(x+q)</span> must <b>multiply to <span class="tex">c</span></b> and <b>add to <span class="tex">b</span></b></li>
+      <li>use the signs of <span class="tex">b</span> and <span class="tex">c</span> to decide the signs of the two integers</li>
+      <li>factor <span class="tex">x^2+bx+c</span> by inspection, taking out a <b>common factor first</b>, and recognize a trinomial that can’t be factored</li>
+      <li>factor <span class="tex">x^2+bxy+cy^2</span>, and check any factoring by <b>expanding</b></li>
     </ul>
   </div>
   <div class="outcome"><b>AN5</b> Demonstrate an understanding of common factors and trinomial factoring, concretely, pictorially and symbolically.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Square Differences" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Square Differences</h2>
-  <p class="wf-rule">Square minus square: <span class="tex">16-9=7</span>. Which numbers can you make? <span class="muted">(Whole numbers only: <span class="tex">0^2</span> counts.)</span></p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Census Taker’s Riddle" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Census Taker’s Riddle</h2>
+  <p class="wf-rule">A census taker knocks on a door. The parent answers only in clues…</p></div>
   <div class="wf-grid"><div class="wf-main">
-
-  <div class="u4l3-wu">
-    <div class="u4l3-wtiles">
-      <div class="u4l3-wt-stage" id="wu-tiles"></div>
-      <div class="u4l3-wt-ctl no-ink">
-        <button class="pill small" type="button" id="wu-lift">Lift out the 4 × 4</button>
-        <button class="pill small" type="button" id="wu-move">Cut and move</button>
-        <button class="pill small" type="button" id="wu-reset" aria-label="Start the tile picture over">↺</button>
-      </div>
-      <div class="u4l3-sqstrip"><span class="u4l3-sqh">Squares:</span><span>0</span><span>1</span><span>4</span><span>9</span><span>16</span><span>25</span><span>36</span><span>49</span><span>64</span><span class="u4l3-dots">…</span></div>
+  <div class="u4l3-wtop">
+    <div class="u4l3-house">
+      <svg viewBox="0 0 400 300" aria-label="A house with a hidden house number, a parent at the door and a census taker on the path">
+        <rect x="40" y="130" width="210" height="140" fill="#d6785a" stroke="#1e2d46" stroke-width="2.5"/>
+        <polygon points="24,131 145,48 266,131" fill="#6e5046" stroke="#1e2d46" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="113" y="86" width="64" height="32" rx="5" fill="#fff" stroke="#1e2d46" stroke-width="2.2"/>
+        <text x="145" y="111" class="u4l3-plate" id="wu-plate">??</text>
+        <rect x="60" y="160" width="52" height="46" fill="#e8f0fc" stroke="#1e2d46" stroke-width="2"/>
+        <path d="M86 160V206M60 183H112" stroke="#1e2d46" stroke-width="1.6"/>
+        <rect x="150" y="166" width="58" height="104" fill="#a8857a" stroke="#1e2d46" stroke-width="2"/>
+        <circle cx="198" cy="222" r="3.5" fill="#c88c14"/>
+        <path d="M6 270H394" stroke="#1e2d46" stroke-width="3"/>
+        <!-- parent -->
+        <g stroke="#1e2d46" stroke-linecap="round">
+          <path d="M168 270L179 233L190 270" stroke-width="4" fill="none"/>
+          <rect x="166" y="194" width="26" height="44" rx="5" fill="#e79a8f" stroke-width="2"/>
+          <path d="M166 199L155 228M192 199L203 228" stroke-width="4"/>
+          <circle cx="179" cy="178" r="14" fill="#fbe6b8" stroke-width="2"/>
+        </g>
+        <circle cx="174" cy="176" r="1.8" fill="#1e2d46"/><circle cx="184" cy="176" r="1.8" fill="#1e2d46"/>
+        <path d="M173 183Q179 188 185 183" stroke="#1e2d46" stroke-width="1.6" fill="none"/>
+        <!-- census taker -->
+        <g stroke="#1e2d46" stroke-linecap="round">
+          <path d="M318 270L329 233L340 270" stroke-width="4" fill="none"/>
+          <rect x="316" y="194" width="26" height="44" rx="5" fill="#b9c9e6" stroke-width="2"/>
+          <path d="M316 199L305 228M342 199L353 224" stroke-width="4"/>
+          <circle cx="329" cy="178" r="14" fill="#fbe6b8" stroke-width="2"/>
+        </g>
+        <circle cx="324" cy="176" r="1.8" fill="#1e2d46"/><circle cx="334" cy="176" r="1.8" fill="#1e2d46"/>
+        <path d="M323 184Q329 181 335 184" stroke="#1e2d46" stroke-width="1.6" fill="none"/>
+        <rect x="350" y="205" width="22" height="28" rx="2" fill="#fff" stroke="#1e2d46" stroke-width="1.6" transform="rotate(-12 361 219)"/>
+        <path d="M354 214L366 211M355 220L367 217M356 226L364 224" stroke="#1e2d46" stroke-width="1.2"/>
+        <text x="179" y="292" text-anchor="middle" font-weight="800" font-size="15" fill="#1e2d46">Parent</text>
+        <text x="329" y="292" text-anchor="middle" font-weight="800" font-size="15" fill="#1e2d46">Census taker</text>
+      </svg>
     </div>
-    <div class="u4l3-wright">
-      <div class="wq">
-        <div class="q-line"><div class="q-num">1</div><div>A 6 by 6 square has a 4 by 4 corner lifted out. <span class="tex">6^2-4^2=\,?</span> How many tiles are left?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">36-16=\boldsymbol{20}</span> tiles. Tap <b>Cut and move</b>: they make a 2 by 10 rectangle.</div></div>
-      </div>
+    <div class="u4l3-clues">
+      <div class="u4l3-clue"><div class="q-num">1</div><div>“The <b>product</b> of my three kids’ ages (in whole years) is <b>36</b>.”</div></div>
+      <div class="u4l3-clue"><div class="q-num">2</div><div>“The <b>sum</b> of their ages is our <b>house number</b>.”</div></div>
+      <div class="u4l3-said">…Still not enough!</div>
+      <div class="u4l3-clue"><div class="q-num">3</div><div>“My <b>oldest</b> kid plays piano.” <small>(older than both of the others)</small></div></div>
+      <div class="u4l3-said">Got it!</div>
     </div>
   </div>
-  <div class="wq u4l3-wq2">
-        <div class="q-line"><div class="q-num">2</div><div><b>Which cards can you make?</b> Which seem impossible? <span class="muted">Tap a card. Three are done for you.</span></div></div>
-        <div class="u4l3-cards" id="wu-cards"></div>
-        <div class="u4l3-cards-ctl no-ink"><button class="pill small" type="button" id="wu-cards-all">Show all</button><button class="pill small" type="button" id="wu-cards-odd">Odds vs evens</button></div>
-        <div class="u4l3-cards-note" id="wu-cards-note"></div>
+
+  <div class="u4l3-wmid">
+    <div class="u4l3-pairs">
+      <div class="u4l3-ph">Warm-up: just <em>two</em> numbers for now · pairs that multiply to 36</div>
+      <div class="u4l3-pcs">
+        <button type="button" class="u4l3-pc" data-a="1" data-b="36"><span class="pq">?</span><span class="pp">1 × 36</span><small>sum 37</small></button>
+        <button type="button" class="u4l3-pc" data-a="2" data-b="18"><span class="pq">?</span><span class="pp">2 × 18</span><small>sum 20</small></button>
+        <button type="button" class="u4l3-pc" data-a="3" data-b="12"><span class="pq">?</span><span class="pp">3 × 12</span><small>sum 15</small></button>
+        <button type="button" class="u4l3-pc" data-a="4" data-b="9"><span class="pq">?</span><span class="pp">4 × 9</span><small>sum 13</small></button>
+        <button type="button" class="u4l3-pc" data-a="6" data-b="6"><span class="pq">?</span><span class="pp">6 × 6</span><small>sum 12</small></button>
       </div>
+      <div class="u4l3-tip">Tap a card to show the pair; tap again for its sum.</div>
+    </div>
+    <div class="u4l3-wqs">
+      <div class="wq"><div class="q-line"><div class="q-num">1</div><div>Find <b>every</b> pair of whole numbers that <b>multiply</b> to 36.</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq="q1">Answer</button><div class="q-ans"><span class="tex">1\times36,\ 2\times18,\ 3\times12,\ 4\times9,\ 6\times6</span>: <b>five pairs</b>.</div></div></div>
+      <div class="wq"><div class="q-line"><div class="q-num">2</div><div>Which pair has the smallest <b>sum</b>?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq="q2">Answer</button><div class="q-ans"><b>6 and 6</b>: sum 12. (The sums are 37, 20, 15, 13, 12.)</div></div></div>
+    </div>
+  </div>
 
   </div><div class="wf-side">
 
-  <div class="wq u4l3-wq-wide">
-    <div class="q-line"><div class="q-num">3</div><div><b>Neighbours:</b> <span class="tex">5^2-4^2</span>, &nbsp;<span class="tex">10^2-9^2</span>, &nbsp;<span class="tex">50^2-49^2</span>. Spot the shortcut?</div></div>
-    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>9, 19, 99.</b> Neighbours always give their <b>sum</b>: <span class="tex">50^2-49^2=50+49</span>. So every odd number can be made.</div></div>
+  <div class="wq-side">
+      <div class="wq"><div class="q-line"><div class="q-num">3</div><div>Product 36 <b>and</b> sum 13: which pair? Could any other pair do that?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq="q3">Answer</button><div class="q-ans"><b>4 and 9</b>, and no other: every pair has a different sum. Product <b>and</b> sum together pin down the pair.</div></div></div>
   </div>
 
-
   <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> It’s <b>2026</b>. Can <em>this year</em> be written as a difference of two whole-number squares? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> Yes: <span class="tex">1013^2-1012^2</span></div>
-      <div class="opt"><b>B</b> Yes: <span class="tex">507^2-505^2</span></div>
-      <div class="opt right"><b>C</b> No, it’s impossible</div>
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The census taker knows the house number, yet clue 2 wasn’t enough. Clue 3 cracked it. How old are the kids? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 6, 6, 1</div>
+      <div class="opt right"><b>B</b> 9, 2, 2</div>
+      <div class="opt"><b>C</b> 4, 3, 3</div>
+      <div class="opt"><b>D</b> 9, 4, 1</div>
     </div>
     <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C, 2026 is impossible.</b> <span class="tex">a^2-b^2=(a-b)(a+b)</span>, and the two brackets differ by <span class="tex">2b</span>, so they are both odd or both even. Both odd: the product is odd. Both even: it’s a multiple of 4. But <span class="tex">2026=2\times1013</span> is even and <span class="tex">2026\div4=506.5</span>. No luck either way.<br>
-      <span class="muted"><b>A</b> is the neighbour shortcut: <span class="tex">1013+1012=2025</span>, one short. <b>B</b> is <span class="tex">(2)(1012)=2024</span>, two short. 2024, 2025 and 2027 (<span class="tex">1014^2-1013^2</span>) all work, but this year doesn’t!</span></div>
+    <div class="poll-ans"><b>B: the kids are 9, 2 and 2.</b> Only one sum appears twice: <b>13</b> (1, 6, 6 and 2, 2, 9). The census taker could see the house number, 13, and was still stuck. “My <b>oldest</b>” rules out 1, 6, 6, where two kids tie for oldest.<br>
+      <span class="muted"><b>A</b> is the other sum-13 trio, but it has no single oldest. <b>C</b> and <b>D</b> multiply to 36, but their sums (10 and 14) are unique, so clue 2 alone would have been enough.</span><br>
+      <b>Today’s lesson:</b> a <b>product</b> and a <b>sum</b> together pin down a pair. <span class="tex">x^2+13x+36=(x+4)(x+9)</span>, because 4 and 9 multiply to 36 and add to 13.</div>
   </div>
   </div></div>
 
-  <div class="wq u4l3-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> 2024 can be written as a difference of two squares in four different ways. Find the one with the smallest numbers. <span class="muted">Or: work out <span class="tex">99^2-1</span> in your head.</span></div></div>
-    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">\boldsymbol{45^2-1^2}=2025-1</span>. The others are <span class="tex">57^2-35^2</span>, <span class="tex">255^2-251^2</span> and <span class="tex">507^2-505^2</span>. &nbsp;And <span class="tex">99^2-1=(99-1)(99+1)=98\times100=\boldsymbol{9\,800}</span>.</div></div>
+    <div class="u4l3-trbox">
+      <div class="u4l3-ph">Every trio of ages with product 36 <span class="muted">(tap a card to open it)</span></div>
+      <div class="u4l3-trios">
+        <button type="button" class="u4l3-tr"><span class="tq">?</span><span class="tt">1, 1, 36</span><small>sum 38</small></button>
+        <button type="button" class="u4l3-tr"><span class="tq">?</span><span class="tt">1, 2, 18</span><small>sum 21</small></button>
+        <button type="button" class="u4l3-tr"><span class="tq">?</span><span class="tt">1, 3, 12</span><small>sum 16</small></button>
+        <button type="button" class="u4l3-tr"><span class="tq">?</span><span class="tt">1, 4, 9</span><small>sum 14</small></button>
+        <button type="button" class="u4l3-tr dup out"><span class="tq">?</span><span class="tt">1, 6, 6</span><small>sum 13</small></button>
+        <button type="button" class="u4l3-tr dup win"><span class="tq">?</span><span class="tt">2, 2, 9</span><small>sum 13</small></button>
+        <button type="button" class="u4l3-tr"><span class="tq">?</span><span class="tt">2, 3, 6</span><small>sum 11</small></button>
+        <button type="button" class="u4l3-tr"><span class="tq">?</span><span class="tt">3, 3, 4</span><small>sum 10</small></button>
+      </div>
+      <div class="u4l3-trctl"><button type="button" class="pill small" data-tr="all">Show all 8</button><button type="button" class="pill small" data-tr="sums">Show the sums</button><button type="button" class="pill small" data-tr="clue">Use clue 3</button><span class="muted">Which sum would leave the census taker stuck?</span></div>
+    </div>
+
+  <div class="wq" style="margin-top:14px">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Same riddle, but the product of the ages is <b>72</b>. How old are the kids?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wqx>Answer</button><div class="q-ans">The stuck sum is <b>14</b>: 2, 6, 6 or 3, 3, 8. “My oldest” rules out 2, 6, 6, so the ages are <b>3, 3 and 8</b>.</div></div>
   </div>
+  <p class="u4l3-social">With a neighbour: list every trio of ages with product 36. Why was clue 2 not enough?</p>
 </section>
 
-<!-- ================= 1. Where the pattern comes from ================= -->
-<section class="card" data-ink="s1" data-section="1. Where the Pattern Comes From">
-  <div class="sec-h"><span class="badge">1</span><h2>Where the Pattern Comes From</h2></div>
-  <p>A <b>difference of squares</b> such as <span class="tex">x^2-49</span> is the case of <span class="tex">x^2+bx+c</span> whose <b>middle coefficient is 0</b>, with <span class="tex">c</span> the negative of a perfect square. By the sum–product method we need two integers with <b>sum 0</b> and <b>product −49</b>. Only <span class="tex">7</span> and <span class="tex">-7</span> work:</p>
-  <div class="u4l3-big tex display">x^2-49=x^2+7x-7x-49=(x+7)(x-7)</div>
-  <div class="explainer" data-explainer="zeroMiddle"></div>
+<!-- ================= 1. Why algebra tiles work ================= -->
+<section class="card" data-ink="s1" data-section="1. Why Algebra Tiles Work">
+  <div class="sec-h"><span class="badge">1</span><h2>Why Algebra Tiles Work</h2></div>
+  <p>With <b>algebra tiles</b>, an <span class="tex">x^2</span>-tile is a square of side <span class="tex">x</span>, an <span class="tex">x</span>-tile is a <span class="tex">1\times x</span> rectangle, and a unit tile is a <span class="tex">1\times1</span> square. The collection below (one <span class="tex">x^2</span>-tile, seven <span class="tex">x</span>-tiles and ten unit tiles) is the polynomial <span class="tex">x^2+7x+10</span>, and those same tiles rearrange, with no gaps or overlaps, into a <b>rectangle</b>.</p>
+  <div class="u4l3-key"></div>
+  <div class="u4l3-figrow"><div data-pile="1,7,10"></div><div class="u4l3-arrow">→</div><div data-rect="2,5"></div></div>
+  <div class="def">The rectangle’s <b>area</b> is the original polynomial, so its <b>length and width are the two binomial factors</b>: length <span class="tex">x+5</span>, width <span class="tex">x+2</span>, giving <span class="tex">x^2+7x+10=(x+2)(x+5)</span>. Multiplying back out confirms it: <span class="tex">(x+2)(x+5)=x^2+5x+2x+10=x^2+7x+10</span> ✓</div>
+  <div class="u4l3-rule"><span class="tex" style="text-align:right">(x+2)(x+5)</span><div class="mid"><b class="teal">expanding →</b><br><b style="color:var(--amber)">← factoring</b></div><span class="tex">x^2+7x+10</span></div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Algebra tiles: add a zero pair">
-  <h3 class="sub">Algebra tiles: the rectangle needs a zero pair</h3>
-  <p>With tiles, <span class="tex">x^2-9</span> is one <span class="tex">x^2</span>-tile and nine <b>negative</b> unit tiles. There are no <span class="tex">x</span>-tiles, so the pieces can’t close up into a rectangle. Add <span class="tex">+3x</span> and <span class="tex">-3x</span>: together they are <b>zero</b>, so the value doesn’t change, but now the rectangle closes, and its sides are the factors.</p>
-  <div class="u4l3-key" id="tile-key"></div>
+<section class="card" data-ink="s1b" data-section="1. Tiles into a rectangle">
+  <h3 class="sub">Arranging the tiles</h3>
+  <p>The <span class="tex">x^2</span>-tile goes in a corner, the <span class="tex">x</span>-tiles line its two sides, and the unit tiles fill the last corner. The whole puzzle is the <b>unit-tile block</b>: it has to use every unit tile, and its rows and columns decide how many <span class="tex">x</span>-tiles it needs.</p>
   <div class="explainer" data-explainer="tileRect"></div>
 </section>
 
-<section class="card" data-ink="s1c" data-section="1. The identity, and why it works">
-  <h3 class="sub">The general pattern</h3>
-  <p>In general, if <span class="tex">c=-k^2</span>, the sum–product pair is always <span class="tex">k</span> and <span class="tex">-k</span>. That gives an identity worth memorizing:</p>
-  <div class="u4l3-identity">
-    <div class="u4l3-id-h">Difference of squares</div>
-    <div class="u4l3-id-f"><span class="tex">A^2-B^2=(A-B)(A+B)</span></div>
-    <div class="u4l3-id-arrows"><span class="u4l3-id-l">factor →</span><span class="u4l3-id-r">← expand</span></div>
-    <div class="u4l3-id-n">Capital letters, so they don’t clash with the <span class="tex">b</span> and <span class="tex">c</span> of <span class="tex">x^2+bx+c</span>.</div>
-  </div>
-  <p><b>Why it works geometrically.</b> Remove a <span class="tex">B\times B</span> square from the corner of an <span class="tex">A\times A</span> square: the L-shape left has area <span class="tex">A^2-B^2</span>. Cut it along the dashed line into a <b>striped</b> piece (<span class="tex">A</span> by <span class="tex">A-B</span>) and a <b>grey</b> piece (<span class="tex">A-B</span> by <span class="tex">B</span>). Turn the grey piece and slide it onto the end of the striped piece: one rectangle, <span class="tex">A-B</span> by <span class="tex">A+B</span>.</p>
-  <div class="explainer" data-explainer="cutMove"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>One plus, one minus.</b> <span class="tex">x^2-36\neq(x-6)^2</span>. Squaring gives <span class="tex">(x-6)(x-6)=x^2-12x+36</span>, with a middle term. The brackets must be <span class="tex">(x-6)(x+6)</span> so the middle terms cancel.</div></div>
-</section>
-
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>The bare pattern</h3></div>
-  <p class="q">Factor each difference of squares.</p>
-  <div class="parts c4">
-    <div class="part"><div class="pl">(a) <span class="tex">w^2-9</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A=w</span>, <span class="tex">B=3</span>:<br><span class="tex">w^2-3^2</span><br><span class="tex">=\boldsymbol{(w-3)(w+3)}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">t^2-121</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">t^2-11^2</span><br><span class="tex">=\boldsymbol{(t-11)(t+11)}</span></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">m^2-n^2</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Already <span class="tex">A^2-B^2</span>:<br><span class="tex">=\boldsymbol{(m-n)(m+n)}</span></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">k^2-36</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">k^2-6^2</span><br><span class="tex">=\boldsymbol{(k-6)(k+6)}</span></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>From a pile of tiles to a factored form</h3></div>
+  <p class="q">Consider the collection of algebra tiles shown below.</p>
+  <div class="u4l3-figbox"><div data-pile="1,9,8"></div></div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Write the polynomial expression represented by the tiles.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Count the tiles: one <span class="tex">x^2</span>-tile, nine <span class="tex">x</span>-tiles, eight unit tiles.<br><span class="tex">\boldsymbol{x^2+9x+8}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Rearrange the tiles into a rectangle, and state the length and width.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Product 8, sum 9: <b>+1 and +8</b>.<div data-rect="1,8" data-s=".62"></div>Length <span class="tex">\boldsymbol{x+8}</span>, width <span class="tex">\boldsymbol{x+1}</span>.</div></div></div>
+    <div class="part"><div class="pl">(c) Use your results to write the polynomial in factored form.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2+9x+8=\boldsymbol{(x+1)(x+8)}</span><br>Check: <span class="tex">x^2+8x+x+8=x^2+9x+8</span> ✓</div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which is quicker to work out: <span class="tex">87^2-13^2</span>, or the same thing in factored form?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Factored: <span class="tex">(87-13)(87+13)=74\times100=\boldsymbol{7\,400}</span>. No squaring needed. (The long way: <span class="tex">7\,569-169=7\,400</span>.)</div></div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. A sum of squares never factors">
-  <h3 class="sub">Important: a <em>sum</em> of squares never factors</h3>
-  <div class="def amber">A <b>sum</b> of squares such as <span class="tex">x^2+16</span> can <b>never</b> be factored over the integers. We would need two integers with a <b>positive product</b> and a <b>sum of zero</b>, but a positive product forces the <b>same sign</b>, so no such pair exists.</div>
-  <div class="explainer" data-explainer="sumNever"></div>
-</section>
-
-<!-- ================= 2. Substituting expressions ================= -->
-<section class="card" data-ink="s2" data-section="2. Substituting Expressions for A and B">
-  <div class="sec-h"><span class="badge">2</span><h2>Substituting Expressions for <span class="tex">A</span> and <span class="tex">B</span></h2></div>
-  <p>In <span class="tex">A^2-B^2=(A-B)(A+B)</span>, the letters <span class="tex">A</span> and <span class="tex">B</span> can stand for numbers, variables, monomials or larger expressions. Rewriting <span class="tex">25x^2-64</span> as <span class="tex">(5x)^2-(8)^2</span> matches the pattern with <span class="tex">A=5x</span> and <span class="tex">B=8</span>, so <span class="tex">25x^2-64=(5x-8)(5x+8)</span>.</p>
-  <div class="def"><b>Check both terms first.</b> If either one is not a perfect square, it is <b>not</b> a difference of squares. A monomial is a perfect square when its <b>coefficient is a perfect square</b> and <b>every exponent is even</b> (halve each exponent to find its square root).</div>
-  <div class="u4l3-ref">
-    <div class="u4l3-ref-h">Perfect squares to know</div>
-    <div class="u4l3-ref-row" id="sq-ref"></div>
-    <div class="u4l3-ref-row u4l3-ref-pow"><span class="tex">x^2=(x)^2</span><span class="tex">x^4=(x^2)^2</span><span class="tex">x^6=(x^3)^2</span><span class="tex">a^2b^2=(ab)^2</span><span class="tex">49p^2q^2=(7pq)^2</span></div>
-  </div>
-  <div class="explainer" data-explainer="detector"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Keep the order.</b> In <span class="tex">121-y^2</span> the square being subtracted is <span class="tex">y^2</span>, so <span class="tex">A=11</span> and <span class="tex">B=y</span>: <span class="tex">(11-y)(11+y)</span>. Writing <span class="tex">(y-11)(y+11)</span> gives <span class="tex">y^2-121</span>, the opposite.</div></div>
-</section>
-
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Coefficients, two variables, and one impostor</h3></div>
-  <p class="q">Factor, if possible, using the difference of squares pattern.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">25x^2-64</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both terms are perfect squares:<br><span class="tex">(5x)^2-8^2</span><br><span class="tex">=\boldsymbol{(5x-8)(5x+8)}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">49a^2-1</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(7a)^2-1^2</span><br><span class="tex">=\boldsymbol{(7a-1)(7a+1)}</span></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">121-y^2</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The square subtracted is the <b>second</b> term:<br><span class="tex">11^2-y^2</span><br><span class="tex">=\boldsymbol{(11-y)(11+y)}</span></div></div></div>
-  </div>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The same process, more unit tiles</h3></div>
+  <p class="q">Consider the collection of algebra tiles shown below.</p>
+  <div class="u4l3-figbox"><div data-pile="1,8,15"></div></div>
   <div class="parts c2">
-    <div class="part"><div class="pl">(d) <span class="tex">16p^2-9q^2</span></div><div class="work" style="--h:180px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(4p)^2-(3q)^2</span><br><span class="tex">=\boldsymbol{(4p-3q)(4p+3q)}</span></div></div></div>
-    <div class="part"><div class="pl">(e) <span class="tex">9x^2+16</span></div><div class="work" style="--h:180px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A <b>sum</b> of squares, not a difference: <span class="tex">(3x)^2+4^2</span>.<br>No pair of integers has product 16 and sum 0, so it <b>does not factor</b> over the integers.</div></div></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">x^2-8</span> a difference of squares?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No</b>, not over the integers: 8 is not a perfect square. The integer pair would need product <span class="tex">-8</span> and sum 0, and <span class="tex">1,-8</span> / <span class="tex">2,-4</span> (and their opposites) never add to 0.</div></div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check (a) by substitution at <span class="tex">x=2</span>.</b> The original: <span class="keys"><kbd>2</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>6</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 36. The factored form: <span class="tex">(10-8)(10+8)=2\times18=36</span> ✓ Both forms must give the same number.</div>
-    <div class="pill-col"><button class="pill" data-keys="25 × 2 x² − 64 =">Show original</button><button class="pill" data-keys="( 5 × 2 − 8 ) × ( 5 × 2 + 8 ) =">Show factored</button></div>
+    <div class="part"><div class="pl">(a) Write the polynomial expression represented by the tiles.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">One <span class="tex">x^2</span>-tile, eight <span class="tex">x</span>-tiles, fifteen unit tiles.<br><span class="tex">\boldsymbol{x^2+8x+15}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Rearrange the tiles into a rectangle, and use the result to write the polynomial in factored form.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Product 15, sum 8: <b>+3 and +5</b>.<div data-rect="3,5" data-s=".62"></div>Length <span class="tex">x+5</span>, width <span class="tex">x+3</span>, so <span class="tex">x^2+8x+15=\boldsymbol{(x+3)(x+5)}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Could these tiles also make a rectangle with all 15 unit tiles in <b>one row</b>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. A <span class="tex">1\times15</span> block needs <span class="tex">1+15=16</span> <span class="tex">x</span>-tiles beside it, and there are only 8. Only the <span class="tex">3\times5</span> block uses exactly <span class="tex">3+5=8</span>.</div></div></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- ================= 3. GCF first ================= -->
-<section class="card" data-ink="s3" data-section="3. Removing a Common Factor First">
-  <div class="sec-h"><span class="badge">3</span><h2>Removing a Common Factor First</h2></div>
-  <p>Always look for a <b>greatest common factor</b> first. An expression often becomes a recognizable difference of squares only <em>after</em> the GCF is removed, and an answer with a common factor still inside a bracket is <b>not fully factored</b>. Then check each new bracket: it may <em>itself</em> be a difference of squares.</p>
-  <div class="u4l3-steps4">
-    <div><span class="u4l3-sn">1</span><b>GCF</b> out front</div>
-    <div><span class="u4l3-sn">2</span>bracket a <b>difference of squares</b>?</div>
-    <div><span class="u4l3-sn">3</span>check <b>every</b> new bracket</div>
-    <div><span class="u4l3-sn">4</span><b>check</b> by expanding</div>
-  </div>
-  <div class="explainer" data-explainer="gcfFirst"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Right product, not finished.</b> <span class="tex">4x^2-36=(2x-6)(2x+6)</span> multiplies back correctly, but each bracket still holds a factor of 2. Take out the GCF 4 first: <span class="tex">4(x^2-9)=4(x-3)(x+3)</span>.</div></div>
+<!-- ================= 2. Sum and product ================= -->
+<section class="card" data-ink="s2" data-section="2. Finding the Pattern">
+  <div class="sec-h"><span class="badge">2</span><h2>Finding the Pattern: Sum and Product</h2></div>
+  <p>Tiles get clumsy fast: nobody wants to push 84 unit tiles around. In every rectangle so far, the two numbers in the factors <b>multiplied to the unit tiles</b> and <b>added to the <span class="tex">x</span>-tiles</b>. Expanding a few products shows that this always happens, and why.</p>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>GCF first, then the pattern</h3></div>
-  <p class="q">Factor completely by first removing the greatest common factor.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">3a^2-75</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">=3</span>: <span class="tex">3(a^2-25)=3(a^2-5^2)</span><br><span class="tex">=\boldsymbol{3(a-5)(a+5)}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">5x^2-20y^2</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">=5</span>: <span class="tex">5(x^2-4y^2)=5\big[x^2-(2y)^2\big]</span><br><span class="tex">=\boldsymbol{5(x-2y)(x+2y)}</span></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">98p^2q^2-2</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">=2</span> (<span class="tex">98=2\times49</span>): <span class="tex">2(49p^2q^2-1)=2\big[(7pq)^2-1^2\big]</span><br><span class="tex">=\boldsymbol{2(7pq-1)(7pq+1)}</span></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">2x^3-32x</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">=2x</span>, the variable comes out too: <span class="tex">2x(x^2-16)=2x(x^2-4^2)</span><br><span class="tex">=\boldsymbol{2x(x-4)(x+4)}</span></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Expand first, then read the pattern backwards</h3></div>
+  <p class="q"><b>(a)</b> Expand each pair of binomials.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl"><span class="tex">(x+3)(x+4)</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2+4x+3x+12</span><br><span class="tex">=\boldsymbol{x^2+7x+12}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">(x+1)(x+9)</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2+9x+x+9</span><br><span class="tex">=\boldsymbol{x^2+10x+9}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">(x+6)(x+6)</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2+6x+6x+36</span><br><span class="tex">=\boldsymbol{x^2+12x+36}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">(x+7)(x+3)</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2+3x+7x+21</span><br><span class="tex">=\boldsymbol{x^2+10x+21}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">(x-4)(x-3)</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2-3x-4x+12</span><br><span class="tex">=\boldsymbol{x^2-7x+12}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">(x+9)(x-5)</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2-5x+9x-45</span><br><span class="tex">=\boldsymbol{x^2+4x-45}</span></div></div></div>
+    <div class="part think span3"><div class="pl">In each case, how are the coefficient <span class="tex">b</span> and the constant term <span class="tex">c</span> related to the two numbers being added to <span class="tex">x</span>?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In every case <span class="tex">b</span> (the coefficient of <span class="tex">x</span>) is the <b>sum</b> of the two numbers added to <span class="tex">x</span>, and <span class="tex">c</span> (the constant term) is their <b>product</b>. For <span class="tex">(x+9)(x-5)</span>: <span class="tex">9+(-5)=4=b</span> and <span class="tex">9\times(-5)=-45=c</span>.</div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Mia factored <span class="tex">3x^3-12x</span> as <span class="tex">3(x^3-4x)</span> and stopped. What would you tell her?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The GCF is <span class="tex">3x</span>, not 3: both terms still share an <span class="tex">x</span>. <span class="tex">3x(x^2-4)</span>, and the bracket is a difference of squares: <span class="tex">\boldsymbol{3x(x-2)(x+2)}</span>.</div></div></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Use FOIL to expand <span class="tex">(x+p)(x+q)</span> and show that it can always be written in the form <span class="tex">x^2+(p+q)x+pq</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(x+p)(x+q)=\underbrace{x\cdot x}_{\text{F}}+\underbrace{x\cdot q}_{\text{O}}+\underbrace{p\cdot x}_{\text{I}}+\underbrace{p\cdot q}_{\text{L}}=x^2+qx+px+pq=\boldsymbol{x^2+(p+q)x+pq}</span><br>Comparing with <span class="tex">x^2+bx+c</span>: <span class="tex">b=p+q</span> and <span class="tex">c=pq</span>, for <b>every</b> <span class="tex">p</span> and <span class="tex">q</span>.</div></div></div>
+  </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<!-- ================= 4. Applications ================= -->
-<section class="card" data-ink="s4" data-section="4. An Application">
-  <div class="sec-h"><span class="badge">4</span><h2>An Application</h2></div>
-  <p>A rectangle’s area is <b>length × width</b>. So when an area is given as a difference of squares, factoring it gives two expressions for the <b>side lengths</b>. Taking the larger factor as the length: <span class="tex">A+B</span> is the length and <span class="tex">A-B</span> the width. Adding them for the perimeter, the <span class="tex">B</span>-terms cancel: another zero pair.</p>
-  <div class="explainer" data-explainer="rink"></div>
+<section class="card" data-ink="s2b" data-section="2. The sum–product rule">
+  <h3 class="sub">The rule</h3>
+  <div class="def">Part (b) proves in general what part (a) suggested: <b>to factor <span class="tex">x^2+bx+c</span>, find two integers whose sum is <span class="tex">b</span> and whose product is <span class="tex">c</span>.</b></div>
+  <div class="u4l3-rule"><span class="tex" style="text-align:right">(x+p)(x+q)</span><div class="mid"><b class="teal">expanding →</b><br><b style="color:var(--amber)">← factoring</b></div><span class="tex">x^2+(p+q)x+pq</span></div>
+  <div class="explainer" data-explainer="expandGrid"></div>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Signs and the search">
+  <h3 class="sub">Which signs? Read them off <span class="tex">b</span> and <span class="tex">c</span></h3>
+  <p>A <b>positive</b> product means the two integers are both positive or both negative; a <b>negative</b> product means one of each. Reading that off the signs of <span class="tex">b</span> and <span class="tex">c</span>:</p>
+  <div class="u4l3-signs">
+    <div class="hd"></div><div class="hd"><span class="tex">b&gt;0</span></div><div class="hd"><span class="tex">b&lt;0</span></div>
+    <div class="hd"><span class="tex">c&gt;0</span></div><div class="pp">both <b class="p">&nbsp;positive</b> <span class="muted small">&nbsp;&nbsp;<span class="tex">x^2+7x+12</span>: 3, 4</span></div><div class="pn">both <b class="n">&nbsp;negative</b> <span class="muted small">&nbsp;&nbsp;<span class="tex">x^2-7x+12</span>: −3, −4</span></div>
+    <div class="hd"><span class="tex">c&lt;0</span></div><div class="mx"><div>one of each; the one <b>further from 0</b> is <b class="p">positive</b><br><span class="muted small"><span class="tex">x^2+x-12</span>: 4, −3</span></div></div><div class="mx"><div>one of each; the one <b>further from 0</b> is <b class="n">negative</b><br><span class="muted small"><span class="tex">x^2-x-12</span>: −4, 3</span></div></div>
+    <div class="hd"><span class="tex">c&lt;0,\ b=0</span></div><div class="wide"><div><span class="tex">k</span> and <span class="tex">-k</span>: this is a <b>difference of squares</b> (Lesson 4). <span class="muted small">&nbsp;&nbsp;<span class="tex">x^2-9</span>: 3, −3</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="pairTable"></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A rink whose area is a difference of squares</h3></div>
-  <p class="q">The surface of a rectangular skating rink has area <span class="tex">25m^2-4n^2</span> square metres.</p>
-  <div class="parts c1">
-    <div class="part"><div class="pl">(a) Write expressions for the length and width of the rink.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">25m^2-4n^2=(5m)^2-(2n)^2=(5m-2n)(5m+2n)</span>. Taking the larger factor as the length:<br><b>Length</b> <span class="tex">=\boldsymbol{(5m+2n)}</span> m, &nbsp; <b>Width</b> <span class="tex">=\boldsymbol{(5m-2n)}</span> m</div></div></div>
-    <div class="part"><div class="pl">(b) The perimeter of the rink is 120 metres. Form an equation in <span class="tex">m</span> and <span class="tex">n</span> and solve for <span class="tex">m</span>.</div><div class="work" style="--h:180px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">n</span>-terms cancel: <span class="tex">2\big[(5m+2n)+(5m-2n)\big]=2(10m)=20m</span><br><span class="tex">20m=120</span>, so <span class="tex">\boldsymbol{m=6}</span></div></div></div>
-    <div class="part"><div class="pl">(c) Determine the length and width of the rink if the length is 50% greater than the width.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">“50% greater” means length <span class="tex">=1.5\times</span> width: <span class="tex">5m+2n=1.5(5m-2n)=7.5m-3n\Rightarrow5n=2.5m\Rightarrow n=0.5m</span><br>With <span class="tex">m=6</span>: <span class="tex">n=3</span>. Length <span class="tex">=5(6)+2(3)=\boldsymbol{36}</span> m, width <span class="tex">=5(6)-2(3)=\boldsymbol{24}</span> m.<br>Check: <span class="tex">36=1.5\times24</span> ✓ and <span class="tex">2(36+24)=120</span> ✓</div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check the area.</b> With <span class="tex">m=6</span> and <span class="tex">n=3</span>: <span class="keys"><kbd>2</kbd><kbd>5</kbd><kbd>×</kbd><kbd>6</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 864, and so does <span class="tex">36\times24</span> ✓</div>
-    <div class="pill-col"><button class="pill" data-keys="25 × 6 x² − 4 × 3 x² =">Show area</button><button class="pill" data-keys="36 × 24 =">Show 36 × 24</button></div>
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Hunting for the pair</h3></div>
+  <p class="q">Complete each table by finding two integers with the given sum and the given product. The first row of Table A has been done for you.</p>
+  <div class="u4l3-tabs">
+    <div class="u4l3-tab">
+      <div class="u4l3-tabh">Table A</div>
+      <div class="u4l3-th"><div>Sum</div><div>Product</div><div>Integers</div></div>
+      <div class="part u4l3-trow given"><div><span class="tex">15</span></div><div><span class="tex">50</span></div><div class="u4l3-tw"><span class="tex">5,\ 10</span></div></div>
+      <div class="part u4l3-trow"><div><span class="tex">13</span></div><div><span class="tex">40</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5,\ 8</span></div></div></div></div>
+      <div class="part u4l3-trow"><div><span class="tex">9</span></div><div><span class="tex">18</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3,\ 6</span></div></div></div></div>
+      <div class="part u4l3-trow"><div><span class="tex">6</span></div><div><span class="tex">9</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3,\ 3</span></div></div></div></div>
+    </div>
+    <div class="u4l3-tab">
+      <div class="u4l3-tabh">Table B</div>
+      <div class="u4l3-th"><div>Sum</div><div>Product</div><div>Integers</div></div>
+      <div class="part u4l3-trow"><div><span class="tex">-10</span></div><div><span class="tex">21</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-3,\ -7</span></div></div></div></div>
+      <div class="part u4l3-trow"><div><span class="tex">-13</span></div><div><span class="tex">12</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-1,\ -12</span></div></div></div></div>
+      <div class="part u4l3-trow"><div><span class="tex">1</span></div><div><span class="tex">-12</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4,\ -3</span></div></div></div></div>
+      <div class="part u4l3-trow"><div><span class="tex">-22</span></div><div><span class="tex">40</span></div><div class="u4l3-tw"><div class="work"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-2,\ -20</span></div></div></div></div>
+    </div>
   </div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Mental math">
-  <h3 class="sub">Run it backwards: mental math</h3>
-  <p>Two numbers the <b>same distance</b> from a friendly number multiply to a difference of squares: <span class="tex">58\times62=(60-2)(60+2)=60^2-2^2</span>. And a difference of two big squares is easier <b>factored</b>: <span class="tex">49^2-51^2=(49-51)(49+51)</span>.</p>
-  <div class="explainer" data-explainer="mental"></div>
+<!-- ================= 3. Factoring by inspection ================= -->
+<section class="card" data-ink="s3" data-section="3. Factoring by Inspection">
+  <div class="sec-h"><span class="badge">3</span><h2>Factoring <span class="tex">x^2+bx+c</span> by Inspection</h2></div>
+  <div class="def">To factor <span class="tex">x^2+bx+c</span>, find two integers with <b>product <span class="tex">c</span></b> and <b>sum <span class="tex">b</span></b>. If no such pair exists, the trinomial <b>cannot be factored over the integers</b>. If the terms share a common factor, remove it <b>first</b>: factoring is not complete until no further factoring is possible.</div>
+  <div class="u4l3-steps4">
+    <div><b class="n">1</b><b>Common factor</b> out front, if there is one.</div>
+    <div><b class="n">2</b><b>Signs</b> of the pair, from <span class="tex">c</span> and <span class="tex">b</span>.</div>
+    <div><b class="n">3</b><b>List</b> the factor pairs of <span class="tex">c</span>; find the sum <span class="tex">b</span>.</div>
+    <div><b class="n">4</b><b>Write</b> the brackets, then <b>check</b> by expanding.</div>
+  </div>
+  <div class="explainer" data-explainer="inspectA"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Finished means nothing else factors.</b> <span class="tex">(3x-6)(x-8)</span> does multiply out to <span class="tex">3x^2-30x+48</span>, but <span class="tex">3x-6</span> still has a common factor of 3. Take the common factor out <b>first</b> and this can’t happen: <span class="tex">3(x-2)(x-8)</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Positive <span class="tex">c</span>, including two with a common factor</h3></div>
+  <p class="q">Factor each expression completely.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">x^2+9x+14</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+2</span> and <span class="tex">+7</span>: product 14, sum 9.<br><span class="tex">=\boldsymbol{(x+2)(x+7)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">x^2+15x+14</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+1</span> and <span class="tex">+14</span>: product 14, sum 15.<br><span class="tex">=\boldsymbol{(x+1)(x+14)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">x^2-15x+14</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">c&gt;0,\ b&lt;0</span>: both negative. <span class="tex">-1</span> and <span class="tex">-14</span>: product 14, sum −15.<br><span class="tex">=\boldsymbol{(x-1)(x-14)}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">m^2-13m+12</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-1</span> and <span class="tex">-12</span>: product 12, sum −13.<br><span class="tex">=\boldsymbol{(m-1)(m-12)}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">y^2+4y+3</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+1</span> and <span class="tex">+3</span>: product 3, sum 4.<br><span class="tex">=\boldsymbol{(y+1)(y+3)}</span></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">x^2+21x+20</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+1</span> and <span class="tex">+20</span>: product 20, sum 21.<br><span class="tex">=\boldsymbol{(x+1)(x+20)}</span></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(g) <span class="tex">3x^2-30x+48</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF 3 first: <span class="tex">3(x^2-10x+16)</span>.<br><span class="tex">-2</span> and <span class="tex">-8</span>: product 16, sum −10.<br><span class="tex">=\boldsymbol{3(x-2)(x-8)}</span></div></div></div>
+    <div class="part"><div class="pl">(h) <span class="tex">2x^3+24x^2+40x</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">2x</span> first: <span class="tex">2x(x^2+12x+20)</span>.<br><span class="tex">+2</span> and <span class="tex">+10</span>: product 20, sum 12.<br><span class="tex">=\boldsymbol{2x(x+2)(x+10)}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Parts (a), (b) and (c) all have <span class="tex">c=14</span>. How many integers <span class="tex">b</span> make <span class="tex">x^2+bx+14</span> factorable? List them.</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The factor pairs of 14 are <span class="tex">1,14</span> and <span class="tex">2,7</span>, both positive or both negative. Their sums: <span class="tex">15,\ 9,\ -9,\ -15</span>. So <b>four</b> values: <span class="tex">b=\pm9</span> or <span class="tex">\pm15</span>. Any other <span class="tex">b</span> and it won’t factor.</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Negative c">
+  <h3 class="sub">Negative <span class="tex">c</span></h3>
+  <p>Negative <span class="tex">c</span> works the same way; only now one integer is positive and the other negative. For <span class="tex">x^2-2x-15</span> we need product <span class="tex">-15</span> and sum <span class="tex">-2</span>. These are <span class="tex">-5</span> and <span class="tex">3</span>, so <span class="tex">x^2-2x-15=(x-5)(x+3)</span>.</p>
+  <div class="explainer" data-explainer="inspectB"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Put the minus on the right number.</b> For <span class="tex">x^2-x-20</span>, both <span class="tex">-5,\ 4</span> and <span class="tex">5,\ -4</span> multiply to −20, but only <span class="tex">-5+4=-1</span> gives the right sum. The number further from 0 takes the sign of <span class="tex">b</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Negative <span class="tex">c</span></h3></div>
+  <p class="q">Factor each trinomial by inspection.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">x^2-x-20</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">c&lt;0</span>: opposite signs; <span class="tex">b&lt;0</span>: the bigger one is negative. <span class="tex">-5</span> and <span class="tex">+4</span>: product −20, sum −1.<br><span class="tex">=\boldsymbol{(x-5)(x+4)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">x^2+5x-24</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">c&lt;0,\ b&gt;0</span>: the bigger one is positive. <span class="tex">+8</span> and <span class="tex">-3</span>: product −24, sum +5.<br><span class="tex">=\boldsymbol{(x+8)(x-3)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">a^2-9a-10</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-10</span> and <span class="tex">+1</span>: product −10, sum −9.<br><span class="tex">=\boldsymbol{(a-10)(a+1)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Every case at once (one of these does not factor)</h3></div>
+  <p class="q">Factor where possible.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">a^2+8a-33</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+11</span> and <span class="tex">-3</span>: product −33, sum +8.<br><span class="tex">=\boldsymbol{(a+11)(a-3)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">3t^2-24t+45</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF 3 first: <span class="tex">3(t^2-8t+15)</span>.<br><span class="tex">-3</span> and <span class="tex">-5</span>: product 15, sum −8.<br><span class="tex">=\boldsymbol{3(t-3)(t-5)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">x^2-5x-9</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No GCF. Need product −9, sum −5. The factor pairs of 9 are <span class="tex">1,9</span> and <span class="tex">3,3</span>; with opposite signs their sums are <span class="tex">\pm8</span> and 0, never −5.<br><b>Cannot be factored over the integers.</b></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">3x^4-12x^3-36x^2</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">3x^2</span> first: <span class="tex">3x^2(x^2-4x-12)</span>.<br><span class="tex">-6</span> and <span class="tex">+2</span>: product −12, sum −4.<br><span class="tex">=\boldsymbol{3x^2(x-6)(x+2)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Check by expanding">
+  <h3 class="sub">Is my factoring right? Check by expanding</h3>
+  <p>Factoring is expanding run backwards, so the check is to run it forwards: <b>expand your answer</b> and compare it with the question, term by term. A second, quicker check: put <span class="tex">x=2</span> into both forms; they must give the same number.</p>
+  <div class="explainer" data-explainer="errorCheck"></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check it on the calculator.</b> <span class="keys"><kbd>5</kbd><kbd>8</kbd><kbd>×</kbd><kbd>6</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>6</kbd><kbd>0</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> both give 3&#8239;596.</div>
-    <div class="pill-col"><button class="pill" data-keys="58 × 62 =">Show 58 × 62</button><button class="pill" data-keys="60 x² − 4 =">Show 60² − 4</button></div>
+    <div><b>Check Example 6(b) at <span class="tex">x=2</span>.</b> The trinomial: <span class="keys"><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>−</kbd><kbd>2</kbd><kbd>4</kbd><kbd>ENTER</kbd></span>. The factored form: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>+</kbd><kbd>8</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>2</kbd><kbd>−</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. Both give −10 ✓</div>
+    <div class="pill-col"><button class="pill" data-keys="2 x² + 5 × 2 − 24 =">Show trinomial</button><button class="pill" data-keys="( 2 + 8 ) × ( 2 − 3 ) =">Show factored</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Use 2 or 3, not 0 or 1.</b> At <span class="tex">x=0</span> both forms only show <span class="tex">c</span>, so a wrong middle term slips straight past the check.</div></div>
+</section>
+
+<!-- ================= 4. Negative tiles ================= -->
+<section class="card" data-ink="s4" data-section="4. Negative Terms with Tiles">
+  <div class="sec-h"><span class="badge">4</span><h2>Modelling Negative Terms with Algebra Tiles</h2></div>
+  <p>A <b>negative</b> tile is drawn white with a minus sign (see the key in Section 1). Build the rectangle exactly as before: the <span class="tex">x^2</span>-tile in the corner, the <span class="tex">x</span>-tiles along the top and the side, and the unit tiles filling the corner. The sign of each tile in the filled corner is the <b>product of the signs</b> along its row and column, so <b>positive × negative gives negative unit tiles</b>. For <span class="tex">x^2+x-6</span>: three positive <span class="tex">x</span>-tiles across the top and two negative <span class="tex">x</span>-tiles down the side give <span class="tex">+3x-2x=+x</span>, and the corner holds <span class="tex">3\times2=6</span> negative unit tiles.</p>
+  <div class="u4l3-readout">
+    <div data-rect="-2,3" data-s=".95"></div>
+    <ul>
+      <li>Top: <span class="tex">x+3</span>. Side: <span class="tex">x-2</span>.</li>
+      <li>Tiles: <span class="tex">x^2</span>, <span class="tex">+3x-2x=+x</span>, <span class="tex">-6</span>.</li>
+      <li>So <span class="tex">x^2+x-6=(x+3)(x-2)</span>.</li>
+      <li>The pair <span class="tex">+3</span> and <span class="tex">-2</span>: product −6, sum +1. <b>The same rule as before.</b></li>
+    </ul>
   </div>
 </section>
 
-<section class="card" data-ink="s4c" data-section="4. Ring areas">
-  <h3 class="sub">A ring: GCF first, then the pattern</h3>
-  <p>A circle of radius <span class="tex">R</span> with a circle of radius <span class="tex">r</span> removed leaves a ring of area <span class="tex">\pi R^2-\pi r^2</span>. Take out the common factor <span class="tex">\pi</span>, and the bracket is a difference of squares: <span class="tex">\pi(R-r)(R+r)</span>. With decimals for <span class="tex">R</span> and <span class="tex">r</span>, the factored form saves squaring them.</p>
-  <div class="explainer" data-explainer="ring"></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>As a decimal.</b> For <span class="tex">R=6.5</span> and <span class="tex">r=3.5</span> the ring is <span class="tex">30\pi</span>: <span class="keys"><kbd>3</kbd><kbd>0</kbd><kbd>π</kbd><kbd>ENTER</kbd></span> gives about 94.2. The long way, <span class="tex">\pi(6.5^2-3.5^2)</span>, gives the same.</div>
-    <div class="pill-col"><button class="pill" data-keys="30 × π =">Show 30π</button><button class="pill" data-keys="π × ( 6.5 x² − 3.5 x² ) =">Show the long way</button></div>
-  </div>
+<section class="card" data-ink="s4b" data-section="4. Zero pairs">
+  <h3 class="sub">Building it from the pile: zero pairs</h3>
+  <p>The pile for <span class="tex">x^2+x-6</span> has only <b>one</b> <span class="tex">x</span>-tile, but the rectangle uses three positive and two negative. The fix is a <b>zero pair</b>: a <span class="tex">+x</span>-tile and a <span class="tex">-x</span>-tile together are worth 0, so adding them doesn’t change the polynomial, but it gives us the tiles the rectangle needs.</p>
+  <div class="explainer" data-explainer="tileNeg"></div>
 </section>
 
-<!-- sources: https://t5k.org/curios/page.php/2027651281.html (1643 letter to Mersenne, 2027651281 = 44021 × 46061, 12 tries) · https://www.imo.universite-paris-saclay.fr/~daniel.perrin/Conferences/BNFredaction.pdf (D. Perrin, BnF talk: Fermat to Mersenne, 1643; c = 45029, square at k = 12: 45041² − 1020²) · https://carmamaths.org/florianbreuer/MATH3170/Sec-Some_Contributions_of_Fermat.html (the method; fastest when the factors are near √n) -->
-<!-- ================= Math History box (brown) ================= -->
-<section class="card history" data-ink="hist" data-section="Math History: Fermat's factoring trick">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">1643</span></div>
-  <div class="hist-grid">
-    <div class="hist-text">
-      <h3 class="hist-title">Fermat’s square-hunting trick</h3>
-      <p>In a 1643 letter to Marin Mersenne, the French mathematician Pierre de Fermat showed how to factor big odd numbers with today’s pattern, run backwards: if <span class="tex">N=a^2-b^2</span>, then <span class="tex">N=(a-b)(a+b)</span>.</p>
-      <p>Start at the first whole number <span class="tex">a</span> above <span class="tex">\sqrt N</span> and try <span class="tex">a</span>, <span class="tex">a+1</span>, <span class="tex">a+2</span>, … until <span class="tex">a^2-N</span> is a perfect square. Fermat’s own example was <span class="u4l3h-nw"><span class="tex">N=2\,027\,651\,281</span></span>. On the 12th try, <span class="u4l3h-nw"><span class="tex">45\,041^2-N=1\,020^2</span></span>, so <span class="u4l3h-nw"><b>N = 44&#8239;021 × 46&#8239;061</b></span>.</p>
-      <div class="part hist-q"><div class="pl">Factor 391 Fermat’s way. (<span class="tex">\sqrt{391}\approx19.8</span>, so start at <span class="tex">a=20</span>.)</div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">20^2-391=400-391=9=3^2</span>, a square on the first try! So <span class="tex">391=20^2-3^2=(20-3)(20+3)=\mathbf{17\times23}</span>.</div></div></div>
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Reading and building rectangles with negative tiles</h3></div>
+  <div class="u4l3-readout" style="background:none;padding:0;grid-template-columns:250px 1fr;align-items:stretch">
+    <div style="align-self:center"><div data-rect="-2,-3" data-lab="?" data-s=".95"></div></div>
+    <div class="parts c1" style="margin:0">
+      <div class="part"><div class="pl">(a) Write the trinomial modelled by the rectangle, and its length and width.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">One <span class="tex">x^2</span>-tile; <span class="tex">3+2=5</span> negative <span class="tex">x</span>-tiles; 6 <b>positive</b> unit tiles (negative × negative).<br>Trinomial <span class="tex">\boldsymbol{x^2-5x+6}</span>; top <span class="tex">x-3</span>, side <span class="tex">x-2</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Write the trinomial in factored form, and verify by expanding.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2-5x+6=\boldsymbol{(x-2)(x-3)}</span><br>Check: <span class="tex">(x-2)(x-3)=x^2-3x-2x+6=x^2-5x+6</span> ✓</div></div></div>
     </div>
-    <figure class="hist-anim">
-      <svg id="fermat-anim" viewBox="0 0 600 300" role="img" aria-label="Fermat's method on 5959: the square root is about 77.2, so try a = 78, 79, 80. 78 squared minus 5959 is 125 and 79 squared minus 5959 is 282, not squares; 80 squared minus 5959 is 441, which is 21 squared. So 5959 = 80 squared minus 21 squared = 59 times 101."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">The trick is quickest when the two factors are close to √<i>N</i>. Fermat added that 44&#8239;021 and 46&#8239;061 are both prime, so they are the only way to split his number.</p>
-    </figure>
   </div>
+  <div class="parts c1" style="margin-top:14px">
+    <div class="part"><div class="pl">(c) Sketch the tile rectangle for <span class="tex">x^2+2x-8</span> and use it to factor the trinomial.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Need product −8, sum +2: <span class="tex">+4</span> and <span class="tex">-2</span>. Four positive <span class="tex">x</span>-tiles across, two negative <span class="tex">x</span>-tiles down (two zero pairs added to the pile’s two <span class="tex">x</span>-tiles), 8 negative unit tiles in the corner.<div data-rect="-2,4" data-s=".62"></div><span class="tex">x^2+2x-8=\boldsymbol{(x+4)(x-2)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Two variables ================= -->
+<section class="card" data-ink="s5" data-section="5. Two Variables">
+  <div class="sec-h"><span class="badge">5</span><h2>Trinomials of the Form <span class="tex">x^2+bxy+cy^2</span></h2></div>
+  <p>A trinomial such as <span class="tex">x^2+10xy+24y^2</span> factors exactly like <span class="tex">x^2+10x+24</span>: the second variable rides along with the second term of each factor. If <span class="tex">x^2+bx+c=(x+p)(x+q)</span>, then <span class="tex">x^2+bxy+cy^2=(x+py)(x+qy)</span>, since <span class="tex">p</span> and <span class="tex">q</span> still only have to multiply to <span class="tex">c</span> and add to <span class="tex">b</span>.</p>
+  <div class="explainer" data-explainer="twoVar"></div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>Expanding shows why the <span class="tex">y</span> tags along</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Expand <span class="tex">(x+4y)(x+6y)</span>.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">F <span class="tex">x^2</span>; O <span class="tex">6xy</span>; I <span class="tex">4xy</span>; L <span class="tex">24y^2</span><br><span class="tex">=x^2+6xy+4xy+24y^2=\boldsymbol{x^2+10xy+24y^2}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Use your answer to part (a) to factor <span class="tex">x^2+10xy+24y^2</span> without any extra work.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Part (a) read backwards: <span class="tex">x^2+10xy+24y^2=\boldsymbol{(x+4y)(x+6y)}</span>.<br>The pair is still <span class="tex">+4</span> and <span class="tex">+6</span> (product 24, sum 10); the <span class="tex">y</span> simply rides along.</div></div></div>
+  </div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Two variables by inspection">
+  <h3 class="sub">Two variables, by inspection</h3>
+  <p>Same steps as Section 3. Find the pair from the numbers alone, then put the second variable next to each number in the brackets. A common factor still comes out first.</p>
+  <div class="explainer" data-explainer="inspectC"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>A big <span class="tex">c</span>? Let the calculator find the partners.</b> Divide <span class="tex">c</span> by 1, 2, 3, … and keep the whole-number answers. <span class="keys"><kbd>8</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> gives 12, so 7 and 12 are a factor pair of 84.</div>
+    <button class="pill" data-keys="84 ÷ 7 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex10" data-section="Example 10">
+  <div class="ex-head"><span class="ex-tag">Example 10</span><h3>Two variables, one with a common factor</h3></div>
+  <p class="q">Factor each trinomial completely.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">x^2+14xy+45y^2</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+5</span> and <span class="tex">+9</span>: product 45, sum 14.<br><span class="tex">=\boldsymbol{(x+5y)(x+9y)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">x^2+55xy-56y^2</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">+56</span> and <span class="tex">-1</span>: product −56, sum +55.<br><span class="tex">=\boldsymbol{(x+56y)(x-y)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">2a^2-10ab-168b^2</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF 2 first: <span class="tex">2(a^2-5ab-84b^2)</span>.<br><span class="tex">-12</span> and <span class="tex">+7</span>: product −84, sum −5.<br><span class="tex">=\boldsymbol{2(a-12b)(a+7b)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex10-space"></div>
+  <button class="more" data-more="ex10-space">+ More space</button>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><span class="tex">A^2-B^2=(A-B)(A+B)</span>. It is <span class="tex">x^2+bx+c</span> with <span class="tex">b=0</span>: the pair is <span class="tex">k</span> and <span class="tex">-k</span>, and expanding, the middle terms cancel. One bracket <b>+</b>, one bracket <b>−</b>.</div>
-    <div><b>Check both terms:</b> perfect-square coefficients, even exponents, and a <b>minus</b> between them. <span class="tex">16p^2-9q^2=(4p)^2-(3q)^2</span>.</div>
-    <div><b>GCF first</b>, then the pattern, then check every bracket: <span class="tex">2x^3-32x=2x(x-4)(x+4)</span>. A <b>sum</b> of squares like <span class="tex">x^2+16</span> never factors.</div>
-    <div><b>Use it backwards:</b> <span class="tex">58\times62=60^2-2^2=3\,596</span>; a ring is <span class="tex">\pi(R-r)(R+r)</span>; a rectangle of area <span class="tex">A^2-B^2</span> is <span class="tex">A+B</span> by <span class="tex">A-B</span>.</div>
+    <div><b>Tiles:</b> arrange the tiles for <span class="tex">x^2+bx+c</span> into a rectangle (add zero pairs if needed). Its <b>length and width are the factors</b>: <span class="tex">x^2+7x+10=(x+2)(x+5)</span>.</div>
+    <div><b>Why it works:</b> <span class="tex">(x+p)(x+q)=x^2+(p+q)x+pq</span>. So find two integers with <b>product <span class="tex">c</span></b> and <b>sum <span class="tex">b</span></b>. No such pair: it <b>can’t be factored</b> over the integers.</div>
+    <div><b>Signs:</b> <span class="tex">c&gt;0</span>, both have the sign of <span class="tex">b</span>. <span class="tex">c&lt;0</span>, one of each, and the one further from 0 has the sign of <span class="tex">b</span>.</div>
+    <div><b>Common factor first</b>, then the pair: <span class="tex">3x^2-30x+48=3(x-2)(x-8)</span>. A second variable tags along: <span class="tex">(x+4y)(x+6y)</span>. Always <b>check by expanding</b>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u4l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Difference of Squares</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Factoring Trinomials of the Form <span class="tex">x^2+bx+c</span></b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Factoring <span class="tex">ax^2+bx+c</span> (where <span class="tex">a\neq1</span>)</b><div class="muted">Algebra tiles, the box model, and decomposition</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Difference of Squares</b><div class="muted">When <span class="tex">b=0</span>: <span class="tex">A^2-B^2=(A-B)(A+B)</span>, and why a sum of squares never factors</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -301,7 +445,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u4l3.js';
-  boot({ key: 'u4l3', homeHref: '../../', title: '4.3 Difference of Squares' });
+  boot({ key: 'u4l3', homeHref: '../../', title: '4.3 Factoring x² + bx + c' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

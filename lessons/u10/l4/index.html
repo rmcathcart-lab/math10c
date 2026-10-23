@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Surface Area and Volume of Pyramids and Cones · Math 10C 10.4</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 4: surface area and volume of right pyramids and right circular cones. A pyramid or cone holds one third of the prism or cylinder on the same base; height h versus slant height s and Pythagoras on the cross-section; the curved surface of a cone unrolled; a hexagonal base; scaling a cone's volume; a composite shed. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u10l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson screen u10l4">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 4</div>
+  <h1>Surface Area and Volume of Pyramids and Cones</h1>
+  <p class="lede">A pyramid or cone holds exactly <b>one third</b> of the prism or cylinder on the same base with the same height. Surface area uses the <b>slant height</b> <span class="tex">s</span>; volume uses the <b>perpendicular height</b> <span class="tex">h</span>, and a right triangle hidden inside the solid connects the two.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain why a pyramid (or cone) holds exactly <span class="tex">\tfrac13</span> of the prism (or cylinder) with the same base and height</li>
+      <li>tell the height <span class="tex">h</span> from the slant height <span class="tex">s</span>, and find one from the other with the Pythagorean theorem on the cross-section</li>
+      <li>calculate the surface area of a pyramid (base + triangular faces) and of a cone, <span class="tex">SA=\pi r^2+\pi rs</span>, with or without the base</li>
+      <li>calculate volumes with <span class="tex">V=\tfrac13A_{\text{Base}}h</span> and <span class="tex">V=\tfrac13\pi r^2h</span>, including a hexagonal base in exact form</li>
+      <li>predict how a cone’s volume changes when its height or radius is scaled, without the formula</li>
+      <li>find the volume and surface area of a composite object, leaving out the hidden faces</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M3</b> Solve problems, using SI and imperial units, that involve the surface area and volume of 3-D objects, including: right cones; right cylinders; right prisms; right pyramids; spheres.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Popcorn Deal" id="wu" style="--wf-side: 320px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Popcorn Deal</h2>
+  <p class="wf-rule">Movie night. Same popcorn, two containers: <b>same radius</b> (10 cm), <b>same height</b> (20 cm).</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u10l4-wtop">
+    <div class="u10l4-wfig">
+      <div id="u10l4-pop"></div>
+      <div class="u10l4-wbtns">
+        <button type="button" class="pill" id="u10l4-pour">Pour a cone into the tub</button>
+        <button type="button" class="pill" id="u10l4-pour0">Empty the tub</button>
+      </div>
+    </div>
+  </div>
+  <div class="poll u10l4-poll3">
+    <div class="q-line"><div class="q-num">3</div><div><b>Guess:</b> how many <b>full cones</b> does it take to fill the tub?</div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 2 cones</div>
+      <div class="opt right"><b>B</b> 3 cones</div>
+      <div class="opt"><b>C</b> 4 cones</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: 3 cones.</b> A cone holds exactly <span class="tex">\tfrac13</span> of the cylinder with the same base and height: <span class="tex">\tfrac13(6\,283)\approx2\,094</span> cm<sup>3</sup>, about 2.1 L. Tap <b>Pour a cone into the tub</b> three times.</div>
+  </div>
+  </div><div class="wf-side">
+    <div class="u10l4-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Area of the tub’s circular base, <span class="tex">\pi r^2</span>?</div></div>
+        <div class="u10l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\pi(10)^2=100\pi\approx314</span> cm<sup>2</sup></div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>Volume of the tub, <span class="tex">V=\pi r^2h</span>?</div></div>
+        <div class="u10l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\pi(10)^2(20)=2000\pi\approx6\,283</span> cm<sup>3</sup>, about 6.3 L.</div></div>
+      </div>
+    </div>
+  <div class="poll u10l4-poll3 wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The cone costs <b>$4</b>. The tub costs <b>$9</b>. Which is the better deal? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> the cone</div>
+      <div class="opt right"><b>B</b> the tub</div>
+      <div class="opt"><b>C</b> same value either way</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: the tub.</b> It takes 3 cones to hold one tub’s worth, so buying cones costs <span class="tex">3\times\$4=\$12</span> per tub of popcorn, versus $9 for the tub. Per litre: cone <span class="tex">\$4\div2.1\approx\$1.91</span>, tub <span class="tex">\$9\div6.3\approx\$1.43</span>.<br>
+      <span class="muted"><b>A</b> is what you get if the cone looks like it holds <b>half</b> the tub (a triangle next to a rectangle): 2 cones for $8 seems cheaper. <b>C</b> would need the cone to hold <span class="tex">\tfrac49\approx44\%</span> of the tub. The narrow bottom half of the cone holds only <span class="tex">\left(\tfrac12\right)^3=\tfrac18</span> of its popcorn.</span></div>
+  </div>
+  </div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>1</kbd><kbd>0</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>2</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 6283.185307 for the tub (leave off <kbd>×</kbd><kbd>2</kbd><kbd>0</kbd> for the base: 314.1592654). Use the <kbd>π</kbd> key, never 3.14.</div>
+    <div class="pill-col"><button class="pill" data-keys="π × 10 x² =">Base</button><button class="pill" data-keys="π × 10 x² × 20 =">Tub</button></div>
+  </div>
+  <div class="u10l4-early">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what price would the cone be a fair deal?</div></div>
+      <div class="u10l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\$9\div3=\$3</span>: three cones would then cost the same as one tub.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Extra challenge.</b> How tall would a cone of radius 10 cm have to be to hold as much as the tub?</div></div>
+      <div class="u10l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\times20=60</span> cm. Three times as tall holds three times as much.</div></div>
+    </div>
+  </div>
+  <p class="u10l4-social">Poll the room: 2, 3 or 4 cones to fill the tub? Hands up, then argue the deal.</p>
+</section>
+
+<!-- ================= 1. Right pyramids ================= -->
+<section class="card" data-ink="s1" data-section="1. Right Pyramids">
+  <div class="sec-h"><span class="badge">1</span><h2>Right Pyramids</h2></div>
+  <div class="u10l4-row">
+    <div>
+      <p>A <b>pyramid</b> has a polygon base and triangular side faces that meet at a single point, the <b>apex</b>. A <b>right pyramid</b> is a pyramid whose apex is directly above the centre of its base. If the base is a regular polygon, the side faces are congruent isosceles triangles; if the base is a rectangle, opposite side faces match in pairs. Two measurements matter:</p>
+      <ul class="u10l4-hs">
+        <li><span class="tex">h</span> = the <b>height</b>: the perpendicular distance from the apex straight down to the centre of the base.</li>
+        <li><span class="tex">s</span> = the <b>slant height</b>: the distance from the apex down along a triangular face to the midpoint of a base edge.</li>
+      </ul>
+      <p>The base can be any polygon (rectangular, triangular, square, pentagonal, hexagonal, …); the figure shows a regular pentagonal base. Unless stated otherwise, “pyramid” in this course always means <i>right</i> pyramid.</p>
+    </div>
+    <div class="u10l4-fig" id="u10l4-f1"></div>
+  </div>
+  <div class="def"><span class="tex">h</span>, <span class="tex">s</span> and the distance from the centre of the base to the midpoint of an edge (half the side, for a square base) are the three sides of a <b>right triangle</b> standing inside the pyramid, with <span class="tex">s</span> as the hypotenuse. So <span class="tex">s</span> is always <b>longer</b> than <span class="tex">h</span>.</div>
+  <div class="explainer" data-explainer="hs"></div>
+</section>
+
+<!-- ================= 2. Volume of a right pyramid ================= -->
+<section class="card" data-ink="s2" data-section="2. Volume of a Right Pyramid">
+  <div class="sec-h"><span class="badge">2</span><h2>Volume of a Right Pyramid</h2></div>
+  <p>In a woodworking class, Mr. Halden’s students built a rectangular <i>planter box</i> (a right prism) and a pyramid-shaped <i>funnel</i> on an identical rectangular base and with the same height. A student filled the funnel with rice and emptied it into the planter box, then repeated this twice more. On the third emptying the box was filled <i>exactly</i> to the top: no rice left over, no room left.</p>
+  <div class="u10l4-row">
+    <div>
+      <p>The experiment illustrates a general fact: <b>a pyramid’s volume is always exactly <span class="tex">\tfrac13</span> of the volume of a prism sharing the same base and the same height</b>, whatever shape the base is. The figure shows a right pyramid (heavy lines) sharing its base and height with the surrounding prism (light lines).</p>
+    </div>
+    <div class="u10l4-fig" id="u10l4-f2"></div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Discuss</span> How does the volume of a pyramid compare with the volume of a prism that has an identical base and the same height?</div><div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The pyramid holds exactly <b>one third</b> of the prism. Three funnels filled the box exactly, so <span class="tex">3V_{\text{pyramid}}=V_{\text{prism}}</span>, giving <span class="tex">V_{\text{pyramid}}=\tfrac13V_{\text{prism}}=\tfrac13A_{\text{Base}}h</span>.<br>All that is needed is that the two solids share a base and share a height; the shape of the base is irrelevant, so the same <span class="tex">\tfrac13</span> holds for a triangular, pentagonal or hexagonal base.</div></div></div>
+  </div>
+  <div class="explainer" data-explainer="third"></div>
+</section>
+
+<!-- ================= Example 1 ================= -->
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Square-based pyramid: volume from <span class="tex">h</span>, surface area from <span class="tex">s</span></h3></div>
+  <p class="q">A glass pyramid-shaped skylight sits above a museum atrium. It has a square base with sides measuring <span class="tex">16</span> m and a height of <span class="tex">6</span> m.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Make a sketch of the pyramid, labelling the given measurements, and calculate its volume to the nearest cubic metre.</div><div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume uses the <b>perpendicular</b> height <span class="tex">h=6</span> m; the slant height plays no part here.
+        <div class="u10l4-afig" id="u10l4-a1a"></div>
+        Base area <span class="tex">A_{\text{Base}}=16^2=256</span> m<sup>2</sup>, so<br><span class="tex">V=\tfrac13A_{\text{Base}}h=\tfrac13(256)(6)=\tfrac13(1\,536)=\boldsymbol{512}</span> m<sup>3</sup>.<br>Check: the prism on the same base holds <span class="tex">256\times6=1\,536</span> m<sup>3</sup>, and 512 is exactly one third of that.</div></div></div>
+    <div class="part"><div class="pl">(b) Make a sketch of the net of the pyramid and calculate the surface area to the nearest square metre. Explain why the base is <i>not</i> included in this calculation.</div><div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Surface area uses the <b>slant</b> height, so find it first. Half a base side is 8 m, and <span class="tex">h</span>, that half-side and <span class="tex">s</span> form a right triangle:<br><span class="tex">s=\sqrt{6^2+8^2}=\sqrt{36+64}=\sqrt{100}=10</span> m.
+        <div class="u10l4-afig" id="u10l4-a1b"></div>
+        The net is the <span class="tex">16\times16</span> base square with four congruent triangles folded out from its edges, each of base 16 m and height <span class="tex">s=10</span> m.<br>The base is <b>not</b> counted: it sits on the roof of the atrium, is never seen and is not glazed, so it contributes no glass area.<br>Each triangular face: <span class="tex">\tfrac12(16)(10)=80</span> m<sup>2</sup>, so <span class="tex">SA=4(80)=\boldsymbol{320}</span> m<sup>2</sup>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Volume:</b> <span class="keys"><kbd>1</kbd><kbd>6</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 512. <b>Slant height:</b> <span class="keys"><kbd>√</kbd><kbd>6</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>8</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 10. The <kbd>√</kbd> key opens a bracket; close it after the sum so the root covers all of it.</div>
+    <div class="pill-col"><button class="pill" data-keys="16 x² × 6 ÷ 3 =">Volume</button><button class="pill" data-keys="√ 6 x² + 8 x² ) =">Slant height</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex1n" data-section="Example 1: unfold the skylight">
+  <h3 class="sub">Example 1: unfold the skylight</h3>
+  <p>The surface area is the area of the <b>net</b>: fold the four glass triangles down flat around the base and add up what is really there.</p>
+  <div class="explainer" data-explainer="net"></div>
+</section>
+
+<!-- ================= 3. Right circular cones ================= -->
+<section class="card" data-ink="s3" data-section="3. Right Circular Cones">
+  <div class="sec-h"><span class="badge">3</span><h2>Right Circular Cones</h2></div>
+  <div class="u10l4-row">
+    <div>
+      <p>A <b>right circular cone</b> has a circular base and an apex directly above the centre of that base. As with a pyramid, <span class="tex">h</span> is the perpendicular height and <span class="tex">s</span> is the slant height: here the straight-line distance along the curved surface from the apex to any point on the edge of the base circle. The base radius is <span class="tex">r</span>. Since <span class="tex">h</span>, <span class="tex">r</span> and <span class="tex">s</span> are the two legs and the hypotenuse of a right triangle,</p>
+      <div class="u10l4-disp"><span class="tex">s^2=h^2+r^2.</span></div>
+      <p>Unless stated otherwise, “cone” in this course always means <i>right circular</i> cone.</p>
+    </div>
+    <div class="u10l4-fig" id="u10l4-f3"></div>
+  </div>
+  <div class="explainer" data-explainer="hsc"></div>
+</section>
+
+<!-- ================= 4. Volume of a cone ================= -->
+<section class="card" data-ink="s4" data-section="4. Volume of a Right Circular Cone">
+  <div class="sec-h"><span class="badge">4</span><h2>Volume of a Right Circular Cone</h2></div>
+  <div class="u10l4-row">
+    <div>
+      <p>A cone and a cylinder built on an identical circular base with the same height behave exactly as the pyramid and prism did: filling the cone with water and pouring it into the cylinder, three full cones are needed to fill the cylinder exactly. <b>A cone’s volume is always exactly <span class="tex">\tfrac13</span> of the volume of a cylinder sharing its base and height</b>; the same <span class="tex">\tfrac13</span> relationship holds for every radius and height.</p>
+    </div>
+    <div class="u10l4-fig" id="u10l4-f4"></div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Discuss</span> How does the volume of a cone compare with the volume of a cylinder that has an identical base and the same height?</div><div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The cone holds exactly <b>one third</b> of the cylinder. Three coneloads fill the cylinder, so <span class="tex">V_{\text{cone}}=\tfrac13V_{\text{cylinder}}=\tfrac13\pi r^2h</span>.<br>As with the pyramid and prism, only a shared base and a shared height are needed; the particular values of <span class="tex">r</span> and <span class="tex">h</span> do not change the ratio.</div></div></div>
+  </div>
+  <div class="explainer" data-explainer="pour"></div>
+</section>
+
+<!-- ================= 5. Formulas ================= -->
+<section class="card" data-ink="s5" data-section="5. Formulas for Surface Area and Volume">
+  <div class="sec-h"><span class="badge">5</span><h2>Formulas for Surface Area and Volume</h2></div>
+  <div class="u10l4-forms">
+    <div class="def u10l4-fsa"><div class="u10l4-fh">Surface Area: uses the <b>slant height</b> <span class="tex">s</span></div>
+      <div class="u10l4-fl"><span class="tex">SA_{\text{pyramid}}=\text{Area of Base}+\text{Area of Triangular Faces}</span></div>
+      <div class="u10l4-fl"><span class="tex">SA_{\text{cone}}=\text{Area of Base}+\text{Area of Curved Surface}=\pi r^2+\pi rs</span></div>
+    </div>
+    <div class="def u10l4-fv"><div class="u10l4-fh">Volume: uses the <b>perpendicular height</b> <span class="tex">h</span></div>
+      <div class="u10l4-fl"><span class="tex">V_{\text{pyramid}}=\tfrac13(\text{Volume of prism})=\tfrac13A_{\text{Base}}h</span></div>
+      <div class="u10l4-fl"><span class="tex">V_{\text{cone}}=\tfrac13(\text{Volume of cylinder})=\tfrac13\pi r^2h</span></div>
+      <div class="eg">where <span class="tex">A_{\text{Base}}</span> is the area of the pyramid’s base.</div>
+    </div>
+  </div>
+  <h3 class="sub">Why the curved surface of a cone is <span class="tex">\pi rs</span></h3>
+  <p>Cut the cone along one slant edge and unroll it. The curved surface flattens into a <b>sector</b> (a “pizza slice”) of a circle whose radius is the slant height <span class="tex">s</span>. The arc of the sector is the edge that wrapped around the base, so its length is the base circumference, <span class="tex">2\pi r</span>.</p>
+  <div class="u10l4-row u10l4-row2">
+    <div class="u10l4-fig" id="u10l4-f5"></div>
+    <div>
+      <p>The sector is the fraction <span class="tex">\dfrac{\text{arc}}{\text{full circumference}}=\dfrac{2\pi r}{2\pi s}=\dfrac{r}{s}</span> of the full circle of radius <span class="tex">s</span>, whose area is <span class="tex">\pi s^2</span>. So</p>
+      <div class="u10l4-disp"><span class="tex">\text{curved area}=\dfrac{r}{s}\times\pi s^2=\pi rs.</span></div>
+      <p>Adding the circular base gives <span class="tex">SA_{\text{cone}}=\pi r^2+\pi rs</span>.</p>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="unroll"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Which height?</b> Volume takes the <b>perpendicular</b> height <span class="tex">h</span>; surface area takes the <b>slant</b> height <span class="tex">s</span>. If the one you need isn’t given, find it with <span class="tex">s^2=h^2+r^2</span> (for a square pyramid, use half the side instead of <span class="tex">r</span>). And check whether you were given the <b>diameter</b>: the formulas use the radius.</div></div>
+  <div class="explainer" data-explainer="which"></div>
+</section>
+
+<!-- ================= Example 2 ================= -->
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Cone: <span class="tex">h</span> given, <span class="tex">s</span> found by Pythagoras</h3></div>
+  <p class="q">A solid wooden cone (a closed solid, so its base counts) has a height of <span class="tex">12</span> cm and a base diameter of <span class="tex">10</span> cm. Determine the volume and the surface area of the cone, each to one decimal place.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:370px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u10l4-ansrow"><div>The diameter is 10 cm, so <span class="tex">r=5</span> cm. Volume wants <span class="tex">h=12</span> cm; surface area wants <span class="tex">s</span>, which is not given, so get it from Pythagoras:<br><span class="tex">s=\sqrt{r^2+h^2}=\sqrt{5^2+12^2}=\sqrt{25+144}=\sqrt{169}=13</span> cm.<br>
+        <span class="tex">V=\tfrac13\pi r^2h=\tfrac13\pi(25)(12)=100\pi=314.159\ldots\approx\boldsymbol{314.2}</span> cm<sup>3</sup> (uses <span class="tex">h</span>).<br>
+        <span class="tex">SA=\pi r^2+\pi rs=\pi(25)+\pi(5)(13)=25\pi+65\pi=90\pi=282.743\ldots\approx\boldsymbol{282.7}</span> cm<sup>2</sup> (uses <span class="tex">s</span>).<br>
+        The cone is solid, so the base is included. An <i>open</i> paper cone of the same size would need only the curved surface, <span class="tex">\pi rs=65\pi\approx204.2</span> cm<sup>2</sup>.</div><div class="u10l4-afig" id="u10l4-a2"></div></div></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Volume:</b> <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 314.1592654. <b>Surface area:</b> <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>π</kbd><kbd>×</kbd><kbd>5</kbd><kbd>×</kbd><kbd>1</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 282.7433388. Round only at the end.</div>
+    <div class="pill-col"><button class="pill" data-keys="π × 5 x² × 12 ÷ 3 =">Volume</button><button class="pill" data-keys="π × 5 x² + π × 5 × 13 =">Surface area</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= Example 3 ================= -->
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Hexagonal base: exact area, then volume</h3></div>
+  <p class="q">A right pyramid has a height of <span class="tex">12</span> cm and a regular hexagonal base with sides measuring <span class="tex">6</span> cm.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Make a sketch of the hexagonal base and determine its area as an exact value (in simplest radical form) and to the nearest square centimetre.</div><div class="work" style="--h:320px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u10l4-afig" id="u10l4-a3"></div>The centre-to-vertex distance of a regular hexagon equals its side length, so the hexagon splits into 6 equilateral triangles of side 6 cm meeting at the centre.<br>Each triangle: height <span class="tex">\sqrt{6^2-3^2}=\sqrt{27}=3\sqrt3</span>, so area <span class="tex">\tfrac12(6)(3\sqrt3)=9\sqrt3</span> cm<sup>2</sup> (the same as <span class="tex">\tfrac{\sqrt3}{4}(6)^2=\tfrac{\sqrt3}{4}(36)</span>).<br><span class="tex">A_{\text{hex}}=6(9\sqrt3)=\boldsymbol{54\sqrt3}</span> cm<sup>2</sup> exactly, and <span class="tex">54\sqrt3=93.53\ldots\approx\boldsymbol{94}</span> cm<sup>2</sup>.</div></div></div>
+    <div class="part"><div class="pl">(b) The pyramid is filled completely with water. Determine the volume of water it holds, to the nearest millilitre.</div><div class="work" style="--h:320px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume uses the perpendicular height <span class="tex">h=12</span> cm (no slant height is involved), and the <b>exact</b> base area from (a) so nothing is lost to early rounding.<br><span class="tex">V=\tfrac13A_{\text{Base}}h=\tfrac13(54\sqrt3)(12)=216\sqrt3=374.122\ldots</span> cm<sup>3</sup>.<br>Since <span class="tex">1</span> cm<sup>3</sup> <span class="tex">=1</span> mL, the pyramid holds <b>374 mL</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Exact to decimal.</b> <span class="keys"><kbd>5</kbd><kbd>4</kbd><kbd>×</kbd><kbd>√</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 93.53074361. For the volume, <span class="keys"><kbd>2</kbd><kbd>1</kbd><kbd>6</kbd><kbd>×</kbd><kbd>√</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 374.1229744. The <kbd>√</kbd> key opens a bracket: close it before multiplying by anything else.</div>
+    <div class="pill-col"><button class="pill" data-keys="54 × √ 3 ) =">Base area</button><button class="pill" data-keys="216 × √ 3 ) =">Volume</button></div>
+  </div>
+  <div class="explainer" data-explainer="hex"></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= Example 4 ================= -->
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Scaling a cone’s volume without the formula</h3></div>
+  <p class="q">Use the information below to answer both parts.</p>
+  <div class="u10l4-probs">
+    <div><b>Problem 1:</b> Two cones have radii of equal length. The first cone has a height of <span class="tex">6</span> cm and a volume of <span class="tex">15</span> cm<sup>3</sup>. State the volume of the second cone if its height is <span class="tex">24</span> cm.</div>
+    <div><b>Problem 2:</b> Two cones have the same height. The first cone has a radius of <span class="tex">4</span> cm and a volume of <span class="tex">20</span> cm<sup>3</sup>. State the volume of the second cone if its radius is <span class="tex">12</span> cm.</div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Explain how Problem 1 can be solved using mental math (without the volume formula), and state the answer.</div><div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">V=\tfrac13\pi r^2h</span> the radius, and so <span class="tex">r^2</span>, is unchanged, which leaves <span class="tex">V</span> directly proportional to <span class="tex">h</span> alone.<br>The height goes from 6 cm to 24 cm, a factor of <span class="tex">24\div6=4</span>, so the volume is multiplied by the same factor of 4:<br><span class="tex">V_2=4(15)=\boldsymbol{60}</span> cm<sup>3</sup>. The formula is never evaluated.</div></div></div>
+    <div class="part"><div class="pl">(b) Explain how Problem 2 can be solved using mental math (without the volume formula), and state the answer.</div><div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Here the height is unchanged, so <span class="tex">V</span> is proportional to <span class="tex">r^2</span>: the radius enters squared.<br>The radius goes from 4 cm to 12 cm, a factor of <span class="tex">12\div4=3</span>, so the volume is multiplied by <span class="tex">3^2=9</span>:<br><span class="tex">V_2=9(20)=\boldsymbol{180}</span> cm<sup>3</sup>. Note the factor is 9, not 3.</div></div></div>
+  </div>
+  <div class="explainer" data-explainer="scale"></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 6. Composite objects ================= -->
+<section class="card" data-ink="s6" data-section="6. Composite Objects">
+  <div class="sec-h"><span class="badge">6</span><h2>Composite Objects</h2></div>
+  <div class="def">A <b>composite object</b> is built from two or more simple solids. Its <b>volume</b> is the sum of the volumes of the parts. For its <b>surface area</b>, add the outside surfaces of the parts, but leave out any face where two parts are joined: that shared face is hidden inside the object, so it is removed from <b>both</b> parts.</div>
+</section>
+
+<!-- ================= Example 5 ================= -->
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A shed: rectangular prism + square pyramid roof</h3></div>
+  <div class="u10l4-row u10l4-row2">
+    <div class="u10l4-fig" id="u10l4-f6"></div>
+    <div>
+      <p class="q">A garden shed is a rectangular prism with a <span class="tex">3</span> m by <span class="tex">3</span> m floor and walls <span class="tex">2.4</span> m high, topped by a right square pyramid roof on the same <span class="tex">3</span> m by <span class="tex">3</span> m square, with a height of <span class="tex">1.2</span> m.</p>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine the volume of the shed.</div><div class="work" style="--h:240px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Prism: <span class="tex">V=A_{\text{Base}}h=(3)(3)(2.4)=21.6</span> m<sup>3</sup>.<br>Pyramid: <span class="tex">V=\tfrac13A_{\text{Base}}h=\tfrac13(9)(1.2)=3.6</span> m<sup>3</sup>.<br>Total <span class="tex">V=21.6+3.6=\boldsymbol{25.2}</span> m<sup>3</sup>.</div></div></div>
+    <div class="part"><div class="pl">(b) Determine the surface area of the shed (including the floor), to the nearest tenth of a square metre. Which face is <i>not</i> counted, and why?</div><div class="work" style="--h:240px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The top of the prism and the base of the roof are the <b>same</b> <span class="tex">3\times3</span> square, hidden inside the shed, so neither is counted.<br>Prism part: floor <span class="tex">3\times3=9</span> m<sup>2</sup> plus four walls <span class="tex">4(3)(2.4)=28.8</span> m<sup>2</sup>.<br>Roof slant height: the horizontal leg is half a side, 1.5 m, so <span class="tex">s=\sqrt{1.2^2+1.5^2}=\sqrt{3.69}=1.9209\ldots</span> m.<br>Four triangles: <span class="tex">4\cdot\tfrac12(3)(1.9209\ldots)=11.5256\ldots</span> m<sup>2</sup>.<br><span class="tex">SA=9+28.8+11.5256\ldots=49.3256\ldots\approx\boldsymbol{49.3}</span> m<sup>2</sup>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Keep the slant height in the calculator.</b> <span class="keys"><kbd>√</kbd><kbd>1</kbd><kbd>.</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>.</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 1.920937271. Then the whole surface area in one line: <span class="keys"><kbd>9</kbd><kbd>+</kbd><kbd>2</kbd><kbd>8</kbd><kbd>.</kbd><kbd>8</kbd><kbd>+</kbd><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>×</kbd><kbd>√</kbd><kbd>3</kbd><kbd>.</kbd><kbd>6</kbd><kbd>9</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 49.32562363.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 1.2 x² + 1.5 x² ) =">Slant height</button><button class="pill" data-keys="9 + 28.8 + 4 × 3 × √ 3.69 ) ÷ 2 =">Surface area</button></div>
+  </div>
+  <div class="explainer" data-explainer="shed"></div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>One third.</b> A pyramid holds <span class="tex">\tfrac13</span> of the prism, and a cone <span class="tex">\tfrac13</span> of the cylinder, with the same base and height: <span class="tex">V=\tfrac13A_{\text{Base}}h</span>, <span class="tex">V=\tfrac13\pi r^2h</span>. Scale the height by <span class="tex">k</span>: volume <span class="tex">\times k</span>. Scale the radius by <span class="tex">k</span>: volume <span class="tex">\times k^2</span>.</div>
+    <div><b><span class="tex">h</span> for volume, <span class="tex">s</span> for surface area.</b> Inside the solid, <span class="tex">h</span>, <span class="tex">r</span> (or half the side) and <span class="tex">s</span> make a right triangle: <span class="tex">s^2=h^2+r^2</span>. The slant height is the hypotenuse, so it is always the longer one.</div>
+    <div><b>Surface area = the net.</b> Pyramid: base + triangles <span class="tex">\tfrac12(\text{side})(s)</span>. Cone: <span class="tex">\pi r^2+\pi rs</span>; the curved part unrolls to a sector, the fraction <span class="tex">\tfrac rs</span> of a circle of radius <span class="tex">s</span>. Leave out a base that isn’t there.</div>
+    <div><b>Composite objects.</b> Volume: add the parts. Surface area: add the <b>outside</b> surfaces only; a face where two parts join is hidden, so it comes off <b>both</b> parts. Use exact values (<span class="tex">\pi</span>, <span class="tex">\sqrt3</span>) and round once at the end.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u10l4">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Surface Area and Volume of Pyramids and Cones</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Spheres and Hemispheres</b><div class="muted">A ball that just fits inside the same kind of cylinder: how much does it hold, and how much skin does it have?</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u10l4.js';
+  boot({ key: 'u10l4', homeHref: '../../', title: '10.4 Pyramids and Cones' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

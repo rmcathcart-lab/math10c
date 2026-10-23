@@ -6,15 +6,16 @@
  *   until parallel, then sliding onto line 1), methods (one system, three roads to (2, 3): graphing, substitution with the
  *   expression lifting into the other equation, elimination with the opposite terms cancelling), choose (★ a system
  *   travels a which-method flowchart, then is solved and checked; Example 1(b), 2(a), 2(b), 2(c), 3 and two demos),
- *   tables (Example 1: two tables → two lines → the crossing; where the gaps between the tables flip), ti84 (graphing
- *   calculator Y=, WINDOW, GRAPH, 2nd TRACE 5:intersect on a TI-84 screen: Example 2(c) and Example 4(c)),
+ *   tables (Example 1: two tables → two lines → the crossing; where the gaps between the tables flip), setEq (decimals:
+ *   a hand-drawn graph only estimates, so a sweep line finds where the two y-values match, then set them equal:
+ *   Example 2(c) and Example 4(c)),
  *   trip (Example 3: the two trips drawn to scale, the motion organizer, the equations, then a race against the clock),
  *   plans (★ Example 4: three plan lines on one graph; a sweep line shows the lowest line, the "best plan" band changing
  *   at the two crossovers).
  * Colours (whole unit): Eq. 1 / line 1 blue, Eq. 2 / line 2 amber, the solution purple; Plan 3 green. */
 import {
   h, tex, add, box, Graph, ValueTable, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
-  pairTex, texNum, svgEl, place, pulse, anim, calcNum, COLORS
+  pairTex, texNum, svgEl, place, pulse, anim, COLORS
 } from '../blocks.js';
 
 const T = (s) => tex(s);
@@ -301,31 +302,31 @@ const methods = {
 /* =============================== explainer: ★ choosing a method =============================== */
 const SYS = {
   e1b: { label: 'Example 1(b)', e: ['y=2x-1', 'y=-x+8'], path: ['q1', 'q2', 'q3', 'sub'],
-    ans: ['<b>No</b>: whole numbers, and we want an exact answer.', '<b>No</b>: neither is in the form ' + T('Ax+By=C') + '.', '<b>Yes</b>: ' + T('y') + ' is already isolated in both.'],
+    ans: ['<b>No</b>: we want an exact answer.', '<b>No</b>: neither is in the form ' + T('Ax+By=C') + '.', '<b>Yes</b>: ' + T('y') + ' is already isolated in both.'],
     why: 'Both equations are already solved for ' + T('y') + ': substitute (set the two expressions equal).',
     work: ['2x-1=-x+8', '3x=9\\Rightarrow x=3', 'y=2(3)-1=5'], sol: '(3,\\ 5)', check: '-3+8=5' },
   e2a: { label: 'Example 2(a)', e: ['y=3x-2', '5x-2y=1'], path: ['q1', 'q2', 'q3', 'sub'],
-    ans: ['<b>No</b>: integer coefficients.', '<b>No</b>: Eq. 1 is not in ' + T('Ax+By=C') + ' form, and nothing matches.', '<b>Yes</b>: ' + T('y') + ' is already isolated in Eq. 1.'],
+    ans: ['<b>No</b>: we want an exact answer.', '<b>No</b>: Eq. 1 is not in ' + T('Ax+By=C') + ' form, and nothing matches.', '<b>Yes</b>: ' + T('y') + ' is already isolated in Eq. 1.'],
     why: T('y') + ' is already isolated: substitute it into Eq. 2.',
     work: ['5x-2(3x-2)=1', '-x+4=1\\Rightarrow x=3', 'y=3(3)-2=7'], sol: '(3,\\ 7)', check: '5(3)-2(7)=1' },
   e2b: { label: 'Example 2(b)', e: ['4x+3y=10', '4x-5y=-6'], path: ['q1', 'q2', 'elim'],
-    ans: ['<b>No</b>: integer coefficients.', '<b>Yes</b>: the ' + T('x') + '-coefficients match (' + T('4') + ' and ' + T('4') + ').'],
+    ans: ['<b>No</b>: we want an exact answer.', '<b>Yes</b>: the ' + T('x') + '-coefficients match (' + T('4') + ' and ' + T('4') + ').'],
     why: 'The ' + T('x') + '-coefficients already match: subtract.',
     work: ['(4x+3y)-(4x-5y)=10-(-6)', '8y=16\\Rightarrow y=2', '4x+6=10\\Rightarrow x=1'], sol: '(1,\\ 2)', check: '4(1)-5(2)=-6' },
-  e2c: { label: 'Example 2(c)', e: ['y=0.8x+1.2', 'y=-1.5x+6.95'], path: ['q1', 'gr'],
-    ans: ['<b>Yes</b>: decimal coefficients. A graphing calculator does this fast.'],
-    why: 'Decimal coefficients, both already ' + T('y=\\ldots') + ': graphing calculator (or set equal).',
+  e2c: { label: 'Example 2(c)', e: ['y=0.8x+1.2', 'y=-1.5x+6.95'], path: ['q1', 'q2', 'q3', 'sub'],
+    ans: ['<b>No</b>: we want an exact answer, and decimals are hard to read off a hand-drawn graph.', '<b>No</b>: neither is in the form ' + T('Ax+By=C') + '.', '<b>Yes</b>: ' + T('y') + ' is already isolated in both.'],
+    why: 'Both are already ' + T('y=\\ldots') + ': set the two expressions equal. The TI-30XIIS handles the decimals.',
     work: ['0.8x+1.2=-1.5x+6.95', '2.3x=5.75\\Rightarrow x=2.5', 'y=0.8(2.5)+1.2=3.2'], sol: '(2.5,\\ 3.2)', check: '-1.5(2.5)+6.95=3.2' },
   e3: { label: 'Example 3', e: ['5w+3r=21', '5w+r=17'], path: ['q1', 'q2', 'elim'],
-    ans: ['<b>No</b>: integer coefficients (we already cleared the fractions).', '<b>Yes</b>: the ' + T('w') + '-coefficients match (' + T('5') + ' and ' + T('5') + ').'],
+    ans: ['<b>No</b>: we want an exact answer.', '<b>Yes</b>: the ' + T('w') + '-coefficients match (' + T('5') + ' and ' + T('5') + ').'],
     why: 'The ' + T('w') + '-coefficients already match: subtract.',
     work: ['(5w+3r)-(5w+r)=21-17', '2r=4\\Rightarrow r=2', '5w+2=17\\Rightarrow w=3'], sol: 'w=3,\\ r=2', check: '5(3)+3(2)=21' },
   one: { label: 'Coefficient 1', e: ['x-3y=4', '2x+5y=19'], path: ['q1', 'q2', 'q3', 'sub'],
-    ans: ['<b>No</b>: integer coefficients.', '<b>No</b>: ' + T('1') + ' and ' + T('2') + ', ' + T('-3') + ' and ' + T('5') + ' don’t match.', '<b>Yes</b>: ' + T('x') + ' has coefficient ' + T('1') + ' in Eq. 1.'],
+    ans: ['<b>No</b>: we want an exact answer.', '<b>No</b>: ' + T('1') + ' and ' + T('2') + ', ' + T('-3') + ' and ' + T('5') + ' don’t match.', '<b>Yes</b>: ' + T('x') + ' has coefficient ' + T('1') + ' in Eq. 1.'],
     why: T('x') + ' has coefficient ' + T('1') + ': solve Eq. 1 for it, ' + T('x=4+3y') + ', and substitute.',
     work: ['2(4+3y)+5y=19', '8+11y=19\\Rightarrow y=1', 'x=4+3(1)=7'], sol: '(7,\\ 1)', check: '2(7)+5(1)=19' },
   scale: { label: 'Scale both', e: ['2x+3y=12', '5x-2y=11'], path: ['q1', 'q2', 'q3', 'scale', 'elim'],
-    ans: ['<b>No</b>: integer coefficients.', '<b>No</b>: ' + T('2') + ' and ' + T('5') + ', ' + T('3') + ' and ' + T('-2') + ' don’t match.', '<b>No</b>: no coefficient is ' + T('1') + ' or ' + T('-1') + '.', 'Easy multiples: ' + T('3y') + ' and ' + T('-2y') + ' both go to ' + T('6') + '. Eq. 1 ' + T('\\times2') + ', Eq. 2 ' + T('\\times3') + '.'],
+    ans: ['<b>No</b>: we want an exact answer.', '<b>No</b>: ' + T('2') + ' and ' + T('5') + ', ' + T('3') + ' and ' + T('-2') + ' don’t match.', '<b>No</b>: no coefficient is ' + T('1') + ' or ' + T('-1') + '.', 'Easy multiples: ' + T('3y') + ' and ' + T('-2y') + ' both go to ' + T('6') + '. Eq. 1 ' + T('\\times2') + ', Eq. 2 ' + T('\\times3') + '.'],
     why: 'Scale both so the ' + T('y') + '-terms are ' + T('+6y') + ' and ' + T('-6y') + ', then add.',
     work: ['4x+6y=24,\\ \\ 15x-6y=33', '19x=57\\Rightarrow x=3', '2(3)+3y=12\\Rightarrow y=2'], sol: '(3,\\ 2)', check: '5(3)-2(2)=11' }
 };
@@ -342,11 +343,11 @@ const choose = {
       x: 4, y: 4, width: FW, height: 500,
       nodes: {
         start: { x: 285, y: 30, w: 270, h: 46, html: '<b>Look at the system</b>', cls: 'bk-round' },
-        q1: { x: 285, y: 125, w: 284, h: 72, html: '<b>Decimals?</b>or just a picture or estimate', cls: 'bk-diamond' },
+        q1: { x: 285, y: 125, w: 284, h: 72, html: '<b>Just a picture or an estimate?</b>exact only for integer solutions', cls: 'bk-diamond' },
         q2: { x: 285, y: 235, w: 284, h: 72, html: `<b>Matching or opposite coefficients?</b>both in ${T('Ax+By=C')} form`, cls: 'bk-diamond' },
         q3: { x: 285, y: 345, w: 284, h: 72, html: `<b>Variable isolated?</b>or a coefficient of ${T('1')} or ${T('-1')}`, cls: 'bk-diamond' },
         scale: { x: 285, y: 455, w: 284, h: 56, html: '<b>Scale one or both</b>easy multiples, every term' },
-        gr: { x: 540, y: 125, w: 170, h: 56, html: '<b>Graphing</b>5:intersect', color: TEAL },
+        gr: { x: 540, y: 125, w: 170, h: 56, html: '<b>Graphing</b>by hand', color: TEAL },
         elim: { x: 540, y: 235, w: 170, h: 56, html: '<b>Elimination</b>add or subtract', color: TEAL },
         sub: { x: 540, y: 345, w: 170, h: 56, html: '<b>Substitution</b>replace and solve', color: TEAL }
       },
@@ -366,7 +367,7 @@ const choose = {
     const goTo = async (c, a, b) => { await Promise.all([F.go(c, a, b), tokTo(c, b)]); await F.visit(c, b); };
     const Pn = panel(stage, PX, 6, PW, 498, 'The system');
     line(Pn, `${tag(1)}${T(cB(S.e[0]))}`); line(Pn, `${tag(2)}${T(cA(S.e[1]))}`);
-    const QTXT = { q1: 'Decimals, or only a picture or estimate needed?', q2: 'Do one variable’s coefficients match or are they opposites?', q3: 'Is a variable isolated, or does one have coefficient 1 or −1?' };
+    const QTXT = { q1: 'Only a picture or an estimate needed?', q2: 'Do one variable’s coefficients match or are they opposites?', q3: 'Is a variable isolated, or does one have coefficient 1 or −1?' };
     const steps = [{ cap: `Start with the system: ${T(cB(S.e[0]))} and ${T(cA(S.e[1]))}.`, run: async (c) => { await tokTo(c, 'start'); await F.visit(c, 'start'); } }];
     const full = ['start', ...S.path];
     S.path.forEach((id, i) => {
@@ -438,57 +439,61 @@ const tables = {
   }
 };
 
-/* =============================== explainer: the TI-84 =============================== */
-const M = (s) => String(s).replace(/-/g, '−');
-const TIX = {
-  e2c: { label: 'Example 2(c) check', y1: '0.8X+1.2', y2: '-1.5X+6.95', f1: (x) => 0.8 * x + 1.2, f2: (x) => -1.5 * x + 6.95, win: { xmin: -2, xmax: 8, ymin: -2, ymax: 8, xscl: 1, yscl: 1 }, guess: 2.2,
-    chk: [cB('0.8(2.5)+1.2=3.2'), cA('-1.5(2.5)+6.95=3.2')], why: 'a window big enough to hold the crossing' },
-  e4c: { label: 'Example 4(c) check', y1: '25+0.5X', y2: '18+0.9X', f1: (x) => 25 + 0.5 * x, f2: (x) => 18 + 0.9 * x, win: { xmin: 0, xmax: 100, ymin: 0, ymax: 80, xscl: 10, yscl: 10 }, guess: 20,
-    chk: [cB('25+0.5(17.5)=33.75'), cA('18+0.9(17.5)=33.75')], why: 'GB from 0 to 100 and dollars from 0 to 80, like the grid in (f)' }
+/* =============================== explainer: decimals? set the expressions equal =============================== */
+const SQ = {
+  e2c: { label: 'Example 2(c) check', f1: (x) => 0.8 * x + 1.2, f2: (x) => -1.5 * x + 6.95, t1: '0.8x+1.2', t2: '-1.5x+6.95', xs: 2.5, ys: 3.2,
+    win: { xmin: -0.5, xmax: 5.5, ymin: -0.5, ymax: 7.5, xstep: 0.5, ystep: 0.5, xlabels: 1, ylabels: 1 }, labs: [[3.6, 'se'], [0.4, 'ne']],
+    alg: ['2.3x=5.75', 'x=2.5'], back: 'y=0.8(2.5)+1.2=3.2', chk: cA('-1.5(2.5)+6.95=3.2'), sol: '(2.5,\\ 3.2)', near: 'near ' + T('(2.5,\\ 3)') },
+  e4c: { label: 'Example 4(c) check', f1: (x) => 25 + 0.5 * x, f2: (x) => 18 + 0.9 * x, t1: '25+0.5x', t2: '18+0.9x', xs: 17.5, ys: 33.75,
+    win: { xmin: 0, xmax: 30, ymin: 0, ymax: 50, xstep: 2.5, ystep: 5, xlabels: 5, ylabels: 10, origin: true }, labs: [[22, 'se'], [9, 'se']],
+    alg: ['7=0.4x', 'x=17.5'], back: 'y=25+0.5(17.5)=33.75', chk: cA('18+0.9(17.5)=33.75'), sol: '(17.5,\\ 33.75)', near: 'somewhere near ' + T('(17,\\ 34)') }
 };
-const ti84 = {
-  title: 'Graphing calculator: Y=, WINDOW, 5:intersect',
-  height: 440,
+const setEq = {
+  title: 'Decimals? Set the two expressions equal',
+  height: 450,
   minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(TIX).map((k) => ({ v: k, label: TIX[k].label })),
-  intro: (v) => `Find the crossing of ${T(cB(TIX[v].y1.replace('X', 'x')))} and ${T(cA(TIX[v].y2.replace('X', 'x')))} on a TI-84. Press <b>Next</b>.`,
+  choices: Object.keys(SQ).map((k) => ({ v: k, label: SQ[k].label })),
+  intro: (v) => `${T(cB('y=' + SQ[v].t1))} and ${T(cA('y=' + SQ[v].t2))}: both already ${T('y=\\ldots')}, with decimal coefficients. Press <b>Next</b>.`,
   make(stage, v, ex) {
-    const D = TIX[v], W = D.win;
-    const G = new Graph(stage, Object.assign({ x: 26, y: 26, width: 468, height: 312, theme: 'calc' }, W));
-    const lcd = h('div', 'u8l6-lcd'); G.el.appendChild(lcd);
-    const show = (lines) => { lcd.innerHTML = lines.map((l) => `<div class="u8l6-ln">${l}</div>`).join(''); lcd.style.display = ''; };
-    show(['']);
-    const hud = h('div', 'u8l6-hud'); hud.style.left = '8px'; hud.style.bottom = '6px'; hud.style.display = 'none'; G.el.appendChild(hud);
-    const hudSet = (html) => { hud.innerHTML = html; hud.style.display = html ? '' : 'none'; };
-    const keys = add(stage, box(h('div', 'u8l6-keys', '<b class="u8l6-kl">Keys</b>'), 500, 46), 18, 372);
-    const press = async (c, ks) => { keys.innerHTML = '<b class="u8l6-kl">Keys</b>'; for (const k of ks) { const e = h('kbd', k === '2nd' ? 'u8l6-k2' : '', k); keys.appendChild(e); await pop(c, e, 220); await sleep(c, 90); } };
-    const Pn = panel(stage, 540, 14, ex.W - 548, 412, 'Steps');
-    const r = G.intersect(D.f1, D.f2, D.guess), mid = (W.xmin + W.xmax) / 2;
-    const xy = (x, y) => `X=${M(calcNum(x))}&nbsp;&nbsp;Y=${M(calcNum(y))}`;
-    let f1, f2, tm;
+    const D = SQ[v], st = { x: D.win.xmin < 0 ? 0 : D.win.xmin };
+    const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: 470, height: 420, fontSize: 15 }, D.win));
+    const L1 = G.fn(D.f1, { color: BLUE, width: 4 }), L2 = G.fn(D.f2, { color: AMB, width: 4 });
+    const lab1 = G.label(D.labs[0][0], D.f1(D.labs[0][0]), T(cB('y=' + D.t1)), { pos: D.labs[0][1], cls: 'bk-ptlab' });
+    const lab2 = G.label(D.labs[1][0], D.f2(D.labs[1][0]), T(cA('y=' + D.t2)), { pos: D.labs[1][1], cls: 'bk-ptlab' });
+    [L1, L2, lab1, lab2].forEach(hide);
+    const sw = G.vline(st.x, { color: GRAY, width: 2.5 });
+    const D1 = G.point(st.x, D.f1(st.x), { color: BLUE, r: 7 }), D2 = G.point(st.x, D.f2(st.x), { color: AMB, r: 7 });
+    [sw, D1, D2].forEach(hide);
+    const Pn = panel(stage, 508, 14, ex.W - 522, 420, 'At the crossing, same y');
+    const xr = line(Pn, '', 'u8l6-sqx'), y1 = line(Pn, '', 'u8l6-sqy'), y2 = line(Pn, '', 'u8l6-sqy');
+    y1.innerHTML = `${T(cB('y=' + D.t1))} = <b class="u8l6-sqn"></b>`; y2.innerHTML = `${T(cA('y=' + D.t2))} = <b class="u8l6-sqn"></b>`;
+    const n1 = y1.querySelector('b'), n2 = y2.querySelector('b');
+    [xr, y1, y2].forEach(hide);
+    const fx = (x) => String(Math.round(x * 100) / 100), set = (x) => {
+      st.x = x; sw.set(x); G.moveTo(D1, x, D.f1(x)); G.moveTo(D2, x, D.f2(x));
+      xr.innerHTML = `<i>x</i> = <b>${fx(x)}</b>`; n1.textContent = fx(D.f1(x)); n2.textContent = fx(D.f2(x));
+    };
+    set(st.x);
+    let ring, S;
     return [
-      { cap: `Press <kbd>Y=</kbd> and type both equations: ${T(cB('Y_1=' + D.y1))} and ${T(cA('Y_2=' + D.y2))}. (Use <kbd>(−)</kbd> for a negative and <kbd>X,T,θ,n</kbd> for ${T('X')}.)`,
-        run: async (c) => { await press(c, ['Y=']); show(['Plot1 Plot2 Plot3', `<span class="u8l6-b">■</span>\\Y1=${M(D.y1)}`, `<span class="u8l6-a">■</span>\\Y2=${M(D.y2)}`, ' \\Y3=', ' \\Y4=', ' \\Y5=']); await say(c, Pn, `1. <kbd>Y=</kbd> both equations`); } },
-      { cap: `Press <kbd>WINDOW</kbd> and choose ${D.why}: ${T(`x:\\ ${W.xmin}\\text{ to }${W.xmax},\\ \\ y:\\ ${W.ymin}\\text{ to }${W.ymax}`)}.`,
-        run: async (c) => { await press(c, ['WINDOW']); show(['WINDOW', `Xmin=${M(W.xmin)}`, `Xmax=${W.xmax}`, `Xscl=${W.xscl}`, `Ymin=${M(W.ymin)}`, `Ymax=${W.ymax}`, `Yscl=${W.yscl}`, 'Xres=1']); await say(c, Pn, `2. <kbd>WINDOW</kbd> ${T(`[${W.xmin},${W.xmax}]\\times[${W.ymin},${W.ymax}]`)}`); } },
-      { cap: `Press <kbd>GRAPH</kbd>. Both lines appear, and they cross inside the window.`,
-        run: async (c) => { await press(c, ['GRAPH']); lcd.style.display = 'none'; f1 = G.fn(D.f1, { color: BLUE, width: 3 }); f2 = G.fn(D.f2, { color: AMB, width: 3 }); await G.drawIn(f1, 700, c); await G.drawIn(f2, 700, c); await say(c, Pn, `3. <kbd>GRAPH</kbd>`); } },
-      { cap: `Open the CALC menu with <kbd class="u8l6-k2">2nd</kbd> <kbd>TRACE</kbd> and choose <code class="u8l6-c">5:intersect</code>.`,
-        run: async (c) => { await press(c, ['2nd', 'TRACE']); show(['<span class="u8l6-inv">CALCULATE</span>', '1:value', '2:zero', '3:minimum', '4:maximum', '<span class="u8l6-inv">5:</span>intersect', '6:dy/dx', '7:∫f(x)dx']); await sleep(c, 300); await press(c, ['2nd', 'TRACE', '5']); await say(c, Pn, `4. <kbd class="u8l6-k2">2nd</kbd> <kbd>TRACE</kbd> <code class="u8l6-c">5:intersect</code>`); } },
-      { cap: `<code class="u8l6-c">First curve?</code> The cursor sits on ${T(cB('Y_1'))}: press <kbd>ENTER</kbd>. <code class="u8l6-c">Second curve?</code> It jumps to ${T(cA('Y_2'))}: press <kbd>ENTER</kbd>.`,
+      { cap: `Graphed by hand, the lines cross <b>between</b> grid lines, ${D.near}: only an estimate.`,
         run: async (c) => {
-          lcd.style.display = 'none';
-          tm = G.traceMarker(D.f1, mid, { readout: false, color: BLUE }); hudSet(`First curve?<br>${xy(mid, D.f1(mid))}`); await appear(c, tm.el, 250);
-          await press(c, ['ENTER']); await sleep(c, 300);
-          tm.remove(); tm = G.traceMarker(D.f2, mid, { readout: false, color: AMB }); hudSet(`Second curve?<br>${xy(mid, D.f2(mid))}`); await appear(c, tm.el, 250);
-          await press(c, ['ENTER', 'ENTER']); await say(c, Pn, `5. <kbd>ENTER</kbd> <kbd>ENTER</kbd> (the two curves)`);
+          for (const [Ln, lb] of [[L1, lab1], [L2, lab2]]) { Ln.style.opacity = 1; await G.drawIn(Ln, 600, c); await fadeIn(c, lb, 200); }
+          const [px, py] = G.toPx(D.xs, D.ys); ring = svgEl('circle', { cx: px, cy: py, r: 30, fill: 'none', stroke: PUR, 'stroke-width': 3, 'stroke-dasharray': '7 6' }, G.layers.top); await pop(c, ring, 400);
         } },
-      { cap: `<code class="u8l6-c">Guess?</code> Move the cursor near the crossing with the arrow keys, then press <kbd>ENTER</kbd>.`,
-        run: async (c) => { hudSet(`Guess?<br>${xy(D.guess, D.f2(D.guess))}`); await press(c, ['◀', '◀', 'ENTER']); await tm.move(c, D.guess, 900); hudSet(`Guess?<br>${xy(D.guess, D.f2(D.guess))}`); await say(c, Pn, `6. move near the crossing, <kbd>ENTER</kbd>`); } },
-      { cap: `The screen shows <code class="u8l6-c">Intersection</code> <code class="u8l6-c">X=${calcNum(r.x)}</code> <code class="u8l6-c">Y=${calcNum(r.y)}</code>: the solution is ${T(cP(pairTex(r.x, r.y)))}.`,
-        run: async (c) => { tm.set(r.x); hudSet(`Intersection<br>${xy(r.x, r.y)}`); const p = G.point(r.x, r.y, { color: PUR, r: 7 }); await G.reveal(p, c); await say(c, Pn, `<b>${T(cP(pairTex(r.x, r.y)))}</b>`); } },
-      { cap: `Check algebraically in <b>both</b> equations (the TI-30XIIS is fine for this): ${T(D.chk[0])} ✓ and ${T(D.chk[1])} ✓`,
-        run: async (c) => { keys.innerHTML = '<b class="u8l6-kl">Keys</b>'; await say(c, Pn, `<span class="u8l6-good">${T(D.chk[0])} ✓</span>`, 'u8l6-small'); await say(c, Pn, `<span class="u8l6-good">${T(D.chk[1])} ✓</span>`, 'u8l6-small'); } }
+      { cap: `Slide ${T('x')} along: the two ${T('y')}-values get closer, and they are <b>equal</b> exactly where the lines cross.`,
+        run: async (c) => {
+          for (const e of [sw, D1, D2, xr, y1, y2]) await fadeIn(c, e, 200);
+          const a = st.x; await tween(c, 2200, (t) => set(a + (D.xs - a) * t)); set(D.xs);
+          ring.remove(); S = G.point(D.xs, D.ys, { color: PUR, r: 8 }); await G.reveal(S, c);
+        } },
+      { cap: `So set the two expressions equal: ${T(cB(D.t1) + '=' + cA(D.t2))}.`, run: (c) => say(c, Pn, T(cB(D.t1) + '=' + cA(D.t2))) },
+      { cap: `Solve (the TI-30XIIS handles the decimals): ${T(D.alg.join('\\ \\Rightarrow\\ '))}.`, run: async (c) => { for (const a of D.alg) await say(c, Pn, T(a), 'u8l6-small'); } },
+      { cap: `Back-substitute: ${T(D.back)}. Check in the other equation: ${T(D.chk)} ✓. The solution is ${T(cP(D.sol))}.`,
+        run: async (c) => {
+          await say(c, Pn, T(D.back), 'u8l6-small'); await say(c, Pn, `<span class="u8l6-good">${T(D.chk)} ✓</span>`, 'u8l6-small');
+          await fadeIn(c, G.label(D.xs, D.ys, T(cP(D.sol)), { pos: 'ne', cls: 'bk-ptlab' }), 300);
+        } }
     ];
   }
 };
@@ -690,5 +695,5 @@ function mountStatic() {
 
 /* =============================== mount =============================== */
 mountStatic();
-export const explainers = mountExplainers({ mobile, howMany, methods, choose, tables, ti84, trip, plans });
-export const _test = { SYS, TIX, PLAN };
+export const explainers = mountExplainers({ mobile, howMany, methods, choose, tables, setEq, trip, plans });
+export const _test = { SYS, SQ, PLAN };

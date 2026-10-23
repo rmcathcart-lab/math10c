@@ -1,6 +1,6 @@
 /* Math 10C · Unit 4 · Lesson 8 — Unit 4 Review: Factoring (AN5)
- * Assignment questions 1–24 (u4_L08.tex: Beginning, Progressing and Mastery sections laid out like the unit test, plus
- * the Lesson 7 extension) and the whole Lesson 8 Extra Practice (u4_EP08.tex, Q1–22).
+ * Assignment questions 1–21 (u4_L08.tex: Beginning, Progressing and Mastery sections laid out like the unit test) and
+ * the whole Lesson 8 Extra Practice (u4_EP08.tex, Q1–15).
  * Every part is a generator that keeps the booklet question's structure (GCF first or not, monic or not, sign pattern,
  * number of letters, perfect squares, sums of squares, negative leading coefficients) and changes the numbers; the
  * booklet's numbers are one of the possible values. Factored keys are built from the generated factors with HW.factor
@@ -14,17 +14,16 @@
     'gcf-one': 'Dropped the 1 left when a term equal to the GCF is divided', 'gcf-power': 'Wrong power of the variable in the GCF',
     'sign-swap': 'Signs in the wrong brackets (pair by product only)', 'dos-square': 'Wrote a difference of squares as a square',
     'sum-split': 'Tried to factor a sum of squares', 'swap-const': 'Constants in the wrong brackets', 'student-ans': 'Repeated the student’s answer',
-    'gcf-small': 'Took out a common factor that isn’t the greatest', 'neg-gcf': 'Took out a negative GCF', 'nr-sign': 'Sign slip in the numerical response',
-    'not-doubled': 'Middle term of a perfect square not doubled', 'half-perim': 'Gave half the perimeter', 'area-not-perim': 'Gave the area instead of the perimeter',
+    'gcf-small': 'Took out a common factor that isn’t the greatest', 'neg-gcf': 'Took out a negative GCF',
+    'nr-sign': 'Sign slip in the numerical response', 'not-doubled': 'Middle term of a perfect square not doubled',
+    'half-perim': 'Gave half the perimeter', 'area-not-perim': 'Gave the area instead of the perimeter',
     'perim-s': 'Added the two unknown sides only once', 'count-pos': 'Counted only the positive values', 'count-ordered': 'Counted each pair twice',
-    'count-zero': 'Counted b = 0', 'not-form': 'Not of the form x² + bx + c', 'wrong-c': 'Wrong constant term', 'can-factor': 'Example can actually be factored',
-    'cannot-factor': 'Example cannot be factored', 'divided-x': 'Divided by x and lost the root 0', 'forgot-m': 'Root of (mx − s) taken as s instead of s/m',
-    'no-rearrange': 'Didn’t move every term to one side first', 'smallest-sum': 'Used the smallest pair sum, not the largest', 'forgot-1': 'Left out the pair 1 × c',
-    'times-c': 'Multiplied instead of using the pair', 'kept-neg': 'Kept the root that has no meaning', 'bad-dim': 'A dimension is zero or negative',
-    'coef-fraction': 'Coefficients not integers', 'root-missing': 'Equation is missing a required root', 'root-extra': 'Equation has an extra root',
-    'root-sign': 'Root ↔ factor sign mix-up', 'double-root': 'Repeated root not repeated in the equation', 'minus-dist': 'Subtracted a bracket without changing every sign',
-    'no-middle': 'Squared a binomial without the middle term', 'count-const': 'Counted a constant factor as giving a solution', 'count-repeat': 'Counted a repeated factor twice',
-    'dos-again': 'Didn’t split a difference of squares again', 'gcf-dropped': 'Dropped the common factor', 'grid-alt': 'Wrong method in the table', 'other-root': 'Gave the rejected root'
+    'count-zero': 'Counted b = 0', 'not-form': 'Not of the form x² + bx + c', 'wrong-c': 'Wrong constant term',
+    'can-factor': 'Example can actually be factored', 'cannot-factor': 'Example cannot be factored',
+    'smallest-sum': 'Used the smallest pair sum, not the largest', 'forgot-1': 'Left out the pair 1 × c',
+    'times-c': 'Multiplied instead of using the pair', 'bad-dim': 'A dimension is zero or negative',
+    'minus-dist': 'Subtracted a bracket without changing every sign', 'no-middle': 'Squared a binomial without the middle term',
+    'gcf-dropped': 'Dropped the common factor', 'grid-alt': 'Wrong method in the table'
   });
 
   /* ---------------- polynomial helpers ---------------- */
@@ -46,7 +45,6 @@
   function sumsOf(c) { return pairsOf(c).map(function (q) { return q[0] + q[1]; }); }
   function plain(s) { return String(s).replace(/\\left|\\right|\\,|\\ /g, '').replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '$1/$2').replace(/\\cdot/g, '·').replace(/\\times/g, '×').replace(/\\pm/g, '±').replace(/[{}\\]/g, ''); }
   function frac(p, q) { var g = gcd(p, q); p /= g; q /= g; if (q < 0) { p = -p; q = -q; } return q === 1 ? String(p) : (p < 0 ? '-' : '') + '\\frac{' + Math.abs(p) + '}{' + q + '}'; }
-  function rat(p, q) { var g = gcd(p, q); p /= g; q /= g; if (q < 0) { p = -p; q = -q; } return q === 1 ? p : [p, q]; }
 
   /* a factored form built from term arrays: pre = monomial in front (or null), brs = [terms] or { terms, k } */
   function FT(pre, brs) {
@@ -166,7 +164,7 @@
 
   HW.defineLesson({
     id: 'u4l8', unit: 4, num: '8', title: 'Unit 4 Review: Factoring', outcome: 'AN5',
-    blurb: 'Laid out like the unit test: Beginning, Progressing and Mastery questions on every factoring tool, then a short look back at solving by factoring.',
+    blurb: 'Laid out like the unit test: Beginning, Progressing and Mastery questions on every factoring tool, each section laid out like the unit test.',
     questions: [
       /* ================= BEGINNING ================= */
       { num: '1', section: 'Beginning (BEG) — common factors, x²+bx+c, patterns', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -519,76 +517,12 @@
               return null;
             }, 'Since ' + t('c=' + c + '>0') + ', the two integers have the same sign: ' + pairsOf(c).map(function (q) { return t('(x\\pm' + q[0] + ')(x\\pm' + q[1] + ')') + ', ' + t('b=\\pm' + (q[0] + q[1])); }).join('; ') + '. That is <b>' + ans + '</b> polynomials.',
             ['List the factor pairs of ' + t(c) + '. Each pair gives one positive and one negative value of ' + t('b') + '.'], 'count factorable x²+bx+' + c);
-          } }] },
-
-      /* ================= EXTENSION ================= */
-      { num: '22', section: 'Extension — solving by factoring (Lesson 7, Math 20-1 preview)', stem: 'Solve by factoring.', parts: [
-        { id: '22a', level: 'EMG', make: function (r) {
-          var z = pick(function () { return { p: r.int(2, 9), q: r.int(2, 9) }; }, function (z) { return z.p < z.q; });
-          var eq = seq([M(1, 'x', 2), M(-(z.p + z.q), 'x'), N(z.p * z.q)]) + '=0';
-          return vs(t(eq), [z.p, z.q], {}, 'Pair: ' + t(-z.p) + ' and ' + t(-z.q) + '.<br>' + t('(x-' + z.p + ')(x-' + z.q + ')=0') + '<br>' + t('x=' + z.p) + ' or ' + t('x=' + z.q),
-            ['Factor the left side, then set each factor equal to ' + t('0') + '.'], 'solve ' + plain(eq), ['x=' + (-z.p) + ', x=' + (-z.q), 'x=' + z.p]);
-        } },
-        { id: '22b', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { m: r.pick([2, 3, 5]), s: r.int(1, 7), q: r.int(1, 6) }; }, function (z) { return gcd(z.m, z.s) === 1 && z.s % z.m !== 0 && z.m * z.q - z.s > 0; });
-          var b = z.m * z.q - z.s, eq = seq([M(z.m, 'x', 2), M(b, 'x')]) + '=' + z.s * z.q;
-          return vs(t(eq), [[z.s, z.m], -z.q], { diag: function (A) {
-            if (A.length === 2 && A.some(function (v) { return v === z.s; }) && A.some(function (v) { return v === -z.q; })) return { code: 'forgot-m', hint: t(z.m + 'x-' + z.s + '=0') + ' gives ' + t('x=' + frac(z.s, z.m)) + ', not ' + t(z.s) + '.' };
-            return null; } },
-            'One side must be ' + t('0') + ' first: ' + t(seq([M(z.m, 'x', 2), M(b, 'x'), N(-z.s * z.q)]) + '=0') + '; ' + t('ac=' + (-z.m * z.s * z.q)) + ', pair ' + t(z.m * z.q) + ', ' + t(-z.s) + '.<br>' + t('(' + z.m + 'x-' + z.s + ')(x+' + z.q + ')=0') + '<br>' + t('x=' + frac(z.s, z.m)) + ' or ' + t('x=-' + z.q),
-            ['Move every term to one side so the equation equals ' + t('0') + '.', 'Then factor and set each factor equal to ' + t('0') + '.'], 'solve ' + plain(eq), ['x=' + z.s + ', x=' + (-z.q)]);
-        } },
-        { id: '22c', level: 'EMG', make: function (r) {
-          var k = r.int(2, 12), eq = 'x^{2}=' + k + 'x';
-          return vs(t(eq), [0, k], { diag: function (A) { if (A.length === 1 && A[0] === k) return { code: 'divided-x', hint: 'There is another solution. Don’t divide by ' + t('x') + ' — move everything to one side and factor: ' + t('x(x-' + k + ')=0') + '.' }; return null; } },
-            t('x^{2}-' + k + 'x=0') + '<br>' + t('x(x-' + k + ')=0') + '<br>' + t('x=0') + ' or ' + t('x=' + k) + '<br><i>Do not divide by ' + t('x') + '.</i>',
-            ['Move every term to one side first.', 'Take out the common factor ' + t('x') + '.'], 'solve ' + plain(eq), ['x=' + k]);
-        } }] },
-      { num: '23', stem: '<i>(Extension)</i>', parts: [
-        { id: '23', level: 'EMG', make: function (r) {
-          var k = r.int(2, 12);
-          return mc(r, 'Kiran solves ' + t('x^{2}=' + k + 'x') + ' by dividing both sides by ' + t('x') + ' to get ' + t('x=' + k) + '. Which statement explains the error and gives the complete solution?', [
-            { html: 'Dividing by ' + t('x') + ' assumes ' + t('x\\neq 0') + ', but ' + t('x=0') + ' is a solution. Complete solution: ' + t('x=0') + ' or ' + t('x=' + k) + '.', right: true },
-            { html: 'There is no error: ' + t('x=' + k) + ' is the only solution.', why: 'Try ' + t('x=0') + ': ' + t('0^{2}=' + k + '(0)') + ' is true.' },
-            { html: 'He should have taken the square root of both sides: ' + t('x=\\pm\\sqrt{' + k + 'x}') + '.', why: 'That still has ' + t('x') + ' on both sides. Move everything to one side and factor: ' + t('x(x-' + k + ')=0') + '.' },
-            { html: 'He lost the negative root: the complete solution is ' + t('x=\\pm ' + k) + '.', why: 'Try ' + t('x=-' + k) + ': ' + t('(-' + k + ')^{2}=' + k * k) + ' but ' + t(k + '(-' + k + ')=-' + k * k) + '.' }],
-            'Dividing by ' + t('x') + ' is only allowed when ' + t('x\\neq 0') + ', and here ' + t('x=0') + ' <i>is</i> a solution, so that step throws a root away.<br>Correct method: ' + t('x^{2}-' + k + 'x=0') + ', ' + t('x(x-' + k + ')=0') + ', so ' + t('x=0') + ' or ' + t('x=' + k) + '.',
-            ['Substitute ' + t('x=0') + ' into the original equation.'], 'Kiran divides by x (k=' + k + ')');
-        } }] },
-      { num: '24', stem: function (sh) { return 'A rectangular array of chairs has ' + t(sh.d) + ' more chairs in each row than there are rows, and ' + t(sh.r * (sh.r + sh.d)) + ' chairs in total.'; },
-        shared: function (r) { return { r: r.int(5, 12), d: r.int(2, 7) }; },
-        parts: [
-          { id: '24a', sub: 'a', level: 'PRG', make: function (r, sh) {
-            var n = sh.r * (sh.r + sh.d);
-            return vs('Write an equation for the number of rows ' + t('r') + ', and solve it. Give <b>both</b> roots of the equation.', [sh.r, -(sh.r + sh.d)], { v: 'r' },
-              'Let ' + t('r=') + ' number of rows; each row holds ' + t('r+' + sh.d) + ' chairs.<br>' + t('r(r+' + sh.d + ')=' + n + '\\ \\Rightarrow\\ r^{2}+' + sh.d + 'r-' + n + '=0') + '<br>' + t('(r-' + sh.r + ')(r+' + (sh.r + sh.d) + ')=0') + '<br>' + t('r=' + sh.r) + ' or ' + t('r=-' + (sh.r + sh.d)),
-              ['Rows × chairs per row = total: ' + t('r(r+' + sh.d + ')=' + n) + '.', 'Expand, move ' + t(n) + ' to the left side, and factor.'], 'chairs r(r+' + sh.d + ')=' + n, ['r=' + sh.r, 'r=' + (-sh.r) + ', r=' + (sh.r + sh.d)]);
-          } },
-          { id: '24b', sub: 'b i', level: 'EMG', make: function (r, sh) {
-            var p = KP.fields('State the number of rows and the number of chairs in each row.', [numBox('Rows:'), numBox('Chairs per row:')],
-              [K.number(sh.r, function (v) { return v === -(sh.r + sh.d) ? { code: 'kept-neg', hint: 'A number of rows can’t be negative.' } : v === sh.r + sh.d ? { code: 'value', hint: 'That is the number of chairs in each row. There are ' + t(sh.d) + ' fewer rows.' } : null; }),
-                K.number(sh.r + sh.d, function (v) { return v === sh.r ? { code: 'value', hint: 'That is the number of rows; each row has ' + t(sh.d) + ' more chairs.' } : null; })],
-              [String(sh.r), String(sh.r + sh.d)], t(sh.r) + ' rows of ' + t(sh.r + sh.d) + ' chairs',
-              t(sh.r) + ' rows of ' + t(sh.r + sh.d) + ' chairs (' + t(sh.r + '\\times ' + (sh.r + sh.d) + '=' + sh.r * (sh.r + sh.d)) + ' ✓).',
-              ['Use the positive root for the number of rows.'], 'chairs rows and per row');
-            p.bad = [[String(sh.r + sh.d), String(sh.r)]];
-            return p;
-          } },
-          { id: '24c', sub: 'b ii', level: 'BEG', make: function (r, sh) {
-            var neg = -(sh.r + sh.d);
-            return mc(r, 'Why must the root ' + t('r=' + neg) + ' be rejected?', [
-              { html: 'A number of rows must be a positive whole number.', right: true },
-              { html: 'Because it is larger in size than the other root.', why: 'Size isn’t the reason — think about what ' + t('r') + ' counts.' },
-              { html: 'Because it does not satisfy the equation.', why: 'Check: ' + t('(' + neg + ')(' + neg + '+' + sh.d + ')=' + neg * (neg + sh.d)) + ' — it does satisfy the equation. The reason is the context.' },
-              { html: 'Because quadratic equations only have one real root.', why: 'This equation has two roots; one of them makes no sense here.' }],
-              'Reject ' + t('r=' + neg) + ': it does satisfy the equation, but a number of rows must be a positive whole number.',
-              ['What does ' + t('r') + ' stand for?'], 'reject negative root');
           } }] }
     ],
 
     /* ======================= EXTRA PRACTICE ======================= */
     extra: [
-      { num: '1', section: 'Extra practice A — Choosing and applying', stem: function (sh) { return 'Work down the Lesson 6 checklist for each expression, but <b>do not factor yet</b>. Example: ' + t('5x^{3}-45x') + ' — common factor first? yes, ' + t('5x') + '; method on what is left: difference of squares.'; },
+      { num: '1', section: 'Extra practice A — Choosing and applying', stem: function (sh) { return 'Work down the Lesson 7 checklist for each expression, but <b>do not factor yet</b>. Example: ' + t('5x^{3}-45x') + ' — common factor first? yes, ' + t('5x') + '; method on what is left: difference of squares.'; },
         shared: function (r) { return { ex: ep1Exprs(r), order: r.shuffle(['a', 'b', 'c', 'd', 'e']) }; },
         parts: [
           { id: 'e1a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -778,135 +712,10 @@
           return fac(t(first), Ft, [], '<b>Already factored completely.</b> ' + t(seq(A)) + ' is linear, and ' + t(seq(B)) + ' is a <i>sum</i>, not a difference, so neither bracket factors.<br>' + t(Ft.tex),
             ['Is ' + t(seq(B)) + ' a difference or a sum?'], 'already complete ' + plain(Ft.tex));
         } }] },
-      { num: '7', section: 'Extra practice C — Solving equations', stem: 'Solve each equation. Factor the left side completely first, then apply the Zero Product Law to every factor. Watch the number of roots — it is not always two.', parts: [
-        { id: 'e7a', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { g: r.pick([2, 3, 4, 5]), p: r.int(1, 9), q: r.int(1, 9) }; }, function (z) { return z.p < z.q && z.g !== z.p && z.g !== z.q; });
-          var eq = seq([M(z.g, 'x', 2), M(-z.g * (z.p + z.q), 'x'), N(z.g * z.p * z.q)]) + '=0';
-          return vs(t(eq), [z.p, z.q], { diag: function (A) { if (A.indexOf(z.g) >= 0) return { code: 'count-const', hint: 'The factor ' + t(z.g) + ' is never ' + t('0') + ', so it gives no solution.' }; return null; } },
-            'GCF ' + t(z.g) + ': ' + t(z.g + '(x^{2}-' + (z.p + z.q) + 'x+' + z.p * z.q + ')=0') + '<br>' + t(z.g + '(x-' + z.p + ')(x-' + z.q + ')=0') + '<br>' + t(z.g + '\\neq 0') + ', so ' + t('x=' + z.p) + ' or ' + t('x=' + z.q),
-            ['Take out the common factor, then factor the trinomial.'], 'solve ' + plain(eq), ['x=' + z.g + ', x=' + z.p + ', x=' + z.q]);
-        } },
-        { id: 'e7b', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { g: r.pick([2, 3]), a: r.pick([2, 3]), s: r.int(1, 7) }; }, function (z) { return gcd(z.a, z.s) === 1; });
-          var eq = seq([M(z.g * z.a * z.a, 'x', 3), M(-z.g * z.s * z.s, 'x')]) + '=0';
-          return vs(t(eq), [0, rat(z.s, z.a), rat(-z.s, z.a)], { diag: function (A) { if (A.indexOf(0) < 0 && A.length === 2) return { code: 'divided-x', hint: 'The common factor ' + t(z.g + 'x') + ' gives a solution too: ' + t('x=0') + '.' }; return null; } },
-            'GCF ' + t(z.g + 'x') + ': ' + t(z.g + 'x(' + z.a * z.a + 'x^{2}-' + z.s * z.s + ')=0') + '<br>' + t(z.g + 'x(' + z.a + 'x-' + z.s + ')(' + z.a + 'x+' + z.s + ')=0') + '<br>' + t('x=0') + ', ' + t('x=' + frac(z.s, z.a)) + ' or ' + t('x=' + frac(-z.s, z.a)),
-            ['Take out ' + t(z.g + 'x') + ' — it gives a solution too.', 'Then a difference of squares.'], 'solve ' + plain(eq), ['x=' + frac(z.s, z.a) + ', x=' + frac(-z.s, z.a)]);
-        } },
-        { id: 'e7c', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { p: r.int(2, 5), s: r.int(1, 7), q: r.int(2, 5), u: r.int(1, 7) }; }, function (z) { return z.p !== z.q && gcd(z.p, z.s) === 1 && gcd(z.q, z.u) === 1 && z.s % z.p && z.u % z.q && z.q * z.s - z.p * z.u !== 0; });
-          var b = z.q * z.s - z.p * z.u, eq = seq([M(z.p * z.q, 'x', 2), M(b, 'x')]) + '=' + z.s * z.u;
-          return vs(t(eq), [rat(-z.s, z.p), rat(z.u, z.q)], {},
-            'One side must be ' + t('0') + ': ' + t(seq([M(z.p * z.q, 'x', 2), M(b, 'x'), N(-z.s * z.u)]) + '=0') + '; ' + t('ac=' + (-z.p * z.q * z.s * z.u)) + ', pair ' + t(z.q * z.s) + ' and ' + t(-z.p * z.u) + '.<br>' + t('(' + z.p + 'x+' + z.s + ')(' + z.q + 'x-' + z.u + ')=0') + '<br>' + t('x=' + frac(-z.s, z.p)) + ' or ' + t('x=' + frac(z.u, z.q)),
-            ['Move every term to one side first.', 'Decompose, then set each factor equal to ' + t('0') + '.'], 'solve ' + plain(eq), ['x=' + (-z.s) + ', x=' + z.u]);
-        } },
-        { id: 'e7d', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { p: r.pick([2, 3, 5]), s: r.int(1, 7), q: r.int(1, 4) }; }, function (z) { return gcd(z.p, z.s) === 1 && z.s % z.p !== 0; });
-          var eq = seq([M(z.p, 'x', 3), M(z.s, 'x', 2), M(-z.p * z.q * z.q, 'x'), N(-z.s * z.q * z.q)]) + '=0';
-          return vs(t(eq), [rat(-z.s, z.p), z.q, -z.q], {},
-            'Four terms ⇒ grouping: ' + t('x^{2}(' + z.p + 'x+' + z.s + ')-' + z.q * z.q + '(' + z.p + 'x+' + z.s + ')=0') + '<br>' + t('(' + z.p + 'x+' + z.s + ')(x^{2}-' + z.q * z.q + ')=0') + '<br>' + t('(' + z.p + 'x+' + z.s + ')(x-' + z.q + ')(x+' + z.q + ')=0') + '<br>' + t('x=' + frac(-z.s, z.p)) + ', ' + t('x=' + z.q) + ' or ' + t('x=-' + z.q),
-            ['Group two and two.', 'Factor every bracket completely — there are three roots.'], 'solve ' + plain(eq), ['x=' + frac(-z.s, z.p) + ', x=' + z.q]);
-        } },
-        { id: 'e7e', level: 'ADV', make: function (r) {
-          var z = pick(function () { return { p: r.int(1, 6), q: r.int(2, 7) }; }, function (z) { return z.p < z.q; });
-          var eq = seq([M(1, 'x', 4), M(-(z.p * z.p + z.q * z.q), 'x', 2), N(z.p * z.p * z.q * z.q)]) + '=0';
-          return vs(t(eq), [z.p, -z.p, z.q, -z.q], { diag: function (A) { if (A.length === 2 && A.indexOf(z.p * z.p) >= 0 && A.indexOf(z.q * z.q) >= 0) return { code: 'dos-again', hint: 'Those are the values of ' + t('x^{2}') + '. Factor each bracket again: ' + t('x^{2}-' + z.p * z.p + '=(x-' + z.p + ')(x+' + z.p + ')') + '.' }; return null; } },
-            'A trinomial in ' + t('x^{2}') + ': product ' + t(z.p * z.p * z.q * z.q) + ', sum ' + t(-(z.p * z.p + z.q * z.q)) + ': ' + t(-z.p * z.p) + ' and ' + t(-z.q * z.q) + '.<br>' + t('(x^{2}-' + z.p * z.p + ')(x^{2}-' + z.q * z.q + ')=0') + '<br>' + t('(x-' + z.p + ')(x+' + z.p + ')(x-' + z.q + ')(x+' + z.q + ')=0') + '<br>' + t('x=\\pm ' + z.p) + ' or ' + t('x=\\pm ' + z.q),
-            ['Treat ' + t('x^{2}') + ' as the variable first.', 'Each bracket is a difference of squares — four roots.'], 'solve ' + plain(eq), ['x=' + z.p * z.p + ', x=' + z.q * z.q, 'x=' + z.p + ', x=' + z.q]);
-        } },
-        { id: 'e7f', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { a: r.int(2, 5), s: r.int(1, 9) }; }, function (z) { return gcd(z.a, z.s) === 1 && z.s % z.a !== 0; });
-          var eq = seq([M(z.a * z.a, 'x', 2), M(-2 * z.a * z.s, 'x'), N(z.s * z.s)]) + '=0';
-          return vs(t(eq), [rat(z.s, z.a)], {},
-            t('\\sqrt{' + z.a * z.a + 'x^{2}}=' + z.a + 'x') + ', ' + t('\\sqrt{' + z.s * z.s + '}=' + z.s) + ', ' + t('2(' + z.a + 'x)(' + z.s + ')=' + 2 * z.a * z.s + 'x') + ': a perfect square.<br>' + t('(' + z.a + 'x-' + z.s + ')^{2}=0') + '<br>' + t(z.a + 'x-' + z.s + '=0') + '<br>' + t('x=' + frac(z.s, z.a)) + ' only',
-            ['Is it a perfect square trinomial?'], 'solve ' + plain(eq), ['x=' + frac(z.s, z.a) + ', x=' + frac(-z.s, z.a)]);
-        } }] },
-      { num: '8', stem: 'Equations can have different numbers of solutions.', parts: [
-        { id: 'e8a', level: 'EMG', make: function (r) {
-          var k = r.int(0, 4), e, n, why, diag;
-          if (k === 0) { var g = r.int(2, 5), p = r.int(1, 6), q = r.int(7, 9); e = g + '(x-' + p + ')(x-' + q + ')=0'; n = 2; why = 'The factor ' + t(g) + ' is never zero; ' + t('x=' + p) + ' and ' + t('x=' + q) + '.'; diag = function (v) { return v === 3 ? { code: 'count-const', hint: 'A nonzero constant factor like ' + t(g) + ' can never be ' + t('0') + ', so it gives no solution.' } : null; }; }
-          else if (k === 1) { var g2 = r.pick([2, 3]), a = r.pick([2, 3]), s = r.pick([1, 5, 7]); e = g2 + 'x(' + a + 'x-' + s + ')(' + a + 'x+' + s + ')=0'; n = 3; why = t('x=0') + ', ' + t('x=' + frac(s, a)) + ' and ' + t('x=' + frac(-s, a)) + '.'; diag = function (v) { return v === 2 ? { code: 'divided-x', hint: 'The factor ' + t(g2 + 'x') + ' gives a solution too: ' + t('x=0') + '.' } : null; }; }
-          else if (k === 2) { var a3 = r.int(2, 5), s3 = r.pick([1, 3, 7]); e = '(' + a3 + 'x-' + s3 + ')^{2}=0'; n = 1; why = 'Both factors are ' + t(a3 + 'x-' + s3) + ', so the only solution is ' + t('x=' + frac(s3, a3)) + '.'; diag = function (v) { return v === 2 ? { code: 'count-repeat', hint: 'The two factors are the <b>same</b>, so they give the same solution.' } : null; }; }
-          else if (k === 3) { var p4 = r.int(1, 3), q4 = r.int(4, 6); e = '(x^{2}-' + p4 * p4 + ')(x^{2}-' + q4 * q4 + ')=0'; n = 4; why = 'Each bracket is a difference of squares: ' + t('x=\\pm ' + p4) + ' and ' + t('x=\\pm ' + q4) + '.'; diag = function (v) { return v === 2 ? { code: 'dos-again', hint: 'Factor each bracket again: each is a difference of squares and gives two solutions.' } : null; }; }
-          else { var p5 = r.int(1, 6), q5 = r.int(1, 6); e = '(x-' + p5 + ')^{2}(x+' + q5 + ')=0'; n = 2; why = t('x=' + p5) + ' (from the repeated factor) and ' + t('x=-' + q5) + '.'; diag = function (v) { return v === 3 ? { code: 'count-repeat', hint: 'The squared factor ' + t('(x-' + p5 + ')') + ' gives only one solution.' } : null; }; }
-          return KP.number('How many <b>different</b> solutions does ' + t(e) + ' have?', n, diag, why + ' Each <i>different</i> factor containing ' + t('x') + ' (after factoring completely) gives exactly one solution, so there are <b>' + n + '</b>.', ['Factor completely, then count the different factors that contain ' + t('x') + '.'], 'number of solutions ' + plain(e));
-        } },
-        { id: 'e8b', level: 'EMG', make: function (r) {
-          var a = r.int(2, 5), s = pick(function () { return r.int(1, 9); }, function (s) { return gcd(a, s) === 1; }), e = seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0';
-          return mc(r, t(e) + ' has only one solution even though it is a quadratic. Why?', [
-            { html: 'It factors as ' + t('(' + a + 'x-' + s + ')(' + a + 'x-' + s + ')=0') + ': both factors give the same equation, ' + t(a + 'x-' + s + '=0') + ', so the two roots are the same number.', right: true },
-            { html: 'A perfect square can’t equal zero, so one root is lost.', why: 'It can: at ' + t('x=' + frac(s, a)) + ' the square is ' + t('0') + '.' },
-            { html: 'The Zero Product Law doesn’t apply to squares.', why: 'It does: ' + t('(' + a + 'x-' + s + ')^{2}') + ' is a product of two equal factors.' },
-            { html: 'The other solution is ' + t('x=' + frac(-s, a)) + ', which has to be rejected.', why: 'Substitute it: ' + t('(' + a + '\\cdot ' + frac(-s, a) + '-' + s + ')^{2}=' + 4 * s * s + '\\neq 0') + '. It isn’t a solution at all.' }],
-            'A perfect square trinomial factors as one linear factor repeated: ' + t('(' + a + 'x-' + s + ')(' + a + 'x-' + s + ')=0') + '. The Zero Product Law sets each factor to ' + t('0') + ', but both give the same equation, so the solution is the single value ' + t('x=' + frac(s, a)) + ' (a double root).',
-            ['Factor it. What do the two factors look like?'], 'perfect square one solution');
-        } },
-        { id: 'e8c', level: 'EMG', make: function (r) {
-          var g = r.pick([2, 3, 4, 5]);
-          return mc(r, 'In ' + t(g + '(x-' + (g + 2) + ')(x-1)=0') + ', why does the factor ' + t(g) + ' give no solution?', [
-            { html: 'Setting ' + t(g + '=0') + ' is false for every ' + t('x') + ': a nonzero constant is never zero.', right: true },
-            { html: 'It does: it gives ' + t('x=' + g) + '.', why: 'Substitute ' + t('x=' + g) + ': ' + t(g + '(' + g + '-' + (g + 2) + ')(' + g + '-1)=' + g * (-2) * (g - 1) + '\\neq 0') + '.' },
-            { html: 'It gives ' + t('x=0') + '.', why: t('x=0') + ' comes from a factor ' + t('x') + '; there is none here. Substitute ' + t('x=0') + ' to check.' },
-            { html: 'You must divide it out first, or it would change the solutions.', why: 'Dividing by ' + t(g) + ' is allowed, but not needed — a constant factor never changes the roots.' }],
-            'The Zero Product Law gives a root only from a factor that can equal ' + t('0') + '. Setting ' + t(g + '=0') + ' is false for every ' + t('x') + ', so it contributes no solution. The roots are ' + t('x=' + (g + 2)) + ' and ' + t('x=1') + '.',
-            ['Can ' + t(g) + ' ever equal ' + t('0') + '?'], 'constant factor no solution');
-        } }] },
-      { num: '9', stem: 'Solve. Each of these needs rearranging before anything can be factored.',
-        shared: function (r) { return pick(function () { return { r: r.pick([2, 3, 5]), s: r.int(1, 7), u: r.int(2, 7) }; }, function (z) { return gcd(z.r, z.s) === 1 && z.u !== z.s && ((z.s + z.u) % z.r === 0 || (z.s - z.u) % z.r === 0); }); },
-        parts: [
-          { id: 'e9a', level: 'PRG', make: function (r) {
-            var z = pick(function () { var A = r.int(4, 9), B = r.int(2, 6), d = r.int(1, B - 1); return { A: A, B: B, d: d, p: A - d, q: B - d }; }, function (z) { return z.A !== z.B && z.q >= 1 && z.p >= 1 && z.p !== z.q; });
-            var k = z.A * z.B - z.p * z.q, eq = '(x-' + z.p + ')(x+' + z.q + ')=' + k, bm = z.q - z.p;
-            return vs(t(eq), [z.A, -z.B], { diag: function (A) { if (A.length === 2 && A.indexOf(z.p) >= 0 && A.indexOf(-z.q) >= 0) return { code: 'no-rearrange', hint: 'The Zero Product Law only works when one side is ' + t('0') + '. Expand and move ' + t(k) + ' over first.' }; return null; } },
-              'Expand, then move ' + t(k) + ' over: ' + t(seq([M(1, 'x', 2), M(bm, 'x'), N(-z.p * z.q)]) + '=' + k) + '<br>' + t(seq([M(1, 'x', 2), M(bm, 'x'), N(-z.A * z.B)]) + '=0') + '<br>' + t('(x-' + z.A + ')(x+' + z.B + ')=0') + '<br>' + t('x=' + z.A) + ' or ' + t('x=-' + z.B),
-              ['The right side must be ' + t('0') + ' before you use the Zero Product Law.'], 'solve ' + plain(eq), ['x=' + z.p + ', x=' + (-z.q)]);
-          } },
-          { id: 'e9b', level: 'PRG', make: function (r) {
-            var z = pick(function () { return { m: r.pick([2, 3, 5]), s: r.int(1, 4), q: r.int(1, 6) }; }, function (z) { return gcd(z.m, z.s) === 1 && z.s % z.m !== 0; });
-            var eq = seq([M(z.m, 'x', 2), N(z.s * z.q)]) + '=' + tx(M(z.m * z.q + z.s, 'x'));
-            return vs(t(eq), [rat(z.s, z.m), z.q], {},
-              t(seq([M(z.m, 'x', 2), M(-(z.m * z.q + z.s), 'x'), N(z.s * z.q)]) + '=0') + '; ' + t('ac=' + z.m * z.s * z.q) + ', pair ' + t(-z.s) + ' and ' + t(-z.m * z.q) + '.<br>' + t('(' + z.m + 'x-' + z.s + ')(x-' + z.q + ')=0') + '<br>' + t('x=' + frac(z.s, z.m)) + ' or ' + t('x=' + z.q),
-              ['Move every term to the left side, in descending order.'], 'solve ' + plain(eq), ['x=' + z.s + ', x=' + z.q]);
-          } },
-          { id: 'e9c', level: 'PRG', make: function (r, sh) {
-            var eq = '(' + sh.r + 'x-' + sh.s + ')^{2}=' + sh.u * sh.u, x1 = rat(sh.s + sh.u, sh.r), x2 = rat(sh.s - sh.u, sh.r);
-            var e2 = seq([M(sh.r * sh.r, 'x', 2), M(-2 * sh.r * sh.s, 'x'), N(sh.s * sh.s - sh.u * sh.u)]);
-            return vs(t(eq), [x1, x2], {},
-              'Expand, then move ' + t(sh.u * sh.u) + ' over: ' + t(e2 + '=0') + '<br>' + t('(' + sh.r + 'x-' + (sh.s + sh.u) + ')(' + sh.r + 'x' + sg(sh.u - sh.s) + ')=0') + ' (or use ' + t(sh.r + 'x-' + sh.s + '=\\pm ' + sh.u) + ')<br>' + t('x=' + frac(sh.s + sh.u, sh.r)) + ' or ' + t('x=' + frac(sh.s - sh.u, sh.r)),
-              ['Expand the square and move ' + t(sh.u * sh.u) + ' to the left side.', 'Or: ' + t(sh.r + 'x-' + sh.s) + ' must be ' + t(sh.u) + ' or ' + t(-sh.u) + '.'], 'solve ' + plain(eq), ['x=' + frac(sh.s + sh.u, sh.r)]);
-          } },
-          { id: 'e9d', level: 'PRG', make: function (r) {
-            var z = pick(function () { return { a: r.pick([2, 3]), s: r.int(1, 7) }; }, function (z) { return gcd(z.a, z.s) === 1; });
-            var eq = tx(M(z.a * z.a, 'x', 3)) + '=' + tx(M(z.s * z.s, 'x'));
-            return vs(t(eq), [0, rat(z.s, z.a), rat(-z.s, z.a)], { diag: function (A) { if (A.indexOf(0) < 0) return { code: 'divided-x', hint: 'Don’t divide by ' + t('x') + ': move everything to one side and take out ' + t('x') + '. It gives ' + t('x=0') + '.' }; return null; } },
-              t(seq([M(z.a * z.a, 'x', 3), M(-z.s * z.s, 'x')]) + '=0') + ' (do not divide by ' + t('x') + ')<br>' + t('x(' + z.a * z.a + 'x^{2}-' + z.s * z.s + ')=0') + '<br>' + t('x(' + z.a + 'x-' + z.s + ')(' + z.a + 'x+' + z.s + ')=0') + '<br>' + t('x=0') + ', ' + t('x=' + frac(z.s, z.a)) + ' or ' + t('x=' + frac(-z.s, z.a)),
-              ['Move everything to the left side and take out the common factor ' + t('x') + '.'], 'solve ' + plain(eq), ['x=' + frac(z.s, z.a) + ', x=' + frac(-z.s, z.a)]);
-          } },
-          { id: 'e9e', level: 'PRG', make: function (r) {
-            var z = pick(function () { return { A: r.int(3, 9), B: r.int(1, 8), a: 0 }; }, function (z) { return z.A > z.B; }); z.a = z.A - z.B;
-            var c = z.A * z.B, eq = 'x(' + seq([M(2, 'x'), N(-z.a)]) + ')=x^{2}+' + c;
-            return vs(t(eq), [z.A, -z.B], {},
-              t(seq([M(2, 'x', 2), M(-z.a, 'x')]) + '=x^{2}+' + c) + '<br>' + t(seq([M(1, 'x', 2), M(-z.a, 'x'), N(-c)]) + '=0') + '<br>Product ' + t(-c) + ', sum ' + t(-z.a) + ': ' + t(-z.A) + ' and ' + t(z.B) + '.<br>' + t('(x-' + z.A + ')(x+' + z.B + ')=0') + '<br>' + t('x=' + z.A) + ' or ' + t('x=-' + z.B),
-              ['Expand the left side, then move every term to the left.'], 'solve ' + plain(eq), ['x=' + (-z.A) + ', x=' + z.B]);
-          } },
-          { id: 'e9f', level: 'PRG', make: function (r) {
-            var z = pick(function () { return { A: r.pick([6, 8, 10, 12, 14, 16]), B: r.pick([2, 4, 6]) }; }, function (z) { return z.A > z.B && (z.A - z.B) % 4 === 0; });
-            var bq = (z.A - z.B) / 4, cq = z.A * z.B / 4, eq = '\\frac{1}{4}x^{2}' + (bq === 1 ? '-x' : '-' + bq + 'x') + '-' + cq + '=0';
-            return vs(t(eq), [z.A, -z.B], {},
-              'Multiply every term by ' + t('4') + ' to clear the fraction: ' + t(seq([M(1, 'x', 2), M(-(z.A - z.B), 'x'), N(-z.A * z.B)]) + '=0') + '<br>Product ' + t(-z.A * z.B) + ', sum ' + t(-(z.A - z.B)) + ': ' + t(-z.A) + ' and ' + t(z.B) + '.<br>' + t('(x-' + z.A + ')(x+' + z.B + ')=0') + '<br>' + t('x=' + z.A) + ' or ' + t('x=-' + z.B),
-              ['Multiply both sides by ' + t('4') + ' first.'], 'solve ' + plain(eq), ['x=' + (-z.A) + ', x=' + z.B]);
-          } },
-          { id: 'e9g', sub: 'g', level: 'PRG', make: function (r, sh) {
-            var a = sh.s + sh.u, b = sh.s - sh.u, Ft = complete([lin(sh.r, 'x', -a), lin(sh.r, 'x', -b)]);
-            return fac('The equation ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}=' + sh.u * sh.u) + ' can also be solved as a difference of squares: ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}-' + sh.u + '^{2}=0') + '. Factor ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}-' + sh.u + '^{2}') + ' completely.', Ft,
-              [{ is: FT(null, [lin(sh.r, 'x', -sh.s - sh.u * sh.u), lin(sh.r, 'x', -sh.s + sh.u * sh.u)]), code: 'value', hint: 'Use ' + t('B=' + sh.u) + ', not ' + t(sh.u * sh.u) + ': ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '.' }],
-              t('[(' + sh.r + 'x-' + sh.s + ')-' + sh.u + '][(' + sh.r + 'x-' + sh.s + ')+' + sh.u + ']=(' + seq(lin(sh.r, 'x', -a)) + ')(' + seq(lin(sh.r, 'x', -b)) + ')') + (Ft.tex !== '(' + seq(lin(sh.r, 'x', -a)) + ')(' + seq(lin(sh.r, 'x', -b)) + ')' ? '<br>Take out the common factor: ' + t('=' + Ft.tex) : '') + '<br>Setting each factor to ' + t('0') + ' gives the same pair of roots as expanding and factoring. ✓',
-              ['Let ' + t('A=' + sh.r + 'x-' + sh.s) + ' and ' + t('B=' + sh.u) + ' in ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '.', 'Check the brackets for a common factor.'], 'DoS route (' + sh.r + 'x−' + sh.s + ')²−' + sh.u * sh.u);
-          } }] },
-      { num: '10', section: 'Extra practice D — Geometry and applications', stem: function (sh) { return 'The area of a rectangle is ' + t('A=' + tx(sh.T) + '') + ' square centimetres, and both side lengths are binomials with integer coefficients.'; },
+      { num: '7', section: 'Extra practice C — Geometry and applications', stem: function (sh) { return 'The area of a rectangle is ' + t('A=' + tx(sh.T) + '') + ' square centimetres, and both side lengths are binomials with integer coefficients.'; },
         shared: function (r) {
-          var z = pick(function () { return { n: r.int(2, 3), s: r.int(1, 5), m: r.int(3, 5), u: r.int(2, 7), x0: r.int(1, 3) }; }, function (z) { return z.m > z.n && z.u > z.s && gcd(z.n, z.s) === 1 && gcd(z.m, z.u) === 1; });
-          z.A = lin(z.n, 'x', z.s); z.B = lin(z.m, 'x', z.u); z.T = P.mul(sum(z.A), sum(z.B)); z.A0 = (z.n * z.x0 + z.s) * (z.m * z.x0 + z.u); z.K = z.m * z.n * z.x0 + z.n * z.u + z.m * z.s; return z;
+          var z = pick(function () { return { n: r.int(2, 3), s: r.int(1, 5), m: r.int(3, 5), u: r.int(2, 7) }; }, function (z) { return z.m > z.n && z.u > z.s && gcd(z.n, z.s) === 1 && gcd(z.m, z.u) === 1; });
+          z.A = lin(z.n, 'x', z.s); z.B = lin(z.m, 'x', z.u); z.T = P.mul(sum(z.A), sum(z.B)); return z;
         },
         parts: [
           { id: 'e10a', level: 'PRG', make: function (r, sh) {
@@ -924,25 +733,9 @@
               { html: 'They are equal when ' + t('x=1') + '.', why: 'At ' + t('x=1') + ' they are ' + t(sh.n + sh.s) + ' and ' + t(sh.m + sh.u) + '.' }],
               'Subtract the sides: ' + t('(' + Lt + ')-(' + St + ')=' + tx(d)) + '. For ' + t('x>0') + ' this is positive, so ' + t(Lt) + ' is always the longer side.',
               ['Subtract one side from the other and look at the sign.'], 'longer side');
-          } },
-          { id: 'e10c', level: 'ADV', make: function (r, sh) {
-            var C = sh.s * sh.u - sh.A0, eq2 = seq([M(sh.m * sh.n, 'x', 2), M(sh.n * sh.u + sh.m * sh.s, 'x'), N(C)]);
-            return vs('Solve ' + t(tx(sh.T) + '=' + sh.A0) + ' to find when the area is ' + t(sh.A0 + '\\text{ cm}^{2}') + '. Give <b>both</b> roots of the equation.', [sh.x0, rat(-sh.K, sh.m * sh.n)], {},
-              t(eq2 + '=0') + '<br>' + t('ac=' + sh.m * sh.n * C) + '; pair ' + t(sh.K) + ' and ' + t(-sh.m * sh.n * sh.x0) + '.<br>' + t('(x-' + sh.x0 + ')(' + sh.m * sh.n + 'x+' + sh.K + ')=0') + '<br>' + t('x=' + sh.x0) + ' or ' + t('x=' + frac(-sh.K, sh.m * sh.n)) + '<br>Reject ' + t('x=' + frac(-sh.K, sh.m * sh.n)) + ': it makes both side lengths negative.',
-              ['Move ' + t(sh.A0) + ' to the left side first, then decompose.'], 'area = ' + sh.A0, ['x=' + sh.x0]);
-          } },
-          { id: 'e10d', level: 'EMG', make: function (r, sh) {
-            var a = sh.n * sh.x0 + sh.s, b = sh.m * sh.x0 + sh.u, per = 2 * (a + b);
-            var p = KP.fields('Using the positive value of ' + t('x') + ' for which ' + t(tx(sh.T) + '=' + sh.A0) + ', state the two side lengths and the perimeter of the rectangle.', [numBox('Shorter side (cm):'), numBox('Longer side (cm):'), numBox('Perimeter (cm):')],
-              [K.number(a), K.number(b), K.number(per, function (v) { return v === a + b ? { code: 'half-perim', hint: 'That is half the perimeter: there are two of each side.' } : v === a * b ? { code: 'area-not-perim', hint: 'That is the area.' } : null; })],
-              [String(a), String(b), String(per)], t(a) + ' cm, ' + t(b) + ' cm, perimeter ' + t(per) + ' cm',
-              t(seq(sh.A) + '=' + sh.n + '(' + sh.x0 + ')+' + sh.s + '=' + a) + ' cm; ' + t(seq(sh.B) + '=' + sh.m + '(' + sh.x0 + ')+' + sh.u + '=' + b) + ' cm. Check: ' + t(a + '\\times ' + b + '=' + sh.A0) + ' ✓<br>Perimeter ' + t('=2(' + a + '+' + b + ')=' + per) + ' cm.',
-              ['Substitute ' + t('x=' + sh.x0) + ' into each side length.'], 'sides and perimeter');
-            p.bad = [[String(a), String(b), String(a + b)]];
-            return p;
           } }] },
-      { num: '11', stem: function (sh) { return 'A square metal plate of side ' + t('(2x+' + sh.b + ')') + ' cm has a square hole of side ' + t('(x-' + sh.c + ')') + ' cm cut out of its centre.'; },
-        shared: function (r) { var z = pick(function () { return { b: r.int(2, 6), c: r.int(1, 4) }; }, function (z) { return z.b > z.c && (z.b - z.c) % 3 !== 0; }); z.x0 = z.c + r.int(1, 3); z.A0 = (2 * z.x0 + z.b) * (2 * z.x0 + z.b) - (z.x0 - z.c) * (z.x0 - z.c); return z; },
+      { num: '8', stem: function (sh) { return 'A square metal plate of side ' + t('(2x+' + sh.b + ')') + ' cm has a square hole of side ' + t('(x-' + sh.c + ')') + ' cm cut out of its centre.'; },
+        shared: function (r) { var z = pick(function () { return { b: r.int(2, 6), c: r.int(1, 4) }; }, function (z) { return z.b > z.c && (z.b - z.c) % 3 !== 0; }); return z; },
         parts: [
           { id: 'e11a', level: 'ADV', make: function (r, sh) {
             var A = lin(1, 'x', sh.b + sh.c), B = lin(3, 'x', sh.b - sh.c), Ft = FT(null, [A, B]);
@@ -959,26 +752,16 @@
               t('(4x^{2}+' + 4 * sh.b + 'x+' + sh.b * sh.b + ')-(x^{2}' + (sh.c === 0 ? '' : '-' + 2 * sh.c + 'x') + '+' + sh.c * sh.c + ')=' + tx(T)) + '<br>' + t('(x+' + (sh.b + sh.c) + ')(3x+' + (sh.b - sh.c) + ')=' + tx(T)) + ' as well. ✓',
               ['Expand each square, then subtract the whole second square.'], 'plate expanded');
           } },
-          { id: 'e11c', level: 'PRG', make: function (r, sh) {
-            var x0 = sh.x0, pl = 2 * x0 + sh.b, ho = x0 - sh.c, other = -(3 * x0 + 2 * (2 * sh.b + sh.c)) / 3; // the rejected root
-            var p = KP.fields('The remaining area is ' + t(sh.A0 + '\\text{ cm}^{2}') + '. Determine ' + t('x') + ', the side of the plate and the side of the hole.', [numBox(t('x') + ' =', 'x'), numBox('Plate side (cm):'), numBox('Hole side (cm):')],
-              [K.number(x0, function (v) { return Math.abs(v - other) < 1e-9 ? { code: 'other-root', hint: 'That root is negative — a length can’t be.' } : null; }), K.number(pl), K.number(ho)],
-              [String(x0), String(pl), String(ho)], t('x=' + x0) + '; plate ' + t(pl) + ' cm, hole ' + t(ho) + ' cm',
-              t(tx(P.sub(P.pow(sum(lin(2, 'x', sh.b)), 2), P.pow(sum(lin(1, 'x', -sh.c)), 2))) + '=' + sh.A0) + '<br>' + t(tx(P.add(P.sub(P.pow(sum(lin(2, 'x', sh.b)), 2), P.pow(sum(lin(1, 'x', -sh.c)), 2)), N(-sh.A0))) + '=0') + '<br>' + t('(x-' + x0 + ')(3x' + sg(3 * x0 + 2 * (2 * sh.b + sh.c)) + ')=0') + ', so ' + t('x=' + x0) + ' (the other root is negative).<br>Plate: ' + t('2(' + x0 + ')+' + sh.b + '=' + pl) + ' cm; hole: ' + t(x0 + '-' + sh.c + '=' + ho) + ' cm. Check: ' + t(pl * pl + '-' + ho * ho + '=' + sh.A0) + ' ✓',
-              ['Set your expanded area equal to ' + t(sh.A0) + ', move it over, and factor.'], 'plate area ' + sh.A0);
-            p.bad = [[String(x0), String(pl), String(ho + 1)]];
-            return p;
-          } },
           { id: 'e11d', level: 'EMG', make: function (r, sh) {
             return mc(r, 'Why must ' + t('x') + ' be greater than ' + t(sh.c) + ' here?', [
-              { html: 'The hole has side ' + t('x-' + sh.c) + ', and a length must be positive, so ' + t('x>' + sh.c) + '. That alone rules out the negative root.', right: true },
+              { html: 'The hole has side ' + t('x-' + sh.c) + ', and a length must be positive, so ' + t('x>' + sh.c) + '.', right: true },
               { html: 'Because the plate side ' + t('2x+' + sh.b) + ' must be positive.', why: 'That only gives ' + t('x>' + frac(-sh.b, 2)) + ' — a weaker condition. Look at the hole.' },
-              { html: 'Because the remaining area is ' + t(sh.A0) + '.', why: 'The area condition gives the equation, not the restriction. Which side length could become zero or negative?' },
+              { html: 'Because the plate must be larger than the hole.', why: t('2x+' + sh.b + '>x-' + sh.c) + ' only gives ' + t('x>' + (-(sh.b + sh.c))) + ' — a weaker condition. Which side length could become zero or negative?' },
               { html: 'Because ' + t('x') + ' must be a whole number.', why: 'Lengths don’t have to be whole numbers. Think about the hole’s side ' + t('x-' + sh.c) + '.' }],
-              'The hole has side ' + t('x-' + sh.c) + ', and a length must be positive: ' + t('x-' + sh.c + '>0') + ', i.e. ' + t('x>' + sh.c) + '. The second root of the equation is negative, so its sign alone rules it out.',
+              'The hole has side ' + t('x-' + sh.c) + ', and a length must be positive: ' + t('x-' + sh.c + '>0') + ', i.e. ' + t('x>' + sh.c) + '.',
               ['Which length in the problem could be zero or negative?'], 'why x > ' + sh.c);
           } }] },
-      { num: '12', stem: function (sh) { return 'A rectangular prism has volume ' + t('V=' + tx(sh.T)) + ' cubic centimetres, and each of its three dimensions is one of the factors of ' + t('V') + '.'; },
+      { num: '9', stem: function (sh) { return 'A rectangular prism has volume ' + t('V=' + tx(sh.T)) + ' cubic centimetres, and each of its three dimensions is one of the factors of ' + t('V') + '.'; },
         shared: function (r) { var z = pick(function () { return { g: r.int(2, 5), p: r.int(1, 5), q: r.int(2, 6) }; }, function (z) { return z.p < z.q; }); z.T = FX.product([M(z.g, 'x'), sum(lin(1, 'x', -z.p)), sum(lin(1, 'x', -z.q))]); return z; },
         parts: [
           { id: 'e12a', sub: 'a', level: 'PRG', make: function (r, sh) {
@@ -987,20 +770,7 @@
               'GCF ' + t('=' + sh.g + 'x') + ': ' + t(sh.g + 'x(x^{2}-' + (sh.p + sh.q) + 'x+' + sh.p * sh.q + ')') + '<br>Product ' + t(sh.p * sh.q) + ', sum ' + t(-(sh.p + sh.q)) + ': ' + t(-sh.p) + ' and ' + t(-sh.q) + '.<br>' + t('V=' + Ft.tex) + '<br>Dimensions: ' + t(sh.g + 'x') + ', ' + t('x-' + sh.p) + ' and ' + t('x-' + sh.q) + ' cm.',
               ['Take out the common factor first.'], 'factor V');
           } },
-          { id: 'e12b', sub: 'b i', level: 'EMG', make: function (r, sh) {
-            return vs('Solve ' + t('V=0') + '.', [0, sh.p, sh.q], {}, t(sh.g + 'x(x-' + sh.p + ')(x-' + sh.q + ')=0') + '<br>' + t('x=0') + ', ' + t('x=' + sh.p) + ' or ' + t('x=' + sh.q),
-              ['Use the factored form: set each factor equal to ' + t('0') + '.'], 'solve V=0', ['x=' + sh.p + ', x=' + sh.q]);
-          } },
-          { id: 'e12c', sub: 'b ii', level: 'EMG', make: function (r, sh) {
-            return mc(r, 'Why can none of the roots of ' + t('V=0') + ' be the value of ' + t('x') + ' for a real prism?', [
-              { html: 'Each root makes one dimension exactly ' + t('0') + ', so the box would be flat with no volume.', right: true },
-              { html: 'The roots are the three dimensions of the box, not values of ' + t('x') + '.', why: 'The dimensions are ' + t(sh.g + 'x') + ', ' + t('x-' + sh.p) + ' and ' + t('x-' + sh.q) + '. The roots are values of ' + t('x') + '.' },
-              { html: 'Only ' + t('x=0') + ' is impossible; the other roots are possible sizes.', why: 'At ' + t('x=' + sh.p) + ', the dimension ' + t('x-' + sh.p) + ' is ' + t('0') + '.' },
-              { html: 'They are the values where the volume is greatest.', why: 'At the roots the volume is ' + t('0') + ' — the smallest it can be.' }],
-              'Each root makes one dimension (' + t(sh.g + 'x') + ', ' + t('x-' + sh.p) + ' or ' + t('x-' + sh.q) + ') exactly ' + t('0') + ', so the box flattens and has no volume. A real prism needs every dimension positive.',
-              ['Substitute each root into the three dimensions.'], 'meaning of roots of V');
-          } },
-          { id: 'e12d', sub: 'c', level: 'PRG', make: function (r, sh) {
+          { id: 'e12d', sub: 'b', level: 'PRG', make: function (r, sh) {
             var x = sh.q + 1, V = sh.g * x * (x - sh.p) * (x - sh.q);
             var p = KP.fields('Determine the smallest whole-number value of ' + t('x') + ' for which the prism actually exists, and evaluate ' + t('V') + ' there.', [numBox(t('x') + ' =', 'x'), numBox(t('V') + ' (cm³) =', 'V')],
               [K.number(x, function (v) { return v === sh.q ? { code: 'bad-dim', hint: 'At ' + t('x=' + sh.q) + ' the dimension ' + t('x-' + sh.q) + ' is ' + t('0') + '. Every dimension must be positive.' } : v < sh.q ? { code: 'bad-dim', hint: 'At ' + t('x=' + v) + ' the dimension ' + t('x-' + sh.q) + ' is not positive.' } : null; }), K.number(V)],
@@ -1010,44 +780,7 @@
             p.bad = [[String(sh.q), '0']];
             return p;
           } }] },
-      { num: '13', stem: function (sh) { return 'A club’s profit, in dollars, from selling ' + t('x') + ' tickets to an event is modelled by ' + t('P=' + tx(sh.T)) + '.'; },
-        shared: function (r) { var z = { g: r.pick([2, 2, 3, 4]), p: r.int(3, 8), d: r.int(3, 6), j: r.int(1, 5) }; z.q = z.p + 2 * z.d; z.h = z.p + z.d; z.M = z.g * z.d * z.d; z.T = FX.product([N(-z.g), sum(lin(1, 'x', -z.p)), sum(lin(1, 'x', -z.q))]); return z; },
-        parts: [
-          { id: 'e13a', level: 'PRG', make: function (r, sh) {
-            var Ft = FT(N(-sh.g), [lin(1, 'x', -sh.p), lin(1, 'x', -sh.q)]);
-            return fac('Factor ' + t('P') + ' completely. Take out the negative common factor so the bracket opens positively.', Ft, [{ is: FT(N(-sh.g), [lin(1, 'x', sh.p), lin(1, 'x', sh.q)]), code: 'sign-swap', hint: 'After taking out ' + t(-sh.g) + ' the bracket is ' + t('x^{2}-' + (sh.p + sh.q) + 'x+' + sh.p * sh.q) + ': the pair adds to ' + t(-(sh.p + sh.q)) + '.' }],
-              'Take out ' + t(-sh.g) + ': ' + t('P=-' + sh.g + '(x^{2}-' + (sh.p + sh.q) + 'x+' + sh.p * sh.q + ')') + '<br>Product ' + t(sh.p * sh.q) + ', sum ' + t(-(sh.p + sh.q)) + ': ' + t(-sh.p) + ' and ' + t(-sh.q) + '.<br>' + t('P=' + Ft.tex),
-              ['Take out ' + t(-sh.g) + ' — every sign in the bracket changes.'], 'factor profit');
-          } },
-          { id: 'e13b', level: 'EMG', make: function (r, sh) {
-            return vs('Solve ' + t('P=0') + ' (the break-even points).', [sh.p, sh.q], {}, t('-' + sh.g + '(x-' + sh.p + ')(x-' + sh.q + ')=0') + '<br>' + t('-' + sh.g + '\\neq 0') + ', so ' + t('x=' + sh.p) + ' or ' + t('x=' + sh.q) + '. Selling ' + t(sh.p) + ' or ' + t(sh.q) + ' tickets gives a profit of exactly ' + t('\\$0') + '.',
-              ['Use your factored form.'], 'break-even', ['x=' + (-sh.p) + ', x=' + (-sh.q)]);
-          } },
-          { id: 'e13c', level: 'EMG', make: function (r, sh) {
-            var p = KP.fields('For which whole-number values of ' + t('x') + ' does the club make a profit? Give the smallest and the largest.', [numBox('Smallest:'), numBox('Largest:')],
-              [K.number(sh.p + 1, function (v) { return v === sh.p ? { code: 'value', hint: 'At ' + t('x=' + sh.p) + ' the profit is exactly ' + t('\\$0') + ' — no profit.' } : null; }), K.number(sh.q - 1, function (v) { return v === sh.q ? { code: 'value', hint: 'At ' + t('x=' + sh.q) + ' the profit is exactly ' + t('\\$0') + '.' } : null; })],
-              [String(sh.p + 1), String(sh.q - 1)], t('x=' + (sh.p + 1) + ',' + (sh.p + 2) + ',\\ldots,' + (sh.q - 1)),
-              'Test ' + t('x=' + sh.h) + ' (between the roots): ' + t('P=-' + sh.g + '(' + sh.d + ')(-' + sh.d + ')=' + sh.M + '>0') + ' ✓. Test ' + t('x=' + (sh.q + 1)) + ' (outside): ' + t('P=-' + sh.g + '(' + (sh.q + 1 - sh.p) + ')(1)<0') + '.<br>The club profits strictly between the roots: ' + t('x=' + (sh.p + 1) + ',\\ldots,' + (sh.q - 1)) + '.',
-              ['Test a value between the roots and one outside them.'], 'profit interval');
-            p.bad = [[String(sh.p), String(sh.q)]];
-            return p;
-          } },
-          { id: 'e13d', level: 'PRG', make: function (r, sh) {
-            return KP.number('Determine the number of tickets for which the profit is exactly ' + t('\\$' + sh.M) + '. (The equation you get is a perfect square trinomial.)', sh.h, null,
-              t(tx(sh.T) + '=' + sh.M) + '<br>' + t(tx(P.add(sh.T, N(-sh.M))) + '=0') + '<br>' + t('-' + sh.g + '(x^{2}-' + 2 * sh.h + 'x+' + sh.h * sh.h + ')=0') + '<br>' + t('-' + sh.g + '(x-' + sh.h + ')^{2}=0') + ', so ' + t('x=' + sh.h) + ' tickets.',
-              ['Move ' + t(sh.M) + ' to the left side and take out ' + t(-sh.g) + '.', 'The bracket is a perfect square.'], 'profit = ' + sh.M);
-          } },
-          { id: 'e13e', level: 'EMG', make: function (r, sh) {
-            var X = sh.M + sh.g * sh.j;
-            return mc(r, 'Solving ' + t('P=' + sh.M) + ' gives only one answer, ' + t('x=' + sh.h) + ', while ' + t('P=0') + ' has two. Why can no number of tickets give a profit of ' + t('\\$' + X) + '?', [
-              { html: t('\\$' + sh.M) + ' is reached at only one value of ' + t('x') + ' — it is the greatest profit possible, so ' + t('\\$' + X) + ' is never reached.', right: true },
-              { html: 'Because ' + t(X) + ' isn’t a multiple of the number of tickets.', why: 'Profit doesn’t have to divide evenly by anything. Try solving ' + t('P=' + X) + ': ' + t('x^{2}-' + 2 * sh.h + 'x+' + (sh.h * sh.h + sh.j) + '=(x-' + sh.h + ')^{2}+' + sh.j) + ', which is never ' + t('0') + '.' },
-              { html: 'Because the answer would be a fraction of a ticket.', why: 'It’s worse than a fraction: ' + t('(x-' + sh.h + ')^{2}+' + sh.j + '=0') + ' has no solution at all.' },
-              { html: 'Because the equation would have two solutions, and we can only pick one.', why: 'Solve it: ' + t('(x-' + sh.h + ')^{2}+' + sh.j + '=0') + ' has <b>no</b> solutions.' }],
-              'A repeated factor means ' + t('\\$' + sh.M) + ' is reached at exactly one value of ' + t('x') + ' — it is the <b>greatest profit possible</b>, at ' + t('x=' + sh.h) + '.<br>For ' + t('\\$' + X) + ': ' + t('-' + sh.g + '(x^{2}-' + 2 * sh.h + 'x+' + (sh.h * sh.h + sh.j) + ')=0') + ', and ' + t('x^{2}-' + 2 * sh.h + 'x+' + (sh.h * sh.h + sh.j) + '=(x-' + sh.h + ')^{2}+' + sh.j) + ' is at least ' + t(sh.j) + ', never ' + t('0') + '.',
-              ['What does a perfect square (one repeated root) tell you about ' + t('\\$' + sh.M) + '?'], 'no x gives $' + X);
-          } }] },
-      { num: '14', section: 'Extra practice E — Reasoning and error analysis', stem: 'Decide whether each statement is <b>true</b> or <b>false</b>.', parts: [
+      { num: '10', section: 'Extra practice D — Reasoning and error analysis', stem: 'Decide whether each statement is <b>true</b> or <b>false</b>.', parts: [
         { id: 'e14a', level: 'EMG', make: function (r) {
           var c = r.pick([20, 12, 18, 28, 30]), S = sumsOf(c), mx = Math.max.apply(null, S), cand = []; for (var k = 1; k < mx; k++) if (S.indexOf(k) < 0) cand.push(k); var b = r.pick(cand);
           var sums = t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')), ex = t('x^{2}+' + lc(b) + 'x+' + c);
@@ -1055,20 +788,6 @@
             '<b>True.</b> Example: ' + ex + '. The factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + ' — so it cannot be factored over the integers.', ['Can you find a trinomial where no pair works?'], 'TF not every trinomial factors');
           return KP.tf(r, 'Every quadratic trinomial can be factored over the integers.', false, 'Try ' + ex + ': the factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + '.',
             '<b>False.</b> Counterexample: ' + ex + '. The factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + '.', ['Can you find a trinomial where no pair works?'], 'TF every trinomial factors');
-        } },
-        { id: 'e14b', level: 'LIM', make: function (r) {
-          if (r.chance(0.5)) { var k = r.int(2, 9);
-            return KP.tf(r, 'If a product of two factors equals ' + t('0') + ', then <b>both</b> of those factors must be ' + t('0') + '.', false, 'Counterexample: ' + t('0\\times ' + k + '=0') + ', but ' + t(k) + ' is not ' + t('0') + '. The Zero Product Law only says <b>at least one</b> factor is ' + t('0') + '.',
-              '<b>False.</b> ' + t('0\\times ' + k + '=0') + ', and ' + t(k) + ' is not ' + t('0') + '. The Zero Product Law says that <b>at least one</b> factor is ' + t('0') + ' — not necessarily both.', ['Try a product where only one factor is ' + t('0') + '.'], 'TF zero product: both factors zero?'); }
-          return KP.tf(r, 'If a product of two factors equals ' + t('0') + ', then at least one of those factors is ' + t('0') + '.', true, 'This is the Zero Product Law: a product can be ' + t('0') + ' only if a factor is ' + t('0') + '.',
-            '<b>True.</b> This is the Zero Product Law: a product can equal ' + t('0') + ' only if at least one of its factors is ' + t('0') + '.', ['Try to find two nonzero numbers whose product is ' + t('0') + '.'], 'TF zero product law');
-        } },
-        { id: 'e14c', level: 'EMG', make: function (r) {
-          var n = r.pick([12, 18, 20, 24, 30, 36]), pq = pairsOf(n).filter(function (q) { return q[0] > 1; }), q = r.pick(pq);
-          if (r.chance(0.5)) return KP.tf(r, 'A product of two factors can equal ' + t(n) + ' even when <b>neither</b> factor is ' + t(n) + '.', true, 'Example: ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '.',
-            '<b>True.</b> For example, ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '. Only ' + t('0') + ' forces one of the factors to be itself (the Zero Product Law).', ['Think of two numbers that multiply to ' + t(n) + '.'], 'TF product ' + n + ' without factor ' + n);
-          return KP.tf(r, 'If a product of two factors equals ' + t(n) + ', then at least one of those factors is ' + t(n) + '.', false, 'Counterexample: ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '.',
-            '<b>False.</b> Counterexample: ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '. Only ' + t('0') + ' has this special property.', ['Think of two numbers that multiply to ' + t(n) + '.'], 'TF product equals ' + n);
         } },
         { id: 'e14d', level: 'PRG', make: function (r) {
           var k = r.pick([2, 3, 4, 5]), m = r.int(1, 4);
@@ -1083,38 +802,8 @@
             '<b>True.</b> ' + t('-(x-' + a + ')(x+' + a + ')=-(x^{2}-' + a * a + ')=' + a * a + '-x^{2}') + ', and ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}') + '. Both give ' + t(a * a + '-x^{2}') + '. (Without the minus sign in front, ' + t('(x-' + a + ')(x+' + a + ')') + ' would be the opposite polynomial.)', ['Expand both products.'], 'TF −(x−a)(x+a) vs (a−x)(a+x)');
           return KP.tf(r, t('(x-' + a + ')(x+' + a + ')') + ' and ' + t('(' + a + '-x)(' + a + '+x)') + ' are factorings of the same polynomial.', false, 'Expand both: ' + t('(x-' + a + ')(x+' + a + ')=x^{2}-' + a * a) + ' but ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}') + '.',
             '<b>False.</b> ' + t('(x-' + a + ')(x+' + a + ')=x^{2}-' + a * a) + ', but ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}=-(x^{2}-' + a * a + ')') + '. They are opposites, not the same polynomial.', ['Expand both products.'], 'TF (x−a)(x+a) vs (a−x)(a+x)');
-        } },
-        { id: 'e14f', level: 'EMG', make: function (r) {
-          var a = r.int(2, 5), s = pick(function () { return r.int(1, 9); }, function (s) { return gcd(a, s) === 1; });
-          if (r.chance(0.5)) return KP.tf(r, 'A quadratic equation can have just one solution.', true, 'Example: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution.',
-            '<b>True.</b> Example: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution, ' + t('x=' + frac(s, a)) + '.', ['Think about a perfect square trinomial set equal to ' + t('0') + '.'], 'TF quadratic one solution');
-          return KP.tf(r, 'A quadratic equation always has exactly two different solutions.', false, 'Counterexample: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution.',
-            '<b>False.</b> Counterexample: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution, ' + t('x=' + frac(s, a)) + '.', ['Think about a perfect square trinomial set equal to ' + t('0') + '.'], 'TF quadratic two solutions');
         } }] },
-      { num: '15', stem: function (sh) { return 'Asked to solve ' + t('x^{2}+' + lc(sh.b) + 'x=' + sh.N) + ', a student wrote ' + t('x(x+' + sh.b + ')=' + sh.N) + ', so ' + t('x=' + sh.N) + ' or ' + t('x+' + sh.b + '=' + sh.N) + ', giving ' + t('x=' + sh.N) + ' or ' + t('x=' + (sh.N - sh.b)) + '.'; },
-        shared: function (r) { var z = pick(function () { return { p: r.int(2, 6), q: r.int(3, 10) }; }, function (z) { return z.q > z.p && z.q - z.p <= 7; }); z.b = z.q - z.p; z.N = z.p * z.q; return z; },
-        parts: [
-          { id: 'e15a', level: 'BEG', make: function (r, sh) {
-            var v1 = sh.N * sh.N + sh.b * sh.N, x2 = sh.N - sh.b, v2 = x2 * x2 + sh.b * x2;
-            var p = KP.fields('Substitute both of the student’s answers into the left side ' + t('x^{2}+' + lc(sh.b) + 'x') + '.', [numBox('At ' + t('x=' + sh.N) + ':', 'at x=' + sh.N), numBox('At ' + t('x=' + x2) + ':', 'at x=' + x2)], [K.number(v1), K.number(v2)], [String(v1), String(v2)],
-              t(F(v1)) + ' and ' + t(F(v2)) + ' — neither is ' + t(sh.N), t(sh.N + '^{2}+' + sh.b + '(' + sh.N + ')=' + F(sh.N * sh.N) + '+' + sh.b * sh.N + '=' + F(v1) + '\\neq ' + sh.N) + '<br>' + t(x2 + '^{2}+' + sh.b + '(' + x2 + ')=' + F(x2 * x2) + '+' + sh.b * x2 + '=' + F(v2) + '\\neq ' + sh.N) + '<br>Neither satisfies the equation.',
-              ['Square the value, then add ' + t(sh.b) + ' times the value.'], 'check student roots');
-            return p;
-          } },
-          { id: 'e15b', level: 'EMG', make: function (r, sh) {
-            return mc(r, 'The first line, ' + t('x(x+' + sh.b + ')=' + sh.N) + ', is correct. Which step after it is invalid?', [
-              { html: 'Setting each factor equal to ' + t(sh.N) + '. The Zero Product Law works <b>only when the product is ' + t('0') + '</b>.', right: true },
-              { html: 'Subtracting ' + t(sh.b) + ' to get ' + t('x=' + (sh.N - sh.b)) + '.', why: 'That subtraction is fine. The mistake is the step before it.' },
-              { html: 'Factoring the left side as ' + t('x(x+' + sh.b + ')') + '.', why: 'The question says that line is correct.' },
-              { html: 'The student should have divided both sides by ' + t('x') + '.', why: 'Dividing by ' + t('x') + ' is never a safe step — it can lose solutions. The problem is using the Zero Product Law with ' + t(sh.N) + ' instead of ' + t('0') + '.' }],
-              'The invalid step is setting each factor equal to ' + t(sh.N) + '. The Zero Product Law says: if ' + t('A\\cdot B=0') + ', then ' + t('A=0') + ' or ' + t('B=0') + '. It applies only when the product is ' + t('0') + '; a product of ' + t(sh.N) + ' could be ' + t(pairsOf(sh.N).slice(1).map(function (q) { return q[0] + '\\times ' + q[1]; }).join(',\\ ') || '1\\times ' + sh.N) + ', …',
-              ['What does the Zero Product Law need on one side of the equation?'], 'invalid step x(x+b)=N');
-          } },
-          { id: 'e15c', level: 'EMG', make: function (r, sh) {
-            return vs('Solve the equation correctly.', [sh.p, -sh.q], {}, t('x^{2}+' + lc(sh.b) + 'x-' + sh.N + '=0') + '<br>Product ' + t(-sh.N) + ', sum ' + t(sh.b) + ': ' + t(sh.q) + ' and ' + t(-sh.p) + '.<br>' + t('(x+' + sh.q + ')(x-' + sh.p + ')=0') + '<br>' + t('x=-' + sh.q) + ' or ' + t('x=' + sh.p) + '<br>Check: ' + t('(' + (-sh.q) + ')^{2}+' + sh.b + '(' + (-sh.q) + ')=' + (sh.q * sh.q) + '-' + sh.b * sh.q + '=' + sh.N) + ' ✓',
-              ['Move ' + t(sh.N) + ' to the left side first, then factor.'], 'solve x²+' + sh.b + 'x=' + sh.N, ['x=' + sh.N + ', x=' + (sh.N - sh.b), 'x=' + (-sh.p) + ', x=' + sh.q]);
-          } }] },
-      { num: '16', stem: function (sh) { return 'Asked to factor ' + t(tx(sh.T)) + ' completely, a student wrote ' + t(tx(sh.T) + '=-' + sh.g + '(x^{2}-' + sh.d + 'x+' + sh.C + ')') + ' and then said the bracket does not factor.'; },
+      { num: '11', stem: function (sh) { return 'Asked to factor ' + t(tx(sh.T)) + ' completely, a student wrote ' + t(tx(sh.T) + '=-' + sh.g + '(x^{2}-' + sh.d + 'x+' + sh.C + ')') + ' and then said the bracket does not factor.'; },
         shared: function (r) { var z = pick(function () { return { g: r.int(2, 5), p: r.int(4, 9), q: r.int(1, 4) }; }, function (z) { return z.p - z.q >= 2; }); z.d = z.p - z.q; z.C = z.g * z.p * z.q; z.T = FX.product([N(-z.g), sum(lin(1, 'x', -z.p)), sum(lin(1, 'x', z.q))]); return z; },
         parts: [
           { id: 'e16a', level: 'BEG', make: function (r, sh) {
@@ -1138,30 +827,7 @@
               t(tx(sh.T) + '=-' + sh.g + '(x^{2}-' + sh.d + 'x-' + sh.p * sh.q + ')') + '<br>Product ' + t(-sh.p * sh.q) + ', sum ' + t(-sh.d) + ': ' + t(-sh.p) + ' and ' + t(sh.q) + '.<br>' + t('=' + Ft.tex) + '<br>The correct bracket <b>does</b> factor.',
               ['Take out ' + t(-sh.g) + ' correctly first.'], 'factor ' + plain(tx(sh.T)));
           } }] },
-      { num: '17', stem: function (sh) { return 'Asked to solve ' + t('(x+' + sh.a + ')(x-' + sh.b + ')=(x+' + sh.a + ')(2x-' + sh.d + ')') + ', a student cancelled the factor ' + t('(x+' + sh.a + ')') + ' from both sides, obtaining ' + t('x-' + sh.b + '=2x-' + sh.d) + ', and answered ' + t('x=' + sh.x0) + '.'; },
-        shared: function (r) { var z = { a: r.int(1, 6), b: r.int(1, 5), x0: r.int(3, 8) }; z.d = z.b + z.x0; return z; },
-        parts: [
-          { id: 'e17a', level: 'BEG', make: function (r, sh) {
-            var L = (sh.x0 + sh.a) * (sh.x0 - sh.b);
-            return KP.fields('Substitute ' + t('x=' + sh.x0) + ' into both sides of the original equation.', [numBox('Left side:'), numBox('Right side:')], [K.number(L), K.number(L)], [String(L), String(L)], 'Both sides equal ' + t(L),
-              'Left: ' + t('(' + sh.x0 + '+' + sh.a + ')(' + sh.x0 + '-' + sh.b + ')=' + (sh.x0 + sh.a) + '(' + (sh.x0 - sh.b) + ')=' + L) + '<br>Right: ' + t('(' + sh.x0 + '+' + sh.a + ')(' + 2 * sh.x0 + '-' + sh.d + ')=' + (sh.x0 + sh.a) + '(' + (2 * sh.x0 - sh.d) + ')=' + L) + '<br>Both sides are equal, so ' + t('x=' + sh.x0) + ' is a genuine root. ✓',
-              ['Work out each bracket, then multiply.'], 'check x=' + sh.x0);
-          } },
-          { id: 'e17b', level: 'PRG', make: function (r, sh) {
-            return vs('Move everything to one side, take out the common binomial factor, and solve.', [-sh.a, sh.x0], { diag: function (A) { if (A.length === 1 && A[0] === sh.x0) return { code: 'root-missing', hint: 'The common factor ' + t('(x+' + sh.a + ')') + ' gives a solution too.' }; return null; } },
-              t('(x+' + sh.a + ')(x-' + sh.b + ')-(x+' + sh.a + ')(2x-' + sh.d + ')=0') + '<br>' + t('(x+' + sh.a + ')[(x-' + sh.b + ')-(2x-' + sh.d + ')]=0') + '<br>' + t('(x+' + sh.a + ')(' + seq([M(-1, 'x'), N(sh.d - sh.b)]) + ')=0') + '<br>' + t('x=-' + sh.a) + ' or ' + t('x=' + sh.x0) + '. The cancelling destroyed ' + t('x=-' + sh.a) + '.',
-              ['Subtract the right side from both sides, then take out ' + t('(x+' + sh.a + ')') + '.'], 'solve by common binomial', ['x=' + sh.a + ', x=' + sh.x0]);
-          } },
-          { id: 'e17c', level: 'EMG', make: function (r, sh) {
-            return mc(r, 'Cancelling a <i>number</i> from both sides is safe; cancelling ' + t('(x+' + sh.a + ')') + ' is not. Why?', [
-              { html: 'Cancelling divides both sides by ' + t('(x+' + sh.a + ')') + ', which is ' + t('0') + ' when ' + t('x=-' + sh.a) + ' — so that root is lost. Never divide by an expression containing the variable; move everything to one side and factor.', right: true },
-              { html: 'Cancelling is always allowed, because the same factor appears on both sides.', why: 'Try ' + t('x=-' + sh.a) + ' in the original: both sides are ' + t('0') + ', so it is a root — but ' + t('x-' + sh.b + '=2x-' + sh.d) + ' doesn’t have it.' },
-              { html: 'Cancelling a number is unsafe too.', why: 'A nonzero number is never ' + t('0') + ', so dividing by it loses nothing.' },
-              { html: 'Cancelling is fine as long as you check your answer afterwards.', why: 'Checking ' + t('x=' + sh.x0) + ' shows it works, but checking can’t find the root that was thrown away.' }],
-              'Cancelling means dividing both sides. A number such as ' + t('3') + ' is never ' + t('0') + ', so dividing by it loses nothing. ' + t('(x+' + sh.a + ')') + ' <i>is</i> ' + t('0') + ' when ' + t('x=-' + sh.a) + ', and division by ' + t('0') + ' is undefined, so that case silently disappears.<br><b>Rule:</b> never divide both sides by an expression containing the variable — move everything to one side and factor instead.',
-              ['When is ' + t('x+' + sh.a) + ' equal to ' + t('0') + '?'], 'why not cancel');
-          } }] },
-      { num: '18', section: 'Extra practice F — Challenge', stem: 'Each expression has <b>four</b> terms, but grouping them two-and-two leads nowhere. Group them <b>one and three</b> instead: three of the terms form a perfect square trinomial, and the whole expression becomes a difference of squares.', parts: [
+      { num: '12', section: 'Extra practice E — Challenge', stem: 'Each expression has <b>four</b> terms, but grouping them two-and-two leads nowhere. Group them <b>one and three</b> instead: three of the terms form a perfect square trinomial, and the whole expression becomes a difference of squares.', parts: [
         { id: 'e18a', level: 'ADV', make: function (r) {
           var p = r.int(2, 9), q = r.int(2, 7), Ft = FT(null, [[M(1, 'x'), N(p), M(-q, 'y')], [M(1, 'x'), N(p), M(q, 'y')]]), poly = seq([M(1, 'x', 2), M(2 * p, 'x'), N(p * p), M(-q * q, 'y', 2)]);
           return fac(t(poly), Ft, [{ is: FT(null, [[M(1, 'x'), N(p), M(-q, 'y')], [M(1, 'x'), N(-p), M(q, 'y')]]), code: 'minus-dist', hint: 'Both brackets start with the whole ' + t('A=x+' + p) + ': ' + t('(A-B)(A+B)') + '.' }],
@@ -1191,38 +857,7 @@
             'Taking out ' + t('-1') + ' changes the sign of every term: ' + t('-n^{2}+' + 2 * p + 'n-' + p * p + '=-(n^{2}-' + 2 * p + 'n+' + p * p + ')') + '. Now the bracket has first term ' + t('n^{2}') + ', last term ' + t(p * p + '=' + p + '^{2}') + ' and middle term ' + t('-2(n)(' + p + ')') + ': a perfect square, ' + t('(n-' + p + ')^{2}') + '. The whole expression is ' + t('m^{2}-(n-' + p + ')^{2}') + ', a difference of squares.',
             ['Take out ' + t('-1') + ' term by term.'], 'sign change taking out −1');
         } }] },
-      { num: '19', stem: 'Working backwards from the answers: write a polynomial <b>equation with integer coefficients</b> whose complete solution is the set given.', parts: [
-        { id: 'e19a', level: 'EMG', make: function (r) {
-          var z = pick(function () { return { A: r.int(1, 8), B: r.int(2, 9) }; }, function (z) { return z.A !== z.B; });
-          return eqPart('A', t('x=-' + z.A) + ' and ' + t('x=' + z.B), [-z.A, z.B], FT(null, [lin(1, 'x', z.A), lin(1, 'x', -z.B)]),
-            'Each root gives a factor: ' + t('x=-' + z.A + '\\Rightarrow(x+' + z.A + ')') + ', ' + t('x=' + z.B + '\\Rightarrow(x-' + z.B + ')') + '.<br>');
-        } },
-        { id: 'e19b', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { q: r.pick([2, 3, 4, 5]), u: r.int(1, 7), A: r.int(1, 7) }; }, function (z) { return gcd(z.q, z.u) === 1; });
-          return eqPart('B', t('x=' + frac(z.u, z.q)) + ' and ' + t('x=-' + z.A), [z.u / z.q, -z.A], FT(null, [lin(z.q, 'x', -z.u), lin(1, 'x', z.A)]),
-            t('x=' + frac(z.u, z.q) + '\\Rightarrow ' + z.q + 'x=' + z.u + '\\Rightarrow(' + z.q + 'x-' + z.u + ')') + '; ' + t('x=-' + z.A + '\\Rightarrow(x+' + z.A + ')') + '.<br>Using ' + t(z.q + 'x-' + z.u) + ' rather than ' + t('x-' + frac(z.u, z.q)) + ' keeps the coefficients integers.<br>');
-        } },
-        { id: 'e19c', level: 'EMG', make: function (r) {
-          var A = r.int(2, 9);
-          return eqPart('C', t('x=0') + ', ' + t('x=' + A) + ' and ' + t('x=-' + A), [0, A, -A], FT(M(1, 'x'), [lin(1, 'x', -A), lin(1, 'x', A)]),
-            t('x=0\\Rightarrow x') + '; ' + t('x=' + A + '\\Rightarrow(x-' + A + ')') + '; ' + t('x=-' + A + '\\Rightarrow(x+' + A + ')') + '.<br>');
-        } },
-        { id: 'e19d', level: 'PRG', make: function (r) {
-          var z = pick(function () { return { q: r.pick([2, 3, 4, 5]), u: r.int(1, 7) }; }, function (z) { return gcd(z.q, z.u) === 1; });
-          return eqPart('D', 'A <b>quadratic</b> equation with ' + t('x=' + frac(z.u, z.q)) + ' and no other solution', [z.u / z.q], FT(null, [{ terms: lin(z.q, 'x', -z.u), k: 2 }]),
-            t('x=' + frac(z.u, z.q) + '\\Rightarrow(' + z.q + 'x-' + z.u + ')') + '. Only one solution, so the factor is repeated (a quadratic with a double root):<br>', true);
-        } },
-        { id: 'e19e', level: 'EMG', make: function (r) {
-          var A = r.int(1, 8), B = pick(function () { return r.int(2, 9); }, function (b) { return b !== A; }), T = P.mul(sum(lin(1, 'x', A)), sum(lin(1, 'x', -B)));
-          return mc(r, 'An equation with solutions ' + t('x=-' + A) + ' and ' + t('x=' + B) + ' is ' + t(tx(T) + '=0') + ', but it isn’t the only one. What must <b>every</b> correct quadratic answer have in common?', [
-            { html: 'It has the factors ' + t('(x+' + A + ')') + ' and ' + t('(x-' + B + ')') + ' and nothing else that gives a root — so it is a nonzero constant multiple of ' + t(tx(T)) + ', such as ' + t(tx(P.scale(T, 2)) + '=0') + '.', right: true },
-            { html: 'It must be exactly ' + t(tx(T) + '=0') + '.', why: t(tx(P.scale(T, 2)) + '=0') + ' is ' + t('2(x+' + A + ')(x-' + B + ')=0') + ' and has the same solutions.' },
-            { html: 'Its constant term must be ' + t(-A * B) + '.', why: t(tx(P.scale(T, 2)) + '=0') + ' has constant term ' + t(-2 * A * B) + ' and the same solutions.' },
-            { html: 'Its leading coefficient must be ' + t('1') + '.', why: 'Multiplying by a nonzero constant changes the leading coefficient but not the solutions.' }],
-            'E.g. multiply by ' + t('2') + ': ' + t(tx(P.scale(T, 2)) + '=0') + ', which is ' + t('2(x+' + A + ')(x-' + B + ')=0') + '. Every correct answer must have ' + t('(x+' + A + ')') + ' and ' + t('(x-' + B + ')') + ' as factors and no factor that gives another root; among quadratics, that means they differ only by a nonzero constant multiple.',
-            ['Multiply the equation by ' + t('2') + ' — do the solutions change?'], 'all equations with given roots');
-        } }] },
-      { num: '20', stem: 'Working backwards from factors. Determine each unknown constant.', parts: [
+      { num: '13', stem: 'Working backwards from factors. Determine each unknown constant.', parts: [
         { id: 'e20a', level: 'ADV', make: function (r) {
           var z = pick(function () { return { p: r.int(2, 5), s: r.int(1, 7), q: r.int(2, 5), u: r.int(1, 7) }; }, function (z) { return z.p !== z.q && gcd(z.p, z.s) === 1 && gcd(z.q, z.u) === 1 && z.p * z.u - z.q * z.s !== 0; });
           var b = z.p * z.u - z.q * z.s, other = sum(lin(z.q, 'x', z.u)), lead = z.p * z.q, c = -z.s * z.u, poly = lead + 'x^{2}+bx-' + z.s * z.u;
@@ -1250,30 +885,20 @@
           return vs(t(z.a * z.a + 'x^{2}+kx+' + z.b * z.b) + ' is a perfect square trinomial. Determine <b>both</b> values of ' + t('k') + '.', [k, -k], { v: 'k', diag: function (A) { if (A.length === 1) return { code: 'count-pos', hint: 'There is a second value: ' + t('(' + z.a + 'x-' + z.b + ')^{2}') + ' is a perfect square too.' }; if (A.indexOf(z.a * z.b) >= 0) return { code: 'not-doubled', hint: 'The middle term is ' + t('\\pm 2AB') + ' — don’t forget the ' + t('2') + '.' }; return null; } },
             t('\\sqrt{' + z.a * z.a + 'x^{2}}=' + z.a + 'x') + ', ' + t('\\sqrt{' + z.b * z.b + '}=' + z.b) + ', so the middle term is ' + t('\\pm 2(' + z.a + 'x)(' + z.b + ')=\\pm ' + k + 'x') + '.<br>' + t('k=' + k) + ': ' + t('(' + z.a + 'x+' + z.b + ')^{2}') + '; ' + t('k=-' + k) + ': ' + t('(' + z.a + 'x-' + z.b + ')^{2}'),
             ['The middle term of ' + t('(A\\pm B)^{2}') + ' is ' + t('\\pm 2AB') + '.'], 'both k for perfect square', ['k=' + k, 'k=' + z.a * z.b + ', k=-' + z.a * z.b]);
-        } },
-        { id: 'e20d', level: 'PRG', make: function (r) {
-          var h = r.int(2, 9);
-          var p = KP.fields(t('x^{2}-' + 2 * h + 'x+c=0') + ' has exactly one solution. Determine ' + t('c') + ' and the solution.', [numBox(t('c') + ' =', 'c'), numBox(t('x') + ' =', 'x')],
-            [K.number(h * h, function (v) { return v === 2 * h ? { code: 'value', hint: 'One solution means a perfect square: ' + t('(x-' + h + ')^{2}') + '. What is its constant term?' } : null; }), K.number(h, function (v) { return v === -h ? { code: 'sign', hint: t('x-' + h + '=0') + ' gives ' + t('x=' + h) + '.' } : null; })],
-            [String(h * h), String(h)], t('c=' + h * h) + ', ' + t('x=' + h),
-            'One solution means a perfect square. The middle term ' + t('-' + 2 * h + 'x=-2(x)(' + h + ')') + ', so the square is ' + t('(x-' + h + ')^{2}') + ' and ' + t('c=' + h + '^{2}=' + h * h) + '.<br>' + t('(x-' + h + ')^{2}=0') + ', so ' + t('x=' + h) + '.',
-            ['One solution ⇒ a repeated factor ⇒ a perfect square trinomial.'], 'c for one solution');
-          p.bad = [[String(h * h), String(-h)]];
-          return p;
         } }] },
-      { num: '21', stem: '<i>(Multiple Choice)</i>', parts: [
+      { num: '14', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: 'e21', level: 'EMG', make: function (r) {
           var z = pick(function () { return { p: r.int(1, 7), q: r.int(2, 6) }; }, function (z) { return z.p !== z.q; });
-          var eq = seq([M(1, 'x', 3), M(-z.p, 'x', 2), M(-z.q * z.q, 'x'), N(z.p * z.q * z.q)]) + '=0';
-          return mc(r, 'The complete solution to ' + t(eq) + ' is', [
-            { html: t('x=' + z.p) + ' only', why: 'That comes from ' + t('(x-' + z.p + ')') + ' — the bracket ' + t('(x^{2}-' + z.q * z.q + ')') + ' gives two more.' },
-            { html: t('x=-' + z.q) + ' and ' + t('x=' + z.q), why: 'Those come from ' + t('x^{2}-' + z.q * z.q) + '; the factor ' + t('(x-' + z.p + ')') + ' gives another.' },
-            { html: t('x=-' + z.q) + ', ' + t('x=' + z.q) + ' and ' + t('x=' + z.p), right: true },
-            { html: t('x=-' + z.p) + ', ' + t('x=-' + z.q) + ' and ' + t('x=' + z.q), why: 'Check the sign: ' + t('x-' + z.p + '=0') + ' gives ' + t('x=' + z.p) + '.' }],
-            'Grouping: ' + t('x^{2}(x-' + z.p + ')-' + z.q * z.q + '(x-' + z.p + ')=0') + '<br>' + t('(x-' + z.p + ')(x^{2}-' + z.q * z.q + ')=0') + '<br>' + t('(x-' + z.p + ')(x-' + z.q + ')(x+' + z.q + ')=0') + '<br>' + t('x=' + z.p) + ', ' + t('x=' + z.q) + ' or ' + t('x=-' + z.q),
-            ['Group the four terms two and two, then factor completely.'], 'solve cubic by grouping');
+          var poly = seq([M(1, 'x', 3), M(-z.p, 'x', 2), M(-z.q * z.q, 'x'), N(z.p * z.q * z.q)]), xp = '(x-' + z.p + ')', xq = '(x-' + z.q + ')(x+' + z.q + ')';
+          return mc(r, 'When ' + t(poly) + ' is factored completely, the result is', [
+            { html: t(xp + '(x^{2}-' + z.q * z.q + ')'), why: 'Not finished: ' + t('x^{2}-' + z.q * z.q) + ' is a difference of squares.' },
+            { html: t('(x+' + z.p + ')' + xq), why: 'Check the sign: expanding gives ' + t('+' + lc(z.p) + 'x^{2}') + ', not ' + t('-' + lc(z.p) + 'x^{2}') + '.' },
+            { html: t(xp + xq), right: true },
+            { html: t(xp + '(x-' + z.q + ')^{2}'), why: t('x^{2}-' + z.q * z.q) + ' is a difference of squares, not a perfect square: ' + t('(x-' + z.q + ')^{2}=x^{2}-' + 2 * z.q + 'x+' + z.q * z.q) + '.' }],
+            'Grouping: ' + t('x^{2}(x-' + z.p + ')-' + z.q * z.q + '(x-' + z.p + ')') + '<br>' + t('=' + xp + '(x^{2}-' + z.q * z.q + ')') + '<br>' + t('=' + xp + xq),
+            ['Group the four terms two and two, then check every bracket again.'], 'factor cubic by grouping');
         } }] },
-      { num: '22', stem: '<i>(Numerical Response)</i>', parts: [
+      { num: '15', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e22', level: 'PRG', make: function (r) {
           var z = pick(function () { var b = r.int(1, 9), d = r.int(1, 9); if (r.chance(0.5)) b = -b; else d = -d; return { a: r.int(3, 9), b: b, c: r.int(2, 6), d: d }; },
             function (z) { var s = z.a + z.b + z.c + z.d, m = z.a * z.d + z.b * z.c; return z.a > z.c && gcd(z.a, z.b) === 1 && gcd(z.c, z.d) === 1 && m !== 0 && Math.abs(m) <= 12 && s > 0 && z.a * z.c <= 36; });
@@ -1351,56 +976,4 @@
     tex = (k === 1 ? '' : k === -1 ? '-' : String(k)) + prims.map(function (p) { return '(' + tx(p) + ')'; }).join('');
     return { list: list, tex: tex, poly: FX.product(list) };
   }
-  /* EP19: an equation with integer coefficients and exactly the given roots (any nonzero multiple; factored or expanded) */
-  /* true when S (in x) is a constant times a product of powers of (x − r), r in roots (exact rational division) */
-  function onlyRoots(S, roots) {
-    var dg = P.degree(S); if (!(dg >= 0)) return false;
-    var rq = function (a) { var g = gcd(a[0], a[1]) || 1, p = a[0] / g, q = a[1] / g; return q < 0 ? [-p, -q] : [p, q]; };
-    var a = []; for (var e = dg; e >= 0; e--) a.push(P.coef(S, e ? { x: e } : {}));
-    roots.forEach(function (rt) {
-      var q = 1; while (q < 1000 && Math.abs(Math.round(rt * q) - rt * q) > 1e-9) q++;
-      var r = rq([Math.round(rt * q), q]);
-      while (a.length > 1) {
-        var b = [a[0]];
-        for (var i = 1; i < a.length; i++) { var m = rq([r[0] * b[i - 1][0], r[1] * b[i - 1][1]]); b.push(rq([a[i][0] * m[1] + m[0] * a[i][1], a[i][1] * m[1]])); }
-        if (b.pop()[0] !== 0) break;
-        a = b;
-      }
-    });
-    return a.length === 1 && a[0][0] !== 0;
-  }
-  function eqPart(tag, rootsTex, roots, Ft, lead, quad) {
-    var T = Ft.poly, key = tx(T), deg = P.degree(T);
-    var check = function (resp) {
-      var s = String(resp == null ? '' : resp).replace(/=\s*0\s*$/, '');
-      if (/=/.test(s)) return form('relation', 'Type the left side only — the ' + t('=0') + ' is already there.');
-      var a = readP(s); if (a.res) return a.res;
-      var S = a.p, vs3 = P.vars(S);
-      if (P.isZero(S)) return wrong('value', t('0=0') + ' is true for <b>every</b> ' + t('x') + ' — build the left side from one factor per root.');
-      if (vs3.some(function (v) { return v !== 'x'; })) return wrong('var', 'Use the variable ' + t('x') + ' only.');
-      var lt = P.lead(S, 'x'), lT = P.lead(T, 'x');
-      var same = !P.isZero(S) && P.eq(P.scale(S, [lT[0] * lt[1], lT[1] * lt[0]]), T);
-      if (same) {
-        if (P.terms(S).some(function (u) { return u.c[1] !== 1; })) return form('coef-fraction', 'Right roots — now multiply through so every coefficient is an integer.');
-        return ok();
-      }
-      var at = function (x) { return P.at(S, { x: x }); };
-      var miss = roots.filter(function (x) { return Math.abs(at(x)) > 1e-9; });
-      if (!miss.length && onlyRoots(S, roots)) { // c·∏(x − r)^m: a repeated factor adds no new solution
-        if (quad && P.degree(S) !== 2) return wrong('double-root', P.degree(S) < 2 ? 'Right solution, but the question asks for a <b>quadratic</b>: repeat the factor.' : 'Right solution, but that isn’t a <b>quadratic</b> — use the factor exactly twice.');
-        if (P.terms(S).some(function (u) { return u.c[1] !== 1; })) return form('coef-fraction', 'Right roots — now multiply through so every coefficient is an integer.');
-        return ok();
-      }
-      if (miss.length && roots.every(function (x) { return Math.abs(at(-x)) < 1e-9; }) && miss.length === roots.filter(function (x) { return x !== 0; }).length) return wrong('root-sign', 'Check the signs: the root ' + t('x=' + rootTex(miss[0])) + ' comes from the factor that is ' + t('0') + ' there, e.g. ' + t('x=-4') + ' gives ' + t('(x+4)') + '.');
-      if (miss.length) return wrong('root-missing', t('x=' + rootTex(miss[0])) + ' is not a solution of your equation. Each root ' + t('r') + ' needs a factor that is ' + t('0') + ' at ' + t('r') + '.');
-      if (P.degree(S) < deg) return wrong('double-root', 'Your equation has the right root, but a quadratic with only that root has the factor <b>repeated</b>.');
-      return wrong('root-extra', 'Your equation has all the roots, but also another one. Use exactly one factor for each root.');
-    };
-    var p = KP.math(rootsTex + '. Type the left side of your equation (the right side is ' + t('0') + ').', check, key, lead + t(Ft.tex + '=0') + '<br>Expand: ' + t(key + '=0'), ['Each root ' + t('r') + ' gives a factor that is ' + t('0') + ' at ' + t('r') + ', e.g. ' + t('x=5\\Rightarrow(x-5)') + '.', 'Multiply the factors and set the product equal to ' + t('0') + '.'], 'equation from roots ' + tag, { keys: 'poly', vars: ['x'] });
-    p.answer = t(key + '=0');
-    p.good = [Ft.tex, tx(P.scale(T, 2)), tx(T, { order: 'asc' })];
-    p.bad = [tx(P.mul(T, sum(lin(1, 'x', -11)))), tx(P.add(T, N(1)))];
-    return p;
-  }
-  function rootTex(x) { if (Number.isInteger(x)) return String(x); for (var q = 2; q <= 12; q++) { var p = Math.round(x * q); if (Math.abs(p / q - x) < 1e-9) return frac(p, q); } return String(x); }
 })(window);

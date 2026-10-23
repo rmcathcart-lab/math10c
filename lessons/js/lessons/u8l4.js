@@ -344,7 +344,7 @@ const method = {
     const d = MT[k], W = ex.W, cx = W / 2, nw = Math.min(290, (W - 60) / 3), y2 = 192;
     const F = new Flowchart(stage, { x: 10, y: 6, width: W - 20, height: 262, nodes: {
       sys: { x: cx - 10, y: 52, w: 330, h: 88, html: `<div class="u8l4-fsys"><span class="u8l4-tag u8l4-t1">Eq. 1</span>${T(`\\B{${d.e1}}`)}</div><div class="u8l4-fsys"><span class="u8l4-tag u8l4-t2">Eq. 2</span>${T(`\\A{${d.e2}}`)}</div>`, cls: 'bk-round' },
-      g: { x: (W - 20) / 6, y: y2, w: nw, h: 112, html: '<b>Graphing</b>a picture or estimate is enough, or a graphing calculator is allowed', color: 'slate' },
+      g: { x: (W - 20) / 6, y: y2, w: nw, h: 112, html: '<b>Graphing</b>a picture or estimate is enough (by hand: exact only for integer solutions)', color: 'slate' },
       s: { x: (W - 20) / 2, y: y2, w: nw, h: 112, html: '<b>Substitution</b>a variable is isolated, or has coefficient 1 or −1', color: 'blue' },
       e: { x: (W - 20) * 5 / 6, y: y2, w: nw, h: 112, html: '<b>Elimination</b>one variable’s coefficients match, are opposites, or are easy multiples', color: 'amber' } },
       edges: [{ from: 'sys', to: 'g' }, { from: 'sys', to: 's' }, { from: 'sys', to: 'e' }] });
@@ -360,7 +360,7 @@ const method = {
     return [
       { cap: `<b>Substitution?</b> ${d.sub[1]}`, run: async (c) => { await F.visit(c, 'sys'); await F.go(c, 'sys', 's'); await F.visit(c, 's'); await stampIn(c, stamps.s); } },
       { cap: `<b>Elimination?</b> ${d.eli[1]}`, run: async (c) => { await F.go(c, 'sys', 'e'); await F.visit(c, 'e'); await stampIn(c, stamps.e); } },
-      { cap: '<b>Graphing?</b> It always works on a graphing calculator, but by hand only when the solution is a pair of <b>integers</b>, and you can’t know that before you solve.', run: async (c) => { await F.go(c, 'sys', 'g'); await F.visit(c, 'g'); await stampIn(c, stamps.g); } },
+      { cap: '<b>Graphing?</b> A hand-drawn graph is exact only when the solution is a pair of <b>integers</b>, and you can’t know that before you solve.', run: async (c) => { await F.go(c, 'sys', 'g'); await F.visit(c, 'g'); await stampIn(c, stamps.g); } },
       { cap: d.why, run: async (c) => {
         Object.keys(stamps).forEach((id) => F.node(id).classList.add(id === d.pick ? 'u8l4-pick' : 'u8l4-nopick')); await pulse(c, F.node(d.pick), 1.06);
         live(P); await show(c, why); for (const e of ls.slice(0, 2)) await show(c, e);

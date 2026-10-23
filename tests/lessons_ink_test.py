@@ -8,7 +8,7 @@ async def main():
         b = await p.chromium.launch(); ctx = await b.new_context(viewport={'width': 1180, 'height': 820}); pg = await ctx.new_page()
         pg.on('pageerror', lambda e: errs.append(str(e)))
         await ctx.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
-        await pg.goto('http://localhost:8811/lessons/u4/l1a/'); await pg.wait_for_selector('#tb'); await pg.evaluate("localStorage.clear(); localStorage.setItem('ink:api', JSON.stringify(' '))"); await pg.reload(); await pg.wait_for_selector('#tb')
+        await pg.goto('http://localhost:8811/lessons/u4/l1/'); await pg.wait_for_selector('#tb'); await pg.evaluate("localStorage.clear(); localStorage.setItem('ink:api', JSON.stringify(' '))"); await pg.reload(); await pg.wait_for_selector('#tb')
         await pg.screenshot(path=SH + 'tb.png', clip={'x': 0, 'y': 0, 'width': 1180, 'height': 70})
         sw = pg.locator('.sw[data-color=blue]'); bb = await sw.bounding_box()
         await pg.mouse.move(bb['x'] + 10, bb['y'] + 10); await pg.mouse.down(); await pg.wait_for_timeout(650); await pg.mouse.up()

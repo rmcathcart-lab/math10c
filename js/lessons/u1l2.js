@@ -1,5 +1,6 @@
-/* Math 10C · Unit 1 · Lesson 2 — Prime Factorization at Work: GCF, LCM, and Perfect Powers (AN1)
- * Assignment questions 1–20 (u1_L02.tex) and the Lesson 2 Extra Practice (u1_EP02.tex).
+/* Math 10C · Unit 1 · Lesson 2 — Prime Factorization at Work: GCF and LCM (AN1)
+ * Assignment questions 1–13 (u1_L02.tex) and the Lesson 2 Extra Practice (u1_EP02.tex). The perfect-square and
+ * perfect-cube parts of the old Lesson 2 moved to Lesson 3 (js/lessons/u1l3.js).
  * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's numbers are one
  * of the possible values) and changes the numbers. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
@@ -20,9 +21,6 @@
   function eqv(n) { var f = K.fac(n); return f === String(n) ? F(n) : f + '=' + F(n); }
   function find(r, gen, test, fallback) { for (var i = 0; i < 800; i++) { var v = gen(); if (test(v)) return v; } return fallback; }
   function noneDivides(a) { for (var i = 0; i < a.length; i++) for (var j = 0; j < a.length; j++) if (i !== j && a[j] % a[i] === 0) return false; return true; }
-  function distinct(a) { return sortN(a).every(function (x, i, s) { return !i || s[i - 1] !== x; }); }
-  function intRoot(n, k) { var r = Math.round(Math.pow(n, 1 / k)); for (var d = -1; d <= 1; d++) if (r + d >= 0 && Math.pow(r + d, k) === n) return r + d; return null; }
-  function rad(n) { return nt.distinctPrimes(n).reduce(function (m, p) { return m * p; }, 1); }
   function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); return o; }
   function nlist(nums) { var s = nums.map(function (n) { return t(F(n)); }); return s.length === 1 ? s[0] : s.length === 2 ? s[0] + ' and ' + s[1] : s.slice(0, -1).join(', ') + ', and ' + s[s.length - 1]; }
   function facEq(n) { return nt.isPrime(n) ? t(F(n)) + ' (prime)' : t(F(n) + '=' + K.fac(n)); }
@@ -30,8 +28,6 @@
   function hm(L) { return t(Math.floor(L / 60) + '\\text{ h}' + (L % 60 ? '\\ ' + (L % 60) + '\\text{ min}' : '')); }
   function normX(s) { return String(s == null ? '' : s).replace(/(\d)\s*[xX]\s*(?=\d)/g, '$1*'); }
   function ord(n) { var s = n % 100; return s >= 11 && s <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'; }
-  function pw(k) { return k === 2 ? 'square' : 'cube'; }
-  function rootTex(k, inner) { return (k === 2 ? '\\sqrt{' : '\\sqrt[3]{') + inner + '}'; }
   function fmtTime(min) { var h = Math.floor(min / 60) % 24, m = min % 60; return (h % 12 || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' a.m.' : ' p.m.'); }
   function timeHtml(min) { return min % 1440 === 720 ? '12:00 noon' : fmtTime(min); }
 
@@ -116,34 +112,8 @@
       return c(s);
     };
   }
-  function valChk(target, diag) { // a whole number, or any product equal to it
-    return function (resp) {
-      var s = normX(resp), pn = HW.parse.number(s), v = null;
-      if (pn.ok) v = pn.value; else { var p = HW.parse.product(s); if (p.ok) v = p.value; else return form(pn.code === 'empty' ? 'empty' : 'notnumber', pn.code === 'empty' ? 'Type your answer first.' : 'Type a whole number (or a product such as ' + t('2^{2}\\times 3') + ').'); }
-      if (v === target) return ok();
-      var h = diag ? diag(v) : null;
-      return h ? wrong(h.code, h.hint) : wrong('value', null);
-    };
-  }
   function isNo(s) { return /^(no|none|nope|not|neither|n\/a|n|-+|—|x)(\s.*|\.)?$/.test(s); }
   function isYes(s) { return /^(yes|y|yep)\b/.test(s); }
-  /* the k-th root (or "none" when the number isn't a perfect k-th power) */
-  function rootOrNone(root, k, nTex, diag) {
-    var word = pw(k), vc = root != null ? valChk(root, diag) : null;
-    return function (resp) {
-      var s = String(resp == null ? '' : resp).trim().toLowerCase();
-      if (!s) return form('empty', 'Type the ' + word + ' root, or <b>none</b> if it is not a perfect ' + word + '.');
-      if (isNo(s)) return root == null ? ok() : wrong('said-not-perfect', 'Look at the exponents in the prime factorization: are they all ' + (k === 2 ? 'even' : 'multiples of ' + t('3')) + '? Then ' + t(nTex) + ' <b>is</b> a perfect ' + word + '.');
-      if (isYes(s)) return root != null ? form('yes-root', 'Right, it is a perfect ' + word + ' — now type the ' + word + ' root itself.') : wrong('said-perfect', 'Check the exponents in the prime factorization: are they <b>all</b> ' + (k === 2 ? 'even' : 'multiples of ' + t('3')) + '?');
-      if (root == null) {
-        var s2 = normX(s), pn = HW.parse.number(s2), pp = HW.parse.product(s2);
-        if (!pn.ok && !pp.ok) return form('notnumber', 'Type a number, or <b>none</b>.');
-        var v = pn.ok ? pn.value : pp.value, big = Math.pow(v, k);
-        return wrong('said-perfect', (v % 1 ? 'A decimal root means the number is <b>not</b> a perfect ' + word + '. ' : (big < 1e12 ? t(F(v) + '^{' + k + '}=' + F(big)) + ', not ' + t(nTex) + '. ' : '')) + 'Look at the exponents in the prime factorization: are they all ' + (k === 2 ? 'even' : 'multiples of ' + t('3')) + '? If not, there is no whole-number ' + word + ' root — type <b>none</b>.');
-      }
-      return vc(s);
-    };
-  }
   function yesNoChk(want, yesWhy, noWhy) {
     return function (resp) {
       var s = String(resp == null ? '' : resp).trim().toLowerCase();
@@ -225,99 +195,12 @@
     p.bad = [keys.slice(0, -1).concat([String(other)]), keys.slice(0, -1).concat([String(prodOf(nums))])].filter(function (b) { return b[b.length - 1] !== String(ans); });
     return p;
   }
-  function productPart(n, exp) {
-    return { prompt: t(F(n)), input: { type: 'math', before: t(F(n) + '=') }, check: K.product(n, exp || 'either'), key: K.fac(n),
-      answer: t(F(n) + '=' + K.fac(n)), text: 'product of primes: ' + n,
-      solution: 'Divide by the smallest prime each time:' + K.ladderSolution(n) + t(F(n) + '=' + K.exp(n) + '=' + K.fac(n)),
-      hints: ['Start with the smallest prime that divides ' + t(F(n)) + ' and keep dividing until you reach ' + t('1') + '.', 'Check: multiply your primes back together on your calculator — do you get ' + t(F(n)) + '?'] };
-  }
-  /* perfect square / cube test: factorization box + root box ("none" if not perfect) */
-  function powerTestPart(n, k) {
-    var word = pw(k), root = intRoot(n, k), f = nt.factor(n), rt = rootTex(k, F(n)), test = k === 2 ? 'even' : 'a multiple of ' + t('3');
-    var bad = f.filter(function (pe) { return pe[1] % k; })[0];
-    var diag = function (v) {
-      if (v === n / k) return { code: 'divided-by-index', hint: 'A ' + word + ' root isn’t ' + (k === 2 ? 'half' : 'a third') + ' of the number. Split the prime factors into ' + (k === 2 ? 'two' : 'three') + ' identical groups and multiply one group.' };
-      if (v === rad(n) && v !== root) return { code: 'each-prime-once', hint: 'You used each prime once. Divide each <b>exponent</b> by ' + t(k) + ' instead — a prime with a bigger exponent appears more than once in the root.' };
-      if (k === 3 && v === intRoot(n, 2)) return { code: 'used-square-root', hint: 'That’s the <b>square</b> root. For the cube root, divide each exponent by ' + t('3') + '.' };
-      if (k === 2 && v === intRoot(n, 3)) return { code: 'used-cube-root', hint: 'That’s the <b>cube</b> root. For the square root, divide each exponent by ' + t('2') + '.' };
-      if (v > 0 && v % 1 === 0 && Math.pow(v, k) < 1e12) return { code: 'root-value', hint: t(F(v) + '^{' + k + '}=' + F(Math.pow(v, k))) + ', not ' + t(F(n)) + '. Divide each exponent in the prime factorization by ' + t(k) + '.' };
-      return null;
-    };
-    var fields = [{ name: 'Prime factorization', before: t(F(n) + '='), mode: 'math', wide: true },
-      { name: word === 'square' ? 'Square root' : 'Cube root', before: t(rt + '='), mode: 'text', placeholder: 'number, or none' }];
-    var keys = [plainFac(n), root != null ? String(root) : 'none'];
-    var sol = t(F(n) + '=' + K.fac(n)) + '.<br>' + (root != null
-      ? 'Every exponent is ' + test + ', so the factors split into ' + (k === 2 ? 'two' : 'three') + ' identical groups: ' + t(F(n)) + ' <b>is</b> a perfect ' + word + '.<br>' + (k === 2 ? 'Halve' : 'Divide') + ' each exponent' + (k === 3 ? ' by ' + t('3') : '') + ': ' + t(rt + '=' + (function (rf) { return rf === String(root) ? '' : rf + '='; })(HW.texFactors(f.map(function (pe) { return [pe[0], pe[1] / k]; }))) + F(root)) + '. (Calculator: ' + t(rt + '=' + F(root)) + ' ✓)'
-      : 'The exponent of ' + t(bad[0]) + ' is ' + t(bad[1]) + ', which is not ' + test + ', so the factors can’t split into ' + (k === 2 ? 'two' : 'three') + ' identical groups: ' + t(F(n)) + ' is <b>not</b> a perfect ' + word + '.<br>Calculator check: ' + t(rt + '\\approx ' + K.roundTo(Math.pow(n, 1 / k), 2).toFixed(2)) + ', not a whole number.');
-    var p = P.fields('Is ' + t(F(n)) + ' a perfect ' + word + '? Write its prime factorization, then give ' + t(rt) + ' — or type <b>none</b> if it is not a perfect ' + word + '.', fields,
-      [prodChk(n, 'either'), rootOrNone(root, k, F(n), diag)], keys,
-      t(F(n) + '=' + K.fac(n)) + '<br>' + (root != null ? 'Perfect ' + word + ': ' + t(rt + '=' + F(root)) : 'Not a perfect ' + word + '.'), sol,
-      ['Factor ' + t(F(n)) + ' into primes and look at the exponents.', 'A perfect ' + word + ' has every exponent ' + test + '. ' + (k === 2 ? 'Halve' : 'Divide') + ' each exponent' + (k === 3 ? ' by 3' : '') + ' to get the root.'],
-      'perfect ' + word + '? ' + n);
-    p.good = root != null ? [[nt.primeList(n).join('x'), String(root)], [plainFac(n), K.fac(root) === String(root) ? String(root) : plainFac(root)]] : [[plainFac(n), 'no'], [plainFac(n), 'not a perfect ' + word]];
-    p.bad = root != null ? [[plainFac(n), 'no'], [plainFac(n), String(root + 1)], [plainFac(n), String(rad(n))]].filter(function (b) { return b[1] !== String(root); }) : [[plainFac(n), String(Math.round(Math.pow(n, 1 / k)))], [plainFac(n), 'yes']];
-    return p;
-  }
   /* exponent form + whole number in two boxes */
   function expNumPart(prompt, target, lab, diag, sol, hints, text) {
     var fields = [{ name: 'Exponent form', label: 'Exponent form', before: t('\\text{' + lab + '}='), mode: 'math', wide: true },
       { name: 'Whole number', label: 'Whole number', before: t('\\text{' + lab + '}=') }];
     var p = P.fields(prompt, fields, [expChk(target, diag), K.number(target, diag)], [plainFac(target), String(target)], lab + ' ' + t('=' + eqv(target)), sol, hints, text);
     if (!nt.isPrime(target)) p.bad = [[String(target), String(target)]];
-    return p;
-  }
-  /* smallest multiplier / divisor to reach a perfect k-th power */
-  function multFor(n, k) { return nt.factor(n).reduce(function (m, pe) { return m * Math.pow(pe[0], (k - pe[1] % k) % k); }, 1); }
-  function divFor(n, k) { return nt.factor(n).reduce(function (m, pe) { return m * Math.pow(pe[0], pe[1] % k); }, 1); }
-  function multPart(n, k, nTex) {
-    var word = pw(k), m = multFor(n, k), N = n * m, rt = intRoot(N, k), test = k === 2 ? 'even' : 'a multiple of ' + t('3');
-    var mdiag = function (v) {
-      if (!(v >= 1) || v % 1) return null;
-      var w = n * v;
-      if (intRoot(w, k) != null) return v === n ? { code: 'times-itself', hint: 'Multiplying by the number itself does give a perfect ' + word + ', but not with the <b>smallest</b> multiplier. Raise each exponent only as far as the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + '.' } : { code: 'not-smallest', hint: t(F(n) + '\\times ' + F(v)) + ' is a perfect ' + word + ', but a <b>smaller</b> multiplier works. Raise each exponent only as far as the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ' — nothing more.' };
-      if (k === 2 && v === n && intRoot(w, 2) != null) return null;
-      if (k === 3 && intRoot(w, 2) != null) return { code: 'made-square', hint: 'That makes a perfect <b>square</b>, but you need a perfect <b>cube</b>: every exponent must reach a multiple of ' + t('3') + '.' };
-      if (k === 2 && intRoot(w, 3) != null) return { code: 'made-cube', hint: 'That makes a perfect <b>cube</b>, but you need a perfect <b>square</b>: every exponent must be even.' };
-      if (m % v === 0) return { code: 'missed-prime', hint: 'Not quite: after multiplying by ' + t(F(v)) + ', some exponent is still not ' + test + '. Check every prime.' };
-      return null;
-    };
-    var rdiag = function (v) {
-      if (v === N / k) return { code: 'divided-by-index', hint: 'A ' + word + ' root isn’t ' + (k === 2 ? 'half' : 'a third') + ' of the number. Divide each exponent by ' + t(k) + '.' };
-      if (v === rad(N) && v !== rt) return { code: 'each-prime-once', hint: 'Divide each <b>exponent</b> by ' + t(k) + ' — a prime with a bigger exponent appears more than once in the root.' };
-      if (v === intRoot(n, k)) return { code: 'root-value', hint: 'That’s the root of the original number. Take the root of the <b>result</b> (after multiplying).' };
-      return null;
-    };
-    var fN = nt.factor(n), fNN = nt.factor(N);
-    var p = P.fields(nTex,
-      [{ name: 'Multiplier', label: 'Multiply by' }, { name: (k === 2 ? 'Square' : 'Cube') + ' root', label: (k === 2 ? 'Square' : 'Cube') + ' root of the result', mode: 'math' }],
-      [K.number(m, mdiag), valChk(rt, rdiag)], [String(m), String(rt)],
-      'Multiply by ' + t(F(m)) + '; ' + t(rootTex(k, F(N)) + '=' + F(rt)),
-      (nTex.indexOf('times') < 0 ? t(F(n) + '=' + K.fac(n)) + '. ' : '') + 'Raise each exponent to the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ': ' +
-        fN.filter(function (pe) { return pe[1] % k; }).map(function (pe) { return t(pe[0] + '^{' + pe[1] + '}\\to ' + pe[0] + '^{' + (pe[1] + (k - pe[1] % k)) + '}'); }).join(', ') + '.<br>Multiply by ' + t(eqv(m)) + '. Result: ' + t(HW.texFactors(fNN) + (N < 1e9 ? '=' + F(N) : '')) + '.<br>' + (k === 2 ? 'Square' : 'Cube') + ' root: ' + t(HW.texFactors(fNN.map(function (pe) { return [pe[0], pe[1] / k]; })) + '=' + F(rt)) + '.',
-      ['Look at the exponents in the prime factorization. Which ones are not ' + test + '?', 'Bring each of those up to the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ' — and no further.'],
-      'multiply to perfect ' + word + ': ' + n);
-    p.bad = [[String(n), String(rt)], [String(m * 2 === n ? m * 3 : m * 2), String(rt)]];
-    return p;
-  }
-  function divPart(n, k) {
-    var word = pw(k), d = divFor(n, k), N = n / d, rt = intRoot(N, k), test = k === 2 ? 'even' : 'a multiple of ' + t('3');
-    var ddiag = function (v) {
-      if (!(v >= 1) || v % 1) return null;
-      if (n % v) return { code: 'not-divisor', hint: t(F(n) + '\\div ' + F(v)) + ' isn’t a whole number. Remove only prime factors that ' + t(F(n)) + ' actually has.' };
-      var w = n / v;
-      if (intRoot(w, k) != null) return { code: 'not-smallest', hint: t(F(n) + '\\div ' + F(v) + '=' + F(w)) + ' is a perfect ' + word + ', but you removed more than you had to. Lower each exponent only to the next ' + (k === 2 ? 'even number' : 'multiple of ' + t('3')) + ' below it.' };
-      if (k === 3 && intRoot(w, 2) != null) return { code: 'made-square', hint: 'That leaves a perfect <b>square</b>, but you need a perfect <b>cube</b>.' };
-      if (k === 2 && intRoot(w, 3) != null) return { code: 'made-cube', hint: 'That leaves a perfect <b>cube</b>, but you need a perfect <b>square</b>.' };
-      return null;
-    };
-    var fN = nt.factor(n), fR = nt.factor(N);
-    var p = P.fields('Find the smallest whole number ' + t(F(n)) + ' can be <b>divided</b> by to leave a perfect ' + word + ', and give the ' + word + ' root.',
-      [{ name: 'Divisor', label: 'Divide by' }, { name: (k === 2 ? 'Square' : 'Cube') + ' root', label: (k === 2 ? 'Square' : 'Cube') + ' root', mode: 'text', placeholder: 'number' }],
-      [K.number(d, ddiag), valChk(rt, null)], [String(d), String(rt)],
-      'Divide by ' + t(F(d)) + '; ' + t(rootTex(k, F(N)) + '=' + F(rt)),
-      t(F(n) + '=' + K.fac(n)) + '. Lower each exponent that isn’t ' + test + ' to the one just below it: ' + fN.filter(function (pe) { return pe[1] % k; }).map(function (pe) { return t(pe[0] + '^{' + pe[1] + '}\\to ' + pe[0] + '^{' + (pe[1] - pe[1] % k) + '}'); }).join(', ') + '.<br>Divide by ' + t(eqv(d)) + ': ' + t(F(n) + '\\div ' + F(d) + '=' + F(N) + '=' + HW.texFactors(fR)) + '.<br>' + (k === 2 ? 'Square' : 'Cube') + ' root: ' + t(HW.texFactors(fR.map(function (pe) { return [pe[0], pe[1] / k]; })) + '=' + F(rt)) + '.',
-      ['Factor ' + t(F(n)) + ' and look for exponents that are not ' + test + '.', 'Remove just enough of each of those primes.'], 'divide to perfect ' + word + ': ' + n);
-    p.bad = [[String(n), '1'], [String(d), String(N)]];
     return p;
   }
   /* pair a = g·x, b = g·y with gcd(x, y) = 1 */
@@ -354,8 +237,8 @@
   });
 
   HW.defineLesson({
-    id: 'u1l2', unit: 1, num: '2', title: 'Prime Factorization at Work: GCF, LCM, and Perfect Powers', outcome: 'AN1',
-    blurb: 'Use prime factorizations to find the greatest common factor and least common multiple, and to test for perfect squares and perfect cubes.',
+    id: 'u1l2', unit: 1, num: '2', title: 'Prime Factorization at Work: GCF and LCM', outcome: 'AN1',
+    blurb: 'Use prime factorizations to find the greatest common factor and least common multiple, and decide which one a problem needs.',
     questions: [
       { num: '1', section: 'Part A — Greatest Common Factor', stem: 'State the greatest common factor of each group.', parts: [
         { id: '1a', level: 'BEG', make: function (r) {
@@ -447,51 +330,8 @@
         { id: '7d', level: 'PRG', make: function (r) {
           return lcmPart(find(r, function () { var p = r.sample([2, 3, 5, 7, 11, 13], 4); return sortN([p[0] * p[0], p[1] * p[2], p[2] * p[3], p[3] * p[3]]); }, function (v) { var L = lcmA(v); return L >= 1000 && L <= 60000; }, [4, 15, 55, 121]));
         } }] },
-      { num: '8', section: 'Part C — Perfect Squares and Perfect Cubes', stem: 'In each case use prime factorization to determine whether the number is a perfect square. If it is a perfect square, state its square root. (Verify with a calculator.)', parts: [
-        { id: '8a', level: 'PRG', make: function (r) { var k = r.pick([18, 20, 28, 45, 50, 44, 52, 63]); return powerTestPart(k * k, 2); } },
-        { id: '8b', level: 'PRG', make: function (r) { var k = r.pick([30, 42, 66, 70, 78]); return powerTestPart(k * k, 2); } },
-        { id: '8c', level: 'PRG', make: function (r) { return powerTestPart(r.pick([686, 250, 375, 1029, 2662, 1715]), 2); } },
-        { id: '8d', level: 'PRG', make: function (r) { return powerTestPart(r.pick([1050, 1470, 1350, 1575, 1176, 2450]), 2); } }] },
-      { num: '9', stem: function (sh) { return 'Consider the number ' + t(F(sh.n)) + '.'; },
-        shared: function (r) { var k = r.pick([45, 63, 50, 75, 98, 44, 52, 99, 28, 36]); return { k: k, n: k * k * k }; },
-        parts: [
-          { id: '9a', level: 'BEG', make: function (r, sh) {
-            var n = sh.n, k = sh.k, s = Math.round(Math.sqrt(n));
-            return P.number('Use a calculator to find the cube root of ' + t(F(n)) + '.', k, function (v) {
-              if (Math.abs(v - Math.sqrt(n)) < 1 || v === s) return { code: 'square-root', hint: 'That’s the <b>square</b> root. Use the cube root: ' + t('\\sqrt[3]{\\ }') + ' (on many calculators, ' + t('x^{1/3}') + ' or the ' + t('\\sqrt[x]{\\ }') + ' key with 3).' };
-              if (v === n / 3) return { code: 'divided-3', hint: 'A cube root isn’t a third of the number. It is the number that, multiplied by itself three times, gives ' + t(F(n)) + '.' };
-              return null;
-            }, t('\\sqrt[3]{' + F(n) + '}=' + k) + '. Check: ' + t(k + '\\times ' + k + '\\times ' + k + '=' + F(n)) + '.', ['Use the cube-root key, not the square-root key.'], 'cube root of ' + n, { before: t('\\sqrt[3]{' + F(n) + '}=') });
-          } },
-          { id: '9b1', sub: 'b i', level: 'EMG', make: function (r, sh) { var p = productPart(sh.n, 'required'); p.prompt = 'Write ' + t(F(sh.n)) + ' as a product of primes in exponent form.'; return p; } },
-          { id: '9b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
-            var n = sh.n, k = sh.k, f = nt.factor(n), fk = HW.texFactors(nt.factor(k)), exps = f.map(function (pe) { return pe[1]; }), sum = nt.sum(exps), mx = Math.max.apply(null, exps);
-            return P.mc(r, 'Which statement explains how the prime factorization ' + t(F(n) + '=' + K.fac(n)) + ' shows that ' + t(F(n)) + ' is a perfect cube, and confirms the cube root?', [
-              { html: 'Every exponent (' + t(exps.join(',\\ ')) + ') is a multiple of ' + t('3') + ', so the primes split into three identical groups. One group is ' + t(fk + (fk === String(k) ? '' : '=' + k)) + ', the cube root.', right: true },
-              { html: 'The exponents add up to ' + t(sum) + ', a multiple of ' + t('3') + ', so it is a perfect cube with cube root ' + t(k) + '.', why: 'Adding the exponents doesn’t test for a cube: ' + t('18=2\\times 3^{2}') + ' has exponents adding to ' + t('3') + ', but ' + t('18') + ' is not a perfect cube. <b>Each</b> exponent must be a multiple of ' + t('3') + '.' },
-              { html: 'The largest exponent, ' + t(mx) + ', is a multiple of ' + t('3') + ', so it is a perfect cube with cube root ' + t(k) + '.', why: 'Every exponent must be a multiple of ' + t('3') + ', not just the largest: ' + t('24=2^{3}\\times 3') + ' is not a perfect cube.' },
-              { html: 'Every exponent is a multiple of ' + t('3') + ', so the cube root is ' + t(F(n) + '\\div 3' + (n % 3 ? '\\approx ' + F(Math.round(n / 3 * 100) / 100) : '=' + F(n / 3))) + '.', why: 'Right test, wrong root: a cube root isn’t a third of the number. Divide each <b>exponent</b> by ' + t('3') + ' instead.' }],
-              t(F(n) + '=' + K.fac(n)) + '. Every exponent is a multiple of ' + t('3') + ', so the factors group into three matching triples and ' + t(F(n)) + ' is a perfect cube. Dividing each exponent by ' + t('3') + ': ' + t('\\sqrt[3]{' + F(n) + '}=' + fk + (fk === String(k) ? '' : '=' + k)) + ', which matches the calculator. ✓',
-              ['For a perfect cube, what must be true of <b>every</b> exponent?'], 'explain perfect cube ' + n);
-          } }] },
-      { num: '10', stem: 'In each case use prime factorization to determine whether the number is a perfect cube. If it is, state its cube root. (Verify with a calculator.)', parts: [
-        { id: '10a', level: 'PRG', make: function (r) { return powerTestPart(r.pick([512, 729, 4096, 15625]), 3); } },
-        { id: '10b', level: 'PRG', make: function (r) { return powerTestPart(r.pick([2197, 4913, 6859, 12167]), 3); } },
-        { id: '10c', level: 'PRG', make: function (r) { return powerTestPart(r.pick([1024, 256, 625, 2401, 6561]), 3); } },
-        { id: '10d', level: 'PRG', make: function (r) { return powerTestPart(r.pick([3025, 1225, 5929, 4225, 8281, 1089]), 3); } }] },
-      { num: '11', stem: 'Explain how you could use prime factorization to determine whether a whole number is <i>both</i> a perfect square and a perfect cube.', parts: [
-        { id: '11', level: 'PRG', make: function (r) {
-          var ex = r.pick([[64, '2^{6}', 8, 4], [729, '3^{6}', 27, 9], [4096, '2^{12}', 64, 16], [15625, '5^{6}', 125, 25], [46656, '2^{6}\\times 3^{6}', 216, 36]]);
-          return P.mc(r, 'Which method works?', [
-            { html: 'Find the prime factorization. The number is both exactly when <b>every</b> exponent is a multiple of ' + t('6') + ' (a multiple of both ' + t('2') + ' and ' + t('3') + ').', right: true },
-            { html: 'Find the prime factorization. The number is both when every exponent is even.', why: 'Even exponents only make a perfect <b>square</b>: ' + t('4=2^{2}') + ' is a square but not a cube.' },
-            { html: 'Find the prime factorization. The number is both when every exponent is a multiple of ' + t('2') + ' <b>or</b> a multiple of ' + t('3') + '.', why: '“Or” isn’t enough: ' + t('108=2^{2}\\times 3^{3}') + ' has one of each, and it is neither a square nor a cube.' },
-            { html: 'Find the prime factorization. The number is both when the exponents add up to a multiple of ' + t('6') + '.', why: t('486=2\\times 3^{5}') + ' has exponents adding to ' + t('6') + ', but it is neither a square nor a cube. Look at each exponent on its own.' }],
-            'A perfect square needs every exponent to be a multiple of ' + t('2') + '; a perfect cube needs every exponent to be a multiple of ' + t('3') + '. Both at once means every exponent is a multiple of ' + t('6') + '. Example: ' + t(F(ex[0]) + '=' + ex[1]) + ', so ' + t('\\sqrt{' + F(ex[0]) + '}=' + ex[2]) + ' and ' + t('\\sqrt[3]{' + F(ex[0]) + '}=' + ex[3]) + '.',
-            ['What must the exponents be for a square? For a cube? What number is a multiple of both?'], 'explain square and cube');
-        } }] },
-      { num: '12', section: 'Part D — Multiple Choice, Numerical Response, and Application', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '12', level: 'BEG', make: function (r) {
+      { num: '8', section: 'Part C — Multiple Choice, Numerical Response, and Application', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '8', level: 'BEG', make: function (r) {
           var v = find(r, function () { var ps = sortN(r.sample([2, 3, 5, 7, 11, 13], 3)), xy = sortN(r.sample([2, 3, 4, 5, 7], 2)), g = prodOf(ps); return { ps: ps, g: g, a: g * xy[0], b: g * xy[1], xy: xy }; },
             function (v) { return gcd(v.xy[0], v.xy[1]) === 1 && v.a >= 300 && v.b <= 2000 && v.g >= 60; }, { ps: [3, 5, 11], g: 165, a: 495, b: 660, xy: [3, 4] });
           var ps = v.ps, subs = [ps[0], ps[1], ps[2], ps[0] * ps[1], ps[0] * ps[2], ps[1] * ps[2]], ds = r.sample(subs, 3);
@@ -500,8 +340,8 @@
             facLines([v.a, v.b]) + '. Shared primes at their lower powers: ' + t(ps.join(',\\ ')) + ', so the GCF is ' + t(ps.join('\\times ') + '=' + F(v.g)) + '. The other options are each only part of the full common factor.',
             ['Factor both numbers. The GCF uses <b>every</b> shared prime.'], 'MC GCF of ' + v.a + ', ' + v.b, true);
         } }] },
-      { num: '13', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '13', level: 'PRG', make: function (r) {
+      { num: '9', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '9', level: 'PRG', make: function (r) {
           var p = r.pick([7, 7, 3, 5, 11, 13]), g = 2 * p, falseAt = r.pick([-1, -1, 0, 1, 2, 3]);
           var S = [
             { tv: t('x') + ' and ' + t('y') + ' must both be even numbers.', tr: t(g) + ' is even, so every multiple of ' + t(g) + ' is even.',
@@ -519,8 +359,8 @@
             t(g + '=2\\times ' + p) + ', so ' + t('x') + ' and ' + t('y') + ' are both multiples of ' + t(g) + '.<br>' + S.map(function (s, i) { return L[i] + ': ' + (i === falseAt ? s.fv + ' ' + s.fr + ' <b>False.</b>' : s.tr + ' <b>True.</b>'); }).join('<br>') + '<br>' + (falseAt < 0 ? 'All four are true, so the answer is <b>E</b>.' : 'So the false statement is <b>' + L[falseAt] + '</b>.'),
             ['Both numbers are multiples of ' + t(g) + '. Test each statement with examples like ' + t('x=' + g) + ' and ' + t('y=' + 2 * g) + '.'], 'GCF statements, GCF ' + g, true);
         } }] },
-      { num: '14', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '14', level: 'EMG', make: function (r) {
+      { num: '10', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: '10', level: 'EMG', make: function (r) {
           var nums = find(r, function () { return sortN(r.sample(range(12, 60), 3)); }, function (v) { var L = lcmA(v); return noneDivides(v) && L >= 1000 && L <= 9999 && prodOf(v) / L >= 8; }, [33, 40, 44]);
           var L = lcmA(nums), pr = prodOf(nums), base = K.number(L, lcmDiag(nums), { nr: true });
           var p = P.nr('The least common multiple of ' + nlist(nums) + ' is ________.', L, null, lcmSol(nums), ['Factor each number into primes.', 'Take every prime that appears, at its highest power.'], 'NR LCM of ' + nums.join(', '));
@@ -528,8 +368,8 @@
           p.bad = [String(pr), String(gcfA(nums))];
           return p;
         } }] },
-      { num: '15', stem: '', parts: [
-        { id: '15', level: 'PRG', make: function (r) {
+      { num: '11', stem: '', parts: [
+        { id: '11', level: 'PRG', make: function (r) {
           var ab = r.pick([[9, 12], [6, 8], [8, 12], [10, 15], [6, 10], [12, 18], [9, 15], [14, 21], [12, 16], [15, 20]]), a = ab[0], b = ab[1], L = lcm(a, b), g = gcd(a, b);
           var N = find(r, function () { return r.int(400, 999); }, function (n) { return n % L && Math.floor(n / L) >= 8 && Math.floor(n / L) <= 40; }, 725);
           if (a === 9 && b === 12 && r.chance(0.3)) N = 725;
@@ -547,42 +387,16 @@
           p.bad = [String(Math.floor(N / (a * b))), String(ans + 1)];
           return p;
         } }] },
-      { num: '16', section: 'Part E — Problem Solving', stem: 'Use prime factorization to explain.', parts: [
-        { id: '16a', level: 'BEG', make: function (r) {
-          var names = r.pick([['Sam', 'Jada'], ['Sam', 'Jada'], ['Eli', 'Mira'], ['Owen', 'Priya']]), sq = r.pick([36, 49, 64, 81, 100, 121, 144, 196, 225]), non = r.pick([20, 18, 45, 50, 72, 98, 75, 48, 28, 63, 80, 12]);
-          var firstSq = r.chance(0.5), nA = firstSq ? sq : non, nB = firstSq ? non : sq, A = names[0], B = names[1], sqN = firstSq ? A : B, nonN = firstSq ? B : A, k = Math.sqrt(sq);
-          var odd = nt.factor(non).filter(function (pe) { return pe[1] % 2; })[0];
-          var whyNon = t(non + '=' + K.fac(non)) + ': the exponent of ' + t(odd[0]) + ' is odd, so the tiles can’t pair up into a square. ' + nonN + ' can only make rectangles.';
-          var whySq = t(sq + '=' + K.fac(sq)) + ': every exponent is even, so ' + sqN + ' can make a ' + t(k + '\\times ' + k) + ' square.';
-          return P.mc(r, A + ' has ' + t(nA) + ' square tiles and ' + B + ' has ' + t(nB) + '. Who can arrange <b>all</b> of their tiles into one solid square?', [
-            { html: 'Only ' + A, right: A === sqN, why: A === sqN ? null : whyNon },
-            { html: 'Only ' + B, right: B === sqN, why: B === sqN ? null : whyNon },
-            { html: 'Both of them', why: whyNon },
-            { html: 'Neither of them', why: whySq }],
-            'A solid square needs a perfect-square number of tiles: every exponent in the prime factorization must be even.<br>' + whySq + '<br>' + whyNon + '<br>So only <b>' + sqN + '</b> can.',
-            ['Factor both numbers. Is every exponent even?'], 'who can make a square: ' + nA + ', ' + nB, true);
-        } },
-        { id: '16b', level: 'BEG', make: function (r) {
-          var c = r.pick([64, 125, 216, 343, 512, 729, 1000]), nc = r.pick([72, 48, 96, 108, 144, 200, 128, 250, 36]), rowsN = r.shuffle([c, nc]);
-          function why(n) { var f = nt.factor(n), b = f.filter(function (pe) { return pe[1] % 3; })[0]; return b ? t(F(n) + '=' + K.fac(n)) + ': the exponent of ' + t(b[0]) + ' isn’t a multiple of ' + t('3') + ', so it is not a perfect cube.' : t(F(n) + '=' + K.fac(n)) + ': every exponent is a multiple of ' + t('3') + ', so it makes a ' + t(intRoot(n, 3) + '\\times ' + intRoot(n, 3) + '\\times ' + intRoot(n, 3)) + ' cube.'; }
-          var want = {}; rowsN.forEach(function (n, i) { want['r' + i] = n === c ? 'yes' : 'no'; });
-          var p = P.grid('Can each number of sugar cubes be stacked into one solid cube?', rowsN.map(function (n, i) { return { id: 'r' + i, html: t(F(n)) + ' cubes', label: n + ' cubes' }; }),
-            [{ id: 'yes', html: 'Yes', label: 'Yes' }, { id: 'no', html: 'No', label: 'No' }], want,
-            { tries: 2, count: false, why: function (row) { return { code: 'row', hint: why(rowsN[Number(row.slice(1))]) }; } },
-            'A solid cube needs a perfect-cube number of sugar cubes: every exponent in the prime factorization must be a multiple of ' + t('3') + '.<br>' + rowsN.map(why).join('<br>'),
-            ['Factor each number. Is every exponent a multiple of ' + t('3') + '?'], 'cube stacking: ' + rowsN.join(', '));
-          return p;
-        } }] },
-      { num: '17', stem: function (sh) { return 'A rectangular floor measures ' + t(sh.a) + ' cm by ' + t(sh.b) + ' cm. It will be covered with identical square tiles, with no tiles cut.'; },
+      { num: '12', section: 'Part D — Problem Solving', stem: function (sh) { return 'A rectangular floor measures ' + t(sh.a) + ' cm by ' + t(sh.b) + ' cm. It will be covered with identical square tiles, with no tiles cut.'; },
         shared: function (r) { var v = gxPair(r, [36, 12, 15, 18, 20, 24, 30, 40, 45], range(2, 12), 100, 600, [252, 360, 36]); return { a: v[0], b: v[1], g: v[2] }; },
         parts: [
-          { id: '17a', level: 'PRG', make: function (r, sh) {
+          { id: '12a', level: 'PRG', make: function (r, sh) {
             var p = P.number('What is the largest possible side length of a tile?', sh.g, gcfDiag([sh.a, sh.b]), 'The tile side must divide evenly into both ' + t(sh.a) + ' and ' + t(sh.b) + ', and be as large as possible: the GCF.<br>' + gcfSol([sh.a, sh.b]) + '<br><b>' + sh.g + ' cm</b>',
               ['The side length has to fit evenly into both measurements. Is that a common factor or a common multiple?', 'Find the GCF of ' + t(sh.a) + ' and ' + t(sh.b) + '.'], 'largest tile ' + sh.a + '×' + sh.b, { after: 'cm' });
             p.bad = [String(lcm(sh.a, sh.b))];
             return p;
           } },
-          { id: '17b', level: 'PRG', make: function (r, sh) {
+          { id: '12b', level: 'PRG', make: function (r, sh) {
             var x = sh.a / sh.g, y = sh.b / sh.g, n = x * y;
             return P.number('Using tiles of the largest possible side length, how many tiles are needed?', n, function (v) {
               if (v === sh.a * sh.b / sh.g) return { code: 'area-by-side', hint: 'You divided the floor’s area by the tile’s <b>side length</b>. Divide by the tile’s <b>area</b> — or count tiles along each side and multiply.' };
@@ -592,8 +406,8 @@
             }, t(sh.a + '\\div ' + sh.g + '=' + x) + ' tiles along one side and ' + t(sh.b + '\\div ' + sh.g + '=' + y) + ' along the other, so ' + t(x + '\\times ' + y + '=' + n) + ' tiles. (Check: ' + t(n + '\\times ' + sh.g + '^{2}=' + F(n * sh.g * sh.g) + '=' + sh.a + '\\times ' + sh.b) + ' ✓)',
             ['How many tiles fit along each side of the floor?'], 'number of tiles ' + sh.a + '×' + sh.b, { after: 'tiles' });
           } }] },
-      { num: '18', stem: '', parts: [
-        { id: '18', level: 'PRG', make: function (r) {
+      { num: '13', stem: '', parts: [
+        { id: '13', level: 'PRG', make: function (r) {
           var ab = r.pick([[18, 24], [18, 24], [30, 45], [25, 40], [20, 35], [15, 25], [18, 30], [24, 36], [16, 20], [21, 28], [27, 36]]), a = ab[0], b = ab[1], L = lcm(a, b), g = gcd(a, b);
           var start = r.pick([360, 390, 420, 420, 435, 450, 480]), E = start + L;
           var dh = Math.floor(L / 60) * 60 + Math.round((L / 60 - Math.floor(L / 60)) * 100);
@@ -607,43 +421,6 @@
           p.bad = [[fmtTime(start + a * b)], [String(L)]];
           return p;
         } }] },
-      { num: '19', stem: function (sh) { return 'A square garden has an area of ' + t(F(sh.n) + '\\text{ m}^{2}') + '.'; },
-        shared: function (r) { var k = r.pick([42, 30, 66, 70, 78, 60, 84, 90]); return { k: k, n: k * k }; },
-        parts: [
-          { id: '19a', level: 'EMG', make: function (r, sh) {
-            var n = sh.n, k = sh.k;
-            var p = P.number('Use prime factorization to find the side length of the garden.', k, function (v) {
-              if (v === n / 2) return { code: 'halved', hint: 'The side length is the <b>square root</b> of the area, not half of it.' };
-              if (v === n / 4) return { code: 'perimeter', hint: 'Dividing by ' + t('4') + ' would work for a <b>perimeter</b>. For an area, take the <b>square root</b>.' };
-              if (v === rad(n) && v !== k) return { code: 'each-prime-once', hint: 'You used each prime once. Halve each <b>exponent</b> in the prime factorization instead.' };
-              return null;
-            }, 'Side ' + t('=\\sqrt{' + F(n) + '}') + '. ' + t(F(n) + '=' + K.fac(n)) + ' (every exponent even), so ' + t('\\sqrt{' + F(n) + '}=' + HW.texFactors(nt.factor(k)) + '=' + k) + '. <b>' + k + ' m</b>',
-            ['A square’s area is side × side, so the side is the square root of the area.', 'Factor ' + t(F(n)) + ' and halve each exponent.'], 'garden side ' + n, { after: 'm' });
-            p.bad = [String(n / 2)];
-            return p;
-          } },
-          { id: '19b', level: 'EMG', make: function (r, sh) {
-            var k = sh.k;
-            return P.number('How much fencing is needed to enclose it?', 4 * k, function (v) {
-              if (v === sh.n) return { code: 'area', hint: 'That’s the area. Fencing goes around the <b>outside</b>: the perimeter.' };
-              if (v === 2 * k) return { code: 'two-sides', hint: 'A square has <b>four</b> equal sides.' };
-              if (v === k) return { code: 'side-only', hint: 'That’s one side. The fence goes all the way around.' };
-              return null;
-            }, 'Perimeter ' + t('=4\\times ' + k + '=' + 4 * k) + '. <b>' + 4 * k + ' m</b> of fencing.', ['Fencing goes around all four sides.'], 'fencing for ' + sh.n, { after: 'm' });
-          } }] },
-      { num: '20', stem: '', parts: [
-        { id: '20', level: 'EMG', make: function (r) {
-          var k = r.pick([14, 12, 15, 18, 21, 22, 20, 24]), n = k * k * k;
-          var p = P.number('A cube-shaped storage box has a volume of ' + t(F(n) + '\\text{ cm}^{3}') + '. Use prime factorization to find the length of each edge.', k, function (v) {
-            if (v === n / 3) return { code: 'divided-3', hint: 'The edge is the <b>cube root</b> of the volume, not a third of it.' };
-            if (v === Math.round(Math.sqrt(n)) || Math.abs(v - Math.sqrt(n)) < 0.5) return { code: 'square-root', hint: 'That’s close to the <b>square</b> root. A cube’s volume is edge × edge × edge, so take the <b>cube</b> root.' };
-            if (v === rad(n) && v !== k) return { code: 'each-prime-once', hint: 'Divide each <b>exponent</b> in the prime factorization by ' + t('3') + '.' };
-            return null;
-          }, 'Edge ' + t('=\\sqrt[3]{' + F(n) + '}') + '. ' + t(F(n) + '=' + K.fac(n)) + ' (every exponent a multiple of 3), so ' + t('\\sqrt[3]{' + F(n) + '}=' + HW.texFactors(nt.factor(k)) + '=' + k) + '. <b>' + k + ' cm</b>. Check: ' + t(k + '^{3}=' + F(n)) + ' ✓',
-          ['Volume of a cube = edge × edge × edge.', 'Factor ' + t(F(n)) + ' and divide each exponent by ' + t('3') + '.'], 'cube edge ' + n, { after: 'cm' });
-          p.bad = [String(Math.round(n / 3))];
-          return p;
-        } }] }
     ],
     extra: [
       { num: '1', section: 'Extra practice A — GCF and LCM straight from the exponents', stem: 'The GCF takes the <b>lower</b> exponent of each prime the numbers <i>all</i> share; a prime missing from even one factorization can’t appear in the GCF. Give each GCF in exponent form and as a whole number.', parts: [
@@ -790,47 +567,13 @@
           p.bad = [[String(g * L), String(Pd), 'yes']];
           return p;
         } }] },
-      { num: '10', section: 'Extra practice C — Perfect squares and cubes from the exponents', stem: 'A number is a perfect square exactly when every exponent in its prime factorization is even, and a perfect cube exactly when every exponent is a multiple of ' + t('3') + '. Decide: square, cube, both, or neither? Give each root that exists (exponent form is fine); type <b>none</b> for a root that isn’t a whole number.', parts: [
-        { id: 'e10a', level: 'EMG', make: function (r) { return sqCubePart(r, function (es) { return es.every(function (e) { return e % 2 === 0; }) && es.some(function (e) { return e % 3; }); }, [2, 4, 6, 8], [6, 4]); } },
-        { id: 'e10b', level: 'EMG', make: function (r) { return sqCubePart(r, function (es) { return es.every(function (e) { return e % 3 === 0; }) && es.some(function (e) { return e % 2; }); }, [3, 6, 9], [9, 3]); } },
-        { id: 'e10c', level: 'PRG', make: function (r) { return sqCubePart(r, function (es) { return es.every(function (e) { return e % 6 === 0; }); }, [6, 12], [6, 12]); } },
-        { id: 'e10d', level: 'EMG', make: function (r) { return sqCubePart(r, function (es) { return es.some(function (e) { return e % 2; }) && es.some(function (e) { return e % 3; }); }, [1, 2, 3, 4], [4, 3, 2], 3); } }] },
-      { num: '11', stem: 'Find the <b>smallest whole number</b> each must be multiplied by to give a perfect square, and state the square root of the result. (Raise each odd exponent to the next even number — nothing more.)', parts: [
-        { id: 'e11a', level: 'PRG', make: function (r) {
-          var v = find(r, function () { var ps = r.pick([[2, 3, 7], [2, 3, 5], [2, 5, 7], [3, 5, 7]]), es = r.shuffle([r.pick([1, 3, 5]), r.pick([1, 3, 5]), r.pick([2, 4])]); return { ps: ps, es: es, n: fromExps(ps, es) }; }, function (v) { return v.n >= 1000 && v.n * multFor(v.n, 2) <= 5e6; }, { ps: [2, 3, 7], es: [3, 5, 2], n: 95256 });
-          return multPart(v.n, 2, t(texE(v.ps, v.es)));
-        } },
-        { id: 'e11b', level: 'ADV', make: function (r) { var n = r.pick([540, 1350, 600, 1500, 2160]); return multPart(n, 2, t(F(n))); } },
-        { id: 'e11c', level: 'PRG', make: function (r) { var n = r.pick([1176, 1512, 980, 1960, 2058, 392]); return multPart(n, 2, t(F(n))); } }] },
-      { num: '12', stem: 'Now find the smallest whole number each must be multiplied by to give a perfect <b>cube</b>, and state the cube root of the result.', parts: [
-        { id: 'e12a', level: 'PRG', make: function (r) {
-          var v = find(r, function () { var ps = r.pick([[2, 3, 7], [2, 3, 5], [2, 5, 7]]), es = r.shuffle([3, r.pick([4, 5]), r.pick([1, 2])]); return { ps: ps, es: es, n: fromExps(ps, es) }; }, function (v) { return v.n * multFor(v.n, 3) <= 3e7; }, { ps: [2, 3, 7], es: [3, 5, 2], n: 95256 });
-          return multPart(v.n, 3, t(texE(v.ps, v.es)));
-        } },
-        { id: 'e12b', level: 'MAS', make: function (r) { var n = r.pick([540, 1350, 600, 1500, 2160]); return multPart(n, 3, t(F(n))); } },
-        { id: 'e12c', level: 'ADV', make: function (r) { var n = r.pick([2205, 1575, 2450, 980, 1100]); return multPart(n, 3, t(F(n))); } }] },
-      { num: '13', stem: function (sh) { return 'Dividing works the same way — strip off just enough to leave the exponents where you need them.'; },
-        shared: function (r) { var pq = r.pick([[2, 5], [2, 5], [2, 3], [3, 2], [2, 7], [5, 2], [3, 5]]); return { p: pq[0], q: pq[1], n: Math.pow(pq[0], 4) * Math.pow(pq[1], 3) }; },
-        parts: [
-          { id: 'e13a', level: 'PRG', make: function (r, sh) { return divPart(sh.n, 2); } },
-          { id: 'e13b', level: 'PRG', make: function (r, sh) { return divPart(sh.n, 3); } },
-          { id: 'e13c', level: 'MAS', make: function (r) {
-            var n = r.pick([72, 108, 200, 48, 500, 98]), m = multFor(n, 6), s2 = multFor(n, 2), s3 = multFor(n, 3), N = n * m;
-            return P.number('Find the smallest whole number ' + t(n) + ' must be <b>multiplied</b> by to give a number that is <i>both</i> a perfect square and a perfect cube.', m, function (v) {
-              if (v === s2) return { code: 'made-square', hint: t(n + '\\times ' + v) + ' is a perfect square, but not a perfect cube. Both at once needs every exponent to be a multiple of ' + t('6') + '.' };
-              if (v === s3) return { code: 'made-cube', hint: t(n + '\\times ' + v) + ' is a perfect cube, but not a perfect square. Both at once needs every exponent to be a multiple of ' + t('6') + '.' };
-              if (v > 0 && v % 1 === 0 && intRoot(n * v, 6) != null) return { code: 'not-smallest', hint: 'That works, but it isn’t the smallest. Raise each exponent only to the next multiple of ' + t('6') + '.' };
-              return null;
-            }, t(n + '=' + K.fac(n)) + '. Square <b>and</b> cube means every exponent must be a multiple of ' + t('6') + '. ' + nt.factor(n).map(function (pe) { return t(pe[0] + '^{' + pe[1] + '}\\to ' + pe[0] + '^{6}') + ' needs ' + t(pe[0] + (6 - pe[1] > 1 ? '^{' + (6 - pe[1]) + '}' : '')); }).join('; ') + '.<br>Multiply by ' + t(eqv(m)) + ': ' + t(n + '\\times ' + F(m) + '=' + F(N) + '=' + K.fac(N)) + ' (square root ' + t(F(intRoot(N, 2))) + ', cube root ' + t(F(intRoot(N, 3))) + ').',
-            ['For both a square and a cube, every exponent must be a multiple of what number?'], 'multiply to square and cube: ' + n, { before: t(n + '\\times') });
-          } }] },
-      { num: '14', section: 'Extra practice D — Which tool: GCF or LCM?', stem: function (sh) { return 'A rectangular sheet of veneer measures ' + t(sh.a) + ' cm by ' + t(sh.b) + ' cm. It is to be cut into identical square tiles with no material left over.'; },
+      { num: '10', section: 'Extra practice C — Which tool: GCF or LCM?', stem: function (sh) { return 'A rectangular sheet of veneer measures ' + t(sh.a) + ' cm by ' + t(sh.b) + ' cm. It is to be cut into identical square tiles with no material left over.'; },
         shared: function (r) { var v = gxPair(r, [36, 12, 18, 24, 30, 20], range(2, 12), 100, 400, [180, 252, 36]); return { a: v[0], b: v[1], g: v[2] }; },
         parts: [
-          { id: 'e14a', level: 'PRG', make: function (r, sh) {
+          { id: 'e10a', level: 'PRG', make: function (r, sh) {
             return P.number('What is the largest possible side length of a tile?', sh.g, gcfDiag([sh.a, sh.b]), 'The side must divide both ' + t(sh.a) + ' and ' + t(sh.b) + ' evenly and be as large as possible: the GCF.<br>' + gcfSol([sh.a, sh.b]) + '<br><b>' + sh.g + ' cm</b>', ['The tile has to fit evenly into both sides.'], 'veneer tile ' + sh.a + '×' + sh.b, { after: 'cm' });
           } },
-          { id: 'e14b', level: 'PRG', make: function (r, sh) {
+          { id: 'e10b', level: 'PRG', make: function (r, sh) {
             var x = sh.a / sh.g, y = sh.b / sh.g;
             return P.number('If the tiles are the largest possible size, how many tiles does the sheet produce?', x * y, function (v) {
               if (v === x + y) return { code: 'added', hint: 'Those are the tiles along each side. The tiles form a grid, so multiply.' };
@@ -838,7 +581,7 @@
               return null;
             }, t(sh.a + '\\div ' + sh.g + '=' + x) + ' and ' + t(sh.b + '\\div ' + sh.g + '=' + y) + ', so ' + t(x + '\\times ' + y + '=' + x * y) + ' tiles. Check: ' + t(x * y + '\\times ' + sh.g + '^{2}=' + F(x * y * sh.g * sh.g) + '=' + sh.a + '\\times ' + sh.b) + ' ✓', ['How many tiles fit along each side?'], 'veneer tile count', { after: 'tiles' });
           } },
-          { id: 'e14c', level: 'EMG', make: function (r, sh) {
+          { id: 'e10c', level: 'EMG', make: function (r, sh) {
             var L = lcm(sh.a, sh.b);
             return P.mc(r, 'Why does the GCF — and not the LCM — answer this question?', [
               { html: 'The tile side has to fit <b>into</b> both ' + t(sh.a) + ' and ' + t(sh.b) + ' with nothing left over, so it is a common <b>factor</b>; we want the largest one. The LCM (' + t(F(L)) + ' cm) is longer than the sheet itself.', right: true },
@@ -848,10 +591,10 @@
               'The tile side must divide evenly into both sides: a common <b>factor</b>, and the largest one is the GCF. The LCM is a common <b>multiple</b> — at least as long as the longer side (' + t(F(L)) + ' cm here) — so it can’t be a tile that fits on the sheet.',
               ['Does the tile fit <b>into</b> the sides, or do the sides fit into it?'], 'why GCF for tiles');
           } }] },
-      { num: '15', stem: function (sh) { return 'Three bus routes all leave the terminal together at ' + fmtTime(sh.start) + ' Route A departs every ' + t(sh.v[0]) + ' minutes, Route B every ' + t(sh.v[1]) + ' minutes, and Route C every ' + t(sh.v[2]) + ' minutes.'; },
+      { num: '11', stem: function (sh) { return 'Three bus routes all leave the terminal together at ' + fmtTime(sh.start) + ' Route A departs every ' + t(sh.v[0]) + ' minutes, Route B every ' + t(sh.v[1]) + ' minutes, and Route C every ' + t(sh.v[2]) + ' minutes.'; },
         shared: function (r) { return { v: r.pick([[24, 36, 40], [20, 30, 45], [12, 18, 40], [15, 20, 36], [30, 40, 45], [18, 24, 40]]), start: r.pick([360, 360, 390, 420]) }; },
         parts: [
-          { id: 'e15a', level: 'PRG', make: function (r, sh) {
+          { id: 'e11a', level: 'PRG', make: function (r, sh) {
             var v = sh.v, L = lcmA(v), E = sh.start + L, g = gcfA(v), pr = prodOf(v);
             var p = P.fields('At what time do all three next leave together?', [{ name: 'Time', label: 'Time', mode: 'text', placeholder: 'e.g. 9:45 a.m.' }],
               [timeChk(E, sh.start, L, [{ add: g, code: 'gave-gcf', hint: 'No bus leaves only ' + t(g) + ' minutes after the start. A shared departure is a common <b>multiple</b>.' }, { add: pr, code: 'lcm-product', hint: 'Multiplying the three intervals gives <i>a</i> common multiple, but not the first one. Find the LCM.' }])],
@@ -861,14 +604,14 @@
             p.bad = [[fmtTime(sh.start + g)]];
             return p;
           } },
-          { id: 'e15b', level: 'EMG', make: function (r, sh) {
+          { id: 'e11b', level: 'EMG', make: function (r, sh) {
             var v = sh.v, L = lcmA(v);
             return P.fields('How many departures has each route made by the next time all three leave together (not counting the one at ' + fmtTime(sh.start) + ')?', [{ name: 'Route A', before: 'A:' }, { name: 'Route B', before: 'B:' }, { name: 'Route C', before: 'C:' }],
               v.map(function (x) { return K.number(L / x, function (q) { return q === L / x + 1 ? { code: 'value', hint: 'Don’t count the departure at ' + fmtTime(sh.start) } : null; }); }), v.map(function (x) { return String(L / x); }),
               'A: ' + t(L / v[0]) + ', B: ' + t(L / v[1]) + ', C: ' + t(L / v[2]),
               v.map(function (x, i) { return 'ABC'[i] + ': ' + t(L + '\\div ' + x + '=' + L / x); }).join('<br>'), ['Divide the time until they meet again (the LCM) by each route’s interval.'], 'departures by LCM');
           } },
-          { id: 'e15c', level: 'EMG', make: function (r, sh) {
+          { id: 'e11c', level: 'EMG', make: function (r, sh) {
             var v = sh.v, g = gcfA(v);
             return P.mc(r, 'Why does the LCM — and not the GCF — answer this question?', [
               { html: 'Each route leaves only at multiples of its own interval, so a time when all three leave is a common <b>multiple</b>; the first one is the LCM. The GCF (' + t(g) + ' min) is a common factor — no bus leaves ' + t(g) + ' minutes after the start.', right: true },
@@ -878,8 +621,8 @@
               'Departures happen at multiples of each interval, so a shared departure is a common multiple, and the first one is the LCM. The GCF (' + t(g) + ' min) is a common factor — not a departure time at all.',
               ['Is the meeting time a multiple of the intervals, or a factor of them?'], 'why LCM for buses');
           } }] },
-      { num: '16', stem: 'Decide which tool each situation calls for (write <b>GCF</b> or <b>LCM</b>), then answer.', parts: [
-        { id: 'e16a', level: 'MAS', make: function (r) {
+      { num: '12', stem: 'Decide which tool each situation calls for (write <b>GCF</b> or <b>LCM</b>), then answer.', parts: [
+        { id: 'e12a', level: 'MAS', make: function (r) {
           var v = gxPair(r, [24, 18, 12, 30, 36], range(4, 11), 100, 400, [168, 216, 24]), a = v[0], b = v[1], g = v[2], n = a / g + b / g;
           var p = P.fields('Two rolls of ribbon, ' + t(a) + ' cm and ' + t(b) + ' cm, are cut into equal-length pieces that are as long as possible, with none wasted. How long is each piece, and how many pieces are there altogether?',
             [{ name: 'Tool', label: 'Tool', mode: 'text', placeholder: 'GCF or LCM' }, { name: 'Length', label: 'Each piece', after: 'cm' }, { name: 'Pieces', label: 'Pieces altogether' }],
@@ -890,7 +633,7 @@
           p.bad = [['LCM', String(g), String(n)]];
           return p;
         } },
-        { id: 'e16b', level: 'MAS', make: function (r) {
+        { id: 'e12b', level: 'MAS', make: function (r) {
           var ab = find(r, function () { return sortN(r.sample(range(40, 100), 2)); }, function (v) { var L = lcm(v[0], v[1]); return gcd(v[0], v[1]) >= 6 && L <= 720 && L / v[1] >= 3 && noneDivides(v); }, [72, 90]), a = ab[0], b = ab[1], L = lcm(a, b);
           var p = P.fields('Two runners start together at the start line of a track. One laps in ' + t(a) + ' seconds, the other in ' + t(b) + ' seconds. When do they next cross the line together, and how many laps has each run by then?',
             [{ name: 'Tool', label: 'Tool', mode: 'text', placeholder: 'GCF or LCM' }, { name: 'Time', label: 'Together again after', after: 's' }, { name: 'Laps (faster)', label: 'Laps by the ' + a + '-second runner' }, { name: 'Laps (slower)', label: 'Laps by the ' + b + '-second runner' }],
@@ -901,20 +644,20 @@
           p.bad = [['GCF', String(L), String(L / a), String(L / b)]];
           return p;
         } }] },
-      { num: '17', stem: function (sh) { return 'A teacher has ' + t(sh.v[0]) + ' pencils, ' + t(sh.v[1]) + ' erasers, and ' + t(sh.v[2]) + ' stickers to divide into identical supply bags with nothing left over.'; },
+      { num: '13', stem: function (sh) { return 'A teacher has ' + t(sh.v[0]) + ' pencils, ' + t(sh.v[1]) + ' erasers, and ' + t(sh.v[2]) + ' stickers to divide into identical supply bags with nothing left over.'; },
         shared: function (r) {
           var v = find(r, function () { var g = r.pick([42, 24, 30, 18, 36, 12]), m = sortN(r.sample([2, 3, 4, 5, 7], 3)); return m.map(function (x) { return g * x; }).concat(m); }, function (v) { return gcfA(v.slice(3)) === 1 && v[2] <= 300; }, [84, 126, 210, 2, 3, 5]);
           return { v: v.slice(0, 3), g: gcfA(v.slice(0, 3)), yes: r.chance(0.6) };
         },
         parts: [
-          { id: 'e17a', level: 'PRG', make: function (r, sh) { return P.number('What is the greatest number of bags possible?', sh.g, gcfDiag(sh.v), 'Each total must split evenly into the bags, and we want the most bags: the GCF.<br>' + gcfSol(sh.v) + ' <b>' + sh.g + ' bags</b>', ['The number of bags must divide evenly into each total.'], 'bags GCF ' + sh.v.join(','), { after: 'bags' }); } },
-          { id: 'e17b', level: 'EMG', make: function (r, sh) {
+          { id: 'e13a', level: 'PRG', make: function (r, sh) { return P.number('What is the greatest number of bags possible?', sh.g, gcfDiag(sh.v), 'Each total must split evenly into the bags, and we want the most bags: the GCF.<br>' + gcfSol(sh.v) + ' <b>' + sh.g + ' bags</b>', ['The number of bags must divide evenly into each total.'], 'bags GCF ' + sh.v.join(','), { after: 'bags' }); } },
+          { id: 'e13b', level: 'EMG', make: function (r, sh) {
             var v = sh.v, g = sh.g;
             return P.fields('If she makes the greatest possible number of bags, what goes into each bag?', [{ name: 'Pencils', after: 'pencils' }, { name: 'Erasers', after: 'erasers' }, { name: 'Stickers', after: 'stickers' }],
               v.map(function (x) { return K.number(x / g); }), v.map(function (x) { return String(x / g); }), t(v[0] / g) + ' pencils, ' + t(v[1] / g) + ' erasers, ' + t(v[2] / g) + ' stickers',
               v.map(function (x) { return t(x + '\\div ' + g + '=' + x / g); }).join('<br>'), ['Divide each total by the number of bags.'], 'bag contents');
           } },
-          { id: 'e17c', level: 'EMG', make: function (r, sh) {
+          { id: 'e13c', level: 'EMG', make: function (r, sh) {
             var v = sh.v, g = sh.g, facs = nt.divisors(g).filter(function (d) { return d > 1 && d < g; });
             var noK = find(r, function () { return r.int(4, Math.max(v[0], 12)); }, function (k) { return v.some(function (x) { return x % k === 0; }) && v.some(function (x) { return x % k; }) && k < g + 20; }, null);
             var yes = sh.yes || noK == null, k = yes ? r.pick(facs) : noK, bad = v.filter(function (x) { return x % k; })[0];
@@ -933,14 +676,14 @@
                 : t(bad + '\\div ' + k + '\\approx ' + (Math.round(bad / k * 100) / 100)) + ' is not a whole number, so ' + t(k) + ' bags won’t work. The number of bags must be a factor of the GCF, ' + t(g) + '.',
               ['The number of bags must divide every total. Is ' + t(k) + ' a factor of ' + t(g) + '?'], k + ' bags?');
           } }] },
-      { num: '18', section: 'Extra practice E — Find the error', stem: function (sh) { return 'Asked for the GCF of ' + t('a=' + texE(sh.ps, sh.ea)) + ' and ' + t('b=' + texE(sh.ps, sh.eb)) + ', a student wrote ' + t('\\text{GCF}=' + texE(sh.ps, sh.ea.map(function (e, i) { return Math.max(e, sh.eb[i]); })) + '=' + F(fromExps(sh.ps, sh.ea.map(function (e, i) { return Math.max(e, sh.eb[i]); })))) + '.'; },
+      { num: '14', section: 'Extra practice D — Find the error', stem: function (sh) { return 'Asked for the GCF of ' + t('a=' + texE(sh.ps, sh.ea)) + ' and ' + t('b=' + texE(sh.ps, sh.eb)) + ', a student wrote ' + t('\\text{GCF}=' + texE(sh.ps, sh.ea.map(function (e, i) { return Math.max(e, sh.eb[i]); })) + '=' + F(fromExps(sh.ps, sh.ea.map(function (e, i) { return Math.max(e, sh.eb[i]); })))) + '.'; },
         shared: function (r) {
           return find(r, function () { var ps = r.pick([[2, 3, 5], [2, 3, 5], [2, 3, 7]]); return { ps: ps, ea: [r.int(1, 4), r.int(1, 4), r.int(1, 2)], eb: [r.int(1, 4), r.int(1, 4), r.int(1, 2)] }; },
             function (s) { var d = s.ea.map(function (e, i) { return e - s.eb[i]; }); return d.every(function (x) { return x !== 0; }) && d.some(function (x) { return x > 0; }) && d.some(function (x) { return x < 0; }) && !s.ea.every(function (e, i) { return Math.max(e, s.eb[i]) === 2 * Math.min(e, s.eb[i]); }) && fromExps(s.ps, s.ea.map(function (e, i) { return Math.max(e, s.eb[i]); })) <= 999999; },
             { ps: [2, 3, 5], ea: [3, 2, 2], eb: [2, 4, 1] });
         },
         parts: [
-          { id: 'e18a', level: 'EMG', make: function (r) {
+          { id: 'e14a', level: 'EMG', make: function (r) {
             return P.mc(r, 'What is the mistake?', [
               { html: 'The student took the <b>higher</b> exponent of each prime; the GCF needs the <b>lower</b> exponent.', right: true },
               { html: 'The student should have <b>added</b> the exponents.', why: 'Adding exponents gives ' + t('a\\times b') + ', which is even bigger. A common factor can’t use more of a prime than either number has.' },
@@ -949,11 +692,11 @@
               'For a common factor, each prime can appear no more times than it does in <b>either</b> number, so the GCF takes the <b>lower</b> exponent. The student took the higher one.',
               ['Compare the student’s exponents with the ones in ' + t('a') + ' and ' + t('b') + '.'], 'GCF error: higher exponents');
           } },
-          { id: 'e18b', level: 'EMG', make: function (r, sh) {
+          { id: 'e14b', level: 'EMG', make: function (r, sh) {
             var a = fromExps(sh.ps, sh.ea), b = fromExps(sh.ps, sh.eb), g = gcd(a, b);
             return expNumPart('Give the correct GCF.', g, 'GCF', gcfDiag([a, b]), 'Lower exponent of each prime: ' + sh.ps.map(function (p, i) { var e = Math.min(sh.ea[i], sh.eb[i]); return t(p + (e > 1 ? '^{' + e + '}' : '')) + ' (from ' + t(sh.ea[i] < sh.eb[i] ? 'a' : 'b') + ')'; }).join(', ') + '.<br>' + t('\\text{GCF}=' + eqv(g)) + '.', ['Take the <b>lower</b> exponent of each prime.'], 'correct GCF (error analysis)');
           } },
-          { id: 'e18c', level: 'EMG', make: function (r, sh) {
+          { id: 'e14c', level: 'EMG', make: function (r, sh) {
             var a = fromExps(sh.ps, sh.ea), b = fromExps(sh.ps, sh.eb), L = lcm(a, b), g = gcd(a, b);
             return P.mc(r, 'The student’s answer, ' + t(F(L)) + ', isn’t meaningless. What is it for these two numbers?', [
               { html: 'The <b>LCM</b> of ' + t('a') + ' and ' + t('b') + '.', right: true },
@@ -963,10 +706,10 @@
               'Taking the higher exponent of each prime is the LCM rule, so ' + t(F(L)) + ' is the LCM. Check: ' + t(F(g) + '\\times ' + F(L) + '=' + F(g * L)) + ' and ' + t('a\\times b=' + F(a) + '\\times ' + F(b) + '=' + F(a * b)) + ' ✓',
               ['Which rule uses the higher exponent of each prime?'], 'what is the wrong GCF');
           } }] },
-      { num: '19', stem: function (sh) { return 'Asked for the LCM of ' + t(sh.a) + ' and ' + t(sh.b) + ', a student wrote: “A multiple of both is just ' + t(sh.a + '\\times ' + sh.b + '=' + F(sh.a * sh.b)) + ', so the LCM is ' + t(F(sh.a * sh.b)) + '.”'; },
+      { num: '15', stem: function (sh) { return 'Asked for the LCM of ' + t(sh.a) + ' and ' + t(sh.b) + ', a student wrote: “A multiple of both is just ' + t(sh.a + '\\times ' + sh.b + '=' + F(sh.a * sh.b)) + ', so the LCM is ' + t(F(sh.a * sh.b)) + '.”'; },
         shared: function (r) { var v = find(r, function () { return sortN(r.sample(range(10, 40), 2)); }, function (v) { var g = gcd(v[0], v[1]); return g >= 4 && g <= 12 && noneDivides(v); }, [18, 24]); return { a: v[0], b: v[1] }; },
         parts: [
-          { id: 'e19a', level: 'EMG', make: function (r, sh) {
+          { id: 'e15a', level: 'EMG', make: function (r, sh) {
             var a = sh.a, b = sh.b, g = gcd(a, b), L = lcm(a, b);
             return P.mc(r, 'The student is right that ' + t(F(a * b)) + ' is a common multiple. Why is it not the <b>least</b> one?', [
               { html: t(a) + ' and ' + t(b) + ' share the factor ' + t(g) + '. The product contains it twice, but a common multiple only needs it once, so ' + t(F(a * b) + '\\div ' + g + '=' + L) + ' is still a multiple of both.', right: true },
@@ -976,14 +719,14 @@
               facLines([a, b]) + '. They share ' + t(g + (K.fac(g) === String(g) ? '' : '=' + K.fac(g))) + '. The product ' + t(a + '\\times ' + b) + ' contains that shared part twice; a common multiple needs it only once. So ' + t(F(a * b) + '\\div ' + g + '=' + L) + ' is a smaller common multiple.',
               ['Do ' + t(a) + ' and ' + t(b) + ' share a factor? How many times does the product contain it?'], 'why ab is not the LCM');
           } },
-          { id: 'e19b', level: 'BEG', make: function (r, sh) {
+          { id: 'e15b', level: 'BEG', make: function (r, sh) {
             var a = sh.a, b = sh.b, g = gcd(a, b), L = lcm(a, b);
             return P.fields('Repair the method using ' + t('\\text{GCF}\\times\\text{LCM}=a\\times b') + ': find the GCF, then the LCM.', [{ name: 'GCF', before: t('\\text{GCF}=') }, { name: 'LCM', before: t('\\text{LCM}=') }],
               [K.number(g, gcfDiag([a, b])), K.number(L, lcmDiag([a, b]))], [String(g), String(L)], t('\\text{GCF}=' + g + ',\\ \\text{LCM}=' + L),
               t('\\text{GCF}(' + a + ',' + b + ')=' + g) + '. ' + t('\\text{LCM}=\\dfrac{' + a + '\\times ' + b + '}{' + g + '}=\\dfrac{' + F(a * b) + '}{' + g + '}=' + L) + '. Check: ' + t(L + '\\div ' + a + '=' + L / a) + ', ' + t(L + '\\div ' + b + '=' + L / b) + ' ✓',
               ['Divide the product by the GCF.'], 'LCM via identity ' + a + ', ' + b);
           } },
-          { id: 'e19c', level: 'PRG', make: function (r) {
+          { id: 'e15c', level: 'PRG', make: function (r) {
             return P.mc(r, 'For which pairs of numbers does the student’s shortcut (LCM = ' + t('a\\times b') + ') actually give the right answer?', [
               { html: 'Exactly when the GCF is ' + t('1') + ' — the two numbers share no prime factor.', right: true },
               { html: 'Only when both numbers are prime.', why: 'That works, but it isn’t the only case: ' + t('8') + ' and ' + t('9') + ' aren’t prime, yet their LCM is ' + t('72=8\\times 9') + '.' },
@@ -992,8 +735,8 @@
               t('\\text{LCM}=\\dfrac{a\\times b}{\\text{GCF}}') + ', which equals ' + t('a\\times b') + ' exactly when the GCF is ' + t('1') + ' — the numbers share no prime factor. Example: ' + t('8=2^{3}') + ' and ' + t('9=3^{2}') + ' give LCM ' + t('72=8\\times 9') + '.',
               ['Use ' + t('\\text{LCM}=\\dfrac{a\\times b}{\\text{GCF}}') + '. When is that the same as ' + t('a\\times b') + '?'], 'when LCM = ab');
           } }] },
-      { num: '20', section: 'Extra practice F — Stretch', stem: 'Hint: write the two numbers as ' + t('gx') + ' and ' + t('gy') + ', where ' + t('g') + ' is the GCF. What must be true of ' + t('x') + ' and ' + t('y') + ', and what must ' + t('x\\times y') + ' equal?', parts: [
-        { id: 'e20', level: 'MAS', make: function (r) {
+      { num: '16', section: 'Extra practice E — Stretch', stem: 'Hint: write the two numbers as ' + t('gx') + ' and ' + t('gy') + ', where ' + t('g') + ' is the GCF. What must be true of ' + t('x') + ' and ' + t('y') + ', and what must ' + t('x\\times y') + ' equal?', parts: [
+        { id: 'e16', level: 'MAS', make: function (r) {
           var gk = find(r, function () { return [r.pick([6, 6, 4, 10, 12, 5, 3]), r.pick([30, 42, 66, 70, 105])]; }, function (v) { return v[0] * v[1] <= 1000; }, [6, 30]), g = gk[0], k = gk[1], L = g * k;
           var want = nt.divisors(k).filter(function (u) { return u * u < k && gcd(u, k / u) === 1; }).map(function (u) { return [g * u, g * k / u]; });
           return { prompt: 'Find <b>all</b> pairs of whole numbers whose GCF is ' + t(g) + ' and whose LCM is ' + t(L) + '.', input: { type: 'pairs', start: 1 }, key: want.map(function (p) { return [String(p[0]), String(p[1])]; }),
@@ -1020,16 +763,16 @@
             hints: ['Write the numbers as ' + t(g + 'x') + ' and ' + t(g + 'y') + '. Use GCF × LCM = product to find ' + t('x\\times y') + '.', 'List every factor pair of ' + t('x\\times y') + ' whose two numbers share no common factor.'],
             bad: [want.slice(1).map(function (p) { return [String(p[0]), String(p[1])]; }), [[String(g), String(L)], [String(2 * g), String(L)]]] };
         } }] },
-      { num: '21', stem: function (sh) { return 'The smallest whole number divisible by every one of ' + t('1, 2, 3, \\ldots, ' + sh.N) + '.'; },
+      { num: '17', stem: function (sh) { return 'The smallest whole number divisible by every one of ' + t('1, 2, 3, \\ldots, ' + sh.N) + '.'; },
         shared: function (r) { return { N: r.pick([10, 10, 9, 12]) }; },
         parts: [
-          { id: 'e21a', level: 'PRG', make: function (r, sh) {
+          { id: 'e17a', level: 'PRG', make: function (r, sh) {
             var nums = range(1, sh.N), L = lcmA(nums);
             return expNumPart('Give the number in exponent form and as a whole number.', L, 'LCM', lcmDiag(range(2, sh.N)),
               'Take the highest power of each prime up to ' + t(sh.N) + ': ' + nt.factor(L).map(function (pe) { return t(pe[0] + (pe[1] > 1 ? '^{' + pe[1] + '}' : '')) + (pe[1] > 1 ? ' (from ' + t(Math.pow(pe[0], pe[1])) + ')' : ''); }).join(', ') + '.<br>' + t(K.fac(L) + '=' + F(L)) + '.',
               ['This is the LCM of ' + t('1, 2, \\ldots, ' + sh.N) + '.', 'Use the highest power of each prime that is at most ' + t(sh.N) + '.'], 'LCM 1..' + sh.N);
           } },
-          { id: 'e21b', level: 'EMG', make: function (r, sh) {
+          { id: 'e17b', level: 'EMG', make: function (r, sh) {
             var comp = range(4, sh.N).filter(function (x) { return !nt.isPrime(x); }), L = lcmA(range(1, sh.N)), pp = comp.filter(function (x) { return nt.factor(x).length === 1; }), hiPP = pp.filter(function (x) { return L % (x * nt.factor(x)[0][0]); });
             return P.mc(r, 'Why don’t you need to check ' + t(comp.join(', ')) + ' separately?', [
               { html: 'Each of them is built only from primes already in ' + t(K.fac(L)) + ', at powers no higher than the ones there, so each of them divides it automatically.', right: true },
@@ -1039,7 +782,7 @@
               'The highest prime powers ' + hiPP.map(function (x) { return t(x + '=' + K.fac(x)); }).join(', ') + ' are exactly what the LCM is built from, and ' + comp.filter(function (x) { return hiPP.indexOf(x) < 0; }).map(function (x) { return t(x + '=' + K.fac(x)); }).join(', ') + ' use only the same primes at the same or smaller powers. So each divides ' + t(K.fac(L)) + ' automatically. (And ' + t('1') + ' divides everything.)',
               ['Write each of these numbers as a product of primes. Are those primes (and powers) already in the LCM?'], 'why not check composites');
           } },
-          { id: 'e21c', level: 'EMG', make: function (r, sh) {
+          { id: 'e17c', level: 'EMG', make: function (r, sh) {
             var M = sh.N + 2, L1 = lcmA(range(1, sh.N)), L2 = lcmA(range(1, M)), added = range(sh.N + 1, M);
             return P.number('Extend the list to ' + t('1') + ' through ' + t(M) + '. What is the smallest whole number divisible by every one of them?', L2, function (v) {
               if (v === L1) return { code: 'lcm-missing-prime', hint: 'That’s the answer for ' + t('1') + ' to ' + t(sh.N) + '. Check whether ' + t(added.join(' or ')) + ' brings in a new prime or a higher power.' };
@@ -1048,8 +791,8 @@
             }, 'New numbers: ' + added.map(facEq).join(', ') + '. ' + (L2 === L1 ? 'Nothing new is needed, so the LCM stays ' + t(F(L1)) + '.' : 'Bring in only what is new: ' + t('\\text{LCM}=' + K.fac(L2) + '=' + F(L2)) + '.'),
             ['Factor each new number. Does it add a new prime, or a higher power of an old one?'], 'LCM 1..' + M, { before: t('\\text{LCM}=') });
           } }] },
-      { num: '22', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e22', level: 'BEG', make: function (r) {
+      { num: '18', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e18', level: 'BEG', make: function (r) {
           var i = r.int(4, 6), k = r.int(2, i - 1), l = r.int(4, 7), j = r.int(2, l - 1), pq = r.sample([5, 7, 11], 2), p = pq[0], q = pq[1];
           var A = texE([2, 3], [k, j]), B = texE([2, 3], [i, l]), C = HW.texFactors(sortN([2, 3, p, q]).map(function (x) { return [x, x === 2 ? k : x === 3 ? j : 1]; })), D = HW.texFactors(sortN([2, 3, p, q]).map(function (x) { return [x, x === 2 ? i + k : x === 3 ? j + l : 1]; }));
           return P.mc(r, 'The greatest common factor of ' + t(texE([2, 3, p], [i, j, 1])) + ' and ' + t(texE([2, 3, q], [k, l, 1])) + ' is', [
@@ -1059,21 +802,6 @@
             { html: t(D), why: 'Adding exponents multiplies the two numbers together. The GCF uses the lower exponent of each shared prime.' }],
             'The GCF uses primes in <b>both</b> numbers, at the <b>lower</b> exponent. ' + t('2') + ': lower of ' + t(i) + ' and ' + t(k) + ' is ' + t(k) + '. ' + t('3') + ': lower of ' + t(j) + ' and ' + t(l) + ' is ' + t(j) + '. ' + t(p) + ' and ' + t(q) + ' are each in only one number, so they’re left out. GCF ' + t('=' + A + '=' + F(fromExps([2, 3], [k, j]))) + '.',
             ['Which primes are in <b>both</b> numbers? Which exponent does the GCF use?'], 'MC GCF exponent form');
-        } }] },
-      { num: '23', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e23', level: 'ADV', make: function (r) {
-          var v = find(r, function () { var b = r.pick([2, 2, 3, 5]), pq = sortN(r.sample([3, 5, 7, 11, 13].filter(function (x) { return x !== b; }), 2)); return { b: b, p: pq[0], q: pq[1], n: b * b * b * pq[0] * pq[0] * pq[1] * pq[1] }; },
-            function (v) { return v.n <= 99999 && v.p * v.q <= 999; }, { b: 2, p: 3, q: 7, n: 3528 });
-          var n = v.n, m = v.p * v.q, N = n * m;
-          return P.nr('The smallest whole number that ' + t(F(n)) + ' must be multiplied by to give a perfect cube is ________. (Record your answer as a three-digit number.)', m, function (x) {
-            if (x === m * m) return { code: 'squared', hint: 'You need just <b>one</b> more of each prime with exponent ' + t('2') + ', to reach ' + t('3') + '.' };
-            if (x === m * v.b) return { code: 'not-smallest', hint: t(v.b + '^{3}') + ' is already a cube — leave it alone.' };
-            if (x > 0 && x % 1 === 0 && intRoot(n * x, 3) != null) return { code: 'not-smallest', hint: 'That makes a cube, but a smaller multiplier works. Raise each exponent only to the next multiple of ' + t('3') + '.' };
-            if (x > 1 && m % x === 0) return { code: 'missed-prime', hint: 'Not quite: after multiplying by ' + t(x) + ', some exponent is still not a multiple of ' + t('3') + '. Check every prime.' };
-            if (x > 0 && x % 1 === 0 && intRoot(n * x, 2) != null) return { code: 'made-square', hint: 'That makes a perfect <b>square</b>. For a cube, every exponent must be a multiple of ' + t('3') + '.' };
-            return null;
-          }, t(F(n) + '=' + K.fac(n)) + '. Raise each exponent to a multiple of ' + t('3') + ': ' + t(v.b + '^{3}') + ' is fine, ' + t(v.p + '^{2}\\to ' + v.p + '^{3}') + ' and ' + t(v.q + '^{2}\\to ' + v.q + '^{3}') + ' each need one more. Multiply by ' + t(v.p + '\\times ' + v.q + '=' + m) + ': ' + t(F(n) + '\\times ' + m + '=' + F(N) + '=' + intRoot(N, 3) + '^{3}') + '. Answer: ' + t((m < 100 ? '0' : '') + m),
-          ['Factor ' + t(F(n)) + ' and look for exponents that aren’t multiples of ' + t('3') + '.'], 'NR cube multiplier ' + n);
         } }] }
     ]
   });
@@ -1120,23 +848,5 @@
       return null;
     }, t(g + '\\times ' + L + '=' + given + '\\times b') + ', so ' + t(F(g * L) + '=' + given + 'b') + ' and ' + t('b=' + F(g * L) + '\\div ' + given + '=' + ans) + '. Check: GCF' + t('(' + Math.min(a, b) + ',' + Math.max(a, b) + ')=' + g) + ', LCM ' + t('=' + L) + ' ✓',
     ['GCF × LCM = the product of the two numbers.'], 'other number GCF ' + g + ' LCM ' + L);
-  }
-  function sqCubePart(r, cond, pool, fallback, nPrimes) {
-    var v = find(r, function () { var ps = sortN(r.sample([2, 3, 5, 7], nPrimes || 2)), es = ps.map(function () { return r.pick(pool); }); return { ps: ps, es: es }; },
-      function (v) { return cond(v.es) && fromExps(v.ps, v.es) < 1e15; }, { ps: fallback.length === 3 ? [2, 3, 5] : fallback[0] === 9 ? [2, 5] : [2, 3], es: fallback });
-    var ps = v.ps, es = v.es, nTex = texE(ps, es), sq = es.every(function (e) { return e % 2 === 0; }), cu = es.every(function (e) { return e % 3 === 0; });
-    var sr = sq ? fromExps(ps, es.map(function (e) { return e / 2; })) : null, cr = cu ? fromExps(ps, es.map(function (e) { return e / 3; })) : null;
-    var srTex = sq ? texE(ps, es.map(function (e) { return e / 2; })) : null, crTex = cu ? texE(ps, es.map(function (e) { return e / 3; })) : null;
-    var d2 = function (val) { return cr != null && val === cr ? { code: 'used-cube-root', hint: 'That’s the <b>cube</b> root. For the square root, divide each exponent by ' + t('2') + '.' } : null; };
-    var d3 = function (val) { return sr != null && val === sr ? { code: 'used-square-root', hint: 'That’s the <b>square</b> root. For the cube root, divide each exponent by ' + t('3') + '.' } : null; };
-    var label = sq && cu ? 'both' : sq ? 'perfect square only' : cu ? 'perfect cube only' : 'neither';
-    var p = P.fields(t(nTex), [{ name: 'Square root', label: 'Square root', mode: 'math', none: true, wide: true }, { name: 'Cube root', label: 'Cube root', mode: 'math', none: true, wide: true }],
-      [rootOrNone(sr, 2, nTex, d2), rootOrNone(cr, 3, nTex, d3)], [sq ? srTex.replace(/\^\{(\d+)\}/g, '^$1').replace(/\\times /g, ' × ') : 'none', cu ? crTex.replace(/\^\{(\d+)\}/g, '^$1').replace(/\\times /g, ' × ') : 'none'],
-      '<b>' + label.charAt(0).toUpperCase() + label.slice(1) + '</b>' + (sq ? '; square root ' + t(srTex + (sr < 1e7 ? '=' + F(sr) : '')) : '') + (cu ? '; cube root ' + t(crTex + (cr < 1e7 ? '=' + F(cr) : '')) : ''),
-      'Exponents: ' + t(es.join(',\\ ')) + '.<br>' + (sq ? 'All even ⇒ perfect square; square root ' + t(srTex + (sr < 1e7 ? '=' + F(sr) : '')) + '.' : 'Not all even (' + t(es.filter(function (e) { return e % 2; })[0]) + ' is odd) ⇒ not a square.') + '<br>' + (cu ? 'All multiples of ' + t('3') + ' ⇒ perfect cube; cube root ' + t(crTex + (cr < 1e7 ? '=' + F(cr) : '')) + '.' : 'Not all multiples of ' + t('3') + ' (' + t(es.filter(function (e) { return e % 3; })[0]) + ') ⇒ not a cube.') + '<br><b>' + label.charAt(0).toUpperCase() + label.slice(1) + '</b>.',
-      ['Square: is every exponent even? Cube: is every exponent a multiple of ' + t('3') + '?', 'To take a root, divide each exponent by ' + t('2') + ' (square) or ' + t('3') + ' (cube).'], 'square/cube from exponents: ' + label);
-    p.bad = [[sq ? 'none' : '2', cu ? 'none' : '2'], [sq ? String(sr + 1) : 'none', cu ? String(cr + 1) : 'none']].filter(function (b) { return !(b[0] === p.key[0] && b[1] === p.key[1]); });
-    if (sq && sr < 1e9) p.good = [[String(sr), p.key[1]]];
-    return p;
   }
 })(window);

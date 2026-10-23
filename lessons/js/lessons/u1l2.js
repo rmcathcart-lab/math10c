@@ -1,4 +1,5 @@
-/* Math 10C · Unit 1 · Lesson 2 — Prime Factorization at Work: GCF, LCM, and Perfect Powers. The explainers on this page. */
+/* Math 10C · Unit 1 · Lesson 2 — Prime Factorization at Work: GCF and LCM. The explainers on this page, the hot-dog warm-up
+ * and the cicada timeline. (The perfect-square / perfect-cube explainers and the locker warm-up moved to Lesson 3.) */
 import { h, fmt, Explainer, factors, primeFactors, productHTML, expHTML, decimal } from '../explain.js';
 import { tex } from '../tex.js';
 
@@ -9,7 +10,6 @@ const gcd = (a, b) => (b ? gcd(b, a % b) : a);
 const lcm = (a, b) => (a / gcd(a, b)) * b;
 const listAnd = (arr) => (arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1]);
 const nameList = (ns) => listAnd(ns.map(fmt));
-const texN = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\\,'); // 15876 → 15\,876 like the booklet
 const WORD = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
 /* every prime gets the same colour everywhere on the page (matches the Lesson 1 sieve) */
@@ -21,7 +21,6 @@ function counts(n) { const m = new Map(); primeFactors(n).forEach((p) => m.set(p
 const pw = (p, k) => fmt(p) + (k > 1 ? '<sup>' + k + '</sup>' : '');          // 2³, 5
 const pw1 = (p, k) => fmt(p) + '<sup>' + k + '</sup>';                          // 5¹ (exponent always shown)
 function descMulti(ps) { return listAnd(groups(ps).map((g) => (WORD[g.k] || g.k) + ' ' + fmt(g.p) + (g.k > 1 ? 's' : ''))); }
-function iroot(n, k) { let r = Math.round(Math.pow(n, 1 / k)); while (Math.pow(r, k) > n) r--; while (Math.pow(r + 1, k) <= n) r++; return r; }
 
 /* move an absolutely-placed element to (x, y), animating from where it was (optionally along an arc) */
 function fly(c, el, x, y, ms = 600, o = {}) {
@@ -34,29 +33,7 @@ function fly(c, el, x, y, ms = 600, o = {}) {
 }
 const pulse = (c, el, s = 1.25, ms = 420, o = {}) => c.anim(el, [{ transform: 'scale(1)' }, { transform: `scale(${s})` }, { transform: 'scale(1)' }], ms, o);
 
-/* ---------- drawings: a square of tiles, a box of small cubes, a little factor tree ---------- */
-function gridSVG(rows, cols, u) {
-  const w = cols * u, ht = rows * u, lines = [];
-  if (u >= 4) {
-    for (let i = 1; i < cols; i++) lines.push(`<line x1="${i * u}" y1="0" x2="${i * u}" y2="${ht}"/>`);
-    for (let j = 1; j < rows; j++) lines.push(`<line x1="0" y1="${j * u}" x2="${w}" y2="${j * u}"/>`);
-  }
-  return `<svg class="gridsvg" width="${w + 4}" height="${ht + 4}" viewBox="-2 -2 ${w + 4} ${ht + 4}"><rect x="0" y="0" width="${w}" height="${ht}" rx="3"/><g>${lines.join('')}</g></svg>`;
-}
-function boxSVG(nx, ny, nz, u) { // nx wide, ny tall, nz deep; oblique projection like the booklet
-  const dx = 0.5 * u, dy = 0.36 * u, oy = nz * dy, W = nx * u + nz * dx, H = ny * u + oy, L = [];
-  const ln = (x1, y1, x2, y2) => L.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`);
-  if (u >= 4) {
-    for (let i = 1; i < nx; i++) { ln(i * u, oy, i * u, oy + ny * u); ln(i * u, oy, i * u + nz * dx, oy - nz * dy); }
-    for (let j = 1; j < ny; j++) { ln(0, oy + j * u, nx * u, oy + j * u); ln(nx * u, oy + j * u, nx * u + nz * dx, oy - nz * dy + j * u); }
-    for (let k = 1; k < nz; k++) { ln(k * dx, oy - k * dy, nx * u + k * dx, oy - k * dy); ln(nx * u + k * dx, oy - k * dy, nx * u + k * dx, oy - k * dy + ny * u); }
-  }
-  const P = (pts) => pts.map((p) => p.map((q) => q.toFixed(1)).join(',')).join(' ');
-  return `<svg class="boxsvg" width="${W + 4}" height="${H + 4}" viewBox="-2 -2 ${W + 4} ${H + 4}">
-    <polygon class="f-top" points="${P([[0, oy], [nx * u, oy], [nx * u + nz * dx, oy - nz * dy], [nz * dx, oy - nz * dy]])}"/>
-    <polygon class="f-side" points="${P([[nx * u, oy], [nx * u + nz * dx, oy - nz * dy], [nx * u + nz * dx, oy - nz * dy + ny * u], [nx * u, oy + ny * u]])}"/>
-    <rect class="f-front" x="0" y="${oy}" width="${nx * u}" height="${ny * u}"/><g>${L.join('')}</g></svg>`;
-}
+/* ---------- drawing: a little factor tree ---------- */
 function treeSVG(spec) { // "60:4,15|4:2,2|15:3,5"
   const kids = {}; spec.split('|').forEach((s) => { const [p, c] = s.split(':'); kids[p] = c.split(',').map(Number); });
   const root = Number(spec.split(':')[0]);
@@ -72,11 +49,11 @@ function treeSVG(spec) { // "60:4,15|4:2,2|15:3,5"
 const gcfList = {
   title: 'GCF by inspection: line up the factors',
   height: 340,
-  choices: [{ v: '60,90', label: '60 & 90' }, { v: '12,18', label: '12 & 18' }, { v: '10,15,25', label: '10, 15, 25' }, { sep: 'Example 1 check:' }, { v: '16,24,40', label: '16, 24, 40' }, { v: '21,28', label: '21 & 28' }, { v: '48,72', label: '48 & 72' }],
+  choices: [{ v: '60,90', label: '60 & 90' }, { v: '24,32', label: '24 & 32 (bags)' }, { v: '10,15,25', label: '10, 15, 25' }, { sep: 'Example 1 check:' }, { v: '16,24,40', label: '16, 24, 40' }, { v: '21,28', label: '21 & 28' }, { v: '48,72', label: '48 & 72' }],
   intro: (v) => `Which numbers divide evenly into <b>every one</b> of ${nameList(parse(v))}? List each number’s factors, line them up, and look for the <b>biggest</b> one they all share.`,
   make(stage, v, ex) {
     const ns = parse(v), W = ex.W, F = ns.map(factors), U = [...new Set(F.flat())].sort((a, b) => a - b);
-    const common = U.filter((u) => F.every((f) => f.includes(u))), g = common[common.length - 1], locker = v === '60,90';
+    const common = U.filter((u) => F.every((f) => f.includes(u))), g = common[common.length - 1], bags = v === '24,32';
     const lx = 124, cw = Math.min(72, (W - lx - 20) / U.length), x0 = lx + (W - lx - 20 - cw * U.length) / 2 + cw / 2;
     const X = (u) => x0 + U.indexOf(u) * cw, rowH = ns.length > 2 ? 72 : 88, Y = (i) => 78 + i * rowH;
     const bandTop = 42, bandBot = Y(ns.length - 1) + 34;
@@ -91,7 +68,7 @@ const gcfList = {
       run: (c) => Promise.all([c.fadeIn(labs[i], 300), ...chips[i].map((e, k) => c.pop(e, 320, { delay: k * 55 }))])
     }));
     steps.push({
-      cap: `The columns filled in <b>every</b> row are the <b>common factors</b>: ${common.map(fmt).join(', ')}.` + (locker ? ' These are the students who touch <b>both</b> locker 60 and locker 90.' : ''),
+      cap: `The columns filled in <b>every</b> row are the <b>common factors</b>: ${common.map(fmt).join(', ')}.` + (bags ? ' Any of these works as a number of take-home bags.' : ''),
       run: async (c) => {
         const jobs = common.map((u, k) => c.anim(bands[u], [{ opacity: 0, transform: 'scaleY(.2)' }, { opacity: 1, transform: 'none' }], 420, { delay: k * 70 }));
         chips.flat().forEach((e) => e.classList.add(common.includes(e._v) ? 'common' : 'dim'));
@@ -101,7 +78,7 @@ const gcfList = {
       }
     });
     steps.push({
-      cap: `The biggest common factor is <b>${g}</b>, so the <b>GCF</b> of ${nameList(ns)} is <b>${g}</b>.` + (locker ? ' Student 30 is the <b>last</b> one to touch both lockers.' : g === 1 ? ' Only 1 is shared.' : ''),
+      cap: `The biggest common factor is <b>${g}</b>, so the <b>GCF</b> of ${nameList(ns)} is <b>${g}</b>.` + (bags ? ' The most bags is <b>8</b>: 24 ÷ 8 = 3 hot dogs and 32 ÷ 8 = 4 buns in each.' : g === 1 ? ' Only 1 is shared.' : ''),
       run: async (c) => {
         bands[g].classList.add('max');
         res.innerHTML = `Common factors: ${common.map((u) => (u === g ? '<b class="gl-g">' + fmt(u) + '</b>' : fmt(u))).join(', ')} &nbsp;→&nbsp; <b class="gl-g">GCF = ${fmt(g)}</b>`;
@@ -317,7 +294,7 @@ const FROG = (col) => `<svg viewBox="0 0 48 40" aria-hidden="true"><ellipse cx="
 const frogs = {
   title: 'LCM by listing multiples: frogs on a number line',
   height: 430,
-  choices: [{ v: '9,12', label: '9 & 12' }, { v: '4,6', label: '4 & 6' }, { v: '8,10', label: '8 & 10' }, { sep: 'Example 3 check:' }, { v: '5,9', label: '5 & 9' }, { v: '6,8,12', label: '6, 8, 12' }, { v: '15,18,21', label: '15, 18, 21' }],
+  choices: [{ v: '9,12', label: '9 & 12' }, { v: '8,10', label: '8 & 10 (packs)' }, { v: '4,6', label: '4 & 6' }, { sep: 'Example 3 check:' }, { v: '5,9', label: '5 & 9' }, { v: '6,8,12', label: '6, 8, 12' }, { v: '15,18,21', label: '15, 18, 21' }],
   intro: (v) => `Each frog starts at 0 and always makes the same size hop: ${listAnd(parse(v).map((n) => '<b>' + n + '</b>'))}. Where do they <b>first land on the same number</b>?`,
   make(stage, v, ex) {
     const ns = parse(v), W = ex.W, L = ns.reduce(lcm), N = 2 * L <= 100 ? 2 * L : L;
@@ -363,7 +340,7 @@ const frogs = {
     });
     const lab1 = add(stage, h('div', 'fr-lcm c', `LCM = ${fmt(L)}`), Math.min(X(L), W - 90), 26); lab1.style.opacity = 0;
     steps.push({
-      cap: `The first number <b>every</b> frog lands on is <b>${fmt(L)}</b>, so the LCM of ${nameList(ns)} is <b>${fmt(L)}</b>.` + (hops > 40 ? ` That took ${hops} hops! With numbers like these, prime factors are much faster.` : ''),
+      cap: `The first number <b>every</b> frog lands on is <b>${fmt(L)}</b>, so the LCM of ${nameList(ns)} is <b>${fmt(L)}</b>.` + (v === '8,10' ? ' The warm-up: 40 buns (5 packs) and 40 hot dogs (4 packs).' : hops > 40 ? ` That took ${hops} hops! With numbers like these, prime factors are much faster.` : ''),
       run: async (c) => {
         lanes.forEach((ln) => ln.dots[L] && ln.dots[L].classList.add('hit'));
         await Promise.all([c.anim(b1, [{ opacity: 0, transform: 'scaleY(.2)' }, { opacity: 1, transform: 'none' }], 450), c.pop(lab1, 420, { delay: 200 }), ...lanes.map((ln, i) => pulse(c, ln.frog, 1.3, 400, { delay: 250 + i * 100 }))]);
@@ -380,178 +357,194 @@ const frogs = {
   }
 };
 
-/* ============ 3 & 4. Deal the primes into identical piles ============ */
-function pilesDef(k, title, choices) {
-  const word = k === 2 ? 'square' : 'cube', grp = k === 2 ? 'pair' : 'triple';
-  const approx = (n) => { const v = Math.pow(n, 1 / k); return Math.abs(v - Math.round(v)) < 0.005 ? v.toFixed(5) : v.toFixed(2); };
-  const rootTex = (n) => (k === 2 ? `\\sqrt{${texN(n)}}` : `\\sqrt[3]{${texN(n)}}`);
-  return {
-    title, height: 480, choices, custom: [2, 999999],
-    intro: (n) => `Is <b>${fmt(n)}</b> a perfect ${word}? Factor it into primes, then try to deal the primes into <b>${k} identical piles</b>.`,
-    make(stage, n, ex) {
-      const W = ex.W, pf = primeFactors(n), G = groups(pf), ok = G.every((g) => g.k % k === 0);
-      const root = G.reduce((acc, g) => acc * Math.pow(g.p, Math.floor(g.k / k)), 1);
-      const leftW = W - 320, sp = Math.min(56, (W - 200) / pf.length), small = sp < 50;
-      const lab = add(stage, h('div', 'pl-lab', fmt(n) + ' ='), 20, 40); lab.style.translate = '0 -50%';
-      const x0 = 30 + Math.max(110, fmt(n).length * 16 + 40);
-      const cs = pf.map((p, i) => { const e = add(stage, chip(p, 'c' + (small ? ' sm' : '')), x0 + i * sp, 40); e.style.opacity = 0; return e; });
-      const bw = (leftW - 20 - 14 * (k - 1)) / k, px = (i) => 20 + i * (bw + 14), py = 88, ph = 210;
-      const piles = Array.from({ length: k }, (_, i) => { const e = add(stage, h('div', 'pile', `<div class="pile-h">Pile ${i + 1}</div>`), px(i), py); e.style.width = bw + 'px'; e.style.height = ph + 'px'; return e; });
-      const per = Math.max(1, Math.floor((bw - 12) / 52));
-      // deal plan: each prime's copies go round-robin into the piles; any remainder has no full pair / triple
-      const plan = [], cnt = Array(k).fill(0); let left = 0, idx = 0;
-      G.forEach((g) => { const d = Math.floor(g.k / k); for (let r = 0; r < d; r++) for (let i = 0; i < k; i++) plan.push({ idx: idx++, pile: i, q: cnt[i]++ }); for (let r = 0; r < g.k % k; r++) plan.push({ idx: idx++, pile: -1, q: left++ }); });
-      const inPile = cnt[0], rows = Math.ceil(inPile / per);
-      const pslot = (i, q) => { const rw = Math.floor(q / per), inRow = Math.min(per, inPile - rw * per); return [px(i) + bw / 2 + (q % per - (inRow - 1) / 2) * 52, py + 66 + rw * 52 - (rows > 2 ? 10 : 0)]; };
-      const leftLab = add(stage, h('div', 'pl-left', k === 2 ? 'no partner:' : 'not a full triple:'), 20, 334); leftLab.style.opacity = 0; leftLab.style.translate = '0 -50%';
-      const lslot = (q) => [(k === 2 ? 200 : 240) + q * 54, 334];
-      const pv = piles.map((_, i) => { const e = add(stage, h('div', 'pile-v c'), px(i) + bw / 2, py + ph - 26); e.style.opacity = 0; return e; });
-      const eq1 = add(stage, h('div', 'pl-eq'), 20, 388), eq2 = add(stage, h('div', 'pl-eq2'), 20, 436);
-      [eq1, eq2].forEach((e) => { e.style.opacity = 0; e.style.width = leftW - 10 + 'px'; });
-      const pic = add(stage, h('div', 'pl-pic c'), leftW + (W - leftW) / 2 + 4, 230), picCap = add(stage, h('div', 'pl-pcap c'), leftW + (W - leftW) / 2 + 4, 420);
-      pic.style.opacity = 0; picCap.style.opacity = 0; picCap.style.width = W - leftW - 24 + 'px';
-      const pileProd = G.filter((g) => g.k >= k).flatMap((g) => Array(Math.floor(g.k / k)).fill(g.p));
-      const leftovers = plan.filter((s) => s.pile < 0).map((s) => pf[s.idx]);
-      const prodTxt = pileProd.length ? productHTML(pileProd) : '1';
-      const expRoot = G.filter((g) => g.k >= k).map((g) => pw(g.p, g.k / k)).join(' × ');
-      const steps = [
-        { cap: `Factor it: <b>${fmt(n)} = ${productHTML(pf)}</b>.`, run: (c) => Promise.all([c.fadeIn(lab, 250), ...cs.map((e, i) => c.pop(e, 300, { delay: i * 60 }))]) },
-        {
-          cap: ok ? `Deal the primes into <b>${k} piles</b>, like dealing cards: one from each ${grp} to each pile. Every prime finds ${k === 2 ? 'a partner' : 'two partners'} — the piles <b>match</b>.`
-            : `Deal the primes into <b>${k} piles</b>… but <b class="red">${descMulti(leftovers)}</b> ${leftovers.length > 1 ? 'are' : 'is'} left without ${k === 2 ? 'a partner' : 'a full triple'}. The piles can’t match.`,
-          run: async (c) => {
-            const jobs = plan.map((s, o) => {
-              const [x, y] = s.pile >= 0 ? pslot(s.pile, s.q) : lslot(s.q), el = cs[s.idx];
-              return fly(c, el, x, y, 560, { delay: o * Math.min(140, 1600 / plan.length), arc: 40 }).then(() => { if (s.pile < 0) { el.classList.add('lone'); return c.shake(el); } });
-            });
-            jobs.push(c.anim(lab, [{ opacity: 1 }, { opacity: 0.25 }], 300));
-            if (!ok) jobs.push(c.fadeIn(leftLab, 300, { delay: 500 }));
-            await Promise.all(jobs);
-          }
-        },
-        ok ? {
-          cap: `Each pile multiplies to <b>${fmt(root)}</b>, and ${k === 2 ? `${fmt(root)} × ${fmt(root)}` : `${fmt(root)} × ${fmt(root)} × ${fmt(root)}`} = ${fmt(n)}. So ${tex(rootTex(n))} = <b>${fmt(root)}</b>.`,
-          run: async (c) => {
-            pv.forEach((e) => (e.innerHTML = '= ' + fmt(root)));
-            eq1.innerHTML = `${tex(rootTex(n))} = ${prodTxt} = <b class="ok">${fmt(root)}</b>`;
-            await Promise.all([...pv.map((e, i) => c.pop(e, 380, { delay: i * 120 })), c.fadeIn(eq1, 400, { delay: 300 })]);
-          }
-        } : {
-          cap: `<b>${fmt(n)} is not a perfect ${word}.</b> On the calculator, ${tex(rootTex(n))} ≈ ${approx(n)} — not a whole number.`,
-          run: async (c) => {
-            eq1.innerHTML = `<b class="red">not a perfect ${word}</b> &nbsp;<span class="muted">${tex(rootTex(n))} ≈ ${approx(n)}</span>`;
-            await c.fadeIn(eq1, 400);
-          }
-        },
-        {
-          cap: ok ? `In exponent form, ${fmt(n)} = ${expHTML(pf)}. Every exponent is ${k === 2 ? '<b>even</b>' : 'a <b>multiple of 3</b>'}. ${k === 2 ? '<b>Halve</b> each exponent' : '<b>Divide</b> each exponent <b>by 3</b>'} to get the root: ${expRoot} = ${fmt(root)}.`
-            : `In exponent form, ${fmt(n)} = ${expHTML(pf)}. The exponent${G.filter((g) => g.k % k).length > 1 ? 's' : ''} in red ${G.filter((g) => g.k % k).length > 1 ? 'are' : 'is'} ${k === 2 ? '<b>odd</b>' : '<b>not a multiple of 3</b>'}.`,
-          run: async (c) => {
-            eq2.innerHTML = `${fmt(n)} = ` + G.map((g) => (g.k % k ? `<span class="bad">${pw1(g.p, g.k)}</span>` : `<span class="good">${pw1(g.p, g.k)}</span>`)).join(' × ') +
-              (ok ? ` &nbsp;→&nbsp; ${tex(rootTex(n))} = ${G.map((g) => pw1(g.p, g.k / k)).join(' × ')} = <b class="ok">${fmt(root)}</b>` : ` &nbsp;<span class="muted">${k === 2 ? 'odd exponent' : 'not a multiple of 3'}</span>`);
-            await c.fadeIn(eq2, 400);
-          }
-        }
-      ];
-      const r0 = ok ? root : iroot(n, k), extra = n - Math.pow(r0, k);
-      steps.push({
-        cap: ok ? (k === 2 ? `Picture it: ${fmt(n)} square tiles make one solid <b>${fmt(root)} × ${fmt(root)}</b> square.` : `Picture it: ${fmt(n)} small cubes stack into one solid <b>${fmt(root)} × ${fmt(root)} × ${fmt(root)}</b> cube.`)
-          : `${fmt(n)} sits between ${fmt(r0)}${k === 2 ? '²' : '³'} = ${fmt(Math.pow(r0, k))} and ${fmt(r0 + 1)}${k === 2 ? '²' : '³'} = ${fmt(Math.pow(r0 + 1, k))}. The biggest ${word} uses ${fmt(Math.pow(r0, k))} and leaves <b class="red">${fmt(extra)}</b> over.`,
-        run: async (c) => {
-          const size = k === 2 ? 240 : 170, u = size / r0;
-          pic.innerHTML = (k === 2 ? gridSVG(r0, r0, u) : boxSVG(r0, r0, r0, u)) + (ok ? '' : `<div class="pl-extra">+ ${fmt(extra)} left over</div>`);
-          picCap.innerHTML = ok ? (k === 2 ? `${fmt(root)} × ${fmt(root)} = ${fmt(n)}` : `${fmt(root)} × ${fmt(root)} × ${fmt(root)} = ${fmt(n)}`) : `${fmt(r0)}${k === 2 ? '²' : '³'} = ${fmt(Math.pow(r0, k))}`;
-          await Promise.all([c.anim(pic, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], 500), c.fadeIn(picCap, 350, { delay: 300 })]);
-        }
-      });
-      return steps;
+/* ============ 3. GCF in a word problem: share everything into identical bags ============ */
+const bags = {
+  title: 'Identical groups, nothing left over: that’s a GCF',
+  height: 400,
+  choices: [{ v: '24,32,hot dogs,buns,bags', label: '24 & 32 (warm-up)' }, { v: '12,18,red beads,blue beads,kits', label: '12 & 18' }, { v: '18,27,pencils,erasers,packs', label: '18 & 27' },
+    { sep: 'Example 5 check:' }, { v: '48,60,roses,tulips,bouquets', label: '48 roses & 60 tulips' }],
+  intro: (v) => { const [a, b, na, nb, grp] = v.split(','); return `<b>${a} ${na}</b> and <b>${b} ${nb}</b> are shared into identical ${grp}, with <b>nothing left over</b>. What is the greatest number of ${grp}?`; },
+  make(stage, v, ex) {
+    const [as, bs, na, nb, grp] = v.split(','), a = +as, b = +bs, W = ex.W, g = gcd(a, b);
+    const COL = { 'hot dogs': '#c4523a', buns: '#e2a64e', roses: '#d0477a', tulips: '#8a58c9', 'red beads': '#d0477a', 'blue beads': '#3b78d8', pencils: '#e0a21a', erasers: '#3b9ad8' };
+    const ca = COL[na] || '#d0477a', cb = COL[nb] || '#3b78d8';
+    const only = (n) => { for (let t = n - 1; t > 1; t--) if ((a % t === 0) !== (b % t === 0)) return t; return null; };
+    const t1 = only(g), t2 = (() => { for (let t = g + 1; t <= 18; t++) if ((a % t === 0) !== (b % t === 0)) return t; return null; })();
+    // the two piles
+    const pitch = 15, perRow = Math.max(12, Math.min(30, Math.floor((W - 210) / pitch)));
+    const pile = (n, col, y, name) => {
+      const lab = add(stage, h('div', 'bg-lab', `${n} <small>${name}</small>`), 20, y + 8); lab.style.translate = '0 -50%';
+      const dots = []; for (let i = 0; i < n; i++) { const d = add(stage, h('div', 'bg-dot'), 190 + (i % perRow) * pitch, y + Math.floor(i / perRow) * pitch); d.style.background = col; d.style.opacity = 0; dots.push(d); }
+      return { lab, dots };
+    };
+    const rowsA = Math.ceil(a / perRow), yB = 22 + Math.max(rowsA * pitch, 30), A = pile(a, ca, 12, na), B = pile(b, cb, yB, nb);
+    const topEnd = yB + Math.max(Math.ceil(b / perRow) * pitch, 24) + 8;
+    const bagY = topEnd + 14, bagH = Math.min(118, 400 - bagY - 92);
+    const tried = add(stage, h('div', 'bg-tried'), 20, 400 - 40); tried.style.opacity = 0;
+    const triedList = [];
+    let layer = null;
+    async function drawBags(c, n, best) {
+      if (layer) { const old = layer; c.anim(old, [{ opacity: 1 }, { opacity: 0 }], 200).then(() => old.remove()); }
+      layer = add(stage, h('div', 'bg-layer'), 0, 0);
+      const qa = Math.floor(a / n), qb = Math.floor(b / n), ra = a % n, rb = b % n, gap = 8, bw = Math.min(92, (W - 40 - gap * (n - 1)) / n);
+      const x0 = 20 + (W - 40 - n * bw - gap * (n - 1)) / 2, jobs = [], cols = bw >= 46 ? 3 : 2, dp = Math.min(14, (bw - 8) / cols);
+      for (let i = 0; i < n; i++) {
+        const bag = add(layer, h('div', 'bg-bag' + (best ? ' best' : '')), x0 + i * (bw + gap), bagY); bag.style.width = bw + 'px'; bag.style.height = bagH + 'px';
+        const put = (q, col, row0) => { for (let k = 0; k < q; k++) { const d = add(bag, h('div', 'bg-dot sm'), 4 + (k % cols) * dp + (bw - 8 - cols * dp) / 2, row0 + Math.floor(k / cols) * dp); d.style.background = col; d.style.width = d.style.height = dp - 3 + 'px'; } return row0 + Math.ceil(q / cols) * dp + 6; };
+        put(qb, cb, put(qa, ca, 8));
+        jobs.push(c.fadeIn(bag, 260, { delay: i * Math.min(60, 600 / n), from: 'translateY(-14px)' }));
+      }
+      const info = add(layer, h('div', 'bg-info c', ra || rb ? `<span class="red">left over: ${[ra ? ra + ' ' + na : '', rb ? rb + ' ' + nb : ''].filter(Boolean).join(' and ')}</span>` : `each: <b>${qa} ${na}</b> and <b>${qb} ${nb}</b>, nothing left over`), W / 2, bagY + bagH + 20);
+      if (ra || rb) {
+        const xs = W / 2 + 10 + info.textContent.length * 4.6;
+        for (let k = 0; k < Math.min(ra + rb, 12); k++) { const d = add(layer, h('div', 'bg-dot lone'), xs + k * 16, bagY + bagH + 13); d.style.background = k < ra ? ca : cb; jobs.push(c.pop(d, 300, { delay: 500 + k * 40 })); }
+      }
+      jobs.push(c.fadeIn(info, 300, { delay: 400 }));
+      const tag = `<span class="${ra || rb ? 'no' : 'ok'}">${n} ${ra || rb ? '✗' : '✓'}</span>`;
+      if (!triedList.includes(tag)) triedList.push(tag);
+      tried.innerHTML = `<b>Tried:</b> ${triedList.join(' ')}`;
+      jobs.push(c.fadeIn(tried, 250));
+      await Promise.all(jobs);
     }
-  };
-}
-const squares = pilesDef(2, 'Perfect square? Deal the primes into two identical piles', [144, 4, 100, 36, 12, 48, { sep: 'Example 5 check:' }, { v: 15876, label: '15 876' }, { sep: 'Example 6 check:' }, { v: 1089, label: '1 089' }, { v: 2028, label: '2 028' }]);
-const cubes = pilesDef(3, 'Perfect cube? Deal the primes into three identical piles', [{ v: 1000, label: '1 000' }, 8, 125, 27, 18, 54, { sep: 'Example 7 check:' }, { v: 5832, label: '5 832' }, { v: 39304, label: '39 304' }]);
-cubes.minW = 780; // drawn this wide and scaled to fit beside the sidebar
-
-/* ============ 4. Square, cube, both or neither: read the exponents ============ */
-const tester = {
-  title: 'Square, cube, both, or neither? Read the exponents',
-  height: 316,
-  choices: [36, 216, 400, 729, { v: 1728, label: '1 728' }, { v: 2025, label: '2 025' }, { v: 4096, label: '4 096' }, 48],
-  custom: [2, 9999999],
-  intro: (n) => `Is <b>${fmt(n)}</b> a perfect square, a perfect cube, both, or neither?`,
-  make(stage, n, ex) {
-    const W = ex.W, pf = primeFactors(n), G = groups(pf), m = G.length;
-    const x0 = 300, sp = Math.min(150, (W - x0 - 290) / Math.max(1, m)), X = (j) => x0 + (j + 0.5) * sp, yR = [52, 150, 240];
-    const lab = add(stage, h('div', 'tp-lab', fmt(n) + ' ='), x0 - 24, yR[0]); lab.style.translate = '-100% -50%';
-    const pows = G.map((g, j) => { const e = add(stage, h('div', 'tp-pow c' + (sp < 110 ? ' sm' : ''), `${fmt(g.p)}<sup>${g.k}</sup>`), X(j), yR[0]); e.style.opacity = 0; return e; });
-    const xs = G.slice(1).map((_, j) => { const e = add(stage, h('div', 'tp-x c', '×'), x0 + (j + 1) * sp, yR[0]); e.style.opacity = 0; return e; });
-    const rowLab = (y, t, s) => { const e = add(stage, h('div', 'tp-rl', `${t}<small>${s}</small>`), 20, y); e.style.translate = '0 -50%'; e.style.opacity = 0; return e; };
-    const rl = [rowLab(yR[1], 'Perfect square?', 'every exponent even'), rowLab(yR[2], 'Perfect cube?', 'every exponent a multiple of 3')];
-    const sq = G.every((g) => g.k % 2 === 0), cu = G.every((g) => g.k % 3 === 0);
-    const rS = G.reduce((a, g) => a * Math.pow(g.p, g.k / 2), 1), rC = G.reduce((a, g) => a * Math.pow(g.p, g.k / 3), 1);
-    const test = (row, kk, good, rootStr) => ({
+    const rem = (x, n) => (x % n ? `${x} ÷ ${n} = ${Math.floor(x / n)}, with <b class="red">${x % n} left over</b>` : `${x} ÷ ${n} = ${x / n}`);
+    const steps = [{
+      cap: `<b>${a} ${na}</b> and <b>${b} ${nb}</b>. Every one of the ${grp} must get the same, and nothing can be left over.`,
+      run: (c) => Promise.all([c.fadeIn(A.lab, 250), c.fadeIn(B.lab, 250, { delay: 150 }), ...A.dots.map((d, i) => c.pop(d, 260, { delay: i * 12 })), ...B.dots.map((d, i) => c.pop(d, 260, { delay: 150 + i * 12 }))])
+    }];
+    const dim = (c) => Promise.all([...A.dots, ...B.dots].map((d) => c.anim(d, [{ opacity: 1 }, { opacity: 0.25 }], 300)));
+    if (t1) steps.push({ cap: `Try <b>${t1} ${grp}</b>: ${rem(a, t1)}; ${rem(b, t1)}. ✗ ${t1} doesn’t divide into <b>both</b> numbers.`, run: (c) => Promise.all([dim(c), drawBags(c, t1)]) });
+    steps.push({ cap: `Try <b>${g} ${grp}</b>: ${a} ÷ ${g} = ${a / g} ${na} and ${b} ÷ ${g} = ${b / g} ${nb} in each. Nothing left over ✓`, run: (c) => Promise.all([dim(c), drawBags(c, g, !t2)]) });
+    if (t2) steps.push({ cap: `More ${grp}? <b>${t2}</b>: ${rem(a, t2)}; ${rem(b, t2)}. ✗ Any number of ${grp} that works must divide into both: a <b>common factor</b>.`, run: (c) => drawBags(c, t2) });
+    const fa = expHTML(primeFactors(a)), fb = expHTML(primeFactors(b)), fg = expHTML(primeFactors(g));
+    steps.push({
+      cap: `The greatest number of ${grp} is the <b>greatest common factor</b>: ${a} = ${fa}, ${b} = ${fb}, so GCF = ${fg} = <b>${g}</b>.`,
       run: async (c) => {
-        const jobs = [c.fadeIn(rl[row], 300)];
-        G.forEach((g, j) => { const yes = g.k % kk === 0, e = add(stage, h('div', 'tp-b c ' + (yes ? 'yes' : 'no'), `${g.k} ${yes ? '✓' : '✗'}`), X(j), yR[row + 1]); jobs.push(c.pop(e, 320, { delay: 150 + j * 140 })); pows[j].classList.remove('odd2', 'odd3'); pows[j].classList.toggle('odd' + kk, !yes); });
-        const v = add(stage, h('div', 'tp-v ' + (good ? 'yes' : 'no'), good ? rootStr : (kk === 2 ? 'not a square' : 'not a cube')), W - 20, yR[row + 1]); v.style.translate = '-100% -50%';
-        jobs.push(c.anim(v, [{ opacity: 0, transform: 'scale(1.5) rotate(-8deg)' }, { opacity: 1, transform: 'rotate(-3deg)' }], 420, { delay: 250 + m * 140, easing: 'cubic-bezier(.2,1.4,.4,1)' }));
-        await Promise.all(jobs);
+        await drawBags(c, g, true);
+        const res = add(stage, h('div', 'bg-res'), W - 20, 400 - 40); res.style.translate = '-100% 0';
+        res.innerHTML = `GCF(${a}, ${b}) = <b>${g}</b> ${grp}`;
+        await c.pop(res, 380);
       }
     });
-    const odd2 = G.filter((g) => g.k % 2).map((g) => fmt(g.p)), odd3 = G.filter((g) => g.k % 3).map((g) => fmt(g.p));
-    const both = sq && cu ? ' It is <b>both</b> a perfect square and a perfect cube!' : !sq && !cu ? ' So it is <b>neither</b>.' : '';
+    return steps;
+  }
+};
+
+/* ============ 3. LCM in a word problem: two beacons flashing on different cycles ============ */
+const beacons = {
+  title: 'Two beacons: when do they flash together again?',
+  height: 380,
+  choices: [{ v: '4,6', label: '4 s & 6 s' }, { v: '6,10', label: '6 s & 10 s' }, { v: '8,12', label: '8 s & 12 s' }, { sep: 'Example 5 check:' }, { v: '12,20', label: '12 s & 20 s' }],
+  intro: (v) => { const [a, b] = parse(v); return `Two beacons flash together at midnight. One flashes every <b>${a} seconds</b>, the other every <b>${b} seconds</b>. When do they next flash <b>together</b>?`; },
+  make(stage, v, ex) {
+    const [a, b] = parse(v), W = ex.W, L = lcm(a, b), N = 2 * L, g = gcd(a, b);
+    const x0 = 150, x1 = W - 40, X = (t) => x0 + (t / N) * (x1 - x0), rowY = [96, 196], axisY = 268;
+    const cols = ['#0f8a8a', '#c06b0c'];
+    const lamps = [a, b].map((p, i) => {
+      add(stage, h('div', 'bc-tower c'), 62, rowY[i] + 30).style.borderColor = cols[i];
+      const lamp = add(stage, h('div', 'bc-lamp c'), 62, rowY[i] - 6); lamp.style.setProperty('--bc', cols[i]);
+      const lab = add(stage, h('div', 'bc-lab c', `every <b>${p} s</b>`), 62, rowY[i] + 62); lab.style.color = cols[i];
+      return lamp;
+    });
+    rowY.forEach((y, i) => { const ln = add(stage, h('div', 'bc-track'), x0, y); ln.style.width = x1 - x0 + 'px'; ln.style.background = cols[i]; });
+    const ax = add(stage, h('div', 'bc-axis'), x0, axisY); ax.style.width = x1 - x0 + 'px';
+    const T = [1, 2, 4, 5, 10, 20, 30, 60].find((t) => (t / N) * (x1 - x0) >= 46) || 60;
+    for (let t = 0; t <= N; t += T) { add(stage, h('div', 'bc-tick'), X(t), axisY - 5); add(stage, h('div', 'bc-tl c', t + ''), X(t), axisY + 18); }
+    add(stage, h('div', 'bc-unit'), x1 + 6, axisY + 18).textContent = 's';
+    const marks = [a, b].map((p, i) => { const ms = []; for (let t = p; t <= N; t += p) { const m = add(stage, h('div', 'bc-mark c', ''), X(t), rowY[i]); m.style.setProperty('--bc', cols[i]); m.style.opacity = 0; m._t = t; ms.push(m); } return ms; });
+    const nums = [a, b].map((p, i) => marks[i].map((m) => { const e = add(stage, h('div', 'bc-num c', m._t + ''), m._t === L || m._t === N ? X(m._t) : X(m._t), rowY[i] - 30); e.style.color = cols[i]; e.style.opacity = 0; return e; }));
+    const band = (t, cls) => { const e = add(stage, h('div', 'bc-band ' + cls), X(t) - 18, rowY[0] - 50); e.style.height = axisY - rowY[0] + 50 + 'px'; e.style.opacity = 0; stage.insertBefore(e, stage.firstChild); return e; };
+    const b1 = band(L, 'first'), b2 = band(N, 'again');
+    const cursor = add(stage, h('div', 'bc-cursor'), X(0), rowY[0] - 44); cursor.style.height = axisY - rowY[0] + 44 + 'px'; cursor.style.opacity = 0;
+    const clock = add(stage, h('div', 'bc-clock'), W - 20, 8); clock.style.translate = '-100% 0'; clock.innerHTML = 't = 0 s';
+    const res = add(stage, h('div', 'bc-res'), x0, axisY + 52); res.style.opacity = 0;
+    const show = (i) => (c) => Promise.all([...marks[i].map((m, k) => c.pop(m, 280, { delay: k * 90 })), ...nums[i].map((e, k) => c.fadeIn(e, 250, { delay: k * 90 }))]);
+    const listOf = (p) => { const o = []; for (let t = p; t <= Math.min(N, 5 * p); t += p) o.push(t); return o.join(', '); };
     return [
-      { cap: `Write ${fmt(n)} with exponents: <b>${fmt(n)} = ${expHTML(pf)}</b>.`, run: (c) => Promise.all([c.fadeIn(lab, 250), ...pows.map((e, j) => c.pop(e, 360, { delay: j * 120 })), ...xs.map((e) => c.fadeIn(e, 300, { delay: 200, from: 'none' }))]) },
-      Object.assign(test(0, 2, sq, `${tex(`\\sqrt{${texN(n)}}`)} = ${fmt(rS)}`), {
-        cap: sq ? `Every exponent is <b>even</b>, so the primes pair up: <b>a perfect square</b>. Halve the exponents: ${tex(`\\sqrt{${texN(n)}}`)} = ${G.map((g) => pw(g.p, g.k / 2)).join(' × ')} = <b>${fmt(rS)}</b>.`
-          : `The exponent${odd2.length > 1 ? 's' : ''} on ${listAnd(odd2)} ${odd2.length > 1 ? 'are' : 'is'} <b>odd</b>, so the primes can’t all pair up: <b>not</b> a perfect square.`
-      }),
-      Object.assign(test(1, 3, cu, `${tex(`\\sqrt[3]{${texN(n)}}`)} = ${fmt(rC)}`), {
-        cap: (cu ? `Every exponent is a <b>multiple of 3</b>, so the primes make triples: <b>a perfect cube</b>. ${tex(`\\sqrt[3]{${texN(n)}}`)} = ${G.map((g) => pw(g.p, g.k / 3)).join(' × ')} = <b>${fmt(rC)}</b>.`
-          : `The exponent${odd3.length > 1 ? 's' : ''} on ${listAnd(odd3)} ${odd3.length > 1 ? 'are' : 'is'} <b>not a multiple of 3</b>: <b>not</b> a perfect cube.`) + both
-      })
+      { cap: `The first beacon flashes every <b>${a} s</b>: at ${listOf(a)}, … — the <b>multiples of ${a}</b>.`, run: show(0) },
+      { cap: `The second flashes every <b>${b} s</b>: at ${listOf(b)}, … — the multiples of ${b}.`, run: show(1) },
+      {
+        cap: `Run the clock from midnight… The first time <b>both</b> flash at once is <b>${L} s</b>: the first common multiple, the <b>LCM</b>.`,
+        run: async (c) => {
+          const dur = 3200, jobs = [c.fadeIn(cursor, 150), c.anim(cursor, [{ transform: 'translateX(0px)' }, { transform: `translateX(${X(L) - X(0)}px)` }], dur, { easing: 'linear' })];
+          [a, b].forEach((p, i) => { for (let t = p; t <= L; t += p) jobs.push(c.anim(lamps[i], [{ background: 'var(--bc)', boxShadow: '0 0 0 0 rgba(255,200,40,0)' }, { background: '#ffd84a', boxShadow: '0 0 26px 12px rgba(255,200,40,.85)' }, { background: 'var(--bc)', boxShadow: '0 0 0 0 rgba(255,200,40,0)' }], 420, { delay: (t / L) * dur - 120 })); });
+          if (!c.fast) { const t0 = performance.now(); const tick = () => { const s = Math.min(L, Math.round(((performance.now() - t0) / dur) * L)); clock.innerHTML = `t = ${s} s`; if (s < L && cursor.isConnected) requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
+          await Promise.all(jobs);
+          clock.innerHTML = `t = <b>${L} s</b>`;
+          marks.forEach((ms) => ms.forEach((m) => m._t === L && m.classList.add('hit')));
+          await Promise.all([c.anim(b1, [{ opacity: 0 }, { opacity: 1 }], 350), ...lamps.map((l) => c.anim(l, [{ background: '#ffd84a', boxShadow: '0 0 26px 12px rgba(255,200,40,.85)' }, { background: '#ffd84a', boxShadow: '0 0 26px 12px rgba(255,200,40,.85)' }], 300))]);
+        }
+      },
+      {
+        cap: `Together again at <b>${N} s</b> = 2 × ${L}, and every ${L} s after that. With primes: ${a} = ${expHTML(primeFactors(a))}, ${b} = ${expHTML(primeFactors(b))}, LCM = ${expHTML(primeFactors(L))} = <b>${L}</b>` + (g > 1 ? ` — not ${a} × ${b} = ${a * b}.` : '.'),
+        run: async (c) => {
+          marks.forEach((ms) => ms.forEach((m) => m._t === N && m.classList.add('hit')));
+          res.innerHTML = `LCM(${a}, ${b}) = ${expHTML(primeFactors(L))} = <b>${L} s</b>` + (L >= 60 && L % 60 === 0 ? ` <span class="muted">(${L / 60} min)</span>` : '');
+          await Promise.all([c.anim(b2, [{ opacity: 0 }, { opacity: 1 }], 350), c.fadeIn(res, 350, { delay: 150 })]);
+        }
+      }
     ];
   }
 };
 
-/* ============ warm-up: the locker problem ============ */
-function mountLockers() {
-  const host = document.getElementById('lockers'); if (!host) return;
-  const st = document.getElementById('lk-status'), hist = document.getElementById('lk-hist'), L = [];
-  let student = 0, gen = 0;
-  for (let i = 1; i <= 100; i++) { const b = h('button', 'lk', '<span>' + i + '</span>'); b.type = 'button'; b.title = 'Locker ' + i; b.onclick = () => showHist(i); host.appendChild(b); L[i] = b; }
-  const HINT = '<span class="muted">Tap any locker to see which students touch it.</span>';
-  function setState(s) {
-    gen++;
-    for (let i = 1; i <= 100; i++) { let t = 0; for (let d = 1; d <= s; d++) if (i % d === 0) t++; L[i].classList.toggle('open', t % 2 === 1); L[i].classList.remove('sq', 'hit'); }
-    student = s;
+/* ============ warm-up: hot dogs (packs of 10) and buns (packs of 8) ============
+ * Two rows drawn to the same scale, one block per pack. Whatever sticks out past the shorter row is marked in red.
+ * "Buy until they match" adds a pack to whichever row is behind until the totals are equal (the LCM, 40). */
+function mountHotdogs() {
+  const svg = document.getElementById('hd-svg'); if (!svg) return;
+  const st = document.getElementById('hd-status'), NS = 'http://www.w3.org/2000/svg';
+  const MAXH = 8, MAXB = 10;
+  let H = 2, B = 2, gen = 0;
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const list = (p, n) => Array.from({ length: n }, (_, i) => p * (i + 1)).join(', ');
+  function draw(added) {
+    svg.innerHTML = '';
+    const nh = 10 * H, nb = 8 * B, X0 = 112, X1 = 632, s = Math.min(15, (X1 - X0) / Math.max(nh, nb, 32)), short = Math.min(nh, nb), long = Math.max(nh, nb);
+    const rows = [{ y: 52, n: nh, per: 10, k: 'h', name: 'hot dogs' }, { y: 140, n: nb, per: 8, k: 'b', name: 'buns' }];
+    rows.forEach((r) => {
+      txt(r.name, { x: 0, y: r.y - 6, class: 'hd-rl' });
+      txt(String(r.n), { x: 0, y: r.y + 22, class: 'hd-rn' });
+      const packs = r.n / r.per;
+      for (let p = 0; p < packs; p++) {
+        const g = mk('g', { class: 'hd-pack' + (added === r.k && p === packs - 1 ? ' new' : '') });
+        mk('rect', { x: X0 + p * r.per * s + 1.5, y: r.y - 33, width: r.per * s - 3, height: 66, rx: 7, class: 'hd-frame' }, g);
+        for (let i = 0; i < r.per; i++) {
+          const idx = p * r.per + i, cx = X0 + (idx + 0.5) * s, cls = idx >= short ? ' extra' : '';
+          if (r.k === 'h') {
+            mk('rect', { x: cx - s * 0.3, y: r.y - 24, width: s * 0.6, height: 48, rx: Math.min(6, s * 0.3), class: 'hd-dog' + cls }, g);
+            if (s >= 9) mk('polyline', { points: [-18, -12, -6, 0, 6, 12, 18].map((yy, j) => `${(cx + (j % 2 ? 1 : -1) * s * 0.12).toFixed(1)},${r.y + yy}`).join(' '), class: 'hd-mustard' }, g);
+          } else {
+            mk('rect', { x: cx - s * 0.42, y: r.y - 26, width: s * 0.84, height: 52, rx: Math.min(8, s * 0.42), class: 'hd-bun' + cls }, g);
+            if (s >= 9) mk('line', { x1: cx, y1: r.y - 18, x2: cx, y2: r.y + 18, class: 'hd-slit' }, g);
+          }
+        }
+      }
+    });
+    if (nh !== nb) {
+      const y = nh > nb ? rows[0].y : rows[1].y;
+      mk('rect', { x: X0 + short * s - 3, y: y - 38, width: (long - short) * s + 6, height: 76, rx: 9, class: 'hd-left' });
+    } else {
+      mk('rect', { x: X0 - 4, y: rows[0].y - 40, width: long * s + 8, height: rows[1].y - rows[0].y + 80, rx: 12, class: 'hd-match' });
+    }
+    const d = Math.abs(nh - nb);
+    st.innerHTML = (nh === nb
+      ? `<b class="ok">${nh} hot dogs, ${nb} buns: a perfect match!</b> ${H} packs of hot dogs and ${B} packs of buns.`
+      : `${nh} hot dogs, ${nb} buns: <b class="red">${d} ${nh > nb ? (d > 1 ? 'hot dogs have' : 'hot dog has') + ' no bun' : (d > 1 ? 'buns have' : 'bun has') + ' no hot dog'}</b>.`) +
+      `<span class="hd-lists">Hot dogs: ${list(10, H)} &nbsp;·&nbsp; Buns: ${list(8, B)}</span>`;
   }
-  const flash = (i) => { L[i].classList.add('hit'); L[i].animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-5px)' }, { transform: 'translateY(0)' }], 260); setTimeout(() => L[i].classList.remove('hit'), 700); };
-  function finish() {
-    const open = []; for (let i = 1; i <= 100; i++) if (L[i].classList.contains('open')) { open.push(i); L[i].classList.add('sq'); }
-    st.innerHTML = `All 100 students done: <b>${open.length} lockers open</b> — ${open.join(', ')}. The <b>perfect squares</b>!`;
-  }
-  function next(quick) {
-    if (student >= 100) return;
-    const s = ++student, g = gen, ms = []; for (let m = s; m <= 100; m += s) ms.push(m);
-    ms.forEach((m, k) => { const go = () => { if (g !== gen) return; L[m].classList.toggle('open'); flash(m); }; if (quick) go(); else setTimeout(go, k * Math.min(70, 900 / ms.length)); });
-    st.innerHTML = ms.length > 1 ? `<b>Student ${s}</b> toggled every ${s === 1 ? '' : ordinal(s) + ' '}locker: ${ms.slice(0, 4).join(', ')}${ms.length > 4 ? ', …, ' + ms[ms.length - 1] : ''} <span class="muted">(${ms.length} lockers)</span>` : `<b>Student ${s}</b> toggled just locker ${s}.`;
-    if (s === 100) setTimeout(() => { if (g === gen) finish(); }, quick ? 0 : 400);
-  }
-  const ordinal = (n) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
-  function showHist(i) {
-    const f = factors(i), seq = f.map((_, k) => (k % 2 === 0 ? 'o' : 'c'));
-    hist.innerHTML = `<b>Locker ${i}</b> is touched by Student${f.length > 1 ? 's' : ''} <b>${f.join(', ')}</b> — the factors of ${i}. <span class="lk-seq">${seq.map((s) => `<i class="${s}"></i>`).join('')}</span> ${f.length} toggle${f.length > 1 ? 's' : ''} → ends <b class="${f.length % 2 ? 'ok' : 'red'}">${f.length % 2 ? 'open' : 'closed'}</b>.`;
-    L.forEach((b) => b && b.classList.remove('sel')); L[i].classList.add('sel');
-  }
-  document.querySelector('[data-lk=next]').onclick = () => next(false);
-  document.querySelector('[data-lk=reset]').onclick = () => { setState(0); hist.innerHTML = HINT; L.forEach((b) => b && b.classList.remove('sel')); st.innerHTML = 'All 100 lockers are <b>closed</b>. <b>Student 1</b> is up.'; };
-  document.querySelector('[data-lk=all]').onclick = async () => {
-    const g = ++gen;
-    while (student < 100 && g === gen) { next(true); await new Promise((r) => setTimeout(r, student < 12 ? 160 : 45)); }
-  };
-  setState(2); hist.innerHTML = HINT;
-  st.innerHTML = 'After Students 1 and 2: odd lockers open, even lockers closed. <b>Student 3</b> is next…';
+  const set = (h, b, added) => { H = Math.max(1, Math.min(MAXH, h)); B = Math.max(1, Math.min(MAXB, b)); draw(added); };
+  const act = { 'h+': () => set(H + 1, B, 'h'), 'h-': () => set(H - 1, B), 'b+': () => set(H, B + 1, 'b'), 'b-': () => set(H, B - 1), reset: () => set(2, 2) };
+  document.querySelectorAll('[data-hd]').forEach((btn) => btn.addEventListener('click', async () => {
+    const k = btn.dataset.hd, g = ++gen;
+    if (act[k]) { act[k](); return; }
+    // buy until they match: add a pack to whichever row is behind (from a match, go on to the next one)
+    if (10 * H === 8 * B) { if (H >= MAXH || B >= MAXB) set(1, 1); else set(H + 1, B, 'h'); await new Promise((r) => setTimeout(r, 450)); }
+    while (g === gen && 10 * H !== 8 * B && H <= MAXH && B <= MAXB) {
+      if (10 * H < 8 * B) { if (H >= MAXH) break; set(H + 1, B, 'h'); } else { if (B >= MAXB) break; set(H, B + 1, 'b'); }
+      await new Promise((r) => setTimeout(r, 450));
+    }
+  }));
+  draw();
 }
 
 function mountWarmup() {
@@ -560,17 +553,15 @@ function mountWarmup() {
 }
 
 function mountFigures() {
-  document.querySelectorAll('[data-grid]').forEach((e) => { const [r, c] = e.dataset.grid.split('x').map(Number); e.innerHTML = gridSVG(r, c, 26); });
-  document.querySelectorAll('[data-box]').forEach((e) => { const [x, y, z] = e.dataset.box.split('x').map(Number); e.innerHTML = boxSVG(x, y, z, 30); });
   document.querySelectorAll('[data-tree]').forEach((e) => { e.innerHTML = treeSVG(e.dataset.tree); });
 }
 
 function mountExplainers() {
-  const defs = { gcfList, tiles, vennG, vennL, tableG, tableL, frogs, squares, cubes, tester };
+  const defs = { gcfList, tiles, vennG, vennL, tableG, tableL, frogs, bags, beacons };
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
 
-mountFigures(); mountExplainers(); mountLockers(); mountWarmup();
+mountFigures(); mountExplainers(); mountHotdogs(); mountWarmup();
 
 /* ---------- Fun fact (the brown box): two cicada broods, every 13 and every 17 years, meet every LCM = 221 years ----------
  * A timeline from 1803 to 2245 fills in when the box scrolls into view (or on Replay / a tap): a cicada for every year each

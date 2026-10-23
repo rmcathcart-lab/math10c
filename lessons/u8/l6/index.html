@@ -33,7 +33,7 @@
     <div class="goals-h">I can…</div>
     <ul>
       <li>tell how many solutions a system has from its graph, from its slopes and <span class="tex">y</span>-intercepts, or from what the algebra gives (<span class="tex">0=5</span> or <span class="tex">0=0</span>)</li>
-      <li>solve a system by graphing (by hand or with a graphing calculator), by substitution, or by elimination, and verify the solution in <b>both</b> equations</li>
+      <li>solve a system by graphing (by hand), by substitution, or by elimination, and verify the solution in <b>both</b> equations</li>
       <li>choose a method for a system and <b>justify</b> the choice</li>
       <li>build the equations from tables, a trip and a price list, and find where they meet</li>
       <li>use the crossing points to decide which option is best</li>
@@ -89,7 +89,7 @@
 <!-- ================= 1. Method summary ================= -->
 <section class="card" data-ink="s1" data-section="1. How Many Solutions?">
   <div class="sec-h"><span class="badge">1</span><h2>Method Summary: How Many Solutions?</h2></div>
-  <p class="muted">Lesson 1B, plus what the algebra shows in Lessons 2–3.</p>
+  <p class="muted">Lesson 1, plus what the algebra shows in Lessons 2–3.</p>
   <table class="u8l6-hm">
     <tr><th></th><th>One solution</th><th>No solution</th><th>Infinitely many</th></tr>
     <tr><td>Graph</td>
@@ -108,9 +108,9 @@
 <section class="card" data-ink="s1b" data-section="1. Three Methods">
   <h3 class="sub">Three methods, one crossing point</h3>
   <div class="u8l6-meths">
-    <div class="u8l6-meth"><h4>Graphing <small>Lesson 1A</small></h4>
+    <div class="u8l6-meth"><h4>Graphing <small>Lesson 1</small></h4>
       <div><span class="u8l6-sub">By hand:</span> rearrange to <span class="tex">y=mx+b</span>, plot <span class="tex">b</span>, use the slope; read the crossing point.</div>
-      <div><span class="u8l6-sub">Graphing calculator</span> <span class="u8l6-ti">TI-83/84</span>: <kbd>Y=</kbd> both equations, choose a <kbd>WINDOW</kbd>, then <kbd class="u8l6-k2">2nd</kbd> <kbd>TRACE</kbd> <code class="u8l6-c">5:intersect</code>.</div>
+      <div><span class="u8l6-sub">Shortcut:</span> both equations in the form <span class="tex">y=\ldots</span>? Set the two expressions equal.</div>
       <div>Verify in both equations.</div></div>
     <div class="u8l6-meth"><h4>Substitution <small>Lesson 2</small></h4>
       <ol><li>Solve one equation for one variable.</li><li>Substitute into the <i>other</i> equation.</li><li>Solve for the remaining variable.</li><li>Back-substitute; verify in both.</li></ol></div>
@@ -125,7 +125,7 @@
   <h3 class="sub">Choosing a method <span class="muted small">(Lesson 3, Section 6)</span></h3>
   <table class="u8l6-choose">
     <tr><th>Method</th><th>Use it when …</th><th>Example</th></tr>
-    <tr><td>Graphing</td><td>you need a picture or an estimate, or a graphing calculator is allowed (by hand: exact only for integer solutions)</td><td><span class="tex">y=2x-1,\ \ y=-x+5</span></td></tr>
+    <tr><td>Graphing</td><td>you need a picture or an estimate (by hand: exact only for integer solutions)</td><td><span class="tex">y=2x-1,\ \ y=-x+5</span></td></tr>
     <tr><td>Substitution</td><td>a variable already has coefficient <span class="tex">1</span> or <span class="tex">-1</span>, or is already isolated</td><td><span class="tex">y=3x-2,\ \ 5x-2y=1</span></td></tr>
     <tr><td>Elimination</td><td>the coefficients of one variable already match or are opposites, or are easy multiples</td><td><span class="tex">4x+3y=10,\ \ 4x-5y=-6</span></td></tr>
   </table>
@@ -172,7 +172,7 @@
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Elimination:</b> the <span class="tex">x</span>-coefficients already match (<span class="tex">4</span>).<br>Subtract: <span class="tex">(4x+3y)-(4x-5y)=10-(-6)</span><br><span class="tex">8y=16\Rightarrow y=2</span>; <span class="tex">4x+6=10\Rightarrow x=1</span><br>Check: <span class="tex">4-10=-6</span> ✓<br><span class="tex">\textcolor{#7b4fc4}{\boldsymbol{(1,2)}}</span></div></div></div>
     <div class="part"><div class="pl">(c) <span class="tex">\textcolor{#1f5bd6}{y=0.8x+1.2},\ \ \textcolor{#b06a07}{y=-1.5x+6.95}</span></div>
       <div class="work" style="--h:290px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Graphing calculator</b> (decimal coefficients; both already <span class="tex">y=\ldots</span>), or set the expressions equal.<br><span class="tex">0.8x+1.2=-1.5x+6.95</span><br><span class="tex">\Rightarrow 2.3x=5.75\Rightarrow x=2.5</span><br><span class="tex">y=0.8(2.5)+1.2=3.2</span><br><code class="u8l6-c">5:intersect</code> shows <code class="u8l6-c">X=2.5</code>, <code class="u8l6-c">Y=3.2</code> ✓<br><span class="tex">\textcolor{#7b4fc4}{\boldsymbol{(2.5,\ 3.2)}}</span></div></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Set the expressions equal</b> (substitution): both are already <span class="tex">y=\ldots</span>, and the decimal coefficients would make a hand-drawn graph hard to read.<br><span class="tex">0.8x+1.2=-1.5x+6.95</span><br><span class="tex">\Rightarrow 2.3x=5.75\Rightarrow x=2.5</span><br><span class="tex">y=0.8(2.5)+1.2=3.2</span><br>Check: <span class="tex">-1.5(2.5)+6.95=3.2</span> ✓<br><span class="tex">\textcolor{#7b4fc4}{\boldsymbol{(2.5,\ 3.2)}}</span></div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
@@ -183,10 +183,10 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex2b" data-section="Example 2(c) on the TI-84">
-  <h3 class="sub">On the graphing calculator <span class="u8l6-ti">TI-83/84</span></h3>
-  <p class="muted">These steps are for the <b>graphing calculator</b>. The TI-30XIIS built into this page can’t graph; use it for the algebraic check.</p>
-  <div class="explainer" data-explainer="ti84"></div>
+<section class="card" data-ink="ex2b" data-section="Example 2(c) check">
+  <h3 class="sub">Example 2(c): decimals? Set the expressions equal</h3>
+  <p>With decimal coefficients the lines cross <b>between</b> grid lines, so a hand-drawn graph only gives an estimate. Both equations are already <span class="tex">y=\ldots</span>: at the crossing the two <span class="tex">y</span>-values are equal.</p>
+  <div class="explainer" data-explainer="setEq"></div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
@@ -335,7 +335,7 @@
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Substitution:</b> <span class="tex">y</span> is already isolated.<br><span class="tex">3x+4(2x-7)=5\Rightarrow 11x-28=5\Rightarrow x=3</span><br><span class="tex">y=2(3)-7=-1</span><br>Check: <span class="tex">9-4=5</span> ✓<br><span class="tex">(3,-1)</span></div></div></div>
     <div class="part"><div class="pl">(c) <span class="tex">y=0.35x+1.2,\ \ y=-0.9x+6.2</span></div>
       <div class="work" style="--h:260px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Graphing calculator</b> (decimal coefficients, both in <span class="tex">y=\ldots</span> form), or set the expressions equal.<br><span class="tex">0.35x+1.2=-0.9x+6.2\Rightarrow 1.25x=5\Rightarrow x=4</span><br><span class="tex">y=0.35(4)+1.2=2.6</span><br><span class="tex">(4,\ 2.6)</span></div></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Set the expressions equal</b> (substitution): both are in <span class="tex">y=\ldots</span> form, and the decimal coefficients would make a hand-drawn graph hard to read.<br><span class="tex">0.35x+1.2=-0.9x+6.2\Rightarrow 1.25x=5\Rightarrow x=4</span><br><span class="tex">y=0.35(4)+1.2=2.6</span><br><span class="tex">(4,\ 2.6)</span></div></div></div>
   </div>
   <p class="q u8l6-gap"><b>14.</b> Two parking garages charge as follows: Garage A charges $8 flat plus $1.50 per hour. Garage B charges $3 flat plus $2.50 per hour.</p>
   <div class="parts c3">
@@ -403,7 +403,7 @@
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
     <div><b>How many solutions?</b> Different slopes: <b>one</b>. Equal slopes, different intercepts: <b>none</b> (algebra gives a false statement like <span class="tex">0=5</span>). Same line: <b>infinitely many</b> (<span class="tex">0=0</span>).</div>
-    <div><b>Choose the method from the system.</b> Decimals or a picture: <b>graph</b>. A variable isolated or with coefficient <span class="tex">\pm1</span>: <b>substitution</b>. Matching, opposite or easy-multiple coefficients: <b>elimination</b>.</div>
+    <div><b>Choose the method from the system.</b> Only a picture or an estimate needed: <b>graph</b> by hand. A variable isolated or with coefficient <span class="tex">\pm1</span>: <b>substitution</b>. Matching, opposite or easy-multiple coefficients: <b>elimination</b>.</div>
     <div><b>Always verify in both</b> original equations, then check the answer against the <b>words</b>: units (hours, not minutes), whole counts, positive lengths.</div>
     <div><b>Crossing points decide.</b> Where two cost lines cross, the cheaper option changes. The best plan is the <b>lowest line</b> between crossings.</div>
   </div>
@@ -413,8 +413,8 @@
   <div class="u8l6-review">
     <div class="u8l6-review-h"><span class="kicker">Up next</span><b>Unit 8 test.</b> <span class="muted">Shaky on a question today? Go back to its lesson.</span></div>
     <div class="u8l6-review-grid">
-      <a href="../l1a/"><span class="u8l6-rn">8.1A</span>Graphing systems of linear equations <small>Ex 2(c), 4(f) · Review 13(c), 15(a)(b)</small></a>
-      <a href="../l1b/"><span class="u8l6-rn">8.1B</span>Classifying systems: how many solutions? <small>Section 1 · Review 2, 4, 5, 15(c)</small></a>
+      <a href="../l1/"><span class="u8l6-rn">8.1</span>Graphing systems of linear equations <small>Ex 2(c), 4(f) · Review 13(c), 15(a)(b)</small></a>
+      <a href="../l1/"><span class="u8l6-rn">8.1</span>Classifying systems: how many solutions? <small>Section 1 · Review 2, 4, 5, 15(c)</small></a>
       <a href="../l2/"><span class="u8l6-rn">8.2</span>Solving systems by substitution <small>Ex 1(b), 2(a) · Review 3, 6, 9, 10, 11, 13(b)</small></a>
       <a href="../l3/"><span class="u8l6-rn">8.3</span>The elimination method <small>Ex 2(b), 3 · Review 1, 7, 8, 13(a)</small></a>
       <a href="../l4/"><span class="u8l6-rn">8.4</span>Solving word problems with systems <small>Ex 1(a), 4 · Review 14, 17, 18</small></a>

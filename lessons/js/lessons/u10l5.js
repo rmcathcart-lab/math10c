@@ -1,786 +1,868 @@
-/* Math 10C · Unit 10 · Lesson 5 — Converting Square and Cubic Units: SI and Imperial Systems.
- * Warm-up carpet square (1 yd² split into 9 ft²), static figures (unit square/cube, rectangle, prism, the two bins), and
- * the explainers:
- *   grid (a 1 m square filling with 100 × 100 cm²; the "×100" slip is one row; Example 1 check), shortcut (n steps on the
- *   metric number line → 10ⁿ, 10²ⁿ, 10³ⁿ as rows of zeros), rect (Example 2: 28 m² tiles, each 10 000 cm²), shiftA /
- *   shiftV (Examples 3 and 6: prefix hops, then the decimal point hops 2 or 3 places per step), cube (a 1 m cube filling
- *   with layers of cm³; the 100 cm³ speck; Example 4 check), prism (Example 5: 30 one-metre cubes in 3 layers),
- *   imperial (Example 7: 12 × 12 in² and 12 layers of 12 × 12 in³; 1 yd² and 1 yd³), cancel (Example 8: the table row,
- *   square or cube it, units cancel like fractions), which (flowchart: what kind of unit, smaller or bigger), bins
- *   (Example 9: both bins in cm³ and in², drawn to the same scale).
- * Colours: big units ink, small units blue, the wrong "×k once" red, tiles/blocks amber, imperial purple. */
+/* Math 10C · Unit 10 · Lesson 5 — Surface Area and Volume of Spheres and Hemispheres.
+ * Warm-up tennis-ball can (unroll the string, split into snug cylinders), static figures (snug cylinder, orange peel,
+ * Example 1 tank, Example 2 slice, Example 4 sheds), and the explainers:
+ *   overflow (Mika's displacement test: the ball pushes out 2/3 of the cylinder; For discussion 900 mL),
+ *   derive (the snug cylinder: 2/3 × πr²(2r) = 4/3 πr³; the warm-up tennis ball),
+ *   peel (STAR: the orange peel fills four great circles; Archimedes' unrolled cylinder label),
+ *   halve (Example 1 check; what happens if you forget to halve the diameter),
+ *   slice (Example 2 check: half the volume; STAR: hemisphere = 2 great circles curved + 1 floor),
+ *   string (Example 3 check: circumference → radius → volume; rounding r too early),
+ *   domes (Example 4 check: the same dome with and without its floor),
+ *   floor (Flowchart: does the flat base count? Example 2(b)/(c), Sana, Tavi, an open bowl),
+ *   backwards (Example 5 check: run V = 4/3 πr³ backwards with a cube root; Mika's ball).
+ * Colours: curved surface / peel orange, flat floor blue, radius red, diameter amber, cylinder teal, water light blue. */
 import {
-  h, tex, add, box, NumberLine, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween, svgEl,
-  liveCtx, pulse, anim, COLORS
+  h, tex, add, box, place, svgEl, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
+  pulse, drawIn, liveCtx, COLORS
 } from '../blocks.js';
 
 const T = (s) => tex(s);
-/** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
-const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
-const INK = COLORS.ink, BLUE = COLORS.blue, RED = COLORS.red, AMB = COLORS.amber, TEAL = COLORS.teal, PUR = COLORS.purple, GRN = COLORS.green;
-let UID = 0;
+const INK = COLORS.ink, RAD = COLORS.red, DIA = COLORS.amber, CYL = COLORS.teal, FLR = COLORS.blue, GRN = COLORS.green;
+const PEEL = '#f39a2c', PEEL_D = '#c56a06', PITH = '#fdf0d2', BALL = '#eef3fa', FLOOR_F = '#bcd2f6', WATER = '#8cc4f0', WATER_T = '#b9dcf7';
+const EQ = 0.27; // ellipse squash for circles seen from slightly above
+const SW = 2.6;
+const PI = Math.PI;
 
-/* ---------------- helpers ---------------- */
-/** TeX for a number as the booklet writes it: thin spaces in 5+ digit integer parts and 5+ digit decimal parts */
-function tn(v) {
-  const s = typeof v === 'string' ? v : String(+(+v).toPrecision(12));
-  const [i, d] = s.split('.');
-  const gi = i.length >= 5 ? i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : i;
-  const gd = d && d.length >= 5 ? d.replace(/(\d{3})(?=\d)/g, '$1\\,') : d;
-  return gd ? gi + '.' + gd : gi;
+/* ---------- numbers ---------- */
+/** fixed decimals, thin space for 5+ digit whole parts (booklet style), for TeX */
+function tn(v, d = 1) {
+  const s = (Math.round(v * 10 ** d) / 10 ** d).toFixed(d), [i, f] = s.split('.');
+  const ii = i.replace('-', '').length > 4 ? i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : i;
+  return f ? ii + '.' + f : ii;
 }
-const U = (n, p) => `\\text{ ${n}}${p > 1 ? '^' + p : ''}`;      // " m^2" style unit
-const UU = (n, p) => `\\text{${n}}${p > 1 ? '^' + p : ''}`;      // bare unit
-const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u10l5-panel ' + cls, title ? `<div class="u10l5-ph">${title}</div>` : ''), w, hh), x, y);
-const line = (P, html, cls = '') => { const d = h('div', 'u10l5-line ' + cls, html); d.style.opacity = 0; P.appendChild(d); return d; };
-const show = (c, el) => fadeIn(c, el, 320);
-const say = (c, P, html, cls) => show(c, line(P, html, cls));
+
+/* ---------- small DOM helpers ---------- */
 const hide = (el) => { el.style.opacity = 0; return el; };
-const ANCH = { c: '-50% -50%', l: '0 -50%', r: '-100% -50%', t: '-50% 0', b: '-50% -100%', bl: '0 -100%' };
-function lab(host, x, y, html, cls = '', a = 'c') { const d = h('div', 'u10l5-lab ' + cls, html); d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.translate = ANCH[a]; host.appendChild(d); return d; }
-async function swap(c, el, html) { await anim(c, el, [{ opacity: 1 }, { opacity: 0 }], 180); el.innerHTML = html; await anim(c, el, [{ opacity: 0 }, { opacity: 1 }], 260); }
-async function strike(c, el) { el.classList.add('u10l5-struck'); const x = h('span', 'u10l5-xline'); el.appendChild(x); await anim(c, x, [{ width: '0%' }, { width: '100%' }], 380); }
-function stampP(P, text, ok = true) { const s = stamp(P, text, { ok }); s.style.alignSelf = 'center'; s.style.marginTop = '6px'; return s; }
-const mkSvg = (stage, W, H) => svgEl('svg', { class: 'u10l5-svg', width: W, height: H, viewBox: `0 0 ${W} ${H}` }, stage);
-const fade = (c, el, to = 0, ms = 260) => anim(c, el, [{ opacity: el.style.opacity === '' ? 1 : +el.style.opacity }, { opacity: to }], ms);
+const show = (c, el) => fadeIn(c, el, 320);
+function lab(host, x, y, html, pos = 'c', cls = '', gap = 6) { const d = h('div', 'u10l5-lab ' + cls, html); host.appendChild(d); place(d, x, y, pos, gap); return d; }
+const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u10l5-panel ' + cls, title ? `<div class="u10l5-ph">${title}</div>` : ''), w, hh), x, y);
+const line = (p, html, cls = '') => { const d = h('div', 'u10l5-line ' + cls, html); p.appendChild(d); return d; };
+function svgOn(host, x, y, w, hh) {
+  const s = svgEl('svg', { width: w, height: hh, viewBox: `0 0 ${w} ${hh}`, class: 'u10l5-svg' }, host);
+  s.style.left = x + 'px'; s.style.top = y + 'px'; return s;
+}
+/** a static figure: a positioned box holding an SVG and HTML labels */
+function figure(id, w, hh) {
+  const host = document.getElementById(id); if (!host) return null;
+  const wrap = box(h('div', 'u10l5-fig'), w, hh); host.appendChild(wrap);
+  const svg = svgEl('svg', { width: w, height: hh, viewBox: `0 0 ${w} ${hh}`, class: 'u10l5-svg' }, wrap);
+  return { wrap, svg };
+}
 
-/* oblique projection: x right, y up, z back (drawn up and to the right) */
-const KX = 0.5, KY = 0.32;
-const oblique = (ox, oy, s) => (x, y, z) => [ox + s * (x + z * KX), oy - s * (y + z * KY)];
-const pstr = (a) => a.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-function polys(P, x0, x1, y0, y1, z0, z1) {
-  return {
-    front: [P(x0, y0, z0), P(x1, y0, z0), P(x1, y1, z0), P(x0, y1, z0)],
-    top: [P(x0, y1, z0), P(x1, y1, z0), P(x1, y1, z1), P(x0, y1, z1)],
-    side: [P(x1, y0, z0), P(x1, y0, z1), P(x1, y1, z1), P(x1, y1, z0)]
-  };
+/* ---------- SVG drawing: solids in a slightly-from-above view, hidden edges dashed ---------- */
+function P(d, attrs, parent) { return svgEl('path', Object.assign({ d, fill: 'none', stroke: INK, 'stroke-width': SW, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, attrs), parent); }
+const halfE = (cx, cy, rx, ry, top) => `M${cx - rx} ${cy} A${rx} ${ry} 0 0 ${top ? 1 : 0} ${cx + rx} ${cy}`;
+const G = (parent, cls = '') => { const g = svgEl('g', { class: cls }, parent); g.style.transformBox = 'view-box'; g.style.transformOrigin = '0 0'; return g; };
+const dot = (g, x, y, r = 3.5, fill = INK) => svgEl('circle', { cx: x, cy: y, r, fill }, g);
+const seg = (g, a, b, attrs = {}) => P(`M${a[0]} ${a[1]} L${b[0]} ${b[1]}`, attrs, g);
+function arrow2(g, a, b, color = INK, w = 2.2) { // double-headed dimension arrow
+  const gg = G(g), dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, k = 10, s = 5;
+  seg(gg, a, b, { stroke: color, 'stroke-width': w });
+  for (const [p, sg] of [[a, 1], [b, -1]]) P(`M${p[0] + sg * ux * k - uy * s} ${p[1] + sg * uy * k + ux * s} L${p[0]} ${p[1]} L${p[0] + sg * ux * k + uy * s} ${p[1] + sg * uy * k - ux * s}`, { stroke: color, 'stroke-width': w }, gg);
+  return gg;
 }
-/** a box [x0,x1,y0,y1,z0,z1] with its three visible faces. o: { fill: {front, top, side}, stroke, sw, faces } */
-function drawBox(parent, P, b, o = {}) {
-  const g = svgEl('g', { class: o.cls || '' }, parent), pl = polys(P, ...b), f = o.fill || {};
-  g.faces = {};
-  for (const k of o.faces || ['front', 'top', 'side']) g.faces[k] = svgEl('polygon', { points: pstr(pl[k]), fill: f[k] ?? 'none', stroke: o.stroke || INK, 'stroke-width': o.sw ?? 2.4, 'stroke-linejoin': 'round' }, g);
-  g.set = (b2) => { const p2 = polys(P, ...b2); for (const k in g.faces) g.faces[k].setAttribute('points', pstr(p2[k])); };
-  return g;
+
+/** sphere centred (cx, cy) */
+function sphere(g, cx, cy, r, o = {}) {
+  const S = G(g, 'u10l5-sphere');
+  S.body = svgEl('circle', { cx, cy, r, fill: o.fill || BALL, stroke: INK, 'stroke-width': SW, 'fill-opacity': o.op ?? 1 }, S);
+  if (o.shine !== false) svgEl('ellipse', { cx: cx - r * 0.4, cy: cy - r * 0.42, rx: r * 0.24, ry: r * 0.13, fill: '#fff', opacity: 0.55, transform: `rotate(-38 ${cx - r * 0.4} ${cy - r * 0.42})` }, S);
+  if (o.equator !== false) {
+    S.back = P(halfE(cx, cy, r, r * EQ, true), { 'stroke-dasharray': '7 6', 'stroke-width': 1.8, opacity: 0.7 }, S);
+    S.front = P(halfE(cx, cy, r, r * EQ, false), { 'stroke-width': 2 }, S);
+  }
+  if (o.dot !== false) dot(S, cx, cy);
+  return S;
 }
-function hiddenEdges(parent, P, b, color = INK) {
-  const [x0, x1, y0, y1, , z1] = b, back = P(x0, y0, z1), g = svgEl('g', {}, parent);
-  for (const q of [P(x1, y0, z1), P(x0, y1, z1), P(x0, y0, 0)]) svgEl('line', { x1: back[0], y1: back[1], x2: q[0], y2: q[1], stroke: color, 'stroke-width': 1.8, 'stroke-dasharray': '7 6' }, g);
-  return g;
+/** hemisphere (dome up) with its flat base centred at (cx, cy) */
+function dome(g, cx, cy, r, o = {}) {
+  const S = G(g, 'u10l5-dome'), ry = r * EQ;
+  S.floor = svgEl('ellipse', { cx, cy, rx: r, ry, fill: FLOOR_F, stroke: FLR, 'stroke-width': 2.4 }, S);
+  if (!o.floor) S.floor.style.opacity = 0;
+  S.shell = svgEl('path', { d: `M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy} A${r} ${ry} 0 0 1 ${cx - r} ${cy} Z`, fill: o.fill || BALL, 'fill-opacity': o.op ?? 0.62 }, S);
+  if (o.shine !== false) svgEl('ellipse', { cx: cx - r * 0.42, cy: cy - r * 0.55, rx: r * 0.2, ry: r * 0.11, fill: '#fff', opacity: 0.5, transform: `rotate(-45 ${cx - r * 0.42} ${cy - r * 0.55})` }, S);
+  S.back = P(halfE(cx, cy, r, ry, true), { 'stroke-dasharray': '7 6', 'stroke-width': 1.8, opacity: 0.7 }, S);
+  S.top = P(`M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}`, {}, S);
+  S.front = P(halfE(cx, cy, r, ry, false), {}, S);
+  if (o.dot !== false) dot(S, cx, cy);
+  return S;
 }
-/** edge labels of an oblique box: bottom (length), left (height), depth */
-function boxLabels(host, P, L, Hh, D, t, cls = '') {
-  const b = P(L / 2, 0, 0), l = P(0, Hh / 2, 0), d = P(L, 0, D / 2);
-  return { b: lab(host, b[0], b[1] + 8, t[0], cls, 't'), l: lab(host, l[0] - 10, l[1], t[1], cls, 'r'), d: lab(host, d[0] + 12, d[1] + 4, t[2], cls, 'l') };
+/** cylinder: bottom centre (cx, yb), radius r, height hh */
+function cylinder(g, cx, yb, r, hh, o = {}) {
+  const S = G(g, 'u10l5-cyl'), ry = r * EQ, yt = yb - hh;
+  S.body = svgEl('path', { d: `M${cx - r} ${yt} L${cx - r} ${yb} A${r} ${ry} 0 0 0 ${cx + r} ${yb} L${cx + r} ${yt} A${r} ${ry} 0 0 1 ${cx - r} ${yt} Z`, fill: o.fill || '#e7f3f1', 'fill-opacity': o.op ?? 0.55 }, S);
+  S.bback = P(halfE(cx, yb, r, ry, true), { 'stroke-dasharray': '7 6', 'stroke-width': 1.8, opacity: 0.7 }, S);
+  S.sides = P(`M${cx - r} ${yt} L${cx - r} ${yb} M${cx + r} ${yt} L${cx + r} ${yb}`, { stroke: o.stroke || INK }, S);
+  S.bfront = P(halfE(cx, yb, r, ry, false), { stroke: o.stroke || INK }, S);
+  S.topE = svgEl('ellipse', { cx, cy: yt, rx: r, ry, fill: o.lid ? (o.fill || '#e7f3f1') : 'none', stroke: o.stroke || INK, 'stroke-width': SW }, S);
+  S.yt = yt; return S;
 }
-const CUBEF = { front: '#a9c4f2', top: '#dbe7fb', side: '#84a8e8' };
-const REDF = { front: '#f0a8a3', top: '#f9d6d3', side: '#e3847d' };
-const AMBF = { front: '#f2c67a', top: '#fbe6bd', side: '#e3a94a' };
+/** a soccer ball */
+function soccer(g, cx, cy, r) {
+  const S = G(g, 'u10l5-soccer');
+  svgEl('circle', { cx, cy, r, fill: '#fff', stroke: INK, 'stroke-width': SW }, S);
+  const pent = (x, y, s, rot) => svgEl('path', { d: Array.from({ length: 5 }, (_, i) => { const a = rot + i * 2 * PI / 5; return (i ? 'L' : 'M') + (x + s * Math.cos(a)).toFixed(1) + ' ' + (y + s * Math.sin(a)).toFixed(1); }).join(' ') + 'Z', fill: '#2b3140' }, S);
+  pent(cx, cy - r * 0.05, r * 0.2, -PI / 2);
+  for (let i = 0; i < 5; i++) { const a = -PI / 2 + PI / 5 + i * 2 * PI / 5; pent(cx + r * 0.62 * Math.cos(a), cy - r * 0.05 + r * 0.62 * Math.sin(a), r * 0.15, a); }
+  svgEl('ellipse', { cx: cx - r * 0.42, cy: cy - r * 0.45, rx: r * 0.18, ry: r * 0.1, fill: '#fff', opacity: 0.6, transform: `rotate(-40 ${cx - r * 0.42} ${cy - r * 0.45})` }, S);
+  return S;
+}
+/** a tennis ball */
+function tball(g, cx, cy, r) {
+  const S = G(g, 'u10l5-tball');
+  svgEl('circle', { cx, cy, r, fill: '#cfe13c', stroke: '#788c14', 'stroke-width': 2 }, S);
+  P(`M${cx - 0.95 * r} ${cy - 0.3 * r} C${cx - 0.2 * r} ${cy - 0.05 * r} ${cx - 0.2 * r} ${cy + 0.75 * r} ${cx + 0.1 * r} ${cy + 0.99 * r}`, { stroke: '#fff', 'stroke-width': 3 }, S);
+  P(`M${cx + 0.95 * r} ${cy + 0.3 * r} C${cx + 0.2 * r} ${cy + 0.05 * r} ${cx + 0.2 * r} ${cy - 0.75 * r} ${cx - 0.1 * r} ${cy - 0.99 * r}`, { stroke: '#fff', 'stroke-width': 3 }, S);
+  return S;
+}
+/** an orange (whole) that can be peeled: .peel() turns it into the pale fruit */
+function orange(g, cx, cy, r, seed = 3) {
+  const S = G(g, 'u10l5-orange'), rnd = rng(seed);
+  S.fruit = G(S);
+  svgEl('circle', { cx, cy, r, fill: PITH, stroke: '#d9b77a', 'stroke-width': 2 }, S.fruit);
+  for (let i = 0; i < 6; i++) { const a = i * PI / 6; P(`M${cx + r * Math.cos(a)} ${cy + r * Math.sin(a)} Q${cx + r * 0.25 * Math.cos(a + 1.2)} ${cy + r * 0.25 * Math.sin(a + 1.2)} ${cx - r * Math.cos(a)} ${cy - r * Math.sin(a)}`, { stroke: '#e5c58c', 'stroke-width': 1.6 }, S.fruit); }
+  S.skin = G(S);
+  svgEl('circle', { cx, cy, r, fill: PEEL, stroke: PEEL_D, 'stroke-width': 2.4 }, S.skin);
+  for (let i = 0; i < 26; i++) { const a = rnd() * 2 * PI, d = Math.sqrt(rnd()) * r * 0.86; svgEl('circle', { cx: cx + d * Math.cos(a), cy: cy + d * Math.sin(a), r: 1.6, fill: PEEL_D, opacity: 0.45 }, S.skin); }
+  svgEl('ellipse', { cx: cx - r * 0.4, cy: cy - r * 0.42, rx: r * 0.22, ry: r * 0.12, fill: '#fff', opacity: 0.45, transform: `rotate(-38 ${cx - r * 0.4} ${cy - r * 0.42})` }, S.skin);
+  svgEl('ellipse', { cx: cx + 6, cy: cy - r - 3, rx: 11, ry: 5, fill: GRN, transform: `rotate(-20 ${cx + 6} ${cy - r - 3})` }, S.skin);
+  return S;
+}
+
+/* ---------- peel pieces: irregular wedges tiling a circle of radius R, which fly from a pile onto traced circles ---------- */
+function rng(seed) { let s = seed * 9301 + 49297; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
+function wedges(R, n, seed) {
+  const rnd = rng(seed), a0 = rnd() * 2 * PI, cuts = [], c0 = [(rnd() - 0.5) * 0.18 * R, (rnd() - 0.5) * 0.18 * R], out = [];
+  for (let i = 0; i < n; i++) cuts.push(a0 + (i + (rnd() - 0.5) * 0.35) * 2 * PI / n);
+  for (let i = 0; i < n; i++) {
+    const t0 = cuts[i], t1 = i + 1 < n ? cuts[i + 1] : cuts[0] + 2 * PI, pts = [c0];
+    const e0 = 0.5 + (rnd() - 0.5) * 0.2; // a wobble halfway along the first radial edge
+    pts.push([c0[0] + (R * Math.cos(t0) - c0[0]) * e0 + (rnd() - 0.5) * 6, c0[1] + (R * Math.sin(t0) - c0[1]) * e0 + (rnd() - 0.5) * 6]);
+    for (let k = 0; k <= 10; k++) { const t = t0 + (t1 - t0) * k / 10, rr = R * (0.965 + (rnd() - 0.5) * 0.035); pts.push([rr * Math.cos(t), rr * Math.sin(t)]); }
+    const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    out.push(pts.map(([x, y]) => [cx + (x - cx) * 0.95, cy + (y - cy) * 0.95]));
+  }
+  return out;
+}
+const setT = (g, p) => g.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${p.rot.toFixed(1)}) scale(${p.s.toFixed(3)})`);
+/** pieces for the given circle centres, piled on (px, py) with pile radius scale `ps`; returns [{ g, from, to }] per circle */
+function peelSet(parent, centres, R, pile, seed, nPer = 4) {
+  const rnd = rng(seed + 77);
+  return centres.map((C, i) => wedges(R, nPer, seed + i * 13).map((pts) => {
+    const g = G(parent, 'u10l5-piece');
+    svgEl('path', { d: 'M' + pts.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + ' Z', fill: PEEL, stroke: PEEL_D, 'stroke-width': 1.4 }, g);
+    const from = { x: pile.x + (rnd() - 0.5) * pile.r * 0.7, y: pile.y + (rnd() - 0.5) * pile.r * 0.7, rot: i * 90 + (rnd() - 0.5) * 60, s: pile.s };
+    const to = { x: C[0], y: C[1], rot: 0, s: 1 };
+    setT(g, from); return { g, from, to };
+  }));
+}
+async function flyPieces(c, list, ms = 900, lift = 70, stagger = 90) {
+  await Promise.all(list.map((p, k) => (async () => {
+    if (!c || c.fast) { setT(p.g, p.to); return; }
+    await sleep(c, k * stagger);
+    await tween(c, ms, (t) => setT(p.g, { x: p.from.x + (p.to.x - p.from.x) * t, y: p.from.y + (p.to.y - p.from.y) * t - lift * Math.sin(PI * t), rot: p.from.rot + (p.to.rot - p.from.rot) * t, s: p.from.s + (p.to.s - p.from.s) * t }));
+  })()));
+}
+const traced = (g, cx, cy, r, color = INK) => svgEl('circle', { cx, cy, r, fill: 'none', stroke: color, 'stroke-width': 2.2, 'stroke-dasharray': '8 6', class: 'bk-stroke' }, g);
+
+/* =============================== warm-up: the tennis ball can =============================== */
+function mountWarm() {
+  const F = figure('u10l5-can', 480, 380); if (!F) return;
+  const { svg, wrap } = F, cx = 180, rb = 48, yb = 340, yt = yb - 6 * rb, ry = rb * 0.3;
+  const cg = G(svg);
+  svgEl('path', { d: `M${cx - rb} ${yt} L${cx - rb} ${yb} A${rb} ${ry} 0 0 0 ${cx + rb} ${yb} L${cx + rb} ${yt} Z`, fill: '#e8f0fc' }, cg);
+  for (const k of [1, 3, 5]) tball(cg, cx, yb - k * rb, rb - 1);
+  svgEl('path', { d: `M${cx - rb} ${yt} L${cx - rb} ${yb} A${rb} ${ry} 0 0 0 ${cx + rb} ${yb} L${cx + rb} ${yt} Z`, fill: '#e8f0fc', opacity: 0.3 }, cg);
+  P(`M${cx - rb} ${yt} L${cx - rb} ${yb} A${rb} ${ry} 0 0 0 ${cx + rb} ${yb} L${cx + rb} ${yt}`, { 'stroke-width': 2.4 }, cg);
+  svgEl('rect', { x: cx - rb - 7, y: yt - 12, width: 2 * rb + 14, height: 12, fill: '#e0605a', stroke: '#9c2f2a', 'stroke-width': 1.6 }, cg);
+  svgEl('ellipse', { cx, cy: yt - 12, rx: rb + 7, ry: ry + 1, fill: '#e97c76', stroke: '#9c2f2a', 'stroke-width': 1.6 }, cg);
+  const sy = yb - 3 * rb; // the string around the middle ball
+  P(halfE(cx, sy, rb, ry, false), { stroke: RAD, 'stroke-width': 4 }, cg);
+  P(halfE(cx, sy, rb, ry, true), { stroke: RAD, 'stroke-width': 3, 'stroke-dasharray': '5 4' }, cg);
+  arrow2(cg, [cx - rb - 26, yt], [cx - rb - 26, yb]);
+  lab(wrap, cx - rb - 34, (yt + yb) / 2 - 8, 'height<br>of can', 'w', 'u10l5-wl');
+  const hval = hide(lab(wrap, cx - rb - 34, (yt + yb) / 2 + 40, '20.1 cm', 'w', 'u10l5-wl u10l5-wv'));
+  const lAround = lab(wrap, cx + rb + 6, sy + 4, 'distance<br>around', 'e', 'u10l5-wl u10l5-wred');
+  // one ball close up
+  const bx = 392, by = 150, br = 62;
+  tball(cg, bx, by, br);
+  lab(wrap, bx, by - br - 8, 'one ball, close up', 'n', 'u10l5-wl');
+  P(`M${bx - br} ${by} L${bx - br} ${by + br + 30} M${bx + br} ${by} L${bx + br} ${by + br + 30}`, { 'stroke-width': 1.4, 'stroke-dasharray': '5 4' }, cg);
+  arrow2(cg, [bx - br, by + br + 24], [bx + br, by + br + 24]);
+  lab(wrap, bx, by + br + 30, 'about 6.7 cm', 's', 'u10l5-wl');
+  // the unrolled string
+  const live = { s: null, k: null }, ctx = liveCtx(), L = PI * 2 * rb, xs = cx + rb + 20;
+  document.getElementById('u10l5-wstring').addEventListener('click', async () => {
+    if (live.s) { live.s.forEach((e) => e.remove()); live.s = null; hide(hval); lAround.style.opacity = 1; return; }
+    lAround.style.opacity = 0;
+    const g = G(svg), bar = P(`M${xs} ${yb} L${xs} ${yb - L}`, { stroke: RAD, 'stroke-width': 7, class: 'bk-stroke' }, g);
+    const extra = P(`M${xs + 14} ${yt} L${xs + 14} ${yb - L}`, { stroke: INK, 'stroke-width': 2 }, g);
+    const guide = P(`M${cx - rb - 26} ${yt} L${xs + 22} ${yt}`, { stroke: INK, 'stroke-width': 1.4, 'stroke-dasharray': '4 4' }, g);
+    extra.style.opacity = 0; guide.style.opacity = 0;
+    const l1 = hide(lab(wrap, xs + 10, yb - L - 2, 'around ≈ <b>21.0 cm</b>', 'e', 'u10l5-wl u10l5-wred u10l5-wbg'));
+    live.s = [g, l1];
+    await drawIn(bar, 1400, ctx); await appear(ctx, guide); await appear(ctx, hval); await appear(ctx, extra); await pop(ctx, l1);
+  });
+  document.getElementById('u10l5-wsnug').addEventListener('click', async () => {
+    if (live.k) { live.k.forEach((e) => e.remove()); live.k = null; return; }
+    const g = G(svg), els = [g];
+    for (const k of [2, 4]) { const l = P(`M${cx - rb - 8} ${yb - k * rb} L${cx + rb + 8} ${yb - k * rb}`, { stroke: CYL, 'stroke-width': 3, 'stroke-dasharray': '9 5', class: 'bk-stroke' }, g); l.style.opacity = 0; }
+    const t = hide(lab(wrap, cx, yb + 14, '3 snug cylinders, one ball each', 'c', 'u10l5-wl u10l5-wteal u10l5-wbg'));
+    els.push(t); live.k = els;
+    for (const l of g.querySelectorAll('path')) await appear(ctx, l, 350);
+    await pop(ctx, t);
+  });
+}
 
 /* =============================== static figures =============================== */
-function figSquare(host, o) {
-  const s = o.s, W = o.w * s + 80, H = o.h * s + 56, x0 = 62, y0 = 12;
-  const S = svgEl('svg', { class: 'u10l5-fsvg', width: W, height: H, viewBox: `0 0 ${W} ${H}` }, host);
-  if (o.grid) {
-    const n = o.grid; let d = '';
-    for (let i = 1; i < n; i++) d += `M${x0 + o.w * s * i / n} ${y0}V${y0 + o.h * s}M${x0} ${y0 + o.h * s * i / n}H${x0 + o.w * s}`;
-    svgEl('path', { d, stroke: '#9aa0ab', 'stroke-width': 1, fill: 'none' }, S);
-    svgEl('rect', { x: x0, y: y0 + o.h * s * (n - 1) / n, width: o.w * s / n, height: o.h * s / n, fill: '#9aa0ab', 'fill-opacity': 0.55 }, S);
-  }
-  svgEl('rect', { x: x0, y: y0, width: o.w * s, height: o.h * s, fill: 'none', stroke: INK, 'stroke-width': 2.6 }, S);
-  const t1 = svgEl('text', { x: x0 + o.w * s / 2, y: y0 + o.h * s + 26, class: 'u10l5-svgt', 'text-anchor': 'middle' }, S); t1.textContent = o.b;
-  const t2 = svgEl('text', { x: x0 - 10, y: y0 + o.h * s / 2 + 6, class: 'u10l5-svgt', 'text-anchor': 'end' }, S); t2.textContent = o.l;
-  if (o.lrot) { t2.setAttribute('transform', `rotate(-90 ${x0 - 14} ${y0 + o.h * s / 2})`); t2.setAttribute('x', x0 - 14); t2.setAttribute('y', y0 + o.h * s / 2); t2.setAttribute('text-anchor', 'middle'); }
-  return S;
-}
-function figBox(host, o) {
-  const s = o.s, W = (o.L + o.D * KX) * s + 150, H = (o.H + o.D * KY) * s + 70 + (o.title ? 30 : 0);
-  const S = svgEl('svg', { class: 'u10l5-fsvg', width: W, height: H, viewBox: `0 0 ${W} ${H}` }, host);
-  const P = oblique(78, H - 40, s), b = [0, o.L, 0, o.H, 0, o.D];
-  drawBox(S, P, b, { fill: { front: '#fff', top: '#f4f6fa', side: '#e9edf4' }, sw: 2.4 });
-  if (o.grid) {
-    const n = o.grid, g = svgEl('g', { stroke: '#9aa0ab', 'stroke-width': 0.9, fill: 'none' }, S); let d = '';
-    for (let i = 1; i < n; i++) {
-      const t = i / n, seg = (a, c) => `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${c[0].toFixed(1)} ${c[1].toFixed(1)}`;
-      d += seg(P(t * o.L, 0, 0), P(t * o.L, o.H, 0)) + seg(P(0, t * o.H, 0), P(o.L, t * o.H, 0));            // front
-      d += seg(P(t * o.L, o.H, 0), P(t * o.L, o.H, o.D)) + seg(P(0, o.H, t * o.D), P(o.L, o.H, t * o.D));    // top
-      d += seg(P(o.L, 0, t * o.D), P(o.L, o.H, t * o.D)) + seg(P(o.L, t * o.H, 0), P(o.L, t * o.H, o.D));    // side
-    }
-    svgEl('path', { d }, g);
-    drawBox(S, P, b, { sw: 2.4 });
-  }
-  hiddenEdges(S, P, b);
-  const tx = (p, str, anchor, dx, dy) => { const t = svgEl('text', { x: p[0] + dx, y: p[1] + dy, class: 'u10l5-svgt', 'text-anchor': anchor }, S); t.textContent = str; };
-  tx(P(o.L / 2, 0, 0), o.t[0], 'middle', 0, 26); tx(P(0, o.H / 2, 0), o.t[1], 'end', -10, 6); tx(P(o.L, 0, o.D / 2), o.t[2], 'start', 12, 12);
-  if (o.title) { const t = svgEl('text', { x: P(o.L / 2, o.H, o.D)[0], y: P(0, o.H, o.D)[1] - 14, class: 'u10l5-svgt u10l5-svgb', 'text-anchor': 'middle' }, S); t.textContent = o.title; }
-  return S;
-}
 function mountStatics() {
-  const $ = (id) => document.getElementById(id);
-  if ($('u10l5-f-s1')) figSquare($('u10l5-f-s1'), { w: 1, h: 1, s: 230, grid: 10, b: '1 m = 100 cm', l: '1 m = 100 cm', lrot: true });
-  if ($('u10l5-f-ex1')) figSquare($('u10l5-f-ex1'), { w: 1, h: 1, s: 150, b: '1 m', l: '1 m' });
-  if ($('u10l5-f-ex2')) figSquare($('u10l5-f-ex2'), { w: 7, h: 4, s: 36, b: '7 m', l: '4 m' });
-  if ($('u10l5-f-s2')) figBox($('u10l5-f-s2'), { L: 1, H: 1, D: 1, s: 170, grid: 10, t: ['100 cm', '100 cm', '100 cm'] });
-  if ($('u10l5-f-ex4')) figBox($('u10l5-f-ex4'), { L: 1, H: 1, D: 1, s: 150, t: ['1 m', '1 m', '1 m'] });
-  if ($('u10l5-f-ex5')) figBox($('u10l5-f-ex5'), { L: 5, H: 3, D: 2, s: 46, t: ['5 m', '3 m', '2 m'] });
-  if ($('u10l5-f-ex7a')) figSquare($('u10l5-f-ex7a'), { w: 1, h: 1, s: 150, b: '1 ft', l: '1 ft' });
-  if ($('u10l5-f-ex7b')) figBox($('u10l5-f-ex7b'), { L: 1, H: 1, D: 1, s: 150, t: ['1 ft', '1 ft', '1 ft'] });
-  if ($('u10l5-f-ex9a')) figBox($('u10l5-f-ex9a'), { L: 1.2, H: 0.7, D: 0.9, s: 190, t: ['1.2 m', '0.7 m', '0.9 m'], title: 'Bin A' });
-  if ($('u10l5-f-ex9b')) figBox($('u10l5-f-ex9b'), { L: 1.2192, H: 0.762, D: 0.9144, s: 190, t: ['4 ft', '2.5 ft', '3 ft'], title: 'Bin B' });
+  // Section 1: the snug cylinder
+  let F = figure('u10l5-snugfig', 250, 250);
+  if (F) {
+    const { svg, wrap } = F, cx = 105, r = 72, yb = 222, hh = 2 * r, g = G(svg);
+    const C = cylinder(g, cx, yb, r, hh, { op: 0.4 });
+    sphere(g, cx, yb - r, r, { op: 0.85 });
+    g.appendChild(C.sides); g.appendChild(C.topE); g.appendChild(C.bfront);
+    seg(g, [cx, yb - r], [cx + r, yb - r], { stroke: RAD, 'stroke-width': 3 });
+    lab(wrap, cx + r / 2, yb - r - 3, T('r'), 'n', 'u10l5-rl');
+    arrow2(g, [cx + r + 26, yb - hh], [cx + r + 26, yb]);
+    lab(wrap, cx + r + 32, yb - r, T('2r'), 'e', 'u10l5-tl');
+  }
+  // Section 1: the orange-peel test
+  F = figure('u10l5-peelfig', 600, 130);
+  if (F) {
+    const { svg, wrap } = F, R = 44, cy = 58, g = G(svg);
+    const o = orange(g, 52, cy, R); o.skin.remove();
+    const cs = [150, 250, 350, 450].map((x) => [x, cy]);
+    cs.forEach(([x, y]) => traced(g, x, y, R));
+    lab(wrap, 52, cy + R + 4, 'peeled orange', 's', 'u10l5-sm');
+    const sets = peelSet(g, cs, R, { x: 52, y: cy, r: R, s: 0.5 }, 11);
+    sets.flat().forEach((p) => setT(p.g, p.to));
+    seg(g, [450, cy], [450 + R, cy], { stroke: RAD, 'stroke-width': 2.6 }); lab(wrap, 450 + R / 2, cy - 2, T('r'), 'n', 'u10l5-rl');
+    lab(wrap, 508, cy, 'the peel fills<br>about <b>4</b> circles<br>of radius ' + T('r'), 'e', 'u10l5-sm');
+  }
+  // Example 1: the tank
+  F = figure('u10l5-ex1fig', 220, 230);
+  if (F) {
+    const { svg, wrap } = F, cx = 110, cy = 100, r = 88, g = G(svg);
+    sphere(g, cx, cy, r);
+    lab(wrap, cx, cy + r + 12, T('d=5.8\\text{ m}'), 's', 'u10l5-tl');
+  }
+  // Example 2: sphere → hemisphere
+  F = figure('u10l5-ex2fig', 470, 190);
+  if (F) {
+    const { svg, wrap } = F, r = 68, g = G(svg);
+    sphere(g, 90, 82, r);
+    P('M200 82 L262 82', { 'stroke-width': 3 }, g); P('M250 74 L264 82 L250 90', { 'stroke-width': 3 }, g);
+    dome(g, 370, 108, r);
+    lab(wrap, 90, 82 + r + 10, 'sphere, radius ' + T('r'), 's', 'u10l5-sm');
+    lab(wrap, 370, 108 + r * EQ + 10, 'hemisphere, radius ' + T('r'), 's', 'u10l5-sm');
+  }
+  // Example 4: the two sheds
+  for (const [id, floor, name] of [['u10l5-ex4a', true, 'Sana’s shed (with floor)'], ['u10l5-ex4b', false, 'Tavi’s shed (no floor)']]) {
+    F = figure(id, 300, 214);
+    if (!F) continue;
+    const { svg, wrap } = F, g = G(svg), cx = 150, cy = 118, r = 96;
+    dome(g, cx, cy, r, { floor });
+    lab(wrap, cx, cy + r * EQ + 4, T('d=12\\text{ ft}'), 's', 'u10l5-tl');
+    lab(wrap, cx, cy + r * EQ + 36, name, 's', 'u10l5-sm');
+  }
 }
 
-/* =============================== warm-up: the carpet deal =============================== */
-function mountCarpet() {
-  const host = document.getElementById('u10l5-carpet'); if (!host) return;
-  const Q = 300, x0 = 58, y0 = 44, W = Q + 150, H = Q + 92;
-  host.style.position = 'relative'; host.style.width = W + 'px'; host.style.height = H + 'px';
-  const S = mkSvg(host, W, H);
-  svgEl('rect', { x: x0, y: y0, width: Q, height: Q, fill: '#78a5a0' }, S);
-  let d = ''; for (let i = 1; i < 60; i++) d += `M${x0 + i * Q / 60} ${y0}V${y0 + Q}`;
-  svgEl('path', { d, stroke: '#46736e', 'stroke-width': 0.8, 'stroke-opacity': 0.5 }, S);
-  const gSplit = svgEl('g', { opacity: 0 }, S), gSlip = svgEl('g', { opacity: 0 }, S), gPrice = svgEl('g', { opacity: 0 }, S);
-  for (const k of [1, 2]) {
-    svgEl('line', { x1: x0 + k * Q / 3, x2: x0 + k * Q / 3, y1: y0, y2: y0 + Q, stroke: '#fff', 'stroke-width': 3, 'stroke-dasharray': '10 7' }, gSplit);
-    svgEl('line', { y1: y0 + k * Q / 3, y2: y0 + k * Q / 3, x1: x0, x2: x0 + Q, stroke: '#fff', 'stroke-width': 3, 'stroke-dasharray': '10 7' }, gSplit);
+/* =============================== explainer: Mika's overflow test =============================== */
+const OVF = { mika: { label: 'Mika: 480 mL', total: 480 }, disc: { label: 'For discussion: 900 mL', total: 900 } };
+const overflow = {
+  title: 'Mika’s overflow test',
+  height: 440,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(OVF).map((k) => ({ v: k, label: OVF[k].label })),
+  intro: 'A ball and a cylinder with the <b>same radius</b>; the cylinder is as tall as the ball. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = OVF[k], tot = d.total, out = tot * 2 / 3, left = tot / 3, Hh = ex.def.height;
+    const svg = svgOn(stage, 0, 0, 560, Hh), g = G(svg);
+    const cx = 270, r = 70, ry = r * EQ, yb = 336, yt = yb - 2 * r, bx0 = 70, bx1 = 470, btop = 300, bbot = 420;
+    // overflow container + its water
+    svgEl('path', { d: `M${bx0} ${btop} L${bx0} ${bbot} L${bx1} ${bbot} L${bx1} ${btop}`, fill: '#f3f7fb', stroke: 'none' }, g);
+    const bw = svgEl('rect', { x: bx0 + 2, y: bbot - 1, width: bx1 - bx0 - 4, height: 0, fill: WATER, opacity: 0.85 }, g);
+    svgEl('rect', { x: cx - 48, y: yb, width: 96, height: bbot - yb, fill: '#d6cfbf', stroke: '#a59c88', 'stroke-width': 1.5 }, g);
+    P(`M${bx0} ${btop} L${bx0} ${bbot} L${bx1} ${bbot} L${bx1} ${btop}`, { 'stroke-width': 3 }, g);
+    lab(stage, bx0 + 8, bbot - 6, 'overflow container', 'ne', 'u10l5-sm u10l5-muted', 0);
+    // cylinder water, ball, cylinder outline
+    const back = P(halfE(cx, yb, r, ry, true), { 'stroke-dasharray': '7 6', 'stroke-width': 1.8, opacity: 0.7 }, g);
+    const ball = G(g); sphere(ball, cx, 0, r, { fill: '#f1d9b8' });
+    const hold = seg(g, [cx, 0], [cx, 0], { 'stroke-width': 1.6 });
+    const wBody = svgEl('path', { fill: WATER, opacity: 0.6 }, g), wTop = svgEl('ellipse', { cx, rx: r, ry, fill: WATER_T, stroke: '#4d93cf', 'stroke-width': 1.4, opacity: 0.9 }, g);
+    const sp = [P('', { stroke: '#4d93cf', 'stroke-width': 3, 'stroke-dasharray': '6 5' }, g), P('', { stroke: '#4d93cf', 'stroke-width': 3, 'stroke-dasharray': '6 5' }, g)];
+    sp.forEach(hide);
+    P(`M${cx - r} ${yt} L${cx - r} ${yb} M${cx + r} ${yt} L${cx + r} ${yb}`, {}, g); P(halfE(cx, yb, r, ry, false), {}, g);
+    svgEl('ellipse', { cx, cy: yt, rx: r, ry, fill: 'none', stroke: INK, 'stroke-width': SW }, g);
+    void back;
+    const setWater = (lvl) => { wBody.setAttribute('d', `M${cx - r} ${lvl} L${cx - r} ${yb} A${r} ${ry} 0 0 0 ${cx + r} ${yb} L${cx + r} ${lvl} A${r} ${ry} 0 0 1 ${cx - r} ${lvl} Z`); wTop.setAttribute('cy', lvl); };
+    const by0 = yt - r - 34, by1 = yt + r;
+    const setBall = (by) => { ball.setAttribute('transform', `translate(0 ${by})`); hold.setAttribute('d', `M${cx} 0 L${cx} ${by - r}`); };
+    const frac = (by) => { const dd = Math.max(0, Math.min(2 * r, by + r - yt)); return dd * dd * (3 * r - dd) / (4 * r * r * r); };
+    const setBasin = (f) => { const hh = 70 * f; bw.setAttribute('y', bbot - 1 - hh); bw.setAttribute('height', hh); };
+    setWater(yt); setBall(by0); setBasin(0);
+    const lCyl = lab(stage, cx + r + 12, yt + 10, `<b>${tot} mL</b>`, 'e', 'u10l5-wv');
+    const hgt = G(g); arrow2(hgt, [cx - r - 22, yt], [cx - r - 22, yb]); hgt.style.opacity = 0;
+    const lH = hide(lab(stage, cx - r - 28, (yt + yb) / 2, 'height =<br>ball’s<br>diameter', 'w', 'u10l5-sm'));
+    const rad = seg(g, [cx, yt], [cx + r, yt], { stroke: RAD, 'stroke-width': 3 }); rad.style.opacity = 0;
+    const lR = hide(lab(stage, cx + r / 2, yt - ry - 2, 'same ' + T('r'), 'n', 'u10l5-rl'));
+    const lOut = hide(lab(stage, (bx0 + cx - 48) / 2, bbot - 40, `<b>${tot === 480 ? 320 : out} mL</b>`, 'c', 'u10l5-wv u10l5-wbg'));
+    const lLeft = hide(lab(stage, cx + r + 12, yb - 22, `<b>${left} mL</b> left`, 'e', 'u10l5-wv'));
+    // panel
+    const Pn = panel(stage, 580, 14, ex.W - 594, Hh - 28, 'Mika’s measurements');
+    const p1 = line(Pn, `Cylinder, full: <b>${tot} mL</b>`), p2 = hide(line(Pn, `Overflow (the ball): <b>${out} mL</b>`)), p3 = hide(line(Pn, `Left in the cylinder: <b>${left} mL</b>`));
+    const p4 = hide(line(Pn, T(`\\dfrac{${out}}{${tot}}=\\dfrac{2}{3}`) + ' &nbsp; ' + T(`\\dfrac{${left}}{${tot}}=\\dfrac{1}{3}`), 'u10l5-big'));
+    const bar = h('div', 'u10l5-bar', `<div class="u10l5-bar-a">ball ${T('\\tfrac23')}</div><div class="u10l5-bar-b">${T('\\tfrac13')}</div>`); Pn.appendChild(hide(bar));
+    void p1;
+    return [
+      { cap: `The cylinder has the ball’s <b>radius</b>, and its height is the ball’s <b>diameter</b>. It is full: <b>${tot} mL</b> of water.`,
+        run: async (c) => { await appear(c, rad); await pop(c, lR); await appear(c, hgt); await show(c, lH); await pulse(c, lCyl); } },
+      { cap: `Lower the ball straight down. Every bit of ball that goes in pushes the same amount of water over the rim.`,
+        run: async (c) => {
+          [lR, lH].forEach(hide); rad.style.opacity = 0; hgt.style.opacity = 0;
+          sp[0].setAttribute('d', `M${cx - r} ${yt} Q${cx - r - 14} ${yt + 6} ${cx - r - 14} ${yt + 30} L${cx - r - 14} ${bbot - 8}`);
+          sp[1].setAttribute('d', `M${cx + r} ${yt} Q${cx + r + 14} ${yt + 6} ${cx + r + 14} ${yt + 30} L${cx + r + 14} ${bbot - 8}`);
+          if (!c.fast) sp.forEach((s) => { s.style.opacity = 1; });
+          await tween(c, 2600, (t) => { const by = by0 + (by1 - by0) * t; setBall(by); setBasin(frac(by)); });
+          sp.forEach(hide);
+        } },
+      { cap: `The ball is all the way in, touching the bottom. <b>${out} mL</b> spilled out: that is exactly the ball’s volume.`,
+        run: async (c) => { await pop(c, lOut); await show(c, p2); } },
+      { cap: `Lift the ball out. The water that is left fills only part of the cylinder: <b>${left} mL</b>.`,
+        run: async (c) => {
+          lCyl.style.opacity = 0;
+          await tween(c, 1400, (t) => { setBall(by1 + (by0 - by1) * t); setWater(yt + (4 * r / 3) * Math.min(1, t * 1.6)); });
+          await pop(c, lLeft); await show(c, p3);
+        } },
+      { cap: `${T(`${out}`)} is ${T('\\tfrac23')} of ${T(`${tot}`)}, and the ${T(`${left}`)} left behind is the other ${T('\\tfrac13')}.`,
+        run: async (c) => { await pop(c, p4); await show(c, bar); } },
+      { cap: `<b>A sphere’s volume is ${T('\\tfrac23')} of its snug cylinder</b> (same radius, height = diameter), whatever the size.`,
+        run: async (c) => { const s = stamp(Pn, '⅔ of the cylinder ✓'); s.style.alignSelf = 'center'; s.style.marginTop = '6px'; await stampIn(c, s); } }
+    ];
   }
-  svgEl('rect', { x: x0, y: y0, width: Q, height: Q, fill: 'none', stroke: INK, 'stroke-width': 3.5 }, S);
-  const nums = [];
-  for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) {
-    const n = lab(host, x0 + (q + 0.5) * Q / 3, y0 + (r + 0.5) * Q / 3, String(r * 3 + q + 1), 'u10l5-wnum'); n.style.opacity = 0; nums.push(n);
-  }
-  svgEl('rect', { x: x0, y: y0 + 2 * Q / 3, width: Q, height: Q / 3, fill: RED, 'fill-opacity': 0.45, stroke: RED, 'stroke-width': 4 }, gSlip);
-  const slipLab = lab(host, x0 + Q / 2, y0 + Q * 5 / 6 + 30, '3 ft² is only <b>one row</b> ✗', 'u10l5-wslip'); slipLab.style.opacity = 0;
-  const prices = [];
-  for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) { const p = lab(host, x0 + (q + 0.5) * Q / 3, y0 + (r + 0.5) * Q / 3 + 26, '$3', 'u10l5-wprice'); p.style.opacity = 0; prices.push(p); }
-  const tot = lab(host, x0 + Q / 2, y0 + Q + 58, 'Store A: 9 × $3 = <b>$27</b> per yd² &nbsp;vs&nbsp; Store B: <b>$25</b>', 'u10l5-wtot'); tot.style.opacity = 0;
-  lab(host, x0 + Q / 2, y0 - 22, '1 yd = 3 ft', 'u10l5-wdim');
-  lab(host, x0 + Q + 12, y0 + Q / 2, '1 yd<br>= 3 ft', 'u10l5-wdim', 'l');
-  lab(host, x0 + Q / 2, y0 + Q + 20, 'one square yard', 'u10l5-wcap');
-  const c = liveCtx(), on = { split: false, slip: false, price: false };
-  const setSplit = async (v) => {
-    on.split = v; await anim(c, gSplit, [{ opacity: v ? 0 : 1 }, { opacity: v ? 1 : 0 }], 300);
-    if (v) { for (const n of nums) { await pop(c, n, 260); await sleep(c, 90); } } else nums.forEach((n) => (n.style.opacity = 0));
-  };
-  document.getElementById('u10l5-wsplit').addEventListener('click', () => setSplit(!on.split));
-  document.getElementById('u10l5-wslip').addEventListener('click', async () => {
-    on.slip = !on.slip;
-    await Promise.all([anim(c, gSlip, [{ opacity: on.slip ? 0 : 1 }, { opacity: on.slip ? 1 : 0 }], 300), anim(c, slipLab, [{ opacity: on.slip ? 0 : 1 }, { opacity: on.slip ? 1 : 0 }], 300)]);
-  });
-  document.getElementById('u10l5-wprice').addEventListener('click', async () => {
-    on.price = !on.price;
-    if (on.price) { if (!on.split) await setSplit(true); gPrice.style.opacity = 1; for (const p of prices) { await pop(c, p, 240); await sleep(c, 60); } await fadeIn(c, tot); }
-    else { prices.forEach((p) => (p.style.opacity = 0)); tot.style.opacity = 0; }
-  });
-}
-
-/* =============================== explainer: a unit square fills up (the star) =============================== */
-/** the picture: a square Q px, its side labels and a panel. Returns tools the steps use. */
-function squareKit(stage, ex, d, o = {}) {
-  const H = ex.def.height, W = ex.W, Q = o.Q || 380, x0 = 108, y0 = (H - Q) / 2 - 8, k = d.k;
-  const S = mkSvg(stage, W, H), uid = ++UID;
-  const defs = svgEl('defs', {}, S), cp = svgEl('clipPath', { id: 'u10l5-cp' + uid }, defs), cr = svgEl('rect', { x: x0, y: y0 + Q, width: Q, height: 0 }, cp);
-  svgEl('rect', { x: x0, y: y0, width: Q, height: Q, fill: '#fff' }, S);
-  const gFill = svgEl('g', { 'clip-path': `url(#u10l5-cp${uid})` }, S);
-  const gMid = svgEl('g', {}, S), gTop = svgEl('g', {}, S);
-  svgEl('rect', { x: x0, y: y0, width: Q, height: Q, fill: 'none', stroke: INK, 'stroke-width': 3.5 }, S);
-  const P = panel(stage, x0 + Q + 46, 12, W - (x0 + Q + 46) - 12, H - 24, d.title || 'Area of the square');
-  const lb = lab(stage, x0 + Q / 2, y0 + Q + 12, T(`1${U(d.big)}`), 'u10l5-side', 't');
-  const ll = lab(stage, x0 - 12, y0 + Q / 2, T(`1${U(d.big)}`), 'u10l5-side', 'r');
-  const kit = { S, P, Q, x0, y0, k, gFill, gMid, gTop, lb, ll };
-  /** the small-unit squares, clipped so that rows can fill from the bottom */
-  kit.fillRows = (rows) => { const hh = Q * rows / k; cr.setAttribute('y', y0 + Q - hh); cr.setAttribute('height', hh); };
-  svgEl('rect', { x: x0, y: y0, width: Q, height: Q, fill: BLUE, 'fill-opacity': 0.17 }, gFill);
-  let gp = ''; for (let i = 1; i < k; i++) gp += `M${(x0 + Q * i / k).toFixed(2)} ${y0}V${y0 + Q}M${x0} ${(y0 + Q * i / k).toFixed(2)}H${x0 + Q}`;
-  svgEl('path', { d: gp, stroke: BLUE, 'stroke-width': k > 20 ? 0.55 : 1.6, 'stroke-opacity': k > 20 ? 0.5 : 0.8, fill: 'none' }, gFill);
-  /** ruler ticks along the bottom and the left side */
-  kit.ticks = () => {
-    const g = svgEl('g', { stroke: INK, 'stroke-width': 1.2 }, gTop); let dd = '';
-    for (let i = 0; i <= k; i++) { const long = k > 20 ? (i % 10 === 0 ? 10 : 4) : 9, t = Q * i / k; dd += `M${x0 + t} ${y0 + Q}v${long}M${x0} ${y0 + Q - t}h${-long}`; }
-    svgEl('path', { d: dd }, g); g.style.opacity = 0; return g;
-  };
-  return kit;
-}
-/** steps that build 1 big² = k² small² from the unit square. d: { big, small, k } */
-function squareSteps(stage, ex, d) {
-  const K = squareKit(stage, ex, d), { P, Q, x0, y0, k } = K, big = d.big, sm = d.small, kk = k * k, cont = k > 20;
-  let counter, strip, call, wrongL;
-  return [
-    { cap: `A square <b>1 ${big}</b> by <b>1 ${big}</b>. Its area is ${TQ(`1${U(big)}\\times1${U(big)}=1${U(big, 2)}`)}.`,
-      run: async (c) => { await pulse(c, K.lb, 1.15); await say(c, P, T(`A=1${U(big)}\\times1${U(big)}=1${U(big, 2)}`)); } },
-    { cap: `Measure the sides in ${sm === 'in' ? 'inches' : sm === 'ft' ? 'feet' : sm === 'cm' ? 'centimetres' : 'millimetres'}: ${TQ(`1${U(big)}=${k}${U(sm)}`)}, so each side is <b>${k} ${sm}</b>.`,
-      run: async (c) => { await appear(c, K.ticks(), 400); await Promise.all([swap(c, K.lb, T(`${k}${U(sm)}`)), swap(c, K.ll, T(`${k}${U(sm)}`))]); await say(c, P, T(`1${U(big)}=${k}${U(sm)}`)); } },
-    { cap: `The tempting answer: “multiply by ${k}”, so ${TQ(`1${U(big, 2)}=${k}${U(sm, 2)}`)}. But ${TQ(`${k}${U(sm, 2)}`)} is only <b>one row</b> of ${k} little squares along the bottom.`,
-      run: async (c) => {
-        strip = svgEl('rect', { x: x0, y: y0 + Q - Q / k, width: Q, height: Q / k, fill: RED, 'fill-opacity': cont ? 1 : 0.55, stroke: cont ? 'none' : RED, 'stroke-width': 2 }, K.gMid);
-        await appear(c, strip, 300);
-        call = lab(stage, x0 + Q / 2, y0 + Q - Q / k - 14, `${T(`${k}${U(sm, 2)}`)} = just this one row ↓`, 'u10l5-call u10l5-callr', 'b'); await pop(c, call);
-        wrongL = line(P, T(`1${U(big, 2)}=${k}${U(sm, 2)}`), 'u10l5-wrong'); await show(c, wrongL); await strike(c, wrongL);
-      } },
-    { cap: `The square is also <b>${k} ${sm} tall</b>, so it holds <b>${k} rows</b> like that one.`,
-      run: async (c) => {
-        await Promise.all([fade(c, call), fade(c, strip)]);
-        counter = lab(stage, x0 + Q / 2, y0 + Q - 18, '', 'u10l5-call', 'c');
-        const set = (r) => { K.fillRows(r); counter.innerHTML = `<b>${Math.max(1, Math.round(r))}</b> row${Math.round(r) > 1 ? 's' : ''}`; counter.style.top = Math.max(y0 + 22, y0 + Q - Q * r / k - 18) + 'px'; };
-        if (cont) await tween(c, 2600, (t) => set(1 + (k - 1) * t), (t) => t);
-        else for (let r = 1; r <= k; r++) { set(r); await sleep(c, 1500 / k + 60); }
-        set(k);
-        await say(c, P, T(`${k}\\text{ rows}\\times${k}${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`));
-      } },
-    ...(cont ? [{ cap: `Check with bigger tiles, 10 ${sm} by 10 ${sm}: 10 across and 10 up make <b>100 tiles</b>, each ${TQ(`10\\times10=100${U(sm, 2)}`)}.`,
-      run: async (c) => {
-        await fade(c, counter);
-        let dd = ''; for (let i = 1; i < 10; i++) dd += `M${x0 + Q * i / 10} ${y0}V${y0 + Q}M${x0} ${y0 + Q * i / 10}H${x0 + Q}`;
-        const g = svgEl('path', { d: dd, stroke: INK, 'stroke-width': 2.4, fill: 'none' }, K.gMid); await appear(c, g, 400);
-        const tile = svgEl('rect', { x: x0, y: y0 + Q * 0.9, width: Q / 10, height: Q / 10, fill: AMB, 'fill-opacity': 0.75, stroke: INK, 'stroke-width': 2.4 }, K.gMid); await appear(c, tile, 300);
-        await pop(c, lab(stage, x0 + 6, y0 + Q * 0.9 - 8, T(`100${U(sm, 2)}`), 'u10l5-call u10l5-calla', 'bl'));
-        await say(c, P, T(`100\\text{ tiles}\\times100${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`));
-      } }] : []),
-    { cap: `${TQ(`1${U(big, 2)}=${k}\\times${k}=${k}^2=${tn(kk)}${U(sm, 2)}`)}. The factor ${k} is used <b>twice</b>: once for each dimension.`,
-      run: async (c) => { const r = line(P, T(`1${U(big, 2)}=${k}^2${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(P, `× ${k}², not × ${k}`)); } }
-  ];
-}
-const SQ = {
-  cm: { label: `${T('1\\text{ m}^2')} in ${T('\\text{cm}^2')}`, big: 'm', small: 'cm', k: 100 },
-  mm: { label: `${T('1\\text{ cm}^2')} in ${T('\\text{mm}^2')}`, big: 'cm', small: 'mm', k: 10 },
-  ex1: { label: 'Example 1 check', big: 'm', small: 'cm', k: 100, ex1: true, title: 'Example 1' }
 };
-const grid = {
-  title: 'Why 1 m² is 10 000 cm², not 100 cm²',
-  height: 500,
+
+/* =============================== explainer: the snug cylinder → 4/3 πr³ =============================== */
+const DER = {
+  r: { label: `Any radius ${T('r')}` },
+  tb: { label: `Warm-up tennis ball: ${T('r=3.35')} cm` }
+};
+const derive = {
+  title: 'From the snug cylinder to the sphere formula',
+  height: 420,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(DER).map((k) => ({ v: k, label: DER[k].label })),
+  intro: 'Mika’s test works for every ball. Turn it into a formula. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const num = k === 'tb', Hh = ex.def.height;
+    const svg = svgOn(stage, 0, 0, 380, Hh), g = G(svg), cx = 175, r = 118, yb = 380, yt = yb - 2 * r;
+    const C = cylinder(g, cx, yb, r, 2 * r, { op: 0.45 }); hide(C);
+    const S = sphere(g, cx, yb - r, r, { op: 0.9, fill: num ? '#dbe86a' : BALL }); hide(S);
+    const front = G(g); front.appendChild(C.sides.cloneNode()); front.appendChild(C.topE.cloneNode()); front.appendChild(C.bfront.cloneNode()); hide(front);
+    const rad = seg(g, [cx, yb - r], [cx + r, yb - r], { stroke: RAD, 'stroke-width': 3.5 }); hide(rad);
+    const lR = hide(lab(stage, cx + r / 2, yb - r - 4, num ? T('3.35') : T('r'), 'n', 'u10l5-rl'));
+    const hA = G(g); arrow2(hA, [cx + r + 28, yt], [cx + r + 28, yb], DIA, 2.6); hide(hA);
+    const lH = hide(lab(stage, cx + r + 34, yb - r, num ? T('6.7') : T('2r'), 'e', 'u10l5-dl'));
+    const Pn = panel(stage, 400, 14, ex.W - 414, Hh - 28, num ? 'One tennis ball, cm' : 'Volume', 'u10l5-lg');
+    const L = num ? [
+      'V_{\\text{cylinder}}=\\pi r^2h',
+      'h=2r=2(3.35)=6.7',
+      'V_{\\text{cylinder}}=\\pi(3.35)^2(6.7)\\approx236.2\\text{ cm}^3',
+      'V_{\\text{sphere}}=\\tfrac23V_{\\text{cylinder}}\\approx\\tfrac23(236.2)\\approx157.5\\text{ cm}^3',
+      'V_{\\text{sphere}}=\\tfrac43\\pi(3.35)^3\\approx157.5\\text{ cm}^3'
+    ] : [
+      'V_{\\text{cylinder}}=\\pi r^2h',
+      'h=2r',
+      'V_{\\text{cylinder}}=\\pi r^2(2r)=2\\pi r^3',
+      'V_{\\text{sphere}}=\\tfrac23V_{\\text{cylinder}}=\\tfrac23(2\\pi r^3)',
+      'V_{\\text{sphere}}=\\dfrac43\\pi r^3'
+    ];
+    const ls = L.map((s, i) => hide(line(Pn, T(s), i === 4 ? 'u10l5-boxed' : '')));
+    return [
+      { cap: num ? `One tennis ball from the warm-up and the part of the can it sits in: its <b>snug cylinder</b>.` : `A ball in its <b>snug</b> cylinder: touching the top, the bottom and the curved wall all at once.`,
+        run: async (c) => { await appear(c, C); await pop(c, S, 500); await appear(c, front); } },
+      { cap: num ? `Same radius: ${T('r=3.35')} cm (half of 6.7 cm). The cylinder’s volume is ${T('\\pi r^2h')}.` : `Ball and cylinder have the <b>same radius</b> ${T('r')}. The cylinder’s volume is ${T('\\pi r^2h')}.`,
+        run: async (c) => { await appear(c, rad); await pop(c, lR); await show(c, ls[0]); } },
+      { cap: num ? `Its height is one ball’s diameter: ${T('h=6.7')} cm.` : `Its height is the ball’s <b>diameter</b>: ${T('h=2r')}.`,
+        run: async (c) => { await appear(c, hA); await pop(c, lH); await show(c, ls[1]); } },
+      { cap: num ? `${T('\\pi(3.35)^2(6.7)\\approx236.2')} cm³ for the snug cylinder.` : `Substitute ${T('h=2r')}: the snug cylinder holds ${T('\\pi r^2(2r)=2\\pi r^3')}.`,
+        run: async (c) => { await show(c, ls[2]); await pulse(c, C); } },
+      { cap: num ? `The ball is ${T('\\tfrac23')} of it: about <b>157.5 cm³</b>, the same as ${T('\\tfrac43\\pi r^3')}. (Three balls: about 472.4 of 708.7 cm³, still ${T('\\tfrac23')}.)` : `Mika’s test: the sphere is ${T('\\tfrac23')} of that. ${T('\\tfrac23\\times2\\pi r^3=\\tfrac43\\pi r^3')}.`,
+        run: async (c) => { await show(c, ls[3]); await pop(c, ls[4], 500); await pulse(c, S, 1.04); } }
+    ];
+  }
+};
+
+/* =============================== explainer: the orange peel (STAR) and Archimedes =============================== */
+const peel = {
+  title: 'Why 4πr²? Four great circles',
+  height: 430,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(SQ).map((k) => ({ v: k, label: SQ[k].label })),
-  intro: (k) => (SQ[k].ex1 ? 'Check Example 1 (a) to (d). Press <b>Next</b>.' : 'Change the units on the sides, then count the little squares. Press <b>Next</b>.'),
+  choices: [{ v: 'peel', label: 'The orange-peel test' }, { v: 'arch', label: 'Archimedes: unroll the snug cylinder' }],
+  intro: (v) => (v === 'peel' ? 'Peel an orange and flatten the peel. How many circles of the same radius does it cover? Press <b>Next</b>.' : 'Another way to see 4πr². Press <b>Next</b>.'),
   make(stage, k, ex) {
-    const d = SQ[k];
-    if (!d.ex1) return squareSteps(stage, ex, d);
-    const K = squareKit(stage, ex, d), { P, Q, x0, y0 } = K;
-    let counter;
-    return [
-      { cap: `(a) ${TQ('A=1\\text{ m}\\times1\\text{ m}=1\\text{ m}^2')}.`, run: (c) => say(c, P, '(a) ' + T('A=1\\times1=1\\text{ m}^2')) },
-      { cap: `(b) Each side is <b>100 cm</b>. Fill the square: <b>100 rows</b> of 100 squares, ${TQ('100\\times100=10\\,000\\text{ cm}^2')}.`,
-        run: async (c) => {
-          await appear(c, K.ticks(), 300); await Promise.all([swap(c, K.lb, T('100\\text{ cm}')), swap(c, K.ll, T('100\\text{ cm}'))]);
-          counter = lab(stage, x0 + Q / 2, y0 + Q - 18, '', 'u10l5-call', 'c');
-          await tween(c, 1800, (t) => { const r = 1 + 99 * t; K.fillRows(r); counter.innerHTML = `<b>${Math.round(r)}</b> rows`; counter.style.top = Math.max(y0 + 22, y0 + Q - Q * r / 100 - 18) + 'px'; }, (t) => t);
-          await say(c, P, '(b) ' + T('100\\times100=10\\,000\\text{ cm}^2'));
-        } },
-      { cap: `(b) In millimetres each side is <b>1000 mm</b>. Zoom in on one ${TQ('\\text{cm}^2')}: it is 10 mm by 10 mm, so ${TQ('1\\text{ cm}^2=100\\text{ mm}^2')}.`,
-        run: async (c) => {
-          await fade(c, counter);
-          const cx = x0 + Q * 0.24, cy = y0 + Q * 0.62, cw = Q / 100, ix = x0 + Q - 196, iy = y0 + 14, iw = 176;
-          const mark = svgEl('rect', { x: cx - 3, y: cy - 3, width: cw + 6, height: cw + 6, fill: RED, stroke: RED, 'stroke-width': 1.5 }, K.gTop);
-          const g = svgEl('g', {}, K.gTop);
-          svgEl('line', { x1: cx, y1: cy - 3, x2: ix, y2: iy + iw, stroke: RED, 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, g);
-          svgEl('line', { x1: cx + cw + 3, y1: cy - 3, x2: ix + iw, y2: iy + iw, stroke: RED, 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, g);
-          svgEl('rect', { x: ix, y: iy, width: iw, height: iw, fill: '#fff', stroke: RED, 'stroke-width': 3 }, g);
-          let dd = ''; for (let i = 1; i < 10; i++) dd += `M${ix + iw * i / 10} ${iy}V${iy + iw}M${ix} ${iy + iw * i / 10}H${ix + iw}`;
-          svgEl('rect', { x: ix, y: iy, width: iw, height: iw, fill: BLUE, 'fill-opacity': 0.15 }, g);
-          svgEl('path', { d: dd, stroke: BLUE, 'stroke-width': 1.4, fill: 'none' }, g);
-          await appear(c, mark, 250); await appear(c, g, 400);
-          await pop(c, lab(stage, ix + iw / 2, iy + iw + 8, T('1\\text{ cm}^2=10\\times10=100\\text{ mm}^2'), 'u10l5-call u10l5-callr', 't'));
-          await say(c, P, T('1\\text{ m}=1000\\text{ mm}'));
-        } },
-      { cap: `So ${TQ('1\\text{ m}^2=10\\,000\\times100=1000\\times1000=1\\,000\\,000\\text{ mm}^2')}.`,
-        run: (c) => say(c, P, '(b) ' + T('1000\\times1000=1\\,000\\,000\\text{ mm}^2')) },
-      { cap: `(c) ${TQ('1\\text{ m}^2=10\\,000\\text{ cm}^2=1\\,000\\,000\\text{ mm}^2')}: the linear factors 100 and 1000, <b>squared</b>.`,
-        run: async (c) => { const r = line(P, '(c) ' + T('1\\text{ m}^2=100^2\\text{ cm}^2=1000^2\\text{ mm}^2'), 'u10l5-boxed'); await pop(c, r, 450); } },
-      { cap: `(d) km² to m²: the length is ×1000 <b>and</b> the width is ×1000, so the area is ${TQ('\\times1000^2=\\times1\\,000\\,000')}. Multiplying by 1000 once only converts a length.`,
-        run: async (c) => { await say(c, P, '(d) ' + T('1\\text{ km}^2=1000\\times1000\\text{ m}^2')); await say(c, P, T('=1\\,000\\,000\\text{ m}^2')); await stampIn(c, stampP(P, 'factor used twice')); } }
-    ];
-  }
-};
-
-/* =============================== explainer: the metric shortcut as rows of zeros =============================== */
-const PRE = { '-3': 'km', '-2': 'hm', '-1': 'dam', 0: 'm', 1: 'dm', 2: 'cm', 3: 'mm' };
-const STEPC = [TEAL, AMB, PUR];
-function prefixLine(stage, ex, p, y = 6) {
-  return new NumberLine(stage, { x: 20, y, width: ex.W - 40, height: 106, axisY: 60, min: -3, max: 3, step: 1, arrows: true,
-    labels: [-3, -2, -1, 0, 1, 2, 3].map((v) => ({ v, html: T(UU(PRE[v], p)) })) });
-}
-const SC = {
-  mmm: { label: 'm to mm', from: 0, to: 3 },
-  kmm: { label: 'km to m', from: -3, to: 0 },
-  mcm: { label: 'm to cm', from: 0, to: 2 }
-};
-const shortcut = {
-  title: 'The metric shortcut: n steps → 10ⁿ, 10²ⁿ, 10³ⁿ',
-  height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(SC).map((k) => ({ v: k, label: SC[k].label })),
-  intro: 'One step on the number line is ×10 for each dimension. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = SC[k], n = d.to - d.from, a = PRE[d.from], b = PRE[d.to];
-    const NL = prefixLine(stage, ex, 1);
-    const rows = [['Length', '1 dimension', 1], ['Area', '2 dimensions', 2], ['Volume', '3 dimensions', 3]].map(([nm, sub, p], i) => {
-      const r = add(stage, h('div', 'u10l5-zrow'), 24, 126 + i * 98); r.style.opacity = 0;
-      r.innerHTML = `<div class="u10l5-zname"><b>${nm}</b><small>${sub}</small></div>`;
-      const eq = h('div', 'u10l5-zeq'); r.appendChild(eq);
-      eq.insertAdjacentHTML('beforeend', T(`1${U(a, p)}=`));
-      const dg = h('span', 'u10l5-zdig'); eq.appendChild(dg);
-      const total = n * p, zs = [];
-      dg.appendChild(h('span', 'u10l5-zd', '1'));
-      for (let j = 0; j < total; j++) { const z = h('span', 'u10l5-zd u10l5-z' + Math.floor(j / p), '0'); if ((total - j) % 3 === 0) z.classList.add('u10l5-zgap'); z.style.opacity = 0; dg.appendChild(z); zs.push(z); }
-      eq.insertAdjacentHTML('beforeend', T(`${U(b, p)}`));
-      const pw = h('span', 'u10l5-zpow', T(`=10^{${total}}${U(b, p)}`)); pw.style.opacity = 0; eq.appendChild(pw);
-      return { r, zs, pw, p };
-    });
-    const runRow = async (c, R) => { await appear(c, R.r, 250); for (let j = 0; j < R.zs.length; j++) { await pop(c, R.zs[j], 220); await sleep(c, 50); } await fadeIn(c, R.pw); };
-    return [
-      { cap: `${a} to ${b}: <b>${n} steps</b> right on the metric number line, to a smaller unit.`,
-        run: async (c) => { for (let i = 0; i < n; i++) await NL.hop(c, d.from + i, d.from + i + 1, { label: T('\\times10'), color: STEPC[i % 3], height: 30 }); } },
-      { cap: `<b>Length</b> has one dimension: ×10 per step, so ${TQ(`1${U(a)}=10^{${n}}${U(b)}`)}. One zero per step.`, run: (c) => runRow(c, rows[0]) },
-      { cap: `<b>Area</b> has two dimensions: each step is ${TQ('\\times10')} twice, ${TQ('\\times10^2')}. Two zeros per step: ${TQ(`1${U(a, 2)}=10^{${2 * n}}${U(b, 2)}`)}.`, run: (c) => runRow(c, rows[1]) },
-      { cap: `<b>Volume</b> has three dimensions: ${TQ('\\times10^3')} per step. Three zeros per step: ${TQ(`1${U(a, 3)}=10^{${3 * n}}${U(b, 3)}`)}.`, run: (c) => runRow(c, rows[2]) },
-      { cap: `The rule: <b>${TQ('n')} steps apart</b> → length ${TQ('10^{n}')}, area ${TQ('10^{2n}')}, volume ${TQ('10^{3n}')}. Here ${TQ(`n=${n}`)}.`,
-        run: async (c) => { for (const R of rows) await pulse(c, R.pw, 1.12); const s = stamp(stage, '', { x: ex.W - 150, y: 430 }); s.innerHTML = T(`10^{${n}},\\ 10^{${2 * n}},\\ 10^{${3 * n}}`); await stampIn(c, s); } }
-    ];
-  }
-};
-
-/* =============================== explainers: prefix hops, then the decimal point hops (Examples 3 and 6) =============================== */
-function shiftDef(p, data, title) {
-  return {
-    title, height: 480,
-    choices: Object.keys(data).map((k) => ({ v: k, label: data[k].label })),
-    intro: 'Find both units on the number line, count the steps, then move the decimal point. Press <b>Next</b>.',
-    make(stage, k, ex) {
-      const d = data[k], W = ex.W, n = Math.abs(d.to - d.from), right = d.to > d.from, m = (d.to - d.from) * p;
-      const NL = prefixLine(stage, ex, p);
-      // the digit strip
-      let digs = d.v.replace('.', '').split(''), p0 = d.v.includes('.') ? d.v.indexOf('.') : d.v.length;
-      const orig = digs.length;
-      let L = 0; if (p0 + m < 1) { L = 1 - (p0 + m); }
-      const R = Math.max(0, p0 + m - orig);
-      const cells = [...Array(L).fill('0'), ...digs, ...Array(R).fill('0')], ps = p0 + L, pe = ps + m;
-      const cw = 46, sw = cells.length * cw, sx = (W - sw) / 2, sy = 132;
-      const strip = add(stage, h('div', 'u10l5-strip'), sx, sy); strip.style.width = sw + 'px';
-      const cEls = cells.map((v, i) => { const e = h('div', 'u10l5-cell', v); e.style.left = i * cw + 'px'; if (i < L || i >= L + orig) e.style.opacity = 0; strip.appendChild(e); return e; });
-      const dot = h('div', 'u10l5-dot'); strip.appendChild(dot);
-      const setDot = (b) => { dot.style.left = b * cw + 'px'; };
-      setDot(ps);
-      const P = panel(stage, 20, 222, W - 40, 246, '', 'u10l5-wide');
-      const fromU = T(UU(PRE[d.from], p)), toU = T(UU(PRE[d.to], p));
-      const fac = `10^{${p * n}}`, per = `10^${p}`;
-      const needed = (i, pt) => {
-        let first = cells.findIndex((v, j) => j < pt && v !== '0'); if (first < 0 || first > pt - 1) first = pt - 1;
-        let last = -1; for (let j = cells.length - 1; j >= pt; j--) if (cells[j] !== '0') { last = j; break; }
-        return (i >= first && i < pt) || (i >= pt && i <= last);
-      };
-      const intRes = !cells.some((v, j) => j >= pe && v !== '0');
+    const W = ex.W, Hh = ex.def.height;
+    const svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
+    if (k === 'arch') {
+      const cx = 140, r = 82, yb = 290, yt = yb - 2 * r, ry = r * EQ, X0 = 300, Lw = 2 * PI * r;
+      const C = cylinder(g, cx, yb, r, 2 * r, { op: 0 });
+      const lbl = svgEl('path', { d: C.body.getAttribute('d'), fill: CYL, 'fill-opacity': 0.35 }, g);
+      g.insertBefore(lbl, C);
+      const S = sphere(g, cx, yb - r, r, { op: 0.95 });
+      const front = G(g); front.appendChild(C.sides.cloneNode()); front.appendChild(C.topE.cloneNode()); front.appendChild(C.bfront.cloneNode());
+      void S;
+      const rad = seg(g, [cx, yb - r], [cx + r, yb - r], { stroke: RAD, 'stroke-width': 3 });
+      lab(stage, cx + r / 2, yb - r - 3, T('r'), 'n', 'u10l5-rl');
+      const rect = svgEl('rect', { x: cx - r, y: yt, width: 2 * r, height: 2 * r, fill: CYL, 'fill-opacity': 0.3, stroke: CYL, 'stroke-width': 3 }, g); hide(rect);
+      const wA = G(g); arrow2(wA, [X0, yb + 22], [X0 + Lw, yb + 22], CYL); hide(wA);
+      const hA = G(g); arrow2(hA, [X0 + Lw + 22, yt], [X0 + Lw + 22, yb], DIA); hide(hA);
+      const lW = hide(lab(stage, X0 + Lw / 2, yb + 28, `${T('2\\pi r')} &nbsp;(the circumference)`, 's', 'u10l5-tl'));
+      const lHt = hide(lab(stage, X0 + Lw + 28, (yt + yb) / 2, T('2r'), 'e', 'u10l5-dl'));
+      const f = hide(lab(stage, X0 + Lw / 2, (yt + yb) / 2, T('2\\pi r\\times2r=4\\pi r^2'), 'c', 'u10l5-big u10l5-wbg'));
+      const cap0 = hide(lab(stage, W / 2, Hh - 30, `the sphere’s surface: ${T('SA_{\\text{sphere}}=4\\pi r^2')}`, 'c', 'u10l5-big'));
+      void rad; void ry;
       return [
-        { cap: `${TQ(d.vt + U(PRE[d.from], p))} to ${toU}. Find both units on the metric number line.`,
-          run: async (c) => { await pop(c, NL.point(d.from, { color: INK })); await pop(c, NL.point(d.to, { color: BLUE })); } },
-        { cap: `${fromU} to ${toU} is <b>${n} step${n > 1 ? 's' : ''} ${right ? 'right' : 'left'}</b>: to a ${right ? '<b>smaller</b> unit, so the number gets bigger (multiply)' : '<b>bigger</b> unit, so the number gets smaller (divide)'}.`,
-          run: async (c) => { for (let i = 0; i < n; i++) { const a = d.from + (right ? i : -i), b = a + (right ? 1 : -1); await NL.hop(c, a, b, { label: T((right ? '\\times' : '\\div') + per), color: STEPC[i % 3], height: 28 }); } } },
-        { cap: `For ${p === 2 ? 'area' : 'volume'} each step is ${TQ('\\times10')} in each of <b>${p} dimensions</b>: ${TQ(per + '=' + (p === 2 ? '100' : '1000'))} per step. ${n} step${n > 1 ? 's' : ''}: ${TQ(n > 1 ? `(${per})^{${n}}=${fac}` : fac)}.`,
-          run: (c) => say(c, P, T(`${right ? '\\times' : '\\div'}${n > 1 ? `(${per})^{${n}}=${right ? '\\times' : '\\div'}${fac}` : per}=${right ? '\\times' : '\\div'}${tn(String(10 ** (p * n)))}`)) },
-        { cap: `Move the decimal point <b>${Math.abs(m)} places ${right ? 'right' : 'left'}</b>: ${p} places for each step.`,
+        { cap: `Put the sphere in its snug cylinder: radius ${T('r')}, height ${T('2r')}. Colour the cylinder’s curved side (its label).`,
+          run: async (c) => { await pulse(c, lbl, 1.03); } },
+        { cap: `Peel off the label and <b>unroll</b> it.`,
           run: async (c) => {
-            for (let j = 0; j < Math.abs(m); j++) {
-              const b0 = ps + (right ? j : -j), b1 = b0 + (right ? 1 : -1), cross = right ? b0 : b1, col = STEPC[Math.floor(j / p) % 3];
-              const ce = cEls[cross];
-              if (ce.style.opacity === '0') await pop(c, ce, 200);
-              ce.style.background = col + '33'; ce.style.borderColor = col;
-              await tween(c, 260, (t) => { const b = b0 + (b1 - b0) * t; dot.style.left = b * cw + 'px'; dot.style.marginTop = -Math.sin(Math.PI * t) * 26 + 'px'; });
-              dot.style.marginTop = '0px';
-            }
-            setDot(pe);
-            await Promise.all(cEls.map((e, i) => (needed(i, pe) ? anim(c, e, [{ opacity: 1 }], 200) : fade(c, e, 0.12))));
-            if (intRes) await fade(c, dot, 0.15);
-            await say(c, P, T(`${d.vt}${right ? '\\times' : '\\div'}${fac}=${d.std}${U(PRE[d.to], p)}`));
+            rect.style.opacity = 1;
+            await tween(c, 1600, (t) => { rect.setAttribute('x', (cx - r) + (X0 - (cx - r)) * t); rect.setAttribute('width', 2 * r + (Lw - 2 * r) * t); lbl.style.opacity = 1 - t; }, (t) => t);
           } },
-        { cap: d.sci ? `Standard notation: <b>${TQ(d.std + U(PRE[d.to], p))}</b>. Scientific notation: <b>${TQ(d.sci + U(PRE[d.to], p))}</b>.` : `${TQ(`${d.vt}${U(PRE[d.from], p)}=${d.std}${U(PRE[d.to], p)}`)}.`,
-          run: async (c) => { if (d.sci) await say(c, P, T(`=${d.sci}${U(PRE[d.to], p)}`)); await stampIn(c, stampP(P, `${n} step${n > 1 ? 's' : ''} → ${p * n} places`)); } }
+        { cap: `It is a <b>rectangle</b>: as long as the circumference, ${T('2\\pi r')}, and as tall as the cylinder, ${T('2r')}.`,
+          run: async (c) => { await appear(c, wA); await show(c, lW); await appear(c, hA); await show(c, lHt); } },
+        { cap: `Area ${T('=2\\pi r\\times2r=4\\pi r^2')}. Archimedes proved the sphere’s surface is <b>exactly</b> this much: the same 4 great circles as the orange peel.`,
+          run: async (c) => { await pop(c, f, 500); await show(c, cap0); } }
       ];
     }
-  };
-}
-const EX3 = {
-  a: { label: 'Example 3(a)', v: '42', vt: '42', from: 0, to: 2, std: '420\\,000', sci: '4.2\\times10^{5}' },
-  b: { label: 'Example 3(b)', v: '156000', vt: '156\\,000', from: 2, to: 0, std: '15.6', sci: '1.56\\times10^{1}' },
-  c: { label: 'Example 3(c)', v: '0.0037', vt: '0.0037', from: -3, to: 0, std: '3700', sci: '3.7\\times10^{3}' },
-  d: { label: 'Example 3(d)', v: '8400000', vt: '8\\,400\\,000', from: 0, to: -3, std: '8.4', sci: '8.4\\times10^{0}' }
-};
-const EX6 = {
-  a: { label: 'Example 6(a)', v: '5.2', vt: '5.2', from: 0, to: 2, std: '5\\,200\\,000' },
-  b: { label: 'Example 6(b)', v: '940000', vt: '940\\,000', from: 2, to: 0, std: '0.94' },
-  c: { label: 'Example 6(c)', v: '0.0000082', vt: '0.000\\,008\\,2', from: -3, to: 0, std: '8200' },
-  d: { label: 'Example 6(d)', v: '63000', vt: '63\\,000', from: 3, to: 2, std: '63' }
-};
-const shiftA = shiftDef(2, EX3, 'Area: the point moves two places per step');
-const shiftV = shiftDef(3, EX6, 'Volume: the point moves three places per step');
-
-/* =============================== explainer: Example 2, the rectangle =============================== */
-const RC = {
-  cm: { label: 'Example 2(b) check: cm²', sm: 'cm', f: 100, ff: '10\\,000', sides: ['700', '400'], prod: '280\\,000', wrong: '2800' },
-  mm: { label: 'Example 2(c) check: mm²', sm: 'mm', f: 1000, ff: '1\\,000\\,000', sides: ['7000', '4000'], prod: '28\\,000\\,000', wrong: '28\\,000' }
-};
-const rect = {
-  title: 'Example 2: every square metre holds the same number of small squares',
-  height: 470,
-  minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
-  intro: 'A 7 m by 4 m rectangle, two ways. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = RC[k], H = ex.def.height, s = 60, x0 = 112, y0 = 50, w = 7 * s, hh = 4 * s;
-    const S = mkSvg(stage, ex.W, H), gTiles = svgEl('g', {}, S), gTop = svgEl('g', {}, S);
-    svgEl('rect', { x: x0, y: y0, width: w, height: hh, fill: 'none', stroke: INK, 'stroke-width': 3.5 }, S);
-    const lb = lab(stage, x0 + w / 2, y0 + hh + 12, T('7\\text{ m}'), 'u10l5-side', 't'), ll = lab(stage, x0 - 12, y0 + hh / 2, T('4\\text{ m}'), 'u10l5-side', 'r');
-    const P = panel(stage, x0 + w + 40, 12, ex.W - (x0 + w + 40) - 12, H - 24, 'Two ways');
-    const tiles = [];
-    for (let r = 0; r < 4; r++) for (let q = 0; q < 7; q++) { const t = svgEl('rect', { x: x0 + q * s, y: y0 + r * s, width: s, height: s, fill: TEAL, 'fill-opacity': 0.12, stroke: TEAL, 'stroke-width': 1.6 }, gTiles); t.style.opacity = 0; tiles.push(t); }
-    const fine = (q, r) => { let dd = ''; const n = 10; for (let i = 1; i < n; i++) dd += `M${x0 + q * s + s * i / n} ${y0 + r * s}v${s}M${x0 + q * s} ${y0 + r * s + s * i / n}h${s}`; return svgEl('path', { d: dd, stroke: BLUE, 'stroke-width': 0.8, 'stroke-opacity': 0.7, fill: 'none' }, gTop); };
+    const R = 76, cy = 160, ox = 100, last = W - 32 - R, first = 290, step = (last - first) / 3;
+    const cs = [0, 1, 2, 3].map((i) => [first + i * step, cy]);
+    const O = orange(g, ox, cy, R);
+    const rad = seg(g, [ox, cy], [ox + R, cy], { stroke: RAD, 'stroke-width': 3 });
+    const lR = lab(stage, ox + R / 2, cy - 4, T('r'), 'n', 'u10l5-rl');
+    const circ = cs.map(([x, y]) => traced(g, x, y, R)); circ.forEach(hide);
+    const cr = seg(g, [cs[3][0], cy], [cs[3][0] + R, cy], { stroke: RAD, 'stroke-width': 3 }); hide(cr);
+    const lcr = hide(lab(stage, cs[3][0] + R / 2, cy - 4, T('r'), 'n', 'u10l5-rl'));
+    const pg = G(g), sets = peelSet(pg, cs, R, { x: ox, y: cy, r: R, s: 0.5 }, 5); hide(pg);
+    const pis = cs.map(([x]) => hide(lab(stage, x, cy + R + 10, T('\\pi r^2'), 's', 'u10l5-tl')));
+    const fl = hide(lab(stage, W / 2 + 60, Hh - 52, T('SA_{\\text{sphere}}=\\pi r^2+\\pi r^2+\\pi r^2+\\pi r^2=4\\pi r^2'), 'c', 'u10l5-big'));
+    const lOr = lab(stage, ox, cy + R + 10, 'orange', 's', 'u10l5-sm');
     return [
-      { cap: `${TQ('7\\times4=28')} squares of ${TQ('1\\text{ m}^2')}: ${TQ('A=28\\text{ m}^2')}.`,
-        run: async (c) => { for (const t of tiles) { await appear(c, t, 90); } await say(c, P, '(a) ' + T('A=7\\times4=28\\text{ m}^2')); } },
-      { cap: `<b>Way 1:</b> convert the sides first: ${TQ(`7\\text{ m}=${d.sides[0]}${U(d.sm)}`)} and ${TQ(`4\\text{ m}=${d.sides[1]}${U(d.sm)}`)}.`,
-        run: async (c) => { await Promise.all([swap(c, lb, T(`${d.sides[0]}${U(d.sm)}`)), swap(c, ll, T(`${d.sides[1]}${U(d.sm)}`))]); await say(c, P, '<b>1</b> ' + T(`A=${d.sides[0]}\\times${d.sides[1]}`)); await say(c, P, T(`\\phantom{A}=${d.prod}${U(d.sm, 2)}`)); } },
-      { cap: `<b>Way 2:</b> each square metre holds ${TQ(`${d.f}^2=${d.ff}${U(d.sm, 2)}`)} (Example 1).`,
-        run: async (c) => {
-          const f = fine(0, 3); if (d.sm === 'mm') f.setAttribute('stroke-width', 0.5);
-          await appear(c, f, 300); svgEl('rect', { x: x0 + 2, y: y0 + 3 * s + 2, width: s - 4, height: s - 4, fill: AMB, 'fill-opacity': 0.3, stroke: AMB, 'stroke-width': 4 }, gTop);
-          const l = lab(stage, x0 + s / 2, y0 + 3 * s - 6, T(`${d.ff}${U(d.sm, 2)}`), 'u10l5-call u10l5-calla', 'b'); l.style.translate = '-12% -100%'; await pop(c, l);
-        } },
-      { cap: `28 squares, each ${TQ(`${d.ff}${U(d.sm, 2)}`)}: ${TQ(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)}. The same answer ✓`,
-        run: async (c) => { for (let r = 0; r < 4; r++) for (let q = 0; q < 7; q++) if (q || r !== 3) fine(q, r).style.opacity = 0; for (const e of [...gTop.querySelectorAll('path')].slice(1)) await appear(c, e, 40); await say(c, P, '<b>2</b> ' + T(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)); } },
-      { cap: `“Times ${d.f}” once would give ${TQ(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`)}: far too small, because it scales only one side.`,
-        run: async (c) => { const w2 = line(P, T(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`), 'u10l5-wrong'); await show(c, w2); await strike(c, w2); await stampIn(c, stampP(P, 'ways 1 and 2 agree ✓')); } }
+      { cap: `An orange with radius ${T('r')}. Trace <b>four circles</b> with the <b>same radius</b> ${T('r')}.`,
+        run: async (c) => { for (const ci of circ) { ci.style.opacity = 1; await drawIn(ci, 450, c); } await appear(c, cr); await pop(c, lcr); } },
+      { cap: `Peel the orange and press the pieces of peel flat.`,
+        run: async (c) => { rad.style.opacity = 0; lR.style.opacity = 0; lOr.innerHTML = 'peeled orange'; await appear(c, pg); await Promise.all([appear(c, O.skin, 200), pulse(c, pg, 1.06)]); O.skin.style.opacity = 0; } },
+      { cap: `Lay the peel inside the circles. <b>One</b> circle full…`,
+        run: async (c) => { await flyPieces(c, sets[0], 900, 70, 120); } },
+      { cap: `…<b>two</b>, <b>three</b>, <b>four</b>. The peel fills almost exactly <b>four</b> circles of radius ${T('r')}.`,
+        run: async (c) => { cr.style.opacity = 0; lcr.style.opacity = 0; for (let i = 1; i < 4; i++) await flyPieces(c, sets[i], 750, 60, 70); } },
+      { cap: `Each circle is ${T('\\pi r^2')}, so the surface of a sphere is ${T('SA_{\\text{sphere}}=4\\pi r^2')}: <b>four great circles</b>.`,
+        run: async (c) => { for (const p of pis) await pop(c, p, 260); await show(c, fl); } }
     ];
   }
 };
 
-/* =============================== explainer: a unit cube fills with layers (the star, part 2) =============================== */
-function cubeKit(stage, ex, d) {
-  const H = ex.def.height, W = ex.W, E = d.E || 276, ox = 108, oy = H - 52, P = oblique(ox, oy, E), k = d.k;
-  const S = mkSvg(stage, W, H);
-  const gBack = svgEl('g', {}, S), gFill = svgEl('g', {}, S), gMid = svgEl('g', {}, S), gOut = svgEl('g', {}, S);
-  drawBox(gBack, P, [0, 1, 0, 1, 0, 1], { fill: { front: '#fff', top: '#f6f7fa', side: '#eef1f6' }, sw: 0 });
-  drawBox(gOut, P, [0, 1, 0, 1, 0, 1], { sw: 3.2 });
-  const hid = hiddenEdges(gOut, P, [0, 1, 0, 1, 0, 1]);
-  const px0 = ox + E * (1 + KX) + 44;
-  const Pn = panel(stage, px0, 12, W - px0 - 12, H - 24, d.title || 'Volume of the cube');
-  const L = boxLabels(stage, P, 1, 1, 1, [T(`1${U(d.big)}`), T(`1${U(d.big)}`), T(`1${U(d.big)}`)], 'u10l5-side');
-  const kit = { S, P, E, k, gFill, gMid, gOut, hid, Pn, L, ox, oy };
-  kit.relabel = (c, html) => Promise.all([swap(c, L.b, html), swap(c, L.l, html), swap(c, L.d, html)]);
-  kit.ticks = () => {
-    let dd = ''; const seg = (a, b) => `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
-    for (let i = 0; i <= k; i++) {
-      const t = i / k, long = k > 20 ? (i % 10 === 0 ? 10 : 4) : 8;
-      dd += seg(P(t, 0, 0), [P(t, 0, 0)[0], P(t, 0, 0)[1] + long]) + seg(P(0, t, 0), [P(0, t, 0)[0] - long, P(0, t, 0)[1]]);
-      const q = P(1, 0, t); dd += seg(q, [q[0] + long * 0.8, q[1] + long * 0.6]);
+/* =============================== explainer: Example 1, halve the diameter first =============================== */
+const halve = {
+  title: 'Example 1 check: halve the diameter first',
+  height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'ex1', label: 'Example 1 check' }, { v: 'oops', label: 'Forget to halve?' }],
+  intro: (v) => (v === 'ex1' ? 'The propane tank: diameter 5.8 m. Press <b>Next</b>.' : 'What if you put the diameter into the formulas? Press <b>Next</b>.'),
+  make(stage, k, ex) {
+    const Hh = ex.def.height, svg = svgOn(stage, 0, 0, 360, Hh), g = G(svg), cx = 180, cy = 196;
+    if (k === 'oops') {
+      const r = 78;
+      const ghost = svgEl('circle', { cx, cy, r: 2 * r, fill: '#fde7e5', stroke: RAD, 'stroke-width': 2.4, 'stroke-dasharray': '9 6' }, g); hide(ghost);
+      sphere(g, cx, cy, r);
+      const dl = seg(g, [cx - r, cy], [cx + r, cy], { stroke: DIA, 'stroke-width': 3.5 });
+      const ld = lab(stage, cx, cy + r * EQ + 6, T('5.8'), 's', 'u10l5-dl');
+      const gr = seg(g, [cx, cy], [cx - 2 * r, cy], { stroke: RAD, 'stroke-width': 3.5, 'stroke-dasharray': '8 5' }); hide(gr);
+      const lg = hide(lab(stage, cx - r, cy - 6, '“r” = 5.8?', 'n', 'u10l5-rl u10l5-wbg'));
+      void dl; void ld;
+      const Pn = panel(stage, 380, 14, ex.W - 394, Hh - 28, 'Using 5.8 as the radius (wrong)');
+      const l1 = hide(line(Pn, T('SA=4\\pi(5.8)^2\\approx422.7\\text{ m}^2'))), l1b = hide(line(Pn, `${T('422.7\\div105.7\\approx4')}: <b>4 times</b> too big`, 'u10l5-no'));
+      const l2 = hide(line(Pn, T('V=\\tfrac43\\pi(5.8)^3\\approx817.3\\text{ m}^3'))), l2b = hide(line(Pn, `${T('817.3\\div102.2\\approx8')}: <b>8 times</b> too big`, 'u10l5-no'));
+      const l3 = hide(line(Pn, `Doubling the radius: area ${T('\\times2^2=4')}, volume ${T('\\times2^3=8')}.`, 'u10l5-sm'));
+      return [
+        { cap: `Putting the diameter in for ${T('r')} draws a tank with radius 5.8 m: <b>twice as wide</b> as the real one.`,
+          run: async (c) => { await appear(c, ghost); await appear(c, gr); await pop(c, lg); } },
+        { cap: `Surface area: ${T('4\\pi(5.8)^2\\approx422.7')} m², <b>4 times</b> the real 105.7 m².`,
+          run: async (c) => { await show(c, l1); await show(c, l1b); } },
+        { cap: `Volume: ${T('\\tfrac43\\pi(5.8)^3\\approx817.3')} m³, <b>8 times</b> the real 102.2 m³.`,
+          run: async (c) => { await show(c, l2); await show(c, l2b); } },
+        { cap: `Twice the radius: ${T('2^2=4')} times the area, ${T('2^3=8')} times the volume. <b>Halve the diameter first!</b>`,
+          run: async (c) => { await show(c, l3); const s = stamp(Pn, 'halve it first!', { ok: false }); s.style.alignSelf = 'center'; await stampIn(c, s); } }
+      ];
     }
-    const g = svgEl('path', { d: dd, stroke: INK, 'stroke-width': 1.2, fill: 'none' }, gOut); g.style.opacity = 0; return g;
-  };
-  /** discrete small cubes: draws layer y (painter's order), returns its group */
-  kit.layer = (y, o = {}) => {
-    const g = svgEl('g', {}, gFill), u = 1 / k, f = o.fill || CUBEF;
-    for (let z = (o.z1 ?? k) - 1; z >= (o.z0 ?? 0); z--) for (let x = 0; x < (o.xn ?? k); x++) {
-      const faces = ['top']; if (z === (o.z0 ?? 0)) faces.unshift('front'); if (x === (o.xn ?? k) - 1) faces.push('side');
-      drawBox(g, P, [x * u, (x + 1) * u, y * u, (y + 1) * u, z * u, (z + 1) * u], { fill: f, stroke: o.stroke || BLUE, sw: k > 10 ? 0.6 : 1, faces });
-    }
-    return g;
-  };
-  return kit;
-}
-function cubeSteps(stage, ex, d) {
-  const K = cubeKit(stage, ex, d), { P, Pn, k, E } = K, big = d.big, sm = d.small, k3 = k ** 3, k2 = k * k, cont = k > 20;
-  const smName = { in: 'inches', ft: 'feet', cm: 'centimetres', mm: 'millimetres' }[sm];
-  let wrong, call, slab, counter, layers = [];
-  const steps = [
-    { cap: `A cube <b>1 ${big}</b> on every edge: ${TQ(`V=1\\times1\\times1=1${U(big, 3)}`)}.`,
-      run: async (c) => { await pulse(c, K.L.b, 1.15); await say(c, Pn, T(`V=1\\times1\\times1=1${U(big, 3)}`)); } },
-    { cap: `Measure the edges in ${smName}: every edge is <b>${k} ${sm}</b>.`,
-      run: async (c) => { await appear(c, K.ticks(), 400); await K.relabel(c, T(`${k}${U(sm)}`)); await say(c, Pn, T(`1${U(big)}=${k}${U(sm)}`)); } },
-    cont
-      ? { cap: `The tempting answer: “times 100”, so ${TQ(`1${U(big, 3)}=100${U(sm, 3)}`)}. But a ${TQ(`100${U(sm, 3)}`)} cube is only about <b>4.6 cm</b> on an edge: this speck.`,
-        run: async (c) => {
-          const e = 0.0464; wrong = drawBox(K.gMid, P, [0, e, 0, e, 0, e], { fill: REDF, stroke: RED, sw: 1.2 }); await pop(c, wrong);
-          const p = P(e, e, 0); call = lab(stage, p[0] + 18, p[1] - 60, `${T(`100${U(sm, 3)}`)}: a cube about 4.6 cm wide`, 'u10l5-call u10l5-callr', 'l');
-          const ar = svgEl('line', { x1: p[0] + 22, y1: p[1] - 46, x2: p[0] + 4, y2: p[1] - 4, stroke: RED, 'stroke-width': 2.4 }, K.gOut);
-          await Promise.all([pop(c, call), appear(c, ar)]); call.ar = ar;
-          const w = line(Pn, T(`1${U(big, 3)}=100${U(sm, 3)}`), 'u10l5-wrong'); await show(c, w); await strike(c, w);
-        } }
-      : { cap: `The tempting answer: “times ${k}”, so ${TQ(`1${U(big, 3)}=${k}${U(sm, 3)}`)}. But ${k} little cubes make only <b>one row</b> along the front edge.`,
-        run: async (c) => {
-          wrong = K.layer(0, { z1: 1, fill: REDF, stroke: RED }); K.gMid.appendChild(wrong); await appear(c, wrong, 300);
-          const p = P(0.5, 1 / k, 0); call = lab(stage, p[0], p[1] - 10, `${T(`${k}${U(sm, 3)}`)} = one row`, 'u10l5-call u10l5-callr', 'b'); await pop(c, call);
-          const w = line(Pn, T(`1${U(big, 3)}=${k}${U(sm, 3)}`), 'u10l5-wrong'); await show(c, w); await strike(c, w);
-        } },
-    { cap: `Lay down one floor, 1 ${sm} thick: ${TQ(`${k}\\times${k}=${tn(k2)}`)} cubes. ${cont ? 'It is the square from Section 1, one centimetre deep.' : ''}`,
-      run: async (c) => {
-        await Promise.all([fade(c, wrong), fade(c, call), call.ar ? fade(c, call.ar) : null]);
-        if (cont) {
-          slab = drawBox(K.gFill, P, [0, 1, 0, 1 / k, 0, 1], { fill: { front: '#7ea6ea', top: '#c8daf8', side: '#6a93dc' }, stroke: BLUE, sw: 1.2 });
-          const g = svgEl('g', { stroke: BLUE, 'stroke-width': 0.8, 'stroke-opacity': 0.7 }, K.gFill); slab.grid = g;
-          slab.setH = (y) => {
-            slab.set([0, 1, 0, y, 0, 1]); let dd = '';
-            for (let i = 1; i < 10; i++) { const a = P(i / 10, y, 0), b = P(i / 10, y, 1), e1 = P(0, y, i / 10), e2 = P(1, y, i / 10); dd += `M${a[0]} ${a[1]}L${b[0]} ${b[1]}M${e1[0]} ${e1[1]}L${e2[0]} ${e2[1]}`; }
-            g.innerHTML = ''; svgEl('path', { d: dd }, g);
-          };
-          slab.setH(1 / k); await appear(c, slab, 400); await appear(c, g, 300);
-        } else { layers[0] = K.layer(0); hide(layers[0]); await appear(c, layers[0], 500); }
-        await say(c, Pn, T(`1\\text{ layer}=${k}\\times${k}=${tn(k2)}${U(sm, 3)}`));
-      } },
-    { cap: `The cube is <b>${k} ${sm} tall</b>, so stack <b>${k} layers</b>.`,
-      run: async (c) => {
-        counter = lab(stage, P(0.5, 0, 0)[0], K.oy - 18, '', 'u10l5-call', 'c');
-        const setC = (n, y) => { counter.innerHTML = `layer <b>${n}</b>`; counter.style.top = Math.min(K.oy - 18, P(0.5, y, 0)[1] + 20) + 'px'; };
-        if (cont) await tween(c, 2600, (t) => { const y = (1 + (k - 1) * t) / k; slab.setH(y); setC(Math.round(y * k), y); }, (t) => t);
-        else for (let y = 1; y < k; y++) { layers[y] = K.layer(y); layers[y].style.opacity = 0; setC(y + 1, (y + 1) / k); await anim(c, layers[y], [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'none' }], 160 + 900 / k); }
-        setC(k, 1); await fade(c, K.hid, 0.25);
-        await say(c, Pn, T(`${k}\\text{ layers}\\times${tn(k2)}=${tn(k3)}${U(sm, 3)}`));
-      } }
-  ];
-  if (cont) steps.push({ cap: `Check with 10 cm blocks: ${TQ('10\\times10\\times10=1000')} blocks, each ${TQ(`10^3=1000${U(sm, 3)}`)}.`,
-    run: async (c) => {
-      await fade(c, counter);
-      let dd = ''; const seg = (a, b) => `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
-      for (let i = 1; i < 10; i++) { const t = i / 10; dd += seg(P(t, 0, 0), P(t, 1, 0)) + seg(P(0, t, 0), P(1, t, 0)) + seg(P(t, 1, 0), P(t, 1, 1)) + seg(P(0, 1, t), P(1, 1, t)) + seg(P(1, 0, t), P(1, 1, t)) + seg(P(1, t, 0), P(1, t, 1)); }
-      const g = svgEl('path', { d: dd, stroke: INK, 'stroke-width': 1.8, fill: 'none' }, K.gMid); await appear(c, g, 400);
-      const blk = drawBox(K.gMid, P, [0.9, 1, 0.9, 1, 0, 0.1], { fill: AMBF, sw: 2.2 }); await pop(c, blk);
-      const q = P(0.95, 1, 0.05), tp = P(0.5, 1, 1), ly = tp[1] - 14;
-      const ar = svgEl('line', { x1: tp[0] + 40, y1: ly, x2: q[0], y2: q[1] - 2, stroke: AMB, 'stroke-width': 2.6 }, K.gMid); await appear(c, ar);
-      await pop(c, lab(stage, tp[0], ly, T(`10\\times10\\times10=1000${U(sm, 3)}`), 'u10l5-call u10l5-calla', 'b'));
-      await say(c, Pn, T(`1000\\text{ blocks}\\times1000${U(sm, 3)}`));
-    } });
-  steps.push({ cap: `${TQ(`1${U(big, 3)}=${k}\\times${k}\\times${k}=${k}^3=${tn(k3)}${U(sm, 3)}`)}. The factor ${k} is used <b>three times</b>: once for each dimension.`,
-    run: async (c) => { const r = line(Pn, T(`1${U(big, 3)}=${k}^3${U(sm, 3)}=${tn(k3)}${U(sm, 3)}`), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(Pn, `× ${k}³, not × ${k}`)); } });
-  return steps;
-}
-const CB = {
-  cm: { label: `${T('1\\text{ m}^3')} in ${T('\\text{cm}^3')}`, big: 'm', small: 'cm', k: 100 },
-  mm: { label: `${T('1\\text{ cm}^3')} in ${T('\\text{mm}^3')}`, big: 'cm', small: 'mm', k: 10 },
-  ex4: { label: 'Example 4 check', big: 'm', small: 'cm', k: 100, ex4: true, title: 'Example 4' }
-};
-const cube = {
-  title: 'Why 1 m³ is 1 000 000 cm³: layers of little cubes',
-  height: 500,
-  minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(CB).map((k) => ({ v: k, label: CB[k].label })),
-  intro: (k) => (CB[k].ex4 ? 'Check Example 4 (a) to (c). Press <b>Next</b>.' : 'Change the units on the edges, then fill the cube layer by layer. Press <b>Next</b>.'),
-  make(stage, k, ex) {
-    const d = CB[k];
-    if (!d.ex4) return cubeSteps(stage, ex, d);
-    const K = cubeKit(stage, ex, d), { P, Pn } = K;
-    let slab, pills = [];
+    const r = 130;
+    sphere(g, cx, cy, r);
+    for (const dx of [-0.55, 0, 0.55]) seg(g, [cx + dx * r, cy + r * Math.sqrt(1 - dx * dx) - 4], [cx + dx * r * 1.12, cy + r + 30], { 'stroke-width': 4, stroke: '#8a8f99' });
+    const dl = seg(g, [cx - r, cy], [cx + r, cy], { stroke: DIA, 'stroke-width': 4, class: 'bk-stroke' }); hide(dl);
+    const ld = hide(lab(stage, cx, cy + r * EQ + 4, T('d=5.8\\text{ m}'), 's', 'u10l5-dl u10l5-wbg'));
+    const rl = seg(g, [cx, cy], [cx + r, cy], { stroke: RAD, 'stroke-width': 5 }); hide(rl);
+    const lr = hide(lab(stage, cx + r / 2, cy - 6, T('r=2.9\\text{ m}'), 'n', 'u10l5-rl u10l5-wbg'));
+    const Pn = panel(stage, 380, 14, ex.W - 394, Hh - 28, 'Spherical tank');
+    const L0 = hide(line(Pn, T('r=5.8\\div2=2.9\\text{ m}')));
+    const La = ['SA_{\\text{sphere}}=4\\pi r^2=4\\pi(2.9)^2', '=4\\pi(8.41)=33.64\\pi', '\\approx\\boldsymbol{105.7}\\text{ m}^2'].map((s) => hide(line(Pn, T(s), 'u10l5-ind')));
+    const Lb = ['V_{\\text{sphere}}=\\tfrac43\\pi r^3=\\tfrac43\\pi(2.9)^3', '=\\tfrac43\\pi(24.389)=32.5187\\pi', '\\approx\\boldsymbol{102.2}\\text{ m}^3'].map((s) => hide(line(Pn, T(s), 'u10l5-ind')));
+    La[0].insertAdjacentHTML('afterbegin', '<b>(a)</b> '); Lb[0].insertAdjacentHTML('afterbegin', '<b>(b)</b> ');
     return [
-      { cap: `(a) ${TQ('V=1\\times1\\times1=1\\text{ m}^3')}.`, run: (c) => say(c, Pn, '(a) ' + T('V=1\\times1\\times1=1\\text{ m}^3')) },
-      { cap: `(b) Every edge is <b>100 cm</b>. One floor 1 cm thick is ${TQ('100\\times100=10\\,000\\text{ cm}^3')}; stack <b>100</b> of them.`,
-        run: async (c) => {
-          await appear(c, K.ticks(), 300); await K.relabel(c, T('100\\text{ cm}'));
-          slab = drawBox(K.gFill, P, [0, 1, 0, 0.01, 0, 1], { fill: { front: '#7ea6ea', top: '#c8daf8', side: '#6a93dc' }, stroke: BLUE, sw: 1.2 });
-          await appear(c, slab, 300); await tween(c, 2000, (t) => slab.set([0, 1, 0, 0.01 + 0.99 * t, 0, 1]), (t) => t); await fade(c, K.hid, 0.25);
-          await say(c, Pn, '(b) ' + T('100\\times100\\times100=100^3')); await say(c, Pn, T('\\phantom{(b)}=1\\,000\\,000\\text{ cm}^3'));
-        } },
-      { cap: `(c) ${TQ('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')}. In millimetres every edge is 1000 mm: the factor 1000, once for <b>each</b> edge.`,
-        run: async (c) => {
-          await K.relabel(c, T('1000\\text{ mm}'));
-          const at = [P(0.5, 0.1, 0), P(0.13, 0.5, 0), P(1, 0.18, 0.5)];
-          for (let i = 0; i < 3; i++) { const e = lab(stage, at[i][0], at[i][1], T('\\times1000'), 'u10l5-call u10l5-calla', 'c'); pills.push(e); await pop(c, e); }
-        } },
-      { cap: `So ${TQ('1\\text{ m}^3=1000\\times1000\\times1000=1000^3=10^{9}\\text{ mm}^3')}, that is ${TQ('1\\,000\\,000\\,000\\text{ mm}^3')}.`,
-        run: async (c) => { const r = line(Pn, '(c) ' + T('1\\text{ m}^3=1000^3\\text{ mm}^3'), ''); await show(c, r); const r2 = line(Pn, T('=10^{9}=1\\,000\\,000\\,000\\text{ mm}^3'), 'u10l5-boxed'); await pop(c, r2, 450); await stampIn(c, stampP(Pn, 'factor used 3 times')); } }
+      { cap: `The tank’s <b>diameter</b> is 5.8 m. But every sphere formula uses the <b>radius</b>.`,
+        run: async (c) => { dl.style.opacity = 1; await drawIn(dl, 700, c); await pop(c, ld); } },
+      { cap: `Halve it first: ${T('r=5.8\\div2=2.9')} m.`,
+        run: async (c) => { await appear(c, rl); await pop(c, lr); await show(c, L0); } },
+      { cap: `(a) ${T('SA=4\\pi(2.9)^2=33.64\\pi\\approx105.7')} <b>square</b> metres.`,
+        run: async (c) => { for (const l of La) await show(c, l); } },
+      { cap: `(b) ${T('V=\\tfrac43\\pi(2.9)^3=32.5187\\pi\\approx102.2')} <b>cubic</b> metres. Keep ${T('\\pi')} exact; round only at the end.`,
+        run: async (c) => { for (const l of Lb) await show(c, l); } }
     ];
   }
 };
 
-/* =============================== explainer: Example 5, the prism =============================== */
-const prism = {
-  title: 'Example 5: 30 cubic metres, each a million cubic centimetres',
-  height: 470,
-  minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'ex5', label: 'Example 5 check' }],
-  intro: 'Build the 5 m by 2 m by 3 m prism from cubic metres. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const H = ex.def.height, s = 68, ox = 110, oy = H - 70, P = oblique(ox, oy, s);
-    const S = mkSvg(stage, ex.W, H), gF = svgEl('g', {}, S), gO = svgEl('g', {}, S);
-    drawBox(gO, P, [0, 5, 0, 3, 0, 2], { sw: 3.2 }); const hid = hiddenEdges(gO, P, [0, 5, 0, 3, 0, 2]);
-    const L = boxLabels(stage, P, 5, 3, 2, [T('5\\text{ m}'), T('3\\text{ m}'), T('2\\text{ m}')], 'u10l5-side');
-    const px0 = ox + s * (5 + 2 * KX) + 46, Pn = panel(stage, px0, 12, ex.W - px0 - 12, H - 24, 'Volume of the prism');
-    const layer = (y) => { const g = svgEl('g', {}, gF); for (let z = 1; z >= 0; z--) for (let x = 0; x < 5; x++) { const f = ['top']; if (z === 0) f.unshift('front'); if (x === 4) f.push('side'); drawBox(g, P, [x, x + 1, y, y + 1, z, z + 1], { fill: { front: '#bfe3df', top: '#e2f3f1', side: '#9fd2cc' }, stroke: TEAL, sw: 1.6, faces: f }); } g.style.opacity = 0; return g; };
-    const Ls = [];
-    return [
-      { cap: `The floor: ${TQ('5\\times2=10')} cubes of ${TQ('1\\text{ m}^3')}.`, run: async (c) => { Ls[0] = layer(0); await anim(c, Ls[0], [{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'none' }], 500); await say(c, Pn, T('5\\times2=10\\text{ cubes per layer}')); } },
-      { cap: `3 layers: ${TQ('V=5\\times2\\times3=30\\text{ m}^3')}.`,
-        run: async (c) => { for (const y of [1, 2]) { Ls[y] = layer(y); await anim(c, Ls[y], [{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'none' }], 450); } await fade(c, hid, 0.25); await say(c, Pn, '(a) ' + T('V=5\\times2\\times3=30\\text{ m}^3')); } },
-      { cap: `Each of those cubes is ${TQ('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')} (Example 4). <b>Way 1:</b> ${TQ('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')}.`,
-        run: async (c) => { const b = drawBox(gO, P, [4, 5, 2, 3, 0, 1], { fill: AMBF, sw: 2.4 }); await pop(c, b); const q = P(4.5, 3, 0.5); await pop(c, lab(stage, q[0], q[1] - 14, T('10^{6}\\text{ cm}^3'), 'u10l5-call u10l5-calla', 'b')); await say(c, Pn, '<b>1</b> ' + T('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')); } },
-      { cap: `<b>Way 2:</b> convert the edges: 500 cm, 200 cm and 300 cm. ${TQ('500\\times200\\times300=30\\,000\\,000\\text{ cm}^3')}.`,
-        run: async (c) => { await Promise.all([swap(c, L.b, T('500\\text{ cm}')), swap(c, L.l, T('300\\text{ cm}')), swap(c, L.d, T('200\\text{ cm}'))]); await say(c, Pn, '<b>2</b> ' + T('500\\times200\\times300')); await say(c, Pn, T('\\phantom{2}=30\\,000\\,000\\text{ cm}^3')); } },
-      { cap: `“Times 100” once would give ${TQ('30\\times100=3000\\text{ cm}^3')}: a cube only about 14 cm on an edge, not a room-sized prism.`,
-        run: async (c) => { const w = line(Pn, T('30\\times100=3000\\text{ cm}^3'), 'u10l5-wrong'); await show(c, w); await strike(c, w); await stampIn(c, stampP(Pn, 'ways 1 and 2 agree ✓')); } }
-    ];
-  }
-};
-
-/* =============================== explainer: imperial units from the unit square and cube (Example 7) =============================== */
-const IMP = {
-  ft2: { label: `Example 7(a): ${T('1\\text{ ft}^2')}`, kind: 'sq', big: 'ft', small: 'in', k: 12, title: 'Area of the square' },
-  ft3: { label: `Example 7(b): ${T('1\\text{ ft}^3')}`, kind: 'cb', big: 'ft', small: 'in', k: 12, title: 'Volume of the cube' },
-  yd2: { label: `Warm-up: ${T('1\\text{ yd}^2')}`, kind: 'sq', big: 'yd', small: 'ft', k: 3, title: 'Area of the square' },
-  yd3: { label: T('1\\text{ yd}^3'), kind: 'cb', big: 'yd', small: 'ft', k: 3, title: 'Volume of the cube' }
-};
-const imperial = {
-  title: 'Imperial: square the 12 (or the 3), cube the 12 (or the 3)',
-  height: 500,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(IMP).map((k) => ({ v: k, label: IMP[k].label })),
-  intro: 'The same picture as Sections 1 and 2, with imperial units. Press <b>Next</b>.',
-  make(stage, k, ex) { const d = IMP[k]; return d.kind === 'sq' ? squareSteps(stage, ex, d) : cubeSteps(stage, ex, Object.assign({ E: 268 }, d)); }
-};
-
-/* =============================== explainer: unit analysis with the table (Example 8) =============================== */
-const TROWS = [
-  { big: 'ft', small: 'in', k: '12', sq: '144', cb: '1728' },
-  { big: 'yd', small: 'ft', k: '3', sq: '9', cb: '27' },
-  { big: 'yd', small: 'in', k: '36', sq: '1296', cb: '46\\,656' },
-  { big: 'mi', small: 'yd', k: '1760', sq: '3\\,097\\,600', cb: '5\\,451\\,776\\,000' }
-];
-const EX8 = {
-  a: { label: 'Example 8(a)', v: '8', from: 'yd', to: 'ft', p: 2, row: 1, calc: '8\\times9', res: '72' },
-  b: { label: 'Example 8(b)', v: '2592', from: 'in', to: 'yd', p: 2, row: 2, calc: '2592\\div1296', res: '2' },
-  c: { label: 'Example 8(c)', v: '0.75', from: 'mi', to: 'yd', p: 2, row: 3, calc: '0.75\\times3\\,097\\,600', res: '2\\,323\\,200' },
-  d: { label: 'Example 8(d)', v: '3.5', from: 'ft', to: 'in', p: 3, row: 0, calc: '3.5\\times1728', res: '6048' },
-  e: { label: 'Example 8(e)', v: '58\\,320', from: 'in', to: 'ft', p: 3, row: 0, calc: '58\\,320\\div1728', res: '33.75' },
-  f: { label: 'Example 8(f)', v: '0.02', from: 'mi', to: 'yd', p: 3, row: 3, calc: '0.02\\times5\\,451\\,776\\,000', res: '109\\,035\\,520', sci: '1.09\\times10^{8}' }
-};
-const cancel = {
-  title: 'Unit analysis: square or cube the factor, then cancel',
-  height: 480,
+/* =============================== explainer: slice a sphere (Example 2) — the STAR hemisphere surface =============================== */
+const slice = {
+  title: 'Example 2 check: half a sphere',
+  height: 440,
   minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(EX8).map((k) => ({ v: k, label: EX8[k].label })),
-  intro: 'Pick the row of the table, square or cube it, then let the units cancel. Press <b>Next</b>.',
+  choices: [{ v: 'vol', label: '(a) Volume' }, { v: 'sa', label: '(b), (c) Surface area' }],
+  intro: (v) => (v === 'vol' ? 'Slice a sphere exactly through its centre. Press <b>Next</b>.' : 'A hemisphere has a curved dome and a flat floor. Press <b>Next</b>.'),
   make(stage, k, ex) {
-    const d = EX8[k], r = TROWS[d.row], W = ex.W, p = d.p, down = d.from === r.big; // down: big unit → small unit (multiply)
-    const fac = p === 2 ? r.sq : r.cb, sqw = p === 2 ? 'square' : 'cube';
-    const tb = add(stage, h('div', 'u10l5-mtbl'), 20, 12); tb.style.width = (W - 40) + 'px';
-    tb.innerHTML = '<div class="u10l5-mh">Linear</div><div class="u10l5-mh">Square</div><div class="u10l5-mh">Cubic</div>';
-    const cellsT = TROWS.map((R) => [`1${U(R.big)}=${R.k}${U(R.small)}`, `1${U(R.big, 2)}=${R.sq}${U(R.small, 2)}`, `1${U(R.big, 3)}=${R.cb}${U(R.small, 3)}`].map((t) => { const e = h('div', 'u10l5-mc', T(t)); tb.appendChild(e); return e; }));
-    const ws = add(stage, h('div', 'u10l5-ua'), 20, 262); ws.style.width = (W - 40) + 'px';
-    const unit = (u) => `<span class="u10l5-un">${T(UU(u, p))}</span>`;
-    const fr = (nu, de) => `<span class="u10l5-fr"><span class="u10l5-nu">${nu}</span><span class="u10l5-de">${de}</span></span>`;
-    const conv = down ? fr(`${T(fac)} ${unit(d.to)}`, `${T('1')} ${unit(d.from)}`) : fr(`${T('1')} ${unit(d.to)}`, `${T(fac)} ${unit(d.from)}`);
-    ws.innerHTML = `<span class="u10l5-uap">${fr(`${T(d.v)} ${unit(d.from)}`, T('1'))}</span><span class="u10l5-uap u10l5-op">${T('\\times')}</span><span class="u10l5-uap">${conv}</span><span class="u10l5-uap u10l5-op">${T('=')}</span><span class="u10l5-uap u10l5-res">${T(d.calc)}</span>`;
-    const parts = [...ws.querySelectorAll('.u10l5-uap')]; parts.forEach(hide);
-    const cutU = [...ws.querySelectorAll('.u10l5-un')].filter((e, i) => i === 0 || i === 2);
-    const res = add(stage, h('div', 'u10l5-ures'), 20, 380); res.style.width = (W - 40) + 'px'; hide(res);
-    const lin = cellsT[d.row][0], sqc = cellsT[d.row][p - 1];
+    const W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
+    if (k === 'vol') {
+      const cx = 165, cy = 220, r = 110, ry = r * EQ;
+      const bot = G(g), top = G(g);
+      svgEl('path', { d: `M${cx - r} ${cy} A${r} ${r} 0 0 0 ${cx + r} ${cy} A${r} ${ry} 0 0 0 ${cx - r} ${cy} Z`, fill: BALL }, bot);
+      P(`M${cx - r} ${cy} A${r} ${r} 0 0 0 ${cx + r} ${cy}`, {}, bot);
+      const face = svgEl('ellipse', { cx, cy, rx: r, ry, fill: FLOOR_F, stroke: FLR, 'stroke-width': 2.4 }, bot); hide(face);
+      const dm = dome(top, cx, cy, r, { op: 1 });
+      dm.back.style.opacity = 0;
+      const eqF = P(halfE(cx, cy, r, ry, false), { 'stroke-width': 2 }, g), eqB = P(halfE(cx, cy, r, ry, true), { 'stroke-width': 1.8, 'stroke-dasharray': '7 6', opacity: 0.7 }, g);
+      const knife = seg(g, [cx - r - 40, cy], [cx + r + 40, cy], { stroke: RAD, 'stroke-width': 3, 'stroke-dasharray': '10 6', class: 'bk-stroke' }); hide(knife);
+      const lr = lab(stage, cx + r / 2, cy - 4, T('r'), 'n', 'u10l5-rl'), rl = seg(g, [cx, cy], [cx + r, cy], { stroke: RAD, 'stroke-width': 3 });
+      const lH1 = hide(lab(stage, cx + r + 14, cy - 80, 'hemisphere', 'e', 'u10l5-tl')), lH2 = hide(lab(stage, cx + r + 14, cy + 90, 'hemisphere', 'e', 'u10l5-tl'));
+      const Pn = panel(stage, 440, 14, W - 454, Hh - 28, 'Volume', 'u10l5-lg');
+      const ls = ['V_{\\text{sphere}}=\\tfrac43\\pi r^3', 'V_{\\text{hemi}}=\\tfrac12\\left(\\tfrac43\\pi r^3\\right)', 'V_{\\text{hemi}}=\\dfrac23\\pi r^3'].map((s, i) => hide(line(Pn, T(s), i === 2 ? 'u10l5-boxed' : '')));
+      const sepr = (t) => { top.setAttribute('transform', `translate(0 ${-36 * t})`); bot.setAttribute('transform', `translate(0 ${44 * t})`); };
+      return [
+        { cap: `A sphere of radius ${T('r')}: ${T('V=\\tfrac43\\pi r^3')}.`, run: async (c) => { await show(c, ls[0]); } },
+        { cap: `Slice it exactly through the <b>centre</b>, like cutting a semi-circle from a circle.`,
+          run: async (c) => { knife.style.opacity = 1; await drawIn(knife, 700, c); } },
+        { cap: `Two equal halves, each a <b>hemisphere</b> with the same radius ${T('r')}.`,
+          run: async (c) => {
+            knife.style.opacity = 0; eqF.style.opacity = 0; eqB.style.opacity = 0; rl.style.opacity = 0; lr.style.opacity = 0; face.style.opacity = 1; dm.back.style.opacity = 0.7;
+            await tween(c, 900, sepr); await show(c, lH1); await show(c, lH2);
+          } },
+        { cap: `Each half holds half the volume: ${T('V_{\\text{hemi}}=\\tfrac12\\left(\\tfrac43\\pi r^3\\right)=\\tfrac23\\pi r^3')}.`,
+          run: async (c) => { await show(c, ls[1]); await pop(c, ls[2], 500); } }
+      ];
+    }
+    // surface area: 2 great circles curved + 1 floor
+    const R = 80, dx = 130, dy = 270, cy = 150, xs = [330, 510, 730];
+    const D = dome(g, dx, dy, R, { floor: true, op: 1, fill: PEEL });
+    D.shell.setAttribute('fill-opacity', 0.9); D.floor.setAttribute('fill-opacity', 1);
+    const pith = svgEl('path', { d: D.shell.getAttribute('d'), fill: PITH }, g); hide(pith);
+    D.insertBefore(pith, D.top);
+    const lCur = lab(stage, dx, dy - R - 8, 'curved', 'n', 'u10l5-tl u10l5-or'), lFl = lab(stage, dx, dy + R * EQ + 6, 'floor', 's', 'u10l5-tl u10l5-bl');
+    const circ = xs.map((x, i) => traced(g, x, cy, R, i < 2 ? PEEL_D : FLR)); circ.forEach(hide);
+    const plus = hide(lab(stage, (xs[1] + xs[2]) / 2, cy, T('+'), 'c', 'u10l5-big'));
+    const pg = G(g), sets = peelSet(pg, xs.slice(0, 2).map((x) => [x, cy]), R, { x: dx, y: dy - R * 0.45, r: R * 0.8, s: 0.45 }, 21); hide(pg);
+    const fl = svgEl('ellipse', { cx: dx, cy: dy, rx: R, ry: R * EQ, fill: FLOOR_F, stroke: FLR, 'stroke-width': 2.4 }, g); hide(fl);
+    const pis = xs.map((x) => hide(lab(stage, x, cy + R + 8, T('\\pi r^2'), 's', 'u10l5-tl')));
+    const br1 = hide(lab(stage, (xs[0] + xs[1]) / 2, cy + R + 44, `curved: ${T('2\\pi r^2')}`, 's', 'u10l5-tl u10l5-or'));
+    const br2 = hide(lab(stage, xs[2], cy + R + 44, `floor: ${T('\\pi r^2')}`, 's', 'u10l5-tl u10l5-bl'));
+    const fb = hide(lab(stage, 560, Hh - 66, `(b) ${T('SA_{\\text{hemi}}=2\\pi r^2+\\pi r^2=3\\pi r^2')}`, 'c', 'u10l5-big'));
+    const fc = hide(lab(stage, 560, Hh - 26, `(c) base <u>not</u> included: ${T('SA=2\\pi r^2')}`, 'c', 'u10l5-big'));
+    const x3 = G(g); P(`M${xs[2] - 50} ${cy - 50} L${xs[2] + 50} ${cy + 50} M${xs[2] + 50} ${cy - 50} L${xs[2] - 50} ${cy + 50}`, { stroke: RAD, 'stroke-width': 6 }, x3); hide(x3);
     return [
-      { cap: `Convert ${TQ(`${d.v}${U(d.from, p)}`)} to ${TQ(UU(d.to, p))}. Start from the linear fact: ${TQ(`1${U(r.big)}=${r.k}${U(r.small)}`)}.`,
-        run: async (c) => { lin.classList.add('u10l5-hl1'); await pulse(c, lin, 1.08); } },
-      { cap: `${p === 2 ? 'Square' : 'Cubic'} units, so ${sqw} it: ${TQ(`1${U(r.big, p)}=${r.k}^${p}=${fac}${U(r.small, p)}`)}.`,
-        run: async (c) => { sqc.classList.add('u10l5-hl2'); await pulse(c, sqc, 1.08); } },
-      { cap: `Write the given over 1. The conversion fraction puts ${TQ(UU(d.from, p))} on the <b>bottom</b>, so it cancels.`,
-        run: async (c) => { for (const e of parts.slice(0, 3)) await fadeIn(c, e); } },
-      { cap: `${TQ(UU(d.from, p))} on the top and on the bottom cancel, leaving ${TQ(UU(d.to, p))}.`,
-        run: async (c) => { for (const e of cutU) await strike(c, e); } },
-      { cap: `${TQ(`${d.calc}=${d.res}`)}, so ${TQ(`${d.v}${U(d.from, p)}=${d.res}${U(d.to, p)}`)}${d.sci ? `${TQ(`=${d.sci}${U(d.to, p)}`)} (2 d.p.)` : ''}.`,
-        run: async (c) => { await fadeIn(c, parts[3]); await fadeIn(c, parts[4]); res.innerHTML = T(`=${d.res}${U(d.to, p)}${d.sci ? `=${d.sci}${U(d.to, p)}` : ''}`); await pop(c, res, 450); const s = stamp(stage, `${down ? '×' : '÷'} ${r.k}${p === 2 ? '²' : '³'}`, { x: W - 110, y: 420 }); await stampIn(c, s); } }
+      { cap: `A hemisphere has two surfaces: the <b>curved</b> dome and the flat circular <b>floor</b>. Trace three circles of radius ${T('r')}.`,
+        run: async (c) => { await pulse(c, lCur); await pulse(c, lFl); for (const ci of circ) { ci.style.opacity = 1; await drawIn(ci, 380, c); } } },
+      { cap: `Peel the dome. It is <b>half</b> of a sphere’s peel, and a whole sphere’s peel fills 4 circles…`,
+        run: async (c) => { await appear(c, pg); await appear(c, pith, 250); } },
+      { cap: `…so the dome’s peel fills <b>2 great circles</b>: curved surface ${T('=\\tfrac12(4\\pi r^2)=2\\pi r^2')}.`,
+        run: async (c) => { await flyPieces(c, sets.flat(), 850, 60, 80); await pop(c, pis[0], 260); await pop(c, pis[1], 260); await show(c, br1); } },
+      { cap: `The floor is <b>1 great circle</b> (a circle through the centre): ${T('\\pi r^2')}.`,
+        run: async (c) => {
+          fl.style.opacity = 1; D.floor.style.opacity = 0.25;
+          await tween(c, 1100, (t) => { fl.setAttribute('cx', dx + (xs[2] - dx) * t); fl.setAttribute('cy', dy + (cy - dy) * t - 40 * Math.sin(PI * t)); fl.setAttribute('ry', R * EQ + (R - R * EQ) * t); });
+          await pop(c, plus); await pop(c, pis[2], 260); await show(c, br2);
+        } },
+      { cap: `(b) A closed hemisphere: curved <b>plus</b> floor, ${T('2\\pi r^2+\\pi r^2=3\\pi r^2')}.`,
+        run: async (c) => { await show(c, fb); } },
+      { cap: `(c) If the base is <b>not</b> included (an open bowl, a dome with no floor): just ${T('2\\pi r^2')}.`,
+        run: async (c) => { await appear(c, x3); await show(c, fc); } }
     ];
   }
 };
 
-/* =============================== explainer: which factor? (flowchart) =============================== */
-const WH = {
-  e2: { label: 'Example 2(b): 7 m to cm', kind: 'len', given: '7\\text{ m}', to: '\\text{cm}', f1: '1\\text{ m}=100\\text{ cm}', f2: null, down: true, calc: '7\\times100=700\\text{ cm}' },
-  c3: { label: 'Example 3(c)', kind: 'area', given: '0.0037\\text{ km}^2', to: '\\text{m}^2', f1: '1\\text{ km}=1000\\text{ m}', f2: '1\\text{ km}^2=1000^2=10^{6}\\text{ m}^2', down: true, calc: '0.0037\\times10^{6}=3700\\text{ m}^2' },
-  d6: { label: 'Example 6(d)', kind: 'vol', given: '63\\,000\\text{ mm}^3', to: '\\text{cm}^3', f1: '1\\text{ cm}=10\\text{ mm}', f2: '1\\text{ cm}^3=10^3=1000\\text{ mm}^3', down: false, calc: '63\\,000\\div1000=63\\text{ cm}^3' },
-  e8: { label: 'Example 8(e)', kind: 'vol', given: '58\\,320\\text{ in}^3', to: '\\text{ft}^3', f1: '1\\text{ ft}=12\\text{ in}', f2: '1\\text{ ft}^3=12^3=1728\\text{ in}^3', down: false, calc: '58\\,320\\div1728=33.75\\text{ ft}^3' },
-  b9: { label: 'Example 9(b): Bin B', kind: 'area', given: '59\\text{ ft}^2', to: '\\text{in}^2', f1: '1\\text{ ft}=12\\text{ in}', f2: '1\\text{ ft}^2=12^2=144\\text{ in}^2', down: true, calc: '59\\times144=8496\\text{ in}^2' }
-};
-const which = {
-  title: 'Which factor, and multiply or divide?',
-  height: 470,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
-  intro: 'Two questions decide every conversion. Press <b>Next</b>.',
+/* =============================== explainer: Example 3, the string around the soccer ball =============================== */
+const string = {
+  title: 'Example 3 check: from a string to the volume',
+  height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'ex3', label: 'Example 3 check' }, { v: 'early', label: `Round ${T('r')} too early?` }],
+  intro: (v) => (v === 'ex3' ? 'A string wrapped once around a soccer ball measures 70 cm. Press <b>Next</b>.' : 'What changes if you round the radius before cubing it? Press <b>Next</b>.'),
   make(stage, k, ex) {
-    const d = WH[k], H = ex.def.height, FW = 600;
-    const F = new Flowchart(stage, { x: 8, y: 6, width: FW, height: H - 12,
+    const W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
+    const cx = 140, cy = 150, r = 100, ry = r * EQ, x0 = 40, sy = 330, Ls = PI * 2 * r;
+    soccer(g, cx, cy, r);
+    const sF = P(halfE(cx, cy, r, ry, false), { stroke: RAD, 'stroke-width': 4.5, class: 'bk-stroke' }, g), sB = P(halfE(cx, cy, r, ry, true), { stroke: RAD, 'stroke-width': 3, 'stroke-dasharray': '6 5', class: 'bk-stroke' }, g);
+    const sL = P(`M${x0} ${sy} L${x0 + Ls} ${sy}`, { stroke: RAD, 'stroke-width': 5, class: 'bk-stroke' }, g);
+    const lC = lab(stage, x0 + Ls, sy - 6, `${T('C=70')} cm`, 'ne', 'u10l5-rl u10l5-wbg', 0);
+    const ticks = G(g), dls = [];
+    for (let i = 0; i <= 3; i++) seg(ticks, [x0 + i * 2 * r, sy - 12], [x0 + i * 2 * r, sy + 12], { 'stroke-width': 2.4 });
+    for (let i = 0; i < 3; i++) dls.push(lab(stage, x0 + (i + 0.5) * 2 * r, sy + 12, T('d'), 's', 'u10l5-dl'));
+    const lExtra = lab(stage, x0 + 6 * r + (Ls - 6 * r) / 2, sy + 12, 'a bit', 's', 'u10l5-sm');
+    const rl = seg(g, [cx, cy], [cx + r, cy], { stroke: RAD, 'stroke-width': 3.5 });
+    const lr = lab(stage, cx + r / 2, cy - 4, T('r'), 'n', 'u10l5-rl u10l5-wbg');
+    [sF, sB, sL, lC, ticks, lExtra, rl, lr, ...dls].forEach(hide);
+    const Pn = panel(stage, 300, 14, W - 314, 268, k === 'ex3' ? 'Soccer ball' : 'Two ways to round');
+    if (k === 'early') {
+      const a = ['r=\\dfrac{70}{2\\pi}=11.1408\\ldots\\text{ cm}'].map((s) => hide(line(Pn, T(s))));
+      const b = hide(line(Pn, `Round first: ${T('V=\\tfrac43\\pi(11.1)^3\\approx5728.7\\text{ cm}^3')}`, 'u10l5-no'));
+      const cc = hide(line(Pn, `Keep every digit: ${T('V\\approx\\boldsymbol{5792.2}\\text{ cm}^3')}`, 'u10l5-ok'));
+      const d = hide(line(Pn, `Off by about ${T('63.5\\text{ cm}^3')}: cubing makes a small rounding error grow.`, 'u10l5-sm'));
+      return [
+        { cap: `The string is the circumference: ${T('C=2\\pi r=70')}, so ${T('r=\\dfrac{70}{2\\pi}=11.1408\\ldots')} cm.`,
+          run: async (c) => { [sF, sB].forEach((e) => (e.style.opacity = 1)); await drawIn(sF, 500, c); await appear(c, rl); await pop(c, lr); await show(c, a[0]); } },
+        { cap: `Round ${T('r')} to 11.1 first, then cube: ${T('\\tfrac43\\pi(11.1)^3\\approx5728.7')} cm³.`,
+          run: async (c) => { await show(c, b); } },
+        { cap: `Keep all the digits of ${T('r')} (one line on the calculator): ${T('V\\approx5792.2')} cm³.`,
+          run: async (c) => { await show(c, cc); } },
+        { cap: `The early-rounded answer is off by about 63.5 cm³. <b>Round only at the very end.</b>`,
+          run: async (c) => { await show(c, d); const s = stamp(Pn, 'round at the end ✓'); s.style.alignSelf = 'center'; s.style.marginTop = '14px'; await stampIn(c, s); } }
+      ];
+    }
+    const ls = ['C=2\\pi r=70', 'r=\\dfrac{70}{2\\pi}=\\dfrac{35}{\\pi}\\approx11.1408\\text{ cm}', 'V=\\tfrac43\\pi r^3=\\tfrac43\\pi\\left(\\dfrac{35}{\\pi}\\right)^3\\approx\\boldsymbol{5792.2}\\text{ cm}^3', 'V=\\dfrac{C^3}{6\\pi^2}=\\dfrac{70^3}{6\\pi^2}=\\dfrac{343\\,000}{59.2176\\ldots}\\approx5792.2']
+      .map((s, i) => hide(line(Pn, T(s), i === 3 ? 'u10l5-sm' : '')));
+    return [
+      { cap: `Wrap the string once around the ball’s <b>widest</b> point: a <b>great circle</b>, through the centre.`,
+        run: async (c) => { sF.style.opacity = 1; sB.style.opacity = 1; await drawIn(sB, 500, c); await drawIn(sF, 600, c); } },
+      { cap: `Pull it straight and measure it: <b>70 cm</b>. That is the ball’s <b>circumference</b>.`,
+        run: async (c) => { await appear(c, sB, 200); sB.style.opacity = 0.35; sF.style.opacity = 0.35; sL.style.opacity = 1; await drawIn(sL, 1200, c); await pop(c, lC); await show(c, ls[0]); } },
+      { cap: `It’s a bit more than <b>3 diameters</b> (exactly ${T('\\pi')} of them), just like the tennis ball can.`,
+        run: async (c) => { await appear(c, ticks); for (const d of dls) await pop(c, d, 250); await show(c, lExtra); } },
+      { cap: `Solve ${T('2\\pi r=70')} for the radius: ${T('r=\\dfrac{70}{2\\pi}\\approx11.1408')} cm. Keep all the digits.`,
+        run: async (c) => { await appear(c, rl); await pop(c, lr); await show(c, ls[1]); } },
+      { cap: `${T('V=\\tfrac43\\pi r^3\\approx5792.2')} <b>cm³</b>.`,
+        run: async (c) => { await pop(c, ls[2], 500); } },
+      { cap: `Or skip ${T('r')} altogether: ${T('V=\\dfrac{C^3}{6\\pi^2}=\\dfrac{70^3}{6\\pi^2}\\approx5792.2')} cm³, the same answer with no rounding along the way.`,
+        run: async (c) => { await show(c, ls[3]); } }
+    ];
+  }
+};
+
+/* =============================== explainer: Example 4, the same dome with and without its floor =============================== */
+const domes = {
+  title: 'Example 4 check: Sana’s and Tavi’s sheds',
+  height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  intro: 'Two domes, both 12 ft across. Only one has a floor. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
+    const xa = W * 0.26, xb = W * 0.74, by = 196, r = 104, tr = 30, ty = 290;
+    const A = dome(g, xa, by, r, { floor: true }), B = dome(g, xb, by, r, { floor: false });
+    A.floor.style.opacity = 0;
+    lab(stage, xa, 30, '<b>Sana</b>: with a floor', 'c', 'u10l5-tl'); lab(stage, xb, 30, '<b>Tavi</b>: no floor', 'c', 'u10l5-tl');
+    const rA = seg(g, [xa, by], [xa + r, by], { stroke: RAD, 'stroke-width': 3.5 }), rB = seg(g, [xb, by], [xb + r, by], { stroke: RAD, 'stroke-width': 3.5 });
+    const lrs = [xa, xb].map((x) => hide(lab(stage, x + r / 2, by - 4, T('r=6'), 'n', 'u10l5-rl u10l5-wbg')));
+    const lds = [xa, xb].map((x) => lab(stage, x, by + r * EQ + 4, T('d=12\\text{ ft}'), 's', 'u10l5-dl'));
+    [rA, rB].forEach(hide);
+    const tile = (x, color, fill) => { const t = svgEl('circle', { cx: x, cy: ty, r: tr, fill, stroke: color, 'stroke-width': 2.4 }, g); hide(t); return t; };
+    const tA = [tile(xa - 74, PEEL_D, PEEL), tile(xa, PEEL_D, PEEL)], tAf = tile(xa + 74, FLR, FLOOR_F), tB = [tile(xb - 37, PEEL_D, PEEL), tile(xb + 37, PEEL_D, PEEL)];
+    const cA = hide(lab(stage, xa - 37, ty + tr + 4, T('2\\pi r^2=72\\pi'), 's', 'u10l5-sm u10l5-or')), cB = hide(lab(stage, xb, ty + tr + 4, T('2\\pi r^2=72\\pi'), 's', 'u10l5-sm u10l5-or'));
+    const fA = hide(lab(stage, xa + 74, ty + tr + 4, T('\\pi r^2=36\\pi'), 's', 'u10l5-sm u10l5-bl'));
+    const sA = hide(lab(stage, xa, Hh - 52, T('SA=3\\pi r^2=3\\pi(36)=\\boldsymbol{108\\pi}\\text{ ft}^2') + '<div class="u10l5-sm u10l5-mid">' + T('\\approx339.3\\text{ ft}^2') + '</div>', 'c', 'u10l5-big'));
+    const sB = hide(lab(stage, xb, Hh - 52, T('SA=2\\pi r^2=2\\pi(36)=\\boldsymbol{72\\pi}\\text{ ft}^2') + '<div class="u10l5-sm u10l5-mid">' + T('\\approx226.2\\text{ ft}^2') + '</div>', 'c', 'u10l5-big'));
+    return [
+      { cap: `Same dome, ${T('d=12')} ft. Halve it: ${T('r=6')} ft, so ${T('r^2=36')} ft².`,
+        run: async (c) => { await Promise.all([appear(c, rA), appear(c, rB)]); await Promise.all(lrs.map((l) => pop(c, l))); } },
+      { cap: `Both sheds need the <b>curved</b> dome: 2 great circles, ${T('2\\pi r^2=2\\pi(36)=72\\pi')} ft².`,
+        run: async (c) => { for (const t of [...tA, ...tB]) await pop(c, t, 260); await show(c, cA); await show(c, cB); } },
+      { cap: `Only Sana builds a <b>floor</b>: one more great circle, ${T('\\pi r^2=36\\pi')} ft².`,
+        run: async (c) => { await appear(c, A.floor, 500); await pop(c, tAf); await show(c, fA); } },
+      { cap: `Sana: ${T('3\\pi r^2=108\\pi')} ft² (≈ 339.3 ft²). Tavi: ${T('2\\pi r^2=72\\pi')} ft² (≈ 226.2 ft²).`,
+        run: async (c) => { await show(c, sA); await show(c, sB); } },
+      { cap: `The difference is exactly one floor: ${T('108\\pi-72\\pi=36\\pi')} ft². The <b>wording</b> decides whether the base counts.`,
+        run: async (c) => { await pulse(c, tAf, 1.25); } }
+    ];
+  }
+};
+
+/* =============================== explainer: does the flat base count? (Flowchart) =============================== */
+const FL = {
+  b: { label: 'Example 2(b)', text: 'Surface area of a hemisphere = curved surface area + area of <b>circular base</b>', yes: true, why: 'The base is named in the statement.', res: T('2\\pi r^2+\\pi r^2=3\\pi r^2') },
+  c: { label: 'Example 2(c)', text: 'Surface area of a hemisphere, if the base is <b><u>not</u> included</b>', yes: false, why: 'The wording leaves the base out.', res: T('2\\pi r^2') },
+  sana: { label: 'Sana’s shed', text: 'Sana’s shed will <b>include a circular floor</b> built from the same material as the dome.', yes: true, why: 'She builds the floor too.', res: T('3\\pi(6)^2=108\\pi\\text{ ft}^2') },
+  tavi: { label: 'Tavi’s shed', text: 'Tavi’s shed will have <b>no floor</b>.', yes: false, why: 'No floor is built.', res: T('2\\pi(6)^2=72\\pi\\text{ ft}^2') },
+  hemi: { label: 'Just “a hemisphere”', text: 'Find the surface area of <b>a hemisphere</b> of radius ' + T('r') + '.', yes: true, why: 'Nothing excludes the base, so it counts.', res: T('3\\pi r^2') },
+  bowl: { label: 'An open bowl', text: 'A hemispherical <b>open bowl</b>: the flat side is open.', yes: false, why: 'There is no lid over the flat side.', res: T('2\\pi r^2') }
+};
+const floor = {
+  title: 'Does the flat base count?',
+  height: 400,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(FL).map((k) => ({ v: k, label: FL[k].label })),
+  intro: 'Read the wording, then follow the chart. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const d = FL[k], W = ex.W, Hh = ex.def.height, fw = W - 360;
+    const card = add(stage, box(h('div', 'u10l5-scen', `<div class="u10l5-ph">The wording</div><div class="u10l5-scen-t">${d.text}</div>`), 310, Hh - 28), 14, 14);
+    const why = hide(h('div', 'u10l5-line u10l5-sm', d.why)); card.appendChild(why);
+    const res = hide(h('div', 'u10l5-line u10l5-big', 'SA ' + T('=') + ' ' + d.res)); card.appendChild(res);
+    const F = new Flowchart(stage, {
+      x: 340, y: 10, width: fw, height: Hh - 20,
       nodes: {
-        start: { x: 300, y: 38, w: 340, h: 54, html: '<b>What is being measured?</b>', cls: 'bk-round' },
-        len: { x: 98, y: 146, w: 186, h: 78, html: `<b>Length</b>${T('\\text{cm},\\ \\text{ft}')}: factor once`, color: 'blue' },
-        area: { x: 300, y: 146, w: 186, h: 78, html: `<b>Area</b>${T('\\text{cm}^2,\\ \\text{ft}^2')}: factor <b>squared</b>`, color: 'teal' },
-        vol: { x: 502, y: 146, w: 186, h: 78, html: `<b>Volume</b>${T('\\text{cm}^3,\\ \\text{ft}^3')}: factor <b>cubed</b>`, color: 'purple' },
-        dir: { x: 300, y: 266, w: 340, h: 54, html: '<b>Going to a smaller unit?</b>', cls: 'bk-round' },
-        mul: { x: 160, y: 386, w: 250, h: 74, html: '<b>Yes: multiply</b>more of the small units', color: 'green' },
-        div: { x: 440, y: 386, w: 250, h: 74, html: '<b>No: divide</b>fewer of the big units', color: 'red' }
+        q: { x: fw / 2, y: 44, w: 330, h: 58, html: '<b>Surface area of a hemisphere</b>', cls: 'bk-round' },
+        d: { x: fw / 2, y: 160, w: 330, h: 104, html: '<b>Is the flat circular base part of the surface?</b>', cls: 'bk-diamond' },
+        y: { x: fw * 0.24, y: 312, w: 250, h: 92, html: `<b>Yes: curved + base</b>${T('2\\pi r^2+\\pi r^2=3\\pi r^2')}`, color: 'orange' },
+        n: { x: fw * 0.76, y: 312, w: 250, h: 92, html: `<b>No: curved only</b>${T('2\\pi r^2')}`, color: 'blue' }
       },
-      edges: [{ from: 'start', to: 'len', route: 'vhv' }, { from: 'start', to: 'area' }, { from: 'start', to: 'vol', route: 'vhv' },
-        { from: 'len', to: 'dir', route: 'vhv' }, { from: 'area', to: 'dir' }, { from: 'vol', to: 'dir', route: 'vhv' },
-        { from: 'dir', to: 'mul', label: 'yes', route: 'vhv' }, { from: 'dir', to: 'div', label: 'no', route: 'vhv' }] });
-    const Pn = panel(stage, FW + 22, 12, ex.W - FW - 34, H - 24, 'Convert');
-    const kn = { len: 'length', area: 'square', vol: 'cubic' }[d.kind], fw = { len: 'used once', area: '<b>squared</b>', vol: '<b>cubed</b>' }[d.kind];
+      edges: [{ from: 'q', to: 'd' }, { from: 'd', to: 'y', label: 'yes, or not mentioned', route: 'hv' }, { from: 'd', to: 'n', label: 'no', route: 'hv' }]
+    });
+    const end = d.yes ? 'y' : 'n';
     return [
-      { cap: `Convert ${TQ(d.given)} to ${TQ(d.to)}.`, run: async (c) => { await F.visit(c, 'start'); await say(c, Pn, T(`${d.given}\\to${d.to}`)); } },
-      { cap: `${d.kind === 'len' ? 'A length' : `${TQ(d.to)} is a ${kn} unit`}, so the linear factor is ${fw}: ${TQ(d.f2 || d.f1)}.`,
-        run: async (c) => { await F.go(c, 'start', d.kind); await F.visit(c, d.kind); await say(c, Pn, T(d.f1)); if (d.f2) await say(c, Pn, T(d.f2)); } },
-      { cap: `${d.down ? 'Going to a <b>smaller</b> unit: there will be more of them, so <b>multiply</b>.' : 'Going to a <b>bigger</b> unit: there will be fewer of them, so <b>divide</b>.'}`,
-        run: async (c) => { await F.go(c, d.kind, 'dir'); await F.visit(c, 'dir'); const e = d.down ? 'mul' : 'div'; await F.go(c, 'dir', e); await F.visit(c, e); } },
-      { cap: `${TQ(d.calc)}.`, run: async (c) => { const r = line(Pn, T(d.calc), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(Pn, d.down ? 'multiply' : 'divide')); } }
+      { cap: `Read the wording: ${d.text}`, run: async (c) => { await pulse(c, card, 1.03); await F.visit(c, 'q'); } },
+      { cap: `Is the flat base part of the surface? <b>${d.yes ? 'Yes' : 'No'}.</b> ${d.why}`, run: async (c) => { await F.go(c, 'q', 'd'); await F.visit(c, 'd'); await show(c, why); } },
+      { cap: `So ${d.yes ? 'count the curved dome <b>and</b> the floor' : 'count the curved dome <b>only</b>'}: SA ${T('=')} ${d.res}.`, run: async (c) => { await F.go(c, 'd', end); await F.visit(c, end); await pop(c, res); } }
     ];
   }
 };
 
-/* =============================== explainer: Example 9, the two bins =============================== */
-const BA = { L: 1.2, H: 0.7, D: 0.9 }, BB = { L: 1.2192, H: 0.762, D: 0.9144 };
-const bins = {
-  title: 'Example 9: the metric bin and the imperial bin, in one unit',
-  height: 500,
-  minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'vol', label: 'Example 9(a) check: volume' }, { v: 'sa', label: 'Example 9(b) check: surface area' }],
-  intro: 'Two bins, two systems. Convert both to the same unit, then compare. Press <b>Next</b>.',
+/* =============================== explainer: Example 5, run the formula backwards =============================== */
+const BK = {
+  ex5: { label: 'Example 5 check', V: '3053.6', unit: 'ft', r3: '728.99', r: '9.0', calc: ['\\dfrac{3(3053.6)}{4\\pi}', '\\dfrac{9160.8}{12.56637}'], lo: 8, hi: 9, note: 'just under 9', near: '9^3=729', chk: '\\tfrac43\\pi(9.0)^3=972\\pi\\approx3053.6\\text{ ft}^3' },
+  mika: { label: 'Mika’s ball: 320 mL', V: '320', unit: 'cm', r3: '76.39', r: '4.2', calc: ['\\dfrac{3(320)}{4\\pi}', '\\dfrac{960}{12.56637}'], lo: 4, hi: 5, note: 'between 4 and 5', near: '4^3=64,\\ 5^3=125', chk: '\\tfrac43\\pi(4.2431\\ldots)^3=320\\text{ cm}^3' }
+};
+const backwards = {
+  title: 'Example 5 check: from the volume back to the radius',
+  height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(BK).map((k) => ({ v: k, label: BK[k].label })),
+  intro: 'The volume formula is a machine: radius in, volume out. Run it backwards. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const H = ex.def.height, s = 135, W = ex.W;
-    const S = mkSvg(stage, W, H), g = svgEl('g', {}, S), gTop = svgEl('g', {}, S);
-    const PA = oblique(80, 214, s), PB = oblique(378, 214, s);
-    const fillW = { front: '#fff', top: '#f4f6fa', side: '#e9edf4' };
-    const bA = drawBox(g, PA, [0, BA.L, 0, BA.H, 0, BA.D], { fill: fillW, sw: 2.6 }); hiddenEdges(g, PA, [0, BA.L, 0, BA.H, 0, BA.D]);
-    const bB = drawBox(g, PB, [0, BB.L, 0, BB.H, 0, BB.D], { fill: fillW, sw: 2.6, stroke: PUR }); hiddenEdges(g, PB, [0, BB.L, 0, BB.H, 0, BB.D], PUR);
-    boxLabels(stage, PA, BA.L, BA.H, BA.D, [T('1.2\\text{ m}'), T('0.7\\text{ m}'), T('0.9\\text{ m}')], 'u10l5-sm');
-    boxLabels(stage, PB, BB.L, BB.H, BB.D, [T('4\\text{ ft}'), T('2.5\\text{ ft}'), T('3\\text{ ft}')], 'u10l5-sm u10l5-imp');
-    lab(stage, PA(BA.L / 2, BA.H, BA.D)[0], PA(0, BA.H, BA.D)[1] - 14, '<b>Bin A</b> (metric)', 'u10l5-btitle', 'b');
-    lab(stage, PB(BB.L / 2, BB.H, BB.D)[0], PB(0, BB.H, BB.D)[1] - 14, '<b>Bin B</b> (imperial)', 'u10l5-btitle u10l5-imp', 'b');
-    const px0 = 640, Pn = panel(stage, px0, 12, W - px0 - 12, H - 24, k === 'vol' ? 'Volume in cm³' : 'Surface area in in²', 'u10l5-small');
-    // comparison bars
-    const bx = 120, bw = 330, by = [300, 360];
-    const mk = (i, name, color) => { lab(stage, bx - 12, by[i] + 17, `<b>${name}</b>`, 'u10l5-bname', 'r'); const r = svgEl('rect', { x: bx, y: by[i], width: 0, height: 34, rx: 6, fill: color, 'fill-opacity': 0.8 }, S); const t = lab(stage, bx + 8, by[i] + 17, '', 'u10l5-bval', 'l'); return { r, t }; };
-    const bar = [mk(0, 'Bin A', TEAL), mk(1, 'Bin B', PUR)];
-    const vals = k === 'vol' ? [756000, 849505] : [7905, 8496], max = Math.max(...vals);
-    const grow = async (c, i, txt) => { const w = bw * vals[i] / max; await tween(c, 700, (t) => bar[i].r.setAttribute('width', w * t)); bar[i].t.innerHTML = txt; bar[i].t.style.left = (bx + w + 10) + 'px'; await fadeIn(c, bar[i].t); };
-    const faceHL = async (c, P, b, face, color, txt) => { const f = drawBox(gTop, P, b, { fill: { [face]: color }, faces: [face], sw: 0 }); f.style.opacity = 0; f.setAttribute('fill-opacity', 0.6); await appear(c, f, 260); const pl = polys(P, ...b)[face], cx = pl.reduce((a, q) => a + q[0], 0) / 4, cy = pl.reduce((a, q) => a + q[1], 0) / 4; await pop(c, lab(stage, cx, cy, T(txt), 'u10l5-flab', 'c')); };
-    const diff = async (c, txt) => { const x1 = bx + bw * vals[0] / max, x2 = bx + bw; const br = svgEl('path', { d: `M${x1} ${by[1] + 44}v8H${x2}v-8`, stroke: RED, 'stroke-width': 2.6, fill: 'none' }, S); await appear(c, br); await pop(c, lab(stage, (x1 + x2) / 2 + 30, by[1] + 62, txt, 'u10l5-call u10l5-callr', 't')); };
-    if (k === 'vol') return [
-      { cap: 'Bin A is measured in metres and Bin B in feet. To compare, put both in the <b>same unit</b>: cubic centimetres.', run: (c) => say(c, Pn, '<b>Common unit:</b> ' + T('\\text{cm}^3')) },
-      { cap: `Bin A: ${TQ('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3')}.`, run: (c) => say(c, Pn, T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3'), 'u10l5-la') },
-      { cap: `${TQ('1\\text{ m}^3=100^3=10^{6}\\text{ cm}^3')}, so Bin A is ${TQ('0.756\\times10^{6}=756\\,000\\text{ cm}^3')}.`,
-        run: async (c) => { await say(c, Pn, T('0.756\\times10^{6}=756\\,000\\text{ cm}^3'), 'u10l5-la'); await grow(c, 0, T('756\\,000\\text{ cm}^3')); } },
-      { cap: `Bin B: ${TQ('V=4\\times3\\times2.5=30\\text{ ft}^3')}.`, run: (c) => say(c, Pn, T('V=4\\times3\\times2.5=30\\text{ ft}^3'), 'u10l5-lb') },
-      { cap: `${TQ('1\\text{ ft}=30.48\\text{ cm}')}, so ${TQ('1\\text{ ft}^3=30.48^3=28\\,316.846\\,592\\text{ cm}^3')}. Bin B is ${TQ('30\\times28\\,316.846\\,592\\approx849\\,505\\text{ cm}^3')}.`,
-        run: async (c) => { await say(c, Pn, T('1\\text{ ft}^3=30.48^3\\text{ cm}^3'), 'u10l5-lb'); await say(c, Pn, T('30\\times28\\,316.846\\,592'), 'u10l5-lb'); await say(c, Pn, T('\\approx849\\,505\\text{ cm}^3'), 'u10l5-lb'); await grow(c, 1, T('849\\,505\\text{ cm}^3')); } },
-      { cap: 'Bin B drawn to the same scale on top of Bin A: a little longer, deeper <b>and</b> taller (4 ft is 1.22 m, 3 ft is 0.91 m, 2.5 ft is 0.76 m).',
-        run: async (c) => { const o = drawBox(gTop, PA, [0, BB.L, 0, BB.H, 0, BB.D], { stroke: PUR, sw: 2.6 }); o.setAttribute('stroke-dasharray', '8 6'); o.style.opacity = 0; await appear(c, o, 500); } },
-      { cap: `Bin B is greater, by ${TQ('849\\,505-756\\,000=93\\,505\\text{ cm}^3')}.`,
-        run: async (c) => { await diff(c, T('93\\,505\\text{ cm}^3')); const r = line(Pn, '<b>B</b> greater by ' + T('93\\,505\\text{ cm}^3'), 'u10l5-boxed'); await pop(c, r, 450); } }
-    ];
+    const d = BK[k], W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
+    const xs = [W * 0.14, W * 0.5, W * 0.86], y = 140, bw = 190, bh = 66;
+    const boxes = [T('r'), T('r^3'), T('V')].map((s, i) => add(stage, box(h('div', 'u10l5-mbox', `<div class="u10l5-mname">${s}</div><div class="u10l5-mval"></div>`), bw, bh), xs[i] - bw / 2, y - bh / 2));
+    const vals = boxes.map((b) => b.querySelector('.u10l5-mval'));
+    const curve = (parent, x1, x2, up, color) => { const yy = up ? y - bh / 2 - 6 : y + bh / 2 + 6, ym = up ? yy - 46 : yy + 46;
+      P(`M${x1} ${yy} Q${(x1 + x2) / 2} ${ym} ${x2} ${yy}`, { stroke: color, 'stroke-width': 3.5 }, parent);
+      const dx = x2 > x1 ? 1 : -1; P(`M${x2 - dx * 4} ${yy + (up ? -15 : 15)} L${x2} ${yy} L${x2 - dx * 15} ${yy + (up ? -3 : 3)}`, { stroke: color, 'stroke-width': 3.5 }, parent); };
+    const fw = G(g); curve(fw, xs[0] + 40, xs[1] - 40, true, CYL); curve(fw, xs[1] + 40, xs[2] - 40, true, CYL); hide(fw);
+    const lf1 = hide(lab(stage, (xs[0] + xs[1]) / 2, y - bh / 2 - 46, 'cube it ' + T('x^3'), 'n', 'u10l5-tl u10l5-teal')), lf2 = hide(lab(stage, (xs[1] + xs[2]) / 2, y - bh / 2 - 46, T('\\times\\tfrac43\\pi'), 'n', 'u10l5-tl u10l5-teal'));
+    const bw1 = G(g); curve(bw1, xs[2] - 40, xs[1] + 40, false, RAD); hide(bw1);
+    const bw2 = G(g); curve(bw2, xs[1] - 40, xs[0] + 40, false, RAD); hide(bw2);
+    const lb1 = hide(lab(stage, (xs[1] + xs[2]) / 2, y + bh / 2 + 46, `undo: ${T('\\times3\\div4\\pi')}`, 's', 'u10l5-tl u10l5-red')), lb2 = hide(lab(stage, (xs[0] + xs[1]) / 2, y + bh / 2 + 46, `undo: ${T('\\sqrt[3]{\\ \\ }')} cube root`, 's', 'u10l5-tl u10l5-red'));
+    const Pn = panel(stage, 14, 268, W - 28, Hh - 282, '');
+    const w1 = hide(line(Pn, T(`r^3=\\dfrac{3V}{4\\pi}=${d.calc[0]}=${d.calc[1]}\\approx${d.r3}`)));
+    const w2 = hide(line(Pn, T(`r=\\sqrt[3]{${d.r3}}\\approx\\boldsymbol{${d.r}}\\text{ ${d.unit}}`) + ` &nbsp; <span class="u10l5-sm">sense check: ${T(`${d.lo}^3=${d.lo ** 3}`)} and ${T(`${d.hi}^3=${d.hi ** 3}`)}</span>`));
+    const w3 = hide(line(Pn, `Check forwards: ${T(d.chk)} ✓`, 'u10l5-ok'));
     return [
-      { cap: 'Surface area: six faces in three matching pairs. Put both bins in the <b>same unit</b>: square inches.', run: (c) => say(c, Pn, '<b>Common unit:</b> ' + T('\\text{in}^2')) },
-      { cap: `Bin A’s faces: top ${TQ('1.2\\times0.9=1.08')}, front ${TQ('1.2\\times0.7=0.84')}, end ${TQ('0.9\\times0.7=0.63')} (all in ${TQ('\\text{m}^2')}).`,
-        run: async (c) => { const b = [0, BA.L, 0, BA.H, 0, BA.D]; await faceHL(c, PA, b, 'top', AMB, '1.08'); await faceHL(c, PA, b, 'front', TEAL, '0.84'); await faceHL(c, PA, b, 'side', PUR, '0.63'); } },
-      { cap: `Each face has a matching one on the hidden side: ${TQ('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')}.`, run: (c) => say(c, Pn, T('SA=2(1.08+0.84+0.63)'), 'u10l5-la').then(() => say(c, Pn, T('\\phantom{SA}=5.10\\text{ m}^2'), 'u10l5-la')) },
-      { cap: `${TQ('1\\text{ m}^2\\approx1550.003\\,1\\text{ in}^2')}, so Bin A is ${TQ('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')}.`,
-        run: async (c) => { await say(c, Pn, T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2'), 'u10l5-la'); await grow(c, 0, T('7905\\text{ in}^2')); } },
-      { cap: `Bin B’s faces: ${TQ('4\\times3=12')}, ${TQ('4\\times2.5=10')}, ${TQ('3\\times2.5=7.5')}, so ${TQ('SA=2(29.5)=59\\text{ ft}^2')}.`,
-        run: async (c) => { const b = [0, BB.L, 0, BB.H, 0, BB.D]; await faceHL(c, PB, b, 'top', AMB, '12'); await faceHL(c, PB, b, 'front', TEAL, '10'); await faceHL(c, PB, b, 'side', PUR, '7.5'); await say(c, Pn, T('SA=2(12+10+7.5)=59\\text{ ft}^2'), 'u10l5-lb'); } },
-      { cap: `${TQ('1\\text{ ft}^2=12^2=144\\text{ in}^2')}, so Bin B is ${TQ('59\\times144=8496\\text{ in}^2')}.`,
-        run: async (c) => { await say(c, Pn, T('59\\times144=8496\\text{ in}^2'), 'u10l5-lb'); await grow(c, 1, T('8496\\text{ in}^2')); } },
-      { cap: `Bin B is greater, by ${TQ('8496-7905=591\\text{ in}^2')}.`,
-        run: async (c) => { await diff(c, T('591\\text{ in}^2')); const r = line(Pn, '<b>B</b> greater by ' + T('591\\text{ in}^2'), 'u10l5-boxed'); await pop(c, r, 450); } }
+      { cap: `Forwards: radius ${T('\\to')} <b>cube</b> it ${T('\\to')} multiply by ${T('\\tfrac43\\pi')} ${T('\\to')} volume.`,
+        run: async (c) => { await appear(c, fw); await Promise.all([pop(c, lf1), pop(c, lf2)]); } },
+      { cap: `${k === 'ex5' ? 'Example 5' : 'Mika’s ball'} gives the <b>output</b>: ${T(`V=${d.V}`)} ${d.unit}³. Run the machine <b>backwards</b>, undoing each step.`,
+        run: async (c) => { vals[2].innerHTML = T(d.V); await pulse(c, boxes[2], 1.08); } },
+      { cap: `Undo ${T('\\times\\tfrac43\\pi')}: multiply by 3 and divide by ${T('4\\pi')}. ${T(`r^3=\\dfrac{3V}{4\\pi}\\approx${d.r3}`)}.`,
+        run: async (c) => { await appear(c, bw1); await pop(c, lb1); vals[1].innerHTML = T(d.r3); await pulse(c, boxes[1], 1.08); await show(c, w1); } },
+      { cap: `Undo the cubing with a <b>cube root</b>: ${T(`r=\\sqrt[3]{${d.r3}}\\approx${d.r}`)} ${d.unit}. It is ${d.note}, since ${T(`${d.lo}^3<${d.r3}<${d.hi}^3`)}.`,
+        run: async (c) => { await appear(c, bw2); await pop(c, lb2); vals[0].innerHTML = T(d.r); await pulse(c, boxes[0], 1.08); await show(c, w2); } },
+      { cap: `Check by running it forwards: ${T(d.chk)}.`,
+        run: async (c) => { await show(c, w3); const s = stamp(Pn, 'checks ✓'); s.style.alignSelf = 'flex-end'; s.style.marginTop = '-34px'; await stampIn(c, s); } }
     ];
   }
 };
 
 /* =============================== mount =============================== */
+mountWarm();
 mountStatics();
-mountCarpet();
-export const explainers = mountExplainers({ grid, shortcut, rect, shiftA, cube, prism, shiftV, imperial, cancel, which, bins });
+export const explainers = mountExplainers({ overflow, derive, peel, halve, slice, string, domes, floor, backwards });
+
+/* =============================== Math History: Archimedes' tomb (u10l5-hist) =============================== */
+(function archimedesTomb() {
+  const svg = document.getElementById('u10l5-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const op = (el, v) => { el.style.opacity = v; };
+  // ----- left: the tomb in Syracuse -----
+  const GY = 272, TX = 110;
+  mk('line', { x1: 14, x2: 214, y1: GY, y2: GY, class: 'u10l8h-ground' });
+  const head = txt('Syracuse, 75 BCE', { x: 18, y: 30, class: 'u10l8h-head' });
+  const sub1 = txt('Cicero has the brambles cleared…', { x: 18, y: 50, class: 'u10l8h-sub' });
+  const sub2 = txt('…a sphere in a cylinder!', { x: 18, y: 50, class: 'u10l8h-sub u10l8h-gold' });
+  mk('rect', { x: TX - 40, y: GY - 14, width: 80, height: 14, class: 'u10l8h-stone' });
+  mk('rect', { x: TX - 24, y: 150, width: 48, height: GY - 14 - 150, class: 'u10l8h-stone' });
+  for (let x = TX - 14; x <= TX + 14; x += 14) mk('line', { x1: x, x2: x, y1: 156, y2: GY - 20, class: 'u10l8h-flute' });
+  mk('rect', { x: TX - 31, y: 140, width: 62, height: 10, class: 'u10l8h-stone' });
+  const top = mk('g', { class: 'u10l8h-top' });
+  mk('rect', { x: TX - 26, y: 86, width: 52, height: 52, class: 'u10l8h-cylbody' }, top);
+  mk('circle', { cx: TX, cy: 112, r: 26, class: 'u10l8h-ball' }, top);
+  mk('ellipse', { cx: TX, cy: 86, rx: 26, ry: 6, class: 'u10l8h-cyltop' }, top);
+  mk('path', { d: `M${TX - 26},138 A26,6 0 0 0 ${TX + 26},138`, class: 'u10l8h-cylline' }, top);
+  // brambles: tangled loops over the whole column
+  const BR = [[74, 256], [104, 260], [136, 256], [166, 254], [60, 228], [92, 232], [124, 230], [156, 226], [74, 200], [108, 204], [142, 198], [86, 172], [122, 170], [154, 166], [70, 146], [104, 142], [138, 140], [64, 172]];
+  const brambles = BR.map(([x, y], i) => {
+    const g = mk('g', { class: 'u10l8h-bramble' }), r = 14 + (i % 3) * 3;
+    mk('path', { d: `M${x - r},${y} c${r * 0.4},${-r * 1.4} ${r * 1.8},${-r * 1.2} ${r * 1.4},${r * 0.2} s${-r * 1.6},${r * 1.1} ${-r * 1.2},${-r * 0.6} s${r * 1.5},${-r * 0.9} ${r * 1.9},${r * 0.5}`, class: 'u10l8h-vine' }, g);
+    mk('path', { d: `M${x - r * 0.6},${y + r * 0.5} q${r * 0.5},${-r} ${r * 1.3},${-r * 0.2}`, class: 'u10l8h-vine2' }, g);
+    mk('ellipse', { cx: x + r * 0.5, cy: y - r * 0.5, rx: 4, ry: 2.4, transform: `rotate(${(i * 47) % 180} ${x + r * 0.5} ${y - r * 0.5})`, class: 'u10l8h-leaf' }, g);
+    mk('ellipse', { cx: x - r * 0.6, cy: y + r * 0.2, rx: 4, ry: 2.4, transform: `rotate(${(i * 83) % 180} ${x - r * 0.6} ${y + r * 0.2})`, class: 'u10l8h-leaf' }, g);
+    return g;
+  });
+  // ----- right: the snug cylinder, filled by the sphere's volume -----
+  const CX = 356, R = 64, YT = 78, YB = 206, RY = 13, LEVEL = YB - (2 / 3) * (YB - YT);
+  const fig = mk('g', {});
+  const link = mk('path', { d: 'M146,118 C 210,100 250,150 288,150', class: 'u10l8h-link' }, fig);
+  mk('path', { d: 'M281,144 L290,150 L281,156', class: 'u10l8h-link' }, fig);
+  const clip = mk('clipPath', { id: 'u10l8h-clip' }, mk('defs', {}, fig));
+  mk('rect', { x: CX - R, y: YT, width: 2 * R, height: YB - YT }, clip); mk('ellipse', { cx: CX, cy: YB, rx: R, ry: RY }, clip);
+  mk('path', { d: `M${CX - R},${YT} L${CX - R},${YB} A${R},${RY} 0 0 0 ${CX + R},${YB} L${CX + R},${YT}`, class: 'u10l8h-glass' }, fig);
+  const liquid = mk('rect', { x: CX - R, y: YB + RY, width: 2 * R, height: 0, 'clip-path': 'url(#u10l8h-clip)', class: 'u10l8h-liquid' }, fig);
+  const surf = mk('ellipse', { cx: CX, cy: YB, rx: R, ry: RY, class: 'u10l8h-surf' }, fig);
+  const ball = mk('circle', { cx: CX, cy: (YT + YB) / 2, r: R, class: 'u10l8h-ball' }, fig);
+  mk('ellipse', { cx: CX, cy: YT, rx: R, ry: RY, class: 'u10l8h-cyltop' }, fig);
+  mk('path', { d: `M${CX - R},${YB} A${R},${RY} 0 0 0 ${CX + R},${YB}`, class: 'u10l8h-cylline' }, fig);
+  mk('line', { x1: CX, x2: CX + R, y1: YT, y2: YT, class: 'u10l8h-rad' }, fig);
+  txt('r', { x: CX + R / 2, y: YT - RY - 4, 'text-anchor': 'middle', class: 'u10l8h-dim' }, fig);
+  mk('line', { x1: CX + R + 10, x2: CX + R + 10, y1: YT, y2: YB, class: 'u10l8h-rad' }, fig);
+  txt('2r', { x: CX + R + 15, y: (YT + YB) / 2 + 5, class: 'u10l8h-dim' }, fig);
+  const pourT = txt('pour in the sphere’s volume', { x: CX, y: 34, 'text-anchor': 'middle', class: 'u10l8h-sub' }, fig);
+  const mark = mk('g', {}, fig);
+  mk('line', { x1: CX - R - 12, x2: CX + R, y1: LEVEL, y2: LEVEL, class: 'u10l8h-mark' }, mark);
+  txt('2/3', { x: CX - R - 16, y: LEVEL + 6, 'text-anchor': 'end', class: 'u10l8h-frac' }, mark);
+  // the algebra
+  const EX = 470, eq1 = mk('g', {}), eq2 = mk('g', {}), eq3 = mk('g', {});
+  txt('cylinder', { x: EX, y: 92, class: 'u10l8h-cap' }, eq1); txt('πr² × 2r = 2πr³', { x: EX, y: 112, class: 'u10l8h-eq' }, eq1);
+  txt('sphere', { x: EX, y: 146, class: 'u10l8h-cap' }, eq2); txt('⁴⁄₃πr³', { x: EX, y: 168, class: 'u10l8h-eq u10l8h-big' }, eq2);
+  txt('sphere ÷ cylinder', { x: EX, y: 204, class: 'u10l8h-cap' }, eq3); txt('⁴⁄₃ ÷ 2 = ⅔', { x: EX, y: 230, class: 'u10l8h-eq u10l8h-gold u10l8h-big' }, eq3);
+  const burst = mk('circle', { cx: CX, cy: LEVEL, r: 60, class: 'u10l8h-burst' });
+  const T = 11600;
+  function draw(t) {
+    brambles.forEach((g, i) => { const p = ease(seg(t, 500 + i * 100, 900 + i * 100)); g.style.opacity = 1 - p; g.style.transform = `scale(${1 - 0.6 * p})`; });
+    op(sub1, 1 - seg(t, 2700, 2900)); op(sub2, seg(t, 2900, 3200)); top.classList.toggle('on', t >= 2900);
+    op(fig, seg(t, 3300, 4100));
+    op(eq1, seg(t, 4300, 4800)); op(eq2, seg(t, 4900, 5400));
+    const f = ease(seg(t, 5800, 9600)), lv = YB - f * (YB - LEVEL);
+    liquid.setAttribute('y', lv.toFixed(1)); liquid.setAttribute('height', (YB + RY - lv).toFixed(1));
+    surf.setAttribute('cy', lv.toFixed(1)); op(surf, f > 0.01 ? 1 : 0);
+    ball.style.opacity = 1 - 0.85 * f; op(pourT, seg(t, 5600, 6000));
+    op(mark, seg(t, 9700, 10100)); op(eq3, seg(t, 10000, 10500)); burst.classList.toggle('on', t >= 9700);
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const t = Math.min(T, now - t0); draw(t); if (t < T) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T); return; }
+    draw(0); raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

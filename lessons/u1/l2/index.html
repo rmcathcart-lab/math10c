@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GCF, LCM and Perfect Powers · Math 10C 1.2</title>
-<meta name="description" content="Math 10C Unit 1 Lesson 2: prime factorization at work — greatest common factor, least common multiple, perfect squares and perfect cubes. Write on it with an Apple Pencil.">
+<title>GCF and LCM · Math 10C 1.2</title>
+<meta name="description" content="Math 10C Unit 1 Lesson 2: prime factorization at work — greatest common factor, least common multiple, and choosing which one a problem needs. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,60 +27,60 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 1 Number · Lesson 2</div>
-  <h1>Prime Factorization at Work: GCF, LCM, and Perfect Powers</h1>
-  <p class="lede">Once a number is broken into primes, a lot of questions get easy. Today prime factors give us a fast, reliable route to the greatest common factor, the least common multiple, and to perfect squares and cubes.</p>
+  <h1>Prime Factorization at Work: GCF and LCM</h1>
+  <p class="lede">Once a number is broken into primes, a lot of questions get easy. Today prime factors give us a fast, reliable route to the greatest common factor and the least common multiple — and we learn to tell which one a problem is asking for.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
       <li>find the <b>greatest common factor</b> of a group of numbers, by inspection and by prime factorization</li>
       <li>find the <b>least common multiple</b> of a group of numbers, by listing multiples and by prime factorization</li>
-      <li>use prime factorization to decide whether a number is a <b>perfect square</b> or a <b>perfect cube</b>, and find its square root or cube root</li>
-      <li>check GCF, LCM, square roots and cube roots on the calculator</li>
+      <li>decide whether a word problem needs the <b>GCF</b> or the <b>LCM</b>, and solve it</li>
+      <li>check a GCF or an LCM on the calculator</li>
     </ul>
   </div>
   <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Locker Problem" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Locker Problem</h2>
-  <p class="wf-rule"><b>100 closed lockers, 100 students.</b> Student 1 <b>toggles</b> every locker, Student 2 every 2nd one, Student 3 every 3rd one, …, Student 100 just #100. <span class="muted">(Toggle = open it if it’s closed, close it if it’s open.)</span></p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Hot Dogs and Buns" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Dogs and Buns</h2>
+  <p class="wf-rule">Hot dogs come in <b>packs of 10</b>. Buns come in <b>packs of 8</b>. You can only buy <b>whole packs</b>.</p></div>
   <div class="wf-grid"><div class="wf-main">
 
-  <div class="lk-box">
-    <div class="lockers" id="lockers"></div>
-    <div class="lk-bar no-ink">
-      <div class="lk-status" id="lk-status"></div>
-      <button class="exb" type="button" data-lk="reset" title="All closed again" aria-label="Close every locker"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
-      <button class="exb next" type="button" data-lk="next">Next student <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
-      <button class="exb" type="button" data-lk="all">All 100 <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
+  <div class="hd-box">
+    <svg class="hd-svg" id="hd-svg" viewBox="0 0 640 190" role="img" aria-label="Packs of hot dogs and packs of buns lined up, with any hot dogs or buns left over marked in red"></svg>
+    <div class="hd-bar no-ink">
+      <div class="hd-ctl"><span class="hd-lab">Hot dogs</span><button class="exb" type="button" data-hd="h-" aria-label="One pack of hot dogs fewer">−</button><button class="exb" type="button" data-hd="h+">+ pack</button></div>
+      <div class="hd-ctl"><span class="hd-lab">Buns</span><button class="exb" type="button" data-hd="b-" aria-label="One pack of buns fewer">−</button><button class="exb" type="button" data-hd="b+">+ pack</button></div>
+      <button class="exb" type="button" data-hd="reset" title="Back to 2 packs of each" aria-label="Back to 2 packs of each"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+      <button class="exb next" type="button" data-hd="match">Buy until they match <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
     </div>
-    <div class="lk-hist" id="lk-hist"></div>
+    <div class="hd-status" id="hd-status"></div>
   </div>
   <div class="wq">
-    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>Which students touch locker 12?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans">Students <b>1, 2, 3, 4, 6, 12</b> — exactly the <b>factors</b> of 12.</div></div></div>
-    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>Does locker 12 end open or closed?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans"><b>Closed.</b> 6 toggles: open, closed, open, closed, open, closed.</div></div></div>
+    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>You buy 2 packs of each. How many hot dogs have no bun?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>4 hot dogs</b>: 20 hot dogs, but only 16 buns.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>List the numbers of hot dogs you could buy. Then the numbers of buns.</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Hot dogs: 10, 20, 30, 40, … Buns: 8, 16, 24, 32, 40, … — the <b>multiples</b> of 10 and of 8.</div></div></div>
   </div>
 
   </div><div class="wf-side">
 
   <div class="wq wq-side">
-    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>Which students touch locker 9? Is it open or closed at the end?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans">Students <b>1, 3, 9</b>. Three toggles, so it ends <b>open</b>.</div></div></div>
+    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>After the BBQ: 24 hot dogs and 32 buns. Share them into identical bags, nothing left over. Most bags?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>8 bags</b>, each with 3 hot dogs and 4 buns. 8 is the biggest number that divides <b>both</b>.</div></div></div>
   </div>
   <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> After all 100 students have had a turn, how many lockers are <b>open</b>? <b>Guess first.</b></div></div>
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>smallest</b> number of hot dogs and buns you can buy with <b>none left over</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 50</div>
-      <div class="opt"><b>B</b> 25</div>
-      <div class="opt right"><b>C</b> 10</div>
-      <div class="opt"><b>D</b> 0</div>
+      <div class="opt"><b>A</b> 80</div>
+      <div class="opt right"><b>B</b> 40</div>
+      <div class="opt"><b>C</b> 18</div>
+      <div class="opt"><b>D</b> never</div>
     </div>
     <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C — 10 lockers:</b> 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 (press <b>All 100</b> to watch). A locker ends open only if it’s toggled an <b>odd</b> number of times — it has an odd number of factors. Factors come in pairs (12 = 1 × 12 = 2 × 6 = 3 × 4), but a <b>perfect square</b> has one pair that is the same number twice (9 = 1 × 9 = 3 × 3), so it has an odd number of factors.
-      <div class="traps"><span><b>A (50)?</b> That’s just the picture after Student 2.</span><span><b>B (25)?</b> There are 25 primes up to 100 — but a prime has exactly 2 factors, so it ends <b>closed</b>.</span><span><b>D (0)?</b> Not everything gets flipped back!</span></div>
+    <div class="poll-ans"><b>B — 40:</b> 4 packs of hot dogs and 5 packs of buns (press <b>Buy until they match</b>). 40 is the first number in <b>both</b> lists from question 2.
+      <div class="traps"><span><b>A (80)?</b> 10 × 8 matches too, but it isn’t the <b>smallest</b>.</span><span><b>C (18)?</b> 10 + 8 isn’t a multiple of either.</span><span><b>D?</b> They match at 40, 80, 120, …</span></div>
     </div>
   </div>
   </div></div>
@@ -102,7 +102,7 @@
 <section class="card" data-ink="s1" data-section="1. Greatest Common Factor">
   <div class="sec-h"><span class="badge">1</span><h2>Greatest Common Factor</h2></div>
   <div class="def">The <b>greatest common factor</b> (GCF) of a group of whole numbers is the <b>largest</b> whole number that divides evenly into <b>every</b> member of the group.<div class="eg">The GCF of 10, 15 and 25 is 5.</div></div>
-  <p>Back to the lockers: which students touch <b>both</b> locker 60 and locker 90? Exactly the numbers that are factors of <b>both</b> — the <b>common factors</b>. The last student to touch both is the <b>greatest</b> common factor.</p>
+  <p>Back to the warm-up: the number of take-home bags had to divide into <b>both</b> 24 and 32. Numbers that divide into every number in a group are its <b>common factors</b>; the most bags is the <b>greatest</b> common factor.</p>
   <div class="explainer" data-explainer="gcfList"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Sanity check.</b> The GCF can never be <b>bigger</b> than the smallest number in the group — it has to fit into that number.</div></div>
 </section>
@@ -250,143 +250,52 @@
   </div>
 </section>
 
-<!-- ================= 3. Perfect squares ================= -->
-<section class="card" data-ink="s3" data-section="3. Perfect Squares">
-  <div class="sec-h"><span class="badge">3</span><h2>Prime Factorization of a Perfect Square</h2></div>
-  <div class="def">Numbers such as 1, 4, 9, 16, 25, 36, 49, … — each the square of a whole number — are <b>perfect squares</b>. <span class="tex">\sqrt{\phantom{0}}</span> means the positive, or <b>principal</b>, square root.</div>
-  <div class="def amber">Factor a perfect square into primes and <b>every prime appears an even number of times</b> — the prime factors pair up perfectly.</div>
-  <div class="concrete">
-    <div class="cc-text"><b>Concretely:</b> a perfect square is a number of square tiles that can be arranged into <b>one solid square</b>. 16 tiles make a 4 × 4 square, so 16 is a perfect square. 12 tiles only ever make rectangles (1 × 12, 2 × 6, 3 × 4), so 12 is not.</div>
-    <div class="cc-fig"><div class="tilefig" data-grid="4x4"></div><div class="cc-cap">16 = 4 × 4 <span class="ok">a square</span></div></div>
-    <div class="cc-fig"><div class="tilefig" data-grid="3x4"></div><div class="cc-cap">12 = 3 × 4 <span class="red">not a square</span></div></div>
+<!-- ================= 3. GCF or LCM? ================= -->
+<section class="card" data-ink="s3" data-section="3. GCF or LCM?">
+  <div class="sec-h"><span class="badge">3</span><h2>GCF or LCM? Reading a Word Problem</h2></div>
+  <p>Both tools come from the same prime factorizations, so the real work in a word problem is <b>choosing</b>. Ask what the answer has to do.</p>
+  <div class="vs">
+    <div class="vs-col g"><div class="vs-h">GCF <span>the answer divides into each number</span></div>
+      <ul><li>share things into <b>identical groups</b>, nothing left over</li><li>cut lengths into the <b>longest equal pieces</b></li><li>the <b>largest</b> square tile that fits</li></ul>
+      <div class="vs-eg">warm-up: 24 hot dogs, 32 buns → <b>8</b> bags</div></div>
+    <div class="vs-col l"><div class="vs-h">LCM <span>each number divides into the answer</span></div>
+      <ul><li>events on different cycles <b>happen together again</b></li><li>buy packages until the totals <b>match</b></li><li>the <b>first</b> or <b>smallest</b> time both happen</li></ul>
+      <div class="vs-eg">big one: packs of 10 and 8 → <b>40</b></div></div>
   </div>
-  <p>Three perfect squares, factored and paired up:</p>
-  <div class="pairs-list">
-    <div><span class="pl-n">4</span> = <span class="pr">2 × 2</span></div>
-    <div><span class="pl-n">100</span> = <span class="pr">2 × 2</span> × <span class="pr">5 × 5</span></div>
-    <div><span class="pl-n">144</span> = <span class="pr">2 × 2</span> × <span class="pr">2 × 2</span> × <span class="pr">3 × 3</span></div>
-    <div class="root"><span class="tex">\sqrt{4} = 2</span></div>
-    <div class="root"><span class="tex">\sqrt{100} = 2\times5 = 10</span></div>
-    <div class="root"><span class="tex">\sqrt{144} = 2\times2\times3 = 12</span></div>
-  </div>
-  <p class="small muted" style="text-align:center">Take <b>one</b> factor from each pair. If the prime factorization does <b>not</b> split into matching pairs, the number is not a perfect square.</p>
-  <div class="explainer" data-explainer="squares"></div>
-  <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>The square root is not half.</b> <span class="tex">\sqrt{144}</span> is 12, not 72. You halve the <b>exponents</b>: 144 = 2<sup>4</sup> × 3<sup>2</sup> → 2<sup>2</sup> × 3<sup>1</sup> = 12.</div></div>
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Even exponents, not even primes.</b> 9 = 3<sup>2</sup> is a perfect square. What matters is how many <b>times</b> each prime appears.</div></div>
-  </div>
+  <div class="explainer" data-explainer="bags"></div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Square roots on the calculator">
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Square root on the TI-30XIIS.</b> <span class="tex">\sqrt{\phantom{0}}</span> is the 2nd function of <kbd>x²</kbd>: <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>4</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 12. <span class="muted">A whole-number answer means a perfect square.</span></div>
-    <button class="pill" data-keys="√ 144 =">Show me</button>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check it backwards.</b> Square the answer with <kbd>x²</kbd>: <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> should give back 144.</div>
-    <button class="pill" data-keys="12 x² =">Show me</button>
-  </div>
+<section class="card" data-ink="s3b" data-section="3. Together again: LCM">
+  <h3 class="sub">Together again: that’s an LCM</h3>
+  <p>Two lights flash on different cycles. They flash together at the <b>common multiples</b> of the two cycles, and the first time is the <b>LCM</b>.</p>
+  <div class="explainer" data-explainer="beacons"></div>
 </section>
 
 <section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A perfect square, two ways</h3></div>
-  <p class="q">Consider the number <b>15 876</b>.</p>
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>GCF or LCM?</h3></div>
+  <p class="q">Decide whether each problem calls for the GCF or the LCM, then solve it.</p>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) Use a calculator to find the square root of 15 876.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2nd x² 15 876 ENTER<br><b><span class="tex">\sqrt{15\,876} = 126</span></b></div></div></div>
-    <div class="part"><div class="pl">(b) <b>Explain</b> how the prime factorization of 15 876 shows that it must be a perfect square, and use it to verify your calculator answer.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">15 876 ÷ 2 ÷ 2 ÷ 3 ÷ 3 ÷ 3 ÷ 3 ÷ 7 ÷ 7 = 1, so 15 876 = 2<sup>2</sup> × 3<sup>4</sup> × 7<sup>2</sup>. Every exponent is even, so the primes pair up: a perfect square.<br><b><span class="tex">\sqrt{15\,876}</span> = 2 × 3<sup>2</sup> × 7 = 126</b> ✓ matches</div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Part (a) on the calculator:</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>5</kbd><kbd>8</kbd><kbd>7</kbd><kbd>6</kbd><kbd>ENTER</kbd></span></div>
-    <button class="pill" data-keys="√ 15876 =">Show me</button>
+    <div class="part"><div class="pl">(a) A florist has 48 roses and 60 tulips. She makes identical bouquets using all of the flowers. What is the greatest number of bouquets she can make, and what is in each one?</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>GCF</b>: the bouquets must divide into both numbers.<br>48 = 2<sup>4</sup> × 3, 60 = 2<sup>2</sup> × 3 × 5 → 2<sup>2</sup> × 3 = 12<br><b>12 bouquets, each with 4 roses and 5 tulips</b></div></div></div>
+    <div class="part"><div class="pl">(b) Two lighthouse beacons flash together at midnight. One flashes every 12 seconds and the other every 20 seconds. How many seconds will it be until they next flash together?</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>LCM</b>: both cycles must divide into the time.<br>12 = 2<sup>2</sup> × 3, 20 = 2<sup>2</sup> × 5 → 2<sup>2</sup> × 3 × 5 = 60<br><b>60 seconds</b> (one minute)</div></div></div>
   </div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
-</section>
-
-<section class="card example" data-ink="ex6" data-section="Example 6">
-  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Testing for a perfect square</h3></div>
-  <p class="q">In each case, use prime factorization to decide whether the number is a perfect square. If it is, state its square root.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) 1 089</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 089 ÷ 3 = 363, ÷ 3 = 121, ÷ 11 = 11, ÷ 11 = 1<br>1 089 = 3<sup>2</sup> × 11<sup>2</sup> — both exponents even<br><b>perfect square: <span class="tex">\sqrt{1\,089}</span> = 3 × 11 = 33</b></div></div></div>
-    <div class="part"><div class="pl">(b) 2 028</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2 028 ÷ 2 = 1 014, ÷ 2 = 507, ÷ 3 = 169, ÷ 13 = 13, ÷ 13 = 1<br>2 028 = 2<sup>2</sup> × 3 × 13<sup>2</sup> — the 3 has no partner (odd exponent)<br><b>not a perfect square</b></div></div></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Back to the warm-up: why were the lockers left open exactly the perfect squares?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A locker is toggled once for each of its <b>factors</b>. Factors come in pairs, except a perfect square’s middle pair (6 × 6 for 36), which counts once. So only perfect squares have an <b>odd</b> number of factors and end <b>open</b>.</div></div></div>
-  <div class="space" id="ex6-space"></div>
-  <button class="more" data-more="ex6-space">+ More space</button>
-</section>
-
-<!-- ================= 4. Perfect cubes ================= -->
-<section class="card" data-ink="s4" data-section="4. Perfect Cubes">
-  <div class="sec-h"><span class="badge">4</span><h2>Prime Factorization of a Perfect Cube</h2></div>
-  <div class="def"><b>Perfect cubes</b> of whole numbers include 1, 8, 27, 64, 125, …, with <b>cube roots</b> 1, 2, 3, 4, 5, …</div>
-  <div class="def amber">In the prime factorization of a perfect cube, <b>every prime factor appears a multiple of three times</b> — the factors group into matching <b>triples</b>.</div>
-  <div class="concrete">
-    <div class="cc-text"><b>Concretely:</b> a perfect cube is a number of small cubes that can be stacked into <b>one solid larger cube</b>. 27 cubes make a 3 × 3 × 3 cube, so 27 is a perfect cube. 18 cubes can’t be stacked into a solid cube (the best is a 3 × 3 × 2 box), so 18 is not.</div>
-    <div class="cc-fig"><div class="boxfig" data-box="3x3x3"></div><div class="cc-cap">27 = 3 × 3 × 3 <span class="ok">a cube</span></div></div>
-    <div class="cc-fig"><div class="boxfig" data-box="3x3x2"></div><div class="cc-cap">18 = 3 × 3 × 2 <span class="red">a box</span></div></div>
-  </div>
-  <p>Three perfect cubes, factored and grouped into triples:</p>
-  <div class="pairs-list">
-    <div><span class="pl-n">8</span> = <span class="pr">2 × 2 × 2</span></div>
-    <div><span class="pl-n">125</span> = <span class="pr">5 × 5 × 5</span></div>
-    <div><span class="pl-n">1 000</span> = <span class="pr">2 × 2 × 2</span> × <span class="pr">5 × 5 × 5</span></div>
-    <div class="root"><span class="tex">\sqrt[3]{8} = 2</span></div>
-    <div class="root"><span class="tex">\sqrt[3]{125} = 5</span></div>
-    <div class="root"><span class="tex">\sqrt[3]{1\,000} = 2\times5 = 10</span></div>
-  </div>
-  <p class="small muted" style="text-align:center">Take <b>one</b> factor from each triple. If the prime factorization does not break into matching triples, the number is not a perfect cube.</p>
-  <div class="explainer" data-explainer="cubes"></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Cube root on the TI-30XIIS.</b> Type the <b>3 first</b>, then <span class="tex">\sqrt[x]{\phantom{0}}</span> (2nd of <kbd>^</kbd>), then the number: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 10.</div>
-    <button class="pill" data-keys="3 ˣ√ 1000 =">Show me</button>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check it backwards.</b> Cube the answer: <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> should give back 1 000.</div>
-    <button class="pill" data-keys="10 ^ 3 =">Show me</button>
-  </div>
-</section>
-
-<section class="card" data-ink="s4b" data-section="4. Square, cube, both?">
-  <h3 class="sub">Square, cube, both, or neither?</h3>
-  <p>Write the number with exponents and look only at the <b>exponents</b>: all even → perfect square; all multiples of 3 → perfect cube.</p>
-  <div class="explainer" data-explainer="tester"></div>
-</section>
-
-<section class="card example" data-ink="ex7" data-section="Example 7">
-  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Testing for a perfect cube</h3></div>
-  <p class="q">In each case, use prime factorization (a division ladder works well) to determine whether the number is a perfect cube. If it is, state its cube root.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) 5 832</div><div class="work" style="--h:400px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">5 832 ÷ 2 ÷ 2 ÷ 2 = 729, then ÷ 3 six times: 729 → 243 → 81 → 27 → 9 → 3 → 1<br>5 832 = 2<sup>3</sup> × 3<sup>6</sup> — both exponents are multiples of 3<br><b>perfect cube: <span class="tex">\sqrt[3]{5\,832}</span> = 2 × 3<sup>2</sup> = 18</b></div></div></div>
-    <div class="part"><div class="pl">(b) 39 304</div><div class="work" style="--h:400px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">39 304 ÷ 2 = 19 652, ÷ 2 = 9 826, ÷ 2 = 4 913, ÷ 17 = 289, ÷ 17 = 17, ÷ 17 = 1<br>39 304 = 2<sup>3</sup> × 17<sup>3</sup><br><b>perfect cube: <span class="tex">\sqrt[3]{39\,304}</span> = 2 × 17 = 34</b></div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check (a) on the calculator:</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>5</kbd><kbd>8</kbd><kbd>3</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> <span class="muted">— a whole number means a perfect cube.</span></div>
-    <button class="pill" data-keys="3 ˣ√ 5832 =">Show me</button>
-  </div>
-  <div class="space" id="ex7-space"></div>
-  <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>GCF:</b> the primes in <b>every</b> factorization, each to its <b>lowest</b> power. 60 = 2<sup>2</sup> × 3 × 5, 90 = 2 × 3<sup>2</sup> × 5 → GCF = 30.</div>
+    <div><b>GCF:</b> the primes in <b>every</b> factorization, each to its <b>lowest</b> power. 60 = 2<sup>2</sup> × 3 × 5, 90 = 2 × 3<sup>2</sup> × 5 → GCF = 2 × 3 × 5 = 30.</div>
     <div><b>LCM:</b> every prime from <b>any</b> factorization, each to its <b>highest</b> power. 60 and 90 → LCM = 2<sup>2</sup> × 3<sup>2</sup> × 5 = 180.</div>
-    <div><b>Perfect square:</b> every exponent is <b>even</b> (primes pair up). Halve the exponents for the square root: <span class="tex">\sqrt{144} = 2^2\times3 = 12</span>.</div>
-    <div><b>Perfect cube:</b> every exponent is a <b>multiple of 3</b> (triples). Divide the exponents by 3: <span class="tex">\sqrt[3]{1\,000} = 2\times5 = 10</span>.</div>
+    <div><b>Which one?</b> Splitting into identical groups or pieces that fit <b>into</b> the numbers → <b>GCF</b>. Cycles that line up <b>again</b>, totals that match → <b>LCM</b>.</div>
+    <div><b>Sanity checks:</b> GCF ≤ the smallest number; LCM ≥ the largest. Multiplying gives <i>a</i> common multiple, not always the least: 10 × 8 = 80, but the LCM is 40.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l2">
-    <div><div class="kicker">Your turn</div><b>Assignment 2 — Prime Factorization at Work: GCF, LCM, and Perfect Powers</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Prime Factorization at Work: GCF and LCM</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l3/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Rational Numbers, Irrational Numbers, and Decimal Patterns</b></div><span class="arrow">→</span>
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Perfect Squares and Perfect Cubes</b></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -396,7 +305,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l2.js';
-  boot({ key: 'u1l2', homeHref: '../../', title: '1.2 GCF, LCM and Perfect Powers' });
+  boot({ key: 'u1l2', homeHref: '../../', title: '1.2 GCF and LCM' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

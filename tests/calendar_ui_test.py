@@ -46,7 +46,7 @@ async def main():
         days = await tp.evaluate("[...document.querySelectorAll('.kc-grid .calm-day:not(.calm-off):not(.calm-blank):not(.calm-we)')].map(c => c.dataset.date)")
         i5 = days.index(d5b); target = days[i5 + 2]
         await drag(tp, '.kc-chip[data-key=u1l5]', '.calm-day[data-date="%s"]' % target)
-        assert await dateOf('u1l5') == target and await keysOn(days[i5]) == [] and await keysOn(days[i5 + 1]) == [] and await dateOf('u1l6a') == days[i5 + 3]
+        assert await dateOf('u1l5') == target and await keysOn(days[i5]) == [] and await keysOn(days[i5 + 1]) == [] and await dateOf('u1l6') == days[i5 + 3]
         # skip Lesson 2 by dragging it to Skipped
         await drag(tp, '.kc-chip[data-key=u1l2]', '.kc-tray')
         assert await tp.locator('.kc-tray .kc-chip[data-key=u1l2]').count() == 1
@@ -61,9 +61,9 @@ async def main():
         await tp.click('.kc-grid .kc-chip[data-key=u1l1]'); await tp.wait_for_selector('.kc-pop'); await tp.screenshot(path=SH + 'pop.png')
         await tp.keyboard.press('Escape')
         # days off: Labour Day (Sept 7) — that day's lessons and everything after move along a day
-        before = await dateOf('u1l6a')
+        before = await dateOf('u1l6')
         await tp.click('.kc-top .btn:has-text("Days off")'); await tp.click('.calm-day[data-date="2026-09-07"]'); await tp.wait_for_timeout(600)
-        after = await dateOf('u1l6a'); print('L6A', before, '->', after)
+        after = await dateOf('u1l6'); print('L6A', before, '->', after)
         assert '2026-09-07' in get('action=classes&key=testkey')['noSchool'] and after > before and 'No school' in await tp.inner_text('.calm-day[data-date="2026-09-07"]')
         await tp.click('.kc-top .btn:has-text("Done with days off")'); await tp.wait_for_timeout(300)
         await tp.screenshot(path=SH + 'edited.png', full_page=True)
@@ -72,7 +72,7 @@ async def main():
         # keep all classes the same: copies now, then every change goes to every class
         await tp.check('.kc-sync input[type=checkbox]'); await tp.wait_for_timeout(900)
         a, d = get('action=cal&class=10c-b'), get('action=cal&class=10c-d'); assert a['cal'] == d['cal'] and a['sync'], 'synced'
-        await drag(tp, '.kc-grid .kc-chip[data-key=u1l6b]', '.calm-day[data-date="%s"]' % (await dateOf('u1l6a')))
+        await drag(tp, '.kc-grid .kc-chip[data-key=u1l7]', '.calm-day[data-date="%s"]' % (await dateOf('u1l6')))
         await tp.wait_for_timeout(600); assert get('action=cal&class=10c-b')['cal'] == get('action=cal&class=10c-d')['cal'], 'a change goes to every class'
         await tp.uncheck('.kc-sync input[type=checkbox]'); await tp.wait_for_timeout(600); assert not get('action=cal&class=10c-b')['sync']
         # ---- the student ----

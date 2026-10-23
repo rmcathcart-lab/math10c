@@ -153,11 +153,11 @@
   HW.addCodes({
     'pt-form': 'Point not written as an ordered pair', 'int-swap': 'x- and y-intercept swapped', point: 'Wrong point', 'nr-orig-slope': 'Used the given slope, not the perpendicular one',
     'nr-perp-sign': 'Perpendicular slope sign', 'nr-neg-only': 'Changed the sign but didn’t take the reciprocal', 'k-yint': 'Gave the y-intercept instead of k', 'ac-flip': 'Gave C/A instead of A/C',
-    'ac-c': 'Forgot to multiply the intercept by B', 'ps-sign': 'Slope–point form: signs of the point not flipped', 'win-miss': 'Window misses an intercept', 'win-order': 'Window min ≥ max', 'win-scale': 'Window scale unsuitable',
-    'win-big': 'Window far too large', 'rate-sign': 'Rate of change sign', 'rate-step': 'Didn’t divide by the step in x', 'rate-units': 'Rate units upside down', 'used-x': 'Used the wrong coordinate',
+    'ac-c': 'Forgot to multiply the intercept by B', 'ps-sign': 'Slope–point form: signs of the point not flipped',
+    'rate-sign': 'Rate of change sign', 'rate-step': 'Didn’t divide by the step in x', 'rate-units': 'Rate units upside down', 'used-x': 'Used the wrong coordinate',
     'line-parallel': 'Used the parallel slope instead of the perpendicular one', 'line-perp-wrong': 'Used the perpendicular slope instead of the parallel one', 'pct-decimal': 'Rate given as a decimal instead of a %', 'pct-as-coef': 'Percent used as the coefficient',
     'graph-slope-sign': 'Graph: slope sign', 'graph-flip': 'Graph: rise and run swapped', 'graph-b-x': 'Graph: b plotted on the x-axis', 'graph-int-swap': 'Graph: intercepts swapped', 'graph-int-sign': 'Graph: intercept signs', 'graph-hv': 'Graph: horizontal/vertical mixed up', 'graph-xk': 'Graph: wrong x-value',
-    'ground-h': 'Solved with the wrong value of h', 'year-t': 'Gave t instead of the year', 'unit-conv': 'Unit conversion slip', 'win-tiny': 'Window too small'
+    'ground-h': 'Solved with the wrong value of h', 'year-t': 'Gave t instead of the year', 'unit-conv': 'Unit conversion slip'
   });
 
   /* ======================================================================================================== */
@@ -410,7 +410,7 @@
             { html: 'Write it as ' + t('0x+' + pol([[1, 'y'], [-v, '']]) + '=0') + ' so that ' + t('A') + ' appears.', why: 'A zero term is left out. The rule moves to the leading <b>non-zero</b> coefficient.' }],
             t('y-' + sgnP(v) + '=0') + ' has ' + t('A=0') + '. The unit then makes the <b>leading non-zero coefficient</b> positive — here ' + t('B') + '. Write ' + t(gT(L3(0, 1, -v))) + '.', ['Which coefficient comes first once ' + t('A') + ' is zero?'], 'sign rule when A = 0');
         } },
-        { id: 'e3g', sub: 'g', level: 'EMG', outcome: 'EXT', make: function (r, sh) { var o = sh.bis;
+        { id: 'e3g', sub: 'g', level: 'EMG', outcome: 'RF7', make: function (r, sh) { var o = sh.bis;
           var d2 = dist2(o.C, o.Pt);
           return B.fields('Verify (c): the point ' + t(ptT(o.Pt)) + ' is on the perpendicular bisector of ' + t('C' + ptT(o.C)) + ' and ' + t('D' + ptT(o.D)) + '. Determine its exact distance from ' + t('C') + ' and from ' + t('D') + '.', [fld('distance to ' + t('C'), 'radical'), fld('distance to ' + t('D'), 'radical')], [exactV(Math.sqrt(d2), 'a radical'), exactV(Math.sqrt(dist2(o.D, o.Pt)), 'a radical')], [radTex(d2), radTex(d2)], t(radTex(d2)) + ' both',
             t(ptT(o.Pt)) + ' is on (c): ' + t(sub(o.T, o.Pt) + '=0') + ' ✓<br>' + t('C') + ' to ' + t(ptT(o.Pt)) + ': ' + t(distT(o.C, o.Pt)) + '<br>' + t('D') + ' to ' + t(ptT(o.Pt)) + ': ' + t(distT(o.D, o.Pt)) + '<br>Both ' + t(radTex(d2)) + ' — equal, as every point of a perpendicular bisector must be.', ['Distance formula: ' + t('d=\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}') + '.'], 'equidistant check');
@@ -1389,31 +1389,18 @@
               'Parallel to ' + t('PQ') + ' means the same slope, ' + t(qT(o.m)) + ', through ' + t('R' + ptT(o.R)) + ':<br>' + siSteps(o.m, o.R) + '<br><b>Check.</b> ' + t(qT(o.m) + '(' + o.R[0] + ')' + (qv(o.b2) < 0 ? '' : '+') + qT(o.b2) + '=' + o.R[1]) + ' ✓',
               ['Parallel lines have equal slopes. Use slope–point form with ' + t('R') + ', then solve for ' + t('y') + '.'], 'L2 through R parallel to PQ');
           } },
-          { id: '9c', sub: 'c', level: 'PRG', outcome: 'RF5', make: function (r, o) {
-            var xlo = Math.min.apply(null, o.xs), xhi = Math.max.apply(null, o.xs), ylo = Math.min.apply(null, o.ys), yhi = Math.max.apply(null, o.ys);
-            var spx = Math.max(xhi - xlo, 4), spy = Math.max(yhi - ylo, 4), num = K.number;
-            var kx = [Math.floor(xlo) - 1, Math.ceil(xhi) + 1, 2], ky = [Math.floor(ylo) - 1, Math.ceil(yhi) + 1, 2];
-            var chk = function (resp) {
-              var v = (resp || []).map(function (s) { var p = HW.parse.number(s); return p.ok ? p.value : NaN; });
-              if (v.length < 6 || v.some(function (z) { return !isFinite(z); })) return form('empty', 'Fill in all six boxes with numbers.');
-              if (v[0] >= v[1] || v[3] >= v[4]) return wrong('win-order', 'Each minimum must be less than its maximum.');
-              if (v[2] <= 0 || v[5] <= 0) return wrong('win-scale', 'A scale is the gap between tick marks, so it must be positive.');
-              var mx = [['the ' + t('x') + '-intercept of ' + t('L_1'), o.xs[0], 0], ['the ' + t('x') + '-intercept of ' + t('L_2'), o.xs[1], 0], ['the ' + t('y') + '-intercept of ' + t('L_1'), o.ys[0], 1], ['the ' + t('y') + '-intercept of ' + t('L_2'), o.ys[1], 1]];
-              for (var i = 0; i < mx.length; i++) { var lo = mx[i][2] ? v[3] : v[0], hi = mx[i][2] ? v[4] : v[1]; if (mx[i][1] < lo - 1e-9 || mx[i][1] > hi + 1e-9) return wrong('win-miss', 'Your window misses ' + mx[i][0] + ', at ' + t(mx[i][2] ? 'y' : 'x') + '-value ' + t(dec(Math.round(mx[i][1] * 100) / 100)) + '. Work out all four intercepts first.'); }
-              if (v[0] > 0 || v[1] < 0 || v[3] > 0 || v[4] < 0) return wrong('win-miss', 'Both axes must be in the window, so it has to include ' + t('x=0') + ' and ' + t('y=0') + '.');
-              if (v[1] - v[0] > 10 * spx || v[4] - v[3] > 10 * spy) return wrong('win-big', 'That window is so large the lines would be squeezed into a corner. Fit it more closely around the intercepts.');
-              if ((v[1] - v[0]) / v[2] > 60 || (v[4] - v[3]) / v[5] > 60) return wrong('win-scale', 'With that scale there would be a crowd of tick marks. Choose a scale like ' + t('1') + ', ' + t('2') + ' or ' + t('5') + '.');
-              if ((v[1] - v[0]) / v[2] < 1 || (v[4] - v[3]) / v[5] < 1) return wrong('win-scale', 'The scale is bigger than the window itself — there would be no tick marks.');
-              return ok();
-            };
-            var p = B.fields('State a suitable window, ' + t('x:[x_{\\min},x_{\\max},x_{\\text{scl}}],\\ y:[y_{\\min},y_{\\max},y_{\\text{scl}}]') + ', for graphing both lines, ' + t('L_1:\\ ' + sT(o.L1)) + ' and ' + t('L_2:\\ ' + sT(o.L2)) + ', so that the ' + t('x') + '- and ' + t('y') + '-intercepts of each line are visible.',
-              [{ label: t('x_{\\min}') }, { label: t('x_{\\max}') }, { label: t('x_{\\text{scl}}') }, { label: t('y_{\\min}') }, { label: t('y_{\\max}') }, { label: t('y_{\\text{scl}}') }], [num(0), num(0), num(0), num(0), num(0), num(0)], kx.concat(ky).map(String),
-              'e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']'),
-              t('L_1') + ': ' + t('x') + '-int ' + t('0=' + sT(o.L1).slice(2)) + ' ⟹ ' + t('x=' + qT(xint(o.L1))) + '; ' + t('y') + '-int ' + t(o.b1) + '.<br>' + t('L_2') + ': ' + t('x') + '-int ' + t('x=' + qT(xint(o.L2)) + (isInt(xint(o.L2)) ? '' : '\\approx ' + dec(Math.round(qv(xint(o.L2)) * 10) / 10))) + '; ' + t('y') + '-int ' + t(qT(o.b2)) + '.<br>The window must reach from ' + t('x=' + dec(Math.round(xlo * 10) / 10)) + ' to ' + t('x=' + dec(Math.round(xhi * 10) / 10)) + ' and from ' + t('y=' + dec(Math.round(ylo * 10) / 10)) + ' to ' + t('y=' + dec(Math.round(yhi * 10) / 10)) + ', e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']') + '.',
-              ['Find all four intercepts (set ' + t('y=0') + ', then ' + t('x=0') + ', in each equation). The window must contain all of them, and both axes.'], 'window for both lines');
-            p.check = chk; p.good = [[String(Math.floor(xlo) - 3), String(Math.ceil(xhi) + 3), '1', String(Math.floor(ylo) - 2), String(Math.ceil(yhi) + 4), '1']];
-            p.bad = [[String(Math.ceil(xlo) + 1), String(Math.ceil(xhi) + 1), '2', String(Math.floor(ylo) - 1), String(Math.ceil(yhi) + 1), '2'], ['-1000', '1000', '1', '-1000', '1000', '1']];
-            return p;
+          { id: '9c', sub: 'c', level: 'EMG', outcome: 'RF5', make: function (r, o) {
+            var Ls = [o.L1, o.L2], fl = [], ch = [], ks = [], sol = [];
+            Ls.forEach(function (L, k) {
+              var nm = 'L_' + (k + 1), xi = xint(L), yi = yint(L), b = k ? o.b2 : o.b1;
+              fl.push({ label: t(nm) + ': ' + t('x') + '-intercept', mode: 'math', keys: 'pairs' }, { label: t(nm) + ': ' + t('y') + '-intercept', mode: 'math', keys: 'pairs' });
+              ch.push(ptChk([xi, 0], 'x'), ptChk([0, yi], 'y')); ks.push(ptK([xi, 0]), ptK([0, yi]));
+              sol.push(t(nm) + ': ' + t('x') + '-int ' + t('0=' + sT(L).slice(2)) + ' ⟹ ' + t('x=' + qT(xi) + (isInt(xi) ? '' : '\\approx ' + dec(Math.round(qv(xi) * 10) / 10))) + ', so ' + t(ptT([xi, 0])) + '; ' + t('y') + '-int ' + t(qT(b)) + ', so ' + t(ptT([0, yi])) + '.');
+            });
+            return B.fields('Determine the ' + t('x') + '- and ' + t('y') + '-intercepts of both lines, ' + t('L_1:\\ ' + sT(o.L1)) + ' and ' + t('L_2:\\ ' + sT(o.L2)) + ', as ordered pairs. (To graph both lines by hand, the grid has to show all four.)', fl, ch, ks,
+              ks.map(function (k) { return t(k); }).join(', '),
+              sol.join('<br>') + '<br>A grid from about ' + t('x=' + dec(Math.floor(Math.min.apply(null, o.xs)) - 1)) + ' to ' + t('x=' + dec(Math.ceil(Math.max.apply(null, o.xs)) + 1)) + ' and ' + t('y=' + dec(Math.floor(Math.min.apply(null, o.ys)) - 1)) + ' to ' + t('y=' + dec(Math.ceil(Math.max.apply(null, o.ys)) + 1)) + ' shows all four.',
+              ['For an ' + t('x') + '-intercept set ' + t('y=0') + ' and solve for ' + t('x') + '; the ' + t('y') + '-intercept is ' + t('b') + ' in ' + t('y=mx+b') + '.'], 'intercepts of both lines');
           } }] },
       /* ---------- 10 ---------- */
       { num: '10', stem: 'State the equation of each line in slope–point form, ' + t('y-y_1=m(x-x_1)') + ', and then rewrite it in general form, ' + t('Ax+By+C=0') + '.',
