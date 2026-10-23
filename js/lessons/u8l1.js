@@ -240,7 +240,9 @@
     }
     var O = [{ html: good + '<br>Both are true, so ' + ptt(P) + ' is the solution.', right: true },
       { html: only, why: 'One equation isn’t enough: every point on that line works in it. A solution of the system must make <b>both</b> equations true.', code: 'ver-one' },
-      { html: swp, why: 'The coordinates were substituted the wrong way round: in ' + ptt(P) + ', ' + t(vars[0] + '=' + nT(P[0])) + ' and ' + t(vars[1] + '=' + nT(P[1])) + '.', code: 'ver-swap' }];
+      P[0] === P[1] ?   // swapping equal coordinates changes nothing: use a "no substitution" distractor instead
+        { html: 'The lines cross at ' + ptt(P) + ' on the graph, so it is the solution — there is nothing to substitute.', why: 'Reading the graph finds the point; verifying it <b>algebraically</b> means substituting it into both equations.', code: 'ver-none' } :
+        { html: swp, why: 'The coordinates were substituted the wrong way round: in ' + ptt(P) + ', ' + t(vars[0] + '=' + nT(P[0])) + ' and ' + t(vars[1] + '=' + nT(P[1])) + '.', code: 'ver-swap' }];
     if (slip) O.push({ html: slip, why: 'Careful with the double negative: subtracting a negative value adds it. Redo the second check.', code: 'ver-sign' });
     else O.push({ html: line1(eqs[1], V) + '<br>It works, so ' + ptt(P) + ' is the solution.', why: 'One equation isn’t enough — substitute into <b>both</b> equations.', code: 'ver-one2' });
     return mc(r, prompt, O, 'Substitute ' + t(vars[0] + '=' + nT(P[0])) + ' and ' + t(vars[1] + '=' + nT(P[1])) + ' into <b>both</b> equations:<br>' + good + '<br>Both equations are true, so ' + ptt(P) + ' is the solution of the system.',
@@ -266,7 +268,7 @@
   }
   function ep3(r, k, R1, R2, trap) {
     var L1 = line(R1[0], R1[1], R1[2]), L2 = line(R2[0], R2[1], R2[2]), n1 = rawG(R1), n2 = rawG(R2), kind = kindOf(L1, L2);
-    return classMC(r, '(' + k + ') ' + t(n1) + ', \\(\;\\) ' + t(n2), kind, clsD(L1, L2), abSol(R1, R2, n1, n2), ['Find ' + t('-\\frac{A}{B}') + ' and ' + t('-\\frac{C}{B}') + ' for each line, then compare — slopes first.'], 'classify general form (' + kind + ')', trap);
+    return classMC(r, '(' + k + ') ' + t(n1) + ', \\(\\;\\) ' + t(n2), kind, clsD(L1, L2), abSol(R1, R2, n1, n2), ['Find ' + t('-\\frac{A}{B}') + ' and ' + t('-\\frac{C}{B}') + ' for each line, then compare — slopes first.'], 'classify general form (' + kind + ')', trap);
   }
   var MS = { a: [[[-3, 2], [3, 2], [-1, 2], [1, 2]], [[3, 4], [-3, 4], [1, 4], [-1, 4]]], b: [[[1, 3], [-1, 3], [2, 3]], [[-2, 3], [2, 3], [-1, 3], [1, 3]]], c: [[-1, 1, -2, 2], [[5, 2], [3, 2], [-3, 2], [-5, 2]]] };
   function mixSys(r, k) {   // y = m1 x + b1 and a general-form line with a fraction slope, integer solution on the 14 x 14 grid
@@ -411,7 +413,7 @@
       /* ---------- Q3: tickets ---------- */
       { num: '3', shared: function (r) {
           var s = pick2(r, function (r) { var N = r.pick([350, 350, 300, 400]), a0 = 50 * r.int(2, N / 50 - 2); return { N: N, p: r.pick([8, 8, 7, 9, 10, 12]), q: r.pick([5, 5, 4, 6]), a0: a0, s0: N - a0 }; },
-            function (s) { if (s.p <= s.q) return false; var R = s.p * s.a0 + s.q * s.s0, L = line(s.p, s.q, -R); return latS(L, [[0, s.N], [0, s.N]], 50, 10).length >= 2; });
+            function (s) { if (s.p <= s.q || s.a0 === s.s0) return false; var R = s.p * s.a0 + s.q * s.s0, L = line(s.p, s.q, -R); return latS(L, [[0, s.N], [0, s.N]], 50, 10).length >= 2; });
           s.R = s.p * s.a0 + s.q * s.s0; s.L1 = line(1, 1, -s.N); s.L2 = line(s.p, s.q, -s.R); s.win = [[0, s.N], [0, s.N]];
           s.n1 = 'a+s=' + s.N; s.n2 = s.p + 'a+' + s.q + 's=' + F(s.R);
           return s;
@@ -720,7 +722,7 @@
             return pointPart(t('\\ell_2') + ' and ' + t('\\ell_4') + ' also look almost alike. Classify the system they form; if it has one solution, find it.', [sh.x0, sh.y0], [sh.L[1], sh.L[3]], {},
               'Slopes: ' + t('\\ell_2') + ': ' + t('-\\frac{' + sh.a + '}{' + (-sh.b) + '}=' + fT(fr(sh.a, sh.b))) + '; ' + t('\\ell_4') + ': ' + t('-\\frac{' + sh.a + '}{' + (-sh.b4) + '}=' + fT(fr(sh.a, sh.b4))) + '. Different, so <b>one solution</b>.<br>' +
               'Subtract the equations (the ' + t('x') + '-terms cancel): ' + t('(' + (-sh.b) + '+' + sh.b4 + ')y+(' + sh.c + '-' + par(sh.c4) + ')=0') + ', so ' + t(T([[sh.b4 - sh.b, 'y']]) + '=' + (sh.c4 - sh.c)) + ' and ' + t('y=' + sh.y0) + '.<br>' +
-              'Then ' + t(subT([[sh.a, 'x'], [-sh.b, 'y'], [sh.c, '']], { x: 'x', y: sh.y0 }).replace('(x)', 'x') + '=0') + ' gives ' + t('x=' + sh.x0) + '. Solution ' + ptt([sh.x0, sh.y0]) + '.<br>Check: ' + t(subT([[sh.a, 'x'], [-sh.b4, 'y'], [sh.c4, '']], { x: sh.x0, y: sh.y0 }) + '=0') + ' ✓',
+              'Then ' + t(T([[sh.a, 'x']]) + '-' + F(sh.b) + '(' + nT(sh.y0) + ')' + (sh.c < 0 ? '-' : '+') + F(Math.abs(sh.c)) + '=0') + ' gives ' + t('x=' + sh.x0) + '. Solution ' + ptt([sh.x0, sh.y0]) + '.<br>Check: ' + t(subT([[sh.a, 'x'], [-sh.b4, 'y'], [sh.c4, '']], { x: sh.x0, y: sh.y0 }) + '=0') + ' ✓',
               ['Compare slopes first. If they differ, find the crossing point.', 'The ' + t('x') + '-terms are the same: subtracting one equation from the other leaves only ' + t('y') + '.'], 'solve l2 l4');
           } },
           { id: 'e4d', sub: 'd', level: 'EMG', make: function (r) {
@@ -868,7 +870,7 @@
               good: [key, '(' + sh.est[0] + ', ' + (sh.est[1] + (Y > sh.est[1] ? 0.5 : -0.5)) + ')'].filter(function (g) { var rp = Ln.readPoint(g); return Math.abs(rp.p[1].v - Y) <= 0.5 + 1e-9; }), bad: ['(' + sh.est[1] + ', ' + sh.est[0] + ')', '(' + (sh.est[0] + 2) + ', ' + sh.est[1] + ')', '(' + pS(sh.P[0]) + ', ' + pS(sh.P[1]) + ')'].filter(function (b) { return check(b).v !== 'correct'; }) };
           } },
           { id: 'e8b2', sub: 'b why', level: 'LIM', make: function (r) {
-            return mc(r, 'Why is your answer an estimate and not the solution?', [
+            return mc(r, 'Why does reading this system’s crossing point off a hand-drawn graph give only an estimate, not the solution?', [
               { html: 'The lines cross between grid lines, so the coordinates have to be judged by eye.', right: true },
               { html: 'Every solution read from a hand-drawn graph is only an estimate.', why: 'When the lines cross exactly on a grid point (as in most systems in this lesson), the graph gives the exact solution.', code: 'all' },
               { html: 'The lines don’t really cross; they only come close.', why: 'The slopes are different, so the lines do cross — just not on a grid point.', code: 'nocross' },
@@ -1017,7 +1019,7 @@
               { html: win(0, X1, 0, sh.Y - 3), why: 'The ' + t('y') + '-coordinate of the intersection is ' + t(sh.Y) + ', above this grid.', code: 'ysmall' },
               { html: win(0, sh.X - 3, 0, Y1), why: 'The ' + t('x') + '-coordinate of the intersection is ' + t(sh.X) + ', to the right of this grid.', code: 'xsmall' }],
               'Any grid containing ' + ptt([sh.X, sh.Y]) + ', e.g. ' + win(0, X1, 0, Y1) + '. An empty grid only shows the lines don’t meet <b>there</b>; the proof of “no solution” is equal slopes with different intercepts — an algebraic test, not a picture.',
-              ['Use your answer to (b): where do the lines cross?'], 'choose a window');
+              ['First find where the lines cross: set the two expressions for ' + t('y') + ' equal and solve.'], 'choose a window');
           } }] },
       { num: '12', shared: function (r) {
           var s = { x0: r.pick([4, 4, 2, 3, 5]), y0: r.pick([-1, -1, -2, -3, -4]), a: r.pick([2, 2, 3]) };

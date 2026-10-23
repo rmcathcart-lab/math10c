@@ -655,7 +655,7 @@
               conds: [amountConds(sh.M, 'kg', 'the blend'), contentConds(sh.hi, sh.lo, String(sh.hi), String(sh.lo), V, '', 'value in dollars')],
               sol: mixSol({ X: 'x', Y: 'y', M: sh.M, r1: sh.hi, r2: sh.lo, r1t: String(sh.hi), r2t: String(sh.lo), C: V, A: sh.y, Bv: sh.x, letTxt: 'Let ' + t('x') + ' = kg of cashews, ' + t('y') + ' = kg of peanuts.', amtName: 'Amount', conName: 'Value', end: 'The blend uses ' + n(sh.y) + ' kg of cashews and ' + n(sh.x) + ' kg of peanuts.' }), hints: H_MIX, text: 'nut amounts' });
           } },
-          { id: 'e3c', sub: 'c', level: 'LIM', make: function (r, sh) {
+          { id: 'e3c', sub: 'c', level: 'BEG', make: function (r, sh) {
             var V = sh.c * sh.M;
             return numP('State the total value of the blend in dollars.', V, function (v) { if (near(v, sh.hi + sh.lo)) return { code: 'mix-rates-added', hint: 'Rates are never added. Value = mass × price per kg for the whole blend.' }; if (near(v, sh.c)) return { code: 'amt', hint: 'That is the price per kg. Multiply by the ' + n(sh.M) + ' kg.' }; return null; },
               t(n(sh.M) + '\\text{ kg}\\times \\$' + sh.c + '\\text{/kg}=\\$' + n(V)) + '. (Check: ' + t(sh.hi + '(' + n(sh.y) + ')+' + sh.lo + '(' + n(sh.x) + ')=' + n(V)) + ' ✓)', ['Value = amount × unit value.'], 'blend value', { before: '$' });
@@ -819,7 +819,7 @@
               good: [['p+w=' + sh.S1, 'p-w=' + sh.S2]],
               sol: t(n(sh.tw) + '(p+w)=' + n(sh.D)) + ' &nbsp; ' + t(n(sh.ta) + '(p-w)=' + n(sh.D)), hints: ['With the wind the ground speed is ' + t('p+w') + '; against it, ' + t('p-w') + '.'], text: 'cargo plane system' });
           } },
-          { id: 'e9b', sub: 'b', level: 'ADV', make: function (r, sh) {
+          { id: 'e9b', sub: 'b', level: 'PRG', make: function (r, sh) {
             return amtP({ prompt: 'Solve the system: find the plane’s speed in still air and the wind speed.', names: ['Still air ' + t('p'), 'Wind ' + t('w')], units: ['km/h', 'km/h'], vals: [sh.p, sh.w],
               diag: function (u, v) { if (near(u, sh.S1) || near(u, sh.S2)) return { code: 'mot-ground', hint: 'That is a ground speed (distance ÷ time). Solve ' + t('p+w=' + n(sh.S1)) + ', ' + t('p-w=' + n(sh.S2)) + '.' }; if (near(v, sh.S1 - sh.S2)) return { code: 'mot-not-halved', hint: 'Subtracting gives ' + t('2w=' + n(sh.S1 - sh.S2)) + ' — divide by 2.' }; return null; },
               conds: [{ f: function (u, v) { return u + v; }, v: sh.S1, code: 'amt-cond', hint: function (g) { return 'Check: ' + t('p+w') + ' should be ' + t(n(sh.D) + '\\div ' + n(sh.tw) + '=' + n(sh.S1)) + '.'; } }, { f: function (u, v) { return u - v; }, v: sh.S2, code: 'amt-cond', hint: function () { return 'Check: ' + t('p-w') + ' should be ' + t(n(sh.D) + '\\div ' + n(sh.ta) + '=' + n(sh.S2)) + '.'; } }],
@@ -1071,7 +1071,7 @@
               conds: [{ f: function (u, v) { return u + v; }, v: S1, code: 'amt-cond', hint: function () { return 'Check the motorboat: ' + t('b+c') + ' should be ' + t(n(sh.D1) + '\\div ' + n(sh.td) + '=' + n(S1)) + '.'; } }, { f: function (u, v) { return u - sh.k - v; }, v: g2, code: 'amt-cond', hint: function () { return 'Check the second boat: ' + t('(b-' + sh.k + ')-c') + ' should be ' + t(n(sh.D2) + '\\div ' + n(sh.tu) + '=' + n(g2)) + '.'; } }],
               sol: bcSol({ b: 'b', c: 'c', S1: S1, S2: S2, l1: 'Divide by the times: ' + t('b+c=' + n(S1)), l2: t('b-' + sh.k + '-c=' + n(g2)) + ', i.e. ' + t('b-c=' + n(S2)), end: 'The current runs at ' + sh.c + ' km/h; the motorboat does ' + sh.b + ' km/h in still water and the second boat ' + (sh.b - sh.k) + ' km/h.' }), hints: ['Divide each equation by its time, then add.'], text: 'two boats speeds' });
           } },
-          { id: 'e17c', sub: 'c', level: 'MAS', make: function (r, sh) {
+          { id: 'e17c', sub: 'c', level: 'PRG', make: function (r, sh) {
             var g = sh.b - sh.k + sh.c;
             return hoursP('How long would the second boat take to travel the same ' + t(n(sh.D2)) + ' km <b>downstream</b>? (Use the motorboat’s still-water speed ' + t(n(sh.b)) + ' km/h and the current ' + t(n(sh.c)) + ' km/h.)', sh.T2, function (v) {
               if (near(v, sh.D2 / (sh.b + sh.c))) return { code: 'mot-offset', hint: 'That uses the motorboat’s speed. The second boat’s still-water speed is ' + t(n(sh.b) + '-' + sh.k + '=' + n(sh.b - sh.k)) + '.' };
