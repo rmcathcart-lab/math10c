@@ -143,7 +143,7 @@
     var out = o.letTxt + '<br>' + o.amtName + ': ' + t(X + '+' + Y + '=' + n(o.M)) + ' &nbsp; ' + o.conName + ': ' + t(r1t + X + '+' + r2t + Y + '=' + cf(o.C));
     out += '<br>Substitute ' + t(Y + '=' + n(o.M) + '-' + X) + ': ' + t(r1t + X + '+' + r2t + '(' + n(o.M) + '-' + X + ')=' + cf(o.C));
     out += '<br>' + t(r1t + X + '+' + cf(k) + '-' + r2t + X + '=' + cf(o.C)) + ' &nbsp; ' + t('\\Rightarrow ' + coef(d) + X + '=' + cf(rhs) + '\\Rightarrow ' + X + '=' + n(o.A));
-    out += '<br>' + t(Y + '=' + n(o.M) + '-' + n(o.A) + '=' + n(o.Bv));
+    out += '<br>' + t(Y + '=' + n(o.M) + '-' + (o.A < 0 ? '(' + n(o.A) + ')' : n(o.A)) + '=' + n(o.Bv));
     out += '<br>Check: ' + t(n(o.A) + '+' + n(o.Bv) + '=' + n(o.M)) + ' ✓ &nbsp; ' + t((r1t || '1') + '(' + n(o.A) + ')+' + (r2t || '1') + '(' + n(o.Bv) + ')=' + cf(rnd(o.r1 * o.A)) + '+' + cf(rnd(o.r2 * o.Bv)) + '=' + cf(o.C)) + ' ✓';
     return out + (o.end ? '<br><b>' + o.end + '</b>' : '');
   }
@@ -341,9 +341,11 @@
 
   function q7Stem(sh) { return 'A cyclist leaves home at ' + clock(sh.start) + ' to bike to the ' + sh.place + ', ' + t(n(sh.D)) + ' km away. She rides at ' + t(n(sh.vr)) + ' km/h until she gets a flat tire, then walks her bike the rest of the way at ' + t(n(sh.vw)) + ' km/h. She arrives at the ' + sh.place + ' at ' + clock(sh.start + sh.T); }
   function q7Sol(sh) {
-    var T = frac60(sh.T), vr = sh.vr, vw = sh.vw, m = vr / vw;
+    var T = frac60(sh.T), vr = sh.vr, vw = sh.vw, Lm = vr * vw / gcd(vr, vw), A = Lm / vr, Bk = Lm / vw;   // clear the fractions with the LCD of the speeds
+    var frq = function (p, q) { var g = gcd(p, q); p /= g; q /= g; if (q === 1) return String(p); var u = q; while (u % 2 === 0) u /= 2; while (u % 5 === 0) u /= 5; return u === 1 ? n(p / q) : (p < 0 ? '-' : '') + '\\frac{' + Math.abs(p) + '}{' + q + '}'; };
+    var rhs = frq(Lm * sh.T, 60), diff = frq(Lm * sh.T - 60 * A * sh.D, 60);
     return 'From ' + clock(sh.start) + ' to ' + clock(sh.start + sh.T) + ' is ' + sh.T + ' min ' + t('=' + T) + ' h. Let ' + t('d') + ' = km ridden, ' + t('k') + ' = km walked.<br>Distance: ' + t('d+k=' + n(sh.D)) + ' &nbsp; Time: ' + t('\\frac{d}{' + vr + '}+\\frac{k}{' + vw + '}=' + T) +
-      '<br>Multiply the time equation by ' + t(vr) + ': ' + t('d+' + coef(m) + 'k=' + n(rnd(vr * sh.T / 60))) + '. Subtract ' + t('d+k=' + n(sh.D)) + ': ' + t(coef(m - 1) + 'k=' + n(rnd(vr * sh.T / 60 - sh.D)) + '\\Rightarrow k=' + n(sh.k)) + ', so ' + t('d=' + n(sh.d)) + '.' +
+      '<br>Multiply the time equation by ' + t(Lm) + ': ' + t(coef(A) + 'd+' + coef(Bk) + 'k=' + rhs) + '. ' + (A === 1 ? 'Subtract ' + t('d+k=' + n(sh.D)) : 'Subtract ' + t(A) + ' times the distance equation, ' + t(A + 'd+' + A + 'k=' + n(A * sh.D))) + ': ' + t(coef(Bk - A) + 'k=' + diff + '\\Rightarrow k=' + n(sh.k)) + ', so ' + t('d=' + n(sh.d)) + '.' +
       '<br>Check: riding ' + t('\\frac{' + n(sh.d) + '}{' + vr + '}') + ' h = ' + sh.tr + ' min, walking ' + t('\\frac{' + n(sh.k) + '}{' + vw + '}') + ' h = ' + sh.tw + ' min, total ' + sh.T + ' min ✓<br><b>She had to walk her bike ' + n(sh.k) + ' km.</b>';
   }
   function q9Stem(sh) { return 'Aiden left home at ' + clock(sh.dep) + ' to travel ' + t(n(sh.D)) + ' km to visit his uncle. He averaged ' + t(n(sh.v1)) + ' km/h for the first part of the trip, during which he took a ' + sh.r1 + '-minute rest, and ' + t(n(sh.v2)) + ' km/h for the second part, during which he took a ' + sh.r2 + '-minute rest. He reached his destination at ' + clock(sh.dep + sh.E); }
@@ -419,9 +421,10 @@
         } },
         { id: '3b', sub: 'b', level: 'MAS', make: function (r, sh) {
           var g = gcd(sh.x, sh.y), px = sh.x / g, py = sh.y / g, ps = px + py, lim = sh.lowRunsOut ? sh.a : sh.b;
+          var vle = function (q) { var v = 1000 * ps / q; return isInt(v * 100) ? n(rnd(v)) : '\\frac{' + (1000 * ps / gcd(1000 * ps, q)) + '}{' + (q / gcd(1000 * ps, q)) + '}=' + n(Math.floor(v * 100) / 100) + '\\ldots'; };
           var sol = 'Every batch keeps the ratio from (a), ' + t(n(sh.x) + ':' + n(sh.y) + '=' + px + ':' + py) + ' — ' + px + ' parts of ' + sh.a + '% and ' + py + ' parts of ' + sh.b + '% in every ' + ps + ' parts. For a total of ' + t('V') + ' mL:' +
-            '<br>' + t('\\frac{' + px + '}{' + ps + '}V\\le 1000\\Rightarrow V\\le ' + n(rnd(1000 * ps / px))) + ' &nbsp; ' + t('\\frac{' + py + '}{' + ps + '}V\\le 1000\\Rightarrow V\\le ' + n(rnd(1000 * ps / py))) +
-            '<br>The ' + lim + '% bottle runs out first, so the most is ' + (isInt(sh.vmaxRaw) ? t(n(sh.vmax)) + ' mL' : t(n(rnd(sh.vmaxRaw))) + ' mL, rounded <b>down</b> to ' + t(n(sh.vmax)) + ' mL') + '.<br><b>At most ' + n(sh.vmax) + ' mL of ' + sh.c + '% solution can be made.</b>';
+            '<br>' + t('\\frac{' + px + '}{' + ps + '}V\\le 1000\\Rightarrow V\\le ' + vle(px)) + ' &nbsp; ' + t('\\frac{' + py + '}{' + ps + '}V\\le 1000\\Rightarrow V\\le ' + vle(py)) +
+            '<br>The ' + lim + '% bottle runs out first, so the most is ' + (isInt(sh.vmaxRaw) ? t(n(sh.vmax)) + ' mL' : t(vle(sh.lowRunsOut ? px : py)) + ' mL, rounded <b>down</b> to ' + t(n(sh.vmax)) + ' mL') + '.<br><b>At most ' + t(n(sh.vmax)) + ' mL of ' + sh.c + '% solution can be made.</b>';
           return numP('What is the maximum volume, rounded down to the nearest mL, of ' + t(pc(sh.c)) + ' alcohol solution that could be made from the two original 1 L bottles?', sh.vmax, function (v) {
             if (v === 2000) return { code: 'mix-max-sum', hint: 'You can’t use all of both bottles: every batch must keep the ratio ' + t(px + ':' + py) + ' from (a), so one bottle runs out before the other.' };
             if (v === sh.vother || v === sh.vother + 1) return { code: 'mix-max-other', hint: 'That batch would need more than 1 L of the ' + lim + '% solution. Work out the limit from <b>each</b> bottle and take the smaller one.' };
@@ -514,7 +517,7 @@
             if (kBad > 0 && near(v, rnd(kBad))) return { code: 'mot-time-decimal', hint: sh.T + ' minutes is ' + t('\\frac{' + sh.T + '}{60}') + ' h, not ' + t(n(sh.T / 100)) + ' h.' };
             if (near(v, sh.tw) || near(v, sh.tr)) return { code: 'mot-other', hint: 'That is a time in minutes. The question asks for a <b>distance</b> in km.' };
             return null;
-          }, q7Sol(sh), ['Distance: ' + t('d+k=' + n(sh.D)) + '. Time: ' + t('\\frac{d}{' + sh.vr + '}+\\frac{k}{' + sh.vw + '}') + ' = the elapsed time in hours.', 'Multiply the time equation by ' + t(sh.vr) + ' to clear the fractions, then subtract the distance equation.'], 'walked ' + sh.k + ' km', { after: 'km' });
+          }, q7Sol(sh), ['Distance: ' + t('d+k=' + n(sh.D)) + '. Time: ' + t('\\frac{d}{' + sh.vr + '}+\\frac{k}{' + sh.vw + '}') + ' = the elapsed time in hours.', 'Multiply the time equation by ' + t(sh.vr * sh.vw / gcd(sh.vr, sh.vw)) + ' to clear the fractions, then eliminate ' + t('d') + ' using the distance equation.'], 'walked ' + sh.k + ' km', { after: 'km' });
         } }] },
 
       /* ---------- 8. MC coffee ---------- */
@@ -827,11 +830,14 @@
             return mcP(r, 'The plane’s still-air speed is ' + t(n(sh.p)) + ' km/h and the wind is ' + t(n(sh.w)) + ' km/h. Why does the round trip take longer than it would with no wind at all, even though the wind helps on one leg?', [
               { html: 'The plane spends longer on the slow leg (' + hrs(sh.ta) + ') than on the fast one (' + hrs(sh.tw) + '), so the time lost against the wind is more than the time gained with it.', right: true },
               { html: 'It doesn’t: the wind’s help and hindrance cancel, so the times are equal.', why: 'Check: with no wind, ' + t('2\\times ' + n(sh.D) + '\\div ' + n(sh.p) + '\\approx ' + K.roundTo(nw, 2).toFixed(2)) + ' h, but the trip took ' + t(n(sh.tw + sh.ta)) + ' h.' },
-              { html: 'Because the wind makes the distance longer on the way back.', why: 'The distance is the same both ways: ' + n(sh.D) + ' km.' },
+              { html: 'Because the wind makes the distance longer on the way back.', why: 'The distance is the same both ways: ' + t(n(sh.D)) + ' km.' },
               { html: 'Because the wind speed is subtracted twice.', why: 'It is added on one leg and subtracted on the other — the speeds average out, but the <b>times</b> don’t.' }],
               'With no wind: ' + t('2\\times ' + n(sh.D) + '\\div ' + n(sh.p) + '\\approx ' + K.roundTo(nw, 2).toFixed(2)) + ' h; with the wind: ' + t(n(sh.tw) + '+' + n(sh.ta) + '=' + n(sh.tw + sh.ta)) + ' h. The plane spends <b>longer</b> on the slow leg than on the fast one, so the time lost fighting the wind is more than the time gained riding it.', [], 'why the round trip is longer');
           } }] },
-      { num: '10', shared: function (r) { return { a: r.pick(E10()), b: r.pick(E10B()), shelf: r.pick([0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2]) }; },
+      { num: '10', shared: function (r) {
+          var a = r.pick(E10()), b = r.pick(E10B()), yes = r.int(0, 1) === 1, all = [0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2];
+          var opts = all.filter(function (s) { return yes ? s * 1000 >= b.x : s * 1000 < b.x; });   // (b ii): “yes” and “no” about equally often
+          return { a: a, b: b, shelf: r.pick(opts.length ? opts : all) }; },
         stem: 'In each part the numbers arrive in mismatched units. Reconcile the units <b>first</b>, then build and solve the system.',
         parts: [
           { id: 'e10a', sub: 'a i', level: 'ADV', make: function (r, sh) {
@@ -1077,8 +1083,8 @@
       /* ---------------- Part H — MC and NR ---------------- */
       { num: '18', section: 'Extra practice H — Multiple choice and numerical response', shared: function (r) { return r.pick(E18()); }, parts: [
         { id: 'e18', level: 'EMG', make: function (r, sh) {
-          var cands = [sh.juice, sh.fin, sh.V - sh.w, Math.round(sh.V * (sh.j - sh.t) / 100), sh.w + Math.round(sh.V / 5), sh.w - 2, sh.w + 3].filter(function (v, i, a) { return v > 0 && v !== sh.w && isInt(v) && a.indexOf(v) === i; }).slice(0, 3);
-          var why = function (v) { return near(v, sh.juice) ? 'That is the litres of <b>juice</b> in the drink — it stays the same when water is added.' : near(v, sh.fin) ? 'That is the <b>final</b> volume of the drink. Subtract the ' + sh.V + ' L you started with.' : 'Check: ' + sh.V + ' L + ' + v + ' L of water = ' + (sh.V + v) + ' L, and ' + n(sh.juice) + ' L of juice in it is ' + n(rnd(sh.juice / (sh.V + v) * 100)) + '%, not ' + sh.t + '%.'; };
+          var cands = [sh.juice, sh.fin, sh.V - sh.w, Math.round(sh.V * (sh.j - sh.t) / 100), sh.w + Math.round(sh.V / 5), sh.w - 2, sh.w + 3].map(rnd).filter(function (v, i, a) { return v > 0 && !near(v, sh.w) && isInt(v) && a.indexOf(v) === i; }).slice(0, 3);   // rnd: 0.4·V and V − w can differ by float noise
+          var why = function (v) { return near(v, sh.juice) ? 'That is the litres of <b>juice</b> in the drink — it stays the same when water is added.' : near(v, sh.fin) ? 'That is the <b>final</b> volume of the drink. Subtract the ' + sh.V + ' L you started with.' : 'Check: ' + sh.V + ' L + ' + v + ' L of water = ' + (sh.V + v) + ' L, and ' + n(sh.juice) + ' L of juice in it is ' + (isInt(sh.juice / (sh.V + v) * 1000) ? '' : 'about ') + n(K.roundTo(sh.juice / (sh.V + v) * 100, 1)) + '%, not ' + sh.t + '%.'; };
           var opts = [{ v: sh.w, right: true }].concat(cands.map(function (v) { return { v: v, why: why(v) }; })).sort(function (a, b) { return a.v - b.v; });
           return mcP(r, '<i>(Multiple choice)</i> A juice drink is ' + t(pc(sh.j)) + ' juice. Pure water is added to ' + t(n(sh.V)) + ' L of it to bring it down to ' + t(pc(sh.t)) + ' juice. The number of litres of water added is', opts.map(function (o) { return { html: t(n(o.v)), right: !!o.right, why: o.why }; }),
             'Adding water changes the volume but not the juice: ' + t(dp(sh.j) + '(' + n(sh.V) + ')=' + n(sh.juice)) + ' L of juice.<br>' + t(dp(sh.t) + '(' + n(sh.V) + '+w)=' + n(sh.juice) + '\\Rightarrow ' + n(sh.V) + '+w=' + n(sh.fin) + '\\Rightarrow w=' + n(sh.w)) + '<br>Check: ' + t(n(sh.juice) + '\\div ' + n(sh.fin) + '=' + pc(sh.t)) + ' ✓', ['The amount of juice doesn’t change when water is added.'], 'MC dilution');

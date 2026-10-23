@@ -347,7 +347,7 @@
   /* Q5: a new referent for each unit (not one already in the lesson) */
   var Q5 = {
     mm: { name: 'millimetre', size: 1, lesson: 'the thickness of a dime', pool: ['the width of a strand of uncooked spaghetti', 'the thickness of a credit card', 'the thickness of the wire in a paperclip'] },
-    cm: { name: 'centimetre', size: 10, lesson: 'the width of an adult pinky fingernail', pool: ['the diameter of an AA battery', 'the width of a standard pencil', 'the width of a staple'] },
+    cm: { name: 'centimetre', size: 10, lesson: 'the width of an adult pinky fingernail', pool: ['the diameter of an AA battery', 'the width of a standard pencil', 'the length of a staple across its top'] },
     m: { name: 'metre', size: 1000, lesson: 'the height of a 4-year-old child', pool: ['the height of a kitchen countertop', 'the length of a guitar', 'the height of a doorknob above the floor'] },
     in: { name: 'inch', size: 25.4, lesson: 'the width of a thumb across the joint', pool: ['the diameter of a quarter (25¢ coin)', 'the width of a postage stamp'] },
     ft: { name: 'foot', size: 305, lesson: 'the length of an adult foot', pool: ['the length of a standard school ruler (12 in)', 'the side of a square floor tile (12 in)', 'the length of a sheet of legal paper'] },
@@ -1196,7 +1196,7 @@
           { html: 'Converting both estimates to feet settles both questions.', why: 'Converting doesn’t add any information.' }],
           'Two different questions, two measurements: tape the wall (its length), and measure each referent (whose assumed value was closer to the truth). A student can get the wall nearly right with a badly known referent if two errors cancel.', ['What would you measure to know the wall’s length? To know each referent?'], 'what settles the disagreement');
       } },
-      { id: 'e20f', sub: 'f i', level: 'ADV', make: function (r, sh) {
+      { id: 'e20f', sub: 'f i', level: 'PRG', make: function (r, sh) {
         var T = sh.T, Tc = rnd(T * 100, 4);
         return fieldsPart('A tape now gives the wall as ' + t(fx(T, 2)) + ' m. Find each student’s percent error (nearest tenth), then each student’s true referent length (nearest tenth of a centimetre). (Nadia: ' + sh.c + ' cubits, ' + t(fx(sh.N / 100, 2)) + ' m; Beckett: ' + sh.b + ' paces, ' + t(fx(sh.B / 100, 2)) + ' m.)',
           [{ label: 'Nadia’s % error', after: '%', x: pct(sh.N / 100, T), dp: 1, alts: percAlts(sh.N / 100, T) }, { label: 'Beckett’s % error', after: '%', x: pct(sh.B / 100, T), dp: 1, alts: percAlts(sh.B / 100, T) }, { label: 'Nadia’s true cubit', after: 'cm', x: Tc / sh.c, dp: 1, alts: [] }, { label: 'Beckett’s true pace', after: 'cm', x: Tc / sh.b, dp: 1, alts: [] }],

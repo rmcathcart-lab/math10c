@@ -329,7 +329,7 @@
             var A = P2[1] - P1[1], Bq = P1[0] - P2[0], C0 = -(A * P1[0] + Bq * P1[1]); if (!C0) continue;
             var p = K0 * A / C0, q = K0 * Bq / C0;
             if (!Number.isInteger(p) || !Number.isInteger(q) || !p || !q || Math.abs(p) > 12 || Math.abs(q) > 12 || p === q) continue;
-            if ((P1.indexOf(0) >= 0 && P2.indexOf(0) >= 0) || (P1[1] - P2[1]) === 6 * (P1[0] - P2[0])) continue;
+            if (P1.indexOf(0) >= 0 || P2.indexOf(0) >= 0 ||(P1[1] - P2[1]) === 6 * (P1[0] - P2[0])) continue;
             return { P1: P1, P2: P2, K: K0, p: p, q: q };
           }
           return { P1: [1, 4], P2: [-2, 2], K: 10, p: 2, q: -3 };
@@ -472,6 +472,7 @@
             var Es = [E(a1, -b1, -c1), E(a2, -b2, -c2)], s = solve2(Es[0], Es[1]); if (!s || (isInt(s[0]) && isInt(s[1]))) continue;
             v = qv(qs(s[0], s[1])); var f = v * 10 - Math.floor(v * 10);
             if (v < 0.2 || v > 99 || Math.abs(f - 0.5) < 0.05 || Math.abs(Math.round(v) - v) < 0.06 || Q(s[0])[1] > 13) continue;
+            if (Math.abs(v * 10 - Math.round(v * 10)) < 1e-9 || qv(s[0]) === 0 || qv(s[1]) === 0) continue;   // m−n must actually need rounding (booklet: 11/7)
             S = { Es: Es, e: [pol([[a1, 'm'], [-b1, 'n'], [c1, '']]), pol([[a2, 'm'], [-b2, 'n'], [c2, '']])], s: s }; break;
           }
           if (!S) S = { Es: [E(2, -5, -8), E(3, -4, 1)], e: ['2m-5n+8', '3m-4n-1'], s: [Q(37, 7), Q(26, 7)] }, v = 11 / 7;
