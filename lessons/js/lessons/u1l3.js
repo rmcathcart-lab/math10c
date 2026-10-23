@@ -345,6 +345,8 @@ const tester = {
   }
 };
 
+tester.minW = 900; // three-prime numbers (1 200) need the room; drawn this wide and scaled to fit beside the sidebar
+
 /* ============ warm-up: the locker problem ============ */
 function mountLockers() {
   const host = document.getElementById('lockers'); if (!host) return;

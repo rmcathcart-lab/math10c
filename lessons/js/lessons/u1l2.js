@@ -377,9 +377,9 @@ const bags = {
       const dots = []; for (let i = 0; i < n; i++) { const d = add(stage, h('div', 'bg-dot'), 190 + (i % perRow) * pitch, y + Math.floor(i / perRow) * pitch); d.style.background = col; d.style.opacity = 0; dots.push(d); }
       return { lab, dots };
     };
-    const rowsA = Math.ceil(a / perRow), A = pile(a, ca, 12, na), B = pile(b, cb, 22 + rowsA * pitch, nb);
-    const topEnd = 22 + rowsA * pitch + Math.ceil(b / perRow) * pitch + 8;
-    const bagY = topEnd + 14, bagH = Math.min(150, 400 - bagY - 92);
+    const rowsA = Math.ceil(a / perRow), yB = 22 + Math.max(rowsA * pitch, 30), A = pile(a, ca, 12, na), B = pile(b, cb, yB, nb);
+    const topEnd = yB + Math.max(Math.ceil(b / perRow) * pitch, 24) + 8;
+    const bagY = topEnd + 14, bagH = Math.min(118, 400 - bagY - 92);
     const tried = add(stage, h('div', 'bg-tried'), 20, 400 - 40); tried.style.opacity = 0;
     const triedList = [];
     let layer = null;
