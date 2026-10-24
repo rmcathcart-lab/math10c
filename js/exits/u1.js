@@ -321,13 +321,14 @@
     var s = String(resp == null ? '' : resp).trim().replace(/−/g, '-').replace(/\\pm|±|\+\s*\/?\s*-/g, '±').replace(/\\left|\\right|\\,|\$/g, '');
     if (!s) return { empty: true };
     if (/^(none|no( real)?( roots?| solutions?| numbers?| answers?)?|not real|not a real number|no solution|not possible|impossible|undefined|dne|n\/a|∅|\{\s*\})\.?$/i.test(s)) return { vals: [] };
-    var toks = s.split(/\s*(?:,|;|\band\b|\bor\b)\s*/i).filter(function (x) { return x !== ''; }), vals = [];
+    var toks = s.split(/\s*(?:,|;|\band\b|\bor\b)\s*/i).filter(function (x) { return x !== ''; }), vals = [], raw = false;
     for (var i = 0; i < toks.length; i++) {
       var tk = toks[i].replace(/^x\s*=\s*/i, ''), pm = /^±/.test(tk); if (pm) tk = tk.replace(/^±\s*/, '');
       var a = K.read(tk); if (a.res || !isFinite(a.val)) return { bad: true };
+      var sh = ex.shape(a.ast); if (sh.roots || sh.pow) raw = true;
       vals.push(a.val); if (pm) vals.push(-a.val);
     }
-    return { vals: vals };
+    return { vals: vals, raw: raw };
   }
   function rootsChk(want, even, negRad) {
     return function (resp) {
@@ -336,7 +337,7 @@
       if (p.bad) return form('roots-format', 'Type each root as a number or fraction, separated by commas (or use ±), or type <b>none</b>.');
       var got = p.vals.filter(function (v, i) { return p.vals.findIndex(function (w) { return ex.eq(v, w, 1e-9); }) === i; });
       var same = got.length === want.length && want.every(function (w) { return got.some(function (v) { return ex.eq(v, w, 1e-9); }); });
-      if (same) return ok();
+      if (same) return p.raw ? form('evaluate', 'Right roots — now evaluate them: give each root as an integer or a fraction, with no radical or power left.') : ok();
       if (negRad && even && got.length) return wrong('u1x-root-notreal', 'No real number raised to an <b>even</b> power is negative, so this has no real roots. Type <b>none</b>.');
       if (even && want.length === 2 && got.length === 1 && want.some(function (w) { return ex.eq(w, got[0], 1e-9); })) return wrong('u1x-root-pm', 'There is another one: an even power of a negative number is positive too, so ' + t('-' + ex.texRat(ex.norm(Math.round(Math.abs(got[0]) * 1e6), 1e6))) + '… check both signs.');
       if (!even && want.length === 1 && got.length === 2 && got.some(function (v) { return ex.eq(v, want[0], 1e-9); })) return wrong('u1x-root-odd-pm', 'An <b>odd</b> root has only one real value: the other sign raised to this odd power gives the opposite sign.');
@@ -703,8 +704,8 @@
           var a3 = neg ? [-fa[0], fa[1]] : fa;
           var p = P.fields('Evaluate ' + t(t1) + ', ' + t(t2) + ' and ' + t(t3) + '.',
             [{ name: '(i)', before: t(t1 + '='), mode: 'math', keys: 'fraction' }, { name: '(ii)', before: t(t2 + '='), mode: 'math', keys: 'fraction' }, { name: '(iii)', before: t(t3 + '='), mode: 'math', keys: 'fraction' }],
-            [guard(K.value(A.m, { diag: function (v) { if (ex.eq(v, An / A.n)) return { code: 'u1x-root-div', hint: 'A root isn’t a division: find the number that, used as a factor ' + t(A.n) + ' times, gives ' + t(F(An)) + '.' }; if (ex.eq(v, Math.pow(A.m, A.n - 1)) || (A.n !== 2 && ex.eq(v, intRoot(An, 2) || -1))) return { code: 'u1x-root-index', hint: 'Check the index: you need ' + t('x^{' + A.n + '}=' + F(An)) + '.' }; return null; } }), [t1, rt(A.n, String(An))]),
-              guard(K.value(-k * c, { diag: function (v) { if (ex.eq(v, -c)) return { code: 'u1x-root-coef', hint: t(rt(3, '-' + Math.pow(c, 3)) + '=-' + c) + ' — now multiply by the ' + t(k) + ' in front.' }; return null; } }), [t2]),
+            [guard(K.value(A.m, { only: 'integer', diag: function (v) { if (ex.eq(v, An / A.n)) return { code: 'u1x-root-div', hint: 'A root isn’t a division: find the number that, used as a factor ' + t(A.n) + ' times, gives ' + t(F(An)) + '.' }; if (ex.eq(v, Math.pow(A.m, A.n - 1)) || (A.n !== 2 && ex.eq(v, intRoot(An, 2) || -1))) return { code: 'u1x-root-index', hint: 'Check the index: you need ' + t('x^{' + A.n + '}=' + F(An)) + '.' }; return null; } }), [t1, rt(A.n, String(An))]),
+              guard(K.value(-k * c, { only: 'integer', diag: function (v) { if (ex.eq(v, -c)) return { code: 'u1x-root-coef', hint: t(rt(3, '-' + Math.pow(c, 3)) + '=-' + c) + ' — now multiply by the ' + t(k) + ' in front.' }; return null; } }), [t2]),
               guard(K.fraction(a3, { diag: function (v) { if (ex.eq(v, Math.pow(fa[0], n3) / Math.pow(fa[1], n3) / n3)) return { code: 'u1x-root-div', hint: 'Take the root of the top and of the bottom.' }; return null; } }), [t3])],
             [String(A.m), String(-k * c), ex.texRat(a3)], t(t1 + '=' + A.m) + ', ' + t(t2 + '=' + (-k * c)) + ', ' + t(t3 + '=' + ex.texRat(a3)),
             t(t1 + '=' + A.m) + ' because ' + t(A.m + '^{' + A.n + '}=' + F(An)) + '.<br>' + t(rt(3, '-' + Math.pow(c, 3)) + '=-' + c) + ' because ' + t('(-' + c + ')^{3}=-' + Math.pow(c, 3)) + ', so ' + t(t2 + '=' + k + '(-' + c + ')=' + (-k * c)) + '.<br>' +

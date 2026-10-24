@@ -592,7 +592,7 @@
         } }] },
       { num: '4', outcome: 'M2', stem: 'Use ' + t('1\\text{ in}=2.54\\text{ cm}') + ' (so ' + t('1\\text{ ft}=0.3048\\text{ m}') + ') and ' + t('1\\text{ m}^3=1000\\text{ L}') + '.', parts: [
         { id: '4', outcome: 'M2', level: 'ADV', make: function (r) {
-          var s = find(function () { return { a: r.int(6, 9), b: r.int(5, 8), c: 2 * r.int(12, 20) }; }, function (q) { var L = q.a * q.b * q.c / 12 * Math.pow(0.3048, 3) * 1000; return q.a !== q.b && safe(L, 0, 0.1); }, { a: 7, b: 6, c: 30 });
+          var s = find(function () { return { a: r.int(6, 9), b: r.int(5, 8), c: 3 * r.int(8, 13) }; }, function (q) { var L = q.a * q.b * q.c / 12 * Math.pow(0.3048, 3) * 1000; return q.a !== q.b && safe(L, 0, 0.1); }, { a: 7, b: 6, c: 30 });
           var a = s.a, b = s.b, c = s.c, ft3 = a * b * c / 12, F3 = Math.pow(0.3048, 3), m3 = ft3 * F3, L = m3 * 1000, what = r.pick(['hot tub', 'fish pond', 'wading pool', 'water trough']);
           var alts = [A(ft3 * 0.3048 * 1000, 'conv-linear', 'Volume units are cubic: ' + t('1\\text{ ft}^3=(0.3048\\text{ m})^3=0.3048^3\\text{ m}^3') + '. Cube the factor.'), A(ft3 * 0.3048 * 0.3048 * 1000, 'conv-square', 'Volume units are cubic: cube the factor, ' + t('0.3048^3') + ', don’t square it.'),
             A(a * b * c * F3 * 1000, 'u10x-ft-in-mix', 'The depth is in <b>inches</b> and the other sides in feet. Change ' + t(c + '\\text{ in}') + ' to feet first (' + t('\\div 12') + ').'), A(m3, 'u10x-m3-l', 'That is the volume in cubic metres. Change it to litres: ' + t('1\\text{ m}^3=1000\\text{ L}') + '.'),
