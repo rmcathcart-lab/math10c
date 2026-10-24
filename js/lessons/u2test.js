@@ -400,7 +400,7 @@
     return INT(t(pb), V, [[-V, 'even-neg', 'The brackets make ' + t('-' + b) + ' the base: ' + n + ' negative factors multiply to a <b>positive</b>.'], [-b * n, 'u2t-times-exp', 'The exponent says how many factors of ' + t('-' + b) + ' to multiply.']],
       'The brackets make ' + t('-' + b) + ' the base. ' + t(n) + ' is even, so the product is positive: ' + t(pb + '=' + b + '^{' + n + '}=' + F(V)) + '.', ['With brackets, the base is ' + t('-' + b) + '. An even number of negative factors is positive.'], 'evaluate ' + pb);
   }
-  var Q2D = [[2, 2, 2], [2, 2, 3], [2, 3, 2], [2, 4, 2], [2, 2, 4], [2, 3, 3], [2, 5, 2], [2, 2, 5], [3, 2, 2], [3, 3, 2], [3, 2, 3], [4, 2, 2], [5, 2, 2], [10, 2, 2], [10, 2, 3], [10, 3, 2], [10, 2, 4], [10, 4, 2], [6, 1, 2], [7, 1, 2]];
+  var Q2D = [[2, 2, 2], [2, 2, 3], [2, 3, 2], [2, 4, 2], [2, 2, 4], [2, 3, 3], [2, 5, 2], [2, 2, 5], [3, 2, 2], [3, 3, 2], [3, 2, 3], [4, 2, 2], [5, 2, 2], [10, 2, 2], [10, 2, 3], [10, 3, 2], [10, 2, 4], [10, 4, 2], [10, 3, 3], [10, 5, 2], [6, 1, 2], [7, 1, 2]];
   /* monomial helpers for prompts */
   function term(c, list) { return (c === 1 ? '' : c === -1 ? '-' : String(c)) + list.map(function (p) { return pw(p[0], p[1]); }).join(''); }
 
@@ -878,7 +878,7 @@
         { id: '9b', outcome: 'AN3', level: 'BEG', make: function (r, s) { return q9Zero(s.c, s.brFirst); } },
         { id: '9c', outcome: 'AN3', level: 'BEG', make: function (r, s) { return q9Zero(s.c, !s.brFirst); } },
         { id: '9d', outcome: 'AN3', level: 'BEG', make: function (r) {
-          var g = find(function () { return [r.int(2, 5), r.int(2, 5), r.pick([2, 3, 3])]; }, function (g) { return g[0] !== g[1] && cop(g[0], g[1]); }), p = g[0], q = g[1], n = g[2];
+          var g = find(function () { return [r.int(2, 6), r.int(2, 6), r.pick([2, 3, 3])]; }, function (g) { return g[0] !== g[1] && cop(g[0], g[1]) && Math.pow(Math.max(g[0], g[1]), g[2]) <= 216; }), p = g[0], q = g[1], n = g[2];
           var pr = '\\left(\\dfrac{' + p + '}{' + q + '}\\right)^{-' + n + '}', V = Q(Math.pow(q, n), Math.pow(p, n));
           return VAL(t(pr), V, [[Math.pow(p, n) / Math.pow(q, n), 'no-flip', 'A negative exponent on a fraction <b>flips</b> it: ' + t(pr + '=\\left(\\dfrac{' + q + '}{' + p + '}\\right)^{' + n + '}') + '.'], [q / p, 'no-power', 'You flipped the fraction — now raise it to the power ' + t(n) + '.'], [-qv(V), 'u2t-opposite', 'A negative exponent flips the fraction; it doesn’t make it negative.'], [Math.pow(q, n) / p, 'top-only', 'Raise the top <b>and</b> the bottom to the power.']],
             'Flip the fraction to make the exponent positive: ' + t(pr + '=\\left(\\dfrac{' + q + '}{' + p + '}\\right)^{' + n + '}=\\dfrac{' + q + '^{' + n + '}}{' + p + '^{' + n + '}}=' + nT(V)), ['A negative exponent on a fraction flips it: ' + t('\\left(\\frac{a}{b}\\right)^{-n}=\\left(\\frac{b}{a}\\right)^{n}') + '.'], 'evaluate ' + pr);
@@ -985,7 +985,7 @@
           return EV({ base: [Math.pow(g.c, g.n), 1], m: g.m, n: g.n });
         } },
         { id: '20b', outcome: 'AN3', level: 'PRG', make: function (r) {
-          var g = find(function () { var n = r.pick([3, 3, 3, 5]), c = r.int(2, n === 3 ? 10 : 3), m = r.pick([2, 2, 4, 5, 7]); return { n: n, c: c, m: m }; }, function (g) { return cop(g.m, g.n) && Math.pow(g.c, g.m) <= 256; });
+          var g = find(function () { var n = r.pick([3, 3, 3, 5]), c = r.int(2, n === 3 ? 10 : 3), m = r.pick([2, 2, 4, 5, 7, 8]); return { n: n, c: c, m: m }; }, function (g) { return cop(g.m, g.n) && Math.pow(g.c, g.m) <= 256; });
           return EV({ base: [-Math.pow(g.c, g.n), 1], m: g.m, n: g.n });
         } },
         { id: '20c', outcome: 'AN3', level: 'PRG', make: function (r) {

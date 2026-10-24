@@ -407,7 +407,7 @@
           { id: '7ia', sub: 'i a', outcome: 'AN5', level: 'MAS', make: function (r, s) {
             var z = s.i, vars = [z.u, z.v].sort(), E = P.add(z.t1, z.t2);
             return boxes('(i) A student wrote ' + t(z.poly + '=' + z.stu.tex) + '.<br>Expand the student’s answer, then name the term of the original that went missing.',
-              [polyBox('Expanded:', vars, { before: t(z.stu.tex + '=') }), polyBox('Missing term:', vars, { wide: false })],
+              [polyBox('Expanded:', vars, { before: t(z.stu.tex + '='), ph: 'the expanded answer' }), polyBox('Missing term:', vars, { wide: false, ph: 'one term' })],
               [polyCheck(E, [{ is: Ft2poly(z), code: 'u4t-expand-orig', hint: 'That is the original expression. Multiply out the <b>student’s</b> answer, ' + t(z.stu.tex) + ', term by term.' }]), polyCheck(z.t3, [{ is: P.neg(z.t3), code: 'sign', hint: 'Right term, wrong sign: look at the sign of the last term in the original.' }])],
               [tx(E), tx(z.t3)], t(z.stu.tex + '=' + tx(E)) + '; missing ' + t(tx(z.t3)),
               t(z.stu.tex + '=' + tx(E)) + ' has only two terms, so the term ' + t(tx(z.t3)) + ' is missing. Removing ' + t(tx(z.G)) + ' from the term ' + t(tx(z.t3)) + ' leaves ' + t(z.s) + ', not nothing.',
@@ -424,7 +424,7 @@
           { id: '7iia', sub: 'ii a', outcome: 'AN5', level: 'MAS', make: function (r, s) {
             var z = s.ii, E = z.stu.poly, pc = pairCheck([z.A, z.B], z.c, z.b, function (x, y) { if ((x === -z.A && y === -z.B) || (x === -z.B && y === -z.A)) return { code: 'u4t-kept-error', hint: 'Those are the student’s integers: they add to ' + t(-z.b) + ', not ' + t(z.b) + '.' }; return null; });
             return boxes('(ii) A student wrote ' + t(z.poly + '=' + z.stu.tex) + '.<br>Expand the student’s answer to find the error. Then give the two integers that do work.',
-              [polyBox('Expanded:', ['x'], { before: t(z.stu.tex + '=') }), numBox('Two integers with product ' + t(z.c) + ' and sum ' + t(z.b) + ':', { name: 'First integer' }), numBox('and', { name: 'Second integer' })],
+              [polyBox('Expanded:', ['x'], { before: t(z.stu.tex + '='), ph: 'the expanded answer' }), numBox('Two integers with product ' + t(z.c) + ' and sum ' + t(z.b) + ':', { name: 'First integer' }), numBox('and', { name: 'Second integer' })],
               [polyCheck(E, [{ is: z.Ft.poly, code: 'u4t-expand-orig', hint: 'That is the original expression. Multiply out the <b>student’s</b> answer, ' + t(z.stu.tex) + '.' }]),
                 function (v, all) { return pc(all[1], all[2]); }, function () { return ok(); }],
               [tx(E), String(z.A), String(z.B)], t(z.stu.tex + '=' + tx(E)) + '; ' + t(z.A) + ' and ' + t(z.B),
@@ -630,7 +630,7 @@
           } }] },
 
       /* ======================= Part 3 · BEG ======================= */
-      { num: '15', outcome: 'AN5', stem: 'Which method should you use <b>first</b>?', parts: [
+      { num: '15', outcome: 'AN5', stem: 'Look at each expression before you start factoring it.', parts: [
         { id: '15', outcome: 'AN5', level: 'BEG', make: function (r) {
           var g = pick(function () { return { g: r.int(2, 9), h: r.int(2, 9), s: r.pick([1, -1]) }; }, function (z) { return z.g !== z.h; });
           var q = r.int(5, 10), ins = pick(function () { return { m: r.int(2, 9), n: r.int(1, 7) }; }, function (z) { return z.m !== z.n && z.m * z.n <= 40; }), sI = r.pick([1, -1]);
@@ -681,13 +681,13 @@
         parts: ['a', 'b'].map(function (w) { return [
           { id: '17' + w + 'i', sub: w + ' i', outcome: 'AN5', level: 'BEG', make: function (r, s) {
             var Z = s[w], e = Z.claim.poly, terms = P.sorted(e), f = Z.claim.tex;
-            return polyPart(w + ') Multiply out ' + t(f) + ' and simplify.', e, [{ is: P.add(P.mono(terms[0].c, terms[0].v), P.mono(terms[2].c, terms[2].v)), code: 'missing-term', hint: 'You multiplied only the first terms and the last terms. Multiply every term of the first bracket by every term of the second (FOIL), then collect the ' + t('x') + '-terms.' }],
+            return polyPart('To check ' + t(Z.poly + '=' + f) + ', multiply out ' + t(f) + ' and simplify.', e, [{ is: P.add(P.mono(terms[0].c, terms[0].v), P.mono(terms[2].c, terms[2].v)), code: 'missing-term', hint: 'You multiplied only the first terms and the last terms. Multiply every term of the first bracket by every term of the second (FOIL), then collect the ' + t('x') + '-terms.' }],
               t(f + '=' + seq(w === 'a' ? [M(1, 'x', 2), M(Z.w, 'x'), M(Z.u, 'x'), N(Z.u * Z.w)] : [M(Z.p, 'x', 2), M(Z.p * Z.s, 'x'), M(Z.q, 'x'), N(Z.q * Z.s)]) + '=' + tx(e)),
               ['Multiply each term of the first bracket by each term of the second.', 'Collect the two ' + t('x') + '-terms.'], '17' + w + ' expand ' + plain(f), { before: t(f + '=') });
           } },
           { id: '17' + w + 'ii', sub: w + ' ii', outcome: 'AN5', level: 'BEG', make: function (r, s) {
             var Z = s[w], e = tx(Z.claim.poly), f = Z.claim.tex;
-            var p = KP.mc(r, w + ') Is ' + t(Z.poly + '=' + f) + ' correct?', [
+            var p = KP.mc(r, 'So is ' + t(Z.poly + '=' + f) + ' correct?', [
               { html: '<b>Correct</b>', right: Z.ok, why: Z.ok ? null : 'Your expansion ' + t(f + '=' + e) + ' doesn’t match ' + t(Z.poly) + ': the middle terms have opposite signs.' },
               { html: '<b>Not correct</b>', right: !Z.ok, why: Z.ok ? 'Your expansion ' + t(f + '=' + e) + ' matches ' + t(Z.poly) + ' term for term.' : null }],
               t(f + '=' + e) + (Z.ok ? ', which matches: <b>correct</b>.' : ', but the question has ' + t(Z.poly) + ' (the middle term’s sign is different): <b>not correct</b>.'),
@@ -777,7 +777,7 @@
             if (!top || top.t !== 'mul') return form('u4t-show-how', 'Right value — now show the factoring: write it as ' + t('(A-B)(A+B)') + ' or as the product of two numbers.');
             return ok();
           };
-          return boxes('a) Calculate ' + t(m + '^{2}-' + n + '^{2}') + '.', [polyBox('Factored:', [], { before: t(m + '^{2}-' + n + '^{2}='), name: 'Factored form' }), numBox('Value:', { before: t('='), name: 'Value' })],
+          return boxes('Calculate ' + t(m + '^{2}-' + n + '^{2}') + '.', [polyBox('Factored:', [], { before: t(m + '^{2}-' + n + '^{2}='), name: 'Factored form', ph: 'e.g. (A − B)(A + B)' }), numBox('Value:', { before: t('='), name: 'Value' })],
             [fchk, K.number(V, function (v) { if (v === (m - n) * (m - n)) return { code: 'u4t-mental-dos', hint: 'Multiply the difference by the sum.' }; if (v % 100 === 0 || Math.abs(v - V) <= 200) return { code: 'u4t-mental-arith', hint: 'Check: ' + t((m - n) + '\\times 100') + '.' }; return null; })],
             ['(' + m + '-' + n + ')(' + m + '+' + n + ')', String(V)], t('(' + m + '-' + n + ')(' + m + '+' + n + ')=' + (m - n) + '\\times 100=' + F(V)),
             t(m + '^{2}-' + n + '^{2}=(' + m + '-' + n + ')(' + m + '+' + n + ')=' + (m - n) + '\\times 100=' + F(V)),
@@ -792,7 +792,7 @@
             if (top && top.t === 'sub' && isPw(top.a, c) && (isPw(top.b, d) || (strip(top.b).t === 'num' && strip(top.b).v === d * d))) return ok();
             return form('u4t-show-how', 'Right value — now show the difference of squares, ' + t(c + '^{2}-' + d + '^{2}') + ', before working it out.');
           };
-          return boxes('b) Calculate ' + t((c + d) + '\\times ' + (c - d)) + '.', [polyBox('Difference of squares:', [], { before: t((c + d) + '\\times ' + (c - d) + '='), name: 'Difference of squares' }), numBox('Value:', { before: t('='), name: 'Value' })],
+          return boxes('Calculate ' + t((c + d) + '\\times ' + (c - d)) + '.', [polyBox('Difference of squares:', [], { before: t((c + d) + '\\times ' + (c - d) + '='), name: 'Difference of squares', ph: 'e.g. A^2 − B^2' }), numBox('Value:', { before: t('='), name: 'Value' })],
             [dchk, K.number(V, function (v) { if (v === c * c + d * d) return { code: 'sign', hint: 'Subtract ' + t(d + '^{2}') + ', don’t add it.' }; if (v === c * c - 2 * d || v === c * c - d) return { code: 'u4t-mental-arith', hint: t(d + '^{2}=' + d * d) + '.' }; return null; })],
             [c + '^{2}-' + d + '^{2}', String(V)], t('(' + c + '+' + d + ')(' + c + '-' + d + ')=' + c + '^{2}-' + d + '^{2}=' + F(c * c) + '-' + d * d + '=' + F(V)),
             t((c + d) + '\\times ' + (c - d) + '=(' + c + '+' + d + ')(' + c + '-' + d + ')=' + c + '^{2}-' + d + '^{2}') + '<br>' + t('=' + F(c * c) + '-' + d * d + '=' + F(V)),
@@ -809,7 +809,7 @@
         stem: function (z) { return z.name + ' factored ' + t(z.poly) + ' as ' + t(z.stu.tex) + '. Is ' + z.name + '’s answer correct, and is it factored completely?'; },
         parts: [
           { id: '21a', sub: 'a', outcome: 'AN5', level: 'MAS', make: function (r, z) {
-            var rows = [{ id: 'eq', html: 'It multiplies out to ' + t(z.poly) + '.', label: 'equal' }, { id: 'comp', html: 'It is factored completely.', label: 'complete' }];
+            var rows = [{ id: 'eq', html: 'It multiplies out to ' + t(z.poly), label: 'equal' }, { id: 'comp', html: 'It is factored completely', label: 'complete' }];
             var p = KP.grid('Decide whether each statement about ' + z.name + '’s answer is true.', rows, [{ id: 'yes', html: 'True', label: 'true' }, { id: 'no', html: 'False', label: 'false' }], { eq: 'yes', comp: 'no' },
               { why: function (id) { return id === 'eq' ? { code: 'row', hint: 'Expand it: ' + t(z.stu.tex + '=' + z.poly) + '.' } : { code: 'row', hint: 'Look at the bracket ' + t(z.br1) + ': do its terms have a common factor?' }; }, rowHead: 'Statement' },
               'It multiplies out correctly: ' + t(z.stu.tex + '=' + z.poly) + ', so it is <b>equal</b>. But it is <b>not complete</b>: ' + t(z.br1) + ' still has the common factor ' + t(z.g) + '. (Expanding correctly is not enough — no factor may factor again.)',
