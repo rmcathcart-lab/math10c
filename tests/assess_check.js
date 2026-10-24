@@ -54,7 +54,8 @@ ids.forEach(function (lid) {
         var r = inst.check(inst.key); if (!r || r.v !== 'correct') throw new Error('key not accepted: ' + JSON.stringify(inst.key) + ' → ' + JSON.stringify(r));
         (inst.bad || []).forEach(function (bd) { var rb = inst.check(bd); if (rb && rb.v === 'correct') throw new Error('a bad answer is marked correct: ' + JSON.stringify(bd)); if (rb && rb.v === 'wrong' && rb.code) codeSeen[rb.code] = codeSeen[rb.code] || lid + ':' + it.id; });
         if (type === 'mc') inst.input.options.forEach(function (o) { if (o.key !== inst.key) { var ro = inst.check(o.key); if (ro.v === 'correct') throw new Error('two MC options are right'); } });
-        seen[(inst.stem || '') + '|' + inst.prompt] = 1;
+        var inp = ''; try { inp = JSON.stringify(inst.input, function (k, v) { return typeof v === 'function' ? undefined : v; }); } catch (e) {}
+        seen[(inst.stem || '') + '|' + inst.prompt + '|' + inp + '|' + JSON.stringify(inst.key)] = 1; // tables and choice grids vary in their rows/options and key
       } catch (e) { if (fails++ < 2) err(it.id + ' seed ' + i + ': ' + e.message); }
     }
     var n = Object.keys(seen).length;

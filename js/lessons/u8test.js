@@ -599,7 +599,7 @@
   }
   function q12Shared(r) {
     return find(function () { return q12Build(r.int(3, 6), nz(r, -5, 5), nz(r, -5, 5), nz(r, -3, 4), nz(r, -4, 4)); },
-      function (s) { return s.b1 !== s.b2 && s.sw !== 0 && Math.abs(s.sw) <= 3 && isInt(s.yw) && s.yw !== s.y0 && s.yw !== 0 && Math.abs(s.yw) <= 20 && !near(s.xw, s.x0) && Math.abs(s.c1) <= 30 && Math.abs(s.c2) <= 30 && s.b1 - s.b2 !== s.sw; }, null) || q12Build(4, -3, 5, 2, 2);
+      function (s) { return s.b1 !== s.b2 && Math.abs(s.sw) >= 2 && Math.abs(s.sw) <= 3 && isInt(s.yw) && s.yw !== s.y0 && s.yw !== 0 && Math.abs(s.yw) <= 20 && !near(s.xw, s.x0) && Math.abs(s.c1) <= 30 && Math.abs(s.c2) <= 30 && s.b1 - s.b2 !== s.sw; }, null) || q12Build(4, -3, 5, 2, 2);
   }
   function xwT(f) { var v = f[0] / f[1], d = f[1]; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d === 1 ? dT(v) : fT(f); }
   /* Q13: the line ax + by = K through two points */

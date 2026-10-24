@@ -86,7 +86,7 @@
     return p;
   }
   function numBox(label, o) { o = o || {}; return { label: label, name: o.name || label.replace(/<[^>]*>|\\\(|\\\)|:$/g, ''), before: o.before, after: o.after }; }
-  function polyBox(label, vars, o) { o = o || {}; return { label: label, name: o.name || label.replace(/<[^>]*>|\\\(|\\\)|:$/g, ''), mode: 'math', keys: 'poly', vars: vars || ['x'], wide: o.wide !== false, before: o.before, after: o.after }; }
+  function polyBox(label, vars, o) { o = o || {}; return { label: label, name: o.name || label.replace(/<[^>]*>|\\\(|\\\)|:$/g, ''), mode: 'math', keys: 'poly', vars: vars || ['x'], wide: o.wide !== false, before: o.before, after: o.after, placeholder: o.ph }; }
   /* a number box that also takes a leading + sign */
   function numPlus(ans, diag) { var c = K.number(ans, diag); return function (resp) { return c(String(resp == null ? '' : resp).replace(/^\s*\+\s*/, '')); }; }
   /* several boxes checked together (checks[i](value, all) → result); reports the first wrong box, else the first form issue */
@@ -123,18 +123,18 @@
   function strip(a) { while (a && a.t === 'paren') a = a.a; return a; }
 
   /* ---------------- drawings ---------------- */
-  var POS = '#9aa3ad', STK = '#2b3340';
-  function tile(x, y, w, h) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="1.5" fill="' + POS + '" stroke="' + STK + '" stroke-width="1.3"/>'; }
+  var STK = '#2b3340', FILL = { x2: '#dfe3e8', x: '#a7b0ba', u: '#6c7783' }; // the paper's three shades: x², x and 1 tiles
+  function tile(x, y, w, h, kind) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="1.5" fill="' + FILL[kind] + '" stroke="' + STK + '" stroke-width="1.3"/>'; }
   /* the rectangle for (x + p)(x + q): x² at top left, p x-tiles across, q x-tiles down, pq unit tiles */
   function tileRect(p, q) {
-    var X = 52, U = 14, ox = 6, oy = 6, s = '', i, j;
-    s += tile(ox, oy, X, X);
-    for (i = 0; i < p; i++) s += tile(ox + X + i * U, oy, U, X);
-    for (j = 0; j < q; j++) s += tile(ox, oy + X + j * U, X, U);
-    for (i = 0; i < p; i++) for (j = 0; j < q; j++) s += tile(ox + X + i * U, oy + X + j * U, U, U);
+    var X = 76, U = 22, ox = 6, oy = 6, s = '', i, j;
+    s += tile(ox, oy, X, X, 'x2') + '<text x="' + (ox + X / 2) + '" y="' + (oy + X / 2 + 6) + '" text-anchor="middle" font-size="17" font-style="italic" fill="' + STK + '" font-family="KaTeX_Main,\'Times New Roman\',serif">x²</text>';
+    for (i = 0; i < p; i++) s += tile(ox + X + i * U, oy, U, X, 'x');
+    for (j = 0; j < q; j++) s += tile(ox, oy + X + j * U, X, U, 'x');
+    for (i = 0; i < p; i++) for (j = 0; j < q; j++) s += tile(ox + X + i * U, oy + X + j * U, U, U, 'u');
     var W = X + p * U, H = X + q * U;
     s += '<rect x="' + ox + '" y="' + oy + '" width="' + W + '" height="' + H + '" fill="none" stroke="' + STK + '" stroke-width="2.4"/>';
-    return '<div style="margin:.4em 0"><svg class="fig-svg" viewBox="0 0 ' + (ox + W + 6) + ' ' + (oy + H + 6) + '" width="100%" style="max-width:' + Math.round((ox + W + 6) * 1.5) + 'px;display:block" role="img" aria-label="algebra tiles arranged in a rectangle">' + s + '</svg></div>';
+    return '<div style="margin:.4em 0"><svg class="fig-svg" viewBox="0 0 ' + (ox + W + 6) + ' ' + (oy + H + 6) + '" width="100%" style="max-width:' + (ox + W + 6) + 'px;display:block" role="img" aria-label="algebra tiles arranged in a rectangle">' + s + '</svg></div>';
   }
   /* a square of side 2x + s with a k-by-k square cut from one corner */
   function lShape(s, k) {
@@ -495,9 +495,9 @@
             return res;
           }; };
           var pp = boxes('Factor ' + t(poly) + ' by decomposition. Fill in each step.',
-            [numBox('ac', { before: t('ac=') }), numBox('Two integers with product ' + t('ac') + ' and sum ' + t(b) + ':', { name: 'First integer' }), numBox('and', { name: 'Second integer' }),
-              polyBox('Split the middle term:', ['x'], { before: t(poly + '=' + a + 'x^{2}+'), wide: false, name: 'First x-term' }), polyBox('', ['x'], { before: t('+'), after: t('+' + c), wide: false, name: 'Second x-term' }),
-              polyBox('Group:', ['x'], { before: t('='), after: t('+'), name: 'First group' }), polyBox('', ['x'], { name: 'Second group' }), polyBox('Factored:', ['x'], { before: t('='), name: 'Factored form' })],
+            [numBox('', { before: t('ac='), name: 'ac' }), numBox('Two integers with product ' + t('ac') + ' and sum ' + t(b) + ':', { name: 'First integer' }), numBox('and', { name: 'Second integer' }),
+              polyBox('Split the middle term:', ['x'], { before: t(a + 'x^{2}+'), wide: false, name: 'First x-term', ph: 'an x-term' }), polyBox('', ['x'], { before: t('+'), after: t('+' + c), wide: false, name: 'Second x-term', ph: 'an x-term' }),
+              polyBox('Common factor from each pair:', ['x'], { before: t('='), after: t('+'), name: 'First group', ph: 'e.g. 2x(x + 3)' }), polyBox('', ['x'], { before: t('\\phantom{=}'), name: 'Second group', ph: 'e.g. 5(x + 3)' }), polyBox('Factored:', ['x'], { before: t('='), name: 'Factored form', ph: 'e.g. (x + 3)(2x + 5)' })],
             [K.number(ac, function (v) { if (v === a + c) return { code: 'ax-ac-wrong', hint: t('ac') + ' means ' + t('a\\times c=' + a + '\\times ' + c) + '.' }; if (v === b) return { code: 'ax-ac-wrong', hint: 'That is ' + t('b') + '. ' + t('ac=' + a + '\\times ' + c) + '.' }; return null; }),
               function (v, all) { return pc(all[1], all[2]); }, function () { return ok(); }, termChk(3), termChk(4), grpChk(5), grpChk(6),
               facCheck(Ft, [{ is: FT(null, [lin(1, 'x', m), lin(1, 'x', n)]), code: 'u4t-pair-as-factors', hint: 'Writing the pair straight into brackets only works when ' + t('a=1') + '. Take out the common bracket from your two groups.' }])],
@@ -510,12 +510,12 @@
           pp.good = [[String(ac), String(m), String(n), tx(M(m, 'x')), tx(M(n, 'x')), g1b.tex, p === 1 ? '(x+' + q + ')' : g2b.tex, '(x+' + q + ')(' + seq(lin(a, 'x', p)) + ')']];
           return pp;
         } }] },
-      { num: '10', outcome: 'AN5', stem: 'Show that the trinomial is a perfect square trinomial, then factor it.', parts: [
+      { num: '10', outcome: 'AN5', stem: 'A perfect square trinomial has the form ' + t('A^{2}\\pm 2AB+B^{2}=(A\\pm B)^{2}') + '.', parts: [
         { id: '10', outcome: 'AN5', level: 'BEG', make: function (r) {
           var v = r.pick(['x', 'x', 'y', 'a', 'm']), q = r.int(3, 9), sgn = r.pick([1, -1]), Ft = FT(null, [{ terms: lin(1, v, sgn * q), k: 2 }]), poly = tx(Ft.poly);
           var rootChk = K.number(q, function (x) { if (x === -q) return null; if (x === q * q) return { code: 'u4t-no-root', hint: 'Give the number that is squared: ' + t('\\sqrt{' + q * q + '}') + '.' }; return null; });
           var pp = boxes('Show that ' + t(poly) + ' is a perfect square trinomial, then factor it. (The first term is ' + t(v + '^{2}=(' + v + ')^{2}') + '.)',
-            [numBox('Last term:', { before: t(q * q + '=\\Big('), after: t('\\Big)^{2}'), name: 'Square root of the last term' }), polyBox('Middle-term check:', [v], { before: t('2\\times ' + v + '\\times(\\text{that number})='), wide: false, name: 'Middle-term check' }), polyBox('Factored form:', [v])],
+            [numBox('Last term:', { before: t(q * q + '=\\Big('), after: t('\\Big)^{2}'), name: 'Square root of the last term' }), polyBox('Middle-term check:', [v], { before: t('2\\times ' + v + '\\times(\\text{that number})='), wide: false, name: 'Middle-term check', ph: 'e.g. 6' + v }), polyBox('Factored form:', [v], { ph: 'e.g. (' + v + ' + 5)^2' })],
             [function (x) { return String(x).replace(/\s/g, '') === '-' + q ? ok() : rootChk(x); },
               function (x) { var y = readPoly(x); if (y.res) return y.res; if (P.eq(y.p, M(2 * q, v)) || P.eq(y.p, M(-2 * q, v))) return ok(); if (P.eq(y.p, M(q, v)) || P.eq(y.p, M(-q, v))) return wrong('not-doubled', 'Twice the product: multiply by ' + t('2') + ' as well.'); return wrong('value', 'Multiply ' + t('2') + ', ' + t(v) + ' and the square root of ' + t(q * q) + '.'); },
               facCheck(Ft, [{ is: FT(null, [{ terms: lin(1, v, -sgn * q), k: 2 }]), code: 'pst-sign', hint: 'The middle term is ' + (sgn < 0 ? 'negative' : 'positive') + ', so the bracket is ' + t(v + (sgn < 0 ? '-' : '+') + q) + '.' },
