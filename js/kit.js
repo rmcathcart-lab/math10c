@@ -155,6 +155,54 @@
     HW.lessons[def.id] = def;
     return def;
   };
+  /* ---------------- tests and exit slips (written only in test mode) ----------------
+   * HW.defineTest({ id: 'u2test', unit: 2, title: 'Unit 2 Test', calc: false, questions: [...] }) and
+   * HW.defineExit({ lesson: 'u2l3', calc: false, questions: [...] }) take the questions in any order (e.g. the paper's) and
+   * put them Beginning first, then Progressing, then Mastery (Ryan, 2026-10-23), keeping the given order inside each box,
+   * then number them 1, 2, 3… Every part of one question must sit in the same box (LIM/BEG, EMG/PRG, ADV/MAS). A part id
+   * that starts with the question's old number gets the new number (paper '14b' → '6b'); other ids are kept.
+   * Both are hidden from the practice (test: true). An exit slip is lesson '<lesson>x' (e.g. u2l3x), titled
+   * 'Exit Slip 2.3'. */
+  HW.BOX_OF = { LIM: 0, BEG: 0, EMG: 1, PRG: 1, ADV: 2, MAS: 2 };
+  HW.BOX_NAMES = ['Beginning', 'Progressing', 'Mastery'];
+  function boxOrder(def) {
+    var qs = (def.questions || []).map(function (q, i) {
+      var boxes = q.parts.map(function (p) { var b = HW.BOX_OF[p.level]; if (b == null) throw new Error(def.id + ' Q' + q.num + ': part ' + p.id + ' has no level'); return b; });
+      if (boxes.some(function (b) { return b !== boxes[0]; })) throw new Error(def.id + ' Q' + q.num + ': its parts are in different boxes (split it into separate questions)');
+      return { q: q, box: boxes[0], i: i };
+    });
+    qs.sort(function (a, b) { return a.box - b.box || a.i - b.i; });
+    var seen = {};
+    qs.forEach(function (x, n) {
+      var q = x.q, old = String(q.num), num = String(n + 1);
+      q.paperNum = old; q.num = num; q.section = HW.BOX_NAMES[x.box];
+      q.parts.forEach(function (p) {
+        p.paperId = p.id;
+        if (old && String(p.id).indexOf(old) === 0 && !/^\d/.test(String(p.id).slice(old.length))) p.id = num + String(p.id).slice(old.length);
+        if (seen[p.id]) throw new Error(def.id + ': two parts have the id ' + p.id);
+        seen[p.id] = 1;
+      });
+    });
+    def.questions = qs.map(function (x) { return x.q; });
+    return def;
+  }
+  HW.defineTest = function (def) {
+    def.test = true; def.num = def.num || 'Test'; def.title = def.title || 'Unit ' + def.unit + ' Test';
+    if (def.calc == null) def.calc = true;
+    return HW.defineLesson(boxOrder(def));
+  };
+  HW.defineExit = function (def) {
+    var m = /^u(\d+)l(\d+)$/.exec(def.lesson || ''); if (!m) throw new Error('defineExit: lesson must look like u2l3');
+    def.id = def.lesson + 'x'; def.unit = Number(m[1]); def.num = 'Exit'; def.forLesson = def.lesson; def.lessonNum = Number(m[2]);
+    def.test = true; def.exit = true; def.title = def.title || 'Exit Slip ' + m[1] + '.' + m[2];
+    if (def.calc == null) def.calc = true;
+    return HW.defineLesson(boxOrder(def));
+  };
+  /* partial credit for a file's own wrong-answer codes: HW.addPartial({ 'code': 's' (small: keeps 2/3) | 'b' (bigger: keeps 1/3) | 'n' (no credit, decided) }) */
+  HW.addPartial = function (o) {
+    var P = HW.PARTIAL = HW.PARTIAL || {}; P.small = P.small || {}; P.big = P.big || {}; P.none = P.none || {};
+    Object.keys(o || {}).forEach(function (k) { if (o[k] === 's') P.small[k] = 1; else if (o[k] === 'b') P.big[k] = 1; else P.none[k] = 1; });
+  };
   /* Build one question instance from its seeds. shared params come from the question seed so parts stay consistent. */
   HW.makeInstance = function (lesson, item, seed, qseed) {
     var q = item.q, shared = null;

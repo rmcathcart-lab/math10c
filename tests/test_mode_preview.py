@@ -21,7 +21,7 @@ async def main():
         print('online chip:', await tp.inner_text('#online-chip'))
         print('exit slip units:', await tp.evaluate("[...document.querySelectorAll('.tt-unit')].map(u => u.querySelector('h3').innerText.replace(/\\s+/g,' ') + ': ' + [...u.querySelectorAll('.tt-title')].map(t => t.textContent).join(', '))"))
         await tp.screenshot(path='/tmp/tm_t_exits.png')
-        await tp.click('.tab:has-text("Tests")'); await tp.wait_for_selector('.tt-ready')
+        await tp.click('.tab:has-text("Tests")'); await tp.wait_for_selector('.tt-card-ready')
         print('tests tab cards:', await tp.evaluate("[...document.querySelectorAll('.tt-title')].map(t => t.textContent)"))
         await tp.click('.tab:has-text("Exit slips")'); await tp.wait_for_selector('.tt-unit')
         # preview from the card

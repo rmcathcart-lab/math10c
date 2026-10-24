@@ -166,11 +166,13 @@
   var T = { sessions: null, live: null, n: 0 };
   function testable(l, it) { try { return !TC.NO_TEST[HW.makeInstance(l, it, 1, 1).input.type]; } catch (e) { return false; } }
   function exitDef(id, num) {
+    var b = HW.DashTests && HW.DashTests.builtin((id || 'u2l2') + 'x'); if (b) return b.def; // the built exit slip for that lesson
     var l = HW.lessons[id || 'u2l2'], want = ['BEG', 'EMG', 'PRG', 'ADV'], items = [];
     want.forEach(function (lv) { var it = l.items.filter(function (x) { return !x.extra && x.level === lv && testable(l, x) && items.indexOf(x) < 0; })[0]; if (it) items.push(it); });
     return { title: 'Exit slip ' + (num || '2.2'), kind: 'exit', unit: 2, minutes: 10, calc: true, shuffle: false, levels: true, items: items.map(function (it) { return { l: l.id, i: it.id }; }) };
   }
   function unitTestDef() {
+    var b = HW.DashTests && HW.DashTests.builtin('u1test'); if (b) return b.def;
     var l = HW.lessons.u1test; if (!l) return null;
     return { title: 'Unit 1 Test', kind: 'test', unit: 1, minutes: 75, calc: true, shuffle: false, levels: true, items: l.items.filter(function (it) { return testable(l, it); }).map(function (it) { return { l: l.id, i: it.id }; }) };
   }
@@ -331,11 +333,14 @@
       case 'retestset': return ok(retestSet(p.id, p.status));
       case 'launchretest': return real('tests', {}).then(function (d) {
         var x = retestList().filter(function (r) { return r.id === p.id; })[0]; if (!x || x.status !== 'requested') return { ok: false, error: 'not requested' };
-        var t = d && d.ok ? (d.tests || []).filter(function (q) { return q.id === p.test; })[0] : null; if (!t || !t.def) return { ok: false, error: 'unknown test' };
+        var t = d && d.ok ? (d.tests || []).filter(function (q) { return q.id === p.test; })[0] : null;
+        if (!t && /^B-/.test(p.test || '') && HW.DashTests) t = HW.DashTests.builtin(String(p.test).slice(2));
+        if (!t || !t.def) return { ok: false, error: 'unknown test' };
         var r = launch(t.def, t.id, x.name); if (r.ok) { x.status = 'open'; x.session = r.live.id; x.updated = Date.now(); x.test = t.id; } return r;
       });
       case 'launch': return real('tests', {}).then(function (d) {
         var t = d && d.ok ? (d.tests || []).filter(function (x) { return x.id === p.test; })[0] : null;
+        if (!t && /^B-/.test(p.test || '') && HW.DashTests) t = HW.DashTests.builtin(String(p.test).slice(2)); // a ready-made one, not saved
         return t && t.def ? launch(t.def, t.id) : { ok: false, error: 'unknown test' };
       });
       default: return ok({ ok: false, error: 'The demo class is made up, so it can’t be changed. Use one of your real classes for that.' });

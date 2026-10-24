@@ -12,7 +12,7 @@ async def main():
         await ctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','__demo__'); localStorage.setItem('hw:ttab','tests');")
         pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
-        await pg.goto(BASE + 'teacher/'); await pg.wait_for_selector('.tt-ready', timeout=20000)
+        await pg.goto(BASE + 'teacher/'); await pg.wait_for_selector('.tt-card-ready', timeout=20000)
         await pg.click('.panel:has-text("Past tests") .btn:has-text("Results")'); await pg.wait_for_selector('.tt-res')
         await pg.click('.tt-res tbody tr:nth-child(3) .tt-m >> nth=3'); await pg.wait_for_selector('.tt-dmodal')
         await pg.screenshot(path=SH + 'm1.png')

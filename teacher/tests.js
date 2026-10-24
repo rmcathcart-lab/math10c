@@ -71,34 +71,58 @@
   function kindWord(k, plural) { return k === 'exit' ? (plural ? 'exit slips' : 'exit slip') : (plural ? 'tests' : 'test'); }
   /* which unit (and lesson) a test belongs to: its saved unit, else the first question's lesson */
   function unitOf(def) { if (def && def.unit) return Number(def.unit); var x = TC.items(def)[0]; return x ? x.lesson.unit : 0; }
-  function lessonRank(def) { var x = TC.items(def)[0]; if (!x) return 1e9; var r = 0, found = -1; HW.CATALOG.forEach(function (u) { u.lessons.forEach(function (c) { if (c.id === x.lesson.id) found = r; r++; }); }); return found < 0 ? 1e8 : found; }
-  function lessonTag(def) { var x = TC.items(def)[0]; return x && !x.lesson.test ? 'Lesson ' + x.lesson.unit + '.' + x.lesson.num : ''; }
+  function lessonOf(def) { var x = TC.items(def)[0]; return !x ? '' : x.lesson.forLesson || (x.lesson.test ? '' : x.lesson.id); }
+  function lessonRank(def) { var id = lessonOf(def); if (!id) return 1e9; var r = 0, found = -1; HW.CATALOG.forEach(function (u) { u.lessons.forEach(function (c) { if (c.id === id) found = r; r++; }); }); return found < 0 ? 1e8 : found; }
+  function catLesson(id) { var out = null; HW.CATALOG.forEach(function (u) { u.lessons.forEach(function (c) { if (c.id === id) out = { unit: u.unit, num: c.num, title: c.title }; }); }); return out; }
+  function lessonTag(def) { var c = catLesson(lessonOf(def)); return c ? 'Lesson ' + c.unit + '.' + c.num : ''; }
+
+  /* ready to launch: a unit test for every unit (js/lessons/uNtest.js) and an exit slip for every lesson (js/exits/uN.js),
+     each with id 'B-<lesson id>'. Until one is edited it isn't in the ledger's Tests sheet: Launch saves it there first
+     (under the same id), and Edit saves the edited copy under that id. Deleting the edited copy brings back the original. */
+  function builtinDef(l) {
+    return { title: l.title, kind: l.exit ? 'exit' : 'test', unit: l.unit, minutes: l.exit ? 10 : 75, timing: 'period', calc: l.calc !== false, shuffle: false, levels: true,
+      items: l.items.filter(function (it) { return !TC.NO_TEST[inputType(l, it)]; }).map(function (it) { return { l: l.id, i: it.id }; }) };
+  }
+  function builtins() { return Object.keys(HW.lessons).map(function (k) { return HW.lessons[k]; }).filter(function (l) { return l.test && l.items.length; }).map(function (l) { return { id: 'B-' + l.id, def: builtinDef(l), updated: 0, virtual: true, builtin: l.id }; }); }
+  TS.builtin = function (lessonId) { var l = HW.lessons[lessonId]; return l && l.test ? { id: 'B-' + l.id, def: builtinDef(l), updated: 0, virtual: true, builtin: l.id } : null; };
+  /* every test and exit slip: the saved ones, plus each ready-made one that hasn't been saved (edited or launched) yet */
+  function allTests() {
+    var saved = TS.tests || [], have = {}; saved.forEach(function (t) { have[t.id] = 1; });
+    return saved.map(function (t) { var m = /^B-(.+)$/.exec(t.id || ''); if (m && HW.lessons[m[1]]) { t.builtin = m[1]; } return t; }).concat(builtins().filter(function (b) { return !have[b.id]; }));
+  }
+  TS.all = allTests;
+  TS.load = load;
   function previewDef(def) {
     try { localStorage.setItem('hw:tmpreview', JSON.stringify({ def: def, at: Date.now() })); } catch (e) { alert('Can’t open the preview on this browser.'); return; }
     var w = root.open('../#/preview', 'tmpreview'); if (w) { try { w.focus(); } catch (e) {} }
   }
   TS.previewDef = previewDef;
   function testCard(t) {
-    var d = t.def || {}, n = (d.items || []).length, lt = lessonTag(d);
-    var card = el('div', 'tt-card tt-card-' + (d.kind === 'exit' ? 'exit' : 'test'));
-    card.innerHTML = '<div class="tt-chiprow">' + (TS.kind === 'exit' ? '' : kindChip(d.kind)) + (lt ? '<span class="tt-out">' + esc(lt) + '</span>' : '') + '</div><div class="tt-title">' + esc(d.title) + '</div><div class="small muted">' + n + ' part' + (n === 1 ? '' : 's') + ' · ' + TC.timingText(d) + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
+    var d = t.def || {}, n = (d.items || []).length, lt = lessonTag(d), cl = d.kind === 'exit' ? catLesson(lessonOf(d)) : null, q = TC.pages(d).length;
+    var card = el('div', 'tt-card tt-card-' + (d.kind === 'exit' ? 'exit' : 'test') + (t.builtin ? ' tt-card-ready' : ''));
+    card.innerHTML = '<div class="tt-chiprow">' + (TS.kind === 'exit' ? '' : kindChip(d.kind)) + (lt ? '<span class="tt-out">' + esc(lt) + '</span>' : '') + (t.builtin && !t.virtual ? '<span class="tt-edited" title="You edited this one. Delete your copy to go back to the original.">Edited</span>' : '') + '</div><div class="tt-title">' + esc(d.title) + '</div>' +
+      (cl ? '<div class="tt-sub">' + esc(String(cl.title).replace(/<[^>]*>/g, '')) + '</div>' : '') +
+      '<div class="small muted">' + (q !== n ? q + ' questions · ' : '') + n + ' part' + (n === 1 ? '' : 's') + ' · ' + TC.timingText(d) + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
     var a = el('div', 'tt-card-acts');
     a.appendChild(button('btn-primary btn-small', 'Launch for ' + esc(klassLabel()), function () { doLaunch(t); }));
     a.appendChild(button('btn-small tt-preview', 'Preview', function () { previewDef(t.def); }));
     a.appendChild(button('btn-small', 'Edit', function () { openEditor(t.id, t.def); }));
     a.appendChild(button('btn-small', 'Copy', function () { var c = JSON.parse(JSON.stringify(t.def)); c.title = c.title + ' (copy)'; openEditor(null, c); }));
-    a.appendChild(button('btn-small btn-ghost', 'Delete', function () { if (!confirm('Delete “' + d.title + '”? Results already written stay.')) return; api('deltest', { id: t.id }).then(function () { return load(true); }).then(rerender); }));
+    if (!t.virtual) a.appendChild(button('btn-small btn-ghost', t.builtin ? 'Undo edits' : 'Delete', function () {
+      if (!confirm(t.builtin ? 'Go back to the original “' + d.title + '”? Your edits are lost; results already written stay.' : 'Delete “' + d.title + '”? Results already written stay.')) return;
+      api('deltest', { id: t.id }).then(function () { return load(true); }).then(rerender);
+    }));
     card.appendChild(a); return card;
   }
   function renderHome(body) {
-    var K = TS.kind, mine = TS.tests.filter(function (t) { return ((t.def && t.def.kind) === 'exit' ? 'exit' : 'test') === K; });
+    var K = TS.kind, mine = allTests().filter(function (t) { return ((t.def && t.def.kind) === 'exit' ? 'exit' : 'test') === K; });
     var top = el('div', 'tt-top');
     top.appendChild(el('div', '', '<h2 class="tt-h">' + (K === 'exit' ? 'Exit slips' : 'Tests') + '</h2><div class="small muted">Launch one and it pops up, full screen, on every signed-in student’s screen in <b>' + esc(klassLabel()) + '</b>. Leaving the window ends a student’s ' + kindWord(K) + '; you can unlock it.</div>'));
     var acts = el('div', 'tt-acts');
     acts.appendChild(K === 'exit' ? button('btn-small tt-new-exit', '+ New exit slip', function () { openEditor(null, { kind: 'exit', minutes: 10 }); })
       : button('btn-small tt-new-test', '+ New test', function () { openEditor(null, { kind: 'test', minutes: 60 }); }));
     top.appendChild(acts); body.appendChild(top);
-    if (!mine.length) body.appendChild(el('div', 'panel muted', K === 'exit' ? 'No exit slips yet. Make one from a lesson’s practice questions.' : 'No tests yet. Make one from the practice questions, or start from a ready-made unit test below.'));
+    if (!mine.length) body.appendChild(el('div', 'panel muted', K === 'exit' ? 'No exit slips yet. Make one from a lesson’s practice questions.' : 'No tests yet. Make one from the practice questions.'));
     // organised by unit (exit slips in lesson order; tests newest first)
     var byUnit = {}; mine.forEach(function (t) { var u = unitOf(t.def); (byUnit[u] = byUnit[u] || []).push(t); });
     var units = Object.keys(byUnit).map(Number).sort(function (a, b) { return (a || 99) - (b || 99); });
@@ -107,25 +131,10 @@
       var sec = el('section', 'tt-unit'); if (cat && HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u));
       sec.appendChild(el('h3', 'tt-unit-h', cat ? '<span class="tt-unum">Unit ' + u + '</span> ' + esc(cat.title) + ' <span class="muted small">' + byUnit[u].length + ' ' + kindWord(K, byUnit[u].length !== 1) + '</span>' : 'Other'));
       var list = el('div', 'tt-list');
-      byUnit[u].sort(K === 'exit' ? function (a, b) { return lessonRank(a.def) - lessonRank(b.def) || String(a.def.title).localeCompare(String(b.def.title), undefined, { numeric: true }); } : function (a, b) { return b.updated - a.updated; })
+      byUnit[u].sort(K === 'exit' ? function (a, b) { return lessonRank(a.def) - lessonRank(b.def) || String(a.def.title).localeCompare(String(b.def.title), undefined, { numeric: true }); } : function (a, b) { return (b.builtin ? 1 : 0) - (a.builtin ? 1 : 0) || b.updated - a.updated; })
         .forEach(function (t) { list.appendChild(testCard(t)); });
       sec.appendChild(list); body.appendChild(sec);
     });
-    // ready-made unit tests (lessons marked test: true)
-    var ready = K === 'test' ? Object.keys(HW.lessons).map(function (k) { return HW.lessons[k]; }).filter(function (l) { return l.test; }) : [];
-    if (ready.length) {
-      var p = el('div', 'panel'); p.appendChild(el('h3', '', 'Ready-made unit tests'));
-      p.appendChild(el('p', 'small muted', 'Your paper unit tests, with number generators so every student gets their own version. Preview one, or start from it and trim or add questions before saving.'));
-      ready.forEach(function (l) {
-        var def = { title: l.title, kind: 'test', unit: l.unit, minutes: 75, calc: true, levels: true, items: l.items.filter(function (it) { return !TC.NO_TEST[inputType(l, it)]; }).map(function (it) { return { l: l.id, i: it.id }; }) };
-        var row = el('div', 'tt-ready', '<b>' + esc(l.title) + '</b> <span class="muted small">' + TC.pages(def).length + ' questions · ' + def.items.length + ' parts · ' + esc(l.outcome || '') + '</span>');
-        var ra = el('span', 'tt-ready-acts');
-        ra.appendChild(button('btn-small', 'Preview', function () { previewDef(def); }));
-        ra.appendChild(button('btn-small', 'Use as a test', function () { openEditor(null, def); }));
-        row.appendChild(ra); p.appendChild(row);
-      });
-      body.appendChild(p);
-    }
     // past launches of this kind
     var past = (TS.sessions || []).filter(function (s) { return (s.kind === 'exit' ? 'exit' : 'test') === K; });
     var ps = el('div', 'panel'); ps.appendChild(el('h3', '', 'Past ' + kindWord(K, true) + ' in ' + esc(klassLabel())));
@@ -142,11 +151,20 @@
     }
     body.appendChild(ps);
   }
-  function doLaunch(t) {
+  /* a ready-made test that isn't in the Tests sheet yet is saved there (under its own id) before it is launched */
+  function ensureSaved(t) {
+    if (!t.virtual || (HW.DashDemo && cls() === HW.DashDemo.CODE)) return Promise.resolve({ ok: true });
+    return api('savetest', { id: t.id, def: JSON.stringify(t.def) });
+  }
+  TS.launchTest = function (t, ask) { return doLaunch(t, ask); };
+  function doLaunch(t, ask) {
     if (TS.who) TS.who = '';
     if (liveHere()) { alert('A test is already live in this class.'); return; }
-    if (!confirm('Launch “' + t.def.title + '” for ' + klassLabel() + ' now?\n\nIt pops up on every signed-in student’s screen within about 10 seconds.')) return;
-    api('launch', { 'class': cls(), test: t.id }).then(function (d) {
+    if (!confirm(ask || 'Launch “' + t.def.title + '” for ' + klassLabel() + ' now?\n\nIt pops up on every signed-in student’s screen within about 10 seconds.')) return;
+    return ensureSaved(t).then(function (d) {
+      if (!d.ok) { alert('Couldn’t save it before launching: ' + d.error); return { ok: true }; }
+      return api('launch', { 'class': cls(), test: t.id });
+    }).then(function (d) {
       if (!d.ok) { alert(d.error === 'live' ? 'A test is already live in this class.' : 'Couldn’t launch: ' + d.error); }
       return load(true);
     }).then(function () { TS.live = null; rerender(); });

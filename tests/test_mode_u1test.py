@@ -11,12 +11,10 @@ async def main():
         await tctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','tests');")
         tp = await tctx.new_page(); tp.on('pageerror', lambda e: errs.append('T ' + str(e))); tp.on('dialog', lambda d: asyncio.ensure_future(d.accept()))
         await tp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
-        await tp.goto(BASE + 'teacher/'); await tp.wait_for_selector('.tt-ready', timeout=15000)
-        await tp.click('.tt-ready .btn:has-text("Use as a test")'); await tp.wait_for_selector('.tt-chosen-list li')
-        n = await tp.locator('.tt-chosen-list li').count(); print('chosen', n, await tp.inner_text('.tt-mix'))
-        await tp.click('.tt-top .btn-primary:has-text("Save")'); await tp.wait_for_selector('.tt-card')
+        await tp.goto(BASE + 'teacher/'); await tp.wait_for_selector('.tt-card-ready', timeout=15000)
+        card = tp.locator('.tt-card-ready:has(.tt-title:text-is("Unit 1 Test"))'); print('card', (await card.inner_text()).replace('\n', ' | '))
         a = await student(b, 'Ava Brown', '1111', errs)
-        await tp.click('.tt-card .btn-primary'); await wait_view(a, 'pending', 25)
+        await card.locator('.btn-primary').click(); await wait_view(a, 'pending', 25)  # launching a built test saves it to the ledger first
         await a.click('.tm-start'); await wait_view(a, 'test')
         bad = []
         n = await a.locator('#testmode .tm-qn').count(); print('pages', n)

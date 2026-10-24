@@ -258,8 +258,11 @@
   function drawNav() {
     var nav = T.els && T.els.nav; if (!nav) return; nav.innerHTML = '';
     nav.appendChild(el('div', 'tm-nav-title', 'Questions'));
-    var list = el('div', 'tm-nav-list');
+    var list = el('div', 'tm-nav-list'), lastSec = null;
     T.pages.forEach(function (pg, pi) {
+      // a unit test runs Beginning → Progressing → Mastery: say where each box starts (not for exit slips or shuffled tests)
+      var x0 = T.byKey[pg.parts[0].key], sec = T.def.kind !== 'exit' && !T.def.shuffle && x0 && x0.it.q.section;
+      if (sec && /^(Beginning|Progressing|Mastery)$/.test(sec) && sec !== lastSec) { list.appendChild(el('div', 'tm-nav-sec', esc(sec))); lastSec = sec; }
       var row = el('div', 'tm-nrow' + (pi === T.cur ? ' on' : '') + (T.rec.flags && T.rec.flags[pg.parts[0].key] ? ' flag' : ''));
       var num = el('button', 'tm-qn' + (pg.parts.every(function (q) { return answered(q.key); }) ? ' done' : pg.parts.some(function (q) { return answered(q.key); }) ? ' some' : ''), esc(pg.num));
       num.type = 'button'; num.title = 'Question ' + pg.num;

@@ -26,7 +26,7 @@ async def main():
         await pg.click('.tbl.items tr.irow >> nth=2'); await pg.wait_for_timeout(200); await pg.screenshot(path=SH + 'questions2.png', full_page=True)
         await pg.click('.tab:has-text("Student")'); await pg.select_option('.opt-row select', 'Ethan Wilson'); await pg.wait_for_selector('.su'); await pg.click('.su-head >> nth=1'); await pg.wait_for_timeout(500)
         await pg.screenshot(path=SH + 'student.png', full_page=True)
-        await pg.click('.tab:has-text("Tests")'); await pg.wait_for_selector('.tt-ready', timeout=15000)
+        await pg.click('.tab:has-text("Tests")'); await pg.wait_for_selector('.tt-card-ready', timeout=15000)
         await pg.screenshot(path=SH + 'tests.png', full_page=True)
         await pg.click('.panel:has-text("Past tests") .btn:has-text("Results")'); await pg.wait_for_selector('.tt-res', timeout=15000); await pg.wait_for_timeout(500)
         await pg.screenshot(path=SH + 'results.png', full_page=True)
