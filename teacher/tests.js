@@ -102,7 +102,7 @@
     var card = el('div', 'tt-card tt-card-' + (d.kind === 'exit' ? 'exit' : 'test') + (t.builtin ? ' tt-card-ready' : ''));
     card.innerHTML = '<div class="tt-chiprow">' + (TS.kind === 'exit' ? '' : kindChip(d.kind)) + (lt ? '<span class="tt-out">' + esc(lt) + '</span>' : '') + (t.builtin && !t.virtual ? '<span class="tt-edited" title="You edited this one. Delete your copy to go back to the original.">Edited</span>' : '') + '</div><div class="tt-title">' + esc(d.title) + '</div>' +
       (cl ? '<div class="tt-sub">' + esc(String(cl.title).replace(/<[^>]*>/g, '')) + '</div>' : '') +
-      '<div class="small muted">' + (q !== n ? q + ' questions · ' : '') + n + ' part' + (n === 1 ? '' : 's') + ' · ' + TC.timingText(d) + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
+      '<div class="small muted">' + q + ' question' + (q === 1 ? '' : 's') + (q !== n ? ' · ' + n + ' parts' : '') + ' · ' + TC.timingText(d) + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
     var a = el('div', 'tt-card-acts');
     a.appendChild(button('btn-primary btn-small', 'Launch for ' + esc(klassLabel()), function () { doLaunch(t); }));
     a.appendChild(button('btn-small tt-preview', 'Preview', function () { previewDef(t.def); }));
@@ -311,7 +311,7 @@
     if (!live.endsAt && d.live && d.live.endsAt) live.endsAt = d.live.endsAt;
     var timed = TC.timing(def) === 'minutes' ? !!def.minutes : TC.timing(def) === 'period' ? !!live.endsAt : false;
     var head = el('div', 'tt-live-head tt-live-' + (def.kind === 'exit' ? 'exit' : 'test'));
-    head.innerHTML = '<div>' + (TS.who ? '<button class="btn btn-ghost btn-small tt-back-rt" type="button">← Retests</button> <span class="tt-kind tt-retest">Retest</span> <b>' + esc(TS.who) + '</b> · ' : '') + kindChip(def.kind) + ' <b class="tt-live-title">' + esc(def.title) + '</b> <span class="tag live-tag">LIVE</span><div class="small muted">Launched ' + ago(live.launched) + ' · ' + items.length + ' questions · ' + TC.timingText(def, live) + (timed && (live.extra || {})['*'] ? ' + ' + live.extra['*'] + ' min for everyone' : '') + ' · ' + (def.calc ? 'calculator' : 'no calculator') + (live.ending ? ' · <b class="tt-ending">Ending: tests submit at their next check-in (≈10 s)</b>' : '') + '</div></div>';
+    head.innerHTML = '<div>' + (TS.who ? '<button class="btn btn-ghost btn-small tt-back-rt" type="button">← Retests</button> <span class="tt-kind tt-retest">Retest</span> <b>' + esc(TS.who) + '</b> · ' : '') + kindChip(def.kind) + ' <b class="tt-live-title">' + esc(def.title) + '</b> <span class="tag live-tag">LIVE</span><div class="small muted">Launched ' + ago(live.launched) + ' · ' + (function () { var q = TC.pages(def).length; return q + ' question' + (q === 1 ? '' : 's') + (q !== items.length ? ' (' + items.length + ' parts)' : ''); })() + ' · ' + TC.timingText(def, live) + (timed && (live.extra || {})['*'] ? ' + ' + live.extra['*'] + ' min for everyone' : '') + ' · ' + (def.calc ? 'calculator' : 'no calculator') + (live.ending ? ' · <b class="tt-ending">Ending: tests submit at their next check-in (≈10 s)</b>' : '') + '</div></div>';
     var acts = el('div', 'tt-acts');
     if (timed && !TS.who) acts.appendChild(button('btn-small', '+5 min for everyone', function () { ctl('time', '', 5); }));
     if (!TS.who) {

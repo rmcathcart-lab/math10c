@@ -821,7 +821,17 @@
                 if (f.t === 'pow') {
                   var b = strip(f.a), e = ex.rat(f.b);
                   if (varsOf(b).length && e && e[0] <= 0) Lw.negzero = 1;
-                  if (b.t !== 'var' && b.t !== 'num' && varsOf(b).length) { Lw.power = 1; scan(b); }
+                  if (b.t !== 'var' && b.t !== 'num' && varsOf(b).length) {
+                    /* power of a product (or quotient) and power of a power are different laws (Lesson 1/2: (2x³)³ uses both) */
+                    var one = e && e[0] === e[1];
+                    if (b.t === 'pow') { if (!one) Lw.powpow = 1; }
+                    else {
+                      var fb = ex.factors(b), all = fb.num.concat(fb.den);
+                      if (!one && (all.length > 1 || fb.sign < 0)) Lw.powprod = 1;
+                      all.forEach(function (g) { g = strip(g); var ge = g.t === 'pow' ? ex.rat(g.b) : null; if (!one && g.t === 'pow' && varsOf(g.a).length && !(ge && ge[0] === ge[1])) Lw.powpow = 1; });
+                    }
+                    scan(b);
+                  }
                 }
               });
             }
@@ -834,14 +844,15 @@
             if (sh.ops) return wrong('u2t-sum', 'Use products, quotients and powers (exponent laws), not addition or subtraction.');
             var L = laws(a.ast);
             if (!L.length) return wrong('u2t-no-law', 'That’s the simplified answer itself. Write an expression that <b>needs</b> two different exponent laws to simplify to ' + t(tg) + '.');
-            if (L.length < 2) return wrong('u2t-one-law', 'It simplifies to ' + t(tg) + ', but it uses only ' + (L[0] === 'power' ? 'the power laws' : L[0] === 'product' ? 'the product law' : L[0] === 'quotient' ? 'the quotient law' : 'the zero/negative exponent law') + '. Combine two different laws, e.g. a power of a product <b>and</b> a quotient.');
+            if (L.length < 2) return wrong('u2t-one-law', 'It simplifies to ' + t(tg) + ', but it uses only ' + (L[0] === 'powprod' ? 'the power of a product law' : L[0] === 'powpow' ? 'the power of a power law' : L[0] === 'product' ? 'the product law' : L[0] === 'quotient' ? 'the quotient law' : 'the zero/negative exponent law') + '. Combine two different laws, e.g. a power of a product <b>and</b> a quotient.');
             return ok();
           };
           var p = P.math('Create an expression that uses <b>two different</b> exponent laws (for example a power of a product and the quotient law) and simplifies to ' + t(tg) + '.', check, keyT,
-            'Many answers work. For example ' + t(keyT + '=' + (j != null ? '\\frac{' + C + pw(x, j * kn[1]) + '}{' + pw(x, j * kn[1] - E) + '}' : C + pw(x, kn[1]) + '\\cdot ' + pw(x, E - kn[1])) + '=' + tg) + ' uses the power of a product (and power of a power) law, then the ' + (j != null ? 'quotient' : 'product') + ' law.<br>Any expression that equals ' + t(tg) + ' and needs two different laws (product, quotient, power of a power/product, zero or negative exponent) counts.',
+            'Many answers work. For example ' + t(keyT + '=' + (j != null ? '\\frac{' + C + pw(x, j * kn[1]) + '}{' + pw(x, j * kn[1] - E) + '}' : C + pw(x, kn[1]) + '\\cdot ' + pw(x, E - kn[1])) + '=' + tg) + ' uses the power of a product and power of a power laws, then the ' + (j != null ? 'quotient' : 'product') + ' law.<br>Any expression that equals ' + t(tg) + ' and needs two different laws (product, quotient, power of a product or quotient, power of a power, zero or negative exponent) counts. (A bracket like ' + t(br('2' + pw(x, 3)) + '^{3}=8' + pw(x, 9)) + ' already uses two: the power of a product and the power of a power.) One law on its own, such as ' + t(C + pw(x, E - 2) + '\\cdot ' + pw(x, 2)) + ', is not enough.',
             ['Start from the answer and work backwards: ' + t(C + '=' + kn[0] + '^{' + kn[1] + '}') + ', so a bracket raised to the power ' + t(kn[1]) + ' gives the ' + t(C) + '.', 'Then make the exponent of ' + t(x) + ' too big and divide by a power of ' + t(x) + ' to fix it.'], 'create expression for ' + tg, { keys: 'expo', vars: [x] });
           p.answer = 'e.g. ' + t(keyT);
-          p.bad = [tg, tg + '+' + tg + '-' + tg]; if (E % kn[1] === 0) p.bad.push(br(kn[0] + pw(x, E / kn[1])) + '^{' + kn[1] + '}');
+          p.bad = [tg, tg + '+' + tg + '-' + tg, C + pw(x, E - 2) + '\\cdot ' + pw(x, 2), '\\frac{' + C + pw(x, E + 3) + '}{' + pw(x, 3) + '}'];
+          if (E % 2 === 0) p.bad.push(C + br(pw(x, E / 2)) + '^{2}');
           return p;
         } }] },
       { num: '8', outcome: 'AN3', shared: q8Shared, stem: function (g) { return g.c.a(g.T, g.E); }, parts: [

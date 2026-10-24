@@ -214,7 +214,9 @@
     return p;
   }
   function numOf(x) {
-    var s = String(x == null ? '' : x).replace(/\\\$|\$|\\%|%|\\,|,(?=\d{3}\b)|\s/g, '').trim(); if (!s) return null;
+    var s = String(x == null ? '' : x).replace(/\\(text|mathrm)\{([^{}]*)\}/g, '$2').replace(/\\[;: ]|~/g, ' ').trim();
+    s = s.replace(/^[a-zA-Z]\s*=\s*/, '').replace(/\s*(km\/h|km|kg|mL|ml|L|h|hrs?|hours?|°|\^\{?\\circ\}?|degrees?|dollars?|guests?|visits?|wins?|losses|loss|games?|tickets?|bills?|baskets?)\s*\.?\s*$/i, '');   // k = -3, 18 kg, 15 wins
+    s = s.replace(/\\\$|\$|\\%|%|\\,|,(?=\d{3}\b)|\s/g, '').trim(); if (!s) return null;
     var p = HW.parse.number(s); if (p.ok) return p.value;
     var a = ex.parse(s); if (!a.ok) return null; var v = ex.value(a.ast); return isFinite(v) ? v : null;
   }
@@ -586,7 +588,8 @@
         else return form('u8t-res-eq', 'Type the equation you get, e.g. ' + t('0=12') + '.');
       }
       var eq = near(v[0], v[1]);
-      if (kind === 'none') return eq ? wrong('u8t-res-true', 'Check the right-hand sides: when you multiply an equation, multiply its right side too. Here the constants do not cancel.') : ok();
+      if (kind === 'none') return eq ? wrong('u8t-res-true', 'Check the right-hand sides: when you multiply an equation, multiply its right side too. Here the constants do not cancel.')
+        : near(Math.abs(v[0] - v[1]), Math.abs(D)) ? ok() : wrong('u8t-res-arith', 'A false statement — but check the arithmetic on the right-hand sides: multiply the first equation’s right side, then add.');
       return eq ? ok() : wrong('u8t-res-false', 'Check the right-hand sides: when you multiply an equation, multiply its right side too. Here the constants cancel as well.');
     };
   }
