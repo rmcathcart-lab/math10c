@@ -383,7 +383,7 @@
             var a = p[0] === 0 ? 'stay on the ' + t('y') + '-axis' : 'go ' + Math.abs(p[0]) + ' ' + (p[0] > 0 ? 'right' : 'left'), b = p[1] === 0 ? 'stay on the ' + t('x') + '-axis' : Math.abs(p[1]) + ' ' + (p[1] > 0 ? 'up' : 'down');
             return a + ', then ' + b;
           };
-          var quadOf = function (p) { return p[0] === 0 ? 'on the ' + t('y') + '-axis' : p[1] === 0 ? 'on the ' + t('x') + '-axis' : 'Quadrant ' + (p[0] > 0 ? (p[1] > 0 ? 'I' : 'IV') : (p[1] > 0 ? 'II' : 'III')); };
+          var quadOf = function (p) { return p[0] === 0 ? 'a point on the ' + t('y') + '-axis, in no quadrant' : p[1] === 0 ? 'a point on the ' + t('x') + '-axis, in no quadrant' : 'Quadrant ' + (p[0] > 0 ? (p[1] > 0 ? 'I' : 'IV') : (p[1] > 0 ? 'II' : 'III')); };
           var lab = pts.map(function (q, i) { return t(names[i] + ptT(q)); });
           var p = B.graph('Plot ' + lab.slice(0, -1).join(', ') + ' and ' + lab[lab.length - 1] + '. (Tap the grid to place a point; tap it again to remove it.)',
             { x: [-6, 6], y: [-6, 6], labels: 1, mode: 'points', max: 360 }, exactChk(key, { wrong: wr }), key,
@@ -729,7 +729,7 @@
   var FN_GRAPHS = [
     { fn: true, make: function (r) { var m = r.pick([1, 2, -1, -2, 0.5]), b = r.int(-2, 2); return { spec: { segs: [{ pts: [toEdge([0, b], [-1, -m], 4.6), toEdge([0, b], [1, m], 4.6)], start: 'arrow', end: 'arrow' }] }, name: 'a slanted line', why: 'every vertical line crosses a slanted line exactly once' }; } },
     { fn: true, make: function (r) { var h = r.int(-1, 1), k = r.int(-3, 0); return { spec: { fns: [parab(h, k, 1, 4.6)] }, name: 'a U-shaped curve', why: 'every vertical line crosses it at most once' }; } },
-    { fn: true, make: function (r) { var h = r.int(-1, 1), k = r.int(-2, 2); return { spec: { segs: [{ pts: [[h - 4, k + 3 > 4 ? 4 : k + 3], [h, k], [h + 4, k - 3 < -4 ? -4 : k - 3]], start: 'closed', end: 'closed' }] }, name: 'a bent line going down', why: 'each ' + t('x') + ' has one point' }; } },
+    { fn: true, make: function (r) { var h = r.int(-1, 1), k = r.int(-2, 1), up = r.chance(0.5) ? 1 : -1; return { spec: { segs: [{ pts: [[h - 4, k + 3 * up], [h, k - up], [h + 4, k + 2 * up]], start: 'closed', end: 'closed' }] }, name: up > 0 ? 'a V-shaped graph' : 'an upside-down V', why: 'every vertical line crosses it at most once' }; } },
     { fn: true, make: function (r) { var c = r.pick([-3, -2, 2, 3]); return { spec: { segs: [{ pts: [[-4.6, c], [4.6, c]], start: 'arrow', end: 'arrow' }] }, name: 'a horizontal line', why: 'a horizontal line has one ' + t('y') + ' for every ' + t('x') }; } },
     { fn: false, make: function (r) { var c = r.pick([-3, -2, -1, 1, 2, 3]); return { spec: { segs: [{ pts: [[c, -4.6], [c, 4.6]], start: 'arrow', end: 'arrow' }] }, name: 'a vertical line', why: 'a vertical line has many ' + t('y') + '-values for one ' + t('x') }; } },
     { fn: false, make: function (r) { var h = r.int(-1, 1), k = r.int(-1, 1), rr = r.pick([2, 3]); return { spec: { segs: [{ pts: circlePts(h, k, rr), start: 'none', end: 'none' }] }, name: 'a circle', why: 'a vertical line through the circle crosses it twice' }; } },
