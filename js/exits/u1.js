@@ -31,7 +31,8 @@
     'u1x-root-notreal': 'Gave a value for an even root of a negative', 'u1x-coef-forgot': 'Forgot to multiply by the number in front', 'u1x-coef-added': 'Added the numbers in front instead of multiplying',
     'u1x-diag-2d': 'Used only two of the three dimensions', 'u1x-diag-sum': 'Added lengths instead of using the Pythagorean theorem', 'u1x-var-exp': 'Didn’t divide a variable’s exponent by the index',
     'u1x-var-coef': 'Number part of the radical wrong', 'u1x-sq-perim': 'Perimeter: not four sides', 'u1x-sq-diag-side': 'Gave the side for the diagonal',
-    'u1x-sq-half': 'Halved the area instead of taking its square root', 'u1x-root-index': 'Used the wrong index for the root', 'u1x-power-index': 'Squared the number in front instead of raising it to the index'
+    'u1x-sq-half': 'Halved the area instead of taking its square root', 'u1x-root-index': 'Used the wrong index for the root', 'u1x-power-index': 'Squared the number in front instead of raising it to the index',
+    'u1x-given': 'Gave back the number or expression from the question (no work)'
   });
   HW.addPartial({
     'u1x-nonfactor': 'b', 'u1x-missing-1n': 's', 'u1x-missing-pair': 's', 'u1x-missing-factors': 'b', 'u1x-composite': 'b', 'u1x-prime-missing': 's', 'u1x-prime-extra': 's',
@@ -42,7 +43,7 @@
     'u1x-alg-mult': 'b', 'u1x-alg-tails': 'b', 'u1x-alg-rhs': 's', 'u1x-as-term': 'n', 'u1x-bar-all': 'b', 'u1x-no-whole': 's', 'u1x-sets-R': 's', 'u1x-est-place': 'b',
     'u1x-est-square': 'n', 'u1x-cond': 'n', 'u1x-cond-range': 'b', 'u1x-root-div': 'n', 'u1x-root-coef': 's', 'u1x-rad-muldiv': 'b', 'u1x-rad-nodiv': 'b', 'u1x-rad-add': 'n', 'u1x-froot-coef': 's',
     'u1x-root-pm': 'b', 'u1x-root-odd-pm': 'b', 'u1x-root-notreal': 'n', 'u1x-coef-forgot': 'b', 'u1x-coef-added': 'b', 'u1x-diag-2d': 'b', 'u1x-diag-sum': 'n',
-    'u1x-var-exp': 'b', 'u1x-var-coef': 'b', 'u1x-sq-perim': 's', 'u1x-sq-diag-side': 'n', 'u1x-sq-half': 'n', 'u1x-root-index': 'b', 'u1x-power-index': 'b'
+    'u1x-var-exp': 'b', 'u1x-var-coef': 'b', 'u1x-sq-perim': 's', 'u1x-sq-diag-side': 'n', 'u1x-sq-half': 'n', 'u1x-root-index': 'b', 'u1x-power-index': 'b', 'u1x-given': 'n'
   });
 
   /* ---------- number helpers ---------- */
@@ -75,7 +76,7 @@
     var c = rc(K.product(n, exp || 'either'), PROD_MAP);
     return function (resp) {
       var s = normX(resp), pn = HW.parse.number(s), pp = HW.parse.product(s), v = pn.ok ? pn.value : pp.ok ? pp.value : null;
-      if (pn.ok && pn.value === n && !nt.isPrime(n)) return form('as-number', 'Right value — now write it as a product of prime factors' + (exp === 'required' ? ' in exponent form' : '') + ', like ' + t('2^{3}\\times 3') + '.');
+      if (pn.ok && pn.value === n && !nt.isPrime(n)) return wrong('u1x-given', 'That’s the number you were given. Write it as a product of prime factors' + (exp === 'required' ? ' in exponent form' : '') + ', like ' + t('2^{3}\\times 3') + '.');
       if (v != null && v !== n) for (var i = 0; i < (alts || []).length; i++) if (v === alts[i].v) return wrong(alts[i].code, alts[i].hint);
       return c(s);
     };
@@ -94,6 +95,15 @@
       if (v === target) return ok();
       for (var i = 0; i < (alts || []).length; i++) if (v === alts[i].v) return wrong(alts[i].code, alts[i].hint);
       return wrong('value', null);
+    };
+  }
+  /* a whole number (or a product equal to it), with diag(value) for known wrong values */
+  function numProd(target, diag) {
+    var base = K.number(target, diag);
+    return function (resp) {
+      var s = normX(resp), pn = HW.parse.number(s);
+      if (!pn.ok) { var pp = HW.parse.product(s); if (pp.ok) { if (pp.value === target) return ok(); var h = diag ? diag(pp.value) : null; return h ? wrong(h.code, h.hint) : wrong('value', null); } }
+      return base(resp);
     };
   }
   function gcfDiag(nums) {
@@ -119,7 +129,7 @@
     };
   }
   /* the k-th root as a whole number (or a product), or "none" */
-  function isNo(s) { return /^(no|none|nope|not|neither|n\/a|-+|—)(\s.*|\.)?$/.test(s); }
+  function isNo(s) { return /^(no|none|nope|not|neither|n\/a|dne|impossible|-+|—)(\s.*|\.)?$/.test(s); }
   function rootOrNone(root, k, nTex, alts) {
     var word = rootWord(k), vc = root != null ? valChk(root, alts) : null, test = k === 2 ? 'even' : 'a multiple of ' + t('3');
     return function (resp) {
@@ -160,6 +170,18 @@
     var L = list.map(function (k) { var p = ex.parse(k[0]); if (!p.ok) throw new Error('bad known tex ' + k[0]); return { ast: p.ast, code: k[1], hint: k[2] }; });
     return function (ast) { for (var i = 0; i < L.length; i++) if (ex.equiv(ast, L[i].ast, vars, 6)) return { code: L[i].code, hint: L[i].hint }; return null; };
   }
+  /* the question's own number or expression typed back is "right value, wrong form" to a checker (2/3 in a test): no work
+     was done, so mark it wrong (no credit). Compared by structure, ignoring brackets and \frac vs / */
+  function nast(a) { if (!a || typeof a !== 'object') return a; if (a.t === 'paren') return nast(a.a); var o = {}; Object.keys(a).sort().forEach(function (k) { if (k !== 'frac' && k !== 'imp' && k !== 's' && k !== 'dec') o[k] = nast(a[k]); }); return o; }
+  function sig(tex) { var p = ex.parse(String(tex == null ? '' : tex)); return p.ok ? JSON.stringify(nast(p.ast)) : null; }
+  function guard(chk, givens, hint) {
+    var gs = givens.map(sig).filter(Boolean);
+    return function (resp) {
+      var res = chk(resp);
+      if (res && res.v === 'form' && typeof resp === 'string') { var s = sig(resp); if (s && gs.indexOf(s) >= 0) return wrong('u1x-given', hint || 'That is what the question gave you. Work it out and write it in the form asked for.'); }
+      return res;
+    };
+  }
 
   /* ---------- radicals ---------- */
   function radPool(n, kr, lo, hi) { var o = []; for (var k = kr[0]; k <= kr[1]; k++) for (var m = 2; m <= 15; m++) { var N = Math.pow(k, n) * m; if (ex.simplest(m, n) && N >= lo && N <= hi) o.push([k, m]); } return o; }
@@ -168,6 +190,7 @@
   function mixedPart(k, n, m, prompt) {
     var p = P.radical(prompt || 'Write ' + t(rt(n, F(Math.pow(k, n) * m))) + ' as a mixed radical in simplest form.', { k: k, n: n, m: m }, 'mixed', mixedSol(k, n, m),
       ['Find the <b>largest</b> perfect ' + powWord(n) + ' that divides ' + t(F(Math.pow(k, n) * m)) + (n === 2 ? ' (4, 9, 16, 25, 36, 49, …)' : n === 3 ? ' (8, 27, 64, 125, …)' : ' (16, 81, 256, …)') + '.', 'Its ' + rootWord(n) + ' root comes out in front of the radical.'], 'mixed radical: ' + rootWord(n) + ' root of ' + Math.pow(k, n) * m);
+    p.check = guard(p.check, [rt(n, F(Math.pow(k, n) * m)), rt(n, String(Math.pow(k, n) * m))]);
     var N = Math.pow(k, n) * m, sm = []; for (var d = 2; d < k; d++) if (k % d === 0) sm.push(d); // a smaller perfect power that also divides
     p.bad = [String(Math.pow(k, n)) + rt(n, String(m)), rt(n, String(N))];
     if (sm.length) p.bad.push(sm[0] + rt(n, String(N / Math.pow(sm[0], n))));
@@ -178,6 +201,7 @@
     var p = P.radical(prompt || 'Write ' + t(rad(k, n, m)) + ' as an entire radical.', { k: k, n: n, m: m }, 'entire', entireSol(k, n, m),
       ['Write the number in front as a ' + rootWord(n) + ' root: ' + t(Math.abs(k) + '=' + rt(n, Math.pow(Math.abs(k), n))) + '.', 'Then multiply the numbers under one radical.'], 'entire radical: ' + k + ' root' + n + ' of ' + m,
       { diag: function (val, rr) { if (n > 2 && rr && rr.n === n && Math.abs(rr.k[0]) === 1 && rr.k[1] === 1 && rr.m === k * k * m) return { code: 'u1x-power-index', hint: 'With index ' + t(n) + ', the number in front must be raised to the power ' + t(n) + ' (not squared) before it moves inside: ' + t(Math.abs(k) + '=' + rt(n, Math.pow(Math.abs(k), n))) + '.' }; return null; } });
+    p.check = guard(p.check, [rad(k, n, m)]);
     var a = Math.abs(k), s = k < 0 ? '-' : '';
     p.bad = [rt(n, s + String(a * m)), rt(n, s + String(Math.pow(a, n) + m))];
     if (n > 2) p.bad.push(rt(n, s + String(a * a * m)));
@@ -263,7 +287,7 @@
       if (!filled.length) return form('empty', 'Fill in the boxes: the equation you get after subtracting, then the fraction.');
       if (filled.length < 3) return form('incomplete', 'Fill in all three boxes (the number in front of ' + t('x') + ', the right side, and the fraction).');
       var cp = HW.parse.number(resp[0]);
-      if (!cp.ok || cp.value <= 0 || cp.value % 1) return form('coef', '<b>' + labels[0] + ':</b> the first box is the whole number in front of ' + t('x') + ' after you subtract, e.g. ' + t('90') + '.');
+      if (!cp.ok || cp.value <= 0 || cp.value % 1) return form('notint', '<b>' + labels[0] + ':</b> the first box is the whole number in front of ' + t('x') + ' after you subtract, e.g. ' + t('90') + '.');
       var c = cp.value, n = num(resp[1]);
       if (!n) return form('rhs', '<b>' + labels[1] + ':</b> type the number on the right side of the equation.');
       if (!/^9+0*$/.test(String(c))) {
@@ -275,6 +299,7 @@
         return wrong('u1x-alg-rhs', '<b>' + labels[1] + ':</b> check your subtraction. Line up the two equations — the repeating tails cancel, leaving a whole number.');
       }
       var res = fr(resp[2]);
+      if (res.v === 'form' && sig(resp[2]) === sig(R.tex)) return wrong('u1x-given', '<b>' + labels[2] + ':</b> that is the decimal you were given. Divide both sides by ' + t(F(c)) + ' and write the fraction.');
       if (res.v !== 'correct') return { v: res.v, code: res.code, hint: '<b>' + labels[2] + ':</b> ' + (res.hint || 'Divide both sides by ' + t(F(c)) + ' and reduce.') };
       return ok();
     };
@@ -282,7 +307,7 @@
     var sol = 'Let ' + t('x=' + R.tex) + '. The block ' + t(R.block) + ' has ' + R.B + ' digits and ' + R.L + ' digit comes before it.<br>' +
       t(F(R.hi) + 'x=' + shiftTex(R, R.hi)) + ' (block left of the point)<br>' + t(F(R.lo) + 'x=' + shiftTex(R, R.lo)) + ' (block just right of the point)<br>' +
       'Subtract: ' + t(F(R.c) + 'x=' + F(R.n)) + ', so ' + t('x=\\frac{' + F(R.n) + '}{' + F(R.c) + '}' + (R.g > 1 ? '=' + ex.texRat(X) : '')) + (R.g > 1 ? ' (divide the top and bottom by ' + t(R.g) + ').' : '.');
-    return { prompt: 'Use the algebraic method (no calculator) to write ' + t(R.tex) + ' as an improper fraction in simplest form. Fill in the equation you get after subtracting, then the fraction.',
+    return { prompt: 'Use the algebraic method (no calculator) to write ' + t(R.tex) + ' as ' + (R.I ? 'an improper fraction' : 'a fraction') + ' in simplest form. Fill in the equation you get after subtracting, then the fraction.',
       input: { type: 'fields', fields: [{ label: 'Subtract:', after: t('x'), name: labels[0] }, { before: t('='), name: labels[1], wide: true, mode: 'text' }, { label: 'So', before: t('x='), wide: true, name: labels[2], mode: 'math', keys: 'fraction' }] },
       check: check, key: key, answer: t(F(R.c) + 'x=' + F(R.n)) + ', so ' + t('x=' + ex.texRat(X)), solution: sol,
       bad: [[String(R.c), String(R.n + 1), key[2]], [String(R.hi), String(R.n), key[2]], [String(Math.pow(10, R.B) - 1), String(Number(R.lead + R.block)), key[2]], [key[0], key[1], trunc[0] + '/' + trunc[1]]].filter(function (b) { return b.join('|') !== key.join('|'); }),
@@ -294,7 +319,7 @@
   function parseRoots(resp) {
     var s = String(resp == null ? '' : resp).trim().replace(/−/g, '-').replace(/\\pm|±|\+\s*\/?\s*-/g, '±').replace(/\\left|\\right|\\,|\$/g, '');
     if (!s) return { empty: true };
-    if (/^(none|no( real)?( roots?| solutions?| numbers?)?|not real|no solution|∅|\{\s*\})\.?$/i.test(s)) return { vals: [] };
+    if (/^(none|no( real)?( roots?| solutions?| numbers?| answers?)?|not real|not a real number|no solution|not possible|impossible|undefined|dne|n\/a|∅|\{\s*\})\.?$/i.test(s)) return { vals: [] };
     var toks = s.split(/\s*(?:,|;|\band\b|\bor\b)\s*/i).filter(function (x) { return x !== ''; }), vals = [];
     for (var i = 0; i < toks.length; i++) {
       var tk = toks[i].replace(/^x\s*=\s*/i, ''), pm = /^±/.test(tk); if (pm) tk = tk.replace(/^±\s*/, '');
@@ -366,8 +391,8 @@
             var f = [[2, s.a], [3, s.b], [s.q, s.c]], N = fVal(f), odd = fVal([[3, s.b], [s.q, s.c]]), no3 = fVal([[2, s.a], [s.q, s.c]]);
             var p = P.fields('Find the <b>largest odd factor</b> of ' + t('N') + ', and the <b>largest factor</b> of ' + t('N') + ' that is <b>not a multiple of ' + t('3') + '</b>.',
               [{ name: 'Largest odd factor', label: 'Largest odd factor:' }, { name: 'Not a multiple of 3', label: 'Largest factor that is not a multiple of ' + t('3') + ':' }],
-              [numChk(odd, [{ v: N / 2, code: 'u1x-odd-once', hint: t(F(N / 2)) + ' is still even: it has ' + t('2^{' + (s.a - 1) + '}') + ' in it. An odd factor can’t use <b>any</b> 2s.' }, { v: s.q, code: 'u1x-odd-prime', hint: t(s.q) + ' is an odd factor, but not the largest. Use every odd prime factor, each to its full power.' }, { v: 3, code: 'u1x-odd-prime', hint: t('3') + ' is an odd factor, but not the largest. Use every odd prime factor, each to its full power.' }, { v: N, code: 'u1x-odd-all', hint: t('N') + ' itself is even. Remove every factor of ' + t('2') + '.' }]),
-                numChk(no3, [{ v: N / 3, code: 'u1x-odd-once', hint: t(F(N / 3)) + ' is still a multiple of ' + t('3') + (s.b > 1 ? ' (it has ' + t('3^{' + (s.b - 1) + '}') + ' in it)' : '') + '. Remove <b>every</b> factor of ' + t('3') + '.' }, { v: odd, code: 'u1x-odd-prime', hint: 'That’s the largest <b>odd</b> factor. This box needs the largest factor with no 3s in it.' }, { v: N, code: 'u1x-odd-all', hint: t('N') + ' itself is a multiple of ' + t('3') + '. Remove every factor of ' + t('3') + '.' }])],
+              [valChk(odd, [{ v: N / 2, code: 'u1x-odd-once', hint: t(F(N / 2)) + ' is still even: it has ' + t('2^{' + (s.a - 1) + '}') + ' in it. An odd factor can’t use <b>any</b> 2s.' }, { v: s.q, code: 'u1x-odd-prime', hint: t(s.q) + ' is an odd factor, but not the largest. Use every odd prime factor, each to its full power.' }, { v: 3, code: 'u1x-odd-prime', hint: t('3') + ' is an odd factor, but not the largest. Use every odd prime factor, each to its full power.' }, { v: N, code: 'u1x-odd-all', hint: t('N') + ' itself is even. Remove every factor of ' + t('2') + '.' }]),
+                valChk(no3, [{ v: N / 3, code: 'u1x-odd-once', hint: t(F(N / 3)) + ' is still a multiple of ' + t('3') + (s.b > 1 ? ' (it has ' + t('3^{' + (s.b - 1) + '}') + ' in it)' : '') + '. Remove <b>every</b> factor of ' + t('3') + '.' }, { v: odd, code: 'u1x-odd-prime', hint: 'That’s the largest <b>odd</b> factor. This box needs the largest factor with no 3s in it.' }, { v: N, code: 'u1x-odd-all', hint: t('N') + ' itself is a multiple of ' + t('3') + '. Remove every factor of ' + t('3') + '.' }])],
               [String(odd), String(no3)], 'Largest odd factor ' + t(F(odd)) + '; largest factor not a multiple of 3: ' + t(F(no3)),
               'Every factor of ' + t('N') + ' is built from its prime factors, each used up to its exponent.<br>An odd factor can’t use any 2s, so the largest one uses all the other primes: ' + t(fTex([[3, s.b], [s.q, s.c]]) + '=' + F(odd)) + '.<br>A factor that is not a multiple of 3 can’t use any 3s: ' + t(fTex([[2, s.a], [s.q, s.c]]) + '=' + F(no3)) + '.',
               ['A factor of ' + t('N') + ' is made from some (or all) of its prime factors.', 'Leave out every copy of the prime you must avoid, and keep everything else.'], 'largest odd factor / not multiple of 3 of ' + N);
@@ -384,7 +409,7 @@
     { text: function (a, b) { return 'A librarian has ' + t(a) + ' novels and ' + t(b) + ' comic books. She stacks them in piles with the same number of books in every pile, only one kind of book in each pile, and as few piles as possible.'; }, ask: ' How many books are in each pile, and how many piles are there?', per: 'Books in each pile:', count: 'Number of piles:' }];
   var LCM_CTX = [
     { text: function (a, b) { return 'Veggie dogs come in packs of ' + t(a) + ' and buns come in packs of ' + t(b) + '. For a barbecue, Jordan wants exactly the same number of veggie dogs and buns, and wants to buy as few as possible.'; }, total: 'Number of each:', c1: function () { return 'Packs of veggie dogs:'; }, c2: function () { return 'Packs of buns:'; } },
-    { text: function (a, b) { return 'Two lighthouse beacons flash together at midnight. One flashes every ' + t(a) + ' seconds and the other every ' + t(b) + ' seconds.'; }, ask: ' How many seconds until they next flash together, and how many times has each one flashed by then?', total: 'Seconds until they flash together:', c1: function (a) { return 'Flashes of the ' + t(a) + '-second beacon:'; }, c2: function (a, b) { return 'Flashes of the ' + t(b) + '-second beacon:'; } }];
+    { text: function (a, b) { return 'Two lighthouse beacons flash together at midnight. One flashes every ' + t(a) + ' seconds and the other every ' + t(b) + ' seconds.'; }, ask: ' How many seconds until they next flash together? How many times does each beacon flash after midnight, up to and including that moment?', total: 'Seconds until they flash together:', c1: function (a) { return 'Flashes of the ' + t(a) + '-second beacon:'; }, c2: function (a, b) { return 'Flashes of the ' + t(b) + '-second beacon:'; } }];
   HW.defineExit({
     lesson: 'u1l2', calc: false, outcome: 'AN1',
     blurb: 'Greatest common factor and least common multiple: by listing, by prime factorization, and in a word problem.',
@@ -417,7 +442,7 @@
           var a = v.a, b = v.b, G = gcd(a, b), L = lcm(a, b);
           var p = P.fields('Write ' + t(a) + ' and ' + t(b) + ' as products of prime factors. Then use them to find the GCF and the LCM of ' + t(a) + ' and ' + t(b) + '.',
             [{ name: String(a), before: t(a + '='), mode: 'math', wide: true }, { name: String(b), before: t(b + '='), mode: 'math', wide: true }, { name: 'GCF', before: t('\\text{GCF}=') }, { name: 'LCM', before: t('\\text{LCM}=') }],
-            [prodChk(a, 'either'), prodChk(b, 'either'), K.number(G, gcfDiag([a, b])), K.number(L, lcmDiag([a, b]))],
+            [prodChk(a, 'either'), prodChk(b, 'either'), numProd(G, gcfDiag([a, b])), numProd(L, lcmDiag([a, b]))],
             [plainFac(a), plainFac(b), String(G), String(L)],
             t(a + '=' + K.fac(a)) + ', ' + t(b + '=' + K.fac(b)) + '; ' + t('\\text{GCF}=' + F(G)) + ', ' + t('\\text{LCM}=' + F(L)),
             t(a + '=' + K.fac(a)) + '<br>' + t(b + '=' + K.fac(b)) + '<br>GCF: the shared primes, each to its <b>lower</b> power: ' + t(K.fac(G) + '=' + F(G)) + '.<br>LCM: every prime, each to its <b>higher</b> power: ' + t(K.fac(L) + '=' + F(L)) + '.',
@@ -472,7 +497,8 @@
           nums = r.shuffle(nums.concat([extra]));
           var rows = nums.map(function (n, i) { return { id: 'r' + i, html: t(F(n)) + ' cubes', label: String(n), n: n }; }), want = {}, by = {};
           rows.forEach(function (x) { var k = sqcubeOf(x.n), w = []; if (k.sq) w.push('sq'); if (k.cu) w.push('cu'); want[x.id] = w; by[x.id] = x; });
-          var desc = function (n) { var k = sqcubeOf(n); return t(F(n) + '=' + K.fac(n)) + ': ' + (k.sq && k.cu ? 'every exponent is a multiple of 6, so it is <b>both</b> (a ' + intRoot(n, 2) + ' by ' + intRoot(n, 2) + ' square, or a ' + intRoot(n, 3) + '×' + intRoot(n, 3) + '×' + intRoot(n, 3) + ' cube)' : k.sq ? 'every exponent is even, so it makes a ' + intRoot(n, 2) + ' by ' + intRoot(n, 2) + ' square (not a cube)' : k.cu ? 'every exponent is a multiple of 3, so it makes a ' + intRoot(n, 3) + '×' + intRoot(n, 3) + '×' + intRoot(n, 3) + ' cube (not a square)' : 'the exponents are neither all even nor all multiples of 3, so it is <b>neither</b>'); };
+          var an = function (x) { return /^(8|11|18)/.test(String(x)) ? 'an ' : 'a '; };
+          var desc = function (n) { var k = sqcubeOf(n); return t(F(n) + '=' + K.fac(n)) + ': ' + (k.sq && k.cu ? 'every exponent is a multiple of 6, so it is <b>both</b> (' + an(intRoot(n, 2)) + intRoot(n, 2) + ' by ' + intRoot(n, 2) + ' square, or ' + an(intRoot(n, 3)) + intRoot(n, 3) + '×' + intRoot(n, 3) + '×' + intRoot(n, 3) + ' cube)' : k.sq ? 'every exponent is even, so it makes ' + an(intRoot(n, 2)) + intRoot(n, 2) + ' by ' + intRoot(n, 2) + ' square (not a cube)' : k.cu ? 'every exponent is a multiple of 3, so it makes ' + an(intRoot(n, 3)) + intRoot(n, 3) + '×' + intRoot(n, 3) + '×' + intRoot(n, 3) + ' cube (not a square)' : 'the exponents are neither all even nor all multiples of 3, so it is <b>neither</b>'); };
           var p = P.grid('The bags hold ' + nlist(nums) + ' cubes. Tick <b>Square</b> if all the cubes in a bag can be laid out as one solid square (one layer), and <b>Cube</b> if they can be stacked into one solid cube. Tick both, or leave both blank, when that is right.',
             rows, [{ id: 'sq', html: 'Square', label: 'Square' }, { id: 'cu', html: 'Cube', label: 'Cube' }], want, { rowHead: 'Bag', allowBlank: true },
             rows.map(function (x) { return desc(x.n); }).join('<br>'),
@@ -489,8 +515,8 @@
           var one = need[0][0], all = prodOf(f.map(function (pe) { return pe[0]; }));
           var p = P.fields('What is the <b>smallest</b> whole number ' + t('n') + ' that ' + t(F(M)) + ' must be multiplied by to give a perfect square? Write ' + t(F(M)) + ' as a product of primes, then give ' + t('n') + ' and the square root of the result.',
             [{ name: 'Prime factorization', before: t(F(M) + '='), mode: 'math', wide: true }, { name: 'n', before: t('n=') }, { name: 'Square root', before: t('\\sqrt{' + F(M) + 'n}=') }],
-            [prodChk(M, 'either'), numChk(n, [{ v: one, code: 'u1x-sq-one', hint: 'Multiplying by ' + t(one) + ' fixes only one exponent. Every exponent must be even: which other prime has an odd exponent?' }, { v: n * n, code: 'u1x-sq-square', hint: 'That works, but it isn’t the <b>smallest</b>: one more of each odd-exponent prime is enough.' }, { v: all, code: 'u1x-sq-all', hint: 'Only the primes with an <b>odd</b> exponent need one more copy.' }]),
-              numChk(root, [{ v: M * n, code: 'u1x-root-product', hint: 'That’s ' + t(F(M) + 'n') + ' itself. Now take its square root: halve each exponent.' }])],
+            [prodChk(M, 'either'), valChk(n, [{ v: one, code: 'u1x-sq-one', hint: 'Multiplying by ' + t(one) + ' fixes only one exponent. Every exponent must be even: which other prime has an odd exponent?' }, { v: n * n, code: 'u1x-sq-square', hint: 'That works, but it isn’t the <b>smallest</b>: one more of each odd-exponent prime is enough.' }, { v: all, code: 'u1x-sq-all', hint: 'Only the primes with an <b>odd</b> exponent need one more copy.' }]),
+              valChk(root, [{ v: M * n, code: 'u1x-root-product', hint: 'That’s ' + t(F(M) + 'n') + ' itself. Now take its square root: halve each exponent.' }])],
             [plainFac(M), String(n), String(root)], t(F(M) + '=' + K.fac(M)) + ', ' + t('n=' + n) + ', ' + t('\\sqrt{' + F(M * n) + '}=' + root),
             t(F(M) + '=' + K.fac(M)) + '.<br>For a perfect square every exponent must be even. ' + need.map(function (pe) { return t(pe[0] + (pe[1] > 1 ? '^{' + pe[1] + '}' : '')); }).join(' and ') + ' have odd exponents, so each needs one more copy: ' + t('n=' + need.map(function (pe) { return pe[0]; }).join('\\times ') + '=' + n) + '.<br>' + t(F(M) + '\\times ' + n + '=' + F(M * n) + '=' + K.fac(M * n)) + ', so ' + t('\\sqrt{' + F(M * n) + '}=' + K.fac(root) + '=' + root) + '.',
             ['Write ' + t(F(M)) + ' as a product of primes and look at each exponent.', 'Raise each odd exponent to the next even number — and no further.'], 'smallest n: ' + M + 'n a perfect square');
@@ -559,6 +585,7 @@
             ['Divide ' + t(fr[0] + '.000000') + ' by ' + t(fr[1]) + '. Watch the remainders: when one comes back, the digits repeat from there.', 'The bar goes over exactly the digits that repeat.'], 'fraction to repeating decimal ' + fr.join('/'));
           var mt = /^(.*?)\\overline\{(\d+)\}$/.exec(dec), pre = mt[1], blk = mt[2];
           var wrongBar = blk.length > 1 ? pre + blk.slice(0, -1) + '\\overline{' + blk.slice(-1) + '}' : /\d$/.test(pre) ? pre.slice(0, -1) + '\\overline{' + pre.slice(-1) + blk + '}' : pre + blk + blk + blk + blk;
+          p.check = guard(p.check, ['\\frac{' + fr[0] + '}{' + fr[1] + '}'], 'That is the fraction you were given. Divide to write it as a decimal, with a bar over the repeating block.');
           p.bad = [plain, wrongBar];
           return p;
         } }] },
@@ -675,9 +702,9 @@
           var a3 = neg ? [-fa[0], fa[1]] : fa;
           var p = P.fields('Evaluate ' + t(t1) + ', ' + t(t2) + ' and ' + t(t3) + '.',
             [{ name: '(i)', before: t(t1 + '='), mode: 'math', keys: 'fraction' }, { name: '(ii)', before: t(t2 + '='), mode: 'math', keys: 'fraction' }, { name: '(iii)', before: t(t3 + '='), mode: 'math', keys: 'fraction' }],
-            [K.value(A.m, { diag: function (v) { if (ex.eq(v, An / A.n)) return { code: 'u1x-root-div', hint: 'A root isn’t a division: find the number that, used as a factor ' + t(A.n) + ' times, gives ' + t(F(An)) + '.' }; if (ex.eq(v, Math.pow(A.m, A.n - 1)) || (A.n !== 2 && ex.eq(v, intRoot(An, 2) || -1))) return { code: 'u1x-root-index', hint: 'Check the index: you need ' + t('x^{' + A.n + '}=' + F(An)) + '.' }; return null; } }),
-              K.value(-k * c, { diag: function (v) { if (ex.eq(v, -c)) return { code: 'u1x-root-coef', hint: t(rt(3, '-' + Math.pow(c, 3)) + '=-' + c) + ' — now multiply by the ' + t(k) + ' in front.' }; return null; } }),
-              K.fraction(a3, { diag: function (v) { if (ex.eq(v, Math.pow(fa[0], n3) / Math.pow(fa[1], n3) / n3)) return { code: 'u1x-root-div', hint: 'Take the root of the top and of the bottom.' }; return null; } })],
+            [guard(K.value(A.m, { diag: function (v) { if (ex.eq(v, An / A.n)) return { code: 'u1x-root-div', hint: 'A root isn’t a division: find the number that, used as a factor ' + t(A.n) + ' times, gives ' + t(F(An)) + '.' }; if (ex.eq(v, Math.pow(A.m, A.n - 1)) || (A.n !== 2 && ex.eq(v, intRoot(An, 2) || -1))) return { code: 'u1x-root-index', hint: 'Check the index: you need ' + t('x^{' + A.n + '}=' + F(An)) + '.' }; return null; } }), [t1, rt(A.n, String(An))]),
+              guard(K.value(-k * c, { diag: function (v) { if (ex.eq(v, -c)) return { code: 'u1x-root-coef', hint: t(rt(3, '-' + Math.pow(c, 3)) + '=-' + c) + ' — now multiply by the ' + t(k) + ' in front.' }; return null; } }), [t2]),
+              guard(K.fraction(a3, { diag: function (v) { if (ex.eq(v, Math.pow(fa[0], n3) / Math.pow(fa[1], n3) / n3)) return { code: 'u1x-root-div', hint: 'Take the root of the top and of the bottom.' }; return null; } }), [t3])],
             [String(A.m), String(-k * c), ex.texRat(a3)], t(t1 + '=' + A.m) + ', ' + t(t2 + '=' + (-k * c)) + ', ' + t(t3 + '=' + ex.texRat(a3)),
             t(t1 + '=' + A.m) + ' because ' + t(A.m + '^{' + A.n + '}=' + F(An)) + '.<br>' + t(rt(3, '-' + Math.pow(c, 3)) + '=-' + c) + ' because ' + t('(-' + c + ')^{3}=-' + Math.pow(c, 3)) + ', so ' + t(t2 + '=' + k + '(-' + c + ')=' + (-k * c)) + '.<br>' +
               t(t3 + '=' + (neg ? '-' : '') + '\\frac{' + rt(n3, Math.pow(fa[0], n3)) + '}{' + rt(n3, Math.pow(fa[1], n3)) + '}=' + ex.texRat(a3)) + (neg ? ' (an odd root of a negative is negative).' : '.'),
@@ -694,6 +721,7 @@
             t(q + '=\\sqrt{\\frac{' + v.a + '\\times ' + v.b + '}{' + v.c + '}}=\\sqrt{\\frac{' + v.a * v.b + '}{' + v.c + '}}=\\sqrt{' + v.x + '}') + '. (Multiply under one root, divide under one root.)',
             ['Use ' + t('\\sqrt{a}\\sqrt{b}=\\sqrt{ab}') + ' and ' + t('\\frac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\frac{a}{b}}') + '.'], 'single radical ' + v.a + '·' + v.b + '/' + v.c,
             { diag: function (val, rr) { if (rr && rr.n === 2 && rr.m === v.a * v.b * v.c && rr.k[0] === 1) return { code: 'u1x-rad-muldiv', hint: 'The ' + t('\\sqrt{' + v.c + '}') + ' is in the denominator: <b>divide</b> by ' + t(v.c) + ' under the root, don’t multiply.' }; if (rr && rr.n === 2 && rr.m === v.a * v.b && rr.k[0] === 1) return { code: 'u1x-rad-nodiv', hint: t('\\sqrt{' + v.a + '}\\sqrt{' + v.b + '}=\\sqrt{' + v.a * v.b + '}') + ' — now divide by the ' + t('\\sqrt{' + v.c + '}') + ' in the denominator: ' + t('\\frac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\frac{a}{b}}') + '.' }; if (rr && rr.n === 2 && rr.k[0] === 1 && (rr.m === v.a + v.b - v.c || rr.m === v.a + v.b)) return { code: 'u1x-rad-add', hint: 'Radicals multiply under one root: ' + t('\\sqrt{a}\\sqrt{b}=\\sqrt{ab}') + ' — the radicands are multiplied, not added.' }; return null; } });
+          p.check = guard(p.check, [q]);
           p.bad = ['\\sqrt{' + v.a * v.b * v.c + '}', '\\sqrt{' + (v.a + v.b - v.c) + '}', '\\sqrt{' + v.a * v.b + '}'].filter(function (b) { return b !== '\\sqrt{' + v.x + '}'; });
           return p;
         } },
@@ -704,6 +732,7 @@
           var p = P.fraction('Evaluate ' + t(tx) + '.', ans, { diag: function (val) { if (ex.eq(val, v.a / v.b)) return { code: 'u1x-froot-coef', hint: t(rt(v.n, '\\frac{' + A + '}{' + B + '}') + '=\\frac{' + v.a + '}{' + v.b + '}') + ' — now multiply by ' + t('\\frac{' + v.c + '}{' + v.d + '}') + '.' }; if (ex.eq(val, v.c * A / (v.d * B))) return { code: 'u1x-root-div', hint: 'Take the ' + rootWord(v.n) + ' root of ' + t('\\frac{' + A + '}{' + B + '}') + ' first.' }; return null; } },
             t(rt(v.n, '\\frac{' + F(A) + '}{' + F(B) + '}') + '=\\frac{' + v.a + '}{' + v.b + '}') + ' because ' + t(v.a + '^{' + v.n + '}=' + F(A)) + ' and ' + t(v.b + '^{' + v.n + '}=' + F(B)) + '.<br>' + t('\\frac{' + v.c + '}{' + v.d + '}\\times\\frac{' + v.a + '}{' + v.b + '}=' + ex.texRat(ans)) + '.',
             ['Take the root of the top and of the bottom separately.', 'Then multiply by the fraction in front and reduce.'], 'evaluate ' + v.c + '/' + v.d + ' root' + v.n + ' ' + A + '/' + B);
+          p.check = guard(p.check, [tx]);
           p.bad = [ex.texRat(ex.norm(v.a, v.b)), ex.texRat(ex.norm(v.c * A, v.d * B))].filter(function (b) { return b !== ex.texRat(ans); });
           return p;
         } }] },
@@ -748,6 +777,7 @@
             t(cT + '\\sqrt{' + N + '}=' + cT + '\\sqrt{' + v.s * v.s + '\\times ' + v.m + '}=' + cT + '\\times ' + v.s + '\\sqrt{' + v.m + '}=' + rad(k, 2, v.m)) + '.',
             ['Simplify ' + t('\\sqrt{' + N + '}') + ' first: find its largest perfect-square factor.', 'Then multiply the number that comes out by the ' + t(cT) + ' in front.'], 'mixed radical ' + cT + 'sqrt' + N,
             { diag: function (val, rr) { if (rr && rr.n === 2 && rr.m === v.m && rr.k[1] === 1 && rr.k[0] === v.s) return { code: 'u1x-coef-forgot', hint: 'You simplified the root, but the ' + t(cT) + ' in front still multiplies it.' }; if (rr && rr.n === 2 && rr.m === v.m && rr.k[1] === 1 && v.c[1] === 1 && rr.k[0] === v.c[0] + v.s) return { code: 'u1x-coef-added', hint: 'Multiply the numbers in front, don’t add them: ' + t(cT + '\\times ' + v.s) + '.' }; return null; } });
+          p.check = guard(p.check, [cT + '\\sqrt{' + N + '}']);
           p.bad = [rad(v.s, 2, v.m), rad(-k, 2, v.m)].concat(v.c[1] === 1 ? [rad(v.c[0] + v.s, 2, v.m)] : []);
           return p;
         } }] },
@@ -796,6 +826,7 @@
     var p = P.math(prompt || 'Write ' + t(given) + ' as a mixed radical in simplest form.', K.varRadical(target, 'mixed', { diag: function (rr, ast) { return kd(ast); } }), target,
       t(given + '=' + (c === 1 ? '' : c) + rt(n, (k > 1 ? Math.pow(k, n) + '\\times ' : '') + (m > 1 ? m : '') + vars.map(function (ve) { var q = Math.floor(ve[1] / n), rr = ve[1] % n; return (q ? vt(ve[0], q * n) : '') + (rr ? '\\cdot ' + vt(ve[0], rr) : ''); }).join('\\cdot ')) + '=' + target) + '.<br>Each perfect ' + powWord(n) + ' comes out: ' + (k > 1 ? t(rt(n, Math.pow(k, n)) + '=' + k) + ', ' : '') + vars.filter(function (ve) { return ve[1] >= n; }).map(function (ve) { var q = Math.floor(ve[1] / n); return t(rt(n, vt(ve[0], q * n)) + '=' + vt(ve[0], q)); }).join(', ') + (c !== 1 ? '; then multiply by the ' + t(c) + ' in front' : '') + '.',
       ['Split the radicand into the largest perfect ' + powWord(n) + ' and what is left. For a variable, use the largest exponent that is a multiple of ' + t(n) + '.', 'Divide those exponents by ' + t(n) + ' as they come out of the root.'], text, { keys: 'expo', vars: vs });
+    p.check = guard(p.check, [given]);
     p.bad = wrongs.map(function (w) { return w[0]; }).filter(function (b) { return b !== target; });
     return p;
   }
@@ -803,20 +834,22 @@
     lesson: 'u1l8', calc: false, outcome: 'AN2',
     blurb: 'Mixed and entire radicals with index 3 and higher, and simplifying radicals with variables.',
     questions: [
+      // the lesson's core skill (a cube root to a mixed radical) is the Beginning question, so the slip spans all three boxes
       { num: '1', outcome: 'AN2', stem: '', parts: [
-        { id: '1a', outcome: 'AN2', level: 'EMG', make: function (r) { var km = r.pick(radPool(3, [2, 5], 16, 1000).filter(function (x) { return x[1] <= 7; })); return mixedPart(km[0], 3, km[1]); } },
-        { id: '1b', outcome: 'AN2', level: 'EMG', make: function (r) {
+        { id: '1', outcome: 'AN2', level: 'BEG', make: function (r) { var km = r.pick(radPool(3, [2, 5], 16, 1000).filter(function (x) { return x[1] <= 7; })); return mixedPart(km[0], 3, km[1]); } }] },
+      { num: '2', outcome: 'AN2', stem: '', parts: [
+        { id: '2', outcome: 'AN2', level: 'EMG', make: function (r) {
           if (r.chance(0.5)) { var km = r.pick(radPool(3, [2, 5], 16, 800).filter(function (x) { return x[1] <= 7; })); return entirePart(r.chance(0.4) ? -km[0] : km[0], 3, km[1]); }
           var k4 = r.pick(radPool(4, [2, 3], 32, 900).filter(function (x) { return x[1] <= 10; })); return entirePart(k4[0], 4, k4[1]);
         } }] },
-      { num: '2', outcome: 'AN2', stem: 'Assume every variable is positive.', parts: [
-        { id: '2', outcome: 'AN2', level: 'PRG', make: function (r) {
+      { num: '3', outcome: 'AN2', stem: 'Assume every variable is positive.', parts: [
+        { id: '3', outcome: 'AN2', level: 'PRG', make: function (r) {
           var v = find(function () { var s = r.int(2, 6), m = r.pick([2, 3, 5, 6, 7]), L = r.pick([['a', 'b'], ['x', 'y'], ['m', 'n']]); return { s: s, m: m, L: L, e1: r.int(2, 9), e2: r.int(1, 8) }; },
             function (v) { return (v.e1 % 2 === 1 || v.e2 % 2 === 1) && v.e1 !== v.e2 && v.s * v.s * v.m <= 250 && (v.e1 >= 2 && v.e2 >= 2); }, { s: 6, m: 3, L: ['a', 'b'], e1: 5, e2: 7 });
           return varRadPart(null, 1, 2, v.s * v.s * v.m, [[v.L[0], v.e1], [v.L[1], v.e2]], 'mixed radical with variables');
         } }] },
-      { num: '3', outcome: 'AN2', stem: 'Assume every variable is positive.', parts: [
-        { id: '3', outcome: 'AN2', level: 'ADV', make: function (r) {
+      { num: '4', outcome: 'AN2', stem: 'Assume every variable is positive.', parts: [
+        { id: '4', outcome: 'AN2', level: 'ADV', make: function (r) {
           var n = r.chance(0.6) ? 3 : 4;
           var v = find(function () { var k = r.int(2, n === 3 ? 5 : 3), m = r.pick(n === 3 ? [2, 3, 4, 5, 6] : [2, 3, 5]), c = r.pick([1, 1, 2, 3]), e = r.int(n === 3 ? 7 : 9, n === 3 ? 14 : 15), x = r.pick(['a', 'x', 'y']); return { k: k, m: m, c: c, e: e, x: x }; },
             function (v) { return v.e % n !== 0 && Math.pow(v.k, n) * v.m <= 700; }, { k: 6, m: 3, c: 3, e: 14, x: 'a' });

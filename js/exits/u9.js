@@ -19,11 +19,12 @@
     'u9x-diff': 'Exit 9: subtracted the two distances instead of adding',
     'u9x-angle-diff': 'Exit 9: used the difference of the angles in one triangle',
     'u9x-same-angle': 'Exit 9: gave the same angle twice (the acute angles add to 90°)',
-    'u9x-not-90': 'Exit 9: the two acute angles don’t add to 90°'
+    'u9x-not-90': 'Exit 9: the two acute angles don’t add to 90°',
+    'u9x-area-half': 'Exit 9: found the other leg as area ÷ leg (forgot the ½ in a triangle’s area)'
   });
   HW.addPartial({
     'u9x-legs-swap': 'b', 'u9x-no-scale': 'b', 'u9x-legs-added': 'n', 'u9x-order': 's', 'u9x-sight': 'n', 'u9x-eye-add': 's',
-    'u9x-sum': 'b', 'u9x-diff': 'b', 'u9x-angle-diff': 'n', 'u9x-same-angle': 'n', 'u9x-not-90': 'b'
+    'u9x-sum': 'b', 'u9x-diff': 'b', 'u9x-angle-diff': 'n', 'u9x-same-angle': 'n', 'u9x-not-90': 'b', 'u9x-area-half': 'b'
   });
 
   /* ---------------- small helpers ---------------- */
@@ -58,6 +59,19 @@
       return check(resp);
     };
   }
+  /* the number in a response (a typed unit dropped), or null */
+  function bareNum(resp) {
+    var s = String(resp == null ? '' : resp), bare = s.replace(/\\text\{[^}]*\}|\\mathrm\{[^}]*\}/g, '').replace(/\^?\{?\\circ\}?|°|\s*(cm|mm|km|m|in|ft|km\/h|m\/s|units|degrees?)\s*$/gi, '').trim(), p = HW.parse.number(bare);
+    return p.ok ? p.value : null;
+  }
+  /* also accept these values (rounded to dp): answers built on an intermediate value rounded to the answer's own place —
+     the Unit 9 test's marking guide accepts them ("a second side built from a rounded first side: accept a tenth off";
+     "rounding the shared side early can move the answer; accept it"). */
+  function alsoWrap(check, also, dp) {
+    var acc = (also || []).filter(function (v) { return isFinite(v); }).map(function (v) { return rd(v, dp); });
+    if (!acc.length) return check;
+    return function (resp) { var v = bareNum(resp); if (v != null && acc.some(function (a) { return Math.abs(v - a) < 1e-9; })) return ok(); return check(resp); };
+  }
   function cleanAlts(x, dp, alts) { return (alts || []).filter(function (a) { return isFinite(a.v) && Math.abs(rd(a.v, dp) - rd(x, dp)) > 1e-9; }); }
   function badOf(x, dp, alts) { var seen = {}, out = []; seen[fx(x, dp)] = 1; cleanAlts(x, dp, alts).forEach(function (a) { if (a.v < 0) return; var s = fx(a.v, dp); if (!seen[s]) { seen[s] = 1; out.push(s); } }); return out; }
   /* one rounded answer: o = { unit, alts, diag, before } */
@@ -65,7 +79,7 @@
     o = o || {};
     var alts = cleanAlts(x, dp, o.alts);
     var p = K.P.near(prompt, x, dp, { unit: o.unit, alts: alts, diag: o.diag, before: o.before }, sol, hints, text);
-    p.check = unitWrap(p.check);
+    p.check = alsoWrap(unitWrap(p.check), o.also, dp);
     if (o.unit === '°') p.answer = t(fx(x, dp) + '^\\circ');
     p.bad = badOf(x, dp, alts).filter(function (b) { return p.check(b).v !== 'correct'; });
     return p;
@@ -73,7 +87,7 @@
   /* several boxes: b = { name, label, before, after, x, dp, alts, diag } or { check, key, show } */
   function fieldsPart(prompt, boxes, sol, hints, text) {
     var fields = boxes.map(function (b) { return { name: b.name, label: b.label, before: b.before, after: b.after, mode: b.mode, keys: b.keys }; });
-    var checks = boxes.map(function (b) { return b.check || unitWrap(K.near(b.x, b.dp, { alts: cleanAlts(b.x, b.dp, b.alts), diag: b.diag })); });
+    var checks = boxes.map(function (b) { return alsoWrap(b.check || unitWrap(K.near(b.x, b.dp, { alts: cleanAlts(b.x, b.dp, b.alts), diag: b.diag })), b.also, b.dp); });
     var keys = boxes.map(function (b) { return b.key != null ? b.key : fx(b.x, b.dp); });
     var ans = boxes.map(function (b, i) {
       var v = b.show || (b.after === '°' ? t(fx(b.x, b.dp) + '^\\circ') : t(F(keys[i])) + (b.after ? ' ' + b.after : ''));
@@ -371,7 +385,7 @@
       { html: T + 'Both ratios have the opposite side on top. Sine divides it by the hypotenuse and tangent divides it by the adjacent side, which is shorter, so ' + t('\\tan ' + dg(x)) + ' is the larger value.', right: true },
       { html: Fz + 'The hypotenuse is the longest side, so the sine is always the larger ratio.', why: 'A longer bottom makes a fraction <b>smaller</b>: with the same opposite side on top, ' + t('\\frac{\\text{opp}}{\\text{hyp}}<\\frac{\\text{opp}}{\\text{adj}}') + '.' },
       { html: T + 'The tangent of every acute angle is greater than ' + t('1') + '.', why: 'Right answer, wrong reason: ' + t('\\tan 20^\\circ\\approx 0.36') + ' is less than ' + t('1') + '. The reason is that the adjacent side is shorter than the hypotenuse.' },
-      { html: '<b>' + (claimTan ? 'False' : 'True') + '.</b> They are equal, because both ratios use the opposite side.', why: 'They share the opposite side, but they divide it by <b>different</b> sides (the hypotenuse and the adjacent side), so they are not equal.' }],
+      { html: '<b>False.</b> They are equal, because both ratios use the opposite side.', why: 'They share the opposite side, but they divide it by <b>different</b> sides (the hypotenuse and the adjacent side), so they are not equal.' }],
       sol: 'Both ratios have the <b>opposite</b> side on top: ' + t('\\sin ' + dg(x) + '=\\frac{\\text{opp}}{\\text{hyp}}') + ' and ' + t('\\tan ' + dg(x) + '=\\frac{\\text{opp}}{\\text{adj}}') + '. The adjacent side is a leg, so it is shorter than the hypotenuse; dividing by a smaller number gives a larger value. So ' + t('\\tan ' + dg(x) + '>\\sin ' + dg(x)) + ' and the statement is <b>' + (claimTan ? 'true' : 'false') + '</b>. (Check: ' + t('\\sin ' + dg(x) + '\\approx ' + fx(TR.sin(x), 3)) + ', ' + t('\\tan ' + dg(x) + '\\approx ' + fx(TR.tan(x), 3)) + '.)' };
   }
   function cosSlot(r) {
@@ -382,7 +396,7 @@
       { html: T + 'With the same hypotenuse, as the angle opens from ' + t(dg(a)) + ' to ' + t(dg(b)) + ' the adjacent side gets shorter, so the cosine gets smaller: ' + t('\\cos ' + dg(a) + '>\\cos ' + dg(b)) + '.', right: true },
       { html: Fz + 'A larger angle always has a larger trigonometric ratio, so ' + t('\\cos ' + dg(b)) + ' is larger.', why: 'That is true for sine and tangent, but cosine is ' + t('\\frac{\\text{adj}}{\\text{hyp}}') + ', and the adjacent side <b>shrinks</b> as the angle opens.' },
       { html: T + 'As the angle opens, the opposite side gets longer, so the cosine gets smaller.', why: 'Right answer, wrong reason: the cosine doesn’t use the opposite side. It is ' + t('\\frac{\\text{adj}}{\\text{hyp}}') + ', and it is the adjacent side that gets shorter.' },
-      { html: Fz + 'The two cosines are equal, because both triangles can be drawn with the same hypotenuse.', why: 'The hypotenuse can be the same, but the adjacent sides are different lengths, so the cosines are different.' }],
+      { html: '<b>False.</b> The two cosines are equal, because both triangles can be drawn with the same hypotenuse.', why: 'The hypotenuse can be the same, but the adjacent sides are different lengths, so the cosines are different.' }],
       sol: 'Draw both angles with the same hypotenuse. As the angle opens from ' + t(dg(a)) + ' to ' + t(dg(b)) + ', the adjacent side gets <b>shorter</b>, so ' + t('\\cos=\\frac{\\text{adj}}{\\text{hyp}}') + ' <b>decreases</b>: ' + t('\\cos ' + dg(a) + '>\\cos ' + dg(b)) + '. The statement is <b>' + (claimTrue ? 'true' : 'false') + '</b>. (Check: ' + t('\\cos ' + dg(a) + '\\approx ' + fx(TR.cos(a), 3)) + ', ' + t('\\cos ' + dg(b) + '\\approx ' + fx(TR.cos(b), 3)) + '.)' };
   }
   function tanOneSlot(r) {
@@ -577,10 +591,11 @@
           var d = s.deg, h = s.h, hs = s.hStr, dp = s.dp || 1, place = dp === 2 ? 'hundredth' : 'tenth';
           var Ls = solveSide({ deg: d, k: h, kStr: hs, kRole: 'opp', uRole: 'hyp', uName: 'L', unit: s.unit, dp: dp });
           var Ds = solveSide({ deg: d, k: h, kStr: hs, kRole: 'opp', uRole: 'adj', uName: 'd', unit: s.unit, dp: dp });
-          var LR = rd(Ls.x, dp), early = [A(Math.sqrt(Math.max(0, LR * LR - h * h)), 'early-round', EARLY), A(LR * TR.cos(d), 'early-round', EARLY)];
+          var LR = rd(Ls.x, dp), DR = rd(Ds.x, dp), early = [A(Math.sqrt(Math.max(0, LR * LR - h * h)), 'early-round', EARLY), A(LR * TR.cos(d), 'early-round', EARLY)];
+          var alsoD = [Math.sqrt(Math.max(0, LR * LR - h * h)), LR * TR.cos(d)], alsoL = [Math.sqrt(DR * DR + h * h), DR / TR.cos(d)];
           return fieldsPart(s.text + ' Determine ' + s.what[0] + ', and ' + s.what[1] + ', each to the nearest ' + place + ' of a metre.' + slopeFig({ deg: d, labH: 'd', labV: hs + ' m', labS: 'L', obj: s.obj, flip: r.chance(0.5) }),
-            [{ name: 'L', before: t('L\\approx'), after: s.unit, x: Ls.x, dp: dp, alts: Ls.alts, diag: Ls.diag }, { name: 'd', before: t('d\\approx'), after: s.unit, x: Ds.x, dp: dp, alts: early.concat(Ds.alts) }],
-            '<b>' + t('L') + '</b>: ' + Ls.sol + '<br><b>' + t('d') + '</b>: ' + Ds.sol + '<br>(Using the full value of ' + t('L') + ' with the Pythagorean theorem gives the same ' + t('d') + '; a rounded ' + t('L') + ' can be off.)',
+            [{ name: 'L', before: t('L\\approx'), after: s.unit, x: Ls.x, dp: dp, alts: Ls.alts, diag: Ls.diag, also: alsoL }, { name: 'd', before: t('d\\approx'), after: s.unit, x: Ds.x, dp: dp, alts: early.concat(Ds.alts), also: alsoD }],
+            '<b>' + t('L') + '</b>: ' + Ls.sol + '<br><b>' + t('d') + '</b>: ' + Ds.sol + '<br>(Using the full value of ' + t('L') + ' with the Pythagorean theorem gives the same ' + t('d') + '; a rounded ' + t('L') + ' can be one place off, which is accepted, but finding each side from the given height is safer.)',
             ['Both unknowns are measured from the ' + t(dg(d)) + ' angle: the height ' + t(hs) + ' is the <b>opposite</b> side. Which ratio links opposite and hypotenuse? Opposite and adjacent?', 'Both unknowns are in the denominator: cross-multiply, then divide the height by the ratio.'],
             c.kind + ' ' + hs + ' ' + d);
         } }] }]
@@ -645,7 +660,7 @@
   /* ---------------- 9.5 ---------------- */
   HW.defineExit({
     lesson: 'u9l5', calc: true, outcome: 'M4',
-    blurb: 'Choosing the Pythagorean theorem or a trigonometric ratio, a distance from an angle of depression, and solving a right triangle completely from two sides.',
+    blurb: 'Choosing the Pythagorean theorem or a trigonometric ratio, a distance from an angle of depression, solving a right triangle completely from two sides, and a right triangle given by one leg and its area.',
     questions: [
       { num: '1', outcome: 'M4', stem: 'Decide whether to use the Pythagorean theorem or a trigonometric ratio.', parts: [
         { id: '1', outcome: 'M4', level: 'BEG', make: function (r) {
@@ -685,17 +700,39 @@
           var opp = p.a, adj = legs ? p.b : Math.sqrt(p.b * p.b - p.a * p.a), hyp = legs ? Math.hypot(p.a, p.b) : p.b;
           var oS = sideOf(n, 'opp'), aS = sideOf(n, 'adj'), hS = sideOf(n, 'hyp'), angA = INV[legs ? 'tan' : 'sin'](legs ? opp / adj : opp / hyp), angB = 90 - angA;
           var unkS = legs ? hS : aS, unkX = legs ? hyp : adj;
+          var UR = rd(unkX, 1), earlyA = legs ? [TR.asin(opp / UR), TR.acos(adj / UR)] : [TR.atan(opp / UR), TR.acos(UR / hyp)];
+          var rA = Math.round(angA), RAH = 'Close — but you used the angle <b>rounded</b> to a whole degree. A rounded angle carries its error into the side: find the side from the two <b>given</b> sides (Pythagorean theorem).';
+          var earlyS = (legs ? [opp / TR.sin(rA), adj / TR.cos(rA)] : [opp / TR.tan(rA), hyp * TR.cos(rA)]).map(function (v) { return A(v, 'early-round', RAH); });
           var pc = legs ? pythCalc({ find: 'hyp', a: opp, b: adj, aStr: fx(opp, 1), bStr: fx(adj, 1), uName: unkS, unit: unit, dp: 1 }) : pythCalc({ find: 'leg', c: hyp, b: opp, cStr: fx(hyp, 1), bStr: fx(opp, 1), uName: unkS, unit: unit, dp: 1 });
           var kind = legs ? 'oa' : 'oh', nS = fx(opp, 1), dS = legs ? fx(adj, 1) : fx(hyp, 1);
           var aAlts = angAlts(kind, opp, legs ? adj : hyp, '\\angle ' + n.ang, oS, legs ? aS : hS, 0);
           var lab = { opp: fx(opp, 1) + ' ' + unit }; if (legs) lab.adj = fx(adj, 1) + ' ' + unit; else lab.hyp = fx(hyp, 1) + ' ' + unit;
           var bCheck = unitWrap(K.near(angB, 0, { alts: [A(angA, 'u9x-same-angle', 'That is the size of ' + t('\\angle ' + n.ang) + '. The two acute angles add to ' + t('90^\\circ') + ', so ' + t('\\angle ' + n.oth) + ' is the other part.')], diag: function (v) { return v > 0 && v < 90 ? { code: 'u9x-not-90', hint: 'Check: the two acute angles of a right triangle add to ' + t('90^\\circ') + '. Use ' + t('90^\\circ-\\angle ' + n.ang) + '.' } : null; } }));
           return fieldsPart('Solve ' + t('\\triangle ' + n.tri) + ': give the side to the nearest tenth and the angles to the nearest degree.' + triFig(r, angA, lab, n, { noAngle: true }),
-            [{ name: unkS, before: t(unkS + '\\approx'), after: unit, x: unkX, dp: 1, alts: pc.alts, diag: pc.diag },
-              { name: '∠' + n.ang, before: t('\\angle ' + n.ang + '\\approx'), after: '°', x: angA, dp: 0, alts: aAlts },
-              { name: '∠' + n.oth, before: t('\\angle ' + n.oth + '\\approx'), after: '°', x: angB, dp: 0, check: bCheck, key: fx(angB, 0), show: t(fx(angB, 0) + '^\\circ'), bad: [fx(angA, 0)] }],
+            [{ name: unkS, before: t(unkS + '\\approx'), after: unit, x: unkX, dp: 1, alts: pc.alts.concat(earlyS), diag: pc.diag },
+              { name: '∠' + n.ang, before: t('\\angle ' + n.ang + '\\approx'), after: '°', x: angA, dp: 0, alts: aAlts, also: earlyA },
+              { name: '∠' + n.oth, before: t('\\angle ' + n.oth + '\\approx'), after: '°', x: angB, dp: 0, check: bCheck, key: fx(angB, 0), show: t(fx(angB, 0) + '^\\circ'), bad: [fx(angA, 0)], also: earlyA.map(function (v) { return 90 - v; }) }],
             pc.sol + '<br>' + angSol(kind, opp, legs ? adj : hyp, oS, legs ? aS : hS, n.ang, '\\angle ' + n.ang, angA, 0) + '<br>' + t('\\angle ' + n.oth + '=90^\\circ-' + dots(angA) + '^{\\circ}\\approx ' + fx(angB, 0) + '^{\\circ}') + ' (the acute angles add to ' + t('90^\\circ') + ').',
             ['The third side comes from the Pythagorean theorem; an angle comes from an inverse ratio using the two given sides.', 'The two acute angles add to ' + t('90^\\circ') + '.'], 'solve SS ' + (legs ? 'legs' : 'leg+hyp') + ' ' + nS + ',' + dS);
+        } }] },
+      { num: '4', outcome: 'M4', stem: 'Only one side is given: the area gives you a second one. (Diagram not to scale.)', parts: [
+        { id: '4', outcome: 'M4', level: 'ADV', make: function (r) {
+          var s = find(function () { return { a: r.int(5, 16), b: r.int(4, 18) }; }, function (q) { var th = TR.atan(q.b / q.a); var hh = Math.hypot(q.a, q.b); return Math.abs(q.a - q.b) >= 2 && th > 18 && th < 72 && safe(th, 0) && safe(hh, 1) && Math.abs(hh - Math.round(hh)) > 1e-6; }, { a: 9, b: 14 });
+          var a = s.a, b = s.b, Ar = a * b / 2, th = TR.atan(b / a), L = Math.hypot(a, b), sail = r.chance(0.5), rA = Math.round(th);
+          var text = sail ? 'A sail is a right triangle. Its bottom edge, along the boom, is ' + t(a + '\\text{ m}') + ' long and meets the vertical mast at a right angle. The sail has an area of ' + t(F(Ar) + '\\text{ m}^2') + '. Determine the angle ' + t('\\theta') + ' between the boom and the slanted edge of the sail, to the nearest degree, and the length ' + t('L') + ' of the slanted edge, to the nearest tenth of a metre.'
+            : 'A garden bed in the corner of a yard is a right triangle: two of its edges run along fences that meet at a right angle. The edge along one fence is ' + t(a + '\\text{ m}') + ' long and the bed covers ' + t(F(Ar) + '\\text{ m}^2') + '. Determine the angle ' + t('\\theta') + ' between that ' + t(a + '\\text{-m}') + ' edge and the slanted edge, to the nearest degree, and the length ' + t('L') + ' of the slanted edge, to the nearest tenth of a metre.';
+          var halfB = Ar / a, RAH = 'Close — but you used the angle <b>rounded</b> to a whole degree. Find ' + t('L') + ' from the two legs (Pythagorean theorem), or keep the full angle.';
+          var thAlts = [A(TR.atan(a / b), 'other-angle', 'That is the <b>other</b> acute angle. From ' + t('\\theta') + ', the ' + t(a + '\\text{ m}') + ' edge is <b>adjacent</b> and the edge you found from the area is <b>opposite</b>.'),
+            A(TR.atan(halfB / a), 'u9x-area-half', 'Check the other leg: the area of a right triangle is ' + t('\\tfrac12\\times\\text{leg}\\times\\text{leg}') + ', so the leg is ' + t('\\dfrac{2\\times ' + F(Ar) + '}{' + a + '}=' + b) + ', not ' + t(F(Ar) + '\\div ' + a) + '.'),
+            A(Math.atan(b / a), 'radian', RAD_HINT)];
+          var LAlts = [A(Math.hypot(a, halfB), 'u9x-area-half', 'Check the other leg: ' + t('\\text{Area}=\\tfrac12(' + a + ')(\\text{leg})') + ', so the leg is ' + t('\\dfrac{2\\times ' + F(Ar) + '}{' + a + '}=' + b) + '.'), A(a + b, 'pyth-nosq', 'Square each leg first, add the squares, and then take the square root.'),
+            A(Math.sqrt(Math.abs(b * b - a * a)), 'pyth-sub', t('L') + ' is across from the right angle — the <b>hypotenuse</b>, so <b>add</b> the squares of the legs.'), A(a / TR.cos(rA), 'early-round', RAH), A(b / TR.sin(rA), 'early-round', RAH)];
+          return fieldsPart(text + triFig(r, th, { adj: a + ' m', hyp: 'L' }, null, { angLabel: 'θ' }),
+            [{ name: 'θ', before: t('\\theta\\approx'), after: '°', x: th, dp: 0, alts: thAlts }, { name: 'L', before: t('L\\approx'), after: 'm', x: L, dp: 1, alts: LAlts }],
+            'The other leg comes from the area: ' + t('\\tfrac12(' + a + ')(b)=' + F(Ar) + '\\ \\Rightarrow\\ b=\\dfrac{2(' + F(Ar) + ')}{' + a + '}=' + b + '\\text{ m}') + '.<br>' +
+              'From ' + t('\\theta') + ': the ' + t(a + '\\text{ m}') + ' edge is adjacent and the ' + t(b + '\\text{ m}') + ' leg is opposite ' + t('\\Rightarrow') + ' <b>TOA</b>: ' + t('\\theta=\\tan^{-1}\\left(\\dfrac{' + b + '}{' + a + '}\\right)=' + dots(th) + '^{\\circ}\\approx ' + fx(th, 0) + '^{\\circ}') + '<br>' +
+              'Two legs known ' + t('\\Rightarrow') + ' <b>Pythagorean theorem</b>: ' + t('L=\\sqrt{' + a + '^2+' + b + '^2}=\\sqrt{' + (a * a + b * b) + '}=' + dots(L) + '\\approx ' + fx(L, 1) + '\\text{ m}'),
+            ['The two edges along the right angle are the legs, so ' + t('\\text{Area}=\\tfrac12\\times\\text{leg}\\times\\text{leg}') + '. Use it to find the missing leg.', 'Then two legs give ' + t('\\theta') + ' (which ratio uses opposite and adjacent?) and ' + t('L') + ' (Pythagorean theorem).'], 'area to angle ' + (sail ? 'sail ' : 'bed ') + a + ',' + b);
         } }] }]
   });
 
@@ -742,7 +779,7 @@
             A(h / TR.sin(th) / tt * 3.6, 'u9x-sight', 'That uses the line of sight (the slanted side). The ' + veh + ' drives along the <b>ground</b>, the horizontal distance.'), A(h / Math.tan(th) / tt * 3.6, 'radian', RAD_HINT),
             A(rd(d, 0) / tt * 3.6, 'early-round', EARLY)];
           return nearPart('A drone hovers ' + t(h + '\\text{ m}') + ' above a straight, level road. The angle of depression from the drone to an approaching ' + veh + ' is ' + t(dg(th)) + '. The ' + veh + ' passes directly beneath the drone ' + t(tt + '\\text{ s}') + ' later. Assuming a constant speed, how fast is the ' + veh + ' going, in km/h, to the nearest whole number?' + deprFig({ th: th, hLab: h + ' m', runLab: 'd', obj: 'drone', label: veh }),
-            v, 0, { unit: 'km/h', alts: alts },
+            v, 0, { unit: 'km/h', alts: alts, also: [rd(d, 0) / tt * 3.6, rd(d, 1) / tt * 3.6] },
             'Distance: the angle of depression equals the angle of elevation from the road, and the height is opposite it ' + t('\\Rightarrow') + ' TOA:<br>' + t('d=\\dfrac{' + h + '}{\\tan ' + dg(th) + '}=' + dots(d) + '\\text{ m}') + '<br>Speed: ' + t('\\dfrac{' + dots(d) + '\\text{ m}}{' + tt + '\\text{ s}}=' + dots(d / tt) + '\\text{ m/s}') + '<br>' + t(dots(d / tt) + '\\text{ m/s}\\times\\dfrac{3600\\text{ s}}{1\\text{ h}}\\times\\dfrac{1\\text{ km}}{1000\\text{ m}}=' + dots(v) + '\\approx ' + fx(v, 0) + '\\text{ km/h}'),
             ['First find the horizontal distance ' + t('d') + ' from the ' + veh + ' to the point under the drone (the height is opposite the angle).', 'Speed = distance ÷ time gives m/s; multiply by ' + t('3.6') + ' to get km/h.'], 'drone speed ' + h + ' ' + th + ' ' + tt);
         } }] }]
@@ -773,7 +810,7 @@
             A(h * TR.tan(a) + h * TR.tan(b), 'mult-div', 'Each piece is the <b>adjacent</b> side, in the denominator of ' + t('\\tan') + ': piece ' + t('=\\frac{' + hs + '}{\\tan\\theta}') + ' (divide).'), A(Math.abs(p1 - p2), 'u9x-diff', 'The two pieces are on <b>opposite</b> sides of the ' + (ctx === 'wires' ? 'pole' : 'tree') + ', so add them.'),
             A(h / Math.tan(a) + h / Math.tan(b), 'radian', RAD_HINT)];
           return nearPart(text + altFig({ names: { L: 'P', F: 'F', R: 'Q', P: 'T' }, l: p1, rr: p2, h: h, lab: { FP: hs + ' m' }, ang: { L: a + '°', R: b + '°' }, showNames: false, fpStyle: { width: ctx === 'wires' ? 3.4 : 2.2 }, extra: [{ type: 'ground', y: 0, x0: -p1 - 0.6, x1: p2 + 0.6 }] }),
-            x, 1, { unit: 'm', alts: alts },
+            x, 1, { unit: 'm', alts: alts, also: [rd(p1, 1) + rd(p2, 1), rd(p1, 2) + rd(p2, 2)] },
             'The ' + (ctx === 'wires' ? 'pole' : 'tree') + ' is the shared side of two right triangles; in each, it is <b>opposite</b> the given angle and the ground piece is <b>adjacent</b> ' + t('\\Rightarrow') + ' TOA.<br>' + t('x_1=\\dfrac{' + hs + '}{\\tan ' + dg(a) + '}=' + dots(p1)) + ' m<br>' + t('x_2=\\dfrac{' + hs + '}{\\tan ' + dg(b) + '}=' + dots(p2)) + ' m<br>' + t('x_1+x_2=' + dots(x) + '\\approx ' + fx(x, 1) + '\\text{ m}'),
             ['In each right triangle the height ' + t(hs) + ' is opposite the angle and the ground piece is adjacent. Use tan and divide.', 'The two pieces are on opposite sides, so add them. Round only at the end.'], 'sum ' + ctx + ' ' + hs + ' ' + a + ',' + b);
         } }] },
@@ -787,7 +824,7 @@
             A(h / TR.tan(a - b), 'u9x-angle-diff', 'The angle between the two lines of sight is not an angle of a right triangle with the gap as a side. Find each horizontal distance in its own right triangle, then subtract.'),
             A(h * TR.tan(a) - h * TR.tan(b) > 0 ? h * TR.tan(a) - h * TR.tan(b) : h * TR.tan(b) - h * TR.tan(a), 'depr-vertical', 'An angle of depression is measured from the <b>horizontal</b>; the height is <b>opposite</b> it, so each distance is ' + t('\\frac{' + h + '}{\\tan\\theta}') + '.'),
             A(Math.abs(h / Math.tan(b) - h / Math.tan(a)), 'radian', RAD_HINT), A(far1, 'ch-one-piece', 'That is the distance to the <b>farther</b> point only. Subtract the distance to the nearer point.')];
-          return nearPart(text + twoDeprFig({ a: a, b: b, h: h, hLab: h + ' m', dashH: ctx === 'balloon', topText: ctx === 'balloon' ? 'balloon' : null, nName: ctx === 'balloon' ? 'barn' : 'buoy', mName: ctx === 'balloon' ? 'barn' : 'buoy' }), x, 1, { unit: 'm', alts: alts },
+          return nearPart(text + twoDeprFig({ a: a, b: b, h: h, hLab: h + ' m', dashH: ctx === 'balloon', topText: ctx === 'balloon' ? 'balloon' : null, nName: ctx === 'balloon' ? 'barn' : 'buoy', mName: ctx === 'balloon' ? 'barn' : 'buoy' }), x, 1, { unit: 'm', alts: alts, also: [rd(far1, 1) - rd(near1, 1), rd(far1, 2) - rd(near1, 2)] },
             'Each angle of depression equals the angle of elevation from that point up to the observer, and the height ' + t(h) + ' is opposite it ' + t('\\Rightarrow') + ' TOA, distance in the denominator.<br>Near point (' + t(dg(a)) + '): ' + t('\\dfrac{' + h + '}{\\tan ' + dg(a) + '}=' + dots(near1)) + ' m<br>Far point (' + t(dg(b)) + '): ' + t('\\dfrac{' + h + '}{\\tan ' + dg(b) + '}=' + dots(far1)) + ' m<br>Gap: ' + t(dots(far1) + '-' + dots(near1) + '=' + dots(x) + '\\approx ' + fx(x, 1) + '\\text{ m}'),
             ['The larger angle of depression belongs to the nearer point. Find each horizontal distance in its own right triangle.', 'The points are on the same side: subtract the near distance from the far distance. Keep full values until the end.'], 'difference ' + ctx + ' ' + h + ' ' + a + ',' + b);
         } }] }]
@@ -824,11 +861,14 @@
           var s1 = solveSide({ deg: deg, k: k, kStr: ks, kRole: kRole, uRole: others[0], kName: kS, uName: sideOf(n, others[0]), unit: unit, dp: 1, angTex: '\\angle ' + n.ang });
           var s2 = solveSide({ deg: deg, k: k, kStr: ks, kRole: kRole, uRole: others[1], kName: kS, uName: sideOf(n, others[1]), unit: unit, dp: 1, angTex: '\\angle ' + n.ang });
           var lab = {}; lab[kRole] = ks + ' ' + unit; var B = 90 - deg;
+          /* the second side found by the Pythagorean theorem from the first, rounded: accepted (one place off at most) */
+          var viaP = function (bR, uR, u) { return bR === 'hyp' ? Math.sqrt(k * k + u * u) : uR === 'hyp' ? Math.sqrt(Math.max(0, u * u - k * k)) : Math.sqrt(Math.max(0, k * k - u * u)); };
+          var also1 = [viaP(others[0], others[1], rd(s2.x, 1))], also2 = [viaP(others[1], others[0], rd(s1.x, 1))];
           var bCheck = unitWrap(K.number(B, function (v) { if (v === deg) return { code: 'u9x-same-angle', hint: 'That is ' + t('\\angle ' + n.ang) + '. The two acute angles add to ' + t('90^\\circ') + '.' }; if (v === 180 - deg) return { code: 'u9x-not-90', hint: 'The angles of a triangle add to ' + t('180^\\circ') + ', and one of them is the right angle: ' + t('90^\\circ-' + dg(deg)) + '.' }; return null; }));
           return fieldsPart('Solve ' + t('\\triangle ' + n.tri) + ' (sides to the nearest tenth).' + triFig(r, deg, lab, n),
             [{ name: '∠' + n.oth, before: t('\\angle ' + n.oth + '='), after: '°', check: bCheck, key: String(B), show: t(B + '^\\circ'), bad: [String(deg), String(180 - deg)] },
-              { name: sideOf(n, others[0]), before: t(sideOf(n, others[0]) + '\\approx'), after: unit, x: s1.x, dp: 1, alts: s1.alts, diag: s1.diag },
-              { name: sideOf(n, others[1]), before: t(sideOf(n, others[1]) + '\\approx'), after: unit, x: s2.x, dp: 1, alts: s2.alts, diag: s2.diag }],
+              { name: sideOf(n, others[0]), before: t(sideOf(n, others[0]) + '\\approx'), after: unit, x: s1.x, dp: 1, alts: s1.alts, diag: s1.diag, also: also1 },
+              { name: sideOf(n, others[1]), before: t(sideOf(n, others[1]) + '\\approx'), after: unit, x: s2.x, dp: 1, alts: s2.alts, diag: s2.diag, also: also2 }],
             t('\\angle ' + n.oth + '=90^\\circ-' + dg(deg) + '=' + dg(B)) + '.<br><b>' + t(sideOf(n, others[0])) + '</b>: ' + s1.sol + '<br><b>' + t(sideOf(n, others[1])) + '</b>: ' + s2.sol + '<br>(Use the given side each time — not a rounded answer — so a rounding error doesn’t carry forward.)',
             ['The acute angles add to ' + t('90^\\circ') + '. For each side, name it (opposite, adjacent, hypotenuse) relative to ' + t('\\angle ' + n.ang) + ' and pick the ratio with the given side.', 'Use the given side ' + t(kS + '=' + ks) + ' in both ratios.'], 'review solve ' + kRole + ' ' + ks + ' ' + deg);
         } }] },
@@ -838,7 +878,7 @@
           var h = s.h, a1 = s.a1, a2 = s.a2, PB = h / TR.tan(a1), QB = h / TR.tan(a2), x = PB - QB;
           var alts = [A(PB + QB, 'u9x-sum', t('P') + ' and ' + t('Q') + ' are on the <b>same</b> side of the tower, so ' + t('PQ=PB-QB') + '.'), A(rd(PB, 1) - rd(QB, 1), 'early-round', EARLY), A(h / TR.tan(a2 - a1), 'u9x-angle-diff', 'The angle between the two lines of sight is not in a right triangle with ' + t('PQ') + '. Find ' + t('PB') + ' and ' + t('QB') + ' in their own right triangles, then subtract.'),
             A(Math.abs(h * TR.tan(a2) - h * TR.tan(a1)), 'mult-div', 'Each ground distance is the <b>adjacent</b> side, in the denominator of tangent: ' + t('PB=\\frac{' + h + '}{\\tan ' + dg(a1) + '}') + '.'), A(PB, 'ch-one-piece', 'That is ' + t('PB') + ', the whole distance from ' + t('P') + ' to the tower. Subtract ' + t('QB') + '.'), A(Math.abs(h / Math.tan(a1) - h / Math.tan(a2)), 'radian', RAD_HINT)];
-          return nearPart('A tower ' + t('BT') + ' is ' + t(h + '\\text{ m}') + ' tall. The angle of elevation of the top ' + t('T') + ' is ' + t(dg(a1)) + ' from ' + t('P') + ' and ' + t(dg(a2)) + ' from ' + t('Q') + '. Determine the distance ' + t('PQ') + ', to the nearest tenth of a metre.' + twoElevFig({ a1: a1, a2: a2, hLab: h + ' m' }), x, 1, { unit: 'm', before: t('PQ\\approx'), alts: alts },
+          return nearPart('A tower ' + t('BT') + ' is ' + t(h + '\\text{ m}') + ' tall. The angle of elevation of the top ' + t('T') + ' is ' + t(dg(a1)) + ' from ' + t('P') + ' and ' + t(dg(a2)) + ' from ' + t('Q') + '. Determine the distance ' + t('PQ') + ', to the nearest tenth of a metre.' + twoElevFig({ a1: a1, a2: a2, hLab: h + ' m' }), x, 1, { unit: 'm', before: t('PQ\\approx'), alts: alts, also: [rd(PB, 1) - rd(QB, 1), rd(PB, 2) - rd(QB, 2)] },
             'In each right triangle the tower is <b>opposite</b> the angle and the ground distance is <b>adjacent</b> ' + t('\\Rightarrow') + ' TOA, distance in the denominator.<br>' + t('PB=\\dfrac{' + h + '}{\\tan ' + dg(a1) + '}=' + dots(PB)) + ' m<br>' + t('QB=\\dfrac{' + h + '}{\\tan ' + dg(a2) + '}=' + dots(QB)) + ' m<br>' + t('PQ=PB-QB=' + dots(x) + '\\approx ' + fx(x, 1) + '\\text{ m}'),
             ['Find ' + t('PB') + ' in right triangle ' + t('PBT') + ' and ' + t('QB') + ' in right triangle ' + t('QBT') + '.', t('PQ=PB-QB') + '. Keep full calculator values until the end.'], 'review two elev ' + h + ' ' + a1 + ',' + a2);
         } }] }]

@@ -1079,10 +1079,14 @@
   /* =====================================================================================================
    * Lesson 9 — Unit review: RF1, RF2, RF8
    * ===================================================================================================== */
-  var BATT = [{ what: 'A phone’s battery', L: 'B' }, { what: 'A laptop’s battery', L: 'B' }, { what: 'An electric scooter’s battery', L: 'E' }, { what: 'A drone’s battery', L: 'D' }];
+  /* new contexts (the booklet's review question uses a phone battery, 100 − 12t) */
+  var DRAIN = [
+    { L: 'h', txt: 'A hot-air balloon is coming down to land. Its height, in metres, ' + t('t') + ' minutes after it starts to descend is modelled by the linear function', unit: 'm', tw: 'minutes', tu: 'min', b0: [240, 300, 360, 420, 480], rs: [12, 15, 16, 20, 24, 25, 30], ask: 'After how many minutes does the balloon reach the ground?', zero: 'reaches the ground (height ' + t('0') + ')', outw: 'height' },
+    { L: 'V', txt: 'The volume of water, in litres, left in a rain barrel ' + t('t') + ' minutes after its tap is opened is modelled by the linear function', unit: 'L', tw: 'minutes', tu: 'min', b0: [160, 180, 200, 240, 250], rs: [8, 10, 12, 15, 16, 20], ask: 'After how many minutes is the rain barrel empty?', zero: 'is empty (volume ' + t('0') + ')', outw: 'volume' },
+    { L: 'F', txt: 'The volume of fuel, in litres, left in a tractor’s tank after ' + t('t') + ' hours of ploughing is modelled by the linear function', unit: 'L', tw: 'hours', tu: 'h', b0: [90, 96, 120, 144, 150], rs: [6, 8, 9, 10, 12, 15], ask: 'After how many hours does the tractor run out of fuel?', zero: 'runs out of fuel (volume ' + t('0') + ')', outw: 'fuel left' }];
   HW.defineExit({
     lesson: 'u5l9', calc: true,
-    blurb: 'Unit 5 review: evaluate a function, domain and range from a table and from a graph, and solve a function model (RF1, RF2, RF8).',
+    blurb: 'Unit 5 review: evaluate a function, domain and range from a table and from a graph, and solve a linear function model (RF1, RF2, RF8).',
     questions: [
       { num: '1', outcome: 'RF8',
         shared: function (r) { return { n: r.pick(['f', 'g', 'h', 'p']), a: r.int(-9, 12), m: r.pick([2, 3, 4, 5, 6, 7]), x: -r.int(2, 8) }; },
@@ -1129,21 +1133,22 @@
           } }] },
       { num: '4', outcome: 'RF8',
         shared: function (r) {
-          return pickWhere(function () { var rt = r.pick([8, 10, 12.5, 16, 20, 25, 40]), n = r.int(1, 8); return { c: r.pick(BATT), r: rt, n: n, v: 100 - rt * n, E: 100 / rt }; }, function (s) { return s.v > 0 && s.v < 100 && s.v % 1 === 0; });
+          return pickWhere(function () { var c = r.pick(DRAIN), b0 = r.pick(c.b0), rt = r.pick(c.rs), n = r.int(2, 9); return { c: c, b0: b0, r: rt, n: n, v: b0 - rt * n, E: cl(b0 / rt) }; },
+            function (s) { return s.v > 0 && Math.abs(s.E * 10 - Math.round(s.E * 10)) < 1e-9 && s.E - s.n >= 2; });
         },
-        stem: function (s) { return s.c.what + ' charge, in percent, after ' + t('t') + ' hours of use is modelled by the linear function ' + t(s.c.L + '(t)=100-' + nf(s.r) + 't') + '.'; },
+        stem: function (s) { return s.c.txt + ' ' + t(s.c.L + '(t)=' + s.b0 + '-' + s.r + 't') + '.'; },
         parts: [
           { id: '4a', outcome: 'RF8', level: 'PRG', make: function (r, s) {
-            var L = s.c.L, rt = s.r, v = s.v, n = s.n;
-            return numPart('Solve ' + t(L + '(t)=' + v) + '.', n, [[(100 + v) / rt, 'fn-solve-inverse', 'Subtract ' + t('100') + ' from both sides first: ' + t('-' + nf(rt) + 't=' + v + '-100') + '.'], [100 - rt * v, 'u5x-evaluated', 'That is ' + t(L + '(' + v + ')') + '. Here ' + t(v) + ' is the charge (the output): solve ' + t('100-' + nf(rt) + 't=' + v) + '.'], [v / rt, 'no-subtract', 'The charge starts at ' + t('100') + ', not ' + t('0') + ': use ' + t('100-' + v) + ' for the change.'], [100 - v, 'no-divide', 'Now divide by ' + t(nf(rt)) + '.']],
-              t('100-' + nf(rt) + 't=' + v) + '<br>' + t('-' + nf(rt) + 't=' + (v - 100)) + '<br>' + t('t=' + n) + '. After ' + t(n) + ' hours the charge is ' + t(v + '\\%') + '.',
-              ['In ' + t(L + '(t)=' + v) + ' you know the output. Set the rule equal to ' + t(v) + '.', 'Subtract ' + t('100') + ', then divide by ' + t('-' + nf(rt)) + '.'], 'solve a linear model', { before: t('t='), after: 'h' });
+            var c = s.c, L = c.L, rt = s.r, v = s.v, n = s.n, b0 = s.b0;
+            return numPart('Solve ' + t(L + '(t)=' + v) + '.', n, [[(b0 + v) / rt, 'fn-solve-inverse', 'Subtract ' + t(b0) + ' from both sides first: ' + t('-' + rt + 't=' + v + '-' + b0) + '.'], [b0 - rt * v, 'u5x-evaluated', 'That is ' + t(L + '(' + v + ')') + '. Here ' + t(v) + ' is the ' + c.outw + ' (the output): solve ' + t(b0 + '-' + rt + 't=' + v) + '.'], [v / rt, 'no-subtract', 'The ' + c.outw + ' starts at ' + t(b0) + ', not ' + t('0') + ': use ' + t(b0 + '-' + v) + ' for the change.'], [b0 - v, 'no-divide', 'Now divide by ' + t(rt) + '.']],
+              t(b0 + '-' + rt + 't=' + v) + '<br>' + t('-' + rt + 't=' + v + '-' + b0 + '=' + (v - b0)) + '<br>' + t('t=' + (v - b0) + '\\div(-' + rt + ')=' + n) + '. After ' + t(n) + ' ' + c.tw + ' the ' + c.outw + ' is ' + t(v) + ' ' + c.unit + '.',
+              ['In ' + t(L + '(t)=' + v) + ' you know the output. Set the rule equal to ' + t(v) + '.', 'Subtract ' + t(b0) + ', then divide by ' + t('-' + rt) + '.'], 'solve a linear model', { before: t('t='), after: c.tu });
           } },
           { id: '4b', outcome: 'RF1', level: 'EMG', make: function (r, s) {
-            var rt = s.r, E = s.E, L = s.c.L;
-            return numPart('After how many hours is the battery empty?', E, [[rt / 100, 'u5x-empty-flip', 'Solve ' + t('100-' + nf(rt) + 't=0') + ': ' + t('t=100\\div' + nf(rt)) + '.'], [100, 'u5x-evaluated', 'That is the charge at the start, ' + t(L + '(0)') + '. The battery is empty when ' + t(L + '(t)=0') + '.']],
-              'Empty means ' + t(L + '(t)=0') + ' (the ' + t('t') + '-intercept):<br>' + t('100-' + nf(rt) + 't=0') + '<br>' + t(nf(rt) + 't=100') + '<br>' + t('t=' + nf(E)) + ' h.',
-              ['The battery is empty when the charge is ' + t('0') + ': solve ' + t(L + '(t)=0') + '.'], 'battery empty time', { after: 'h' });
+            var c = s.c, rt = s.r, E = s.E, L = c.L, b0 = s.b0;
+            return numPart(c.ask, E, [[rt / b0, 'u5x-empty-flip', 'Solve ' + t(b0 + '-' + rt + 't=0') + ': ' + t('t=' + b0 + '\\div' + rt) + '.'], [b0, 'u5x-evaluated', 'That is the value at the start, ' + t(L + '(0)') + '. Find when ' + t(L + '(t)=0') + '.'], [b0 - rt, 'u5x-evaluated', 'That is ' + t(L + '(1)') + '. Find the time when ' + t(L + '(t)=0') + '.']],
+              'It ' + c.zero + ' when ' + t(L + '(t)=0') + ' (the ' + t('t') + '-intercept):<br>' + t(b0 + '-' + rt + 't=0') + '<br>' + t(rt + 't=' + b0) + '<br>' + t('t=' + b0 + '\\div' + rt + '=' + nf(E)) + ' ' + c.tu + '.',
+              ['Set the ' + c.outw + ' equal to ' + t('0') + ': solve ' + t(L + '(t)=0') + '.'], 'linear model: t-intercept', { after: c.tu });
           } }] }
     ]
   });

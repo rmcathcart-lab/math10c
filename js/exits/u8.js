@@ -2,8 +2,8 @@
  * lesson, written only in test mode. HW.defineExit makes u8l1x … u8l6x ("Exit Slip 8.1" …).
  * Each slip has 3–4 questions (3–5 parts, about 5–8 minutes) that are new but match the skills and difficulty of the
  * lesson's assignment (u8_LXX.tex / js/lessons/u8lN.js), using only what has been taught up to that lesson. The questions
- * are spread over the Beginning, Progressing and Mastery boxes (the word-problem lessons 8.4 and 8.5 start at Emerging,
- * as their assignments do). Every part is a generator (each student gets their own numbers) with a key, a worked
+ * are spread over the Beginning, Progressing and Mastery boxes (in 8.4 and 8.5 the Beginning question is writing the
+ * system for a word problem, which the unit test puts in its Beginning box). Every part is a generator (each student gets their own numbers) with a key, a worked
  * solution, hints and typical wrong answers (codes u8x-…, labelled and given a partial-credit decision below).
  * Solutions are typed as ordered pairs (point keypad with "no solution" / "infinitely many"); graphs use the graph pad.
  * Lesson 8.6 is the unit review: its slip mixes graphing/solving methods, the number of solutions and an application.
@@ -25,7 +25,7 @@
     'u8x-sys-coef': 'System: coefficients attached to the wrong variables', 'u8x-sys-total': 'System: used the wrong total', 'u8x-sys-units': 'System: mixed cents and dollars'
   });
   HW.addPartial({
-    'u8x-gr-line': 'b', 'u8x-gr-shift': 's', 'u8x-gr-sign': 's', 'u8x-gr-flip': 's', 'u8x-gr-slope': 'b', 'u8x-line-missing': 's', 'u8x-line-extra': 's', 'u8x-point-off': 'n', 'u8x-points-only': 'n', 'u8x-graph': 'n',
+    'u8x-gr-line': 'b', 'u8x-gr-shift': 's', 'u8x-gr-sign': 's', 'u8x-gr-flip': 's', 'u8x-gr-slope': 'b', 'u8x-line-missing': 'b', 'u8x-line-extra': 's', 'u8x-point-off': 'n', 'u8x-points-only': 'n', 'u8x-graph': 'n',
     'u8x-same': 'n', 'u8x-parallel': 'n', 'u8x-cross': 'n', 'u8x-distribute': 'b', 'u8x-c-sign': 's', 'u8x-pq-swap': 'b', 'u8x-elim-const': 'b', 'u8x-elim-noscale': 'n', 'u8x-elim-sign': 'b',
     'u8x-price-swap': 's', 'u8x-combo-swap': 'b', 'u8x-combo-one': 's', 'u8x-digit-rev': 's', 'u8x-digit-sum': 'n', 'u8x-mix-swap': 's', 'u8x-mix-pct': 'b', 'u8x-wind-swap': 's', 'u8x-ground': 'b',
     'u8x-cost-sign': 's', 'u8x-cost-add': 'b', 'u8x-k-unscaled': 'b',
@@ -40,6 +40,10 @@
   function nf(x) { return F(cl(x)); }
   function nT(x) { if (Array.isArray(x)) { var f = fr(x); return Ln.frT(f[0], f[1]); } if (Number.isInteger(cl(x))) return F(cl(x)); var g = Ln.toFr(x); return g[1] <= 12 ? Ln.frT(g[0], g[1]) : String(cl(x)); }
   function pT(x) { return fv(x) < 0 ? '(' + nT(x) + ')' : nT(x); }
+  /* c times the value x, e.g. 3(4), -(2), \frac{1}{2}(-6) — for substituting into a check */
+  function cT(c) { return fv(c) === 1 ? '' : fv(c) === -1 ? '-' : nT(c); }
+  function mT(c, x) { return cT(c) + '(' + nT(x) + ')'; }
+  function plusMT(c, x) { return (fv(c) < 0 ? '' : '+') + mT(c, x); }
   function ptT(p) { return '(' + nT(p[0]) + ',\\ ' + nT(p[1]) + ')'; }
   function pS(x) { if (Array.isArray(x)) { var f = fr(x); return f[1] === 1 ? String(f[0]) : f[0] + '/' + f[1]; } if (Number.isInteger(cl(x))) return String(cl(x)); var g = Ln.toFr(x); return g[1] === 1 ? String(g[0]) : g[0] + '/' + g[1]; }
   function ptK(p) { return '(' + pS(p[0]) + ', ' + pS(p[1]) + ')'; }
@@ -182,7 +186,7 @@
   function numC(ans, list) { return K.number(ans, dg(list, ans)); }
   /* a system of two equations in the question's letters (either order). bads: [{ eqs: [text, text], code, hint }] —
    * typical wrong systems (they are also the part's bad answers); other mistakes say which equation is right. */
-  function sysWrite(prompt, Ls, vars, keyTex, sol, hints, text, bads) {
+  function sysWrite(prompt, Ls, vars, keyTex, sol, hints, text, bads, alts) {   // alts: other right systems [[{A,B,C}, {A,B,C}], …]
     var TL = Ls.map(function (L) { return { A: L.A, B: L.B, C: L.C }; });
     var base = K.system(TL, { vars: vars, form: 'any' });
     var rd = function (s) { var r0 = Ln.read(s, vars); return r0.ok ? [r0.a, r0.b, r0.c] : null; };
@@ -191,6 +195,7 @@
       var r0 = base(resp); if (r0.v !== 'wrong') return r0;
       var S = [rd(String((resp || [])[0] || '')), rd(String((resp || [])[1] || ''))];
       if (!S[0] || !S[1]) return r0;
+      if ((alts || []).some(function (A) { var a0 = arr(A[0]), a1 = arr(A[1]); return (Ln.same(S[0], a0) && Ln.same(S[1], a1)) || (Ln.same(S[0], a1) && Ln.same(S[1], a0)); })) return ok();
       for (var i = 0; i < specs.length; i++) { var b = specs[i]; if ((Ln.same(S[0], b.L[0]) && Ln.same(S[1], b.L[1])) || (Ln.same(S[0], b.L[1]) && Ln.same(S[1], b.L[0]))) return wrong(b.code, b.hint); }
       if (Ln.same(S[0], S[1])) return wrong('sys-same', 'Your two equations describe the same line. The two facts in the question give two <b>different</b> equations.');
       var hit = S.map(function (q) { return TL.some(function (L) { return Ln.same(q, arr(L)); }); });
@@ -218,7 +223,7 @@
           }, function (s) {
             if (fv(s.m2) === s.m1 || s.b2[1] !== 1 || Math.abs(s.b1) > 6 || Math.abs(s.b2[0]) > 6 || s.b1 === 0 && s.b2[0] === 0) return false;
             var L1 = mbL(s.m1, s.b1), L2 = mbL(s.m2, s.b2[0]);
-            return latS(L1, W6).length >= 3 && latS(L2, W6).length >= 3 && (s.P[0] !== 0 || s.P[1] !== 0);
+            return latS(L1, W6).length >= 3 && latS(L2, W6).length >= 3 && s.P[0] !== 0;   // not on the y-axis (there both y-intercepts would give the answer away)
           });
         },
         stem: function (s) { return 'Consider the system ' + t(si(mbL(s.m1, s.b1))) + ' and ' + t(si(mbL(s.m2, s.b2[0]))) + '.'; },
@@ -234,7 +239,7 @@
           { id: '1b', outcome: 'RF9', level: 'BEG', make: function (r, s) {
             var L1 = mbL(s.m1, s.b1), L2 = mbL(s.m2, s.b2[0]);
             return pointPart('State the solution of the system.', s.P, [L1, L2], {},
-              'The lines cross at ' + t(ptT(s.P)) + '.<br><b>Check.</b> ' + t(nT(s.P[1]) + '=' + s.m1 + pT(s.P[0]) + (s.b1 < 0 ? '' : '+') + s.b1) + ' ✓ and ' + t(nT(s.P[1]) + '=' + nT(s.m2) + pT(s.P[0]) + (s.b2[0] < 0 ? '' : '+') + s.b2[0]) + ' ✓',
+              'The lines cross at ' + t(ptT(s.P)) + '.<br><b>Check.</b> ' + t(nT(s.P[1]) + '=' + mT(s.m1, s.P[0]) + (s.b1 ? (s.b1 < 0 ? '' : '+') + s.b1 : '')) + ' ✓ and ' + t(nT(s.P[1]) + '=' + mT(s.m2, s.P[0]) + (s.b2[0] ? (s.b2[0] < 0 ? '' : '+') + s.b2[0] : '')) + ' ✓',
               ['The solution is the point where the two lines cross.', 'Check it: it must make both equations true.'], 'solution from graph');
           } }] },
       { num: '2', stem: '', parts: [
@@ -300,9 +305,9 @@
           if (!o.xIso) { var xs = (e - b) / den; if (isFinite(xs) && !near(xs, x0)) W.push({ is: [Ln.toFr(xs), Ln.toFr(a * xs + b)], code: 'u8x-distribute', hint: 'When you substitute ' + t(T([[a, 'x'], [b, '']])) + ' for ' + t('y') + ', multiply <b>both</b> terms by ' + t(d) + ': ' + t(d + '\\left(' + T([[a, 'x'], [b, '']]) + '\\right)=' + T([[d * a, 'x'], [d * b, '']])) + '.' }); }
           else { var ys = (e - b) / den; if (isFinite(ys) && !near(ys, y0)) W.push({ is: [Ln.toFr(a * ys + b), Ln.toFr(ys)], code: 'u8x-distribute', hint: 'When you substitute ' + t(T([[a, 'y'], [b, '']])) + ' for ' + t('x') + ', multiply <b>both</b> terms by ' + t(c) + ': ' + t(c + '\\left(' + T([[a, 'y'], [b, '']]) + '\\right)=' + T([[c * a, 'y'], [c * b, '']])) + '.' }); }
           var v = o.xIso ? 'y' : 'x', other = o.xIso ? 'x' : 'y', vv = o.xIso ? y0 : x0;
-          var subLine = o.xIso ? T([[c, '']]).replace(/^1$/, '') + '\\left(' + T([[a, 'y'], [b, '']]) + '\\right)' + (d < 0 ? '' : '+') + T([[d, 'y']]) + '=' + e : T([[c, 'x']]) + (d < 0 ? '-' : '+') + (Math.abs(d) === 1 ? '' : Math.abs(d)) + '\\left(' + T([[a, 'x'], [b, '']]) + '\\right)=' + e;
+          var subLine = o.xIso ? cT(c) + '\\left(' + T([[a, 'y'], [b, '']]) + '\\right)' + (d < 0 ? '' : '+') + T([[d, 'y']]) + '=' + e : T([[c, 'x']]) + (d < 0 ? '-' : '+') + (Math.abs(d) === 1 ? '' : Math.abs(d)) + '\\left(' + T([[a, 'x'], [b, '']]) + '\\right)=' + e;
           return pointPart('Solve the system by substitution. Give the solution as an ordered pair.' + sysT(e1, e2), [x0, y0], [L1, L2], { wrong: W },
-            'Substitute ' + t(other + '=' + T([[a, v], [b, '']])) + ' into the second equation:<br>' + t(subLine) + '<br>' + t(T([[den, v]]) + (o.xIso ? (c * b < 0 ? '-' : '+') + Math.abs(c * b) : (d * b < 0 ? '-' : '+') + Math.abs(d * b)) + '=' + e) + ' &nbsp;→&nbsp; ' + t(v + '=' + vv) + '.<br>Then ' + t(other + '=' + a + pT(vv) + (b < 0 ? '' : '+') + b + '=' + (o.xIso ? x0 : y0)) + '. The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check.</b> ' + t(c + pT(x0) + (d < 0 ? '' : '+') + d + pT(y0) + '=' + e) + ' ✓',
+            'Substitute ' + t(other + '=' + T([[a, v], [b, '']])) + ' into the second equation:<br>' + t(subLine) + '<br>' + t(T([[den, v]]) + (o.xIso ? (c * b < 0 ? '-' : '+') + Math.abs(c * b) : (d * b < 0 ? '-' : '+') + Math.abs(d * b)) + '=' + e) + ' &nbsp;→&nbsp; ' + t(v + '=' + vv) + '.<br>Then ' + t(other + '=' + mT(a, vv) + (b < 0 ? '' : '+') + b + '=' + (o.xIso ? x0 : y0)) + '. The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check.</b> ' + t(mT(c, x0) + plusMT(d, y0) + '=' + e) + ' ✓',
             ['The first equation already gives ' + t(other) + ' in terms of ' + t(v) + ': replace ' + t(other) + ' in the second equation with that expression (in brackets).', 'Solve for ' + t(v) + ', then substitute back to find ' + t(other) + '.'], 'substitution, isolated ' + other);
         } }] },
       { num: '2', stem: '', parts: [
@@ -318,7 +323,7 @@
           var B2 = std(o.c, -o.d, u + o.d * o.s), ip = (function () { var D = A1.A * B2.B - B2.A * A1.B; if (!D) return null; return [(A1.B * B2.C - B2.B * A1.C) / D, (B2.A * A1.C - A1.A * B2.C) / D]; })();
           if (ip && isFinite(ip[0])) W.push({ is: [Ln.toFr(ip[0]), Ln.toFr(ip[1])], code: 'u8x-c-sign', hint: 'Check how you expanded ' + t('-' + br(o.d, 'y', -o.s)) + ': the minus sign multiplies <b>both</b> terms in the bracket.' });
           return pointPart('Solve the system by substitution. Give the solution as an ordered pair.' + sysT(e1, e2), [x0, y0], [A1, A2], { wrong: W },
-            'Expand and simplify each equation first:<br>' + t(ex1) + ' and ' + t(ex2) + '.<br>Isolate the variable with coefficient ' + t('\\pm1') + ' in one equation, substitute it into the other, and solve.<br>The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check.</b> ' + t(br(o.a, pT(x0), o.p) + '+' + br(o.b, pT(y0), o.q) + '=' + rr) + ' ✓ and ' + t(o.c + pT(x0) + '-' + br(o.d, pT(y0), -o.s) + '=' + u) + ' ✓',
+            'Expand and simplify each equation first:<br>' + t(ex1) + ' and ' + t(ex2) + '.<br>Isolate the variable with coefficient ' + t('\\pm1') + ' in one equation, substitute it into the other, and solve.<br>The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check.</b> ' + t(br(o.a, pT(x0), o.p) + '+' + br(o.b, pT(y0), o.q) + '=' + rr) + ' ✓ and ' + t(mT(o.c, x0) + '-' + br(o.d, pT(y0), -o.s) + '=' + u) + ' ✓',
             ['Expand the brackets and collect like terms in both equations first.', 'Then isolate a variable whose coefficient is ' + t('1') + ' or ' + t('-1') + ', and substitute.'], 'substitution with brackets');
         } }] },
       { num: '3', stem: '', parts: [
@@ -326,7 +331,7 @@
           var o = until(function () {
             var pp = nz(r, -5, 5), qq = nz(r, -5, 5), g = r.pick([1, 1, 2, 3]), x1 = r.int(-5, 5), y1 = r.int(-5, 5), j = r.pick([-2, -1, 1, 2]);
             return { pp: pp, qq: qq, g: g, x1: x1, y1: y1, x2: x1 + qq * j, y2: y1 - pp * j };
-          }, function (o) { var p = o.g * o.pp, q = o.g * o.qq, c = -(p * o.x1 + q * o.y1); return gcd(o.pp, o.qq) === 1 && c !== 0 && Math.abs(c) <= 24 && Math.abs(o.x2) <= 9 && Math.abs(o.y2) <= 9 && p !== q && Math.abs(p) !== Math.abs(q) && o.x1 !== o.x2; });
+          }, function (o) { var p = o.g * o.pp, q = o.g * o.qq, c = -(p * o.x1 + q * o.y1); return gcd(o.pp, o.qq) === 1 && c !== 0 && Math.abs(c) <= 24 && Math.abs(o.x2) <= 9 && Math.abs(o.y2) <= 9 && p !== q && Math.abs(p) !== Math.abs(q) && o.x1 !== o.x2 && [o.x1, o.y1, o.x2, o.y2].some(function (v) { return Math.abs(v) <= 1; }); });   // a coefficient 0 or ±1, so substitution needs no fractions (as in Assignment 4)
           var p = o.g * o.pp, q = o.g * o.qq, c = -(p * o.x1 + q * o.y1), Lname = 'px+qy' + (c < 0 ? '-' : '+') + Math.abs(c) + '=0';
           var P1 = [o.x1, o.y1], P2 = [o.x2, o.y2];
           var e1 = T([[o.x1, 'p'], [o.y1, 'q'], [c, '']]) + '=0', e2 = T([[o.x2, 'p'], [o.y2, 'q'], [c, '']]) + '=0';
@@ -334,7 +339,7 @@
           var cks = [numC(p, [[-p, 'u8x-c-sign', 'Check the signs: when the constant ' + t(c) + ' moves to the other side, it changes sign.'], [q, 'u8x-pq-swap', 'That’s the value of ' + t('q') + '. ' + t('p') + ' is the coefficient of ' + t('x') + '.']]),
             numC(q, [[-q, 'u8x-c-sign', 'Check the signs: when the constant ' + t(c) + ' moves to the other side, it changes sign.'], [p, 'u8x-pq-swap', 'That’s the value of ' + t('p') + '. ' + t('q') + ' is the coefficient of ' + t('y') + '.']])];
           var pr = B.fields('The line ' + t(Lname) + ' passes through the points ' + t(ptT(P1)) + ' and ' + t(ptT(P2)) + '. Determine the values of ' + t('p') + ' and ' + t('q') + '.', flds, cks, [String(p), String(q)], t('p=' + p + ',\\ q=' + q),
-            'Substitute each point into ' + t(Lname) + ':<br>' + t(ptT(P1)) + ': ' + t(e1) + '<br>' + t(ptT(P2)) + ': ' + t(e2) + '<br>Solve this system in ' + t('p') + ' and ' + t('q') + ' by substitution (isolate the letter with the simpler coefficient): ' + t('p=' + p) + ', ' + t('q=' + q) + '.<br>The line is ' + t(T([[p, 'x'], [q, 'y'], [c, '']]) + '=0') + '. <b>Check.</b> ' + t(T([[p, '']]) + pT(o.x2) + (q < 0 ? '' : '+') + q + pT(o.y2) + (c < 0 ? '' : '+') + c + '=0') + ' ✓',
+            'Substitute each point into ' + t(Lname) + ':<br>' + t(ptT(P1)) + ': ' + t(e1) + '<br>' + t(ptT(P2)) + ': ' + t(e2) + '<br>Solve this system in ' + t('p') + ' and ' + t('q') + ' by substitution (isolate the letter with the simpler coefficient): ' + t('p=' + p) + ', ' + t('q=' + q) + '.<br>The line is ' + t(T([[p, 'x'], [q, 'y'], [c, '']]) + '=0') + '. <b>Check.</b> ' + t(mT(p, o.x2) + plusMT(q, o.y2) + (c < 0 ? '' : '+') + c + '=0') + ' ✓',
             ['Each point gives an equation: replace ' + t('x') + ' and ' + t('y') + ' with its coordinates. The unknowns are ' + t('p') + ' and ' + t('q') + '.', 'Solve the two equations in ' + t('p') + ' and ' + t('q') + ' by substitution.'], 'p, q from two points');
           pr.bad = [[String(-p), String(-q)], [String(q), String(p)], [String(p), String(-q)]];
           return pr;
@@ -359,13 +364,19 @@
           var e1 = eqT(c1, r1), e2 = eqT(c2, r2), L1 = std(c1[0][0], c1[1][0], r1), L2 = std(c2[0][0], c2[1][0], r2);
           var v = o.elimX ? 'y' : 'x', coef = o.add ? o.a + o.b : o.a - o.b, rhs = o.add ? r1 + r2 : r1 - r2, other = o.elimX ? 'x' : 'y';
           return pointPart('Solve the system by elimination. Give the solution as an ordered pair.' + sysT(e1, e2), [x0, y0], [L1, L2], {},
-            'The ' + t(other) + '-terms are ' + (o.add ? 'opposites, so <b>add</b>' : 'equal, so <b>subtract</b>') + ' the equations: ' + t(T([[coef, v]]) + '=' + rhs) + ', so ' + t(v + '=' + (o.elimX ? y0 : x0)) + '.<br>Substitute into the first equation to find ' + t(other + '=' + (o.elimX ? x0 : y0)) + '. The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check</b> in the second equation: ' + t(T([[c2[0][0], '']]).replace(/^1$/, '') + pT(x0) + (c2[1][0] < 0 ? '' : '+') + c2[1][0] + pT(y0) + '=' + r2) + ' ✓',
+            'The ' + t(other) + '-terms are ' + (o.add ? 'opposites, so <b>add</b>' : 'equal, so <b>subtract</b>') + ' the equations: ' + t(T([[coef, v]]) + '=' + rhs) + ', so ' + t(v + '=' + (o.elimX ? y0 : x0)) + '.<br>Substitute into the first equation to find ' + t(other + '=' + (o.elimX ? x0 : y0)) + '. The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check</b> in the second equation: ' + t(mT(c2[0][0], x0) + plusMT(c2[1][0], y0) + '=' + r2) + ' ✓',
             ['Look for a variable with the same coefficient (subtract) or opposite coefficients (add).', 'After you find one variable, substitute it to find the other.'], 'elimination direct');
         } }] },
       { num: '2', stem: '', parts: [
         { id: '2', outcome: 'RF9', level: 'EMG', make: function (r) {
           var o = until(function () { return { a: nz(r, -6, 6), b: r.int(1, 4), c: nz(r, -15, 15), d: nz(r, -7, 7), k: r.pick([2, 3]), f: nz(r, -15, 15), add: r.chance(0.6) }; },
-            function (o) { return (o.k * o.a + (o.add ? o.d : -o.d)) !== 0 && o.k * o.a !== o.d && Math.abs(o.d) !== Math.abs(o.a); });
+            function (o) {
+              if ((o.k * o.a + (o.add ? o.d : -o.d)) === 0 || o.k * o.a === o.d || Math.abs(o.d) === Math.abs(o.a)) return false;
+              var sg = o.add ? 1 : -1, res = [[o.k * o.a + sg * o.d, o.k * o.c + sg * o.f], [o.k * o.a + sg * o.d, o.c + sg * o.f], [o.a + sg * o.d, o.c + sg * o.f], [o.k * o.a - sg * o.d, o.k * o.c - sg * o.f]];
+              if (res.some(function (p) { return p[0] === 0; })) return false;
+              var xs = res.map(function (p) { return cl(p[1] / p[0]); });
+              return xs.every(function (v, i) { return xs.indexOf(v) === i; });   // no two results give the same x (no wrong option is equivalent to the right one)
+            });
           var e = o.k * o.b, s2 = o.add ? -1 : 1, E1 = eqT([[o.a, 'x'], [o.b, 'y']], o.c), E2 = eqT([[o.d, 'x'], [s2 * e, 'y']], o.f);
           var right = o.add ? [o.k * o.a + o.d, o.k * o.c + o.f] : [o.k * o.a - o.d, o.k * o.c - o.f];
           var noC = o.add ? [o.k * o.a + o.d, o.c + o.f] : [o.k * o.a - o.d, o.c - o.f], noS = o.add ? [o.a + o.d, o.c + o.f] : [o.a - o.d, o.c - o.f], wsg = o.add ? [o.k * o.a - o.d, o.k * o.c - o.f] : [o.k * o.a + o.d, o.k * o.c + o.f];
@@ -390,14 +401,14 @@
           var lc = Math.abs(o.b1 * o.b2) / gcd(o.b1, o.b2), k1 = lc / Math.abs(o.b1), k2 = lc / Math.abs(o.b2), same = (o.b1 > 0) === (o.b2 > 0);
           var cx = same ? k1 * o.a1 - k2 * o.a2 : k1 * o.a1 + k2 * o.a2, cr = same ? k1 * c1 - k2 * c2 : k1 * c1 + k2 * c2;
           return pointPart('Solve the system by elimination. Give the solution as an ordered pair.' + sysT(e1, e2), [x0, y0], [L1, L2], {},
-            'Eliminate ' + t('y') + ': multiply the first equation by ' + t(k1) + ' and the second by ' + t(k2) + ':<br>' + t(eqT([[k1 * o.a1, 'x'], [k1 * o.b1, 'y']], k1 * c1)) + '<br>' + t(eqT([[k2 * o.a2, 'x'], [k2 * o.b2, 'y']], k2 * c2)) + '<br>' + (same ? 'Subtract' : 'Add') + ': ' + t(T([[cx, 'x']]) + '=' + cr) + ', so ' + t('x=' + x0) + '.<br>Substitute into the first equation: ' + t(o.a1 + pT(x0) + (o.b1 < 0 ? '' : '+') + o.b1 + 'y=' + c1) + ', so ' + t('y=' + y0) + '.<br>The solution is ' + t(ptT([x0, y0])) + '. <b>Check</b> in the second equation ✓',
+            'Eliminate ' + t('y') + ': multiply the first equation by ' + t(k1) + ' and the second by ' + t(k2) + ':<br>' + t(eqT([[k1 * o.a1, 'x'], [k1 * o.b1, 'y']], k1 * c1)) + '<br>' + t(eqT([[k2 * o.a2, 'x'], [k2 * o.b2, 'y']], k2 * c2)) + '<br>' + (same ? 'Subtract' : 'Add') + ': ' + t(T([[cx, 'x']]) + '=' + cr) + ', so ' + t('x=' + x0) + '.<br>Substitute into the first equation: ' + t(mT(o.a1, x0) + T([[o.b1, 'y']]).replace(/^(?!-)/, '+') + '=' + c1) + ', so ' + t('y=' + y0) + '.<br>The solution is ' + t(ptT([x0, y0])) + '. <b>Check</b> in the second equation ✓',
             ['Neither variable lines up yet: multiply <b>both</b> equations so that one variable gets the same coefficient (use the lowest common multiple).', 'Every term of an equation, including the constant, gets multiplied.'], 'elimination both scaled');
         } }] },
       { num: '4', stem: '', parts: [
         { id: '4', outcome: 'RF9', level: 'ADV', make: function (r) {
-          var o = until(function () { return { a: r.pick([2, 3, 4, 5]), b: r.pick([2, 3, 4, 5, 6]), d: r.pick([2, 3, 4, 5]), e: r.pick([2, 3, 4, 6]), i: nz(r, -3, 3), j: nz(r, -3, 3), p: nz(r, -5, 5) }; },
+          var o = until(function () { var a = r.pick([2, 3, 4, 5]); return { a: a, b: r.pick([2, 3, 4, 5, 6]), d: a, e: r.pick([2, 3, 4, 6]), i: nz(r, -3, 3), j: nz(r, -3, 3), p: nz(r, -5, 5) }; },   // d = a: once the fractions are cleared the y-terms are opposites (as in Assignment 9(a))
             function (o) {
-              var x0 = o.a * o.i, y0 = o.b * o.j; if ((x0 - o.p) % o.d !== 0 || y0 % o.e !== 0 || o.a === o.b || o.d === o.e) return false;
+              var x0 = o.a * o.i, y0 = o.b * o.j; if ((x0 - o.p) % o.d !== 0 || y0 % o.e !== 0 || o.a === o.b || o.d === o.e || o.b === o.e) return false;
               var c1 = x0 / o.a + y0 / o.b, c2 = (x0 - o.p) / o.d - y0 / o.e; return Math.abs(x0) <= 15 && Math.abs(y0) <= 15 && c1 !== 0 && (1 / (o.a * -o.e) - 1 / (o.b * o.d)) !== 0 && Math.abs(c2) <= 9;
             });
           var x0 = o.a * o.i, y0 = o.b * o.j, c1 = x0 / o.a + y0 / o.b, c2 = (x0 - o.p) / o.d - y0 / o.e;
@@ -407,8 +418,8 @@
           var W = [{ is: (function () { var M = std(o.e, -o.d, o.d * o.e * c2 + o.p), D = L1.A * M.B - M.A * L1.B; return D ? [Ln.toFr((L1.B * M.C - M.B * L1.C) / D), Ln.toFr((M.A * L1.C - L1.A * M.C) / D)] : [NaN, NaN]; })(), code: 'u8x-elim-const',
             hint: 'When you clear the fractions in the second equation, multiply <b>every</b> part by ' + t(o.d * o.e) + ': ' + t(o.d * o.e + '\\times\\frac{x' + (o.p < 0 ? '+' : '-') + Math.abs(o.p) + '}{' + o.d + '}=' + o.e + '(x' + (o.p < 0 ? '+' : '-') + Math.abs(o.p) + ')') + ' — the ' + t(Math.abs(o.p)) + ' gets multiplied too.' }];
           return pointPart('Solve the system by elimination. Give the solution as an ordered pair.' + sysT(e1, e2), [x0, y0], [L1, L2], { wrong: W },
-            'Clear the fractions first.<br>Multiply the first equation by ' + t(o.a * o.b) + ': ' + t(n1) + '.<br>Multiply the second equation by ' + t(o.d * o.e) + ': ' + t(o.e + '(x' + (o.p < 0 ? '+' : '-') + Math.abs(o.p) + ')-' + o.d + 'y=' + o.d * o.e * c2) + ', so ' + t(n2) + '.<br>Now eliminate one variable and solve: ' + t('x=' + x0) + ', ' + t('y=' + y0) + '.<br><b>Check.</b> ' + t('\\frac{' + x0 + '}{' + o.a + '}+\\frac{' + y0 + '}{' + o.b + '}=' + c1) + ' ✓',
-            ['Multiply each equation by the lowest common denominator of its fractions so that every coefficient is an integer.', 'Then eliminate a variable as usual.'], 'elimination with fractions');
+            'Clear the fractions first.<br>Multiply the first equation by ' + t(o.a * o.b) + ': ' + t(n1) + '.<br>Multiply the second equation by ' + t(o.d * o.e) + ': ' + t(o.e + '(x' + (o.p < 0 ? '+' : '-') + Math.abs(o.p) + ')-' + o.d + 'y=' + o.d * o.e * c2) + ', so ' + t(n2) + '.<br>The ' + t('y') + '-terms are now opposites, so add the equations: ' + t((o.b + o.e) + 'x=' + (o.a * o.b * c1 + o.d * o.e * c2 + o.e * o.p)) + ', so ' + t('x=' + x0) + '. Substitute to find ' + t('y=' + y0) + '.<br><b>Check.</b> ' + t('\\frac{' + x0 + '}{' + o.a + '}+\\frac{' + y0 + '}{' + o.b + '}=' + c1) + ' ✓',
+            ['Multiply each equation by the lowest common denominator of its fractions so that every coefficient is an integer (multiply <b>every</b> part, including the bracket).', 'Then eliminate a variable as usual.'], 'elimination with fractions');
         } }] }
     ]
   });
@@ -422,7 +433,7 @@
     blurb: 'Write a system of equations for a word problem, solve a two-price problem and use the prices, and solve a digit problem.',
     questions: [
       { num: '1', stem: '', parts: [
-        { id: '1', outcome: 'RF9', level: 'EMG', make: function (r) {
+        { id: '1', outcome: 'RF9', level: 'BEG', make: function (r) {
           var kind = r.pick(['rect', 'nums', 'tix', 'coins']);
           if (kind === 'rect') {
             var w = r.int(4, 20), k = r.int(2, 9), twice = r.chance(0.5), l = twice ? 2 * w - k : w + k, P = 2 * (l + w);
@@ -467,7 +478,7 @@
             var p = B.fields('Set up and solve a system of equations to find the price of one ' + it[0] + ' and the price of one ' + it[2] + '.',
               [{ label: 'One ' + it[0] + ':', name: it[0], before: t('\\$'), mode: 'math', keys: 'fraction', placeholder: 'a number' }, { label: 'One ' + it[2] + ':', name: it[2], before: t('\\$'), mode: 'math', keys: 'fraction', placeholder: 'a number' }],
               [numC(s.x, sw), numC(s.y, [[s.x, 'u8x-price-swap', 'You swapped the two prices.']])], [String(s.x), String(s.y)], it[0] + ' ' + t('\\$' + s.x) + ', ' + it[2] + ' ' + t('\\$' + s.y),
-              'Let ' + t('a') + ' be the price of a ' + it[0] + ' and ' + t('b') + ' the price of a ' + it[2] + ':<br>' + t(s.a1 + 'a+' + s.b1 + 'b=' + s.c1) + ' and ' + t(s.a2 + 'a+' + s.b2 + 'b=' + s.c2) + '.<br>Solve (elimination or substitution): ' + t('a=' + s.x) + ', ' + t('b=' + s.y) + '.<br><b>Check.</b> ' + t(s.a2 + '(' + s.x + ')+' + s.b2 + '(' + s.y + ')=' + s.c2) + ' ✓',
+              'Let ' + t('a') + ' be the price of a ' + it[0] + ' and ' + t('b') + ' the price of a ' + it[2] + ':<br>' + t(eqT([[s.a1, 'a'], [s.b1, 'b']], s.c1)) + ' and ' + t(eqT([[s.a2, 'a'], [s.b2, 'b']], s.c2)) + '.<br>Solve (elimination or substitution): ' + t('a=' + s.x) + ', ' + t('b=' + s.y) + '.<br><b>Check.</b> ' + t(s.a2 + '(' + s.x + ')+' + s.b2 + '(' + s.y + ')=' + s.c2) + ' ✓',
               ['Let two letters stand for the two prices; each sentence gives one equation.', 'Solve the system by elimination (or substitution).'], 'two prices');
             p.bad = [[String(s.y), String(s.x)], [String(s.x), String(s.x)]];
             return p;
@@ -503,13 +514,14 @@
     blurb: 'Write the system for a mixture problem, solve a percent-mixture problem, and solve a motion problem with a wind or current.',
     questions: [
       { num: '1', stem: '', parts: [
-        { id: '1', outcome: 'RF9', level: 'EMG', make: function (r) {
+        { id: '1', outcome: 'RF9', level: 'BEG', make: function (r) {
           var c = r.pick(BLENDS), pa = r.int(c.a[0], c.a[1]), pb = r.int(c.b[0], c.b[1]), x = 5 * r.int(2, 12), y = 5 * r.int(2, 12), N = x + y, V = pa * x + pb * y, perKg = r.chance(0.4) && V % N === 0;
           var tail = perKg ? 'to make ' + t(N) + ' kg of a blend worth ' + t('\\$' + (V / N)) + ' per kg' : 'to make ' + t(N) + ' kg of a blend worth ' + t('\\$' + F(V)) + ' in total';
           return sysWrite('A store mixes ' + c.what + ' that sell for ' + t('\\$' + pa) + ' per kg with ' + c.what + ' that sell for ' + t('\\$' + pb) + ' per kg ' + tail + '. Let ' + t('x') + ' be the mass of the ' + t('\\$' + pa) + ' ' + c.what + ' and ' + t('y') + ' the mass of the ' + t('\\$' + pb) + ' ' + c.what + ', in kg. Write a system of two equations: one for the total mass and one for the total value. (Don’t solve it.)',
             [line(1, 1, -N), line(pa, pb, -V)], ['x', 'y'], ['x+y=' + N, pa + 'x+' + pb + 'y=' + V],
             'Total mass: ' + t('x+y=' + N) + '.<br>Total value: ' + t(pa + 'x+' + pb + 'y=' + (perKg ? (V / N) + '(' + N + ')=' : '') + F(V)) + '.',
-            ['One equation adds the masses; the other adds the values (price per kg × mass).', perKg ? 'The blend’s total value is (its price per kg) × (its mass).' : 'The total value is given in dollars.'], 'write mixture system', [{ eqs: ['x+y=' + N, pa + 'x+' + pb + 'y=' + (perKg ? V / N : N)], code: 'u8x-sys-total', hint: perKg ? 'The value equation needs the blend’s total value: ' + t('\\$' + (V / N)) + ' per kg × ' + t(N) + ' kg.' : 'The value equation adds up dollars, so its total is ' + t('\\$' + F(V)) + ', not the mass.' }, { eqs: ['x+y=' + V, pa + 'x+' + pb + 'y=' + N], code: 'u8x-sys-total', hint: 'The masses add up to ' + t(N) + ' kg; the values add up to ' + t('\\$' + F(V)) + '.' }]);
+            ['One equation adds the masses; the other adds the values (price per kg × mass).', perKg ? 'The blend’s total value is (its price per kg) × (its mass).' : 'The total value is given in dollars.'], 'write mixture system', [{ eqs: ['x+y=' + N, pa + 'x+' + pb + 'y=' + (perKg ? V / N : N)], code: 'u8x-sys-total', hint: perKg ? 'The value equation needs the blend’s total value: ' + t('\\$' + (V / N)) + ' per kg × ' + t(N) + ' kg.' : 'The value equation adds up dollars, so its total is ' + t('\\$' + F(V)) + ', not the mass.' }, { eqs: ['x+y=' + V, pa + 'x+' + pb + 'y=' + N], code: 'u8x-sys-total', hint: 'The masses add up to ' + t(N) + ' kg; the values add up to ' + t('\\$' + F(V)) + '.' }],
+            perKg ? [[line(1, 1, -N), line(pa - V / N, pb - V / N, 0)]] : []);   // the value written as (price per kg)(x + y) is right too
         } }] },
       { num: '2', stem: '', parts: [
         { id: '2', outcome: 'RF9', level: 'PRG', make: function (r) {
@@ -563,7 +575,7 @@
           var o = until(function () { return { x0: r.int(-5, 8), y0: r.int(-5, 8), a: r.int(2, 5) }; }, function (o) { return o.x0 !== o.y0 && (o.x0 + o.y0 !== 0); });
           var x0 = o.x0, y0 = o.y0, a = o.a, s = x0 + y0, e = a * x0 - y0, e1 = eqT([[1, 'x'], [1, 'y']], s), e2 = eqT([[a, 'x'], [-1, 'y']], e);
           return pointPart('Solve the system. Give the solution as an ordered pair.' + sysT(e1, e2), [x0, y0], [std(1, 1, s), std(a, -1, e)], {},
-            'The ' + t('y') + '-terms are opposites, so add the equations: ' + t((a + 1) + 'x=' + (s + e)) + ', so ' + t('x=' + x0) + '.<br>Then ' + t(x0 + '+y=' + s) + ', so ' + t('y=' + y0) + '. The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check.</b> ' + t(a + pT(x0) + '-' + pT(y0) + '=' + e) + ' ✓',
+            'The ' + t('y') + '-terms are opposites, so add the equations: ' + t((a + 1) + 'x=' + (s + e)) + ', so ' + t('x=' + x0) + '.<br>Then ' + t(x0 + '+y=' + s) + ', so ' + t('y=' + y0) + '. The solution is ' + t(ptT([x0, y0])) + '.<br><b>Check.</b> ' + t(mT(a, x0) + '-' + '(' + nT(y0) + ')' + '=' + e) + ' ✓',
             ['Adding the two equations eliminates ' + t('y') + '.', 'Substitute the value you find into the first equation.'], 'review solve');
         } }] },
       { num: '2', stem: '', parts: [

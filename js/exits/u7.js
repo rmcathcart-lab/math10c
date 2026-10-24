@@ -461,11 +461,13 @@
           /* parallel/perpendicular to one line, with the y-intercept of another (Example 4 and Assignment 4–5 of the
            * lesson): the second line is in general form or in the form Ax + By = D, and its y-intercept may be a fraction */
           var o = until(function () {
-            return { a1: r.int(1, 6), b1: r.int(2, 6) * r.pick([1, -1]), c1: nz(r, -12, 12), a2: nz(r, -6, 6), b2: r.int(2, 6) * r.pick([1, -1]), c2: nz(r, -24, 24), perp: r.chance(0.5), std: r.chance(0.5) };
+            var b2 = r.int(2, 6) * r.pick([1, -1]), c2 = r.chance(0.5) ? -b2 * nz(r, -6, 6) : nz(r, -24, 24);   // about half the y-intercepts are integers
+            return { a1: r.int(1, 6), b1: r.int(2, 6) * r.pick([1, -1]), c1: nz(r, -12, 12), a2: nz(r, -6, 6), b2: b2, c2: c2, perp: r.chance(0.5), std: r.chance(0.5) };
           }, function (o) {
             var b = fr(-o.c2, o.b2), b1 = fr(-o.c1, o.b1), xi = fr(-o.c2, o.a2);
             return gcd(o.a1, o.b1) === 1 && o.a1 !== Math.abs(o.b1) && gcd(gcd(o.a2, o.b2), o.c2) === 1 && Math.abs(o.a2) !== Math.abs(o.b2) && !fEq(b, b1) && !fEq(b, xi) && !fEq(b, fNeg(b1)) && !fEq(fr(-o.a2, o.b2), fr(-o.a1, o.b1));
           });
+          if (o.a2 < 0) { o.a2 = -o.a2; o.b2 = -o.b2; o.c2 = -o.c2; }   // the same line, written with a positive x-term
           var g = fr(-o.a1, o.b1), m = o.perp ? nrec(g) : g, b = fr(-o.c2, o.b2), T = L(m, b);
           var L1 = Ln.tex({ A: o.a1, B: o.b1, C: o.c1 }, 'general'), L2 = o.std ? lin([[o.a2, 'x'], [o.b2, 'y']]) + '=' + (-o.c2) : lin([[o.a2, 'x'], [o.b2, 'y'], [o.c2, '']]) + '=0';
           var W = (o.perp ? perpW(g, { b: b }) : parW(g, { b: b })).concat([

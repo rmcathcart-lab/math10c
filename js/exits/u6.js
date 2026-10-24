@@ -114,7 +114,7 @@
     return { x: va, y: vb, simple: simpleNum(a.ast) && simpleNum(b.ast) };
   }
   function readPts(resp) {
-    var s = stripP(resp);
+    var s = stripP(resp).replace(/^\s*(?:[A-Za-z]\s*=|[A-Z])\s*(?=\()/, ''); // "M = (…)" or "D(…)": the point's name typed too
     if (/^\{[\s\S]*\}$/.test(s) && !/^\{[^{}]*\}\{/.test(s)) s = s.slice(1, -1).trim();
     if (!s) return { empty: true };
     var re = /\(([^()]*)\)/g, m, out = [];
@@ -221,7 +221,7 @@
   function lineV(a, b) { return gv([], [seg(a, b, 'arrow', 'arrow')]); }
   var LINEHELP = '<div class="muted">Use <b>╱ Line</b>: tap the given point, tap a second point on the line, then tap it again to finish. The ends start as arrows (a line goes on forever).</div>';
   function ptPlain(p) { var mn = function (x) { x = cl(x); return x < 0 ? '−' + Math.abs(x) : String(x); }; return '(' + mn(p[0]) + ', ' + mn(p[1]) + ')'; }
-  function bgPt(P0, w) { var o = { x: P0[0], y: P0[1] }; if (P0[0] <= w.x[1] - 4 && P0[1] <= w.y[1] - 1) o.label = ptPlain(P0); return o; }
+  function bgPt(P0, w) { var o = { x: P0[0], y: P0[1] }; if (P0[0] <= w.x[1] - 4 && P0[1] <= w.y[1] - 1 && !(P0[0] < 0 && P0[0] > -4)) o.label = ptPlain(P0); return o; } // no label that would run across the y-axis numbers
   function lineInfo(resp) { var g = D.geom(resp), ks = Object.keys(g.lines); return { g: g, ks: ks, L: ks.length === 1 ? g.lines[ks[0]] : null }; }
   function lineDiag(L, P0, sl) {
     var near = function (a, b) { return Math.abs(a - b) < 1e-9; };
@@ -380,7 +380,7 @@
    * ===================================================================================================== */
   var SLOPES = [[1, 2], [2, 3], [3, 4], [3, 2], [4, 3], [2, 5], [5, 2], [1, 3], [3, 5], [-1, 2], [-2, 3], [-3, 4], [-3, 2], [-4, 3], [-2, 5], [-5, 2], [-1, 3], [-3, 5]];
   var RAMPS = [
-    { what: 'A wheelchair ramp', rule: function (k) { return 'A building code says a wheelchair ramp may have a slope of <b>no more than</b> ' + t('\\frac{1}{' + k + '}') + '.'; }, ask: function (h) { return 'A ramp must rise ' + t(nT(h)) + ' m to reach a doorway. What is the <b>shortest</b> run (horizontal length) that meets the code?'; }, ks: [12, 15, 16, 20], hs: [0.36, 0.45, 0.48, 0.6, 0.72, 0.75, 0.9] },
+    { what: 'A haul road', rule: function (k) { return 'Trucks at an open-pit mine climb out on a haul road. For safety the road may have a slope of <b>no more than</b> ' + t('\\frac{1}{' + k + '}') + '.'; }, ask: function (h) { return 'One section of the road must climb ' + t(nT(h)) + ' m. What is the <b>shortest</b> run (horizontal distance) this section can have?'; }, ks: [8, 10, 12, 15], hs: [6, 9, 12, 15, 18, 24, 30] }, // new context: the booklet's own question is a wheelchair ramp
     { what: 'A loading ramp', rule: function (k) { return 'A loading ramp for a truck should have a slope of no more than ' + t('\\frac{1}{' + k + '}') + ' so that carts can be pushed up it safely.'; }, ask: function (h) { return 'The truck bed is ' + t(nT(h)) + ' m above the ground. What is the <b>shortest</b> run the ramp can have?'; }, ks: [4, 5, 6, 8], hs: [0.9, 1.2, 1.25, 1.5, 0.8, 1.1] }];
   /* the end of the roof: an isosceles triangle drawn to scale, span along the bottom, dashed height to the peak */
   function roofFig(a, w) {
@@ -430,7 +430,7 @@
         parts: [
           { id: '3', outcome: 'RF3', level: 'PRG', make: function (r, s) {
             var k = s.k, h = s.h, run = cl(k * h);
-            return numPart(s.c.ask(h), run, [[cl(h / k), 'u6x-run-div', 'A ramp is much longer than it is high. Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}') + ', so ' + t('\\frac{' + nT(h) + '}{\\text{run}}=\\frac{1}{' + k + '}') + ' and the run is ' + t(nT(h) + '\\times' + k) + '.'], [cl(1 / k * h), 'u6x-run-div', 'Solve ' + t('\\frac{' + nT(h) + '}{\\text{run}}=\\frac{1}{' + k + '}') + ' for the run: multiply ' + t(nT(h)) + ' by ' + t(k) + '.'], [cl(k + h), 'u6x-run-mult', 'The run is ' + t(k) + ' <b>times</b> the rise, not ' + t(k) + ' more than it.']],
+            return numPart(s.c.ask(h), run, [[cl(h / k), 'u6x-run-div', 'With such a gentle slope the run is much longer than the rise. Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}') + ', so ' + t('\\frac{' + nT(h) + '}{\\text{run}}=\\frac{1}{' + k + '}') + ' and the run is ' + t(nT(h) + '\\times' + k) + '.'], [cl(1 / k * h), 'u6x-run-div', 'Solve ' + t('\\frac{' + nT(h) + '}{\\text{run}}=\\frac{1}{' + k + '}') + ' for the run: multiply ' + t(nT(h)) + ' by ' + t(k) + '.'], [cl(k + h), 'u6x-run-mult', 'The run is ' + t(k) + ' <b>times</b> the rise, not ' + t(k) + ' more than it.']],
               'Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}\\le\\frac{1}{' + k + '}') + ', so the run must be at least ' + t(k) + ' times the rise.<br>' + t('\\frac{' + nT(h) + '}{\\text{run}}=\\frac{1}{' + k + '}') + ' → ' + t('\\text{run}=' + k + '\\times' + nT(h) + '=' + nT(run)) + ' m. (A longer run gives a gentler slope, which also meets the code.)',
               ['Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}') + '. Put in the rise and the greatest slope allowed, then solve for the run.', 'A slope of ' + t('\\frac{1}{' + k + '}') + ' means ' + t(k) + ' units of run for every ' + t('1') + ' unit of rise.'], 'ramp run', { after: 'm' });
           } }] },
@@ -499,17 +499,17 @@
             var X = [r.int(-8, 8), r.int(-8, 8)], dq = r.pick([[2, 3], [3, 4], [1, 4], [4, 3], [3, 2], [2, 5], [5, 2], [3, 1], [-2, 3], [-3, 4], [-1, 3], [-4, 3], [-3, 2], [-5, 2]]), j = r.pick([1, 2]), Y = [X[0] + dq[1] * j, X[1] + dq[0] * j];
             var V = [r.int(-8, 8), r.int(-8, 8)], run = dq[0] * r.pick([1, 2, -1]), U = [V[0] - run, null], mp = [-dq[1], dq[0]];
             U[1] = V[1] - mp[0] * run / mp[1];
-            return { X: X, Y: Y, U: U, V: V, m: dq };
+            return { X: X, Y: Y, U: U, V: V, m: dq, nm: r.pick([['G', 'H', 'J', 'K'], ['A', 'B', 'C', 'D'], ['M', 'N', 'R', 'S'], ['E', 'F', 'P', 'Q']]), w: r.pick(['a', 'b', 't', 'w']) }; // new letters (the booklet’s question uses U, V, X, Y and p)
           }, function (s) { return s.U[1] % 1 === 0 && Math.abs(s.U[1]) <= 15 && Math.abs(s.U[0]) <= 12 && Math.abs(s.Y[0]) <= 12 && Math.abs(s.Y[1]) <= 12 && s.U[0] !== s.V[0]; });
         },
-        stem: function (s) { return 'Segment ' + t('UV') + ' joins ' + t('U(' + s.U[0] + ',\\ p)') + ' and ' + t('V' + ptT(s.V)) + '. Segment ' + t('XY') + ' joins ' + t('X' + ptT(s.X)) + ' and ' + t('Y' + ptT(s.Y)) + '. The two segments are <b>perpendicular</b>.'; },
+        stem: function (s) { var n = s.nm; return 'Segment ' + t(n[2] + n[3]) + ' joins ' + t(n[2] + ptT(s.X)) + ' and ' + t(n[3] + ptT(s.Y)) + '. Segment ' + t(n[0] + n[1]) + ', which joins ' + t(n[0] + '(' + s.U[0] + ',\\ ' + s.w + ')') + ' and ' + t(n[1] + ptT(s.V)) + ', is <b>perpendicular</b> to ' + t(n[2] + n[3]) + '.'; },
         parts: [
           { id: '3', outcome: 'RF3', level: 'PRG', make: function (r, s) {
-            var U = s.U, V = s.V, mxy = slopeOf(s.X, s.Y), mp = red(-mxy[1], mxy[0]), p = U[1], dx = V[0] - U[0];
+            var U = s.U, V = s.V, n = s.nm, w = s.w, mUV = 'm_{' + n[0] + n[1] + '}', mXY = 'm_{' + n[2] + n[3] + '}', mxy = slopeOf(s.X, s.Y), mp = red(-mxy[1], mxy[0]), p = U[1], dx = V[0] - U[0];
             var pPar = V[1] - sval(mxy) * dx, pSign = V[1] + sval(mp) * dx, pFlip = V[1] - (1 / sval(mp)) * dx;
-            return numPart('Determine the value of ' + t('p') + '.', p, [[pPar, 'u6x-perp-par', 'Perpendicular segments don’t have equal slopes. ' + t('m_{UV}') + ' must be the negative reciprocal of ' + t('m_{XY}=' + slT(mxy)) + ': ' + t(slT(mp)) + '.'], [pSign, 'u6x-k-sign', 'Check the signs in ' + t('\\frac{' + V[1] + '-p}{' + V[0] + '-' + sgp(U[0]) + '}=' + slT(mp)) + '.'], [pFlip, 'u6x-k-flip', 'Slope is rise over run: ' + t('\\frac{y_V-y_U}{x_V-x_U}') + ', with ' + t('p') + ' on the top.']],
-              t('m_{XY}=' + formulaT(s.X, s.Y) + '=' + slT(mxy)) + ', so ' + t('m_{UV}=' + slT(mp)) + ' (negative reciprocal).<br>' + t('\\frac{' + V[1] + '-p}{' + V[0] + '-' + sgp(U[0]) + '}=' + slT(mp)) + ' → ' + t(V[1] + '-p=' + slT(mp) + '\\times' + sgp(dx) + '=' + nT(sval(mp) * dx)) + ' → ' + t('p=' + nT(p)) + '.',
-              ['Find ' + t('m_{XY}') + ', then the perpendicular slope (negative reciprocal) — that is ' + t('m_{UV}') + '.', 'Write ' + t('m_{UV}') + ' with the slope formula, using ' + t('p') + ', set it equal to that slope, and solve.'], 'perpendicular segments: unknown', { before: t('p=') });
+            return numPart('Determine the value of ' + t(w) + '.', p, [[pPar, 'u6x-perp-par', 'Perpendicular segments don’t have equal slopes. ' + t(mUV) + ' must be the negative reciprocal of ' + t(mXY + '=' + slT(mxy)) + ': ' + t(slT(mp)) + '.'], [pSign, 'u6x-k-sign', 'Check the signs in ' + t('\\frac{' + V[1] + '-' + w + '}{' + V[0] + '-' + sgp(U[0]) + '}=' + slT(mp)) + '.'], [pFlip, 'u6x-k-flip', 'Slope is rise over run: ' + t('\\frac{y_{' + n[1] + '}-y_{' + n[0] + '}}{x_{' + n[1] + '}-x_{' + n[0] + '}}') + ', with ' + t(w) + ' on the top.']],
+              t(mXY + '=' + formulaT(s.X, s.Y) + '=' + slT(mxy)) + ', so ' + t(mUV + '=' + slT(mp)) + ' (negative reciprocal).<br>' + t('\\frac{' + V[1] + '-' + w + '}{' + V[0] + '-' + sgp(U[0]) + '}=' + slT(mp)) + ' → ' + t(V[1] + '-' + w + '=' + slT(mp) + '\\times' + sgp(dx) + '=' + nT(sval(mp) * dx)) + ' → ' + t(w + '=' + nT(p)) + '.',
+              ['Find ' + t(mXY) + ', then the perpendicular slope (negative reciprocal) — that is ' + t(mUV) + '.', 'Write ' + t(mUV) + ' with the slope formula, using ' + t(w) + ', set it equal to that slope, and solve.'], 'perpendicular segments: unknown', { before: t(w + '=') });
           } }] },
       { num: '4', outcome: 'RF3',
         shared: function (r) {
@@ -541,7 +541,7 @@
     { who: 'A snowmobile uses fuel at a steady rate.', x: 't', y: 'F', xu: 'h', yu: 'L', yw: 'fuel left', ya: 'Fuel left, ' + t('F') + ' (L)', vs: [4, 5, 6, 8], Ts: [5, 6, 8, 9, 10], st: 1, mean0: 'the fuel in the tank at the start', meanX: 'the time when the tank is empty' }];
   var TWOREAD = [
     { txt: function (a, b) { return 'A candle burns at a constant rate. ' + a + ' after it is lit it is ' + b; }, unit: 'cm', x: 't', y: 'h', end: 'burn out', xu: 'h', w: ['hour', 'hours'], a: 'tall', q: 'How tall was the candle when it was lit', s0: 'When lit:' },
-    { txt: function (a, b) { return 'A generator burns fuel at a constant rate. After ' + a + ' its tank holds ' + b; }, unit: 'L', x: 't', y: 'F', end: 'run out of fuel', xu: 'h', w: ['hour', 'hours'], a: '', q: 'How much fuel was in the tank at the start', s0: 'At the start:' },
+    { txt: function (a, b) { return 'Snow on a flat roof melts at a constant rate on a warm day. After ' + a + ' it is ' + b; }, unit: 'cm', x: 't', y: 'd', end: 'be gone', xu: 'h', w: ['hour', 'hours'], a: 'deep', q: 'How deep was the snow at the start', s0: 'At the start:' }, // (the booklet’s own question is a generator)
     { txt: function (a, b) { return 'Water drains from a tank at a constant rate. After ' + a + ' the tank holds ' + b; }, unit: 'L', x: 't', y: 'V', end: 'be empty', xu: 'min', w: ['minute', 'minutes'], a: '', q: 'How much water was in the tank at the start', s0: 'At the start:' }];
   function nUnit(n, w) { return t(n) + ' ' + (n === 1 ? w[0] : w[1]); }
   HW.defineExit({
@@ -647,11 +647,11 @@
           } }] },
       { num: '2', outcome: 'RF3',
         shared: function (r) { return pickWhere(function () { return { K0: [r.int(-9, 9), r.int(-9, 9)], L0: [r.int(-9, 9), r.int(-9, 9)] }; }, function (s) { var dx = s.L0[0] - s.K0[0], dy = s.L0[1] - s.K0[1]; return dx !== 0 && dy !== 0 && Math.abs(dx) !== Math.abs(dy) && Math.abs(red(dy, dx)[0]) !== 1 || false; }); },
-        stem: function (s) { return t('K') + ' and ' + t('L') + ' are the points ' + t(ptT(s.K0)) + ' and ' + t(ptT(s.L0)) + '.'; },
+        stem: function (s) { return 'A line passes through ' + t('K' + ptT(s.K0)) + ' and ' + t('L' + ptT(s.L0)) + '. A second line crosses it at a right angle.'; }, // reworded: the booklet’s review question is “K and L are the points … respectively”
         parts: [
           { id: '2', outcome: 'RF3', level: 'EMG', make: function (r, s) {
             var m = slopeOf(s.K0, s.L0), pm = red(-m[1], m[0]);
-            var p0 = B.slope('Determine the slope of a line perpendicular to ' + t('KL') + '.', pm, {}, t('m_{KL}=' + formulaT(s.K0, s.L0) + '=' + fracSteps(s.L0[1] - s.K0[1], s.L0[0] - s.K0[0])) + '.<br>The perpendicular slope is the negative reciprocal: ' + t(slT(pm)) + '.',
+            var p0 = B.slope('Determine the slope of the second line.', pm, {}, t('m_{KL}=' + formulaT(s.K0, s.L0) + '=' + fracSteps(s.L0[1] - s.K0[1], s.L0[0] - s.K0[0])) + '.<br>The perpendicular slope is the negative reciprocal: ' + t(slT(pm)) + '.',
               ['Find ' + t('m_{KL}') + ' with the slope formula.', 'Then flip the fraction and change its sign.'], 'perpendicular slope');
             p0.check = perpChk(m, 'perp');
             p0.bad = [slT(m), slT([-m[0], m[1]]), slT(red(m[1], m[0]))];
@@ -662,20 +662,21 @@
           return pickWhere(function () { var st = r.pick([2, 3, 4, 5]), m = r.pick([-3, -2, -1.5, -0.5, 1.5, 2.5, 3, -2.5]), b = r.int(-9, 24), x0 = r.pick([0, 0, -st]); var xs = [0, 1, 2, 3].map(function (i) { return x0 + i * st; }); return { xs: xs, ys: xs.map(function (x) { return cl(m * x + b); }), m: m, b: b, X: -b / m }; },
             function (s) { return s.ys.every(function (y) { return y % 1 === 0; }) && s.b !== 0 && Math.abs(s.X) <= 30 && Math.abs(s.X * 10 - Math.round(s.X * 10)) > 1e-6 && Math.abs((Math.abs(s.X) * 10) % 1 - 0.5) > 0.05 && s.xs.every(function (x) { return !same(x, s.X); }); });
         },
-        stem: function (s) { return 'The table represents a linear relation.' + tbl(s.xs, s.ys); },
+        stem: function (s) { return 'Every column of this table is a point on the same straight line.' + tbl(s.xs, s.ys); }, // reworded (booklet review NR: “The table represents a linear relation …”)
         parts: [
           { id: '3', outcome: 'RF5', level: 'PRG', make: function (r, s) {
             var X = s.X, m = s.m, b = s.b, st = s.xs[1] - s.xs[0], dy = cl(m * st);
             var base = K.approx(X, 1, {});
             var chk = function (resp) {
-              var pn = HW.parse.number(String(resp == null ? '' : resp));
+              resp = String(resp == null ? '' : resp).replace(/^\s*x\s*=\s*/, ''); // "x = 5.3" after the printed "x =" is fine
+              var pn = HW.parse.number(resp);
               if (pn.ok && Math.abs(pn.value - b) < 1e-9) return wrong('u6x-xint-y', 'That is the ' + t('y') + '-intercept (the value at ' + t('x=0') + '). The ' + t('x') + '-intercept is where ' + t('y=0') + '.');
               if (pn.ok && Math.abs(pn.value + X) < 0.06 && Math.abs(X) > 0.1) return wrong('sign', 'Check the sign: is the ' + t('x') + '-intercept to the left or to the right of ' + t('x=0') + '?');
               if (pn.ok && Math.abs(pn.value - rd(X, 0)) < 1e-9) return wrong('u6x-xint-round', 'Round to the nearest <b>tenth</b>: one decimal place.');
               return base(resp);
             };
             var key = rd(X, 1).toFixed(1);
-            return { prompt: 'To the nearest tenth, determine the ' + t('x') + '-intercept of its graph.', input: { type: 'number', before: t('x=') }, check: chk, key: key, answer: t(key),
+            return { prompt: 'Where does the line cross the ' + t('x') + '-axis? Give its ' + t('x') + '-intercept to the nearest tenth.', input: { type: 'number', before: t('x=') }, check: chk, key: key, answer: t(key),
               solution: 'Slope: ' + t('\\frac{' + s.ys[1] + '-' + sgp(s.ys[0]) + '}{' + st + '}=' + nT(m)) + '. ' + (s.xs[0] === 0 ? 'At ' + t('x=0') + ', ' + t('y=' + b) + '.' : 'Going one step from ' + t('x=' + s.xs[0]) + ' to ' + t('x=0') + ': ' + t('y=' + s.ys[0] + (dy < 0 ? '' : '+') + nT(dy) + '=' + b) + '.') + ' So ' + t('y=' + nT(m) + 'x' + (b < 0 ? '' : '+') + b) + '.<br>' + t('y=0') + ': ' + t(nT(m) + 'x=' + (-b)) + ', ' + t('x=' + nT(-b) + '\\div' + sgp(m) + '\\approx' + key) + '.',
               hints: ['Find the slope from the table (change in ' + t('y') + ' ÷ change in ' + t('x') + ') and the ' + t('y') + '-intercept (the value at ' + t('x=0') + ').', 'The ' + t('x') + '-intercept is where ' + t('y=0') + ': solve ' + t('mx+b=0') + '.'], text: 'x-intercept from a table',
               bad: [String(b), rd(X, 0).toFixed(0)].filter(function (v) { return v !== key; }) };

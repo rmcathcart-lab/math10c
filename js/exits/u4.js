@@ -26,7 +26,7 @@
     'u4x-pairs-c': 'Used the factor pairs of c instead of ac', 'u4x-missing-b': 'Missed some values of b', 'u4x-not-b': 'Listed a value of b that does not work',
     'u4x-mid-half': 'Middle term: used ab instead of 2ab', 'u4x-mid-square': 'Middle term: used a square instead of 2ab', 'u4x-no-var': 'Left the variable off the term',
     'u4x-pst-dos': 'Wrote a perfect square trinomial as a difference of squares', 'u4x-pst-sign': 'Perfect square with the wrong sign in the bracket', 'u4x-block-sign': 'Factored the trinomial in x² with the wrong signs',
-    'u4x-sum-split': 'Factored a sum of squares', 'u4x-perim-sum': 'Perimeter: used L + W instead of 2(L + W)', 'u4x-perim-gave-dim': 'Gave a side length instead of x'
+    'u4x-sum-split': 'Factored a sum of squares', 'u4x-neg-b': 'Listed negative values of b as well', 'u4x-perim-sum': 'Perimeter: used L + W instead of 2(L + W)', 'u4x-perim-gave-dim': 'Gave a side length instead of x'
   });
   HW.addPartial({
     'u4x-gcf-high': 'b', 'u4x-gcf-nocoef': 's', 'u4x-gcf-small': 'b', 'u4x-gcf-lcm': 'n', 'u4x-exp-kept': 'b', 'u4x-bracket-sign': 's',
@@ -379,14 +379,16 @@
       function (o) { return gcd(o.p, o.q) === 1 && gcd(o.r, o.s) === 1 && o.m !== o.n && o.q !== o.s && o.b <= 30; });
     var lo = Math.min(o.m, o.n), hi = Math.max(o.m, o.n), full = tx(o.full);
     var fc = fchk(o.list, axWrongs(o));
-    var pairHint = function (vv) { return o.ac % vv === 0 ? { code: 'u4x-pair-wrong', hint: t(vv) + ' is a factor of ' + t(o.ac) + ', but ' + t(vv + '+' + o.ac / vv + '=' + (vv + o.ac / vv)) + ', not ' + t(o.b) + '.' } : { code: 'u4x-pair-wrong', hint: t(vv) + ' doesn’t divide ' + t(o.ac) + '. The two integers multiply to ' + t('ac') + '.' }; };
+    var pairHint = function (vv, which) { if (vv === lo || vv === hi) return { code: 'u4x-pair-wrong', hint: t(vv) + ' is one of the pair, but this box takes the <b>' + which + '</b> integer.' }; return vv && o.ac % vv === 0 ? { code: 'u4x-pair-wrong', hint: t(vv) + ' is a factor of ' + t(o.ac) + ', but ' + t(vv + '+' + o.ac / vv + '=' + (vv + o.ac / vv)) + ', not ' + t(o.b) + '.' } : { code: 'u4x-pair-wrong', hint: t(vv) + ' doesn’t divide ' + t(o.ac) + '. The two integers multiply to ' + t('ac') + '.' }; };
     var key = [String(o.ac), String(lo), String(hi), FX.tex(o.list)];
     var pt = KP.fields('Factor ' + t(full) + ' by decomposition. Find ' + t('ac') + ', the two integers with product ' + t('ac') + ' and sum ' + t(o.b) + ', then the factored form.',
       [nbox(t('ac=')), nbox('Smaller integer:'), nbox('Larger integer:'), fbox('Factored form:', [v], { placeholder: 'e.g. (2x + 1)(x + 3)' })],
       [numChk(o.ac, [{ v: o.a + o.c, code: 'u4x-ac-sum', hint: t('ac') + ' means ' + t('a\\times c') + ': multiply.' }, { v: o.c, code: 'u4x-ac-c', hint: 'When ' + t('a\\ne 1') + ', use the product ' + t('a\\times c') + ', not just ' + t('c') + '.' }]),
-        K.number(lo, function (vv) { return vv === lo ? null : pairHint(vv); }), K.number(hi, function (vv) { return vv === hi ? null : pairHint(vv); }), fc.check],
+        K.number(lo, function (vv) { return vv === lo ? null : pairHint(vv, 'smaller'); }), K.number(hi, function (vv) { return vv === hi ? null : pairHint(vv, 'larger'); }), fc.check],
       key, t('ac=' + o.ac) + '; ' + t(lo) + ' and ' + t(hi) + '; ' + t(FX.tex(o.list)),
       axSol(o), ['Multiply ' + t('a') + ' by ' + t('c') + ', then list the factor pairs of ' + t(o.ac) + ': which pair adds to ' + t(o.b) + '?', 'Split the middle term with that pair, group in twos, and take out the common bracket.'], 'decomposition steps');
+    var chk = pt.check, same = function (s, n) { return String(s == null ? '' : s).replace(/\s/g, '') === String(n); };
+    pt.check = function (resp) { if (resp && same(resp[1], hi) && same(resp[2], lo)) { resp = resp.slice(); resp[1] = String(lo); resp[2] = String(hi); } return chk(resp); }; // the right pair in the other order
     pt.bad = badRows(key, 0, [o.a + o.c, o.c]).concat(badRows(key, 3, fc.bad));
     return pt;
   }
@@ -396,17 +398,19 @@
     return fpart(t(tx(o.full)), o.list, axWrongs(o), axSol(o), ['Find two integers with product ' + t('ac=' + o.ac) + ' and sum ' + t(o.b) + '. ' + signHint(o.b, o.ac), 'Split the middle term with them, group in pairs, and take out the common bracket. Expand to check.'], 'decomposition, c < 0');
   }
   function l5q3(r) {
-    var v = r.pick(['x', 'y']), s = pickWhere(function () { return { a: r.pick([2, 3, 5, 6]), c: r.int(2, 12) }; }, function (s) {
+    var v = r.pick(['x', 'y']), s = pickWhere(function () { return { a: r.pick([2, 3, 4, 5, 6, 7]), c: r.int(2, 12) }; }, function (s) {
       var ac = s.a * s.c, sums = posPairs(ac).map(function (pq) { return pq[0] + pq[1]; }), cs = posPairs(s.c).map(function (pq) { return pq[0] + pq[1]; });
-      return sums.length >= 3 && sums.length <= 5 && cs.join() !== sums.join() && s.c !== s.a && ac <= 72;
+      return gcd(s.a, s.c) === 1 && sums.length >= 3 && sums.length <= 5 && cs.join() !== sums.join() && ac <= 72; // gcd(a, c) = 1: otherwise every b sharing that factor “factors” by a GCF alone
     });
     var a = s.a, c = s.c, ac = a * c, pairs = posPairs(ac), sums = pairs.map(function (pq) { return pq[0] + pq[1]; }).sort(function (x, y) { return x - y; }), csums = posPairs(c).map(function (pq) { return pq[0] + pq[1]; }).sort(function (x, y) { return x - y; });
     var expr = a + v + '^{2}+b' + v + '+' + c;
     return { prompt: 'List <b>every positive</b> integer ' + t('b') + ' for which ' + t(expr) + ' can be factored over the integers.', input: { type: 'list' }, key: sums, answer: t(sums.join(',\\ ')),
       check: function (resp) {
         if (!resp || !resp.length) return form('empty', 'Add the values one at a time (press Enter or comma after each).');
+        resp = resp.map(Number); if (resp.some(function (x) { return !Number.isInteger(x); })) return wrong('u4x-not-b', 'Each value of ' + t('b') + ' is an integer.');
         var seen = {}; for (var i = 0; i < resp.length; i++) { if (seen[resp[i]]) return form('duplicate', 'You listed ' + t(resp[i]) + ' more than once.'); seen[resp[i]] = 1; }
-        var srt = resp.slice().sort(function (x, y) { return x - y; });
+        var srt = resp.slice().sort(function (x, y) { return x - y; }), pos = srt.filter(function (x) { return x > 0; });
+        if (pos.length < srt.length) return pos.join() === sums.join() ? form('u4x-neg-b', 'Your positive values are all right — the question asks for <b>positive</b> values of ' + t('b') + ' only, so leave out the others.') : wrong('u4x-not-b', 'The question asks for <b>positive</b> values of ' + t('b') + ' only. For each positive factor pair of ' + t('ac=' + ac) + ', the sum is one value of ' + t('b') + '.');
         if (srt.join() === csums.join()) return wrong('u4x-pairs-c', 'Those come from the factor pairs of ' + t(c) + '. With ' + t('a=' + a) + ', the decomposition pair must multiply to ' + t('ac=' + ac) + '.');
         var bad = resp.filter(function (x) { return sums.indexOf(x) < 0; });
         if (bad.length) return wrong('u4x-not-b', 'For ' + t('b=' + bad[0]) + ' no pair of integers multiplies to ' + t('ac=' + ac) + ' and adds to ' + t(bad[0]) + ', so ' + t(a + v + '^{2}+' + bad[0] + v + '+' + c) + ' doesn’t factor.');
@@ -415,7 +419,7 @@
       },
       solution: 'Decomposition needs two integers with product ' + t('ac=' + a + '\\times ' + c + '=' + ac) + ' and sum ' + t('b') + '. For a positive ' + t('b') + ', use the positive factor pairs of ' + t(ac) + ':<br>' + pairs.map(function (pq) { return t(pq[0] + '\\times ' + pq[1]) + ' → ' + t('b=' + (pq[0] + pq[1])); }).join(', ') + '.<br>So ' + t('b=' + sums.join(',\\ ')) + '. (For example, ' + t('b=' + sums[0]) + ' gives ' + t(FX.tex(cleanFromPair(a, c, pairs[pairs.length - 1], v))) + '.)',
       hints: ['When ' + t('a\\ne 1') + ', the decomposition pair multiplies to ' + t('ac') + ', not ' + t('c') + '.', 'Every positive factor pair of ' + t(ac) + ' gives one value of ' + t('b') + ': its sum.'], text: 'all positive b for ' + a + 'x^2+bx+' + c,
-      bad: [csums, sums.slice(1), sums.concat([sums[sums.length - 1] + 1])] };
+      bad: [csums, sums.slice(1), sums.concat([sums[sums.length - 1] + 1]), sums.slice(1).concat([-sums[0]])] };
   }
   /* the factorization of ax² + (m+n)x + c from a pair m·n = ac */
   function cleanFromPair(a, c, pq, v) {

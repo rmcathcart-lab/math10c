@@ -81,6 +81,28 @@
   function dots(x, n) { return F((+x).toFixed(n == null ? 3 : n)) + '\\ldots'; }
   function near(a, b) { return Math.abs(a - b) < 1e-7 * Math.max(1, Math.abs(a), Math.abs(b)); }
   function num(resp) { var p = HW.parse.number(resp); return p.ok ? p.value : null; }
+  /* a number, or a simple fraction (1/4, \\frac{1}{4}) or a factor written ×9 / x9 / 9 times */
+  function numF(resp) {
+    var v = num(resp); if (v != null) return v;
+    var s = String(resp == null ? '' : resp).replace(/\\text\{([^{}]*)\}/g, '$1').replace(/^\s*(\\times|×|x|\*)\s*/i, '').replace(/\s*times\s*$/i, '').trim();
+    v = num(s); if (v != null) return v;
+    var m = /^(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/.exec(s) || /^(-?\d+(?:\.\d+)?)?\\[dt]?frac\{(\d+(?:\.\d+)?)\}\{(\d+(?:\.\d+)?)\}$/.exec(s);
+    if (m && m.length === 3 && Number(m[2])) return Number(m[1]) / Number(m[2]);
+    if (m && m.length === 4 && !m[1] && Number(m[3])) return Number(m[2]) / Number(m[3]);
+    return null;
+  }
+  /* a number typed with its unit in a box that already shows the unit: mark the number (as test mode does for one-box parts) */
+  var UNIT_END = /\s*(°|degrees?|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?|\\?%)\s*\.?\s*$/;
+  function unitWrap(ck) {
+    return function (resp) {
+      var r = ck(resp);
+      if (r && r.v === 'form' && r.code === 'units' && typeof resp === 'string') {
+        var bare = resp.replace(/\\(text|mathrm)\{\s*([^{}]*)\}/g, '$2').replace(/\^\{?\\circ\}?|\\degree/g, '').replace(/\\[,;: ]|~/g, ' ').replace(UNIT_END, '');
+        var r2 = ck(bare); if (!(r2.v === 'form' && r2.code === 'units')) return r2;
+      }
+      return r;
+    };
+  }
   function decs(resp) { var s = HW.parse.plain(String(resp == null ? '' : resp)).replace(/\s/g, ''); return (s.split('.')[1] || '').length; }
   function decsOf(x) { return (S(x).split('.')[1] || '').length; }
   function A(v, code, hint) { return { v: v, code: code, hint: hint }; }
@@ -105,10 +127,9 @@
     opt = opt || {};
     var base = K.number(x, null);
     return function (resp) {
-      var p = HW.parse.number(resp);
-      if (!p.ok) return base(resp);
-      var v = p.value;
-      if (near(v, x)) { if (opt.dp != null && decs(resp) < opt.dp) return form('u10t-precision', opt.precisionHint || ('Right value! Write it to ' + opt.dp + ' decimal places: ' + t(fx(x, opt.dp)) + '.')); return ok(); }
+      var v = numF(resp);
+      if (v == null) return base(resp);
+      if (near(v, x)) { if (opt.dp != null && decs(resp) < opt.dp && !opt.zeroOK) return form('u10t-precision', opt.precisionHint || ('Right value! Write it to ' + opt.dp + ' decimal places: ' + t(fx(x, opt.dp)) + '.')); return ok(); }
       for (var i = 0; i < (alts || []).length; i++) if (near(v, alts[i].v)) return wrong(alts[i].code, alts[i].hint);
       if (x !== 0 && Math.abs(v - x) <= 0.006 * Math.abs(x) && decs(resp) < decsOf(x)) return form('u10t-rounded', 'Close — but this value comes out exactly. Give it without rounding.');
       return wrong('value', null);
@@ -138,7 +159,7 @@
   /* one number box. unit = TeX unit shown after the box (e.g. U3('cm')), opt.before, opt.also, opt.exactDp */
   function numP(prompt, x, dp, unit, alts, sol, hints, text, opt) {
     opt = opt || {};
-    var ck = dp == null ? exactCk(x, alts, { dp: opt.exactDp, precisionHint: opt.precisionHint }) : nearCk(x, dp, alts, opt);
+    var ck = dp == null ? exactCk(x, alts, { dp: opt.exactDp, precisionHint: opt.precisionHint, zeroOK: opt.zeroOK }) : nearCk(x, dp, alts, opt);
     var key = dp == null && opt.exactDp != null ? fx(x, opt.exactDp) : keyOf(x, dp);
     var after = unit ? t(unit.replace(/^\\text\{ /, '\\text{')) : undefined;
     var p = { prompt: prompt, input: { type: 'number', after: after, before: opt.before }, check: ck, key: key,
@@ -149,7 +170,7 @@
   /* several boxes: specs [{ name, label, before, after (TeX unit), x, dp, alts, check, key, mode, placeholder, ans }] */
   function fieldsP(prompt, specs, sol, hints, text, extraBad) {
     var fields = specs.map(function (s) { return { name: s.name || s.label, label: s.label, before: s.before, after: s.after ? t(s.after.replace(/^\\text\{ /, '\\text{')) : s.afterHtml, mode: s.mode, placeholder: s.placeholder, wide: s.wide }; });
-    var checks = specs.map(function (s) { return s.check || (s.dp == null ? exactCk(s.x, s.alts, { dp: s.exactDp }) : nearCk(s.x, s.dp, s.alts, { also: s.also })); });
+    var checks = specs.map(function (s) { return s.check || unitWrap(s.dp == null ? exactCk(s.x, s.alts, { dp: s.exactDp }) : nearCk(s.x, s.dp, s.alts, { also: s.also })); });
     var keys = specs.map(function (s) { return s.key != null ? s.key : s.dp == null && s.exactDp != null ? fx(s.x, s.exactDp) : keyOf(s.x, s.dp); });
     var ans = specs.map(function (s, i) { return (s.label || s.name) + ' ' + (s.ans || ((s.before || '') + t(F(keys[i]) + (s.after || '')))); }).join('<br>');
     var p = P.fields(prompt, fields, checks, keys, ans, sol, hints, text);
@@ -574,7 +595,7 @@
           return numP('Read the vernier caliper, in millimetres.' + vernSvg(M, Nf), x, null, U('mm'), vernAlts(M, Nf),
             '<b>Coarse</b> (main scale): the index — the vernier’s 0 — has passed the ' + t(M) + ' mm mark, so the coarse reading is ' + t(M + '\\text{ mm}') + '.<br><b>Fine</b> (vernier): mark ' + t(Nf) + ' lines up with a main-scale mark, so ' + t(Nf + '\\times0.05=' + fx(0.05 * Nf, 2) + '\\text{ mm}') + '.<br>' + t(M + '+' + fx(0.05 * Nf, 2) + '=\\mathbf{' + fx(x, 2) + '}\\text{ mm}') + ', written to two decimals because the caliper reads to ' + t('0.05') + ' mm.',
             ['Coarse reading: the last whole millimetre on the main scale <b>at or before</b> the vernier’s 0 (the red index).', 'Fine reading: find the one vernier mark that lines up exactly with a main-scale mark; multiply its number by ' + t('0.05') + ' mm.'], 'vernier ' + fx(x, 2),
-            { exactDp: 2, precisionHint: 'Right value! A caliper reads to ' + t('0.05') + ' mm, so state the reading with two decimals: ' + t(fx(x, 2)) + ' mm.' });
+            { exactDp: 2, zeroOK: true });   // the paper key: “23.7 is fine, but 23.70 shows the precision”
         } }] },
       { num: '6', outcome: 'M1', shared: q6Shared,
         stem: function (s) { return s.who + ' estimated the ' + s.obj + ' as ' + t(s.n) + ' ' + s.refTxt + '. With ' + s.tool + ', it measures ' + s.measTxt + '. Was the estimate reasonable?<br><span style="font-size:0.92em">Use: an estimate within ' + t('10\\%') + ' of the measured length is reasonable.<br>Percent difference ' + t('=\\dfrac{|\\text{estimate}-\\text{measured}|}{\\text{measured}}\\times100\\%') + '.</span>'; },
@@ -709,7 +730,7 @@
           var x = v * (toMi ? KM_MI : MI_KM), what = r.pick(['A road race', 'A bike route', 'A hiking trail', 'A ski trail', 'A charity walk']);
           return numP(what + ' is ' + t(N(v) + (toMi ? '\\text{ km}' : '\\text{ mi}')) + ' long. Find its length in ' + (toMi ? 'miles' : 'kilometres') + ', to the nearest tenth.', x, 1, U(toMi ? 'mi' : 'km'), [A(v / (toMi ? KM_MI : MI_KM), 'u10t-conv-dir', toMi ? 'A mile is longer than a kilometre, so there are <b>fewer</b> miles: multiply by ' + t('0.6214') + ' (or divide by ' + t('1.6093') + ').' : 'A kilometre is shorter than a mile, so there are <b>more</b> kilometres: multiply by ' + t('1.6093') + '.'), A(v * (toMi ? MI_KM : KM_MI), 'u10t-conv-dir', 'Check the factor: use ' + t(toMi ? '1\\text{ km}=0.6214\\text{ mi}' : '1\\text{ mi}=1.6093\\text{ km}') + '.')],
             t(N(v) + (toMi ? '\\text{ km}\\times\\dfrac{0.6214\\text{ mi}}{1\\text{ km}}' : '\\text{ mi}\\times\\dfrac{1.6093\\text{ km}}{1\\text{ mi}}') + '=' + dots(x, 3) + ap(x, 1, toMi ? 'mi' : 'km')),
-            ['Write the factor so the old unit cancels.'], (toMi ? 'km to mi ' : 'mi to km ') + v);
+            ['Write the factor so the old unit cancels.'], (toMi ? 'km to mi ' : 'mi to km ') + v, { also: [toMi ? v / MI_KM : v / KM_MI] });
         } },
         { id: '11c', sub: 'c', outcome: 'M2', level: 'PRG', make: function (r) {
           var v = find(function () { return { m: step(r, 1.5, 1.95, 0.01), who: r.pick(NAMES) }; }, function (v) { return !bord(v.m * 100 / IN_CM, 0, 0.06); }, { m: 1.85, who: 'Jordan' });
@@ -737,7 +758,8 @@
             : [A(v * MI_KM, 'u10t-rate-part', 'That is in km/h. Change kilometres to metres and hours to seconds as well.'), A(v * MI_KM * 1000 / 60, 'u10t-rate-time', 'There are ' + t('3600') + ' seconds in an hour, not ' + t('60') + '.'), A(v * MI_KM * 1000, 'u10t-rate-time', 'Change hours to seconds too: ' + t('\\times\\dfrac{1\\text{ h}}{3600\\text{ s}}') + '.'), A(v * KM_MI * 1000 / 3600, 'u10t-conv-dir', 'Check the mi–km factor: use ' + t('1\\text{ mi}=1.6093\\text{ km}') + '.')];
           return numP(c[0] + ' ' + t(v + (toMph ? '\\text{ m/s}' : '\\text{ mph}')) + '. Use unit analysis to convert this speed to ' + (toMph ? 'miles per hour' : 'metres per second') + ', to the nearest tenth.', x, 1, U(c[1]), alts,
             t((toMph ? '\\dfrac{' + v + '\\text{ m}}{1\\text{ s}}\\times\\dfrac{3600\\text{ s}}{1\\text{ h}}\\times\\dfrac{1\\text{ km}}{1000\\text{ m}}\\times\\dfrac{0.6214\\text{ mi}}{1\\text{ km}}' : '\\dfrac{' + v + '\\text{ mi}}{1\\text{ h}}\\times\\dfrac{1.6093\\text{ km}}{1\\text{ mi}}\\times\\dfrac{1000\\text{ m}}{1\\text{ km}}\\times\\dfrac{1\\text{ h}}{3600\\text{ s}}')) + '<br>' + t('=' + dots(x, 3) + ap(x, 1, c[1])) + ' (' + (toMph ? 'm, s and km' : 'mi, km and h') + ' all cancel).',
-            ['Change one unit at a time: write each factor so the unit you don’t want cancels.', 'There are ' + t('3600') + ' s in an hour.'], 'speed ' + v + (toMph ? ' m/s' : ' mph'));
+            ['Change one unit at a time: write each factor so the unit you don’t want cancels.', 'There are ' + t('3600') + ' s in an hour.'], 'speed ' + v + (toMph ? ' m/s' : ' mph'),
+            { also: toMph ? [v * 3.6 / MI_KM, v * 3.2808 * 3600 / 5280, v * 3600 / FT_M / 5280, v * 3600 / (0.9144 * 1760)] : [v / KM_MI * 1000 / 3600, v * 5280 * FT_M / 3600, v * 5280 / 3.2808 / 3600, v * 1760 * 0.9144 / 3600] });
         } }] },
 
       /* ======================= M2 · Mastery ======================= */
@@ -769,11 +791,11 @@
             if (s.k === 'mpg') { var fuel = s.D * s.a / 100, cost = fuel * s.pr, c2 = s.D * rd(s.a, 1) / 100 * s.pr;
               return numP('Gas costs ' + t('\\$' + fx(s.pr, 2)) + '/L. What will the fuel cost for a ' + t(s.D) + ' km trip?', cost, 2, '', [A(s.D / s.a * s.pr, 'u10t-cost-part', 'The rating is litres for every ' + t('100') + ' km: fuel ' + t('=' + s.D + '\\times\\dfrac{' + FX(s.a, 3) + '}{100}') + '.'), A(s.D * s.a * s.pr, 'u10t-cost-part', 'The rating is per ' + t('100') + ' km — divide by ' + t('100') + '.'), A(s.D / s.kmL, 'u10t-cost-part', 'That is the fuel in litres. Multiply by the price per litre.')],
                 'Fuel: ' + t(s.D + '\\times\\dfrac{' + FX(s.a, 3) + '}{100}=' + FX(fuel, 2) + '\\text{ L}') + '<br>Cost: ' + t(FX(fuel, 2) + '\\times' + fx(s.pr, 2) + '\\approx\\mathbf{\\$' + fx(cost, 2) + '}') + ' (' + t('\\$' + fx(c2, 2)) + ' from the rounded rating is also accepted).',
-                ['Fuel used = distance × (litres per 100 km) ÷ 100.', 'Cost = litres × price per litre.'], 'trip cost ' + s.D + ' km', { before: '$', also: [c2] }); }
+                ['Fuel used = distance × (litres per 100 km) ÷ 100.', 'Cost = litres × price per litre.'], 'trip cost ' + s.D + ' km', { before: '$', also: [c2, rd(fuel, 2) * s.pr, rd(s.D * rd(s.a, 1) / 100, 2) * s.pr, s.D * rd(s.a, 2) / 100 * s.pr, s.D * rd(s.a, 3) / 100 * s.pr] }); }
             if (s.k === 'l100') { var gal = s.D / s.a, cost2 = gal * s.pr, c3 = s.D / rd(s.a, 1) * s.pr;
               return numP('On a ' + t(s.D) + '-mile trip in the US, gas costs US' + t('\\$' + fx(s.pr, 2)) + ' per US gallon. What will the fuel cost, in US dollars?', cost2, 2, '', [A(s.D * s.a * s.pr, 'u10t-cost-part', 'Miles per gallon: the gallons used are ' + t('\\text{miles}\\div\\text{mpg}') + ', not times.'), A(s.D / s.a, 'u10t-cost-part', 'That is the fuel in gallons. Multiply by the price per gallon.'), A(s.D * s.l / 100 * s.pr, 'u10t-no-convert', 'The trip is in miles and the price is per gallon: use the mpg rating from part (a).')],
                 'Fuel: ' + t(s.D + '\\div' + FX(s.a, 3) + '=' + FX(gal, 2) + '\\text{ gal}') + '<br>Cost: ' + t(FX(gal, 2) + '\\times' + fx(s.pr, 2) + '\\approx\\mathbf{\\$' + fx(cost2, 2) + '}') + ' (' + t('\\$' + fx(c3, 2)) + ' from the rounded rating is also accepted).',
-                ['Gallons used = miles ÷ mpg.', 'Cost = gallons × price per gallon.'], 'trip cost ' + s.D + ' mi', { before: 'US$', also: [c3] }); }
+                ['Gallons used = miles ÷ mpg.', 'Cost = gallons × price per gallon.'], 'trip cost ' + s.D + ' mi', { before: 'US$', also: [c3, rd(gal, 2) * s.pr, rd(s.D / rd(s.a, 1), 2) * s.pr, s.D / rd(s.a, 2) * s.pr] }); }
             var save = (s.ab - s.a) * s.T, sv2 = (s.ab - rd(s.a, 2)) * s.T;
             return numP('Gas in Alberta costs C' + t('\\$' + fx(s.ab, 2)) + '/L. How much would ' + s.who + ' save, in Canadian dollars, by filling a ' + t(s.T) + ' L tank in Montana?', save, 2, '', [A(s.ab * s.T, 'u10t-cost-part', 'That is what the tank costs in Alberta. Find the <b>difference</b> per litre first.'), A(s.a * s.T, 'u10t-cost-part', 'That is what the tank costs in Montana. The saving is the difference between the two costs.'), A((s.ab - s.p / GAL_L) * s.T, 'u10t-exch-none', 'Use the Montana price in <b>Canadian</b> dollars from part (a).')],
               'Saving per litre: ' + t(fx(s.ab, 2) + '-' + FX(s.a, 4) + '=' + FX(s.ab - s.a, 4)) + '<br>' + t(FX(s.ab - s.a, 4) + '\\times' + s.T + '\\approx\\mathbf{\\$' + fx(save, 2) + '}') + ' (' + t('\\$' + fx(sv2, 2)) + ' from the rounded price is also accepted).',
@@ -799,7 +821,7 @@
             else if (s.k === 'yddec') { T = [{ html: 'A yard has ' + t('3') + ' feet, not ' + t('10') + ', so ' + t(s.I) + ' ft is ' + t('\\tfrac{' + s.I + '}{3}') + ' of a yard, not ' + t('0.' + s.I) + ' yd.' }, { html: t(s.F + '.' + s.I + '\\text{ yd}') + ' means ' + t(s.F) + ' yd plus ' + t(s.I) + ' <b>tenths</b> of a yard.' }];
               Fs = [{ html: s.who + ' is right: the feet can be written after the decimal point.', why: 'Decimal places are tenths, but a foot is a third of a yard.' }, { html: 'The error is the units: the answer should be in feet, not yards.', why: 'Yards are fine; the problem is writing feet as tenths of a yard.' }, { html: t(s.F + '\\text{ yd }' + s.I + '\\text{ ft}') + ' is shorter than ' + t(s.F + '.' + s.I + '\\text{ yd}') + '.', why: t(s.I) + ' ft ' + t('\\approx' + fx(s.I / 3, 2)) + ' yd, which is more than ' + t('0.' + s.I) + ' yd.' }]; }
             else { T = [{ html: 'An inch is longer than a centimetre, so the number of inches must be <b>smaller</b> than ' + t(s.cm) + '.' }, { html: s.who + ' multiplied by ' + t('2.54') + ' but should have divided by ' + t('2.54') + '.' }];
-              Fs = [{ html: 'A centimetre is longer than an inch, so the number of inches must be bigger.', why: t('1\\text{ in}\\approx2.5\\text{ cm}') + ': an inch is the longer unit.' }, { html: s.who + '’s method is right; only the rounding is wrong.', why: 'The method is wrong: changing to a bigger unit needs a smaller number.' }, { html: 'He should have multiplied by ' + t('0.3048') + ' instead.', why: t('0.3048') + ' changes feet to metres; inches and centimetres use ' + t('2.54') + '.' }]; }
+              Fs = [{ html: 'A centimetre is longer than an inch, so the number of inches must be bigger.', why: t('1\\text{ in}\\approx2.5\\text{ cm}') + ': an inch is the longer unit.' }, { html: s.who + '’s method is right; only the rounding is wrong.', why: 'The method is wrong: changing to a bigger unit needs a smaller number.' }, { html: s.who + ' should have multiplied by ' + t('0.3048') + ' instead.', why: t('0.3048') + ' changes feet to metres; inches and centimetres use ' + t('2.54') + '.' }]; }
             var pick = r.shuffle(T.concat(r.sample(Fs, 2)));
             var rows = pick.map(function (x, i) { return { id: 's' + i, html: x.html, label: 'statement ' + (i + 1) }; }), want = {};
             pick.forEach(function (x, i) { want['s' + i] = x.why ? 'F' : 'T'; });
@@ -953,7 +975,7 @@
             if (s.k === 'tent') { var Aw = 2 * s.b * s.sl;
               return numP('How much nylon is needed, to the nearest tenth of a square metre?', Aw, 1, U2('m'), [A(Aw + s.b * s.b, 'u10t-sa-extra-base', 'The tent has <b>no floor</b>: count only the four walls.'), A(2 * s.b * s.h, 'u10t-sa-height', 'Each wall’s height is the <b>slant</b> height, not the tent’s height. Find it first.'), A(4 * s.b * s.sl, 'u10t-half', 'Each wall is a triangle: ' + t('\\tfrac12bs') + '.'), A(2 * s.b * Math.sqrt(s.h * s.h + s.b * s.b), 'u10t-half-edge', 'In the slant-height triangle, use half the base side.')],
                 'Slant height: ' + t('s=\\sqrt{' + N(s.h) + '^2+' + N(s.b / 2) + '^2}=' + dots(s.sl, 3) + '\\text{ m}') + '<br>No floor, so only the four walls: ' + t('4\\times\\tfrac12(' + N(s.b) + ')(' + FX(s.sl, 3) + ')' + ap(Aw, 1, 'm', 2)),
-                ['Find the slant height of a wall first.', 'Which surfaces need nylon? There is no floor.'], 'tent nylon ' + s.b + ',' + s.h); }
+                ['Find the slant height of a wall first.', 'Which surfaces need nylon? There is no floor.'], 'tent nylon ' + s.b + ',' + s.h, { also: [2 * s.b * rd(s.sl, 2), 2 * s.b * rd(s.sl, 3)] }); }
             var Ac = PI * s.r * s.sl, A2 = PI * s.r * Math.sqrt(s.hr * s.hr + s.r * s.r);
             return numP('How much ' + (s.k === 'cup' ? 'paper' : 'metal') + ' is needed, to the nearest square centimetre?', Ac, 0, U2('cm'), [A(Ac + PI * s.r * s.r, 'u10t-sa-extra-base', 'The ' + (s.k === 'cup' ? 'cup' : 'funnel') + ' is open at the top: there is no circular base. Use only the curved surface ' + t('\\pi rs') + '.'), A(PI * s.r * s.h, 'u10t-sa-height', 'The curved surface uses the <b>slant</b> height, ' + t('s=\\sqrt{h^2+r^2}') + '.'), A(PI * s.r * s.r + PI * s.r * s.h, 'u10t-sa-height', 'Use the slant height, and leave out the base (the top is open).')],
               t('s=\\sqrt{' + FX(s.h, 3) + '^2+' + s.r + '^2}=' + dots(s.sl, 3) + '\\text{ cm}') + '<br>Open at the top, so only the curved surface: ' + t('\\pi rs=\\pi(' + s.r + ')(' + FX(s.sl, 3) + ')' + ap(Ac, 0, 'cm', 2)),
@@ -1082,7 +1104,8 @@
             var w = s.k === 'cone' ? 'scoop' : s.k === 'bowl' ? 'bowl' : 'globe', dst = s.k === 'cone' ? s.r * s.r * s.h / 3 : s.r * s.r * s.h, frac = s.k === 'bowl' ? '\\tfrac23' : '\\tfrac43', fk = s.k === 'bowl' ? 2 / 3 : 4 / 3, R3 = dst / fk;
             return numP('What ' + w + ' radius would exactly fill the ' + (s.k === 'cone' ? 'cone' : s.k === 'bowl' ? 'container' : 'vase') + '? Round to the nearest hundredth.', s.fill, 2, U('cm'), [A(R3, 'u10t-no-root', 'That is ' + t('R^3') + '. Take the cube root.'), A(Math.sqrt(R3), 'u10t-sqrt', 'Undo a cube with a <b>cube</b> root.'), A(Math.cbrt(dst), 'u10t-v-no43', 'Divide by ' + t(frac) + ' as well: ' + t('R^3=' + N(dst) + '\\div' + frac) + '.'), A(Math.cbrt(dst * fk), 'u10t-v-no43', 'Divide by ' + t(frac) + ', don’t multiply.')],
               t(frac + '\\pi R^3=' + piC(dst) + '\\pi') + ', so ' + t('R^3=' + piC(dst).replace(/\\ldots$/, '') + '\\div' + frac + '=' + N(R3)) + '<br>' + t('R=\\sqrt[3]{' + N(R3) + '}' + ap(s.fill, 2, 'cm')),
-              ['Set the ' + w + '’s volume formula equal to the ' + (s.k === 'cone' ? 'cone' : 'container') + '’s volume.', 'The ' + t('\\pi') + ' cancels; solve for ' + t('R^3') + ', then take the cube root.'], 'fill radius ' + s.k);
+              ['Set the ' + w + '’s volume formula equal to the ' + (s.k === 'cone' ? 'cone' : 'container') + '’s volume.', 'The ' + t('\\pi') + ' cancels; solve for ' + t('R^3') + ', then take the cube root.'], 'fill radius ' + s.k,
+              { also: [Math.cbrt(rd(PI * dst, 1) / (fk * PI))] });   // worked from the rounded volume in (a)
           } }] }
     ]
   });

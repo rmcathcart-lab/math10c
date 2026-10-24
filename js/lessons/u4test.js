@@ -26,13 +26,13 @@
     'u4t-cut-not-squared': 'Subtracted the side of the cut square instead of its area', 'u4t-side-minus': 'Took the cut off the side length instead of the area',
     'u4t-two-not-four': 'Took only one 2 out (the common factor is 4)', 'u4t-tile-count': 'Mixed up x-tiles and unit tiles',
     'u4t-no-root': 'Used a square instead of its square root in a bracket', 'u4t-mental-dos': 'Squared the difference instead of multiplying the difference and the sum',
-    'u4t-mental-arith': 'Arithmetic slip in the last step', 'u4t-pair-as-factors': 'Wrote the pair into the brackets as if a = 1', 'u4t-no-divide': 'Used ax ± m, ax ± n without dividing out a', 'u4t-not-dos': 'Not written as a difference of squares', 'u4t-show-how': 'Value given without the factoring step'
+    'u4t-mental-arith': 'Arithmetic slip in the last step', 'u4t-pair-as-factors': 'Wrote the pair into the brackets as if a = 1', 'u4t-no-divide': 'Used ax ± m, ax ± n without dividing out a', 'u4t-not-dos': 'Not written as a difference of squares', 'u4t-wrong-line': 'Picked the wrong line as the error', 'u4t-show-how': 'Value given without the factoring step'
   });
   HW.addPartial({
     'u4t-kept-error': 'n', 'u4t-expand-orig': 'n', 'u4t-dos-square': 'n', 'u4t-pst-dos': 'n', 'u4t-pair-sum': 'b', 'u4t-pair-product': 'b',
     'u4t-split': 'b', 'u4t-group': 'b', 'u4t-k-plus-c': 'b', 'u4t-k-one': 'b', 'u4t-k-pos': 'b', 'u4t-c-root': 'b', 'u4t-c-monic': 'b',
     'u4t-cut-not-squared': 's', 'u4t-side-minus': 'n', 'u4t-two-not-four': 's', 'u4t-tile-count': 'b', 'u4t-no-root': 'b',
-    'u4t-mental-dos': 'n', 'u4t-mental-arith': 's', 'u4t-pair-as-factors': 'n', 'u4t-no-divide': 'n'
+    'u4t-mental-dos': 'n', 'u4t-mental-arith': 's', 'u4t-pair-as-factors': 'n', 'u4t-no-divide': 'n', 'u4t-wrong-line': 'b'
   });
 
   /* ---------------- polynomial helpers ---------------- */
@@ -616,11 +616,12 @@
         parts: [
           { id: '14a', sub: 'a', outcome: 'AN5', level: 'MAS', make: function (r, z) {
             var sec = seq([M(z.m, 'x'), N(z.c)]);
-            return boxes('Find ' + z.name + '’s error: factor the second pair of Line 2 correctly.', [numBox('Second pair:', { before: t(sec + '='), after: t(z.Bt), name: 'Factor taken out of the second pair' })],
-              [numPlus(z.s, function (v) { if (v === -z.s) return { code: 'u4t-kept-error', hint: 'That is ' + z.name + '’s step. Expand it: ' + t('-' + z.s + z.Bt + '=' + seq([M(-z.m, 'x'), N(-z.c)])) + ', not ' + t(sec) + '.' }; return null; })],
-              [String(z.s)], t(sec + '=+' + z.s + z.Bt),
+            var lineWhy = { 1: 'Line 1 is right: ' + t(z.n + '\\times ' + z.m + '=' + z.ac) + ' and ' + t(z.n + '+' + z.m + '=' + z.b) + '.', 2: 'Line 2 is right: it splits ' + t(tx(M(z.b, 'x'))) + ' into ' + t(seq([M(z.n, 'x'), M(z.m, 'x')])) + '.', 4: 'Line 4 does follow from Line 3. The first mistake is earlier: expand each part of Line 3.' };
+            return boxes('Find ' + z.name + '’s error: which line is the <b>first</b> one that is wrong? Then fix it: factor the second pair of Line 2 correctly.', [numBox('First wrong line:', { before: 'Line', name: 'First wrong line' }), numBox('Second pair:', { before: t(sec + '='), after: t(z.Bt), name: 'Factor taken out of the second pair' })],
+              [K.number(3, function (v) { return lineWhy[v] ? { code: 'u4t-wrong-line', hint: lineWhy[v] } : null; }), numPlus(z.s, function (v) { if (v === -z.s) return { code: 'u4t-kept-error', hint: 'That is ' + z.name + '’s step. Expand it: ' + t('-' + z.s + z.Bt + '=' + seq([M(-z.m, 'x'), N(-z.c)])) + ', not ' + t(sec) + '.' }; return null; })],
+              ['3', String(z.s)], 'Line 3: ' + t(sec + '=+' + z.s + z.Bt),
               'Line 3 is wrong: ' + t(sec + '=+' + z.s + z.Bt) + ', not ' + t('-' + z.s + z.Bt) + ' (that would give ' + t(seq([M(-z.m, 'x'), N(-z.c)])) + '). Lines 1 and 2 are right: ' + t(z.n + '\\times ' + z.m + '=' + z.ac) + ' and ' + t(z.n + '+' + z.m + '=' + z.b) + '.',
-              ['Expand each line and compare it with the line before.', 'What do you multiply ' + t(z.Bt) + ' by to get ' + t(sec) + '?'], 'Q14 error ' + plain(z.poly), [[String(-z.s)]], [['+' + z.s]]);
+              ['Expand each line and compare it with the line before.', 'What do you multiply ' + t(z.Bt) + ' by to get ' + t(sec) + '?'], 'Q14 error ' + plain(z.poly), [['3', String(-z.s)], ['2', String(z.s)], ['4', String(z.s)]], [['3', '+' + z.s]]);
           } },
           { id: '14b', sub: 'b', outcome: 'AN5', level: 'MAS', make: function (r, z) {
             return fac('Write the correct factored form of ' + t(z.poly) + '.', z.Ft, [{ is: z.stu, code: 'u4t-kept-error', hint: 'That is ' + z.name + '’s answer. Expand it: the middle term comes out wrong. Fix the sign from Line 3.' },
@@ -747,6 +748,7 @@
               var top = strip(a.ast), isSqr = function (n) { n = strip(n); return n && n.t === 'pow' && n.b && n.b.t === 'num' && n.b.v === 2; };
               if (P.eq(rp.p, A)) {
                 if (top && top.t === 'sub' && isSqr(top.a) && isSqr(top.b)) return ok();
+                if (top && top.t === 'sub' && isSqr(top.a) && strip(top.b).t === 'num' && strip(top.b).v === z.k * z.k) return ok(); // (2x+s)² − k², with k² worked out
                 return form('u4t-not-dos', 'Right area — now write it as a difference of two squares, ' + t('A^{2}-B^{2}') + ': the big square minus the cut square.');
               }
               if (P.eq(rp.p, P.sub(P.pow(big, 2), N(z.k)))) return wrong('u4t-cut-not-squared', 'The cut piece is a square of side ' + t(z.k) + ': its area is ' + t(z.k + '^{2}') + ', not ' + t(z.k) + '.');
@@ -757,7 +759,7 @@
             var p = KP.math('Write the area of ' + z.c.rest + ' as a difference of squares.', chk, key,
               'Area of the big square minus the area of the cut square:<br>' + t('\\text{Area}=(2x+' + z.s + ')^{2}-' + z.k + '^{2}') + ' ' + z.c.u + t('^{2}'),
               ['The whole square has area ' + t('(\\text{side})^{2}') + '. What area is removed?'], 'L-shape area as DoS ' + z.s + ',' + z.k, { keys: 'poly', vars: ['x'], before: t('\\text{Area}='), after: z.c.u + t('^{2}') });
-            p.bad = ['(2x+' + z.s + ')^{2}-' + z.k, tx(A), '(2x+' + (z.s - z.k) + ')^{2}'];
+            p.bad = (z.k > 1 ? ['(2x+' + z.s + ')^{2}-' + z.k] : []).concat([tx(A), '(2x+' + (z.s - z.k) + ')^{2}']);
             return p;
           } },
           { id: '19b', sub: 'b', outcome: 'AN5', level: 'MAS', make: function (r, z) {
@@ -790,6 +792,9 @@
             var top = strip(a.ast), isPw = function (n, base) { n = strip(n); return n && n.t === 'pow' && strip(n.a) && strip(n.a).t === 'num' && strip(n.a).v === base && n.b && n.b.t === 'num' && n.b.v === 2; };
             if (Math.abs(a.val - V) > 1e-9) { if (Math.abs(a.val - (c * c + d * d)) < 1e-9) return wrong('sign', '(Sum)(difference) gives a <b>difference</b> of squares: ' + t('(A+B)(A-B)=A^{2}-B^{2}') + '.'); return wrong('value', 'Write ' + t((c + d) + '=' + c + '+' + d) + ' and ' + t((c - d) + '=' + c + '-' + d) + ', then use ' + t('(A+B)(A-B)=A^{2}-B^{2}') + '.'); }
             if (top && top.t === 'sub' && isPw(top.a, c) && (isPw(top.b, d) || (strip(top.b).t === 'num' && strip(top.b).v === d * d))) return ok();
+            /* (c + d)(c − d), the sum-times-difference step that gives c² − d², shows the factoring too */
+            var sd = function (n) { n = strip(n); if (!n || (n.t !== 'add' && n.t !== 'sub')) return null; var u = strip(n.a), w = strip(n.b); return u && w && u.t === 'num' && w.t === 'num' && u.v === c && w.v === d ? n.t : null; };
+            if (top && top.t === 'mul' && sd(top.a) && sd(top.b) && sd(top.a) !== sd(top.b)) return ok();
             return form('u4t-show-how', 'Right value — now show the difference of squares, ' + t(c + '^{2}-' + d + '^{2}') + ', before working it out.');
           };
           return boxes('Calculate ' + t((c + d) + '\\times ' + (c - d)) + '.', [polyBox('Difference of squares:', [], { before: t((c + d) + '\\times ' + (c - d) + '='), name: 'Difference of squares', ph: 'e.g. A^2 − B^2' }), numBox('Value:', { before: t('='), name: 'Value' })],

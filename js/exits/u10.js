@@ -251,19 +251,19 @@
 
   /* ---------------- 10.1 ---------------- */
   var REFS = [
-    { ref: 'one pace (about 1 yd)', per: 3, unit: 'ft', what: function (n) { return 'You pace out the length of a school hallway and count ' + t(n) + ' paces. Using one pace as about ' + t('1\\text{ yd}') + ', estimate the length of the hallway in <b>feet</b>.'; }, lo: 12, hi: 40,
+    { ref: 'one pace (about 1 yd)', nm: 'pace', per: 3, unit: 'ft', what: function (n) { return 'You pace out the length of a school hallway and count ' + t(n) + ' paces. Using one pace as about ' + t('1\\text{ yd}') + ', estimate the length of the hallway in <b>feet</b>.'; }, lo: 12, hi: 40,
       alts: function (n) { return [A(n, 'pace-ft', 'One pace is about <b>1 yard</b>, and a yard is ' + t('3') + ' feet. Multiply the number of paces by ' + t('3') + '.'), A(36 * n, 'gave-other-unit', 'That is the estimate in <b>inches</b>. The question asks for feet (' + t('1\\text{ yd}=3\\text{ ft}') + ').'), A(12 * n, 'u10x-ref-unit', 'A yard is ' + t('3') + ' feet (it is ' + t('36') + ' inches). Multiply by ' + t('3') + ' to get feet.')]; },
       sol: function (n) { return t(n + '\\text{ paces}\\times 1\\text{ yd}=' + n + '\\text{ yd}') + ', and ' + t('1\\text{ yd}=3\\text{ ft}') + ', so ' + t(n + '\\times 3=' + 3 * n + '\\text{ ft}') + '.'; } },
-    { ref: 'one hand span (about 20 cm)', per: 0.2, unit: 'm', what: function (n) { return 'Laying your hand span along a whiteboard, it fits ' + t(n) + ' times. Using a hand span as about ' + t('20\\text{ cm}') + ', estimate the length of the whiteboard in <b>metres</b>.'; }, lo: 5, hi: 16,
+    { ref: 'one hand span (about 20 cm)', nm: 'hand span', per: 0.2, unit: 'm', what: function (n) { return 'Laying your hand span along a whiteboard, it fits ' + t(n) + ' times. Using a hand span as about ' + t('20\\text{ cm}') + ', estimate the length of the whiteboard in <b>metres</b>.'; }, lo: 5, hi: 16,
       alts: function (n) { return [A(20 * n, 'gave-other-unit', 'That is the estimate in <b>centimetres</b>. Divide by ' + t('100') + ' to get metres.'), A(n, 'u10x-ref-count', 'That is the number of hand spans. Multiply by the size of one span (about ' + t('20\\text{ cm}') + '), then change to metres.')]; },
       sol: function (n) { return t(n + '\\times 20\\text{ cm}=' + 20 * n + '\\text{ cm}') + ', and ' + t(20 * n + '\\text{ cm}\\div 100=' + nT(0.2 * n) + '\\text{ m}') + '.'; } },
-    { ref: 'the length of an adult foot (about 1 ft)', per: 12, unit: 'in', what: function (n) { return 'Placing your feet heel to toe along a rug, you count ' + t(n) + ' foot lengths. Using an adult foot as about ' + t('1\\text{ ft}') + ', estimate the length of the rug in <b>inches</b>.'; }, lo: 4, hi: 14,
+    { ref: 'the length of an adult foot (about 1 ft)', nm: 'foot length', per: 12, unit: 'in', what: function (n) { return 'Placing your feet heel to toe along a rug, you count ' + t(n) + ' foot lengths. Using an adult foot as about ' + t('1\\text{ ft}') + ', estimate the length of the rug in <b>inches</b>.'; }, lo: 4, hi: 14,
       alts: function (n) { return [A(n, 'u10x-ref-count', 'That is the estimate in <b>feet</b>. There are ' + t('12') + ' inches in a foot.'), A(10 * n, 'u10x-ref-unit', 'There are ' + t('12') + ' inches in a foot, not ' + t('10') + '.'), A(3 * n, 'u10x-ref-unit', 'A foot is ' + t('12') + ' inches. Multiply the number of foot lengths by ' + t('12') + '.')]; },
       sol: function (n) { return t(n + '\\text{ ft}\\times 12=' + 12 * n + '\\text{ in}') + '.'; } },
-    { ref: 'the width of a thumb (about 2.5 cm)', per: 25, unit: 'mm', what: function (n) { return 'Laying your thumb across a book again and again, it fits ' + t(n) + ' times. Using a thumb width as about ' + t('2.5\\text{ cm}') + ', estimate the width of the book in <b>millimetres</b>.'; }, lo: 6, hi: 14,
+    { ref: 'the width of a thumb (about 2.5 cm)', nm: 'thumb width', per: 25, unit: 'mm', what: function (n) { return 'Laying your thumb across a book again and again, it fits ' + t(n) + ' times. Using a thumb width as about ' + t('2.5\\text{ cm}') + ', estimate the width of the book in <b>millimetres</b>.'; }, lo: 6, hi: 14,
       alts: function (n) { return [A(2.5 * n, 'gave-other-unit', 'That is the estimate in <b>centimetres</b>. Multiply by ' + t('10') + ' to get millimetres.'), A(n, 'u10x-ref-count', 'That is the number of thumb widths. Multiply by the size of one thumb width.')]; },
       sol: function (n) { return t(n + '\\times 2.5\\text{ cm}=' + nT(2.5 * n) + '\\text{ cm}') + ', and ' + t(nT(2.5 * n) + '\\text{ cm}\\times 10=' + 25 * n + '\\text{ mm}') + '.'; } },
-    { ref: 'the width of an adult hand (about 4 in)', per: 4, unit: 'in', what: function (n) { return 'A pony’s height is measured by placing a hand flat against it again and again: it is ' + t(n) + ' hands tall. Using a hand width as about ' + t('4\\text{ in}') + ', estimate the pony’s height in <b>inches</b>.'; }, lo: 9, hi: 15,
+    { ref: 'the width of an adult hand (about 4 in)', nm: 'hand', per: 4, unit: 'in', what: function (n) { return 'A pony’s height is measured by placing a hand flat against it again and again: it is ' + t(n) + ' hands tall. Using a hand width as about ' + t('4\\text{ in}') + ', estimate the pony’s height in <b>inches</b>.'; }, lo: 9, hi: 15,
       alts: function (n) { return [A(n, 'u10x-ref-count', 'That is the number of hands. Each hand is about ' + t('4') + ' inches.'), A(4 * n / 12, 'gave-other-unit', 'That is the estimate in <b>feet</b>. The question asks for inches.')]; },
       sol: function (n) { return t(n + '\\times 4\\text{ in}=' + 4 * n + '\\text{ in}') + '.'; } }];
   var PCT_CTX = [
@@ -278,7 +278,7 @@
       { num: '1', outcome: 'M1', stem: 'Use the referent to estimate the measurement.', parts: [
         { id: '1', outcome: 'M1', level: 'BEG', make: function (r) {
           var c = r.pick(REFS), n = r.int(c.lo, c.hi), x = cl(n * c.per);
-          return numPart(c.what(n), x, { unit: c.unit, alts: c.alts(n), places: false }, 'Each ' + c.ref.replace(/ \(.*/, '') + ' is ' + c.ref.replace(/^.*\((.*)\)$/, '$1') + '.<br>' + c.sol(n),
+          return numPart(c.what(n), x, { unit: c.unit, alts: c.alts(n), places: false }, 'Each ' + c.nm + ' is ' + c.ref.replace(/^.*\((.*)\)$/, '$1') + '.<br>' + c.sol(n),
             ['Multiply the count by the size of one referent.', 'Then change to the unit the question asks for.'], 'referent ' + c.unit + ' ' + n);
         } }] },
       { num: '2', outcome: 'M1', stem: 'Compare an estimate with the measured value.', parts: [
@@ -307,6 +307,26 @@
             ['Coarse reading: the last sleeve mark the thimble has uncovered — whole millimetres above the line, half millimetres below it.', 'Fine reading: the thimble number on the index line, times ' + t('0.01') + ' mm.'], 'micrometer ' + fx(xm, 2));
           q.check = precisionWrap(q.check, xm, 2, 'A micrometer'); q.key = fx(xm, 2); q.answer = t(fx(xm, 2)) + ' mm';
           return q;
+        } }] },
+      { num: '4', outcome: 'M1', stem: 'Work backwards: from a measurement to what the instrument shows.', parts: [
+        { id: '4', outcome: 'M1', level: 'ADV', make: function (r) {
+          if (r.chance(0.5)) {
+            var M = r.int(14, 92), n = r.int(2, 19), x = cl(M + 0.05 * n), xs = fx(x, 2), fine = fx(0.05 * n, 2);
+            var nAlts = [A(5 * n, 'vern-tenths', 'Each vernier division is worth ' + t('0.05') + ' mm, so the division number is ' + t(fine + '\\div 0.05') + ', not the hundredths digits.')];
+            if (n % 2 === 0) nAlts.push(A(n / 2, 'vern-tenths', 'Each vernier division is worth ' + t('0.05') + ' mm, not ' + t('0.1') + ' mm: divide ' + t(fine) + ' by ' + t('0.05') + '.'));
+            return fieldsPart('A vernier caliper (main scale in millimetres, vernier ' + t('0.05') + ' mm per division) is set to read exactly ' + t(xs + '\\text{ mm}') + '. Which whole-millimetre mark on the main scale has the index (the vernier’s 0) just passed, and which vernier division lines up with a main-scale mark?',
+              [{ name: 'Main-scale mark', label: 'Main-scale mark:', after: 'mm', x: M, places: false, alts: [A(M + 1, 'vern-coarse', 'The index sits <b>past</b> the coarse mark: the coarse reading is the last whole millimetre at or before it, ' + t(xs) + ' rounded <b>down</b>.')] },
+                { name: 'Vernier division', label: 'Vernier division:', x: n, places: false, alts: nAlts }],
+              'Coarse reading: the whole millimetres, ' + t(M + '\\text{ mm}') + ' — the index has just passed the ' + t(M) + ' mm mark.<br>Fine reading: ' + t(xs + '-' + M + '=' + fine + '\\text{ mm}') + ', and each vernier division is ' + t('0.05') + ' mm, so ' + t(fine + '\\div 0.05=' + n) + ': vernier division ' + t(n) + ' lines up.<br>Check: ' + t(M + '+' + n + '\\times 0.05=' + xs) + ' mm.',
+              ['The coarse reading is the whole-millimetre part of the measurement.', 'The fine reading is what is left over; how many ' + t('0.05') + '-mm divisions make it?'], 'vernier backwards ' + xs);
+          }
+          var h = r.int(8, 30), f = r.int(3, 47), xm = cl(0.5 * h + 0.01 * f), xms = fx(xm, 2), c = 0.5 * h, half = h % 2 === 1;
+          var cAlts = half ? [A(Math.floor(xm), 'mic-half', 'Past ' + t(Math.floor(xm)) + ' mm the reading is more than ' + t(Math.floor(xm) + '.5') + ', so a half-millimetre mark below the line is showing: the sleeve reads ' + t(fx(c, 1)) + ' mm.')] : [A(c + 0.5, 'mic-half', 'The reading is less than ' + t(c + '.5') + ' mm, so no half-millimetre mark is showing past ' + t(c) + ' mm.')];
+          var fAlts = half ? [A(f + 50, 'mic-half', 'The sleeve already shows the half millimetre (' + t(fx(c, 1)) + ' mm), so the thimble shows only the rest: ' + t(xms + '-' + fx(c, 1) + '=' + fx(0.01 * f, 2)) + ' mm, that is ' + t(f) + ' divisions. (The thimble has only 50 divisions.)')] : [];
+          return fieldsPart('A micrometer (sleeve: a mark every ' + t('0.5') + ' mm; thimble: ' + t('0.01') + ' mm per division, 50 divisions per turn) reads exactly ' + t(xms + '\\text{ mm}') + '. What is the sleeve (coarse) reading, and which thimble division is on the index line?',
+            [{ name: 'Sleeve reading', label: 'Sleeve reading:', after: 'mm', x: c, places: false, alts: cAlts }, { name: 'Thimble division', label: 'Thimble division:', x: f, places: false, alts: fAlts }],
+            'Sleeve: the last half-millimetre mark at or below ' + t(xms) + ' is ' + t(fx(c, 1) + '\\text{ mm}') + (half ? ' (a half mark, below the line).' : ' (a whole millimetre; no half mark is showing).') + '<br>Thimble: ' + t(xms + '-' + fx(c, 1) + '=' + fx(0.01 * f, 2) + '\\text{ mm}') + ', and each division is ' + t('0.01') + ' mm, so division ' + t(f) + ' is on the index line.<br>Check: ' + t(fx(c, 1) + '+' + f + '\\times 0.01=' + xms) + ' mm.',
+            ['The sleeve reading is the measurement rounded <b>down</b> to a multiple of ' + t('0.5') + ' mm.', 'The thimble shows what is left over, in hundredths of a millimetre (always less than 50).'], 'micrometer backwards ' + xms);
         } }] }]
   });
 
@@ -370,6 +390,19 @@
           var dd = ex / 12, q0 = Math.floor(dd), dg = Math.round((dd - q0) * 100);
           p.bad = [[String(q0), String(dg)], [String(w[0]), String((w[1] + 1) % 12)], decomp(Math.round(X * 100 * 2.54), FTIN).map(String)].filter(function (b) { return b.join() !== p.key.join() && ck(b).v !== 'correct'; });
           return p;
+        } }] },
+      { num: '4', outcome: 'M2', stem: 'Use ' + t('1\\text{ ft}=0.3048\\text{ m}') + '. The boards are sold whole.', parts: [
+        { id: '4', outcome: 'M2', level: 'ADV', make: function (r) {
+          var s = find(function () { return { B: r.pick([8, 10, 12, 14, 16]), T: r.int(80, 400) / 10 }; }, function (q) { var bd = q.B * 0.3048, qn = q.T / bd, fr = qn - Math.floor(qn), left = Math.ceil(qn) * bd - q.T; return Math.ceil(qn) >= 3 && fr > 0.15 && fr < 0.85 && safe(left, 2) && Math.ceil(q.T / q.B) !== Math.ceil(qn) && Math.ceil(q.T / q.B) !== Math.floor(qn); }, { B: 12, T: 25.6 });
+          var B = s.B, T = s.T, bd = cl(B * 0.3048), qn = T / bd, n = Math.ceil(qn), left = n * bd - T, what = r.pick(['wooden edging for a garden', 'baseboard trim for a room', 'fence railing for a deck', 'shelving for a storage room']);
+          var nAlts = [A(Math.floor(qn), 'u10x-round-down', t(Math.floor(qn)) + ' boards make only ' + t(nT(Math.floor(qn) * bd) + '\\text{ m}') + ' — not enough. Part of a board still means buying a whole board: round <b>up</b>.'),
+            A(Math.ceil(T / B), 'u10x-no-convert', 'You divided metres by feet. Change one board to metres first: ' + t(B + '\\times 0.3048') + '.')];
+          var lAlts = [A(n * B - T, 'u10x-no-convert', 'The boards are measured in feet: change the length bought to metres before subtracting.'), A(left / 0.3048, 'gave-other-unit', 'That is the leftover in <b>feet</b>. The question asks for metres.'),
+            A(n * rd(bd, 2) - T, 'early-round', 'Close — but you rounded the board length. ' + t(B + '\\times 0.3048=' + nT(bd)) + ' m exactly; use all of it.'), A(n * rd(bd, 1) - T, 'early-round', 'Close — but you rounded the board length. ' + t(B + '\\times 0.3048=' + nT(bd)) + ' m exactly; use all of it.')];
+          return fieldsPart('A plan calls for ' + t(nT(T) + '\\text{ m}') + ' of ' + what + '. The store sells it only in ' + t(B + '\\text{-ft}') + ' boards. How many boards must be bought, and how much will be left over, in metres to the nearest hundredth?',
+            [{ name: 'Boards', label: 'Boards to buy:', x: n, places: false, alts: nAlts }, { name: 'Left over', label: 'Left over:', after: 'm', x: left, dp: 2, alts: lAlts }],
+            'One board: ' + t(B + '\\text{ ft}\\times 0.3048=' + nT(bd) + '\\text{ m}') + ' (exact).<br>' + t(nT(T) + '\\div ' + nT(bd) + '=' + dots(qn)) + ' boards. ' + t(Math.floor(qn)) + ' boards are not enough, and only whole boards are sold, so buy <b>' + n + '</b>.<br>Bought: ' + t(n + '\\times ' + nT(bd) + '=' + nT(n * bd) + '\\text{ m}') + '; left over: ' + t(nT(n * bd) + '-' + nT(T) + '=' + nT(left) + '\\approx ' + fx(left, 2) + '\\text{ m}') + '.',
+            ['Change one board to metres, then divide the total length by one board.', 'You can’t buy part of a board. The leftover is what you buy minus what the plan uses.'], 'boards ' + T + ' m in ' + B + ' ft');
         } }] }]
   });
 
@@ -405,10 +438,26 @@
           var s = find(function () { var V = inL ? r.int(12, 60) / 10 : 10 * r.int(25, 90), h = inL ? r.int(18, 40) : r.int(9, 24); return { V: V, h: h }; }, function (s) { var Vc = s.V * (inL ? 1000 : 1), dd = 2 * Math.sqrt(Vc / (PI * s.h)); return dd > 3 && dd < 2 * s.h && safe(dd, 1); }, { V: 750, h: 21 });
           var V = s.V, h = s.h, Vc = V * (inL ? 1000 : 1), rr = Math.sqrt(Vc / (PI * h)), d = 2 * rr;
           var alts = [A(rr, 'gave-radius', 'That is the <b>radius</b>. The question asks for the diameter: double it.'), A(2 * Vc / (PI * h), 'no-sqrt', 'That is ' + t('2r^2') + ' — you need the square root: ' + t('r=\\sqrt{\\dfrac{V}{\\pi h}}') + ', then ' + t('d=2r') + '.'), A(Vc / (PI * h), 'no-sqrt', 'That is ' + t('r^2') + '. Take the square root to get ' + t('r') + ', then double it.'),
-            A(2 * Math.sqrt(V / (PI * h)), 'u10x-cm3-l', 'Change litres to cm³ first: ' + t('1\\text{ L}=1000\\text{ cm}^3') + '.'), A(rr / 2, 'gave-radius', 'The diameter is <b>twice</b> the radius, not half of it.'), A(2 * Math.sqrt(Vc / h), 'divided-pi', 'Divide by ' + t('\\pi') + ' too: ' + t('V=\\pi r^2h') + ', so ' + t('r^2=\\dfrac{V}{\\pi h}') + '.')];
+            A(2 * Math.sqrt(V / (PI * h)), 'u10x-cm3-l', 'Change litres to cm³ first: ' + t('1\\text{ L}=1000\\text{ cm}^3') + '.'), A(rr / 2, 'gave-radius', 'The diameter is <b>twice</b> the radius, not half of it.'), A(2 * Math.sqrt(Vc / h), 'divided-pi', 'Divide by ' + t('\\pi') + ' too: ' + t('V=\\pi r^2h') + ', so ' + t('r^2=\\dfrac{V}{\\pi h}') + '.'),
+            A(2 * rd(rr, 1), 'early-round', 'Close — but you rounded the radius before doubling it. Keep the full value of ' + t('r') + ' and round only the diameter.')];
           return numPart(what + ' holds ' + t(nT(V) + (inL ? '\\text{ L}' : '\\text{ mL}')) + ' when full, and its inside height is ' + t(h + '\\text{ cm}') + '. Determine its inside diameter, to the nearest tenth of a centimetre.', d, { before: t('d\\approx'), unit: 'cm', dp: 1, alts: alts },
             (inL ? t(nT(V) + '\\text{ L}=' + F(Vc) + '\\text{ cm}^3') + '<br>' : t(V + '\\text{ mL}=' + V + '\\text{ cm}^3') + '<br>') + t('V=\\pi r^2h\\ \\Rightarrow\\ ' + F(Vc) + '=\\pi r^2(' + h + ')') + '<br>' + t('r^2=\\dfrac{' + F(Vc) + '}{' + h + '\\pi}=' + dots(Vc / (PI * h)) + ',\\quad r=' + dots(rr) + '\\text{ cm}') + '<br>' + t('d=2r=' + dots(d) + '\\approx ' + fx(d, 1) + '\\text{ cm}'),
             ['Change the capacity to cm³ (' + t('1\\text{ mL}=1\\text{ cm}^3') + (inL ? ', ' + t('1\\text{ L}=1000\\text{ cm}^3') : '') + '), then substitute into ' + t('V=\\pi r^2h') + '.', 'Solve for ' + t('r^2') + ', take the square root, then double ' + t('r') + ' for the diameter.'], 'capacity to diameter ' + V + (inL ? 'L' : 'mL') + ' h' + h);
+        } }] },
+      { num: '4', outcome: 'M3', stem: 'Decide which surfaces get paint. ' + t('1\\text{ m}^2=10\\,000\\text{ cm}^2') + '.', parts: [
+        { id: '4', outcome: 'M3', level: 'ADV', make: function (r) {
+          var s = find(function () { return { N: r.int(6, 24), d: 2 * r.int(10, 20), h: 10 * r.int(6, 12), c: r.pick([2, 2.5, 3, 4, 5]) }; },
+            function (q) { var R = q.d / 2, tot = q.N * (PI * R * R + 2 * PI * R * q.h) / 10000, cn = tot / q.c, fr = cn - Math.floor(cn); return cn >= 2 && fr > 0.15 && fr < 0.85 && safe(tot, 2); }, { N: 12, d: 30, h: 90, c: 4 });
+          var N = s.N, d = s.d, h = s.h, c = s.c, R = d / 2, one = PI * R * R + 2 * PI * R * h, tot = N * one / 10000, cans = Math.ceil(tot / c), what = r.pick(['concrete bollards (short posts) along a bike path', 'wooden fence posts', 'cylindrical pillars at a park entrance']);
+          var aAlts = [A(N * (2 * PI * R * R + 2 * PI * R * h) / 10000, 'sa-extra-face', 'The bottom of each post is in the ground — it isn’t painted. Count the curved side and the top only.'), A(N * 2 * PI * R * h / 10000, 'sa-lateral', 'The flat top is painted too: add one circle, ' + t('\\pi r^2') + ', for each post.'),
+            A(N * one / 100, 'u10x-area-units', 'Square the factor for area: ' + t('1\\text{ m}^2=100^2=10\\,000\\text{ cm}^2') + ', not ' + t('100') + '.'), A(one / 10000, 'count-missing', 'That is the area of <b>one</b> post. Multiply by the number of posts.'),
+            A(N * (PI * d * d + 2 * PI * d * h) / 10000, 'diam-radius', 'You used the diameter as the radius. The radius is ' + t(d + '\\div 2=' + R + '\\text{ cm}') + '.')];
+          var cAlts = [A(Math.floor(tot / c), 'u10x-round-down', t(Math.floor(tot / c)) + ' cans cover only ' + t(nT(Math.floor(tot / c) * c) + '\\text{ m}^2') + ' — not enough. Round <b>up</b> to whole cans.'), A(Math.ceil(tot * c), 'per-rate', 'Each can covers ' + t(nT(c) + '\\text{ m}^2') + ', so <b>divide</b> the area by ' + t(nT(c)) + '.')];
+          return fieldsPart('The town is painting ' + t(N) + ' ' + what + '. Each is a cylinder with a diameter of ' + t(d + '\\text{ cm}') + ' and a height of ' + t(h + '\\text{ cm}') + ' above the ground. The curved side and the flat top of each are painted (the bottom is in the ground). One can of paint covers ' + t(nT(c) + '\\text{ m}^2') + '. Determine the total area to be painted, in square metres to the nearest hundredth, and the number of cans of paint to buy.' + solidFig('cylinder', { d: d + ' cm', h: h + ' cm' }),
+            [{ name: 'Area', label: 'Area to paint:', after: 'm²', x: tot, dp: 2, alts: aAlts }, { name: 'Cans', label: 'Cans to buy:', x: cans, places: false, alts: cAlts }],
+            'Painted on each: the curved side and the top circle. ' + t('r=' + d + '\\div 2=' + R + '\\text{ cm}') + '.<br>' + t('\\pi r^2+2\\pi rh=\\pi(' + R + ')^2+2\\pi(' + R + ')(' + h + ')=' + dots(one) + '\\text{ cm}^2') + ' per post.<br>' +
+              t(N) + ' posts: ' + t(N + '\\times ' + dots(one) + '=' + dots(N * one) + '\\text{ cm}^2') + ', and ' + t('\\div 10\\,000') + ': ' + t(dots(tot) + '\\text{ m}^2\\approx ' + fx(tot, 2) + '\\text{ m}^2') + '.<br>Cans: ' + t(dots(tot) + '\\div ' + nT(c) + '=' + dots(tot / c)) + ', so buy <b>' + cans + '</b> (a part-can still has to be bought).',
+            ['Which surfaces get paint? The curved side ' + t('(2\\pi rh)') + ' and the top ' + t('(\\pi r^2)') + ' — not the bottom.', 'Change cm² to m² (' + t('\\div 10\\,000') + '), then divide by the area one can covers and round <b>up</b>.'], 'paint posts N' + N + ' d' + d + ' h' + h + ' c' + c);
         } }] }]
   });
 
@@ -449,7 +498,8 @@
           }
           var sd = 2 * r.int(3, 14), hp = r.int(4, 20), sl = Math.sqrt(hp * hp + sd * sd / 4), Sp = sd * sd + 2 * sd * sl;
           var altsP = [A(sd * sd + 2 * sd * hp, 'sa-height', 'Each triangular face uses the <b>slant height</b> (up the middle of the face), not the height of the pyramid. Find it first: ' + t('s=\\sqrt{h^2+(\\tfrac{b}{2})^2}') + '.'), A(2 * sd * sl, 'sa-no-base', 'Add the square base too: ' + t(sd + '^2') + '.'),
-            A(sd * sd + 2 * sd * Math.sqrt(hp * hp + sd * sd), 'half-edge', 'The slant-height triangle uses <b>half</b> the base edge (from the middle of the base to the middle of an edge): ' + t(sd + '\\div 2=' + sd / 2) + '.'), A(sd * sd + 4 * sd * sl, 'tri-half', 'Each triangle’s area is ' + t('\\tfrac12bs') + ' — don’t forget the ½.')];
+            A(sd * sd + 2 * sd * Math.sqrt(hp * hp + sd * sd), 'half-edge', 'The slant-height triangle uses <b>half</b> the base edge (from the middle of the base to the middle of an edge): ' + t(sd + '\\div 2=' + sd / 2) + '.'), A(sd * sd + 4 * sd * sl, 'tri-half', 'Each triangle’s area is ' + t('\\tfrac12bs') + ' — don’t forget the ½.'),
+            A(sd * sd + 2 * sd * rd(sl, 1), 'early-round', 'Close — but you rounded the slant height before using it. Keep its full calculator value and round only the surface area.'), A(sd * sd + 2 * sd * rd(sl, 2), 'early-round', 'Close — but you rounded the slant height before using it. Keep its full calculator value and round only the surface area.')];
           return numPart('A square-based pyramid has base edges of ' + t(sd + U(u)) + ' and a height of ' + t(hp + U(u)) + '. Determine its total surface area, including the base.' + solidFig('sqpyramid', { s: sd + ' ' + u, h: hp + ' ' + u }), Sp, { unit: u + '²', dp: 0, alts: altsP },
             'Slant height (up the middle of a face): ' + t('s=\\sqrt{h^2+\\left(\\tfrac{b}{2}\\right)^2}=\\sqrt{' + hp + '^2+' + sd / 2 + '^2}=\\sqrt{' + (hp * hp + sd * sd / 4) + '}=' + (Number.isInteger(rd(sl, 9)) ? sl : dots(sl))) + '.<br>' + t('SA=b^2+4\\left(\\tfrac12 bs\\right)=' + sd + '^2+2(' + sd + ')(' + (Number.isInteger(rd(sl, 9)) ? sl : dots(sl)) + ')=' + (Number.isInteger(rd(Sp, 9)) ? F(Sp) : dots(Sp) + '\\approx ' + F(fx(Sp, 0))) + U(u + '²')),
             ['The height, half the base edge and the slant height form a right triangle.', 'Surface area = the square base + four triangles, each ' + t('\\tfrac12 bs') + '.'], 'pyr SA b' + sd + ' h' + hp);
@@ -487,7 +537,7 @@
           var rr = Math.sqrt(S / (4 * PI)), V = 4 / 3 * PI * Math.pow(rr, 3); if (!safe(V, 0)) { S += 5; rr = Math.sqrt(S / (4 * PI)); V = 4 / 3 * PI * Math.pow(rr, 3); }
           var v43 = function (x) { return 4 / 3 * PI * Math.pow(x, 3); };
           var alts = [A(v43(S / (4 * PI)), 'no-sqrt', 'From ' + t('S=4\\pi r^2') + ', ' + t('\\dfrac{S}{4\\pi}') + ' is ' + t('r^2') + ': take the square root to get ' + t('r') + '.'), A(v43(Math.sqrt(S / PI)), 'sa-no-4', 'Divide by ' + t('4\\pi') + ', not just ' + t('\\pi') + ': ' + t('r^2=\\dfrac{S}{4\\pi}') + '.'),
-            A(v43(rd(rr, 1)), 'early-round', 'Close — but you rounded the radius first. Keep its full value in the calculator.'), A(rr, 'gave-r', 'That is the radius. Now use it to find the volume, ' + t('\\tfrac43\\pi r^3') + '.'), A(v43(Math.cbrt(S / (4 * PI))), 'cbrt-for-sqrt', 'Surface area has ' + t('r^2') + ', so undo it with a <b>square</b> root, not a cube root.')];
+            A(v43(rd(rr, 1)), 'early-round', 'Close — but you rounded the radius first. Keep its full value in the calculator.'), A(v43(rd(rr, 2)), 'early-round', 'Close — but you rounded the radius first. Keep its full value in the calculator.'), A(rr, 'gave-r', 'That is the radius. Now use it to find the volume, ' + t('\\tfrac43\\pi r^3') + '.'), A(v43(Math.cbrt(S / (4 * PI))), 'cbrt-for-sqrt', 'Surface area has ' + t('r^2') + ', so undo it with a <b>square</b> root, not a cube root.')];
           return numPart(what + ' has a surface area of ' + t(F(S) + '\\text{ m}^2') + '. Determine its volume, to the nearest cubic metre.', V, { unit: 'm³', dp: 0, alts: alts },
             t(F(S) + '=4\\pi r^2\\ \\Rightarrow\\ r^2=\\dfrac{' + F(S) + '}{4\\pi}=' + dots(rr * rr) + ',\\quad r=' + dots(rr) + '\\text{ m}') + '<br>' + t('V=\\tfrac43\\pi r^3=\\tfrac43\\pi(' + dots(rr) + ')^3=' + dots(V) + '\\approx ' + F(fx(V, 0)) + '\\text{ m}^3'),
             ['Solve ' + t('S=4\\pi r^2') + ' for ' + t('r') + ': divide by ' + t('4\\pi') + ', then take the square root.', 'Then ' + t('V=\\tfrac43\\pi r^3') + ', rounding only at the end.'], 'sphere SA to V ' + S + u);
@@ -522,7 +572,7 @@
           var Lm = r.int(105, 295) / 100, cut = r.int(12, Math.floor(Lm * 100) - 20), what = r.pick(['board', 'pipe', 'curtain rod', 'length of rope']);
           var rest = Math.round(Lm * 100 - cut) * 10;
           return numPart('A ' + what + ' is ' + t(nT(Lm) + '\\text{ m}') + ' long. A piece ' + t(cut + '\\text{ cm}') + ' long is cut off. How long is the rest of the ' + what.replace(/^length of /, '') + ', in millimetres?', rest, { unit: 'mm', alts: [A(Lm * 1000 - cut, 'u10x-same-unit', 'The two lengths are in different units: change ' + t(nT(Lm) + '\\text{ m}') + ' and ' + t(cut + '\\text{ cm}') + ' to millimetres first, then subtract.'), A(Math.abs(Lm - cut), 'u10x-same-unit', 'Change both lengths to the same unit before subtracting.')] },
-            t(nT(Lm) + '\\text{ m}=' + F(Lm * 1000) + '\\text{ mm}') + ' and ' + t(cut + '\\text{ cm}=' + cut * 10 + '\\text{ mm}') + '.<br>' + t(F(Lm * 1000) + '-' + cut * 10 + '=' + F(rest) + '\\text{ mm}'),
+            t(nT(Lm) + '\\text{ m}=' + F(Lm * 1000) + '\\text{ mm}') + ' and ' + t(cut + '\\text{ cm}=' + F(cut * 10) + '\\text{ mm}') + '.<br>' + t(F(Lm * 1000) + '-' + F(cut * 10) + '=' + F(rest) + '\\text{ mm}'),
             ['Change both lengths to millimetres (' + t('1\\text{ m}=1000\\text{ mm}') + ', ' + t('1\\text{ cm}=10\\text{ mm}') + ').', 'Then subtract.'], 'cut ' + Lm + 'm - ' + cut + 'cm');
         } }] },
       { num: '2', outcome: 'M1', stem: 'A personal referent used again and again.', parts: [
@@ -540,14 +590,16 @@
             'Unrolled, the label is a rectangle: its width is the circumference and its height is the can’s height.<br>' + t('A=\\pi dh=\\pi(' + fx(d, 1) + ')(' + h + ')=' + dots(x) + '\\approx ' + F(fx(x, 0)) + '\\text{ cm}^2'),
             ['Unroll the label: it is a rectangle.', 'Its width is the circumference ' + t('\\pi d') + ' and its height is the height of the can.'], 'label d' + d + ' h' + h);
         } }] },
-      { num: '4', outcome: 'M2', stem: 'Use unit analysis. Round to the nearest tenth.', parts: [
-        { id: '4', outcome: 'M2', level: 'PRG', make: function (r) {
-          var D = r.pick([100, 200, 400, 800, 1500]), lo = { 100: [10.5, 16], 200: [21, 34], 400: [48, 80], 800: [110, 190], 1500: [230, 400] }[D];
-          var T = find(function () { return r.int(Math.round(lo[0] * 100), Math.round(lo[1] * 100)) / 100; }, function (T) { return safe(D / T * 3.6, 1); }, lo[0] + 1.37), x = D / T * 3.6, who = r.pick(['A sprinter', 'A swimmer', 'A speed skater', 'A cyclist']);
-          var alts = [A(D / T, 'u10x-rate-one', 'That is the speed in <b>m/s</b>. Change metres to kilometres and seconds to hours too (' + t('\\times 3.6') + ').'), A(D / T / 3.6, 'conv-direction', 'A km/h is a smaller speed unit than a m/s, so the number must get bigger: multiply by ' + t('3.6') + '.'), A(T / D * 3.6, 'rate-flip', 'Speed is distance ÷ time, not time ÷ distance.'), A(D / T * 60 / 1000, 'u10x-rate-one', 'That is km per <b>minute</b>. An hour has ' + t('3600') + ' seconds.')];
-          return numPart(who + ' covers ' + t(F(D) + '\\text{ m}') + ' in ' + t(T.toFixed(2) + '\\text{ s}') + '. What is the average speed in kilometres per hour?', x, { unit: 'km/h', dp: 1, alts: alts },
-            disp(chainT([[D, 'm', T.toFixed(2), 's'], [1, 'km', 1000, 'm'], [3600, 's', 1, 'h']]) + '=' + dots(x) + '\\text{ km/h}\\approx ' + fx(x, 1) + '\\text{ km/h}'),
-            ['Speed = distance ÷ time gives metres per second.', 'Then multiply by unit factors: ' + t('\\frac{1\\text{ km}}{1000\\text{ m}}') + ' and ' + t('\\frac{3600\\text{ s}}{1\\text{ h}}') + '.'], 'speed ' + D + ' in ' + T);
+      { num: '4', outcome: 'M2', stem: 'Use ' + t('1\\text{ in}=2.54\\text{ cm}') + ' (so ' + t('1\\text{ ft}=0.3048\\text{ m}') + ') and ' + t('1\\text{ m}^3=1000\\text{ L}') + '.', parts: [
+        { id: '4', outcome: 'M2', level: 'ADV', make: function (r) {
+          var s = find(function () { return { a: r.int(6, 9), b: r.int(5, 8), c: 2 * r.int(12, 20) }; }, function (q) { var L = q.a * q.b * q.c / 12 * Math.pow(0.3048, 3) * 1000; return q.a !== q.b && safe(L, 0, 0.1); }, { a: 7, b: 6, c: 30 });
+          var a = s.a, b = s.b, c = s.c, ft3 = a * b * c / 12, F3 = Math.pow(0.3048, 3), m3 = ft3 * F3, L = m3 * 1000, what = r.pick(['hot tub', 'fish pond', 'wading pool', 'water trough']);
+          var alts = [A(ft3 * 0.3048 * 1000, 'conv-linear', 'Volume units are cubic: ' + t('1\\text{ ft}^3=(0.3048\\text{ m})^3=0.3048^3\\text{ m}^3') + '. Cube the factor.'), A(ft3 * 0.3048 * 0.3048 * 1000, 'conv-square', 'Volume units are cubic: cube the factor, ' + t('0.3048^3') + ', don’t square it.'),
+            A(a * b * c * F3 * 1000, 'u10x-ft-in-mix', 'The depth is in <b>inches</b> and the other sides in feet. Change ' + t(c + '\\text{ in}') + ' to feet first (' + t('\\div 12') + ').'), A(m3, 'u10x-m3-l', 'That is the volume in cubic metres. Change it to litres: ' + t('1\\text{ m}^3=1000\\text{ L}') + '.'),
+            A(ft3 / F3 * 1000, 'conv-direction', 'A cubic metre is much bigger than a cubic foot, so there are <b>fewer</b> cubic metres: multiply by ' + t('0.3048^3') + '.'), A(ft3 * rd(F3, 4) * 1000, 'early-round', 'Close — but you rounded the conversion factor. ' + t('0.3048^3=0.028316846\\ldots') + ': keep all of it.'), A(ft3 * rd(F3, 3) * 1000, 'early-round', 'Close — but you rounded the conversion factor. ' + t('0.3048^3=0.028316846\\ldots') + ': keep all of it.')];
+          return numPart('A rectangular ' + what + ' is ' + t(a + '\\text{ ft}') + ' long and ' + t(b + '\\text{ ft}') + ' wide inside, and it is filled with water to a depth of ' + t(c + '\\text{ in}') + '. How many litres of water does it hold, to the nearest litre?', L, { unit: 'L', dp: 0, alts: alts },
+            'Depth in feet: ' + t(c + '\\text{ in}\\div 12=' + nT(c / 12) + '\\text{ ft}') + '. Volume: ' + t(a + '\\times ' + b + '\\times ' + nT(c / 12) + '=' + nT(ft3) + '\\text{ ft}^3') + '.<br>' + t('1\\text{ ft}^3=0.3048^3\\text{ m}^3=0.028316\\ldots\\text{ m}^3') + ':' + disp(t('') ? chainT([[nT(ft3), 'ft³', null, null], ['0.3048^3', 'm³', 1, 'ft³'], [1000, 'L', 1, 'm³']]) + '=' + dots(L) + '\\text{ L}\\approx ' + F(fx(L, 0)) + '\\text{ L}' : ''),
+            ['Put every length in feet first (' + t('12\\text{ in}=1\\text{ ft}') + '), then find the volume in ft³.', 'Cube the length factor: ' + t('1\\text{ ft}^3=0.3048^3\\text{ m}^3') + '; then ' + t('1\\text{ m}^3=1000\\text{ L}') + '.'], 'litres ' + a + 'x' + b + 'ft x' + c + 'in');
         } }] }]
   });
 })(window);

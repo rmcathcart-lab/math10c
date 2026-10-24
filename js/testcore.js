@@ -91,11 +91,12 @@
     var mc = inst.input && inst.input.type === 'mc', P = HW.PARTIAL || {};
     // some boxes answered and one left empty is an unfinished step (a bigger mistake: keeps 1/3), not "right value, wrong form"
     if (res.v === 'form' && (res.code === 'empty' || res.code === 'blank' || res.code === 'blank-box' || res.code === 'rr-blank' || res.code === 'incomplete')) return { m: mc ? 'w' : 'g', code: 'incomplete' };
-    if (res.v === 'form' && res.code === 'units' && typeof resp === 'string') { // a number typed with its unit: mark the number
-      var bare = resp.replace(/\\(text|mathrm)\{\s*([^{}]*)\}/g, '$2').replace(/\^\{?\\circ\}?|\\degree/g, '').replace(/\\[,;: ]|~/g, ' ').replace(/\s*(°|degrees?|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?|\\?%)\s*\.?\s*$/, '');
+    if (res.v === 'form' && (/units/.test(res.code || '') || res.code === 'notnumber')) { // a number typed with its unit or as "k = 3" (in any box): mark the number
+      var strip = function (v) { return typeof v !== 'string' ? v : v.replace(/^\s*[a-zA-Z]\s*=\s*/, '').replace(/\\(text|mathrm)\{\s*([^{}]*)\}/g, '$2').replace(/\^\{?\\circ\}?|\\degree/g, '').replace(/\\[,;: ]|~/g, ' ').replace(/\s*(°|degrees?|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?|\\?%)\s*\.?\s*$/, ''); };
+      var bare = Array.isArray(resp) ? resp.map(strip) : resp && typeof resp === 'object' ? Object.keys(resp).reduce(function (o, k) { o[k] = strip(resp[k]); return o; }, {}) : strip(resp);
       var rb; try { rb = inst.check(bare); } catch (e) { rb = null; }
       if (rb && rb.v === 'correct') return { m: 'c' };
-      if (rb && rb.v === 'wrong') res = rb; else return { m: 'w', code: 'units' };
+      if (rb && rb.v === 'wrong') res = rb; else return { m: 'w', code: res.code };
     }
     if (res.v === 'form' && TC.FORM_NO_CREDIT[res.code]) return { m: 'w', code: res.code };
     // the question's own expression typed back (e.g. the radical left as given) shows no work: no credit
