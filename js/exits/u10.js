@@ -170,7 +170,7 @@
     return out.filter(function (a) { return !near(a.v, x); });
   }
   function precisionWrap(ch, x, dp, what) {
-    return function (resp) { var p = HW.parse.number(resp); if (p.ok && near(p.value, x) && decs(String(resp).replace(/\s/g, '')) < dp) return form('precision', 'Right value! ' + what + ' reads to two decimal places, so state the reading as ' + t(fx(x, 2)) + ' mm.'); return ch(resp); };
+    return function (resp) { var p = HW.parse.number(resp); if (p.ok && near(p.value, x) && (String(resp).replace(/\s/g, '').split('.')[1] || '').replace(/\D.*$/, '').length < dp) return form('precision', 'Right value! ' + what + ' reads to two decimal places, so state the reading as ' + t(fx(x, 2)) + ' mm.'); return ch(resp); };
   }
   /* percent error alternatives (from u10l1) */
   function percAlts(est, meas) { return [A(Math.abs(est - meas) / est * 100, 'pct-base', 'Divide by the <b>measured</b> (true) value, not the estimate.'), A(Math.abs(est - meas) / meas, 'pct-no100', 'Multiply by ' + t('100') + ' to make it a percent.')]; }

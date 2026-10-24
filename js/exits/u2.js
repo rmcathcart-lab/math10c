@@ -24,13 +24,13 @@
     'u2x-not-given-exp': 'Didn’t use the exponent asked for', 'u2x-one-num': 'Added 1 to the numerator of the exponent only',
     'u2x-add-den': 'Added the tops and the bottoms of fractional exponents', 'u2x-eval-part': 'One of the two powers evaluated wrongly',
     'u2x-power-only': 'Took the root but forgot the power (or the reverse)', 'u2x-missed-factor': 'Didn’t apply the outside exponent to every factor',
-    'u2x-sign-final': 'Sign of the answer wrong', 'u2x-sci-mult': 'Multiplied the powers of 10 instead of adding their exponents'
+    'u2x-sign-final': 'Sign of the answer wrong', 'u2x-sci-mult': 'Multiplied the powers of 10 instead of adding their exponents', 'u2x-base-is-number': 'Used the number itself as the base'
   });
   HW.addPartial({
     'u2x-mult-exp': 'b', 'u2x-add-exp': 'b', 'u2x-div-exp': 'b', 'u2x-base-times-exp': 'n', 'u2x-coef-not-raised': 'b', 'u2x-coef-times-exp': 'b', 'u2x-coef-added': 'b',
     'u2x-neg-base': 'b', 'u2x-even-neg': 's', 'u2x-odd-neg': 's', 'u2x-zero-pow': 'n', 'u2x-base-same': 'n', 'u2x-opposite': 'n', 'u2x-coef-side': 'b', 'u2x-no-flip': 'b',
     'u2x-sub-neg': 's', 'u2x-coef-pos-power': 'b', 'u2x-root-div': 'n', 'u2x-coef-in': 'b', 'u2x-neg-value': 'n', 'u2x-index-power': 'b', 'u2x-not-given-exp': 'n',
-    'u2x-one-num': 'b', 'u2x-add-den': 'b', 'u2x-eval-part': 's', 'u2x-power-only': 'b', 'u2x-missed-factor': 'b', 'u2x-sign-final': 's', 'u2x-sci-mult': 'b'
+    'u2x-one-num': 'b', 'u2x-add-den': 'b', 'u2x-eval-part': 's', 'u2x-power-only': 'b', 'u2x-missed-factor': 'b', 'u2x-sign-final': 's', 'u2x-sci-mult': 'b', 'u2x-base-is-number': 'n'
   });
 
   /* ---------- rationals and LaTeX ---------- */
@@ -151,7 +151,7 @@
             [EX(b + '^{' + e + '}', { form: 'single-power', diag: kn }), K.number(val, function (x) { if (x === b * e) return { code: 'u2x-base-times-exp', hint: t(b + '^{' + e + '}') + ' means ' + t(b) + ' used as a factor ' + t(e) + ' times, not ' + t(b + '\\times ' + e) + '.' }; return null; })],
             [b + '^{' + e + '}', String(val)], t(tx + '=' + b + '^{' + e + '}=' + F(val)), law + ', and ' + t(b + '^{' + e + '}=' + F(val)) + '.',
             ['Same base: product law adds exponents, quotient law subtracts, power of a power multiplies.', 'Then multiply ' + t(b) + ' by itself ' + t(e) + ' times.'], 'single power ' + tx);
-          p.bad = kn.texs.map(function (w) { return [w, String(val)]; }).concat([[b + '^{' + e + '}', String(b * e)]]);
+          p.bad = kn.texs.map(function (w) { return [w, String(val)]; }).concat(b * e !== val ? [[b + '^{' + e + '}', String(b * e)]] : []);
           return p;
         } },
         { id: '1b', outcome: 'AN3', level: 'BEG', make: function (r) {
@@ -364,7 +364,10 @@
       var ge = ex.rat(top.b);
       if (!ge || ge[0] * e[1] !== e[0] * ge[1]) return ex.eq(a.val, rv(val)) ? wrong('u2x-not-given-exp', 'Right value, but the exponent must be ' + t(eT(e)) + '.') : wrong('value', null);
       if (!ex.eq(a.val, rv(val))) {
-        var bv = ex.value(top.a); if (isFinite(bv) && ex.eq(Math.pow(bv, rv(inv(e))), rv(val))) return wrong('u2x-index-power', 'Check the base: undo the exponent ' + t(eT(e)) + ' by raising the number to the power ' + t(eT(inv(e))) + '.');
+        var bv = ex.value(top.a);
+        if (isFinite(bv) && ex.eq(bv, rv(val))) return wrong('u2x-base-is-number', 'The base can’t be the number itself: ' + t(frT(val) + '^{' + eT(e) + '}') + ' isn’t ' + t(frT(val)) + '. Find the base whose power ' + t(eT(e)) + ' gives ' + t(frT(val)) + '.');
+        if (isFinite(bv) && ex.eq(a.val, 1 / rv(val))) return wrong('u2x-no-flip', 'Your power equals ' + t(frT(inv(val))) + ', the reciprocal. With a negative exponent, the base has to be flipped.');
+        if (isFinite(bv) && ex.eq(Math.pow(bv, rv(inv(e))), rv(val))) return wrong('u2x-index-power', 'Check the base: undo the exponent ' + t(eT(e)) + ' by raising the number to the power ' + t(eT(inv(e))) + '.');
         return wrong('value', null);
       }
       var b = strip(top.a); if (b.t === 'neg') b = strip(b.a);

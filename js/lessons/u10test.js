@@ -352,7 +352,7 @@
     s += L(FL[0], FL[1], FR[0], FR[1], { w: 2 }) + L(FR[0], FR[1], BR[0], BR[1], { w: 2 }) + L(T[0], T[1], FL[0], FL[1], { w: 2 }) + L(T[0], T[1], FR[0], FR[1], { w: 2 }) + L(T[0], T[1], BR[0], BR[1], { w: 2 });
     s += L(BR[0], BR[1], BL[0], BL[1], { w: 1.3, dash: '5 4' }) + L(BL[0], BL[1], FL[0], FL[1], { w: 1.3, dash: '5 4' }) + L(T[0], T[1], BL[0], BL[1], { w: 1.3, dash: '5 4' });
     s += L(T[0], T[1], M[0], M[1], { w: 1.4, dash: '2 3', c: COL });
-    s += lab(M[0], yb + 14, bLab) + lab(M[0] + 0.32 * (T[0] - M[0]) + 5, M[1] + 0.32 * (T[1] - M[1]), sLab, { anchor: 'start', c: COL });
+    s += lab(M[0], yb + 14, bLab) + (function () { var px = M[0] + 0.4 * (T[0] - M[0]), py = M[1] + 0.4 * (T[1] - M[1]), w = 8 * String(sLab).length + 6; return R(px - w / 2, py - 9, w, 18, '#ffffff', { rx: 3 }) + TX(px, py, sLab, { c: COL, size: 14 }); })();
     return svgFit(x0 + B + dx + 26, yb + 26, s, 'square-based pyramid, base side ' + bLab + ', slant height ' + sLab, 250);
   }
   function sphereSvg(rLab) {
@@ -363,9 +363,9 @@
     return svgFit(180, 160, s, 'sphere, radius ' + rLab, 190);
   }
   function bowlSvg(rLab) {
-    var cx = 95, cy = 34, Rr = 70, s = '';
+    var cx = 95, cy = 40, Rr = 70, s = '';
     s += pth('M' + (cx - Rr) + ' ' + cy + ' A' + Rr + ' ' + Rr + ' 0 0 0 ' + (cx + Rr) + ' ' + cy + ' A' + Rr + ' 16 0 0 0 ' + (cx - Rr) + ' ' + cy, { fill: SOFT });
-    s += ellF(cx, cy, Rr, 16, { fill: '#e3f1ef' }) + L(cx, cy, cx + Rr, cy, { w: 1.5 }) + dot(cx, cy) + lab(cx + Rr / 2, cy + 32, rLab);
+    s += ellF(cx, cy, Rr, 16, { fill: '#e3f1ef' }) + L(cx, cy, cx + Rr, cy, { w: 1.5 }) + dot(cx, cy) + lab(cx + Rr / 2, cy - 25, rLab);
     return svgFit(190, cy + Rr + 10, s, 'hemispherical bowl, radius ' + rLab, 200);
   }
   /* cylinder topped by a hemisphere (silo / observatory), to scale */
@@ -382,9 +382,9 @@
     var sc = Math.min(150 / len, 50 / r, 230 / (len + 2 * r)), Rr = r * sc, Lx = len * sc, xL = 20 + Rr, xR = xL + Lx, cy = 30 + Rr, s = '';
     s += pth('M' + n1(xL) + ' ' + n1(cy - Rr) + ' L' + n1(xR) + ' ' + n1(cy - Rr) + ' A' + n1(Rr) + ' ' + n1(Rr) + ' 0 0 1 ' + n1(xR) + ' ' + n1(cy + Rr) + ' L' + n1(xL) + ' ' + n1(cy + Rr) + ' A' + n1(Rr) + ' ' + n1(Rr) + ' 0 0 1 ' + n1(xL) + ' ' + n1(cy - Rr), { fill: SOFT });
     [xL, xR].forEach(function (x) { s += pth('M' + n1(x) + ' ' + n1(cy - Rr) + ' A' + n1(Rr * 0.28) + ' ' + n1(Rr) + ' 0 0 0 ' + n1(x) + ' ' + n1(cy + Rr), { w: 1.3 }) + pth('M' + n1(x) + ' ' + n1(cy - Rr) + ' A' + n1(Rr * 0.28) + ' ' + n1(Rr) + ' 0 0 1 ' + n1(x) + ' ' + n1(cy + Rr), { w: 1.1, dash: 1 }); });
-    s += L(xR, cy, xR + Rr, cy, { w: 1.5 }) + dot(xR, cy) + lab(xR + Rr * 0.62, cy - 11, rLab);
+    s += L(xR, cy, xR + Rr, cy, { w: 1.5 }) + dot(xR, cy) + lab(xR + Rr + 6, cy, rLab, { anchor: 'start' });
     s += dimH(cy + Rr + 14, xL, xR, lLab, true);
-    return svgFit(xR + Rr + 20, cy + Rr + 36, s, 'cylinder with a hemisphere on each end', 300);
+    return svgFit(xR + Rr + 64, cy + Rr + 36, s, 'cylinder with a hemisphere on each end', 300);
   }
 
   /* ======================= Q1: referents and units ======================= */

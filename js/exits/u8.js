@@ -20,13 +20,16 @@
     'u8x-elim-const': 'Elimination: did not scale the constant', 'u8x-elim-noscale': 'Elimination: combined without scaling', 'u8x-elim-sign': 'Elimination: added instead of subtracting (or the reverse)',
     'u8x-price-swap': 'The two prices swapped', 'u8x-combo-swap': 'Combination cost with the prices swapped', 'u8x-combo-one': 'Combination cost: one price wrong', 'u8x-digit-rev': 'Gave the reversed number',
     'u8x-digit-sum': 'Gave the digit sum or difference', 'u8x-mix-swap': 'Mixture amounts swapped', 'u8x-mix-pct': 'Mixture: percent used as a whole number', 'u8x-wind-swap': 'Plane/boat speed and wind/current speed swapped',
-    'u8x-ground': 'Gave a ground speed (with or against the wind)', 'u8x-cost-sign': 'Break-even: sign slip solving', 'u8x-cost-add': 'Break-even: added instead of subtracting', 'u8x-k-unscaled': 'Equivalent equations: did not scale every term'
+    'u8x-ground': 'Gave a ground speed (with or against the wind)', 'u8x-cost-sign': 'Break-even: sign slip solving', 'u8x-cost-add': 'Break-even: added instead of subtracting', 'u8x-k-unscaled': 'Equivalent equations: did not scale every term',
+    'u8x-sys-one': 'System: one of the two equations wrong', 'u8x-sys-eq': 'System: both equations wrong', 'u8x-sys-double': 'System: perimeter not doubled', 'u8x-sys-rel': 'System: relationship written backwards',
+    'u8x-sys-coef': 'System: coefficients attached to the wrong variables', 'u8x-sys-total': 'System: used the wrong total', 'u8x-sys-units': 'System: mixed cents and dollars'
   });
   HW.addPartial({
     'u8x-gr-line': 'b', 'u8x-gr-shift': 's', 'u8x-gr-sign': 's', 'u8x-gr-flip': 's', 'u8x-gr-slope': 'b', 'u8x-line-missing': 's', 'u8x-line-extra': 's', 'u8x-point-off': 'n', 'u8x-points-only': 'n', 'u8x-graph': 'n',
     'u8x-same': 'n', 'u8x-parallel': 'n', 'u8x-cross': 'n', 'u8x-distribute': 'b', 'u8x-c-sign': 's', 'u8x-pq-swap': 'b', 'u8x-elim-const': 'b', 'u8x-elim-noscale': 'n', 'u8x-elim-sign': 'b',
     'u8x-price-swap': 's', 'u8x-combo-swap': 'b', 'u8x-combo-one': 's', 'u8x-digit-rev': 's', 'u8x-digit-sum': 'n', 'u8x-mix-swap': 's', 'u8x-mix-pct': 'b', 'u8x-wind-swap': 's', 'u8x-ground': 'b',
-    'u8x-cost-sign': 's', 'u8x-cost-add': 'b', 'u8x-k-unscaled': 'b'
+    'u8x-cost-sign': 's', 'u8x-cost-add': 'b', 'u8x-k-unscaled': 'b',
+    'u8x-sys-one': 'b', 'u8x-sys-eq': 'n', 'u8x-sys-double': 'b', 'u8x-sys-rel': 'b', 'u8x-sys-coef': 'b', 'u8x-sys-total': 'b', 'u8x-sys-units': 's'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -177,11 +180,27 @@
     return p;
   }
   function numC(ans, list) { return K.number(ans, dg(list, ans)); }
-  /* a system of two equations in the question's letters (either order) */
-  function sysWrite(prompt, Ls, vars, keyTex, sol, hints, text, bad) {
-    var p = K.P.system(prompt, Ls.map(function (L) { return { A: L.A, B: L.B, C: L.C }; }), { vars: vars, form: 'any', keyTex: keyTex }, sol, hints, text);
-    p.input.fields.forEach(function (f) { f.placeholder = 'e.g. ' + vars[0] + ' + ' + vars[1] + ' = 10'; });
-    p.bad = bad || [];
+  /* a system of two equations in the question's letters (either order). bads: [{ eqs: [text, text], code, hint }] —
+   * typical wrong systems (they are also the part's bad answers); other mistakes say which equation is right. */
+  function sysWrite(prompt, Ls, vars, keyTex, sol, hints, text, bads) {
+    var TL = Ls.map(function (L) { return { A: L.A, B: L.B, C: L.C }; });
+    var base = K.system(TL, { vars: vars, form: 'any' });
+    var rd = function (s) { var r0 = Ln.read(s, vars); return r0.ok ? [r0.a, r0.b, r0.c] : null; };
+    var specs = (bads || []).map(function (b) { return { L: b.eqs.map(rd), code: b.code, hint: b.hint }; }).filter(function (b) { return b.L[0] && b.L[1] && !(Ln.same(b.L[0], arr(TL[0])) && Ln.same(b.L[1], arr(TL[1]))) && !(Ln.same(b.L[0], arr(TL[1])) && Ln.same(b.L[1], arr(TL[0]))); });
+    var check = function (resp) {
+      var r0 = base(resp); if (r0.v !== 'wrong') return r0;
+      var S = [rd(String((resp || [])[0] || '')), rd(String((resp || [])[1] || ''))];
+      if (!S[0] || !S[1]) return r0;
+      for (var i = 0; i < specs.length; i++) { var b = specs[i]; if ((Ln.same(S[0], b.L[0]) && Ln.same(S[1], b.L[1])) || (Ln.same(S[0], b.L[1]) && Ln.same(S[1], b.L[0]))) return wrong(b.code, b.hint); }
+      if (Ln.same(S[0], S[1])) return wrong('sys-same', 'Your two equations describe the same line. The two facts in the question give two <b>different</b> equations.');
+      var hit = S.map(function (q) { return TL.some(function (L) { return Ln.same(q, arr(L)); }); });
+      if (hit[0] || hit[1]) return wrong('u8x-sys-one', 'Your ' + (hit[0] ? 'first' : 'second') + ' equation is right. Check the ' + (hit[0] ? 'second' : 'first') + ' one against the words: ' + (hints[1] || hints[0]));
+      return wrong('u8x-sys-eq', null);
+    };
+    var labels = ['Equation 1', 'Equation 2'];
+    var p = { prompt: prompt, input: { type: 'fields', fields: labels.map(function (l) { return { label: l, mode: 'math', keys: 'eq', vars: vars, placeholder: 'e.g. ' + vars[0] + ' + ' + vars[1] + ' = 10' }; }) },
+      check: check, key: keyTex, answer: keyTex.map(function (k) { return t(k); }).join('<br>'), solution: sol, hints: hints || [], text: text };
+    p.bad = (bads || []).map(function (b) { return b.eqs; });
     return p;
   }
 
@@ -413,27 +432,27 @@
             return sysWrite('A rectangle has a perimeter of ' + t(P) + ' cm. Its length ' + rel + '. Let ' + t('l') + ' be the length and ' + t('w') + ' the width, in centimetres. Write a system of two equations that models this situation. (Don’t solve it.)',
               [line(2, 2, -P), E2], ['l', 'w'], ['2l+2w=' + P, twice ? 'l=2w-' + k : 'l=w+' + k],
               'Perimeter: ' + t('2l+2w=' + P) + '.<br>Length: ' + t(twice ? 'l=2w-' + k : 'l=w+' + k) + '.',
-              ['A rectangle’s perimeter is ' + t('2l+2w') + '.', 'Translate the sentence about the length word by word: “is” becomes ' + t('=') + '.'], 'write system rectangle', [['l+w=' + P, twice ? 'l=2w-' + k : 'l=w+' + k], ['2l+2w=' + P, twice ? 'l=2w+' + k : 'w=l+' + k]]);
+              ['A rectangle’s perimeter is ' + t('2l+2w') + '.', 'Translate the sentence about the length word by word: “is” becomes ' + t('=') + '.'], 'write system rectangle', [{ eqs: ['l+w=' + P, twice ? 'l=2w-' + k : 'l=w+' + k], code: 'u8x-sys-double', hint: 'The perimeter goes all the way round: two lengths and two widths, ' + t('2l+2w') + '.' }, { eqs: ['2l+2w=' + P, twice ? 'l=2w+' + k : 'w=l+' + k], code: 'u8x-sys-rel', hint: 'Check the sentence about the length: the length ' + rel + ', so ' + t(twice ? 'l=2w-' + k : 'l=w+' + k) + '.' }]);
           }
           if (kind === 'nums') {
             var y = r.int(-6, 12), m = r.pick([2, 3]), d = r.int(1, 9), x = m * y + d, s = x + y;
             return sysWrite('The sum of two numbers is ' + t(s) + '. The larger number is ' + t(d) + ' more than ' + (m === 2 ? 'twice' : 'three times') + ' the smaller number. Let ' + t('x') + ' be the larger number and ' + t('y') + ' the smaller number. Write a system of two equations that models this situation. (Don’t solve it.)',
               [line(1, 1, -s), line(1, -m, -d)], ['x', 'y'], ['x+y=' + s, 'x=' + m + 'y+' + d],
               'Sum: ' + t('x+y=' + s) + '.<br>“The larger is ' + t(d) + ' more than ' + (m === 2 ? 'twice' : 'three times') + ' the smaller”: ' + t('x=' + m + 'y+' + d) + '.',
-              ['“The sum of two numbers” means you add them.', '“' + t(d) + ' more than ' + (m === 2 ? 'twice' : 'three times') + ' the smaller” is ' + t(m + 'y+' + d) + '.'], 'write system numbers', [['x+y=' + s, 'y=' + m + 'x+' + d], ['x+y=' + s, m + 'x=y+' + d]]);
+              ['“The sum of two numbers” means you add them.', '“' + t(d) + ' more than ' + (m === 2 ? 'twice' : 'three times') + ' the smaller” is ' + t(m + 'y+' + d) + '.'], 'write system numbers', [{ eqs: ['x+y=' + s, 'y=' + m + 'x+' + d], code: 'u8x-sys-rel', hint: t('x') + ' is the <b>larger</b> number, so it is the one that equals ' + (m === 2 ? 'twice' : 'three times') + ' the smaller plus ' + t(d) + ': ' + t('x=' + m + 'y+' + d) + '.' }, { eqs: ['x+y=' + s, m + 'x=y+' + d], code: 'u8x-sys-rel', hint: '“The larger is ' + t(d) + ' more than ' + (m === 2 ? 'twice' : 'three times') + ' the smaller”: ' + t('x=' + m + 'y+' + d) + '.' }]);
           }
           if (kind === 'tix') {
             var A = r.int(9, 16), S = r.int(4, A - 2), na = r.int(40, 160), ns = r.int(40, 160), N = na + ns, R = A * na + S * ns;
             return sysWrite('A school sold ' + t(N) + ' tickets to its play. Adult tickets cost ' + t('\\$' + A) + ' and student tickets cost ' + t('\\$' + S) + '. Ticket sales came to ' + t('\\$' + F(R)) + '. Let ' + t('a') + ' be the number of adult tickets and ' + t('s') + ' the number of student tickets. Write a system of two equations that models this situation. (Don’t solve it.)',
               [line(1, 1, -N), line(A, S, -R)], ['a', 's'], ['a+s=' + N, A + 'a+' + S + 's=' + R],
               'Number of tickets: ' + t('a+s=' + N) + '.<br>Money: ' + t(A + 'a+' + S + 's=' + F(R)) + '.',
-              ['One equation counts the tickets; the other adds up the money.', 'Money from adult tickets is (price) × (number of adult tickets).'], 'write system tickets', [['a+s=' + N, S + 'a+' + A + 's=' + R], ['a+s=' + R, A + 'a+' + S + 's=' + N]]);
+              ['One equation counts the tickets; the other adds up the money.', 'Money from adult tickets is (price) × (number of adult tickets).'], 'write system tickets', [{ eqs: ['a+s=' + N, S + 'a+' + A + 's=' + R], code: 'u8x-sys-coef', hint: 'Each price goes with its own kind of ticket: adult tickets ' + t('a') + ' cost ' + t('\\$' + A) + '.' }, { eqs: ['a+s=' + R, A + 'a+' + S + 's=' + N], code: 'u8x-sys-total', hint: 'The number of tickets adds up to ' + t(N) + '; the money adds up to ' + t('\\$' + F(R)) + '.' }]);
           }
           var nn = r.int(10, 60), nd = r.int(10, 60), N2 = nn + nd, V = (5 * nn + 25 * nd) / 100;
           return sysWrite('A jar holds ' + t(N2) + ' coins, all nickels and quarters, worth ' + t('\\$' + V.toFixed(2)) + ' in total. Let ' + t('n') + ' be the number of nickels and ' + t('q') + ' the number of quarters. Write a system of two equations that models this situation. (Don’t solve it.)',
             [line(1, 1, -N2), line(5, 25, -Math.round(V * 100))], ['n', 'q'], ['n+q=' + N2, '0.05n+0.25q=' + V.toFixed(2)],
             'Number of coins: ' + t('n+q=' + N2) + '.<br>Value (in dollars): ' + t('0.05n+0.25q=' + V.toFixed(2)) + ' (or, in cents, ' + t('5n+25q=' + Math.round(V * 100)) + ').',
-            ['One equation counts the coins; the other adds up their value.', 'A nickel is worth ' + t('\\$0.05') + ' and a quarter ' + t('\\$0.25') + '. Use the same units on both sides.'], 'write system coins', [['n+q=' + N2, '0.25n+0.05q=' + V.toFixed(2)], ['n+q=' + N2, '5n+25q=' + V.toFixed(2)]]);
+            ['One equation counts the coins; the other adds up their value.', 'A nickel is worth ' + t('\\$0.05') + ' and a quarter ' + t('\\$0.25') + '. Use the same units on both sides.'], 'write system coins', [{ eqs: ['n+q=' + N2, '0.25n+0.05q=' + V.toFixed(2)], code: 'u8x-sys-coef', hint: 'Each value goes with its own coin: ' + t('n') + ' nickels are worth ' + t('0.05n') + ' dollars.' }, { eqs: ['n+q=' + N2, '5n+25q=' + V.toFixed(2)], code: 'u8x-sys-units', hint: 'Use the same units on both sides: ' + t('5n+25q') + ' is in cents, so the total must be ' + t(Math.round(V * 100)) + ' cents (or use ' + t('0.05n+0.25q') + ' for dollars).' }]);
         } }] },
       { num: '2', shared: function (r) {
           return until(function () {
@@ -490,7 +509,7 @@
           return sysWrite('A store mixes ' + c.what + ' that sell for ' + t('\\$' + pa) + ' per kg with ' + c.what + ' that sell for ' + t('\\$' + pb) + ' per kg ' + tail + '. Let ' + t('x') + ' be the mass of the ' + t('\\$' + pa) + ' ' + c.what + ' and ' + t('y') + ' the mass of the ' + t('\\$' + pb) + ' ' + c.what + ', in kg. Write a system of two equations: one for the total mass and one for the total value. (Don’t solve it.)',
             [line(1, 1, -N), line(pa, pb, -V)], ['x', 'y'], ['x+y=' + N, pa + 'x+' + pb + 'y=' + V],
             'Total mass: ' + t('x+y=' + N) + '.<br>Total value: ' + t(pa + 'x+' + pb + 'y=' + (perKg ? (V / N) + '(' + N + ')=' : '') + F(V)) + '.',
-            ['One equation adds the masses; the other adds the values (price per kg × mass).', perKg ? 'The blend’s total value is (its price per kg) × (its mass).' : 'The total value is given in dollars.'], 'write mixture system', [['x+y=' + N, pa + 'x+' + pb + 'y=' + (perKg ? V / N : N)], ['x+y=' + V, pa + 'x+' + pb + 'y=' + N]]);
+            ['One equation adds the masses; the other adds the values (price per kg × mass).', perKg ? 'The blend’s total value is (its price per kg) × (its mass).' : 'The total value is given in dollars.'], 'write mixture system', [{ eqs: ['x+y=' + N, pa + 'x+' + pb + 'y=' + (perKg ? V / N : N)], code: 'u8x-sys-total', hint: perKg ? 'The value equation needs the blend’s total value: ' + t('\\$' + (V / N)) + ' per kg × ' + t(N) + ' kg.' : 'The value equation adds up dollars, so its total is ' + t('\\$' + F(V)) + ', not the mass.' }, { eqs: ['x+y=' + V, pa + 'x+' + pb + 'y=' + N], code: 'u8x-sys-total', hint: 'The masses add up to ' + t(N) + ' kg; the values add up to ' + t('\\$' + F(V)) + '.' }]);
         } }] },
       { num: '2', stem: '', parts: [
         { id: '2', outcome: 'RF9', level: 'PRG', make: function (r) {
@@ -507,7 +526,7 @@
             [String(cl(X)), String(cl(Y))], t(nf(X)) + ' ' + u + ' of the ' + t(o.p1 + '\\%') + ' and ' + t(nf(Y)) + ' ' + u + ' of the ' + t(o.p2 + '\\%') + ' ' + what,
             'Let ' + t('x') + ' and ' + t('y') + ' be the amounts of the ' + t(o.p1 + '\\%') + ' and ' + t(o.p2 + '\\%') + ' ' + what + ':<br>' + t('x+y=' + nf(VV)) + '<br>' + t(nf(o.p1 / 100) + 'x+' + nf(o.p2 / 100) + 'y=' + nf(p / 100) + '(' + nf(VV) + ')=' + nf(p * VV / 100)) + '<br>Substitute ' + t('y=' + nf(VV) + '-x') + ': ' + t(nf((o.p1 - o.p2) / 100) + 'x=' + nf((p - o.p2) * VV / 100)) + ', so ' + t('x=' + nf(X)) + ' and ' + t('y=' + nf(Y)) + '.',
             ['One equation adds the amounts; the other adds the amounts of pure ' + (c.alloy ? 'silver' : 'substance') + ' (percent as a decimal × amount).', 'Solve by substitution or elimination.'], 'percent mixture');
-          pr.bad = [[String(cl(Y)), String(cl(X))], [String(cl(X)), String(cl(Y + 10 / scale))]];
+          pr.bad = [[String(cl(Y)), String(cl(X))], [String(cl(X)), String(cl(X))]];
           return pr;
         } }] },
       { num: '3', stem: '', parts: [
