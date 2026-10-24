@@ -105,7 +105,7 @@
       if (rb && rb.v === 'correct') return { m: 'c' };
       if (rb && rb.v === 'wrong') res = rb; else return { m: 'w', code: res.code };
     }
-    if (res.v === 'form' && TC.FORM_NO_CREDIT[res.code]) return { m: 'w', code: res.code };
+    if (res.v === 'form' && (TC.FORM_NO_CREDIT[res.code] || /unreadable/.test(res.code || ''))) return { m: 'w', code: res.code };
     // the question's own expression typed back (e.g. the radical left as given, the product not expanded) shows no work: no credit
     if (res.v === 'form' && (res.code === 'unchanged' || TC.echoes(inst, resp))) return { m: 'w', code: 'unchanged' };
     if (res.v === 'form') return { m: mc ? 'w' : 'f', code: res.code || '' };

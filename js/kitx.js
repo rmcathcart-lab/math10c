@@ -329,7 +329,7 @@
       var h = opt.diag ? opt.diag(an, a.ast) : null;
       if (h) return wrong(h.code || 'diag', h.hint);
       // compare coefficient and exponents with the target
-      if (an.coef && ta.coef && !f.complex && !ta.flags.complex && !f.roots && !ta.flags.roots) {
+      if (an.coef && ta.coef && !f.complex && !ta.flags.complex && !f.roots && !ta.flags.roots && Object.keys(an.vars || {}).every(function (v) { return (ta.vars || {})[v]; })) { // (letters not in the answer key: just wrong)
         var tv = ta.vars, sv2 = an.vars, keys = Object.keys(tv).concat(Object.keys(sv2)).filter(function (v, i, arr) { return arr.indexOf(v) === i; });
         var bad = keys.filter(function (v) { var x = tv[v] || [0, 1], y = sv2[v] || [0, 1]; return x[0] * y[1] !== y[0] * x[1]; });
         var coefOk = an.coef[0] * ta.coef[1] === ta.coef[0] * an.coef[1], coefNeg = an.coef[0] * ta.coef[1] === -ta.coef[0] * an.coef[1];

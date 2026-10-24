@@ -107,7 +107,7 @@
   parse.hasBlank = function (s) { return /\\placeholder|□/.test(String(s || '')); };
   /* a single number. Returns {ok, value} or {ok:false, code} */
   parse.number = function (s) {
-    var t = parse.plain(s).replace(/\s+/g, '').replace(/,(?=\d{3}(\D|$))/g, '');
+    var t = parse.plain(s).replace(/\s+/g, '').replace(/,(?=\d{3}(\D|$))/g, '').replace(/^\+(?=\.?\d)/, '');
     if (!t) return { ok: false, code: 'empty' };
     if (/^-?\d+(\.\d+)?$/.test(t) || /^-?\.\d+$/.test(t)) return { ok: true, value: Number(t) };
     if (/^\(?-?\d+(\.\d+)?\)?$/.test(t)) return { ok: true, value: Number(t.replace(/[()]/g, '')) };
