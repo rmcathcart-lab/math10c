@@ -127,8 +127,6 @@
       return base(resp);
     };
   }
-  function numFields(fields, checks, keys) { return { fields: fields, checks: checks, keys: keys }; }
-  void numFields;
 
   /* ===== Lesson 1 — Powers and the Exponent Laws ===== */
   HW.defineExit({
@@ -454,7 +452,7 @@
           var p = P.fields('Simplify ' + t(tx) + '.',
             [{ name: 'Power', label: 'Power:', mode: 'math', keys: 'expo', vars: [x] }, { name: 'Radical form', label: 'Radical form:', mode: 'math', keys: 'expo', vars: [x] }],
             [EX(powT, { form: 'power', diag: kn }), EX(rT, { form: 'radical', diag: rk })], [powT, rT], 'Power: ' + t(powT) + '; radical form: ' + t(rT),
-            (kind === 'times' ? 'Product law (add the exponents): ' + t(tx + '=' + x + '^{' + eT(R(e[0] - (e[0] - (e[0] % e[1] || e[1])), 1)).replace(/^.*$/, '') + '}').replace(/\^\{\}/, '') : 'Power of a power (multiply the exponents): ') + t(tx + '=' + powT) + '.<br>Radical form — the denominator is the index: ' + t(powT + '=' + rT) + '.',
+            (kind === 'times' ? 'Product law (add the exponents, with a common denominator): ' + t(tx + '=' + x + '^{' + eT([v.a, v.b]) + '+\\frac{' + v.n * v.b + '}{' + v.b + '}}=' + powT) : 'Power of a power (multiply the exponents): ' + t(tx + '=' + x + '^{' + eT([w.a, w.b]) + '\\times ' + eT([w.b, w.c]) + '}=' + powT)) + '.<br>Radical form — the denominator is the index: ' + t(powT + '=' + rT) + '.',
             ['Use the exponent law with the fractions exactly (common denominators to add).', IDX], 'rational exponent law ' + tx);
           p.bad = kn.texs.map(function (k0) { return [k0, rT]; }).concat(rk.texs.map(function (k0) { return [powT, k0]; }));
           return p;
