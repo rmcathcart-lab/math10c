@@ -116,12 +116,12 @@
           var cnv = cn.length === 1 ? ex.rat(cn[0]) : null, cdv = cd.length === 1 ? ex.rat(cd[0]) : null;
           if (cn.length > 1 || cd.length > 1 || (cnv && cdv && cnv[1] === 1 && cdv[1] === 1 && ex.gcd(cnv[0], cdv[0]) > 1) || (cn.length === 1 && !cnv) || (cd.length === 1 && !cdv))
             return form('simplify', 'Right value — now simplify the numbers in front of the radical into a single coefficient' + (cd.length ? ' (reduce the fraction)' : '') + '.');
-          if (r.n !== 1 && !ex.simplest(r.m, r.n)) { var f = ex.nthFactor(r.m, r.n); return form('not-simplest', 'Right value, but not in simplest form yet: ' + t(F(r.m)) + ' still has the factor ' + t(Math.pow(f, r.n) + (r.n === 2 ? '=' + f + '^{2}' : '=' + f + '^{' + r.n + '}')) + '. Take ' + t(f) + ' out of the radical too.'); }
+          if (r.n !== 1 && !ex.simplest(r.m, r.n)) { var f = ex.nthFactor(r.m, r.n); return form(r.m === M && Math.abs(r.k[0]) === 1 && r.k[1] === 1 ? 'unchanged' : 'not-simplest', 'Right value, but not in simplest form yet: ' + t(F(r.m)) + ' still has the factor ' + t(Math.pow(f, r.n) + (r.n === 2 ? '=' + f + '^{2}' : '=' + f + '^{' + r.n + '}')) + '. Take ' + t(f) + ' out of the radical too.'); }
           if (r.n === 1 && s.n !== 1 && s.m !== 1) return form('one-radical', 'Write it as a mixed radical.');
           return ok();
         }
         if (mode === 'entire') {
-          if (Math.abs(r.k[0]) !== 1 || r.k[1] !== 1) return form('not-entire', 'Right value, but an entire radical has nothing in front of the root. Move ' + t(ex.texRat(r.k)) + ' inside: it becomes ' + t(ex.texRat([Math.pow(Math.abs(r.k[0]), n), Math.pow(r.k[1], n)])) + ' under the ' + (n === 2 ? 'square' : n === 3 ? 'cube' : n + 'th') + ' root.');
+          if (Math.abs(r.k[0]) !== 1 || r.k[1] !== 1) return form(r.m === s.m && ex.eq(Math.abs(ex.ratVal ? ex.ratVal(r.k) : r.k[0] / r.k[1]), kAbs) ? 'unchanged' : 'not-entire', 'Right value, but an entire radical has nothing in front of the root. Move ' + t(ex.texRat(r.k)) + ' inside: it becomes ' + t(ex.texRat([Math.pow(Math.abs(r.k[0]), n), Math.pow(r.k[1], n)])) + ' under the ' + (n === 2 ? 'square' : n === 3 ? 'cube' : n + 'th') + ' root.');
           return ok();
         }
         return ok();
@@ -329,7 +329,7 @@
       var h = opt.diag ? opt.diag(an, a.ast) : null;
       if (h) return wrong(h.code || 'diag', h.hint);
       // compare coefficient and exponents with the target
-      if (an.coef && ta.coef && !f.complex && !ta.flags.complex && !f.roots && !ta.flags.roots) {
+      if (an.coef && ta.coef && !f.complex && !ta.flags.complex && !f.roots && !ta.flags.roots && Object.keys(an.vars || {}).every(function (v) { return (ta.vars || {})[v]; })) { // (letters not in the answer key: just wrong)
         var tv = ta.vars, sv2 = an.vars, keys = Object.keys(tv).concat(Object.keys(sv2)).filter(function (v, i, arr) { return arr.indexOf(v) === i; });
         var bad = keys.filter(function (v) { var x = tv[v] || [0, 1], y = sv2[v] || [0, 1]; return x[0] * y[1] !== y[0] * x[1]; });
         var coefOk = an.coef[0] * ta.coef[1] === ta.coef[0] * an.coef[1], coefNeg = an.coef[0] * ta.coef[1] === -ta.coef[0] * an.coef[1];
@@ -380,7 +380,7 @@
   HW.addCodes = function (o) { Object.keys(o).forEach(function (k) { HW.CODES[k] = o[k]; }); };
   HW.addCodes({
     'mixed-num': 'Wrote a mixed number', sign: 'Wrong sign', flip: 'Fraction upside down', lowest: 'Not in lowest terms', decimal: 'Gave a decimal instead of exact form', 'decimal-rounded': 'Rounded decimal instead of exact fraction',
-    simplify: 'Right value, not simplified', 'one-radical': 'Not written as one radical', 'not-simplest': 'Radical not in simplest form', 'not-simplest-var': 'Variable left under the radical',
+    simplify: 'Right value, not simplified', 'one-radical': 'Not written as one radical', 'not-simplest': 'Radical not in simplest form', unchanged: 'Gave the expression back unchanged', 'not-simplest-var': 'Variable left under the radical',
     'not-entire': 'Left a coefficient outside (entire radical)', index: 'Wrong index', 'coef-power': 'Left the perfect square/cube outside instead of its root',
     divided: 'Divided out a factor instead of taking its root', 'no-power': 'Didn’t square/cube the coefficient before moving it in', unchanged: 'Didn’t simplify',
     'var-exp': 'Didn’t divide the variable exponent by the index', var: 'Stray variable', 'as-decimal': 'Not written as a decimal', dots: 'Used … instead of a bar',

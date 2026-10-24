@@ -76,14 +76,38 @@
   /* marks: c right · s small recognized mistake (keeps 2/3) · f right value, wrong form (2/3) · g bigger but reasonable
      mistake (1/3) · w wrong · b blank; the teacher's overrides are C (1) T (2/3) O (1/3) W (0). Multiple choice is right or
      wrong. Which recognized mistakes are small or bigger: js/partial.js (HW.PARTIAL). */
+  /* "form" results that are really input problems (unreadable, wrong kind of answer, a word not typed, a point not drawn…):
+     the checker never got to the value, so they earn no automatic credit (the teacher can still give it). Every other "form"
+     result means the value is right (or only rounded/written differently) and keeps 2/3. */
+  TC.FORM_NO_CREDIT = {};
+  'unreadable unreadable2 notnumber notint comma plus divide equals duplicate dup repeat set-repeat nochoice no-input one-input none-both letter letter-form letter-x ch-ab ch-seg-name lin-word word name-word tool-format tool-unclear yes-no u10t-yn u2t-tf-word u3t-tf-word u6t-yesno-form u6t-name-form u7t-yn u8t-kind-read u8t-pick-read u9t-word u9t-side-letters u7t-icpt-read u8t-res-eq u8t-sub-read u8t-sub-show line-unreadable eq-unreadable int-unreadable pt-unreadable u72-int-unreadable pt-read stmt-unreadable roots-format pts-format pair-format pt-form pt-not-pair pt-many pts-few pts-dup pts-repeat pts-given pts-int pts-lines sys-one line-vars u72-k-var var-same sol-letter conv-name conv-lhs conv-no-eq conv-out eq-no-equals variable use-none none-hint same-pair three-five trivial proof-1 no-radical no-index no-point range rhs time-format nr-long x-times whole sign-in-blank whole-bracket np-unplaced ss-unplaced dr-nodomain dr-norange nl-noshade two-seg seg-arrow sq-points ctx-join alt-missing arrows unfinished u8l6-list value-point int-point-not-value gf-value-not-point not-factored u72-pt-value stmt-pair stmt-arg not-pct time-duration as-power as-radical not-product ex-coef-irr ex-simplify'.split(' ').forEach(function (c) { TC.FORM_NO_CREDIT[c] = 1; });
   TC.CREDIT = { c: 1, C: 1, s: 2 / 3, T: 2 / 3, f: 2 / 3, g: 1 / 3, O: 1 / 3, w: 0, W: 0, b: 0 };
   TC.credit = function (m) { return TC.CREDIT[m] || 0; };
+  /* is the answer just an expression copied from the question (stem or prompt)? */
+  function normTex(x) { return String(x).replace(/\\(left|right|displaystyle|,|;|:|!| )/g, '').replace(/\\cdot|\\times/g, '*').replace(/[{}\s]/g, '').replace(/\\dfrac/g, '\\frac'); }
+  TC.echoes = function (inst, resp) {
+    if (typeof resp !== 'string') return false;
+    var r = normTex(resp); if (r.length < 5 || !/[()\\^]/.test(r)) return false;
+    return normTex((inst.stem || '') + ' ' + (inst.prompt || '')).indexOf(r) >= 0;
+  };
   TC.grade = function (inst, resp) {
     if (TC.blank(resp)) return { m: 'b' };
     var res; try { res = inst.check(resp); } catch (e) { return { m: 'w', code: 'unreadable' }; }
     if (!res) return { m: 'w' };
     if (res.v === 'correct') return { m: 'c' };
     var mc = inst.input && inst.input.type === 'mc', P = HW.PARTIAL || {};
+    // some boxes answered and one left empty is an unfinished step (a bigger mistake: keeps 1/3), not "right value, wrong form"
+    if (res.v === 'form' && (res.code === 'empty' || res.code === 'blank' || res.code === 'blank-box' || res.code === 'rr-blank' || res.code === 'incomplete')) return { m: mc ? 'w' : 'g', code: 'incomplete' };
+    if (res.v === 'form' && (/unit/.test(res.code || '') || res.code === 'notnumber')) { // a number typed with its unit or as "k = 3" (in any box): mark the number
+      var strip = function (v) { return typeof v !== 'string' ? v : v.replace(/^\s*[a-zA-Z]\s*=\s*/, '').replace(/^\s*\\?\$\s*/, '').replace(/\s*(\\text\{\s*)?[a-zA-Z]{1,3}\s*(\/|\\?\/|\\text\{\/\})\s*[a-zA-Z]{1,3}\}?\s*$/, '').replace(/\\(text|mathrm)\{\s*([^{}]*)\}/g, '$2').replace(/\^\{?\\circ\}?|\\degree/g, '').replace(/\\[,;: ]|~/g, ' ').replace(/\s*(°|degrees?|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?|\\?%)\s*\.?\s*$/, ''); };
+      var bare = Array.isArray(resp) ? resp.map(strip) : resp && typeof resp === 'object' ? Object.keys(resp).reduce(function (o, k) { o[k] = strip(resp[k]); return o; }, {}) : strip(resp);
+      var rb; try { rb = inst.check(bare); } catch (e) { rb = null; }
+      if (rb && rb.v === 'correct') return { m: 'c' };
+      if (rb && rb.v === 'wrong') res = rb; else return { m: 'w', code: res.code };
+    }
+    if (res.v === 'form' && (TC.FORM_NO_CREDIT[res.code] || /unreadable/.test(res.code || ''))) return { m: 'w', code: res.code };
+    // the question's own expression typed back (e.g. the radical left as given, the product not expanded) shows no work: no credit
+    if (res.v === 'form' && (res.code === 'unchanged' || TC.echoes(inst, resp))) return { m: 'w', code: 'unchanged' };
     if (res.v === 'form') return { m: mc ? 'w' : 'f', code: res.code || '' };
     var code = res.code || '';
     if (!mc && P.small && P.small[code]) return { m: 's', code: code };

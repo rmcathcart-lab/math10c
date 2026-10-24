@@ -23,6 +23,7 @@
   var HW = root.HW;
   HW.PARTIAL = {
     small: {
+      'arrows': 1, // Sketch: drew lines with arrows instead of segments (decided 2026-10-23)
       'ab-sign': 1, // Area box: sign of a product
       'abc-sum': 1, // Added instead of a − b − c
       'abs-minus-out': 1, // Dropped the minus sign outside the bars
@@ -435,6 +436,12 @@
       'zipper-once': 1 // Counted the zipper only once
     },
     big: {
+      // decided 2026-10-23 when the unit tests and exit slips were built
+      'fl-only': 1, // Expanded with only First and Last
+      'pt-swap': 1, // Point coordinates swapped
+      'int-pt-swap': 1, // x- and y-intercept points swapped
+      'int-swap': 1, // x- and y-intercept swapped
+      'end-step': 1, // Missing endpoint: gave the step from A to M
       'a-b': 1, // Found a − b
       'ab-cell': 1, // Area box: wrong product
       'ab-exp': 1, // Area box: exponents

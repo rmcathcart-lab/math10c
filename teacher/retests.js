@@ -25,7 +25,10 @@
       R.busy = null;
       if (!r[0].ok) throw new Error(r[0].error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for retests: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : r[0].error);
       R.data = r[0]; R.at = Date.now(); R.klass = cls();
-      if (r[1] && r[1].ok) R.tests = r[1].tests;
+      if (r[1] && r[1].ok) { // the saved tests, plus the ready-made unit tests not saved yet (saved when one is opened)
+        var have = {}; r[1].tests.forEach(function (t) { have[t.id] = 1; });
+        R.tests = r[1].tests.concat(Object.keys(HW.lessons).filter(function (k) { return HW.lessons[k].test && !HW.lessons[k].exit && !have['B-' + k]; }).map(function (k) { return HW.DashTests.builtin(k); }).filter(Boolean));
+      }
       D.retestCount = R.data.retests.filter(function (x) { return x.status === 'requested'; }).length;
     }, function (e) { R.busy = null; throw e; });
   }
@@ -138,7 +141,11 @@
     var t = (R.tests || []).filter(function (q) { return q.id === testId; })[0]; if (!t) return;
     if (!confirm('Open “' + t.def.title + '” for ' + x.name + ' now?\n\nIt pops up on ' + x.name.split(' ')[0] + '’s screen within about 10 seconds, with new numbers. The rest of the class isn’t affected.')) return;
     btn.disabled = true;
-    api('launchretest', { 'class': cls(), id: x.id, test: testId }).then(function (d) {
+    var demo = HW.DashDemo && cls() === HW.DashDemo.CODE;
+    (t.virtual && !demo ? api('savetest', { id: t.id, def: JSON.stringify(t.def) }) : Promise.resolve({ ok: true })).then(function (d) {
+      if (!d.ok) return d;
+      return api('launchretest', { 'class': cls(), id: x.id, test: testId });
+    }).then(function (d) {
       if (!d.ok) { btn.disabled = false; alert(d.error === 'live' ? x.name + ' already has a retest open.' : 'Couldn’t open it: ' + d.error); return; }
       return load().then(function () { HW.DashTests.watch(x.name); });
     });

@@ -805,3 +805,6 @@ button.ulv:hover { border-color: var(--brand); }
 @media (max-width: 520px) { .notes-row { grid-template-columns: 36px minmax(0, 1fr) auto; } .notes-open { display: none; } }
 /* the next-test notice: a rounded rectangle, not a pill (the Class calendar button stays a pill) */
 .hh-cal > .hh-test { border-radius: 10px; }
+/* test-mode question list: where the Beginning / Progressing / Mastery boxes start */
+.tm-nav-sec { font-size: 12px; font-weight: 700; color: var(--muted); margin: 8px 3px 2px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,.08); }
+.tm-nav-list > .tm-nav-sec:first-child { margin-top: 0; padding-top: 0; border-top: 0; }

@@ -412,3 +412,10 @@ button.rt-test:hover { border-color: #9aa6b8; }
 .rc-ippline { margin-top: 6px; padding: 6px 9px; border-radius: 8px; background: #f4f0fa; color: #4c3a75; line-height: 1.4; }
 .lp-intro { --uc: #0f5f5a; --ucs: #b9d8d4; --ucd: #0f5f5a; --uct: #0f5f5a; margin-bottom: 14px; }
 .lp-intro .lp-grid { grid-template-columns: minmax(210px, 320px); }
+/* header: launch today's exit slip (yellow, like exit slips everywhere) */
+.top-exit { white-space: nowrap; background: #ffd84d; border-color: #e5b800; color: #4a3800; font-weight: 700; }
+.top-exit:hover:not(:disabled) { background: #ffcc1a; border-color: #d4a900; }
+.top-exit:disabled { opacity: .45; cursor: default; }
+/* ready-made tests and exit slips */
+.tt-sub { font-size: 13px; color: var(--ink-2, #4b5563); margin: -2px 0 4px; line-height: 1.3; }
+.tt-edited { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }

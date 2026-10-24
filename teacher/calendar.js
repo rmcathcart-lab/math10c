@@ -295,6 +295,25 @@
     else if (t.keys.length > 1) { go = button('btn-primary top-launch', 'Launch Today’s Lesson', function () { openLessons('today'); }); go.title = 'Two lessons today: pick one'; }
     else { go = button('btn-primary top-launch', 'Launch Today’s Lesson', function () {}); go.disabled = true; go.title = t.why; }
     right.appendChild(go);
+    // beside it: launch today's exit slip (the ready-made one for today's lesson, or Ryan's edited copy of it)
+    var xs = t.keys.filter(function (k) { return HW.lessons[k + 'x']; });
+    var xb = button('top-exit', 'Exit Slip', function () { launchExit(xs); });
+    if (!xs.length) { xb.disabled = true; xb.title = t.keys.length ? 'Today’s lesson has no exit slip.' : t.why; }
+    else xb.title = xs.map(function (k) { var i = C.info(k); return 'Exit Slip ' + i.unit + '.' + i.num + ': ' + String(i.title).replace(/<[^>]*>/g, ''); }).join('\n') + '\nLaunch it for this class';
+    right.appendChild(xb);
+  }
+  function launchExit(keys) {
+    var TS = HW.DashTests; if (!TS || !keys.length) return;
+    TS.load(true).then(function () {
+      var k = keys[0];
+      if (keys.length > 1) { var i2 = C.info(keys[1]); if (!confirm('Two lessons today. Launch the exit slip for Lesson ' + C.info(k).unit + '.' + C.info(k).num + '?\n\nCancel to choose Lesson ' + i2.unit + '.' + i2.num + ' instead.')) k = keys[1]; }
+      var t = TS.all().filter(function (x) { return x.id === 'B-' + k + 'x'; })[0]; if (!t) return;
+      var cl = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0], lab = cl ? cl.label : st.klass;
+      var prev = st.tab; st.tab = 'exits'; // the live monitor opens on the Exit slips tab
+      var p = TS.launchTest(t, 'Launch “' + t.def.title + '” for ' + lab + ' now?\n\nIt pops up on every signed-in student’s screen within about 10 seconds.');
+      if (!p) { st.tab = prev; return; } // cancelled (or something is already live)
+      try { localStorage.setItem('hw:ttab', 'exits'); } catch (e) {}
+    }, function (e) { alert('Couldn’t load the exit slips: ' + e.message); });
   }
   /* the Lessons pop-up: every lesson as cards (by unit, in unit colours, marked Today / Taught / its date for this class),
      or the class calendar; tap one to open it for this class */

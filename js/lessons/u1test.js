@@ -477,8 +477,8 @@
       ['Write the coefficient as a ' + rootWord(n) + ' root: ' + t(Math.abs(k) + '=' + rt(n, Math.pow(Math.abs(k), n))) + '.', 'Then multiply the numbers under one radical.'], 'entire radical of ' + k + ' root' + n + ' ' + m);
   }
 
-  HW.defineLesson({
-    id: 'u1test', unit: 1, num: 'Test', title: 'Unit 1 Test', outcome: 'AN1', test: true,
+  HW.defineTest({
+    id: 'u1test', unit: 1, title: 'Unit 1 Test', outcome: 'AN1', calc: false,
     blurb: 'The Unit 1 outcomes-based test: AN1 (prime factors, GCF and LCM, square and cube roots) and AN2 (irrational numbers, ordering, entire and mixed radicals), each at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= AN1 · Part 1 ======================= */

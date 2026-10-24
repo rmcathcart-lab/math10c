@@ -8,6 +8,7 @@ ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 var only = process.argv[3] || null;
 var lessonFiles = fs.readdirSync(path.join(root, 'js/lessons')).filter(function (f) { return /\.js$/.test(f); }).sort().map(function (f) { return 'js/lessons/' + f; });
+if (fs.existsSync(path.join(root, 'js/exits'))) lessonFiles = lessonFiles.concat(fs.readdirSync(path.join(root, 'js/exits')).filter(function (f) { return /\.js$/.test(f); }).sort().map(function (f) { return 'js/exits/' + f; }));
 ['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js', 'js/factor.js', 'js/relfn.js', 'js/draw.js', 'js/draw2.js', 'js/lines.js', 'js/geom.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); });
 var loadErrors = 0;
 lessonFiles.forEach(function (f) { try { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); } catch (e) { loadErrors++; console.log('LOAD ERROR', f, e.message); } });
