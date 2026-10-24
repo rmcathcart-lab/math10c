@@ -531,7 +531,7 @@
       /* ======================= Part 2 · PRG ======================= */
       { num: '11', outcome: 'AN5', stem: 'Factor by decomposition.', parts: [
         { id: '11a', outcome: 'AN5', level: 'PRG', make: function (r) {
-          var z = triPick(r, function () { return { p: r.int(2, 5), q: r.int(1, 7), r: r.int(2, 5), s: -r.int(1, 7) }; }, function (o) { var b = o.p * o.s + o.q * o.r; return o.p < o.r && b > 0 && Math.abs(o.p * o.r * o.q * o.s) <= 150 && b <= 15; });
+          var z = triPick(r, function () { return { p: r.int(2, 5), q: r.int(1, 7), r: r.int(2, 5), s: -r.int(1, 7) }; }, function (o) { var b = o.p * o.s + o.q * o.r; return o.p < o.r && b >= 3 && Math.abs(o.p * o.r * o.q * o.s) <= 150 && b <= 15; });
           return triPart(Tri(z));
         } },
         { id: '11b', outcome: 'AN5', level: 'PRG', make: function (r) {
@@ -539,7 +539,7 @@
           return triPart(Tri(z));
         } },
         { id: '11c', outcome: 'AN5', level: 'PRG', make: function (r) {
-          var z = triPick(r, function () { var sg1 = r.pick([1, -1]); return { p: 1, q: sg1 * r.int(1, 4), r: r.int(3, 5), s: -sg1 * r.int(1, 4) }; }, function (o) { var b = o.p * o.s + o.q * o.r; return b !== 0 && Math.abs(b) <= 15; });
+          var z = triPick(r, function () { var sg1 = r.pick([1, -1]); return { p: 1, q: sg1 * r.int(2, 4), r: r.int(3, 5), s: -sg1 * r.int(1, 4) }; }, function (o) { var b = o.p * o.s + o.q * o.r; return b !== 0 && Math.abs(b) <= 15; });
           z.w = 'y';
           return triPart(Tri(z));
         } }] },

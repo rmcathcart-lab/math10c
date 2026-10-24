@@ -84,6 +84,8 @@
     if (!res) return { m: 'w' };
     if (res.v === 'correct') return { m: 'c' };
     var mc = inst.input && inst.input.type === 'mc', P = HW.PARTIAL || {};
+    // some boxes answered and one left empty is an unfinished step (a bigger mistake: keeps 1/3), not "right value, wrong form"
+    if (res.v === 'form' && (res.code === 'empty' || res.code === 'blank')) return { m: mc ? 'w' : 'g', code: 'incomplete' };
     if (res.v === 'form') return { m: mc ? 'w' : 'f', code: res.code || '' };
     var code = res.code || '';
     if (!mc && P.small && P.small[code]) return { m: 's', code: code };

@@ -450,7 +450,7 @@
               [numC(s.x, sw), numC(s.y, [[s.x, 'u8x-price-swap', 'You swapped the two prices.']])], [String(s.x), String(s.y)], it[0] + ' ' + t('\\$' + s.x) + ', ' + it[2] + ' ' + t('\\$' + s.y),
               'Let ' + t('a') + ' be the price of a ' + it[0] + ' and ' + t('b') + ' the price of a ' + it[2] + ':<br>' + t(s.a1 + 'a+' + s.b1 + 'b=' + s.c1) + ' and ' + t(s.a2 + 'a+' + s.b2 + 'b=' + s.c2) + '.<br>Solve (elimination or substitution): ' + t('a=' + s.x) + ', ' + t('b=' + s.y) + '.<br><b>Check.</b> ' + t(s.a2 + '(' + s.x + ')+' + s.b2 + '(' + s.y + ')=' + s.c2) + ' ✓',
               ['Let two letters stand for the two prices; each sentence gives one equation.', 'Solve the system by elimination (or substitution).'], 'two prices');
-            p.bad = [[String(s.y), String(s.x)], [String(s.x), String(s.y + 1)]];
+            p.bad = [[String(s.y), String(s.x)], [String(s.x), String(s.x)]];
             return p;
           } },
           { id: '2b', outcome: 'RF9', level: 'PRG', make: function (r, s) {
