@@ -216,7 +216,7 @@
   function solDecomp(T) {
     var L = [];
     if (T.hasG) L.push('Take out the common factor ' + t(tx(T.gm)) + ' first: ' + t(T.tex + '=' + gpre(T) + '(' + T.innerTex + ')') + '.');
-    L.push((T.hasG ? 'For ' + t(T.innerTex) + ': ' : '') + t('ac=' + T.a + pv(T.c) + '=' + T.ac) + '; the pair with product ' + t(T.ac) + ' and sum ' + t(T.b) + ' is ' + t(T.m) + ' and ' + t(T.n) + '.');
+    L.push((T.hasG ? 'For ' + t(T.innerTex) + ': ' : '') + t('ac=' + T.a + '\\times ' + pv(T.c) + '=' + T.ac) + '; the pair with product ' + t(T.ac) + ' and sum ' + t(T.b) + ' is ' + t(T.m) + ' and ' + t(T.n) + '.');
     L.push(t(T.innerTex + '=' + splitTex(T)));
     L.push(t('=' + groupTex(T)));
     L.push(t('=' + P.btex(T.F2) + P.btex(T.F1)));

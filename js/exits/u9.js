@@ -49,11 +49,12 @@
   function A(v, code, hint) { return { v: v, code: code, hint: hint }; }
   function an(n) { var s = String(n); return /^8/.test(s) || /^1[18](\D|$)/.test(s) ? 'an' : 'a'; }
 
-  /* unit typed into the box -> nudge, not a wrong answer */
+  /* unit typed into the box: mark the number (as test mode does for a single box; in a multi-box part a typed unit
+     would otherwise come back as "form" and cost a third of the point) */
   function unitWrap(check) {
     return function (resp) {
       var s = String(resp == null ? '' : resp), bare = s.replace(/\\text\{[^}]*\}|\\mathrm\{[^}]*\}/g, '').replace(/\^?\{?\\circ\}?|°|\s*(cm|mm|km|m|in|ft|km\/h|m\/s|units|degrees?)\s*$/gi, '').trim();
-      if (bare !== s.trim() && HW.parse.number(bare).ok) return form('units', 'Just the number — the unit is already shown after the box.');
+      if (bare !== s.trim() && HW.parse.number(bare).ok) return check(bare);
       return check(resp);
     };
   }
@@ -797,7 +798,7 @@
     { kind: 'ramp', make: function (r) { var p = find(function () { return { h: r.int(40, 95) / 100, d: tenth(r, 4.5, 11.5) }; }, function (p) { return safe(angCalc('oa', p.h, p.d), 1); }, { h: 0.6, d: 7.2 }); return { k: 'oa', n: p.h, d: p.d, nS: fx(p.h, 2), dS: fx(p.d, 1),
       text: 'A wheelchair ramp rises ' + t(fx(p.h, 2) + '\\text{ m}') + ' over a horizontal distance of ' + t(fx(p.d, 1) + '\\text{ m}') + '. Determine the angle ' + t('\\theta') + ' between the ramp and the ground, to the nearest tenth of a degree.', fig: function (r, x) { return slopeFig({ deg: x, labH: fx(p.d, 1) + ' m', labV: fx(p.h, 2) + ' m', labS: '', obj: 'ramp', angLab: 'θ', flip: r.chance(0.5) }); } }; } },
     { kind: 'zip', make: function (r) { var p = find(function () { return { L: r.int(90, 260), h: r.int(12, 60) }; }, function (p) { return p.h < p.L / 3 && safe(angCalc('oh', p.h, p.L), 1); }, { L: 145, h: 32 }); return { k: 'oh', n: p.h, d: p.L, nS: String(p.h), dS: String(p.L), depr: true,
-      text: 'A straight zip-line cable is ' + t(p.d + '\\text{ m}') + ' long and its lower end is ' + t(p.n + '\\text{ m}') + ' below its upper end. Determine the angle of depression ' + t('\\theta') + ' of the cable from its upper end, to the nearest tenth of a degree.', fig: function (r, x) { return deprFig({ th: x, hLab: p.n + ' m', runLab: '', sightLab: p.L + ' m', obj: 'tower', angLab: 'θ' }); } }; } },
+      text: 'A straight zip-line cable is ' + t(p.L + '\\text{ m}') + ' long and its lower end is ' + t(p.h + '\\text{ m}') + ' below its upper end. Determine the angle of depression ' + t('\\theta') + ' of the cable from its upper end, to the nearest tenth of a degree.', fig: function (r, x) { return deprFig({ th: x, hLab: p.n + ' m', runLab: '', sightLab: p.L + ' m', obj: 'tower', angLab: 'θ' }); } }; } },
     { kind: 'flag', make: function (r) { var p = find(function () { return { h: tenth(r, 6, 18), s: tenth(r, 4, 20) }; }, function (p) { return Math.abs(p.h - p.s) > 0.8 && safe(angCalc('oa', p.h, p.s), 1); }, { h: 11.4, s: 8.6 }); return { k: 'oa', n: p.h, d: p.s, nS: fx(p.h, 1), dS: fx(p.s, 1),
       text: 'A flagpole ' + t(fx(p.h, 1) + '\\text{ m}') + ' tall casts a shadow ' + t(fx(p.s, 1) + '\\text{ m}') + ' long on level ground. Determine the angle of elevation of the sun, ' + t('\\theta') + ', to the nearest tenth of a degree.', fig: function (r, x) { return slopeFig({ deg: x, labH: fx(p.s, 1) + ' m', labV: fx(p.h, 1) + ' m', labS: '', obj: 'pole', angLab: 'θ', flip: r.chance(0.5) }); } }; } }];
   HW.defineExit({

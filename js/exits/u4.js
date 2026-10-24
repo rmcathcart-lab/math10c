@@ -75,10 +75,13 @@
     opt = opt || {};
     var f = wfilter(target, ws), keyTex = opt.keyTex || FX.tex(target);
     var part = KP.factored(prompt, target, Object.assign({}, opt, { wrong: f.W, keyTex: keyTex, vars: opt.vars || varsOf(prodOf(target)) }), sol, hints, text);
+    part.check = noProduct(part.check);
     part.bad = f.bad.concat(opt.bad || []);
     return part;
   }
-  function fchk(target, ws, opt) { var f = wfilter(target, ws); return { check: K.factored(target, Object.assign({}, opt || {}, { wrong: f.W })), bad: f.bad, key: FX.tex(target) }; }
+  /* an answer that isn't a product at all (e.g. the expression typed back) shows no factoring: wrong, not the 2/3 "form" nudge */
+  function noProduct(chk) { return function (resp) { var res = chk(resp); return res && res.v === 'form' && res.code === 'not-factored' ? wrong('not-factored', res.hint) : res; }; }
+  function fchk(target, ws, opt) { var f = wfilter(target, ws); return { check: noProduct(K.factored(target, Object.assign({}, opt || {}, { wrong: f.W }))), bad: f.bad, key: FX.tex(target) }; }
   /* the monomial factors of a typed answer multiply to a negative number? (for "take out a negative common factor") */
   function monoSign(resp) {
     var a = K.read(resp); if (a.res) return 0;
@@ -210,7 +213,7 @@
   }
   function l1q1b(r) {
     var v = r.pick(['x', 'y', 'a', 't', 'n']), s = pickWhere(function () { return { G: r.int(2, 6), e: r.int(1, 2), a: r.int(1, 5), b: nz(r, 1, 7), c: nz(r, 1, 9) }; },
-      function (s) { return gcd(gcd(s.a, Math.abs(s.b)), Math.abs(s.c)) === 1 && Math.abs(s.b) !== Math.abs(s.c); });
+      function (s) { var D = s.b * s.b - 4 * s.a * s.c, rt = Math.round(Math.sqrt(Math.abs(D))); return gcd(gcd(s.a, Math.abs(s.b)), Math.abs(s.c)) === 1 && Math.abs(s.b) !== Math.abs(s.c) && !(D >= 0 && rt * rt === D); }); // the bracket doesn't factor again (Lesson 1: the GCF is the whole job)
     var G = T(s.G, v, s.e), Br = P.add(T(s.a, v, 2), T(s.b, v, 1), P.num(s.c)), full = P.mul(G, Br);
     var keptExp = P.add(T(s.a, v, 2 + s.e), T(s.b, v, 1 + s.e), T(s.c, v, s.e));
     return fpart('Factor ' + t(tx(full)) + ' by removing the greatest common factor.', [G, Br],
@@ -240,7 +243,7 @@
     return pickWhere(function () {
       var G = r.int(2, 9), a = r.int(1, 6), b = r.int(2, 7), g1 = r.int(1, 4), g2 = r.int(1, 3);
       return { G: G, a: a, b: b, g1: g1, g2: g2, e1: g2 + r.int(1, 3), e2: g1 + r.int(1, 3), sign: r.chance(0.5) ? 1 : -1, vs: r.pick([['x', 'y'], ['a', 'b'], ['p', 'q'], ['c', 'd']]) };
-    }, function (s) { return gcd(s.a, s.b) === 1 && s.a !== s.b && s.G * s.b <= 60; });
+    }, function (s) { var sq = function (n) { return Math.round(Math.sqrt(n)) * Math.round(Math.sqrt(n)) === n; }; return gcd(s.a, s.b) === 1 && s.a !== s.b && s.G * s.b <= 60 && !(s.sign < 0 && sq(s.a) && sq(s.b) && (s.e1 - s.g2) % 2 === 0 && (s.e2 - s.g1) % 2 === 0); }); // bracket never a difference of squares
   }
   function l1q3(r, s) {
     var x = s.vs[0], y = s.vs[1], A = s.G * s.a, B = s.G * s.b * s.sign, g1 = s.g1, g2 = s.g2, e1 = s.e1, e2 = s.e2;

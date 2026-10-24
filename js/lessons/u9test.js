@@ -59,11 +59,26 @@
 
   /* rounded answer with targeted alternatives; alternatives that round differently become the test's "bad" answers */
   function goodAlts(alts) { return (alts || []).filter(function (a) { return isFinite(a.v) && a.v > 0; }); }
-  function badOf(x, dp, alts) { var want = RT(x, dp), seen = {}; return goodAlts(alts).filter(function (a) { var k = RT(a.v, dp); if (Math.abs(k - want) < 1e-9 || seen[k]) return false; seen[k] = 1; return true; }).map(function (a) { return RT(a.v, dp).toFixed(dp); }); }
-  function nearC(x, dp, alts) { return K.near(x, dp, { alts: goodAlts(alts) }); }
-  function nearP(prompt, x, dp, unit, alts, sol, hints, text, before) {
+  /* an answer worked from correctly rounded intermediate values (e.g. a second side from the rounded first side) can be one
+     unit off in the last place: the paper key accepts it ("accept a tenth off" / "accept it"), so those values are marked right */
+  function accVals(x, dp, vals) { var w = RT(x, dp), u = Math.pow(10, -dp); return (vals || []).filter(function (v) { return isFinite(v) && Math.abs(RT(v, dp) - w) <= u + 1e-9; }).map(function (v) { return RT(v, dp); }); }
+  var UNIT_END = /\s*(°|\^\{?\\circ\}?|\\circ|\\degree|degrees?|km|cm|mm|m|\\text\{\s*(km|cm|mm|m)\s*\})\s*\.?\s*$/;
+  function withAcc(chk, x, dp, vals) {
+    var acc = accVals(x, dp, vals);
+    return function (resp) {
+      var r = chk(resp), raw = String(resp == null ? '' : resp);
+      if (r && r.v === 'form' && r.code === 'units') { var r2 = chk(raw.replace(UNIT_END, '')); if (!(r2.v === 'form' && r2.code === 'units')) { r = r2; raw = raw.replace(UNIT_END, ''); } }   // a number typed with its unit (the unit is after the box): mark the number
+      if (r && r.v !== 'correct' && acc.length) { var q = HW.parse.number(raw.trim()); if (q.ok && acc.some(function (a) { return Math.abs(q.value - a) < 1e-9; })) return ok(); }
+      return r;
+    };
+  }
+  function badOf(x, dp, alts, accept) { var want = RT(x, dp), seen = {}, acc = accVals(x, dp, accept); return goodAlts(alts).filter(function (a) { var k = RT(a.v, dp); if (Math.abs(k - want) < 1e-9 || seen[k] || acc.some(function (v) { return Math.abs(v - k) < 1e-9; })) return false; seen[k] = 1; return true; }).map(function (a) { return RT(a.v, dp).toFixed(dp); }); }
+  function fromRounded(v, f) { return [1, 2].map(function (d) { return f(RT(v, d)); }); }   // f applied to v rounded to 1 and 2 decimals
+  function nearC(x, dp, alts, accept) { return withAcc(K.near(x, dp, { alts: goodAlts(alts) }), x, dp, accept); }
+  function nearP(prompt, x, dp, unit, alts, sol, hints, text, before, accept) {
     var p = K.P.near(prompt, x, dp, { unit: unit, alts: goodAlts(alts), before: before }, sol, hints, text);
-    p.bad = badOf(x, dp, alts);
+    p.check = withAcc(p.check, x, dp, accept);
+    p.bad = badOf(x, dp, alts, accept);
     if (unit === '°') p.answer = t(fx(x, dp) + '^\\circ');
     return p;
   }
@@ -393,7 +408,7 @@
 
   /* ---------- Q17 / Q19 ---------- */
   var TRIP_CTX = [{ who: 'A ship leaves port', n0: 'P', n1: 'S', verb: 'sails', d: [10, 30], int: true },
-    { who: 'A small plane flies from airport', n0: 'A', n1: 'B', verb: 'flies', d: [150, 400], int: true },
+    { who: 'A small plane leaves airport', n0: 'A', n1: 'B', verb: 'flies', d: [150, 400], int: true },
     { who: 'A boat leaves dock', n0: 'D', n1: 'F', verb: 'travels', d: [12, 40], int: true },
     { who: 'A hiker leaves trailhead', n0: 'H', n1: 'K', verb: 'walks', d: [3, 12], int: false }];
   function quad(b) { return b < 90 ? ['north', 'east', b] : b < 180 ? ['south', 'east', 180 - b] : b < 270 ? ['south', 'west', b - 180] : ['north', 'west', 360 - b]; }
@@ -481,13 +496,16 @@
           var hr = RT(c.hs.x, 1), early = [A(Math.sqrt(Math.max(hr * hr - c.k * c.k, 0)), 'early-round', EARLY), A(hr * (c.ur === 'o' ? Tg.sin(c.th) : Tg.cos(c.th)), 'early-round', EARLY)];
           var lAlts = c.ls.alts.concat(early, [A(Math.sqrt(c.hs.x * c.hs.x + c.k * c.k), 'u9t-pyth-add', 'The hypotenuse is the longest side: to find a <b>leg</b>, subtract the squares.')]);
           var T = fromAngle(nm, c.th, c.kr, c.k), lab = { h: hyp }; lab[c.kr] = nf(c.k); lab[c.ur] = other;
+          var tU = c.ur === 'o' ? Tg.sin(c.th) : Tg.cos(c.th);   // other leg = hyp × tU
+          var hAcc = fromRounded(c.ls.x, function (l) { return Math.sqrt(l * l + c.k * c.k); }).concat(fromRounded(c.ls.x, function (l) { return l / tU; }));
+          var lAcc = fromRounded(c.hs.x, function (h) { return Math.sqrt(Math.max(h * h - c.k * c.k, 0)); }).concat(fromRounded(c.hs.x, function (h) { return h * tU; }));
           var p = P.fields('In ' + t('\\triangle ' + nm.L.join('')) + ', ' + t('\\angle ' + nm.R + '=90^\\circ') + ', ' + t('\\angle ' + nm.A + '=' + dg(c.th)) + ' and ' + t(given + '=' + nf(c.k)) + ' ' + unit + '. Sketch and label the triangle. Then find ' + t(hyp) + ' and ' + t(other) + ', to the nearest tenth.',
             [{ name: hyp, before: t(hyp + '='), after: unit }, { name: other, before: t(other + '='), after: unit }],
-            [nearC(c.hs.x, 1, c.hs.alts), nearC(c.ls.x, 1, lAlts)], [fx(c.hs.x, 1), fx(c.ls.x, 1)], t(hyp + '\\approx' + fx(c.hs.x, 1)) + ' ' + unit + ', ' + t(other + '\\approx' + fx(c.ls.x, 1)) + ' ' + unit,
+            [nearC(c.hs.x, 1, c.hs.alts, hAcc), nearC(c.ls.x, 1, lAlts, lAcc)], [fx(c.hs.x, 1), fx(c.ls.x, 1)], t(hyp + '\\approx' + fx(c.hs.x, 1)) + ' ' + unit + ', ' + t(other + '\\approx' + fx(c.ls.x, 1)) + ' ' + unit,
             sideRow('<div style="flex:0 1 220px">' + triSvg(T, { lab: lab, angA: c.th + '°', width: 210 }) + '</div>', '<div>From ' + t('\\angle ' + nm.A) + ': ' + t(given) + ' is ' + ROLE[c.kr] + '.</div>') +
               '<b>' + t(hyp) + ':</b> ' + sideWork(c.hs, c.kr, 'h', c.th, hyp, nf(c.k), unit, true) + '<br><b>' + t(other) + ':</b> ' + sideWork(c.ls, c.kr, c.ur, c.th, other, nf(c.k), unit, true) + '<br>Each side is found from the <b>given</b> data, not from a rounded answer.',
             ['Sketch it: the hypotenuse is across from ' + t('\\angle ' + nm.R) + '. From ' + t('\\angle ' + nm.A) + ', is ' + t(given) + ' opposite or adjacent?', 'Use the given side and the angle for <b>both</b> unknowns, so a rounding error isn’t carried along.'], 'solve for hyp and leg ' + c.th + ' ' + c.k);
-          p.bad = [[badOf(c.hs.x, 1, c.hs.alts)[0] || '0', fx(c.ls.x, 1)], [fx(c.hs.x, 1), badOf(c.ls.x, 1, lAlts)[0] || '0']];
+          p.bad = [[badOf(c.hs.x, 1, c.hs.alts, hAcc)[0] || '0', fx(c.ls.x, 1)], [fx(c.hs.x, 1), badOf(c.ls.x, 1, lAlts, lAcc)[0] || '0']];
           return p;
         } }] },
       { num: '4', outcome: 'M4', parts: [
@@ -606,13 +624,15 @@
           { id: '9', outcome: 'M4', level: 'PRG', make: function (r, s) {
             var nm = s.nm, hyp = sn(nm.A, nm.B), other = s.ur === 'a' ? sn(nm.A, nm.R) : sn(nm.B, nm.R), given = s.kr === 'a' ? sn(nm.A, nm.R) : sn(nm.B, nm.R), u = s.unit, B = 90 - s.th;
             var hs = solveSide(s.k, s.kr, 'h', s.th, t(hyp)), ls = solveSide(s.k, s.kr, s.ur, s.th, t(other)), lr = RT(ls.x, 1);
-            var hAlts = hs.alts.concat([A(Math.sqrt(lr * lr + s.k * s.k), 'early-round', EARLY)]);
+            var hAlts = hs.alts.concat([A(Math.sqrt(lr * lr + s.k * s.k), 'early-round', EARLY)]), tU = s.ur === 'o' ? Tg.sin(s.th) : Tg.cos(s.th);
+            var hAcc = fromRounded(ls.x, function (l) { return Math.sqrt(l * l + s.k * s.k); }).concat(fromRounded(ls.x, function (l) { return l / tU; }));
+            var lAcc = fromRounded(hs.x, function (h) { return Math.sqrt(Math.max(h * h - s.k * s.k, 0)); }).concat(fromRounded(hs.x, function (h) { return h * tU; }));
             var p = P.fields('Solve the triangle.', [{ name: '∠' + nm.B, before: t('\\angle ' + nm.B + '='), after: '°' }, { name: other, before: t(other + '='), after: u }, { name: hyp, before: t(hyp + '='), after: u }],
-              [intChk(B, [A(180 - s.th, 'angle-180', 'The angles of a triangle add to ' + t('180^\\circ') + ', and one of them is the right angle: ' + t('90^\\circ-' + dg(s.th)) + '.'), A(s.th, 'u9t-same-angle', 'That is the given angle. The other acute angle is ' + t('90^\\circ-' + dg(s.th)) + '.')]), nearC(ls.x, 1, ls.alts), nearC(hs.x, 1, hAlts)],
+              [withAcc(intChk(B, [A(180 - s.th, 'angle-180', 'The angles of a triangle add to ' + t('180^\\circ') + ', and one of them is the right angle: ' + t('90^\\circ-' + dg(s.th)) + '.'), A(s.th, 'u9t-same-angle', 'That is the given angle. The other acute angle is ' + t('90^\\circ-' + dg(s.th)) + '.')]), B, 0), nearC(ls.x, 1, ls.alts, lAcc), nearC(hs.x, 1, hAlts, hAcc)],
               [String(B), fx(ls.x, 1), fx(hs.x, 1)], t('\\angle ' + nm.B + '=' + dg(B)) + ', ' + t(other + '\\approx' + fx(ls.x, 1)) + ' ' + u + ', ' + t(hyp + '\\approx' + fx(hs.x, 1)) + ' ' + u,
               t('\\angle ' + nm.B + '=90^\\circ-' + dg(s.th) + '=' + dg(B)) + '<br>From ' + t('\\angle ' + nm.A) + ', ' + t(given) + ' is ' + ROLE[s.kr] + '.<br><b>' + t(other) + ':</b> ' + sideWork(ls, s.kr, s.ur, s.th, other, nf(s.k), u, true) + '<br><b>' + t(hyp) + ':</b> ' + sideWork(hs, s.kr, 'h', s.th, hyp, nf(s.k), u, true),
               ['The acute angles of a right triangle add to ' + t('90^\\circ') + '.', 'From the ' + t(dg(s.th)) + ' angle, is the given side opposite or adjacent? Use it (not a rounded answer) for both sides.'], 'solve triangle ' + s.th + ' ' + s.k);
-            p.bad = [[String(180 - s.th), fx(ls.x, 1), fx(hs.x, 1)], [String(B), badOf(ls.x, 1, ls.alts)[0] || '0', fx(hs.x, 1)]];
+            p.bad = [[String(180 - s.th), fx(ls.x, 1), fx(hs.x, 1)], [String(B), badOf(ls.x, 1, ls.alts, lAcc)[0] || '0', fx(hs.x, 1)]];
             return p;
           } }] },
       { num: '10', outcome: 'M4', parts: [
@@ -653,9 +673,11 @@
           if (s.b < s.s) pAlts.push(A(2 * Tg.asin(s.b / s.s), 'full-base', 'Use <b>half</b> the base: the altitude cuts the base into two equal parts.'));
           var hAlts = [A(Math.sqrt(s.s * s.s + s.b * s.b / 4), 'u9t-pyth-add', 'The ' + c.sides.replace(/s$/, '') + ' is the hypotenuse: subtract the squares to find the height.'), A(s.s * Tg.cos(Math.round(s.peak) / 2), 'early-round', EARLY), A(s.s * Tg.sin(s.half), 'wrong-ratio', 'The height is <b>adjacent</b> to the half-angle at the ' + top + ': use cosine (or the Pythagorean theorem).')];
           if (s.b < s.s) hAlts.push(A(Math.sqrt(s.s * s.s - s.b * s.b), 'full-base', 'Use <b>half</b> the base in the Pythagorean theorem.'));
+          pAlts.push(A(2 * Math.round(s.half), 'early-round', EARLY));   // the half-angle rounded to a whole degree, then doubled
+          var pAcc = fromRounded(s.half, function (h) { return 2 * h; }), hAcc = [0, 1, 2].map(function (d) { return s.s * Tg.cos(RT(s.half, d)); }).concat([0, 1].map(function (d) { return s.s * Tg.cos(RT(s.peak, d) / 2); }), [1, 2].map(function (d) { return hb / Tg.tan(RT(s.half, d)); }));
           var p = P.fields(c.what + ' ' + t(nf(s.s)) + ' m and a base of ' + t(nf(s.b)) + ' m.' + isoFig(s) + 'SOH CAH TOA cannot be used on this triangle as it is (explain why in your work). Draw the altitude from the ' + top + ' to the base. Then find the angle at the ' + top + ' (to the nearest degree) and the height (to the nearest tenth).',
             [{ name: 'Half of the base', label: 'Each right triangle has a base of', after: 'm' }, { name: 'Angle at the ' + top, label: 'Angle at the ' + top + ':', after: '°' }, { name: 'Height', label: 'Height:', after: 'm' }],
-            [K.number(hb, function (v) { return Math.abs(v - s.b) < 1e-9 ? { code: 'full-base', hint: 'The altitude cuts the base in <b>half</b>.' } : null; }), nearC(s.peak, 0, pAlts), nearC(s.hgt, 1, hAlts)],
+            [withAcc(K.number(hb, function (v) { return Math.abs(v - s.b) < 1e-9 ? { code: 'full-base', hint: 'The altitude cuts the base in <b>half</b>.' } : null; }), hb, 2), nearC(s.peak, 0, pAlts, pAcc), nearC(s.hgt, 1, hAlts, hAcc)],
             [nf(hb), fx(s.peak, 0), fx(s.hgt, 1)], 'half-base ' + t(nf(hb)) + ' m, ' + top + ' angle ' + t('\\approx' + dg(Math.round(s.peak))) + ', height ' + t('\\approx' + fx(s.hgt, 1)) + ' m',
             'The ratios need a <b>right</b> triangle, and this one has no right angle. The altitude from the ' + top + ' makes two congruent right triangles: it halves the base (' + t(nf(s.b) + '\\div 2=' + nf(hb)) + ' m) and the angle at the ' + top + '.<br>' +
               'SOH: ' + t('\\sin(\\text{half})=\\frac{' + nf(hb) + '}{' + nf(s.s) + '}') + ', half ' + t('=' + s.half.toFixed(2) + '^\\circ') + '<br>Angle at the ' + top + ' ' + t('=2(' + s.half.toFixed(2) + '^\\circ)=' + s.peak.toFixed(2) + '^\\circ\\approx' + dg(Math.round(s.peak))) + '<br>Height ' + t('=\\sqrt{' + nf(s.s) + '^2-' + nf(hb) + '^2}=' + fl(s.hgt) + '\\approx' + fx(s.hgt, 1)) + ' m',
@@ -770,7 +792,7 @@
           var nsAlts = [A(s.ew, 'trig-bearing-swap', 'That is the ' + q[1] + ' distance. The ' + q[0] + ' distance is <b>adjacent</b> to the ' + t(dg(ref)) + ' angle at the north–south line: CAH.'), A(s.D * Math.cos(ref), 'radian', RADH), A(s.D * Math.abs(Tg.cos(s.b - (s.b < 180 ? 90 : 270))), 'trig-bearing-swap', 'Measure the angle in the triangle from the north–south line.')];
           var ewAlts = [A(s.ns, 'trig-bearing-swap', 'That is the ' + q[0] + ' distance. The ' + q[1] + ' distance is <b>opposite</b> the ' + t(dg(ref)) + ' angle: SOH.'), A(s.D * Math.sin(ref), 'radian', RADH)];
           var p = P.fields(c.who + ' ' + t(c.n0) + ' and ' + c.verb + ' ' + t(Ds) + ' km on a bearing of ' + t(b3(s.b) + '^\\circ') + ' to point ' + t(c.n1) + '. How far ' + q[0] + ' and how far ' + q[1] + ' of ' + t(c.n0) + ' is ' + t(c.n1) + '? Round to the nearest tenth.' + tripSvg(s.b, Ds + ' km', c.n0, c.n1),
-            [{ name: q[0], label: 'How far ' + q[0] + ':', after: u }, { name: q[1], label: 'How far ' + q[1] + ':', after: u }], [nearC(s.ns, 1, nsAlts), nearC(s.ew, 1, ewAlts)], [fx(s.ns, 1), fx(s.ew, 1)],
+            [{ name: q[0], label: 'How far ' + q[0] + ':', after: u }, { name: q[1], label: 'How far ' + q[1] + ':', after: u }], [nearC(s.ns, 1, nsAlts, fromRounded(s.ew, function (e) { return Math.sqrt(Math.max(s.D * s.D - e * e, 0)); })), nearC(s.ew, 1, ewAlts, fromRounded(s.ns, function (n) { return Math.sqrt(Math.max(s.D * s.D - n * n, 0)); }))], [fx(s.ns, 1), fx(s.ew, 1)],
             t(fx(s.ns, 1)) + ' km ' + q[0] + ', ' + t(fx(s.ew, 1)) + ' km ' + q[1],
             tripSvg(s.b, Ds + ' km', c.n0, c.n1, true) + refEq + '.<br>' + q[0][0].toUpperCase() + q[0].slice(1) + ' distance is ADJ to ' + t(dg(ref)) + ' (CAH): ' + t(Ds + '\\cos' + dg(ref) + '=' + fl(s.ns) + '\\approx' + fx(s.ns, 1)) + ' km<br>' + q[1][0].toUpperCase() + q[1].slice(1) + ' distance is OPP to ' + t(dg(ref)) + ' (SOH): ' + t(Ds + '\\sin' + dg(ref) + '=' + fl(s.ew) + '\\approx' + fx(s.ew, 1)) + ' km',
             ['Draw the north–south line through ' + t(c.n0) + ' and a horizontal line through ' + t(c.n1) + ': that makes a right triangle.', 'The angle inside the triangle is measured from the north–south line, not the bearing itself (unless it is under ' + t('90^\\circ') + ').'], 'bearing components ' + s.b + ' ' + s.D);
@@ -796,8 +818,9 @@
             alts = [A(s.x, 'ch-one-piece', 'That is only the part above the roof of the first building. Add the ' + t(s.H) + ' m.'), A(s.H + s.H * Tg.tan(s.a1) * Tg.tan(s.a2), 'mult-div', 'Lower triangle: ' + t(s.H) + ' is OPP to the ' + t(dg(s.a1)) + ' angle and the street is ADJ, so ' + t('d=\\frac{' + s.H + '}{\\tan' + dg(s.a1) + '}') + '.'), A(s.H + Math.round(s.d1) * Tg.tan(s.a2), 'ch-early', EARLY), A(s.H + RT(s.d1, 0) * Tg.tan(s.a2), 'ch-early', EARLY), A(s.H * Tg.tan(s.a1 + s.a2) / Tg.tan(s.a1), 'u9t-angle-diff', 'Use two right triangles that share the street width ' + t('d') + ': one below eye level, one above.'), A(s.H + s.d1 * Tg.sin(s.a2), 'ch-ratio', 'In the upper triangle the street width is ADJ and the extra height is OPP: TOA.')];
             sol = 'Lower triangle: ' + t(s.H) + ' is OPP to ' + t(dg(s.a1)) + ', the street width ' + t('d') + ' is ADJ ' + t('\\Rightarrow') + ' TOA: ' + t('d=\\frac{' + s.H + '}{\\tan' + dg(s.a1) + '}=' + fl(s.d1)) + ' m<br>Upper triangle (shared side ' + t('d') + ', not rounded): ' + t('x=d\\tan' + dg(s.a2) + '=' + fl(s.x)) + ' m<br>height ' + t('=' + s.H + '+' + fl(s.x) + '=' + fl(s.ans) + '\\approx' + Math.round(s.ans)) + ' m';
           }
+          var acc = [0, 1].map(function (d) { var a = RT(s.d1, d), b = RT(s.d2, d); return s.v === 'same' ? b - a : s.v === 'opposite' ? a + b : s.H + a * Tg.tan(s.a2); });   // the paper: rounding a shared piece early can move the answer by a metre; accept it
           var p = nearP(prompt, s.ans, 0, 'm', alts, '<div class="fig" style="text-align:center;margin:6px 0">' + q18Fig(s) + '</div>' + sol,
-            ['Draw the vertical height and the horizontal ground: there are two right triangles that share the height' + (s.v === 'across' ? ' (here: the street width)' : '') + '.', 'Solve each triangle from the given data, then combine. Round only at the end.'], 'two triangles ' + s.v + ' ' + s.H + ' ' + s.a1 + ' ' + s.a2);
+            ['Draw the vertical height and the horizontal ground: there are two right triangles that share the height' + (s.v === 'across' ? ' (here: the street width)' : '') + '.', 'Solve each triangle from the given data, then combine. Round only at the end.'], 'two triangles ' + s.v + ' ' + s.H + ' ' + s.a1 + ' ' + s.a2, null, acc);
           return p;
         } }] },
       { num: '19', outcome: 'M4', parts: [
@@ -814,7 +837,7 @@
           var side = s.cw ? '+' : '-', b1s = b3(s.b1), b2s = b3(s.b2);
           var p = P.fields(s.who + ' hikes ' + t(s.d1) + ' km on a bearing of ' + t(b1s + '^\\circ') + ', then turns and hikes ' + t(s.d2) + ' km on a bearing of ' + t(b2s + '^\\circ') + '. Draw a diagram. Find the angle the path turns through at the turn (and why), then how far ' + s.who + ' ends up from the start, and the bearing to walk to return directly to the start.',
             [{ name: 'Turn', label: 'Angle between the two legs:', after: '°' }, { name: 'Distance', label: 'Distance from the start:', after: 'km' }, { name: 'Return bearing', label: 'Bearing back to the start:', after: '°', placeholder: '000' }],
-            [intChk(90, turnAlts), nearC(s.dist, 1, dAlts), bearingChk(R, retAlts)], ['90', fx(s.dist, 1), b3(R)], 'turn ' + t('90^\\circ') + ', ' + t(fx(s.dist, 1)) + ' km, return bearing ' + t(b3(R) + '^\\circ'),
+            [withAcc(intChk(90, turnAlts), 90, 0), nearC(s.dist, 1, dAlts), bearingChk(R, retAlts)], ['90', fx(s.dist, 1), b3(R)], 'turn ' + t('90^\\circ') + ', ' + t(fx(s.dist, 1)) + ' km, return bearing ' + t(b3(R) + '^\\circ'),
             t((s.cw ? b2s + '^\\circ-' + b1s + '^\\circ' : b1s + '^\\circ-' + b2s + '^\\circ') + '=90^\\circ') + (Math.abs(s.b2 - s.b1) !== 90 ? ' (going past ' + t('000^\\circ') + ')' : '') + ': both bearings are measured from parallel north lines, so the path turns through ' + t('90^\\circ') + ' and the legs form a right angle.' +
               '<div class="fig" style="text-align:center">' + twoLegSvg(s.b1, s.d1, s.b2, s.d2) + '</div>' +
               'Distance ' + t('=\\sqrt{' + s.d1 + '^2+' + s.d2 + '^2}=' + fl(s.dist) + '\\approx' + fx(s.dist, 1)) + ' km<br>At the start: ' + t('\\tan\\alpha=\\frac{' + s.d2 + '}{' + s.d1 + '}') + ', ' + t('\\alpha=' + s.al.toFixed(2) + '^\\circ') + '<br>Start to end: ' + t(b1s + '^\\circ' + side + s.al.toFixed(2) + '^\\circ=' + s.se.toFixed(2) + '^\\circ') + '<br>Return: ' + t(s.se.toFixed(2) + '^\\circ' + (s.se >= 180 ? '-' : '+') + '180^\\circ=' + s.ret.toFixed(2) + '^\\circ\\approx ' + b3(R) + '^\\circ'),

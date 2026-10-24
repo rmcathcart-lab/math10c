@@ -47,13 +47,20 @@
   }
 
   /* ---------------- checkers ---------------- */
-  function unitTyped(s) { s = String(s == null ? '' : s); if (!/[a-zA-Zµμ'"′″%]/.test(s)) return false; var rest = s.replace(/\\text\{[^}]*\}|\\mu|[a-zA-Zµμ'"′″%{}\\/²³^]+/g, ' '); return HW.parse.number(rest).ok; }
+  /* a number typed with its unit (or a $ sign): the bare number, else null. Test mode gives a 'unit-in-box' form result
+     no credit, so a typed unit is simply dropped and the number is marked. */
+  function unitBare(s) {
+    s = String(s == null ? '' : s);
+    if (/^\s*\\?\$/.test(s) && HW.parse.number(s.replace(/^\s*\\?\$/, '')).ok) return s.replace(/^\s*\\?\$/, '').trim();
+    if (!/[a-zA-Zµμ'"′″%]/.test(s)) return null;
+    var rest = s.replace(/\\text\{[^}]*\}|\\mathrm\{[^}]*\}|\\mu/g, ' ').replace(/(\^\{?[23]\}?|[²³])/g, ' ').replace(/[a-zA-Zµμ'"′″%{}\\/^]+/g, ' ').trim();
+    return HW.parse.number(rest).ok ? rest : null;
+  }
+  function unitTyped(s) { return unitBare(s) != null; }
   function wrapUnit(ch) {
     return function (resp) {
-      var s = String(resp == null ? '' : resp);
-      if (/^\s*\\?\$/.test(s) && HW.parse.number(s.replace(/^\s*\\?\$/, '')).ok) return form('unit-in-box', 'Leave out the ' + t('\\$') + ' sign — just type the number.');
-      if (unitTyped(s)) return form('unit-in-box', 'Type just the number — the unit is already written after the box.');
-      return ch(resp);
+      var b = unitBare(resp);
+      return ch(b != null ? b : resp);
     };
   }
   /* an exact number; alts = [{v, code, hint}]; a power-of-ten slip is diagnosed unless o.places === false */
@@ -68,7 +75,7 @@
     });
     return wrapUnit(function (resp) {
       var p = HW.parse.number(resp);
-      if (p.ok && !near(p.value, ans, 1e-9)) { var d = decs(p.value); if (d < dpA && near(rd(ans, d), p.value, 1e-9)) return form('exact-round', 'Close — but this comes out <b>exactly</b>. Don’t round: give every decimal place.'); }
+      if (p.ok && !near(p.value, ans, 1e-9) && !alts.some(function (a) { return near(p.value, a.v, 0.002); })) { var d = decs(p.value); if (d < dpA && near(rd(ans, d), p.value, 1e-9)) return form('exact-round', 'Close — but this comes out <b>exactly</b>. Don’t round: give every decimal place.'); }
       if (p.ok && o.abs && near(-p.value, ans, 1e-9)) return ok();
       return base(resp);
     });
@@ -170,7 +177,7 @@
     return out.filter(function (a) { return !near(a.v, x); });
   }
   function precisionWrap(ch, x, dp, what) {
-    return function (resp) { var p = HW.parse.number(resp); if (p.ok && near(p.value, x) && (String(resp).replace(/\s/g, '').split('.')[1] || '').replace(/\D.*$/, '').length < dp) return form('precision', 'Right value! ' + what + ' reads to two decimal places, so state the reading as ' + t(fx(x, 2)) + ' mm.'); return ch(resp); };
+    return function (resp) { var b = unitBare(resp); if (b != null) resp = b; var p = HW.parse.number(resp); if (p.ok && near(p.value, x) && (String(resp).replace(/\s/g, '').split('.')[1] || '').replace(/\D.*$/, '').length < dp) return form('precision', 'Right value! ' + what + ' reads to two decimal places, so state the reading as ' + t(fx(x, 2)) + ' mm.'); return ch(resp); };
   }
   /* percent error alternatives (from u10l1) */
   function percAlts(est, meas) { return [A(Math.abs(est - meas) / est * 100, 'pct-base', 'Divide by the <b>measured</b> (true) value, not the estimate.'), A(Math.abs(est - meas) / meas, 'pct-no100', 'Multiply by ' + t('100') + ' to make it a percent.')]; }
@@ -186,7 +193,7 @@
       for (var i = 0; i < n; i++) {
         var s = String(resp[i] == null ? '' : resp[i]).trim();
         if (!s) return form('blank-box', 'Fill in every box — type ' + t('0') + ' if there are no ' + Us[i].name + '.');
-        if (unitTyped(s)) return form('unit-in-box', 'Type just the number in each box — the units are already written after the boxes.');
+        if (unitTyped(s)) s = unitBare(s);
         var p = HW.parse.number(s); if (!p.ok) return form('notnumber', 'Each box takes a single number.');
         vals.push(p.value);
       }

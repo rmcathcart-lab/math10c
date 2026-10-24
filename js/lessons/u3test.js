@@ -26,13 +26,13 @@
     'u3t-prod-value': 'Product doesn’t expand to the given polynomial', 'u3t-a-half': 'Didn’t halve the x-coefficient to find a', 'u3t-b-nosq': 'Didn’t square a when finding b',
     'u3t-b-plus': 'Added a² instead of subtracting it', 'u3t-k-sign': 'Wrong sign for k', 'u3t-notice': 'Miscounted the terms of the expansion', 'u3t-tf-only': 'Right working, wrong true/false conclusion',
     'u3t-tf': 'Wrong true/false', 'u3t-tf-word': 'True/false box not filled with true or false', 'u3t-two-edges': 'Volume: multiplied only two of the three edges', 'u3t-box-x': 'Box: took x instead of 2x off each side',
-    'u3t-box-height': 'Box: left out the height', 'u3t-err-who': 'Matched an error to the wrong student', 'u3t-sp-value': 'Special product with the wrong value',
+    'u3t-box-height': 'Box: left out the height', 'u3t-err-who': 'Matched an error to the wrong student', 'u3t-err-who2': 'Matched several errors wrongly', 'u3t-sp-value': 'Special product with the wrong value',
     'u3t-sp-form': 'Not written as a special product', 'u3t-new-side': 'Gave the new side length', 'u3t-inc-nod2': 'Solving: left out the d² term'
   });
   HW.addPartial({
     'u3t-tile-dims': 'b', 'u3t-tile-side': 'b', 'u3t-not-product': 'b', 'u3t-factors': 'n', 'u3t-a-sign': 's', 'u3t-b-coef': 'b', 'u3t-b-one': 'b', 'u3t-b-sign': 's',
     'u3t-one-product': 's', 'u3t-same-product': 'b', 'u3t-prod-value': 'n', 'u3t-a-half': 'b', 'u3t-b-nosq': 'b', 'u3t-b-plus': 'b', 'u3t-k-sign': 'b',
-    'u3t-notice': 'n', 'u3t-tf-only': 'b', 'u3t-tf': 'n', 'u3t-two-edges': 'b', 'u3t-box-x': 'b', 'u3t-box-height': 'b', 'u3t-err-who': 'b',
+    'u3t-notice': 'n', 'u3t-tf-only': 'b', 'u3t-tf': 'n', 'u3t-two-edges': 'b', 'u3t-box-x': 'b', 'u3t-box-height': 'b', 'u3t-err-who': 'b', 'u3t-err-who2': 'n',
     'u3t-sp-value': 'n', 'u3t-sp-form': 'b', 'u3t-new-side': 's', 'u3t-inc-nod2': 'b'
   });
 
@@ -128,7 +128,7 @@
     return out;
   }
   function sqSol(A, B) {
-    var nb = coefOf(B) < 0, Bp = nb ? neg(B) : B, Ap = pf(A), sqA = PL.count(A) === 1 && coefOf(A) === 1 && /^[a-z]$/.test(tx(A)) ? tx(A) : '(' + tx(A) + ')', sqB = PL.vars(Bp).length || coefOf(Bp) !== Math.abs(coefOf(Bp)) ? '(' + tx(Bp) + ')' : tx(Bp);
+    var nb = coefOf(B) < 0, Bp = nb ? neg(B) : B, Ap = PL.count(A) === 1 && coefOf(A) === 1 ? tx(A) : '(' + tx(A) + ')', sqA = PL.count(A) === 1 && coefOf(A) === 1 && /^[a-z]$/.test(tx(A)) ? tx(A) : '(' + tx(A) + ')', sqB = PL.vars(Bp).length || coefOf(Bp) !== Math.abs(coefOf(Bp)) ? '(' + tx(Bp) + ')' : tx(Bp);
     var sq = tx(add(A, B));
     return 'Square of a binomial, ' + t('(a' + (nb ? '-' : '+') + 'b)^{2}=a^{2}' + (nb ? '-' : '+') + '2ab+b^{2}') + ':<br>' + t('(' + sq + ')^{2}=' + sqA + '^{2}' + (nb ? '-' : '+') + '2' + Ap + '(' + tx(Bp) + ')+' + sqB + '^{2}=' + tx(mul(add(A, B), add(A, B))));
   }
@@ -672,6 +672,7 @@
         { id: '17b', outcome: 'AN4', level: 'MAS', make: function (r) {
           var p = r.int(1, 3), q = r.int(1, 9), sgn = r.chance(0.5) ? 1 : -1, kind = r.pick(['nomid', 'nomid', 'once', 'sd']);
           if (p === 1 && q === 1) q = r.int(2, 9);
+          if (kind === 'sd' && p === 1) p = r.int(2, 3); // (x+a)(x-a) alone is the Beginning question; keep the Mastery claim a step harder
           var A = xm(p), B = N(sgn * q), Sq = mul(add(A, B), add(A, B)), base = '(' + tx(add(A, B)) + ')';
           if (kind === 'sd') {
             var Dd = sub(mul(A, A), mul(B, B)), pr = '(' + tx(add(A, N(q))) + ')(' + tx(add(A, N(-q))) + ')';
@@ -742,7 +743,7 @@
         } }] },
       { num: '22', outcome: 'AN4', stem: 'Write the volume as a polynomial in expanded form.', parts: [
         { id: '22', outcome: 'AN4', level: 'PRG', make: function (r) {
-          var L = r.pick([12, 14, 16, 18, 20, 22, 24]), W = r.pick([8, 10, 12, 14, 16].filter(function (w) { return w <= L - 2; })), what = r.pick([['card', 'box'], ['tin', 'tray'], ['cardboard', 'box'], ['sheet metal', 'tray']]);
+          var L = r.pick([12, 14, 16, 18, 20, 22, 24]), W = r.pick([8, 10, 12, 14, 16].filter(function (w) { return w <= L - 2; })), what = r.pick([['card', 'box'], ['tin', 'tray'], ['cardboard', 'box'], ['metal', 'tray']]);
           var X = xm(1), Ls = lin(-2, L), Ws = lin(-2, W), base = mul(Ls, Ws), T = mul(X, base);
           return pp('Squares of side ' + t('x') + ' cm are cut from the corners of a ' + t(L) + ' cm by ' + t(W) + ' cm sheet of ' + what[0] + ', and the sides are folded up to make an open ' + what[1] + '. Write the volume of the ' + what[1] + ' as a polynomial in expanded form.' + netSvg(L, W), T,
             [{ is: mul(X, lin(-1, L), lin(-1, W)), code: 'u3t-box-x', hint: 'A square is cut from <b>both</b> ends of each side, so the length is ' + t(L + '-2x') + ', not ' + t(L + '-x') + '.' }, { is: base, code: 'u3t-box-height', hint: 'That is the area of the base. The ' + what[1] + ' is ' + t('x') + ' cm tall: multiply by ' + t('x') + '.' },
@@ -764,6 +765,13 @@
               ids.map(function (id) { return '… ' + ERR[id] + ': <b>' + who(id) + '</b>.'; }).join('<br>') + '<br>' + s.names[0] + ': ' + q23Expl(s, s.e[0]) + '<br>' + s.names[1] + ': ' + q23Expl(s, s.e[1]),
               ['Redo the first step yourself: ' + t('(' + s.p + 'x-' + s.q + ')^{2}') + ' first, then multiply by ' + t(s.k) + '. Compare each student’s first step with yours.'], 'who made which error: ' + s.e.join(','));
             var sw = {}, all = {}; ids.forEach(function (id) { sw[id] = want[id] === 'a' ? 'b' : want[id] === 'b' ? 'a' : 'none'; all[id] = want[id] === 'none' ? 'a' : want[id]; });
+            /* one row wrong, or the two errors found but swapped between the students: 1/3; anything more: no credit */
+            var gBase = g.check;
+            g.check = function (resp) {
+              var res = gBase(resp); if (res.v !== 'wrong') return res; resp = resp || {};
+              var nBad = ids.filter(function (id) { return resp[id] !== want[id]; }).length, swapped = ids.every(function (id) { return resp[id] === sw[id]; });
+              return nBad > 1 && !swapped ? wrong('u3t-err-who2', res.hint) : res;
+            };
             g.bad = [sw, all];
             return g;
           } },
@@ -815,9 +823,21 @@
       var q = PL.read(a.ast); if (!q.ok || PL.vars(q.p).length) return wrong('u3t-sp-value', 'Write the special product with numbers, like ' + t(kind === 'sd' ? '(40+3)(40-3)' : '(60+1)^{2}') + '.');
       var v = PL.constant(q.p); if (v[1] !== 1 || v[0] !== val) return wrong('u3t-sp-value', 'That product equals ' + t(F(v[0] / v[1])) + ', not ' + t(exprTex) + '.');
       var top = a.ast; while (top.t === 'paren') top = top.a;
-      var two = function (x) { while (x && x.t === 'paren') x = x.a; return x && (x.t === 'add' || x.t === 'sub'); };
-      if (top.t === 'pow' && two(top.a) && ex.rat(top.b) && ex.rat(top.b)[0] === 2) return ok();
-      if (top.t === 'mul' && two(top.a) && two(top.b)) return ok();
+      var unp = function (x) { while (x && x.t === 'paren') x = x.a; return x; };
+      /* signed terms of a sum (null if it isn't one) */
+      var terms = function (x) { x = unp(x); if (!x || (x.t !== 'add' && x.t !== 'sub')) return null; var out = []; (function w(y, s) { y = unp(y); if (y.t === 'add') { w(y.a, s); w(y.b, s); } else if (y.t === 'sub') { w(y.a, s); w(y.b, -s); } else if (y.t === 'neg') w(y.a, -s); else out.push({ s: s, n: y }); })(x, 1); return out; };
+      var tval = function (tm) { var r0 = ex.rat(tm.n); return r0 ? tm.s * r0[0] / r0[1] : NaN; };
+      var bin = function (x) { var ts = terms(x); return ts && ts.length === 2 ? ts.map(tval) : null; };
+      var sqr = function (tm) { var n = unp(tm.n); return n.t === 'pow' && ex.rat(n.b) && ex.rat(n.b)[0] === 2 && ex.rat(n.b)[1] === 1; };
+      var B1 = top.t === 'mul' ? bin(top.a) : null, B2 = top.t === 'mul' ? bin(top.b) : null, ts = terms(top);
+      if (kind === 'sq') {
+        if (top.t === 'pow' && bin(top.a) && ex.rat(top.b) && ex.rat(top.b)[0] === 2) return ok();
+        if (B1 && B2 && ((B1[0] === B2[0] && B1[1] === B2[1]) || (B1[0] === B2[1] && B1[1] === B2[0]))) return ok();
+        if (ts && ts.length === 3 && ts.filter(sqr).length >= 1) return ok(); // a² ± 2ab + b² written out
+      } else {
+        if (B1 && B2 && [0, 1].some(function (i) { return [0, 1].some(function (j) { return B1[i] === B2[j] && B1[1 - i] === -B2[1 - j] && B1[1 - i] !== 0; }); })) return ok();
+        if (ts && ts.length === 2 && ts[0].s > 0 && ts[1].s < 0 && ts.every(sqr)) return ok(); // a² − b² written out
+      }
       return wrong('u3t-sp-form', 'Right value — but show the special product, written like ' + t(kind === 'sd' ? '(a+b)(a-b)' : '(a+b)^{2}') + ' with numbers.');
     };
     var al = altVals(val, alts);

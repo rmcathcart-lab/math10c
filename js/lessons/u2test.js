@@ -1008,9 +1008,9 @@
       { num: '22', outcome: 'AN3', parts: [
         { id: '22', outcome: 'AN3', level: 'PRG', make: function (r) {
           var g = find(function () { var n = r.pick([2, 3, 3, 4]), a = r.int(2, n === 2 ? 9 : n === 3 ? 5 : 3); return { n: n, a: a, m: r.int(n + 1, 2 * n + 3) }; }, function (g) { return cop(g.m, g.n); });
-          var x = r.pick(['x', 'y', 'm', 'a', 'k', 'z']), C = Math.pow(g.a, g.n), pr = rootT(g.n, C + pw(x, g.m)), tg = g.a + x + '^{\\frac{' + g.m + '}{' + g.n + '}}';
+          var x = r.pick(['x', 'y', 'm', 'w', 'k', 'z']), C = Math.pow(g.a, g.n), pr = rootT(g.n, C + pw(x, g.m)), tg = g.a + x + '^{\\frac{' + g.m + '}{' + g.n + '}}';
           var kn = known([[C + x + '^{\\frac{' + g.m + '}{' + g.n + '}}', 'coef-root', 'Take the ' + rootName(g.n) + ' root of ' + t(C) + ' too: ' + t(rootT(g.n, C) + '=' + g.a) + '.'], [g.a + x + '^{\\frac{' + g.n + '}{' + g.m + '}}', 'index-power', 'The index ' + t(g.n) + ' is the <b>denominator</b> of the exponent; the power ' + t(g.m) + ' is the numerator.'], [g.a + pw(x, g.m * g.n), 'u2t-times-exp', 'A root divides the exponent by the index.']], tg);
-          return XP('Write ' + t(pr) + ' in the form ' + t('ax^{n}') + ', where ' + t('a\\in I') + ' and ' + t('n\\in Q') + '.', tg, { form: 'power' }, t(pr + '=' + C + '^{\\frac{1}{' + g.n + '}}' + x + '^{\\frac{' + g.m + '}{' + g.n + '}}=' + tg) + ' (because ' + t(g.a + '^{' + g.n + '}=' + C) + ').',
+          return XP('Write ' + t(pr) + ' in the form ' + t('a' + x + '^{n}') + ', where ' + t('a\\in I') + ' and ' + t('n\\in Q') + '.', tg, { form: 'power' }, t(pr + '=' + C + '^{\\frac{1}{' + g.n + '}}' + x + '^{\\frac{' + g.m + '}{' + g.n + '}}=' + tg) + ' (because ' + t(g.a + '^{' + g.n + '}=' + C) + ').',
             ['The ' + rootName(g.n) + ' root applies to every factor: ' + t(rootT(g.n, 'ab') + '=' + rootT(g.n, 'a') + '\\cdot ' + rootT(g.n, 'b')) + '.', 'For the letter, the index becomes the denominator of the exponent.'], 'write ' + pr + ' as ax^n', kn);
         } }] },
       { num: '23', outcome: 'AN3', stem: 'Evaluate. Show your steps.', parts: [

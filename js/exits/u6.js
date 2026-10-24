@@ -68,6 +68,7 @@
     var L = (dl || []).filter(function (d) { return d && isFinite(d[0]) && !same(cl(d[0]), ans); });
     var p = B.number(prompt, ans, function (v) { for (var i = 0; i < L.length; i++) if (Math.abs(v - L[i][0]) < 1e-6) return { code: L[i][1], hint: L[i][2] }; return null; }, sol, hints, text, inp);
     p.bad = L.map(function (d) { return String(cl(d[0])); }).filter(function (s, i, a) { return a.indexOf(s) === i; });
+    var base = p.check; p.check = function (resp) { return base(String(resp == null ? '' : resp).replace(/^\s*[a-zA-Z]\s*=\s*(?=[-−+.\d\\])/, '')); }; // "x = 6" typed after a printed "x =" is fine
     return p;
   }
   function numChk(ans, dl) {

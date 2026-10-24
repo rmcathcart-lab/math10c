@@ -54,6 +54,7 @@
   function perpOf(s) { if (s == null) return [0, 1]; if (s[0] === 0) return null; return red(-s[1], s[0]); }
   function find(gen, test, fb) { for (var i = 0; i < 1500; i++) { var v = gen(); if (v != null && test(v)) return v; } return fb; }
   function inBox(p, b) { return Math.abs(p[0]) <= b && Math.abs(p[1]) <= b; }
+  function art(n) { return /^(8|11|18)(\.|$)|^8/.test(String(n)) ? 'an' : 'a'; }   // “an 8 km trail”, “an 80 km route”
   function money(c) { return c % 100 === 0 ? String(c / 100) : (c / 100).toFixed(2); }   // cents → "19.70"
   /* m_{AB} = (yB − yA)/(xB − xA) = dy/dx = reduced */
   function calc(A, B, nm) {
@@ -388,11 +389,11 @@
     { k: 'ebike', S: [100], rs: [0.8, 1.25, 1.6, 2, 2.5], ds: [12, 16, 20, 24], f: 10, du: [-5, -2.5, 2.5, 5],
       intro: function (s) { return s.N + ' charges her e-bike to ' + t('100\\%') + ' and resets the trip meter. After ' + t(s.d) + ' km, the battery shows ' + t(dT(s.E) + '\\%') + '.'; },
       u: '\\%\\text{/km}', use: 'The battery loses', useAfter: '% of its charge for every kilometre', cu: '% per 10 km', cuT: '\\%\\text{ per 10 km}', conv: '% per 10 km',
-      other: function (s) { return s.O + '’s e-bike uses ' + t(dT(s.o) + '\\%') + ' per 10 km.'; }, graph: 'charge vs distance', can: function (s) { return 'On a full charge, can ' + s.N + ' ride a ' + t(s.D) + ' km route?'; }, maxL: 'Distance on a full charge', ul: '%' },
+      other: function (s) { return s.O + '’s e-bike uses ' + t(dT(s.o) + '\\%') + ' per 10 km.'; }, graph: 'charge vs distance', can: function (s) { return 'On a full charge, can ' + s.N + ' ride ' + art(s.D) + ' ' + t(s.D) + ' km route?'; }, maxL: 'Distance on a full charge', ul: '%' },
     { k: 'water', S: [2, 2.5, 3, 3.5, 4], rs: [0.2, 0.25, 0.4, 0.5], ds: [3, 4, 5, 6], f: 1000, du: [-100, -50, 50, 100],
       intro: function (s) { return s.N + ' starts a hike with ' + t(dT(s.S)) + ' L of water. After ' + t(s.d) + ' km, she has ' + t(dT(s.E)) + ' L left.'; },
       u: '\\text{L/km}', use: 'She drinks', useAfter: 'L of water for every kilometre', cu: 'mL/km', cuT: '\\text{mL/km}', conv: 'mL/km',
-      other: function (s) { return s.O + ' drinks ' + t(dT(s.o)) + ' mL/km.'; }, graph: 'water carried vs distance', can: function (s) { return 'At this rate, can ' + s.N + ' hike a ' + t(s.D) + ' km trail with her ' + t(dT(s.S)) + ' L?'; }, maxL: 'Distance her water lasts', ul: 'L' }];
+      other: function (s) { return s.O + ' drinks ' + t(dT(s.o)) + ' mL/km.'; }, graph: 'water carried vs distance', can: function (s) { return 'At this rate, can ' + s.N + ' hike ' + art(s.D) + ' ' + t(s.D) + ' km trail with her ' + t(dT(s.S)) + ' L?'; }, maxL: 'Distance her water lasts', ul: 'L' }];
   function q14Shared(r) {
     return find(function () {
       var c = r.pick(Q14C), S = r.pick(c.S), rt = r.pick(c.rs), d = r.pick(c.ds), E = cl(S - rt * d);

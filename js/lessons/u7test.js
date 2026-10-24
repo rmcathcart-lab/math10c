@@ -764,8 +764,10 @@
             var g = s.g, L = g.L, strat = function (resp) {
               var x = String(resp == null ? '' : resp).toLowerCase();
               if (!x.trim()) return form('empty', 'Type the strategy.');
-              if (/slope|point|table|y\s*=|m\s*x/.test(x)) return wrong('u7t-strategy', 'That works, but it isn’t the fastest here: ' + t(gT(L)) + ' would need rearranging first. Setting ' + t('x=0') + ' and ' + t('y=0') + ' gives two points at once.');
-              if (/intercept|x\s*=\s*0|y\s*=\s*0|cover/.test(x)) return ok();
+              var slow = function () { return wrong('u7t-strategy', 'That works, but it isn’t the fastest here: ' + t(gT(L)) + ' would need rearranging first. Setting ' + t('x=0') + ' and ' + t('y=0') + ' gives two points at once.'); };
+              if (/slope|table|m\s*x/.test(x)) return slow();   // slope–intercept, slope–point, a table of values
+              if (/intercept|x\s*=\s*0|y\s*=\s*0|cover/.test(x)) return ok();   // “intercept points”, “let x = 0 and y = 0”
+              if (/point|y\s*=/.test(x)) return slow();
               return form('u7t-yn', 'Name a strategy: <b>intercepts</b>, <b>slope–intercept</b> or <b>slope–point</b>.');
             };
             var p = B.fields('Which strategy is fastest for graphing ' + t(gT(L)) + '? Name it, and give the two points you would plot.',

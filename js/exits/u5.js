@@ -66,6 +66,7 @@
     var L = (dl || []).filter(function (d) { return d && isFinite(d[0]) && !same(cl(d[0]), ans); });
     var p = B.number(prompt, ans, function (v) { for (var i = 0; i < L.length; i++) if (Math.abs(v - L[i][0]) < 1e-6) return { code: L[i][1], hint: L[i][2] }; return null; }, sol, hints, text, inp);
     p.bad = L.map(function (d) { return String(cl(d[0])); }).filter(function (s, i, a) { return a.indexOf(s) === i; });
+    var base = p.check; p.check = function (resp) { return base(String(resp == null ? '' : resp).replace(/^\s*[a-zA-Z]\s*=\s*(?=[-−+.\d\\])/, '')); }; // "x = 6" typed after a printed "x =" is fine
     return p;
   }
   function numChk(ans, dl) {
@@ -84,6 +85,8 @@
   function solPart(prompt, vals, v, dl, sol, hints, text, extraDiag) {
     var L = (dl || []).filter(function (d) { return d[0].length && d[0].every(isFinite) && !setSame(d[0], vals); });
     var p = B.valueSet(prompt, vals, { v: v, diag: function (A, T) { for (var i = 0; i < L.length; i++) if (setSame(A, L[i][0])) return { code: L[i][1], hint: L[i][2] }; return extraDiag ? extraDiag(A, T) : null; } }, sol, hints, text);
+    var base = p.check; // a list written as a set, {3, -5} or k ∈ {3, -5}, is fine too
+    p.check = function (resp) { var s0 = String(resp == null ? '' : resp), m = /^\s*(?:[a-zA-Z]\s*(?:\\in|∈|=)\s*)?(?:\\left)?\s*(?:\\\{|\\lbrace|\{)([^{}]*?)(?:\\right)?\s*(?:\\\}|\\rbrace|\})\s*$/.exec(s0); return base(m ? m[1] : s0); };
     p.bad = L.map(function (d) { return d[0].map(function (x) { return v + '=' + nf(x); }).join(', '); });
     if (vals.length > 1) p.bad.push(v + '=' + nf(vals[0]));
     var s = uniq(vals); p.good = [s.slice().reverse().map(function (x) { return v + '=' + nf(x); }).join(', '), s.map(nf).join(', ')];
@@ -469,7 +472,8 @@
     { ind: 'g', dep: 'L', s: ['The length, ' + t('L') + ' (cm), of a spring is related to the mass, ' + t('g') + ' (g), hung from it.', 'The mass, ' + t('g') + ' (g), hung from a spring is related to the length of the spring, ' + t('L') + ' (cm).'], why: 'Hanging more mass stretches the spring: its length depends on the mass.' }];
   function varsPart(prompt, ind, dep, why, sol, text) {
     function clean(s) { return String(s == null ? '' : s).replace(/\\[a-zA-Z]+|[{}$\\()\s]/g, ''); }
-    function eqL(a, b) { return a === b; }
+    var ci = ind.toLowerCase() !== dep.toLowerCase(); // the two letters differ even ignoring case: accept either case
+    function eqL(a, b) { return a === b || (ci && a.length === 1 && a.toLowerCase() === b.toLowerCase()); }
     return { prompt: prompt, text: text, solution: sol,
       input: { type: 'fields', fields: [{ label: 'Independent variable:', name: 'Independent', mode: 'text', placeholder: 'letter' }, { label: 'Dependent variable:', name: 'Dependent', mode: 'text', placeholder: 'letter' }] },
       key: [ind, dep], answer: 'Independent: ' + t(ind) + '; dependent: ' + t(dep), bad: [[dep, ind]],
@@ -525,7 +529,7 @@
           { id: '3', outcome: 'RF1', level: 'EMG', make: function (r, s) {
             var ys = s.ys, d = [1, 2, 3, 4].map(function (i) { return ys[i] - ys[i - 1]; }), word = s.linear ? 'linear' : 'nonlinear';
             var fl = d.map(function (x, i) { return { label: 'Change from ' + t('y=' + ys[i]) + ' to ' + t('y=' + ys[i + 1]) + ':', mode: 'number' }; }).concat([{ label: 'The relation is', name: 'Linear or nonlinear', mode: 'text', wide: true, placeholder: 'type linear or nonlinear' }]);
-            var ch = d.map(function (x, i) { return numChk(x, [[-x, 'u5x-diff-order', 'Subtract in order: the <b>new</b> value minus the <b>old</b> one, ' + t(ys[i + 1] + '-' + sgp(ys[i])) + '.']]); });
+            var ch = d.map(function (x, i) { var c0 = numChk(x, [[-x, 'u5x-diff-order', 'Subtract in order: the <b>new</b> value minus the <b>old</b> one, ' + t(ys[i + 1] + '-' + sgp(ys[i])) + '.']]); return function (resp) { return c0(String(resp == null ? '' : resp).replace(/^\s*\+/, '')); }; }); // "+3" (as the booklet writes a change) is fine
             ch.push(function (resp) {
               var w = String(resp == null ? '' : resp).replace(/\\text\{([^}]*)\}/g, '$1').trim().toLowerCase().replace(/[^a-z]/g, '');
               if (!w) return form('empty', 'Type <b>linear</b> or <b>nonlinear</b>.');
@@ -878,7 +882,7 @@
               { is: PL(lin([[1, v + '^{2}'], [bq, v], [c + k, '']])), code: 'u5x-plus-out', hint: 'That is ' + t(n + '(' + v + ')' + (k < 0 ? '' : '+') + k) + '. Replace <b>every</b> ' + t('x') + ' with ' + t('(' + inner + ')') + ' and expand.' },
               { is: PL(lin([[1, v + '^{2}'], [2 * k + bq, v], [k * k + k + c, '']])), code: 'fn-dist', hint: 'Multiply <b>every</b> term in the bracket: ' + t(bq + '(' + inner + ')=' + lin([[bq, v], [bq * k, '']])) + '.' }];
             return polyPart('Determine a simplified expression for ' + t(n + '(' + inner + ')') + '.', t(n + '(' + inner + ')='), T, lin([[1, v + '^{2}'], [B1, v], [C1, '']]), W,
-              t(n + '(' + inner + ')=(' + inner + ')^{2}' + (bq < 0 ? '' : '+') + bq + '(' + inner + ')' + term(c, '', false)) + '<br>' + t('=' + v + '^{2}' + term(2 * k, v, false) + '+' + k * k + term(bq, v, false) + term(bq * k, '', false) + term(c, '', false)) + '<br>' + t('=' + lin([[1, v + '^{2}'], [B1, v], [C1, '']])),
+              t(n + '(' + inner + ')=(' + inner + ')^{2}' + (bq < 0 ? '-' : '+') + (Math.abs(bq) === 1 ? '' : Math.abs(bq)) + '(' + inner + ')' + term(c, '', false)) + '<br>' + t('=' + v + '^{2}' + term(2 * k, v, false) + '+' + k * k + term(bq, v, false) + term(bq * k, '', false) + term(c, '', false)) + '<br>' + t('=' + lin([[1, v + '^{2}'], [B1, v], [C1, '']])),
               ['Replace every ' + t('x') + ' with ' + t('(' + inner + ')') + ', in brackets.', 'Expand ' + t('(' + inner + ')^{2}') + ' as ' + t('(' + inner + ')(' + inner + ')') + ', distribute, then collect like terms.'], 'F(a+k) expansion', [v]);
           } }] }
     ]
@@ -916,7 +920,7 @@
   function vGraph(s) { return G({ segs: [{ pts: s.V, start: 'closed', end: 'closed' }], aria: 'graph of the function ' + s.name }); }
   var COSTCTX = [
     { who: 'A bakery', item: 'cakes', one: 'cake' }, { who: 'A print shop', item: 'T-shirts', one: 'T-shirt' }, { who: 'A candle maker', item: 'candles', one: 'candle' },
-    { who: 'A bike shop', item: 'tune-ups', one: 'tune-up' }, { who: 'A school club', item: 'yearbooks', one: 'yearbook' }];
+    { who: 'A furniture maker', item: 'stools', one: 'stool' }, { who: 'A school club', item: 'yearbooks', one: 'yearbook' }];
   HW.defineExit({
     lesson: 'u5l7', calc: true,
     blurb: 'Read a function’s values and solve s(x) = b from its graph, write a relation in function notation, and use a cost model.',
@@ -1029,7 +1033,8 @@
       { num: '2', outcome: 'RF1',
         shared: function (r) {
           return pickWhere(function () {
-            var v1 = r.pick([10, 12, 15, 16, 20]), t1 = r.pick([1, 2]), t2 = r.pick([1, 2]), v3 = r.pick([5, 8, 10, 12, 15, 20]), t3 = r.pick([1, 2, 3]), back = r.chance(0.5);
+            // every corner on a 5 km grid line (the graph has no point labels), so the distances can be read exactly
+            var v1 = r.pick([10, 15, 20, 25, 30]), t1 = r.pick([1, 2]), t2 = r.pick([1, 2]), v3 = r.pick([5, 10, 15, 20, 25]), t3 = r.pick([1, 2, 3]), back = r.chance(0.5);
             var d1 = v1 * t1, d3 = back ? d1 - v3 * t3 : d1 + v3 * t3;
             return { v1: v1, t1: t1, t2: t2, v3: v3, t3: t3, back: back, V: [[0, 0], [t1, d1], [t1 + t2, d1], [t1 + t2 + t3, d3]], who: r.pick(WHO) };
           }, function (s) { var e = s.V[3][1]; return e >= 0 && e <= 60 && s.v1 !== s.v3 && s.V[3][0] <= 6; });

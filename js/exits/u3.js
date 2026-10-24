@@ -28,7 +28,7 @@
     'u3x-diff-d': 'Difference of areas: didn’t square the change', 'u3x-diff-sign': 'Difference of areas: wrong sign', 'u3x-diff-2d': 'Difference of areas: doubled instead of squaring',
     'u3x-foil-only': 'Binomial × trinomial: only four of the six products', 'u3x-second-partial': 'Second term of the binomial multiplied into only part of the trinomial',
     'u3x-p-sign': 'Sign error on the products of the binomial’s second term', 'u3x-third-partial': 'Third bracket only partly multiplied', 'u3x-fl-first': 'First two brackets: middle term left out',
-    'u3x-third-sign': 'Third bracket: sign error', 'u3x-k-sign': 'Value of k with the wrong sign', 'u3x-k-other': 'Value of k that removes the other term',
+    'u3x-third-sign': 'Third bracket: sign error', 'u3x-cube-sum': 'Cubed a binomial as a³ + b³', 'u3x-vdiff-sign': 'Difference of volumes: wrong sign',
     'u3x-added': 'Added the inside area instead of subtracting it', 'u3x-sub-first': 'Subtracted an area but changed only its first sign', 'u3x-outer-only': 'Gave the outer area only',
     'u3x-perim': 'Gave the perimeter instead of the area', 'u3x-ab-lost': 'Equation: lost the constant term of the product', 'u3x-ab-sign': 'Equation: sign slip with the constant term',
     'u3x-gave-x': 'Gave x instead of the side length', 'u3x-lw-swap': 'Length and width swapped',
@@ -43,7 +43,7 @@
     'u3x-c-one': 'b', 'u3x-c-sign': 's', 'u3x-b-sign': 's', 'u3x-a-sub': 'n',
     'u3x-no-middle': 'b', 'u3x-middle-once': 'b', 'u3x-last-neg': 'b', 'u3x-mid-sign': 's', 'u3x-dsq-plus': 'b', 'u3x-dsq-middle': 'b',
     'u3x-k-inside': 'b', 'u3x-k-first': 'b', 'u3x-k-lost': 's', 'u3x-diff-d': 'b', 'u3x-diff-sign': 's', 'u3x-diff-2d': 'b',
-    'u3x-foil-only': 'b', 'u3x-second-partial': 'b', 'u3x-p-sign': 's', 'u3x-third-partial': 'b', 'u3x-fl-first': 'b', 'u3x-third-sign': 's', 'u3x-k-sign': 's', 'u3x-k-other': 'n',
+    'u3x-foil-only': 'b', 'u3x-second-partial': 'b', 'u3x-p-sign': 's', 'u3x-third-partial': 'b', 'u3x-fl-first': 'b', 'u3x-third-sign': 's', 'u3x-cube-sum': 'b', 'u3x-vdiff-sign': 's',
     'u3x-added': 'b', 'u3x-sub-first': 'b', 'u3x-outer-only': 'n', 'u3x-perim': 'n', 'u3x-ab-lost': 'b', 'u3x-ab-sign': 's', 'u3x-gave-x': 'n', 'u3x-lw-swap': 's',
     'u3x-h-half': 'b', 'u3x-h-sign': 's', 'u3x-h-no-k': 'b', 'u3x-q-no-k': 'b', 'u3x-q-sign': 's'
   });
@@ -75,9 +75,19 @@
     (ws || []).forEach(function (w) { if (!w || !w.is) return; var p = PL.lift(w.is); if (seen.some(function (s) { return PL.eq(s, p); })) return; seen.push(p); W.push({ is: p, code: w.code, hint: w.hint }); });
     return W;
   }
+  /* the given expression typed back unchanged would be "right value, wrong form" (2/3 in a test): mark it wrong, no credit */
+  function givenGuard(prompt, chk) {
+    var gs = (String(prompt).replace(/<svg[\s\S]*?<\/svg>/g, '').match(/\\\(([\s\S]*?)\\\)/g) || []).map(function (m) { var q = HW.ex.parse(m.slice(2, -2)); return q.ok ? JSON.stringify(q.ast) : null; }).filter(Boolean);
+    return function (resp) {
+      var res = chk(resp);
+      if (res && res.v === 'form' && typeof resp === 'string') { var q = HW.ex.parse(resp); if (q.ok && gs.indexOf(JSON.stringify(q.ast)) >= 0) return wrong('unchanged', 'That is the expression you were given. <b>Expand</b> it: multiply out the brackets, then collect like terms.'); }
+      return res;
+    };
+  }
   function pp(prompt, target, ws, sol, hints, text, opt) {
     opt = opt || {};
     var W = wlist(target, ws), part = KP.poly(prompt, target, Object.assign({}, opt, { wrong: W }), sol, hints, text);
+    part.check = givenGuard(prompt, part.check);
     part.bad = W.map(function (w) { return tx(w.is); });
     return part;
   }
@@ -258,7 +268,7 @@
     return 'Square of a binomial: ' + t('(a+b)^{2}=a^{2}+2ab+b^{2}') + '.<br>' + t('(' + seq([A, B]) + ')^{2}=' + pf(A) + '^{2}+2' + pf(A) + pf(B) + '+' + pf(B) + '^{2}=' + seq([A2, AB2, B2]));
   }
   function l3q1a(r) {
-    var v = r.pick(['x', 'y', 'a', 't']), a = nz(r, 3, 12), A = V(v), B = N(a);
+    var v = r.pick(['x', 'y', 'n', 't']), a = nz(r, 3, 12), A = V(v), B = N(a);
     return pp(t('(' + seq([A, B]) + ')^{2}'), mul(add(A, B), add(A, B)), sqWrongs(A, B), sqSol(A, B), ['Write it as ' + t('(' + seq([A, B]) + ')(' + seq([A, B]) + ')') + ' — or use ' + t('(a+b)^{2}=a^{2}+2ab+b^{2}') + '.', 'The middle term is <b>twice</b> the product of the two terms.'], 'square of a binomial');
   }
   function l3q1b(r) {
@@ -322,30 +332,29 @@
       'Multiply two brackets first: ' + t(br(A) + br(B) + '=' + tx(Q)) + '.<br>Then multiply by ' + t(br(C)) + ': ' + t('(' + tx(Q) + ')' + br(C) + '=' + seq([mul(Q, T(s.c, v, 1)), mul(Q, N(s.d))].map(function (p) { return tx(p); }).join('+').replace(/\+-/g, '-').split(/(?=[+-])/).map(function (x) { return x; })) + '') + '<br>' + t('=' + tx(res)),
       ['Multiply the first two binomials, then multiply that trinomial by the third binomial.', 'The trinomial × binomial step has six products; collect like terms at the end.'], 'three binomials');
   }
+  /* Mastery: a cube and a box whose middle edge equals the cube's edge — expand both volumes and compare them
+   * (replaces a "find k so a term vanishes" item that duplicated the Unit 3 test's Mastery question) */
   function l4q3Shared(r) {
-    return pickWhere(function () {
-      var noX2 = r.chance(0.5), a = r.pick([1, 1, 2, 3]), b = nz(r, 1, 5), c = nz(r, 1, 9), k = noX2 ? -a * b : (a * c) % b === 0 ? -a * c / b : null;
-      return k == null ? null : { noX2: noX2, a: a, b: b, c: c, k: k, v: r.pick(['x', 'x', 'y']) };
-    }, function (s) {
-      if (!s.k || Math.abs(s.k) > 12) return false;
-      var res = mul(lin(s.a, s.k, 'x'), add(T(1, 'x', 2), T(s.b, 'x', 1), N(s.c))), cs = coefs(res, 'x', 3);
-      return s.noX2 ? cs[1] === 0 && cs[2] !== 0 && cs[3] !== 0 : cs[2] === 0 && cs[1] !== 0 && cs[3] !== 0;
-    });
+    return pickWhere(function () { return { m: r.int(1, 6), d: r.int(1, 4), v: r.pick(['x', 'x', 'y', 'n']), u: r.pick(['cm', 'cm', 'm']), what: r.pick(['storage box', 'shipping crate', 'planter', 'toy box']) }; },
+      function (s) { return s.m !== s.d; });
   }
   function l4q3(r, s) {
-    var v = s.v, X = V(v), tri = add(T(1, v, 2), T(s.b, v, 1), N(s.c)), k = s.k, res = mul(lin(s.a, k, v), tri);
-    var term = s.noX2 ? t(v + '^{2}') : t(v), A = s.a === 1 ? '' : s.a;
-    var other = s.noX2 ? ((s.a * s.c) % s.b === 0 ? -s.a * s.c / s.b : null) : -s.a * s.b;
-    var kc = numChk(k, [{ v: -k, code: 'u3x-k-sign', hint: 'Set the coefficient of ' + term + ' equal to ' + t('0') + ' and solve carefully — check the sign.' }, other != null && other !== k ? { v: other, code: 'u3x-k-other', hint: 'That value removes the ' + (s.noX2 ? t(v) : t(v + '^{2}')) + '-term. Which products give ' + term + '?' } : null]);
-    var ec = pchk(res, [{ is: mul(lin(s.a, -k, v), tri), code: 'u3x-k-sign', hint: 'Use your value of ' + t('k') + ' with its sign.' }]);
-    var key = [String(k), tx(res)];
-    var coefLine = s.noX2 ? t(v + '^{2}') + '-terms: ' + t((s.a * s.b) + v + '^{2}') + ' (from ' + t(A + v + '\\cdot ' + s.b + v) + ') and ' + t('k' + v + '^{2}') + ' (from ' + t('k\\cdot ' + v + '^{2}') + '), so ' + t(s.a * s.b + '+k=0') + ' and ' + t('k=' + k) + '.'
-      : t(v) + '-terms: ' + t((s.a * s.c) + v) + ' (from ' + t(A + v + '\\cdot ' + par(s.c)) + ') and ' + t(s.b + 'k' + v) + ' (from ' + t('k\\cdot ' + s.b + v) + '), so ' + t(s.a * s.c + (s.b < 0 ? '' : '+') + s.b + 'k=0') + ' and ' + t('k=' + k) + '.';
-    var pt = KP.fields('For what value of ' + t('k') + ' does the expansion of ' + t('(' + A + v + '+k)(' + tx(tri) + ')') + ' have <b>no ' + term + '-term</b>? Then write the expansion for that value of ' + t('k') + '.',
-      [nbox(t('k=')), pbox('Expansion:', [v])], [kc, ec.check], key, t('k=' + k) + '; ' + t(tx(res)),
-      'Expand with ' + t('k') + ' as a number: the products that give ' + term + ' are the only ones that matter.<br>' + coefLine + '<br>' + t('(' + tx(lin(s.a, k, v)) + ')(' + tx(tri) + ')=' + cat(tx(mul(T(s.a, v, 1), tri)), tx(scale(tri, k))) + '=' + tx(res)) + ' — no ' + term + '-term ✓',
-      ['Which two of the six products give ' + term + '? Add their coefficients and set the total equal to ' + t('0') + '.', 'Then expand with your value of ' + t('k') + ' and check that the ' + term + '-term is gone.'], 'find k so a term vanishes');
-    pt.bad = badRows(key, 0, [-k, other]).concat(badRows(key, 1, ec.bad));
+    var v = s.v, m = s.m, d = s.d, u = s.u, X = V(v), E = lin(1, m, v), Lo = lin(1, m - d, v), Hi = lin(1, m + d, v);
+    var Cube = mul(E, E, E), Sq = mul(E, E), LH = mul(Lo, Hi), Box = mul(LH, E), Diff = sub(Cube, Box);
+    var U3 = t('\\text{' + u + '}^{3}');
+    var cc = pchk(Cube, [{ is: add(mul(X, X, X), N(m * m * m)), code: 'u3x-cube-sum', hint: 'A cube of a binomial is the binomial times itself <b>three</b> times: ' + t(br(E) + br(E) + br(E)) + '. Square it first, then multiply by ' + t(br(E)) + ' again.' },
+      { is: mul(E, add(mul(X, X), N(m * m))), code: 'u3x-no-middle', hint: 'Check ' + t(br(E) + '^{2}') + ' first: it has a middle term, ' + t(tx(T(2 * m, v, 1))) + '.' },
+      { is: mul(E, add(mul(X, X), T(m, v, 1), N(m * m))), code: 'u3x-middle-once', hint: 'The middle term of ' + t(br(E) + '^{2}') + ' is <b>doubled</b>: ' + t(tx(T(2 * m, v, 1))) + '.' }]);
+    var bc = pchk(Box, [{ is: mul(E, add(Sq, N(d * d))), code: 'u3x-dsq-plus', hint: 'Check ' + t(br(Lo) + br(Hi)) + ': the Last terms are ' + t(par(m - d) + '\\cdot ' + par(m + d) + '=' + (m * m - d * d)) + '.' },
+      { is: mul(E, add(mul(X, X), N(m * m - d * d))), code: 'u3x-fl-only', hint: 'Check ' + t(br(Lo) + br(Hi)) + ': the Outside and Inside products give a middle term, ' + t(tx(T(2 * m, v, 1))) + '.' }]);
+    var dc = pchk(Diff, [{ is: neg(Diff), code: 'u3x-vdiff-sign', hint: 'Subtract the ' + s.what + '’s volume <b>from</b> the cube’s volume.' }]);
+    var key = [tx(Cube), tx(Box), tx(Diff)];
+    var pt = KP.fields('A cube has edges of ' + t(br(E)) + ' ' + u + '. A ' + s.what + ' shaped like a rectangular prism measures ' + t(br(Lo)) + ' ' + u + ' by ' + t(br(E)) + ' ' + u + ' by ' + t(br(Hi)) + ' ' + u + '. Write each volume as an expanded polynomial, then write how much <b>greater</b> the cube’s volume is (also expanded and simplified).',
+      [pbox('Cube’s volume:', [v], { after: U3 }), pbox('The ' + s.what + '’s volume:', [v], { after: U3 }), pbox('The cube’s volume is greater by:', [v], { after: U3 })],
+      [cc.check, bc.check, dc.check], key, t(tx(Cube)) + '; ' + t(tx(Box)) + '; greater by ' + t(tx(Diff)) + ' ' + U3,
+      'Cube: ' + t(br(E) + '^{2}=' + tx(Sq)) + ', so ' + t(br(E) + '^{3}=(' + tx(Sq) + ')' + br(E) + '=' + tx(Cube)) + '.<br>' + s.what.charAt(0).toUpperCase() + s.what.slice(1) + ': ' + t(br(Lo) + br(Hi) + '=' + tx(LH)) + ', so ' + t('V=(' + tx(LH) + ')' + br(E) + '=' + tx(Box)) + '.<br>Difference: ' + t('(' + tx(Cube) + ')-(' + tx(Box) + ')=' + tx(Diff)) + ' ' + U3 + '.<br>The ' + t(v + '^{3}') + ' and ' + t(v + '^{2}') + ' terms cancel. (Shortcut: both volumes have the factor ' + t(br(E)) + ', and ' + t(br(E) + '^{2}-' + br(Lo) + br(Hi) + '=' + d * d) + ', so the difference is ' + t(d * d + br(E)) + '.)',
+      ['Volume = length × width × height. Multiply two of the brackets first, then multiply that trinomial by the third bracket.', 'Subtract the ' + s.what + '’s volume from the cube’s, changing the sign of every term you subtract.'], 'cube vs box volumes');
+    pt.bad = badRows(key, 0, cc.bad.slice(0, 2)).concat(badRows(key, 1, bc.bad.slice(0, 2)), badRows(key, 2, dc.bad));
     return pt;
   }
 
@@ -471,11 +480,11 @@
       { num: '3', outcome: 'AN4', stem: 'Comparing areas.', shared: l3q3Shared, parts: [{ id: '3', outcome: 'AN4', level: 'MAS', make: l3q3 }] }] });
 
   HW.defineExit({ lesson: 'u3l4', calc: false, outcome: 'AN4',
-    blurb: 'Binomial × trinomial with a grid, a product of three binomials, and choosing k so that a term disappears.',
+    blurb: 'Binomial × trinomial with a grid, a product of three binomials, and comparing the volumes of a cube and a box.',
     questions: [
       { num: '1', outcome: 'AN4', stem: 'Binomial × trinomial.', parts: [{ id: '1', outcome: 'AN4', level: 'BEG', make: l4q1 }] },
       { num: '2', outcome: 'AN4', stem: 'Expand and simplify.', parts: [{ id: '2', outcome: 'AN4', level: 'PRG', make: l4q2 }] },
-      { num: '3', outcome: 'AN4', stem: 'A missing term.', shared: l4q3Shared, parts: [{ id: '3', outcome: 'AN4', level: 'MAS', make: l4q3 }] }] });
+      { num: '3', outcome: 'AN4', stem: 'Comparing volumes.', shared: l4q3Shared, parts: [{ id: '3', outcome: 'AN4', level: 'MAS', make: l4q3 }] }] });
 
   HW.defineExit({ lesson: 'u3l5', calc: false, outcome: 'AN4',
     blurb: 'Area of a rectangle as a polynomial and its value, a shaded area, and an equation from comparing areas.',
@@ -491,5 +500,5 @@
       { num: '1', outcome: 'AN4', stem: 'Degree and a binomial product.', parts: [{ id: '1a', outcome: 'AN4', level: 'BEG', make: l6q1a }, { id: '1b', sub: 'b', outcome: 'AN4', level: 'BEG', make: function (r) { var p = l6q1b(r); p.prompt = 'Expand and simplify ' + p.prompt + '.'; return p; } }] },
       { num: '2', outcome: 'AN4', stem: 'Expand and simplify.', parts: [{ id: '2', outcome: 'AN4', level: 'PRG', make: l6q2 }] },
       { num: '3', outcome: 'AN4', stem: 'Matching coefficients.', parts: [{ id: '3', outcome: 'AN4', level: 'MAS', make: l6q3 }] }] });
-  void form; void ok; void wrong;
+  void form; void ok;
 })(window);

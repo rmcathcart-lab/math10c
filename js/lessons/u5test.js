@@ -1116,7 +1116,7 @@
         return { id: '22' + 'abc'[i], sub: 'abc'[i], outcome: 'RF8', level: 'BEG', make: function (r, s) {
           var x = w === 'p' ? s.p : w === 'n' ? s.n : 0, val = s.m * x + s.b, fx = 'f(' + x + ')';
           return numPart('Evaluate ' + t(fx) + '.', val, [{ v: -s.m * x + s.b, code: 'ev-sign', hint: 'Check the sign: ' + t(s.m + '\\times' + sg(x) + '=' + s.m * x) + '.' }, { v: s.m * x, code: 'u5t-ev-no-b', hint: 'Don’t forget the constant term: add ' + t(s.b) + ' after multiplying.' }, { v: s.m * x - s.b, code: 'ev-sign', hint: 'Check the sign of the constant term: it is ' + t((s.b > 0 ? '+' : '') + s.b) + '.' }, { v: s.m + x + s.b, code: 'u5t-ev-no-b', hint: t(s.m + 'x') + ' means ' + t(s.m + '\\times x') + ': multiply, don’t add.' }],
-            t(fx + '=' + s.m + sg(x) + (s.b > 0 ? '+' : '') + s.b + '=' + (s.m * x) + (s.b > 0 ? '+' : '') + s.b + '=' + val), ['Replace every ' + t('x') + ' with ' + t(x) + (x < 0 ? ' (in brackets)' : '') + ', then simplify.'], 'evaluate f(' + x + ')', { before: t(fx + '=') });
+            t(fx + '=' + s.m + '(' + x + ')' + (s.b > 0 ? '+' : '') + s.b + '=' + (s.m * x) + (s.b > 0 ? '+' : '') + s.b + '=' + val), ['Replace every ' + t('x') + ' with ' + t(x) + (x < 0 ? ' (in brackets)' : '') + ', then simplify.'], 'evaluate f(' + x + ')', { before: t(fx + '=') });
         } };
       }) },
     { num: '23', outcome: 'RF8',
@@ -1159,7 +1159,7 @@
         var o = find(function () { return { a: r.pick(nz(-6, 6).filter(function (x) { return Math.abs(x) > 1; })), b: r.pick(nz(-9, 9)), x: r.pick(nz(-5, 5)) }; }, function (o) { var k = o.a * o.x + o.b; return Math.abs(k) <= 30 && k !== o.x && k !== 0; }, { a: 4, b: 9, x: -2 });
         var k = o.a * o.x + o.b, rule = lin(o.a, o.b);
         return numPart('For ' + t('p(x)=' + rule) + ', solve ' + t('p(x)=' + k) + '.', o.x, [{ v: o.a * k + o.b, code: 'u5t-ev-instead', hint: 'That is ' + t('p(' + k + ')') + '. Here ' + t(k) + ' is the <b>output</b>: solve ' + t(rule + '=' + k) + ' for ' + t('x') + '.' }, { v: cl((k + o.b) / o.a), code: 'fn-solve-inverse', hint: 'To undo ' + t((o.b > 0 ? '+' : '') + o.b) + ', ' + (o.b > 0 ? 'subtract' : 'add') + ' ' + t(Math.abs(o.b)) + ' on both sides.' }, { v: k - o.b, code: 'fn-solve-divide', hint: 'Last step: divide both sides by ' + t(o.a) + '.' }, { v: -o.x, code: 'fn-solve-sign', hint: 'Check the sign when you divide by ' + t(o.a) + '.' }],
-          t(rule + '=' + k) + '<br>' + t(o.a + 'x=' + (k - o.b)) + '<br>' + t('x=' + o.x) + '<br>Check: ' + t('p(' + o.x + ')=' + o.a + sg(o.x) + (o.b > 0 ? '+' : '') + o.b + '=' + k) + ' ✓',
+          t(rule + '=' + k) + '<br>' + t(o.a + 'x=' + (k - o.b)) + '<br>' + t('x=' + o.x) + '<br>Check: ' + t('p(' + o.x + ')=' + o.a + '(' + o.x + ')' + (o.b > 0 ? '+' : '') + o.b + '=' + k) + ' ✓',
           ['In ' + t('p(x)=' + k) + ', ' + t(k) + ' is the output. Set the rule equal to ' + t(k) + ' and solve for ' + t('x') + '.'], 'solve p(x)=' + k, { before: t('x=') });
       } }] },
     { num: '26', outcome: 'RF8',

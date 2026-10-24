@@ -422,14 +422,14 @@
    * ===================================================================================================== */
   HW.defineExit({
     lesson: 'u7l3', calc: true, outcome: 'RF6',
-    blurb: 'Convert y = mx + b to general form (with and without fractions), read m and b from Ax + By + C = 0, and write a parallel or perpendicular line through another line’s x-intercept.',
+    blurb: 'Convert y = mx + b to general form (with and without fractions), read m and b from Ax + By + C = 0, and write a parallel or perpendicular line with another line’s y-intercept.',
     questions: [
       { num: '1', stem: '', parts: [
         { id: '1', outcome: 'RF6', level: 'BEG', make: function (r) {
           var a = r.int(2, 9), c = nz(r, -12, 12), v = r.int(0, 2), s = v === 2 ? 1 : -1;
           var eq = v === 0 ? 'y=' + c + '-' + a + 'x' : 'y=' + (s < 0 ? '-' : '') + a + 'x' + (c < 0 ? '-' : '+') + Math.abs(c);
           var T = L(s * a, c);
-          return LP('Write ' + t(eq) + ' in general form, ' + t('Ax+By+C=0') + ', where ' + t('A') + ', ' + t('B') + ' and ' + t('C') + ' are integers and ' + t('A\\ge 0') + '.', T, { form: 'general', bad: [GEN(L(-s * a, c)), GEN(L(s * a, -c))] },
+          return LP('Write ' + t(eq) + ' in general form, ' + t('Ax+By+C=0') + ', where ' + t('A') + ', ' + t('B') + ' and ' + t('C') + ' are integers with no common factor and ' + t('A\\ge 0') + '.', T, { form: 'general', bad: [GEN(L(-s * a, c)), GEN(L(s * a, -c))] },
             'Move every term to one side so the other side is ' + t('0') + (s < 0 ? ' (add ' + t(a + 'x') + ' to both sides and subtract ' + t(pT(c)) + ')' : ' (subtract ' + t('y') + ' from both sides, so the ' + t('x') + '-term stays positive)') + ':<br>' + t(GEN(T)) + '.',
             ['Get everything on one side with ' + t('0') + ' on the other: ' + t('Ax+By+C=0') + '.', 'Keep the ' + t('x') + '-term positive; a term changes sign when it moves across the equals sign.'], 'general form of ' + eq);
         } }] },
@@ -458,20 +458,26 @@
         } }] },
       { num: '4', stem: '', parts: [
         { id: '4', outcome: 'RF7', level: 'ADV', make: function (r) {
+          /* parallel/perpendicular to one line, with the y-intercept of another (Example 4 and Assignment 4–5 of the
+           * lesson): the second line is in general form or in the form Ax + By = D, and its y-intercept may be a fraction */
           var o = until(function () {
-            var a1 = r.int(1, 6), b1 = r.int(2, 6) * r.pick([1, -1]), c1 = nz(r, -12, 12), x0 = nz(r, -6, 6), a2 = r.int(1, 5), b2 = nz(r, -5, 5);
-            return { a1: a1, b1: b1, c1: c1, x0: x0, a2: a2, b2: b2, perp: r.chance(0.5) };
-          }, function (o) { return gcd(o.a1, o.b1) === 1 && Math.abs(o.a1) !== Math.abs(o.b1) && gcd(gcd(o.a2, o.b2), o.a2 * o.x0) === 1 && o.a2 * o.x0 % o.b2 !== 0; });
-          var g = fr(-o.a1, o.b1), m = o.perp ? nrec(g) : g, L1 = Ln.tex({ A: o.a1, B: o.b1, C: o.c1 }, 'general'), L2 = Ln.tex({ A: o.a2, B: o.b2, C: -o.a2 * o.x0 }, 'general');
-          var y2 = fr(o.a2 * o.x0, o.b2), T = { m: m, point: [o.x0, 0] }, bT = fMul(fNeg(m), [o.x0, 1]);
-          var W = (o.perp ? perpW(g, { point: [o.x0, 0] }) : parW(g, { point: [o.x0, 0] })).concat([
-            { is: { m: m, point: [0, fv(y2)] }, code: 'u7x-xint-yint', hint: 'You used the point where the second line crosses the <b>' + t('y') + '</b>-axis. You need its <b>' + t('x') + '</b>-intercept: set ' + t('y=0') + '.' },
-            { is: { m: m, point: [-o.x0, 0] }, code: 'u7x-xint-sign', hint: 'Check the sign of the ' + t('x') + '-intercept: set ' + t('y=0') + ' in ' + t(L2) + ' and solve carefully.' }]);
-          if (!o.perp) W.push({ is: { A: o.a1, B: o.b1, C: o.c1 }, code: 'u7x-given-line', hint: 'That’s the first line itself. Keep its slope, but your line must pass through the ' + t('x') + '-intercept of ' + t(L2) + '.' });
-          return LP('Write, in general form, the equation of the line that is <b>' + (o.perp ? 'perpendicular' : 'parallel') + '</b> to ' + t(L1) + ' and has the same ' + t('x') + '-intercept as ' + t(L2) + '.', T, { form: 'general', wrong: W },
-            'Slope of ' + t(L1) + ': ' + t('m=-\\frac{A}{B}=' + nT(g)) + (o.perp ? '; the perpendicular slope is ' + t(nT(m)) : '; a parallel line has the same slope') + '.<br>' + t('x') + '-intercept of ' + t(L2) + ': set ' + t('y=0') + ': ' + t(o.a2 + 'x' + (o.a2 * o.x0 > 0 ? '-' : '+') + Math.abs(o.a2 * o.x0) + '=0\\Rightarrow x=' + o.x0) + ', the point ' + t(ptT(o.x0, 0)) + '.<br>' +
-              'Substitute into ' + t('y=mx+b') + ': ' + t('0=' + nT(m) + '\\left(' + o.x0 + '\\right)+b\\Rightarrow b=' + nT(bT)) + ', so ' + t(SI(m, bT)) + '.<br>General form: ' + t(GEN(T)) + '.',
-            ['Find the slope from ' + t('m=-\\frac{A}{B}') + ', and the ' + t('x') + '-intercept by setting ' + t('y=0') + '.', 'The line passes through ' + t('(x\\text{-intercept},\\ 0)') + ': substitute it to find ' + t('b') + ', then rearrange to general form.'], (o.perp ? 'perp' : 'par') + ' through x-intercept');
+            return { a1: r.int(1, 6), b1: r.int(2, 6) * r.pick([1, -1]), c1: nz(r, -12, 12), a2: nz(r, -6, 6), b2: r.int(2, 6) * r.pick([1, -1]), c2: nz(r, -24, 24), perp: r.chance(0.5), std: r.chance(0.5) };
+          }, function (o) {
+            var b = fr(-o.c2, o.b2), b1 = fr(-o.c1, o.b1), xi = fr(-o.c2, o.a2);
+            return gcd(o.a1, o.b1) === 1 && o.a1 !== Math.abs(o.b1) && gcd(gcd(o.a2, o.b2), o.c2) === 1 && Math.abs(o.a2) !== Math.abs(o.b2) && !fEq(b, b1) && !fEq(b, xi) && !fEq(b, fNeg(b1)) && !fEq(fr(-o.a2, o.b2), fr(-o.a1, o.b1));
+          });
+          var g = fr(-o.a1, o.b1), m = o.perp ? nrec(g) : g, b = fr(-o.c2, o.b2), T = L(m, b);
+          var L1 = Ln.tex({ A: o.a1, B: o.b1, C: o.c1 }, 'general'), L2 = o.std ? lin([[o.a2, 'x'], [o.b2, 'y']]) + '=' + (-o.c2) : lin([[o.a2, 'x'], [o.b2, 'y'], [o.c2, '']]) + '=0';
+          var W = (o.perp ? perpW(g, { b: b }) : parW(g, { b: b })).concat([
+            { is: L(m, fr(-o.c1, o.b1)), code: 'u7x-b-wrongline', hint: 'Right slope — but the ' + t('y') + '-intercept comes from ' + t(L2) + ', not from ' + t(L1) + '.' },
+            { is: L(m, fr(-o.c2, o.a2)), code: 'u7x-k-xint', hint: 'You used the <b>' + t('x') + '</b>-intercept of ' + t(L2) + '. For the ' + t('y') + '-intercept set ' + t('x=0') + ' and solve for ' + t('y') + '.' },
+            { is: L(m, fNeg(b)), code: 'u7x-b-sign', hint: 'Check the sign of the ' + t('y') + '-intercept: set ' + t('x=0') + ' in ' + t(L2) + ' and solve carefully.' }]);
+          if (!o.perp) W.push({ is: { A: o.a1, B: o.b1, C: o.c1 }, code: 'u7x-given-line', hint: 'That’s the first line itself. Keep its slope, but your line must cross the ' + t('y') + '-axis where ' + t(L2) + ' does.' });
+          var yStep = o.std ? t(term(o.b2, 'y', true) + '=' + (-o.c2)) : t(term(o.b2, 'y', true) + (o.c2 < 0 ? '-' : '+') + Math.abs(o.c2) + '=0');
+          return LP('Write the equation of the line that is <b>' + (o.perp ? 'perpendicular' : 'parallel') + '</b> to ' + t(L1) + ' and has the same ' + t('y') + '-intercept as ' + t(L2) + '. Give it in general form, ' + t('Ax+By+C=0') + ' (integers with no common factor, ' + t('A\\ge 0') + ').', T, { form: 'general', wrong: W },
+            'Slope of ' + t(L1) + ': ' + t('m=-\\frac{A}{B}=' + nT(g)) + (o.perp ? '; the perpendicular slope is its negative reciprocal, ' + t(nT(m)) : '; a parallel line has the same slope') + '.<br>' +
+              t('y') + '-intercept of ' + t(L2) + ': set ' + t('x=0') + ': ' + yStep + ' ' + t('\\Rightarrow y=' + nT(b)) + '.<br>So ' + t(SI(m, b)) + '.<br>' + 'General form' + (m[1] > 1 || b[1] > 1 ? ' (multiply every term by the common denominator, then move every term to one side)' : '') + ': ' + t(GEN(T)) + '.',
+            ['Find the slope from ' + t('m=-\\frac{A}{B}') + ' (then flip and change the sign if the line is perpendicular).', 'Set ' + t('x=0') + ' in the second equation to find ' + t('b') + '; write ' + t('y=mx+b') + ', then rearrange to general form.'], (o.perp ? 'perp' : 'par') + ' with y-intercept of a second line');
         } }] }
     ]
   });
@@ -516,7 +522,7 @@
           var o = until(function () { var d = r.int(2, 6), a = nz(r, -7, 7), j = r.pick([1, 1, 2]); return { d: d, a: a, j: j, x1: nz(r, -6, 4), y1: nz(r, -8, 8) }; },
             function (o) { var y2 = o.y1 + o.a * o.j; return gcd(o.a, o.d) === 1 && Math.abs(o.a) !== o.d && o.x1 + o.d * o.j <= 9 && Math.abs(y2) <= 14 && y2 !== 0 && o.x1 + o.d * o.j !== 0; });
           var x1 = o.x1, y1 = o.y1, x2 = x1 + o.d * o.j, y2 = y1 + o.a * o.j, m = fr(o.a, o.d), T = { m: m, point: [x1, y1] };
-          return LP('The table shows two points on a line. Write the equation of the line in general form.' + HW.valueTable([['x', x1, x2], ['y', y1, y2]]), T,
+          return LP('The table shows two points on a line. Write the equation of the line in general form, ' + t('Ax+By+C=0') + ' (integers with no common factor, ' + t('A\\ge 0') + ').' + HW.valueTable([['x', x1, x2], ['y', y1, y2]]), T,
             { form: 'general', wrong: [{ is: { m: m, point: [-x1, -y1] }, code: 'u7x-sp-signs', hint: 'Right slope — but your line misses the points. In ' + t('y-y_1=m(x-x_1)') + ' the coordinates are subtracted.' }], bad: [GEN({ m: fNeg(m), point: [x1, y1] }), GEN({ m: fInv(m), point: [x1, y1] })] },
             t('m=\\frac{' + y2 + '-' + pT(y1) + '}{' + x2 + '-' + pT(x1) + '}=\\frac{' + (y2 - y1) + '}{' + (x2 - x1) + '}' + ((y2 - y1) === m[0] && (x2 - x1) === m[1] ? '' : '=' + nT(m))) + '.<br>Slope–point form with ' + t(ptT(x1, y1)) + ': ' + t(PS(m, [x1, y1])) + '.<br>' + (m[1] > 1 ? 'Multiply both sides by ' + t(m[1]) + ', expand and ' : 'Expand and ') + 'move every term to one side: ' + t(GEN(T)) + '.<br><b>Check.</b> ' + t(ptT(x2, y2)) + ' also satisfies it ✓',
             ['Find the slope from the two points, then use slope–point form with either point.', 'Clear any fraction, expand, and move every term to one side (' + t('A\\ge 0') + ').'], 'general form through 2 points');
@@ -526,7 +532,7 @@
           var c = r.pick(BUY), o = until(function () { var a = r.int(2, 7), b = r.int(2, 7), j = r.pick([1, 2]); return { a: a, b: b, j: j, x1: r.int(1, 4), y1: a * j + r.int(1, 5) }; },
             function (o) { return gcd(o.a, o.b) === 1 && o.a !== o.b && o.x1 + o.b * o.j <= 14 && o.y1 <= 16; });
           var x1 = o.x1, y1 = o.y1, x2 = x1 + o.b * o.j, y2 = y1 - o.a * o.j, M = o.a * x1 + o.b * y1, T = { A: o.a, B: o.b, C: -M }, m = fr(-o.a, o.b);
-          return LP(c.who + ' buys exactly ' + t(x1) + ' ' + c.a + ' and ' + t(y1) + ' ' + c.b + ', <i>or</i> exactly ' + t(x2) + ' ' + c.a + ' and ' + t(y2) + ' ' + c.b + '. A linear relationship exists between the number of ' + c.a + ', ' + t('x') + ', and the number of ' + c.b + ', ' + t('y') + ', that can be bought. Determine the equation of this relationship in general form.', T,
+          return LP(c.who + ' buys exactly ' + t(x1) + ' ' + c.a + ' and ' + t(y1) + ' ' + c.b + ', <i>or</i> exactly ' + t(x2) + ' ' + c.a + ' and ' + t(y2) + ' ' + c.b + '. A linear relationship exists between the number of ' + c.a + ', ' + t('x') + ', and the number of ' + c.b + ', ' + t('y') + ', that can be bought. Determine the equation of this relationship in general form, ' + t('Ax+By+C=0') + ' (integers with no common factor, ' + t('A\\ge 0') + ').', T,
             { form: 'general', wrong: [{ is: { A: o.b, B: o.a, C: -M }, code: 'u7x-ctx-swap', hint: 'The number of ' + c.a + ' is ' + t('x') + ' (first coordinate) and the number of ' + c.b + ' is ' + t('y') + ': the points are ' + t(ptT(x1, y1)) + ' and ' + t(ptT(x2, y2)) + '.' }] },
             'The two purchases are the points ' + t(ptT(x1, y1)) + ' and ' + t(ptT(x2, y2)) + '.<br>' + t('m=\\frac{' + y2 + '-' + y1 + '}{' + x2 + '-' + x1 + '}=\\frac{' + (y2 - y1) + '}{' + (x2 - x1) + '}=' + nT(m)) + '.<br>' + t(PS(m, [x1, y1])) + '. Multiply by ' + t(o.b) + ': ' + t(o.b + 'y-' + o.b * y1 + '=' + (-o.a) + 'x+' + o.a * x1) + '.<br>' + t(GEN(T)) + '.',
             ['Each purchase is a point (number of ' + c.a + ', number of ' + c.b + ').', 'Find the slope, use slope–point form, then clear the fraction and move every term to one side.'], 'budget line ' + c.a);
@@ -627,10 +633,10 @@
     { txt: 'Water drains from a tank at a constant rate. After {x1} min the water level is {y1} cm; after {x2} min it is {y2} cm.', X: 't', Y: 'W', xw: 'the time in minutes', yw: 'the water level in centimetres', m: [-8, -2, 1], b: [60, 120, 4], x: [2, 9], drain: true }];
   function pickStep(r, a) { var s = a[2] || 1, n = Math.round((a[1] - a[0]) / s); return a[0] + s * r.int(0, n); }
   var DR_CTX = [
-    { txt: 'A tank holds {V0} L of water. When a valve is opened, the volume ' + t('V') + ' (in litres) after ' + t('t') + ' minutes is ' + t('V={V0}-{k}t') + '. The model applies from the moment the valve opens until the tank is empty.', dv: 't', w: 'V', k: [5, 25], T: [8, 40] },
-    { txt: 'A candle is {V0} cm tall. Its height ' + t('h') + ' (in cm) after burning for ' + t('t') + ' hours is ' + t('h={V0}-{k}t') + '. The model applies from when the candle is lit until it has burned down completely.', dv: 't', w: 'h', k: [2, 4], T: [5, 12] },
-    { txt: 'A hot-air balloon is at {V0} m when it starts to descend. Its altitude ' + t('A') + ' (in m) after ' + t('t') + ' minutes is ' + t('A={V0}-{k}t') + '. The model applies from the start of the descent until the balloon lands.', dv: 't', w: 'A', k: [15, 40], T: [12, 40] },
-    { txt: 'A phone’s battery is at {V0}% when a video call starts. The charge ' + t('B') + ' (in %) after ' + t('t') + ' minutes of the call is ' + t('B={V0}-{k}t') + '. The model applies from the start of the call until the battery is empty.', dv: 't', w: 'B', k: [2, 3], T: [20, 50] }];
+    { txt: 'A tank holds {V0t} L of water. When a valve is opened, the volume ' + t('V') + ' (in litres) after ' + t('t') + ' minutes is ' + t('V={V0}-{k}t') + '. The model applies from the moment the valve opens until the tank is empty.', dv: 't', w: 'V', k: [5, 25], T: [8, 40] },
+    { txt: 'A candle is {V0t} cm tall. Its height ' + t('h') + ' (in cm) after burning for ' + t('t') + ' hours is ' + t('h={V0}-{k}t') + '. The model applies from when the candle is lit until it has burned down completely.', dv: 't', w: 'h', k: [2, 4], T: [5, 12] },
+    { txt: 'A hot-air balloon is at {V0t} m when it starts to descend. Its altitude ' + t('A') + ' (in m) after ' + t('t') + ' minutes is ' + t('A={V0}-{k}t') + '. The model applies from the start of the descent until the balloon lands.', dv: 't', w: 'A', k: [15, 40], T: [12, 40] },
+    { txt: 'A phone’s battery is at {V0t} when a video call starts. The charge ' + t('B') + ' (in %) after ' + t('t') + ' minutes of the call is ' + t('B={V0}-{k}t') + '. The model applies from the start of the call until the battery is empty.', dv: 't', w: 'B', k: [2, 3], T: [20, 50] }];
   HW.defineExit({
     lesson: 'u7l6', calc: true, outcome: 'RF5',
     blurb: 'Calculate a rate of change from two readings, interpret the slope of a context equation, write the equation of a context line, and state a sensible domain and range.',
@@ -675,7 +681,7 @@
         { id: '4', outcome: 'RF5', level: 'ADV', make: function (r) {
           var c = r.pick(DR_CTX), k = r.int(c.k[0], c.k[1]), T = r.int(c.T[0], c.T[1]), V0 = k * T;
           if (c.w === 'B') { V0 = until(function () { return r.int(60, 100); }, function (v) { return v % k === 0 && v / k >= 20; }); T = V0 / k; }
-          var txt = c.txt.replace(/\{V0\}/g, String(V0)).replace(/\{k\}/g, String(k));
+          var txt = c.txt.replace(/\{V0t\}/g, t(F(V0) + (c.w === 'B' ? '\\%' : ''))).replace(/\{V0\}/g, String(V0)).replace(/\{k\}/g, String(k));
           return drPart(txt + ' State the domain and the range of the model.', { dv: c.dv, w: c.w, D: [0, T], R: [0, V0],
             dW: [{ is: bldK(c.dv, 0, V0), code: 'set-swap', hint: 'The domain is the set of <b>times</b>: from ' + t(c.dv + '=0') + ' until the model stops. When is ' + t(c.w + '=0') + '?' }],
             rW: [{ is: bldK('y', 0, T), code: 'set-swap', hint: 'The range is the set of values of ' + t(c.w) + ': from ' + t(F(V0)) + ' at the start down to ' + t('0') + '.' }] },
@@ -710,7 +716,7 @@
         { id: '2', outcome: 'RF6', level: 'EMG', make: function (r) {
           var m = r.int(2, 9) * r.pick([1, -1]), P = until(function () { return [nz(r, -9, 9), nz(r, -9, 9)]; }, function (p) { return Math.abs(p[0]) !== Math.abs(p[1]) && p[1] - m * p[0] !== 0; });
           var T = { m: [m, 1], point: P }, eq = PS([m, 1], P), b = P[1] - m * P[0];
-          return LP('Rewrite ' + t(eq) + ' in general form, ' + t('Ax+By+C=0') + ' (integers, ' + t('A\\ge 0') + ').', T,
+          return LP('Rewrite ' + t(eq) + ' in general form, ' + t('Ax+By+C=0') + ' (integers with no common factor, ' + t('A\\ge 0') + ').', T,
             { form: 'general', wrong: [{ is: { m: [m, 1], point: [-P[0], -P[1]] }, code: 'u7x-sp-signs', hint: 'Check the signs when you expand ' + t(eq) + ': the point on the line is ' + t(ptT(P[0], P[1])) + '.' }], bad: [GEN(L(m, -b)), GEN(L(-m, b))] },
             'Expand: ' + t('y' + (P[1] < 0 ? '+' : '-') + Math.abs(P[1]) + '=' + m + 'x' + (m * P[0] > 0 ? '-' : '+') + Math.abs(m * P[0])) + '.<br>Move every term to one side, keeping the ' + t('x') + '-term positive: ' + t(GEN(T)) + '.',
             ['Expand the bracket first (multiply both terms by the slope).', 'Then move every term to one side so the other side is ' + t('0') + ', with a positive ' + t('x') + '-term.'], 'slope-point to general');
