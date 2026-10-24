@@ -16,7 +16,7 @@
     'u5x-swap-all': 'Plotted every point as (y, x)', 'u5x-one-swap': 'One point plotted as (y, x)', 'u5x-one-sign': 'One point with a sign slip',
     'u5x-swap-coef': 'Rate and constant swapped in the pattern rule', 'u5x-step-const': 'Added the step instead of multiplying by it',
     'u5x-per-step': 'Used the change per table step, not per unit', 'u5x-no-b': 'Left out the constant term', 'u5x-var-swap': 'Independent and dependent variables swapped',
-    'u5x-diff-order': 'Differences subtracted the wrong way', 'u5x-lin-word': 'Linear/nonlinear decision wrong', 'u5x-diff-one': 'One difference wrong',
+    'u5x-diff-order': 'Differences subtracted the wrong way', 'u5x-lin-word': 'Linear/nonlinear decision wrong',
     'u5x-evaluated': 'Evaluated instead of solving', 'u5x-a-c': 'Used the y-intercept as a', 'u5x-a-flip': 'Divided the wrong way to find a',
     'u5x-no-a': 'Left a out of the expanded equation', 'u5x-factor-sign': 'Used (x + p) for the x-intercept p', 'u5x-expand': 'Expansion slip',
     'u5x-one-k': 'Gave only one of the possible values', 'u5x-k-y': 'Used the outputs instead of the inputs', 'u5x-k-extra': 'Included a value that keeps it a function',
@@ -24,15 +24,15 @@
     'u5x-profit-rev': 'Ignored the cost per item', 'u5x-profit-fixed': 'Ignored the fixed cost', 'u5x-profit-cost': 'Solved cost = target instead of profit = target',
     'u5x-profit-sign': 'Subtracted the fixed cost instead of adding it', 'u5x-speed-dist': 'Gave the distance instead of the speed', 'u5x-speed-flip': 'Divided time by distance',
     'u5x-speed-total': 'Used the total distance from home instead of the change', 'u5x-stage': 'Described a stage of the graph wrongly', 'u5x-empty-flip': 'Divided the wrong way to find the time',
-    'u5x-fn-reason': 'Right decision, wrong reason', 'u5x-fn-wrong': 'Wrong function decision', 'u5x-conv-nodiv': 'Solved for By instead of y', 'u5x-conv-sign': 'Sign slip moving a term across',
+    'u5x-fn-wrong': 'Wrong function decision', 'u5x-conv-nodiv': 'Solved for By instead of y', 'u5x-conv-sign': 'Sign slip moving a term across',
     'u5x-conv-part': 'Divided only one term by the coefficient of y', 'u5x-speed-neg': 'Gave a negative speed'
   });
   HW.addPartial({
     'u5x-swap-all': 'n', 'u5x-one-swap': 's', 'u5x-one-sign': 's', 'u5x-swap-coef': 'n', 'u5x-step-const': 'n', 'u5x-per-step': 'b', 'u5x-no-b': 's',
-    'u5x-var-swap': 'n', 'u5x-diff-order': 's', 'u5x-lin-word': 'b', 'u5x-diff-one': 's', 'u5x-evaluated': 'n', 'u5x-a-c': 'n', 'u5x-a-flip': 'n',
+    'u5x-var-swap': 'n', 'u5x-diff-order': 's', 'u5x-lin-word': 'b', 'u5x-evaluated': 'n', 'u5x-a-c': 'n', 'u5x-a-flip': 'n',
     'u5x-no-a': 'b', 'u5x-factor-sign': 'b', 'u5x-expand': 's', 'u5x-one-k': 'b', 'u5x-k-y': 'n', 'u5x-k-extra': 'b', 'u5x-read-swap': 'n', 'u5x-read-off': 's',
     'u5x-plus-out': 'n', 'u5x-profit-rev': 'b', 'u5x-profit-fixed': 'b', 'u5x-profit-cost': 'n', 'u5x-profit-sign': 's', 'u5x-speed-dist': 'n', 'u5x-speed-flip': 'n',
-    'u5x-speed-total': 'b', 'u5x-stage': 's', 'u5x-empty-flip': 'n', 'u5x-fn-reason': 'n', 'u5x-fn-wrong': 'n', 'u5x-conv-nodiv': 'b', 'u5x-conv-sign': 's', 'u5x-conv-part': 'b', 'u5x-speed-neg': 's'
+    'u5x-speed-total': 'b', 'u5x-stage': 's', 'u5x-empty-flip': 'n', 'u5x-fn-wrong': 'n', 'u5x-conv-nodiv': 'b', 'u5x-conv-sign': 's', 'u5x-conv-part': 'b', 'u5x-speed-neg': 's'
   });
 
   /* ================= numbers and LaTeX ================= */

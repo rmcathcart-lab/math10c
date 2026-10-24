@@ -557,7 +557,9 @@
           var p = P.repeating('<b>Without a calculator</b>, divide to write ' + t('\\frac{' + fr[0] + '}{' + fr[1] + '}') + ' as a decimal. Put a bar over the block of digits that repeats.', fr, {},
             'Long division: ' + t(fr[0] + '\\div ' + fr[1] + '=' + val.toFixed(6) + '\\ldots') + '. The remainders start to repeat, so the digits do too: ' + t('\\frac{' + fr[0] + '}{' + fr[1] + '}=' + dec) + '.',
             ['Divide ' + t(fr[0] + '.000000') + ' by ' + t(fr[1]) + '. Watch the remainders: when one comes back, the digits repeat from there.', 'The bar goes over exactly the digits that repeat.'], 'fraction to repeating decimal ' + fr.join('/'));
-          p.bad = [plain, dec.replace(/\\overline\{(\d)(\d+)\}/, '$1\\overline{$2}').replace(/\.(\d)\\overline/, '.\\overline{$1}') === dec ? plain + '1' : dec.replace(/\\overline\{([^}]*)\}/, function (m0, b) { return b.length > 1 ? b[0] + '\\overline{' + b.slice(1) + '}' : '\\overline{' + b + b + '}1'; })];
+          var mt = /^(.*?)\\overline\{(\d+)\}$/.exec(dec), pre = mt[1], blk = mt[2];
+          var wrongBar = blk.length > 1 ? pre + blk.slice(0, -1) + '\\overline{' + blk.slice(-1) + '}' : /\d$/.test(pre) ? pre.slice(0, -1) + '\\overline{' + pre.slice(-1) + blk + '}' : pre + blk + blk + blk + blk;
+          p.bad = [plain, wrongBar];
           return p;
         } }] },
       { num: '3', outcome: 'AN2', stem: '<i>(Extension)</i>', parts: [
@@ -866,15 +868,14 @@
             var A = s.m * s.k * s.k, d2 = 2 * A, fd = ex.nthFactor(d2, 2), md = d2 / (fd * fd);
             var side = K.radical({ k: s.k, n: 2, m: s.m }, 'mixed', { diag: function (val) { if (ex.eq(val, A / 2)) return { code: 'u1x-sq-half', hint: 'The side isn’t half the area: the area of a square is side × side, so the side is ' + t('\\sqrt{' + A + '}') + '.' }; return null; } });
             var per = K.radical({ k: 4 * s.k, n: 2, m: s.m }, 'mixed', { diag: function (val) { if (ex.eq(val, 2 * s.k * Math.sqrt(s.m))) return { code: 'u1x-sq-perim', hint: 'A square has <b>four</b> equal sides: perimeter ' + t('=4s') + '.' }; return null; } });
-            var dg = md === 1 ? numChk(fd, [], function (v) { if (ex.eq(v, s.k * Math.sqrt(s.m))) return { code: 'u1x-sq-diag-side', hint: 'That’s the side. The diagonal is the hypotenuse: ' + t('d^{2}=s^{2}+s^{2}') + '.' }; return null; })
-              : K.radical({ k: fd, n: 2, m: md }, 'mixed', { diag: function (val) { if (ex.eq(val, s.k * Math.sqrt(s.m))) return { code: 'u1x-sq-diag-side', hint: 'That’s the side. The diagonal is the hypotenuse: ' + t('d^{2}=s^{2}+s^{2}') + '.' }; return null; } });
+            var dg = K.radical({ k: fd, n: 2, m: md }, 'mixed', { diag: function (val) { if (ex.eq(val, s.k * Math.sqrt(s.m))) return { code: 'u1x-sq-diag-side', hint: 'That’s the side. The diagonal is the hypotenuse: ' + t('d^{2}=s^{2}+s^{2}') + '.' }; return null; } });
             var dTex = md === 1 ? String(fd) : rad(fd, 2, md);
             var p = P.fields('Find the <b>exact</b> side length, perimeter and diagonal of the ' + s.what + '. Write radicals in simplest form.',
               [{ name: 'Side', label: 'Side:', mode: 'math', keys: 'radical', after: 'm' }, { name: 'Perimeter', label: 'Perimeter:', mode: 'math', keys: 'radical', after: 'm' }, { name: 'Diagonal', label: 'Diagonal:', mode: 'math', keys: 'radical', after: 'm' }],
               [side, per, dg], [rad(s.k, 2, s.m), rad(4 * s.k, 2, s.m), dTex], 'side ' + t(rad(s.k, 2, s.m)) + ' m, perimeter ' + t(rad(4 * s.k, 2, s.m)) + ' m, diagonal ' + t(dTex) + ' m',
               'Side: ' + t('s=\\sqrt{' + A + '}=\\sqrt{' + s.k * s.k + '\\times ' + s.m + '}=' + rad(s.k, 2, s.m)) + ' m.<br>Perimeter: ' + t('4\\times ' + rad(s.k, 2, s.m) + '=' + rad(4 * s.k, 2, s.m)) + ' m.<br>Diagonal: ' + t('d^{2}=s^{2}+s^{2}=' + A + '+' + A + '=' + d2) + ', so ' + t('d=\\sqrt{' + d2 + '}' + (md === 1 ? '=' + fd : '=\\sqrt{' + fd * fd + '\\times ' + md + '}=' + dTex)) + ' m.',
               ['Area of a square = side × side, so the side is the square root of the area.', 'The diagonal is the hypotenuse of a right triangle whose legs are two sides: ' + t('d^{2}=s^{2}+s^{2}') + '.'], 'square area ' + A + ': side, perimeter, diagonal');
-            p.bad = [[rad(s.k, 2, s.m), rad(2 * s.k, 2, s.m), dTex], [rad(s.k, 2, s.m), rad(4 * s.k, 2, s.m), rad(s.k, 2, s.m)], [String(A / 2), rad(4 * s.k, 2, s.m), dTex]];
+            p.bad = [[rad(s.k, 2, s.m), rad(2 * s.k, 2, s.m), dTex], [rad(s.k, 2, s.m), rad(4 * s.k, 2, s.m), rad(s.k, 2, s.m)]].concat(A % 2 ? [] : [[String(A / 2), rad(4 * s.k, 2, s.m), dTex]]);
             return p;
           } }] }
     ]

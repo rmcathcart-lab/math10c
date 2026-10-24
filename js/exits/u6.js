@@ -21,13 +21,13 @@
     'u6x-full-span': 'Used the whole span as the run', 'u6x-no-half': 'Forgot the ½ in the triangle area', 'u6x-height': 'Gave the height instead of the area',
     'u6x-pitch-flip': 'Used 12 over the pitch (run over rise)', 'u6x-rate-step': 'Gave the change per table step, not per unit', 'u6x-rate-sign': 'Rate with the wrong sign',
     'u6x-ctx-first': 'Used the first value in the table as the intercept', 'u6x-ctx-end': 'Stopped at the last value in the table', 'u6x-empty-y': 'Gave the starting value for the time',
-    'u6x-tab-step': 'Completed the table with the wrong step', 'u6x-tab-sign': 'Completed the table in the wrong direction', 'u6x-xint-round': 'Rounded to the wrong place',
+    'u6x-tab-step': 'Completed the table with the wrong step', 'u6x-xint-round': 'Rounded to the wrong place',
     'u6x-xint-y': 'Gave the y-intercept for the x-intercept', 'u6x-right-perp': 'Made the right angle at the wrong vertex', 'u6x-right-par': 'Used equal slopes for a right angle'
   });
   HW.addPartial({
     'u6x-one-pt': 'b', 'u6x-leg': 'n', 'u6x-perp-sign': 'b', 'u6x-perp-recip': 'b', 'u6x-perp-same': 'n', 'u6x-par-perp': 'n', 'u6x-perp-par': 'n', 'u6x-k-sign': 's', 'u6x-k-flip': 'b',
     'u6x-col-line': 'n', 'u6x-run-div': 'n', 'u6x-run-mult': 'n', 'u6x-full-span': 'b', 'u6x-no-half': 's', 'u6x-height': 'b', 'u6x-pitch-flip': 'b', 'u6x-rate-step': 'b', 'u6x-rate-sign': 's',
-    'u6x-ctx-first': 'n', 'u6x-ctx-end': 'n', 'u6x-empty-y': 'n', 'u6x-tab-step': 'b', 'u6x-tab-sign': 's', 'u6x-xint-round': 's', 'u6x-xint-y': 'n', 'u6x-right-perp': 'n', 'u6x-right-par': 'n'
+    'u6x-ctx-first': 'n', 'u6x-ctx-end': 'n', 'u6x-empty-y': 'n', 'u6x-tab-step': 'b', 'u6x-xint-round': 's', 'u6x-xint-y': 'n', 'u6x-right-perp': 'n', 'u6x-right-par': 'n'
   });
 
   /* ================= numbers and LaTeX ================= */
@@ -381,6 +381,20 @@
   var RAMPS = [
     { what: 'A wheelchair ramp', rule: function (k) { return 'A building code says a wheelchair ramp may have a slope of <b>no more than</b> ' + t('\\frac{1}{' + k + '}') + '.'; }, ask: function (h) { return 'A ramp must rise ' + t(nT(h)) + ' m to reach a doorway. What is the <b>shortest</b> run (horizontal length) that meets the code?'; }, ks: [12, 15, 16, 20], hs: [0.36, 0.45, 0.48, 0.6, 0.72, 0.75, 0.9] },
     { what: 'A loading ramp', rule: function (k) { return 'A loading ramp for a truck should have a slope of no more than ' + t('\\frac{1}{' + k + '}') + ' so that carts can be pushed up it safely.'; }, ask: function (h) { return 'The truck bed is ' + t(nT(h)) + ' m above the ground. What is the <b>shortest</b> run the ramp can have?'; }, ks: [4, 5, 6, 8], hs: [0.9, 1.2, 1.25, 1.5, 0.8, 1.1] }];
+  /* the end of the roof: an isosceles triangle drawn to scale, span along the bottom, dashed height to the peak */
+  function roofFig(a, w) {
+    var x0 = 30, x1 = 270, yb = 128, hp = 120 * a / 12, xm = (x0 + x1) / 2, ink = '#2b3340';
+    var body = '<path d="M' + x0 + ' ' + yb + ' L' + xm + ' ' + (yb - hp).toFixed(1) + ' L' + x1 + ' ' + yb + ' Z" fill="#eef0f2" stroke="' + ink + '" stroke-width="2"/>' +
+      '<line x1="' + xm + '" y1="' + (yb - hp).toFixed(1) + '" x2="' + xm + '" y2="' + yb + '" stroke="' + ink + '" stroke-width="1.4" stroke-dasharray="5 4"/>' +
+      '<path d="M' + xm + ' ' + (yb - 10) + ' H' + (xm + 10) + ' V' + yb + '" fill="none" stroke="' + ink + '" stroke-width="1.1"/>' +
+      '<text x="' + (xm - 8) + '" y="' + (yb - hp / 2).toFixed(1) + '" text-anchor="end" font-style="italic" fill="' + ink + '">h</text>' +
+      '<line x1="' + x0 + '" y1="' + (yb + 14) + '" x2="' + x1 + '" y2="' + (yb + 14) + '" stroke="' + ink + '" stroke-width="1.1"/>' +
+      '<line x1="' + x0 + '" y1="' + (yb + 9) + '" x2="' + x0 + '" y2="' + (yb + 19) + '" stroke="' + ink + '" stroke-width="1.1"/><line x1="' + x1 + '" y1="' + (yb + 9) + '" x2="' + x1 + '" y2="' + (yb + 19) + '" stroke="' + ink + '" stroke-width="1.1"/>' +
+      '<rect x="' + (xm - 26) + '" y="' + (yb + 6) + '" width="52" height="16" fill="#fff"/><text x="' + xm + '" y="' + (yb + 19) + '" text-anchor="middle" fill="' + ink + '">' + HW.esc(String(w).replace('.', '.')) + ' m</text>' +
+      '<text x="' + ((xm + x1) / 2 + 14).toFixed(1) + '" y="' + (yb - hp / 2 - 6).toFixed(1) + '" fill="' + ink + '" font-size="13">pitch ' + a + ' in 12</text>';
+    var top = Math.max(0, Math.floor(yb - hp - 12));
+    return '<div style="margin:.4em 0"><svg viewBox="0 ' + top + ' 300 ' + (yb + 30 - top) + '" width="100%" style="max-width:340px;display:block" role="img" aria-label="isosceles roof triangle, span ' + w + ' m" font-family="KaTeX_Main, \'Times New Roman\', serif" font-size="15">' + body + '</svg></div>';
+  }
   HW.defineExit({
     lesson: 'u6l2', calc: true,
     blurb: 'Rise, run and slope of a segment on a grid, drawing a line from a point and a slope, and slope in ramps and roofs.',
@@ -421,13 +435,13 @@
           } }] },
       { num: '4', outcome: 'RF3',
         shared: function (r) { return pickWhere(function () { var a = r.pick([3, 4, 5, 6, 8, 9, 10]), w = r.pick([6, 7.2, 8, 9, 9.6, 10, 12]); return { a: a, w: w, h: cl(a / 12 * w / 2) }; }, function (s) { return Math.abs(s.h * 100 - Math.round(s.h * 100)) < 1e-6 && s.h >= 1; }); },
-        stem: function (s) { return 'A garage roof has the shape of an isosceles triangle. It spans ' + t(nT(s.w)) + ' m from wall to wall, and the peak is directly above the middle. Each side of the roof has a pitch of “' + t(s.a) + ' in ' + t('12') + '”: it rises ' + t(s.a) + ' units for every ' + t('12') + ' units of run.'; },
+        stem: function (s) { return 'A garage roof has the shape of an isosceles triangle. It spans ' + t(nT(s.w)) + ' m from wall to wall, and the peak is directly above the middle. Each side of the roof has a pitch of ' + t(s.a) + ' in ' + t('12') + ': it rises ' + t(s.a) + ' units for every ' + t('12') + ' units of run.' + roofFig(s.a, s.w); },
         parts: [
           { id: '4', outcome: 'RF3', level: 'ADV', make: function (r, s) {
             var a = s.a, w = s.w, h = s.h, A = cl(w * h / 2), hf = cl(a / 12 * w), hp = cl(12 / a * w / 2);
             var ch = numChk(h, [[hf, 'u6x-full-span', 'Each side of the roof only covers <b>half</b> the span: the run from a wall to the peak is ' + t(nT(w) + '\\div 2=' + nT(w / 2)) + ' m.'], [hp, 'u6x-pitch-flip', 'The pitch ' + t(a) + ' in ' + t('12') + ' is a slope of ' + t('\\frac{' + a + '}{12}') + ' (rise over run), so the height is ' + t('\\frac{' + a + '}{12}\\times') + ' the run.']]);
             var ca = numChk(A, [[cl(w * h), 'u6x-no-half', 'The area of a triangle is ' + t('\\frac{1}{2}\\times\\text{base}\\times\\text{height}') + ' — don’t forget the ' + t('\\frac{1}{2}') + '.'], [h, 'u6x-height', 'That is the height of the peak. The area is ' + t('\\frac{1}{2}\\times' + nT(w) + '\\times' + nT(h)) + '.'], [cl(w * hf / 2), 'u6x-full-span', 'Find the height with the run from a wall to the peak (half the span), then use the whole span as the base.']]);
-            var p0 = B.fields('Determine the height of the peak above the top of the walls, and the area of the triangular end of the roof.', [{ label: 'Height:', name: 'Height', mode: 'number', after: 'm' }, { label: 'Area:', name: 'Area', mode: 'number', after: 'm²' }], [ch, ca], [nT(h).replace(/\\,/g, ''), String(A)],
+            var p0 = B.fields('Determine the height of the peak above the top of the walls, and the area of the triangular end of the roof.', [{ label: 'Height:', name: 'Height', mode: 'number', after: 'm' }, { label: 'Area:', name: 'Area', mode: 'number', after: 'm²' }], [ch, ca], [String(h), String(A)],
               'Height ' + t(nT(h)) + ' m, area ' + t(nT(A)) + ' m²',
               'The run from a wall to the peak is half the span: ' + t(nT(w) + '\\div 2=' + nT(w / 2)) + ' m.<br>Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}=\\frac{' + a + '}{12}') + ', so the rise is ' + t('\\frac{' + a + '}{12}\\times' + nT(w / 2) + '=' + nT(h)) + ' m.<br>Area ' + t('=\\frac{1}{2}\\times' + nT(w) + '\\times' + nT(h) + '=' + nT(A)) + ' m².',
               ['Each sloped side runs from a wall to the point under the peak: half the span.', 'Rise ' + t('=\\text{slope}\\times\\text{run}') + '. Then use ' + t('A=\\frac{1}{2}bh') + ' with the whole span as the base.'], 'roof pitch height and area');
@@ -523,11 +537,12 @@
   var WALKCTX = [
     { who: 'Ben walks home from the bus stop at a steady pace.', x: 't', y: 'd', xu: 'min', yu: 'm', yw: 'distance from home', ya: 'Distance from home, ' + t('d') + ' (m)', vs: [40, 50, 60, 75, 80], Ts: [10, 12, 14, 15, 16], st: 2, mean0: 'Ben’s distance from home when he starts walking', meanX: 'the time when Ben gets home' },
     { who: 'A pool is drained at a steady rate.', x: 't', y: 'V', xu: 'min', yu: 'L', yw: 'volume of water', ya: 'Volume of water, ' + t('V') + ' (L)', vs: [20, 25, 30, 40, 45], Ts: [20, 24, 30, 32, 36], st: 4, mean0: 'the volume of water before draining starts', meanX: 'the time when the pool is empty' },
-    { who: 'A snowmobile uses fuel at a steady rate.', x: 'h', y: 'F', xu: 'h', yu: 'L', yw: 'fuel left', ya: 'Fuel left, ' + t('F') + ' (L)', vs: [4, 5, 6, 8], Ts: [5, 6, 8, 9, 10], st: 1, mean0: 'the fuel in the tank at the start', meanX: 'the time when the tank is empty' }];
+    { who: 'A snowmobile uses fuel at a steady rate.', x: 't', y: 'F', xu: 'h', yu: 'L', yw: 'fuel left', ya: 'Fuel left, ' + t('F') + ' (L)', vs: [4, 5, 6, 8], Ts: [5, 6, 8, 9, 10], st: 1, mean0: 'the fuel in the tank at the start', meanX: 'the time when the tank is empty' }];
   var TWOREAD = [
-    { txt: function (a, b) { return 'A candle burns at a constant rate. ' + a + ' hours after it is lit it is ' + b; }, unit: 'cm', x: 't', y: 'h', start: 'tall when it was lit', end: 'burn out', xu: 'h', a: 'tall' },
-    { txt: function (a, b) { return 'A generator burns fuel at a constant rate. After ' + a + ' hours its tank holds ' + b; }, unit: 'L', x: 't', y: 'F', start: 'of fuel at the start', end: 'run out of fuel', xu: 'h', a: '' },
-    { txt: function (a, b) { return 'Water drains from a tank at a constant rate. After ' + a + ' minutes the tank holds ' + b; }, unit: 'L', x: 't', y: 'V', start: 'of water at the start', end: 'be empty', xu: 'min', a: '' }];
+    { txt: function (a, b) { return 'A candle burns at a constant rate. ' + a + ' after it is lit it is ' + b; }, unit: 'cm', x: 't', y: 'h', end: 'burn out', xu: 'h', w: ['hour', 'hours'], a: 'tall' },
+    { txt: function (a, b) { return 'A generator burns fuel at a constant rate. After ' + a + ' its tank holds ' + b; }, unit: 'L', x: 't', y: 'F', end: 'run out of fuel', xu: 'h', w: ['hour', 'hours'], a: '' },
+    { txt: function (a, b) { return 'Water drains from a tank at a constant rate. After ' + a + ' the tank holds ' + b; }, unit: 'L', x: 't', y: 'V', end: 'be empty', xu: 'min', w: ['minute', 'minutes'], a: '' }];
+  function nUnit(n, w) { return t(n) + ' ' + (n === 1 ? w[0] : w[1]); }
   HW.defineExit({
     lesson: 'u6l4', calc: true,
     blurb: 'Intercepts and slope of a graphed line, completing a linear table, intercepts and rate of change in context, and a line from two readings.',
@@ -572,7 +587,7 @@
               bl.map(function (i) { return String(ys[i]); }), tbl(xs, ys),
               'Each step of ' + t(xs[1] - xs[0]) + ' in ' + t('x') + ' changes ' + t('y') + ' by the same amount. From the known values, the change per step is ' + t(nT(d)) + '.<br>' + bl.map(function (i) { return t('x=' + xs[i]) + ': ' + t('y=' + ys[i]); }).join(', ') + '.',
               ['A linear table has the same change in ' + t('y') + ' for each equal step in ' + t('x') + '. Use two known values to find it.', 'If two known values are several steps apart, divide their difference by the number of steps.'], 'complete a linear table');
-            p0.bad = [bl.map(function (i) { return String(ys[i] + 1); })];
+            p0.bad = [bl.map(function (i) { return String(ys[i] + 2 * d); })];
             return p0;
           } }] },
       { num: '3', outcome: 'RF5',
@@ -599,7 +614,7 @@
           return pickWhere(function () { var c = r.pick(TWOREAD), m = r.pick([1.5, 2, 2.5, 3, 4, 6, 7, 8]), y0 = r.int(18, 60), t1 = r.int(1, 4), t2 = t1 + r.int(2, 5); return { c: c, m: m, y0: y0, t1: t1, t2: t2, y1: cl(y0 - m * t1), y2: cl(y0 - m * t2), E: y0 / m }; },
             function (s) { return s.y2 > 0 && s.y1 % 1 === 0 && s.y2 % 1 === 0 && Math.abs(s.E * 10 - Math.round(s.E * 10)) > 1e-6 && Math.abs((s.E * 10) % 1 - 0.5) > 0.05; });
         },
-        stem: function (s) { var c = s.c; return c.txt(t(s.t1), t(s.y1) + ' ' + c.unit + (c.a ? ' ' + c.a : '')) + ', and after ' + t(s.t2) + ' ' + (c.xu === 'h' ? 'hours' : 'minutes') + ' it ' + (c.a ? 'is ' : 'holds ') + t(s.y2) + ' ' + c.unit + (c.a ? ' ' + c.a : '') + '.'; },
+        stem: function (s) { var c = s.c; return c.txt(nUnit(s.t1, c.w), t(s.y1) + ' ' + c.unit + (c.a ? ' ' + c.a : '')) + ', and after ' + nUnit(s.t2, c.w) + ' it ' + (c.a ? 'is ' : 'holds ') + t(s.y2) + ' ' + c.unit + (c.a ? ' ' + c.a : '') + '.'; },
         parts: [
           { id: '4', outcome: 'RF5', level: 'ADV', make: function (r, s) {
             var c = s.c, m = s.m, y0 = s.y0, E = s.E, dt = s.t2 - s.t1, dy = s.y2 - s.y1;

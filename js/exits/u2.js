@@ -147,7 +147,7 @@
           e = v.E; var val = Math.pow(b, e), law = kind === 'prod' ? 'Product law: ' + t(tx + '=' + b + '^{' + v.m + '+' + v.n + '}=' + b + '^{' + e + '}') : kind === 'quot' ? 'Quotient law: ' + t(tx + '=' + b + '^{' + v.m + '-' + v.n + '}=' + b + '^{' + e + '}') : 'Power of a power: ' + t(tx + '=' + b + '^{' + v.m + '\\times ' + v.n + '}=' + b + '^{' + e + '}');
           var kn = known(wrongs, b + '^{' + e + '}');
           var p = P.fields('Write ' + t(tx) + ' as a single power, then evaluate it.',
-            [{ name: 'Single power', label: 'Single power:', mode: 'math', keys: 'expo', vars: [] }, { name: 'Value', label: 'Value:' }],
+            [{ name: 'Single power', label: 'Single power:', mode: 'math', keys: 'expr' }, { name: 'Value', label: 'Value:' }],
             [EX(b + '^{' + e + '}', { form: 'single-power', diag: kn }), K.number(val, function (x) { if (x === b * e) return { code: 'u2x-base-times-exp', hint: t(b + '^{' + e + '}') + ' means ' + t(b) + ' used as a factor ' + t(e) + ' times, not ' + t(b + '\\times ' + e) + '.' }; return null; })],
             [b + '^{' + e + '}', String(val)], t(tx + '=' + b + '^{' + e + '}=' + F(val)), law + ', and ' + t(b + '^{' + e + '}=' + F(val)) + '.',
             ['Same base: product law adds exponents, quotient law subtracts, power of a power multiplies.', 'Then multiply ' + t(b) + ' by itself ' + t(e) + ' times.'], 'single power ' + tx);
@@ -199,7 +199,7 @@
             [v.p + '^{' + (v.k + v.e - v.f) + '}', 'u2x-add-exp', t('(' + v.p + '^{' + v.k + '})^{' + v.e + '}') + ' is a power of a power: <b>multiply</b> the exponents.'],
             [v.p + '^{' + (v.k * v.e + v.f) + '}', 'u2x-mult-exp', 'Dividing powers with the same base: <b>subtract</b> the exponents.']], T);
           var p = P.fields(ctx.s + ' Write the answer as a single power of ' + t(v.p) + ', then evaluate it.',
-            [{ name: 'Single power', label: 'Single power of ' + t(v.p) + ':', mode: 'math', keys: 'expo', vars: [] }, { name: 'Value', label: 'Number of ' + ctx.u + ':' }],
+            [{ name: 'Single power', label: 'Single power of ' + t(v.p) + ':', mode: 'math', keys: 'expr' }, { name: 'Value', label: 'Number of ' + ctx.u + ':' }],
             [EX(T, { form: 'single-power', diag: kn }), K.number(val, function (x) { if (v.e - v.f > -12 && x === Math.pow(v.p, v.e - v.f)) return { code: 'u2x-base-same', hint: 'Rewrite ' + t(v.B) + ' as a power of ' + t(v.p) + ' before using the quotient law.' }; if (x === v.p * v.E) return { code: 'u2x-base-times-exp', hint: t(T) + ' means ' + t(v.p) + ' used as a factor ' + t(v.E) + ' times.' }; return null; })],
             [T, String(val)], t(v.B + '^{' + v.e + '}\\div ' + v.p + '^{' + v.f + '}=' + T + '=' + val) + ' ' + ctx.u,
             t(v.B + '=' + v.p + '^{' + v.k + '}') + ', so ' + t(v.B + '^{' + v.e + '}=\\left(' + v.p + '^{' + v.k + '}\\right)^{' + v.e + '}=' + v.p + '^{' + v.k * v.e + '}') + ' (power of a power).<br>' + t(v.p + '^{' + v.k * v.e + '}\\div ' + v.p + '^{' + v.f + '}=' + v.p + '^{' + v.k * v.e + '-' + v.f + '}=' + T + '=' + val) + ' (quotient law), so ' + t(val) + ' ' + ctx.u + '.',
@@ -255,7 +255,7 @@
           var v = find(function () {
             var x = r.pick(['t', 'x', 'k', 'w']), k = r.int(2, 6), a = r.int(2, 5), b = r.int(1, 5), c = r.int(1, 4), p = r.pick([3, 4]), d = r.int(1, 6), e = r.int(2, 8);
             return { x: x, k: k, a: a, b: b, c: c, p: p, d: d, e: e, E: 2 * (a + b - c) + p + d - e };
-          }, function (v) { return v.a + v.b - v.c >= 1 && v.E >= 2 && v.p + v.d - v.e !== 0; }, { x: 't', k: 5, a: 2, b: 4, c: 1, p: 4, d: 3, e: 4, E: 13 });
+          }, function (v) { return v.b >= 2 && v.b !== v.c && v.a + v.b - v.c >= 1 && v.E >= 2 && v.p + v.d - v.e !== 0; }, { x: 't', k: 5, a: 2, b: 4, c: 1, p: 4, d: 3, e: 4, E: 13 });
           var x = v.x, sgn = v.p % 2 ? -1 : 1, T = M(sgn * v.k, [[x, v.E]]), tgt = ptex(T);
           var f1 = '\\left(\\dfrac{-' + v.k + pw(x, v.a) + '\\cdot ' + pw(x, v.b) + '}{' + pw(x, v.c) + '}\\right)^{2}', f2 = '\\left(\\dfrac{(-' + x + ')^{' + v.p + '}\\cdot ' + pw(x, v.d) + '}{' + v.k + pw(x, v.e) + '}\\right)';
           var in1 = v.a + v.b - v.c, in2 = v.p + v.d - v.e;
@@ -323,7 +323,7 @@
             [v.p + '^{' + (v.k1 + v.e1 + v.e2 - (v.k2 + v.e3)) + '}', 'u2x-add-exp', 'A power of a power multiplies the exponents: ' + t(B1 + '^{' + v.e1 + '}=\\left(' + v.p + '^{' + v.k1 + '}\\right)^{' + v.e1 + '}=' + v.p + '^{' + v.k1 * v.e1 + '}') + '.']], T);
           var vk = known([[v.p + '^{' + (v.e1 + v.e2 - v.e3) + '}', 'u2x-base-same', 'Rewrite ' + t(B1) + ' and ' + t(B2) + ' as powers of ' + t(v.p) + ' first.'], ['-' + frT(val), 'u2x-opposite', 'A negative exponent means reciprocal, not negative.'], [frT(inv(val)), 'u2x-no-flip', 'Check the sign of the exponent: ' + t(T) + (v.E < 0 ? ' is a reciprocal.' : ' is a whole number.')]], frT(val));
           var p = P.fields('Evaluate ' + t(tx) + '. Give it as a single power of ' + t(v.p) + ', then as a number.',
-            [{ name: 'Single power', label: 'Single power of ' + t(v.p) + ':', mode: 'math', keys: 'expo', vars: [] }, { name: 'Value', label: 'Value:', mode: 'math', keys: 'fraction' }],
+            [{ name: 'Single power', label: 'Single power of ' + t(v.p) + ':', mode: 'math', keys: 'expr' }, { name: 'Value', label: 'Value:', mode: 'math', keys: 'expr' }],
             [EX(T, { form: 'single-power', positive: false, diag: kn }), exactChk(val, vk)], [T, frT(val)], t(tx + '=' + T + '=' + frT(val)),
             t(B1 + '=' + v.p + '^{' + v.k1 + '}') + ' and ' + t(B2 + '=' + v.p + '^{' + v.k2 + '}') + ', so the expression is ' + t('\\frac{' + v.p + '^{' + v.k1 * v.e1 + '}\\cdot ' + v.p + '^{' + v.e2 + '}}{' + v.p + '^{' + v.k2 * v.e3 + '}}') + ' (power of a power).<br>' +
               t(v.p + '^{' + v.k1 * v.e1 + '+' + v.e2 + '-(' + v.k2 * v.e3 + ')}=' + T + '=' + frT(val)) + (v.E < 0 ? ' (a negative exponent means reciprocal).' : '.'),
@@ -421,7 +421,7 @@
           var eB = [-1, Bv.q], valB = Bv.recip ? R(1, Bv.m) : R(Bv.m), baseB = Bv.recip ? R(Math.pow(Bv.m, Bv.q)) : R(1, Math.pow(Bv.m, Bv.q));
           var keyA = F(A.B).replace(/\\,/g, '') + '^{' + eT(A.e) + '}', keyB = (baseB[1] === 1 ? String(baseB[0]) : '\\left(\\frac{1}{' + baseB[1] + '}\\right)') + '^{' + eT(eB) + '}';
           var p = P.fields('(i) Write ' + t(F(A.N)) + ' as a power with an exponent of ' + t(eT(A.e)) + '.<br>(ii) Write ' + t(frT(valB)) + ' as a power with an exponent of ' + t(eT(eB)) + '.',
-            [{ name: '(i)', label: '(i)', before: t(F(A.N) + '='), mode: 'math', keys: 'expo', vars: [] }, { name: '(ii)', label: '(ii)', before: t(frT(valB) + '='), mode: 'math', keys: 'expo', vars: [] }],
+            [{ name: '(i)', label: '(i)', before: t(F(A.N) + '='), mode: 'math', keys: 'expr' }, { name: '(ii)', label: '(ii)', before: t(frT(valB) + '='), mode: 'math', keys: 'expr' }],
             [givenExpChk([A.N, 1], A.e, keyA), givenExpChk(valB, eB, keyB)], [keyA, keyB], t(F(A.N) + '=' + keyA) + ', ' + t(frT(valB) + '=' + keyB),
             '(i) The base ' + t('B') + ' must satisfy ' + t('B^{' + eT(A.e) + '}=' + A.N) + ', so ' + t('B=' + A.N + '^{' + eT(inv(A.e)) + '}') + ': ' + t(A.N + '=' + A.b + (A.e[0] > 1 ? '^{' + A.e[0] + '}' : '')) + ', so ' + t('B=' + A.b + '^{' + A.e[1] + '}=' + F(A.B)) + '. Check: ' + t(F(A.B) + '^{' + eT(A.e) + '}=\\left(' + rootT(A.e[1], F(A.B)) + '\\right)^{' + A.e[0] + '}=' + A.b + (A.e[0] > 1 ? '^{' + A.e[0] + '}' : '') + '=' + A.N) + '.<br>' +
               '(ii) The exponent ' + t(eT(eB)) + ' takes a ' + K.rootName(Bv.q) + ' root and a reciprocal, so start from ' + t(frT(inv(valB))) + ' and raise it to the power ' + t(Bv.q) + ': base ' + t(frT(baseB)) + '. Check: ' + t(keyB + '=' + frT(inv(baseB)) + '^{\\frac{1}{' + Bv.q + '}}=' + frT(valB)) + '.',

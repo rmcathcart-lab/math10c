@@ -198,7 +198,7 @@
       return wrong('u8x-sys-eq', null);
     };
     var labels = ['Equation 1', 'Equation 2'];
-    var p = { prompt: prompt, input: { type: 'fields', fields: labels.map(function (l) { return { label: l, mode: 'math', keys: 'eq', vars: vars, placeholder: 'e.g. ' + vars[0] + ' + ' + vars[1] + ' = 10' }; }) },
+    var p = { prompt: prompt, input: { type: 'fields', fields: labels.map(function (l) { return { label: l, mode: 'math', keys: 'eq', vars: vars, placeholder: 'an equation in ' + vars[0] + ' and ' + vars[1] }; }) },
       check: check, key: keyTex, answer: keyTex.map(function (k) { return t(k); }).join('<br>'), solution: sol, hints: hints || [], text: text };
     p.bad = (bads || []).map(function (b) { return b.eqs; });
     return p;
@@ -330,7 +330,7 @@
           var p = o.g * o.pp, q = o.g * o.qq, c = -(p * o.x1 + q * o.y1), Lname = 'px+qy' + (c < 0 ? '-' : '+') + Math.abs(c) + '=0';
           var P1 = [o.x1, o.y1], P2 = [o.x2, o.y2];
           var e1 = T([[o.x1, 'p'], [o.y1, 'q'], [c, '']]) + '=0', e2 = T([[o.x2, 'p'], [o.y2, 'q'], [c, '']]) + '=0';
-          var flds = [{ label: t('p') + ' =', name: t('p'), mode: 'math', keys: 'fraction' }, { label: t('q') + ' =', name: t('q'), mode: 'math', keys: 'fraction' }];
+          var flds = [{ label: t('p') + ' =', name: t('p'), mode: 'math', keys: 'fraction', placeholder: 'a number' }, { label: t('q') + ' =', name: t('q'), mode: 'math', keys: 'fraction', placeholder: 'a number' }];
           var cks = [numC(p, [[-p, 'u8x-c-sign', 'Check the signs: when the constant ' + t(c) + ' moves to the other side, it changes sign.'], [q, 'u8x-pq-swap', 'That’s the value of ' + t('q') + '. ' + t('p') + ' is the coefficient of ' + t('x') + '.']]),
             numC(q, [[-q, 'u8x-c-sign', 'Check the signs: when the constant ' + t(c) + ' moves to the other side, it changes sign.'], [p, 'u8x-pq-swap', 'That’s the value of ' + t('p') + '. ' + t('q') + ' is the coefficient of ' + t('y') + '.']])];
           var pr = B.fields('The line ' + t(Lname) + ' passes through the points ' + t(ptT(P1)) + ' and ' + t(ptT(P2)) + '. Determine the values of ' + t('p') + ' and ' + t('q') + '.', flds, cks, [String(p), String(q)], t('p=' + p + ',\\ q=' + q),
@@ -465,7 +465,7 @@
           { id: '2a', outcome: 'RF9', level: 'PRG', make: function (r, s) {
             var it = s.it, sw = [[s.y, 'u8x-price-swap', 'You swapped the two prices: check which item each equation’s coefficients belong to.']];
             var p = B.fields('Set up and solve a system of equations to find the price of one ' + it[0] + ' and the price of one ' + it[2] + '.',
-              [{ label: 'One ' + it[0] + ':', name: it[0], before: t('\\$'), mode: 'math', keys: 'fraction' }, { label: 'One ' + it[2] + ':', name: it[2], before: t('\\$'), mode: 'math', keys: 'fraction' }],
+              [{ label: 'One ' + it[0] + ':', name: it[0], before: t('\\$'), mode: 'math', keys: 'fraction', placeholder: 'a number' }, { label: 'One ' + it[2] + ':', name: it[2], before: t('\\$'), mode: 'math', keys: 'fraction', placeholder: 'a number' }],
               [numC(s.x, sw), numC(s.y, [[s.x, 'u8x-price-swap', 'You swapped the two prices.']])], [String(s.x), String(s.y)], it[0] + ' ' + t('\\$' + s.x) + ', ' + it[2] + ' ' + t('\\$' + s.y),
               'Let ' + t('a') + ' be the price of a ' + it[0] + ' and ' + t('b') + ' the price of a ' + it[2] + ':<br>' + t(s.a1 + 'a+' + s.b1 + 'b=' + s.c1) + ' and ' + t(s.a2 + 'a+' + s.b2 + 'b=' + s.c2) + '.<br>Solve (elimination or substitution): ' + t('a=' + s.x) + ', ' + t('b=' + s.y) + '.<br><b>Check.</b> ' + t(s.a2 + '(' + s.x + ')+' + s.b2 + '(' + s.y + ')=' + s.c2) + ' ✓',
               ['Let two letters stand for the two prices; each sentence gives one equation.', 'Solve the system by elimination (or substitution).'], 'two prices');
@@ -521,7 +521,7 @@
           var txt = c.alloy ? c.who + ' needs ' + t(nf(VV)) + ' g of an alloy that is ' + t(p + '\\%') + ' silver. She has one alloy that is ' + t(o.p1 + '\\%') + ' silver and another that is ' + t(o.p2 + '\\%') + ' silver.'
             : c.who + ' needs ' + t(nf(VV)) + ' ' + u + ' of a ' + t(p + '\\%') + ' ' + c.what + '. There is a ' + t(o.p1 + '\\%') + ' ' + c.what + ' and a ' + t(o.p2 + '\\%') + ' ' + c.what + ' in stock.';
           var pr = B.fields(txt + ' How much of each should be mixed?',
-            [{ label: t(o.p1 + '\\%') + ' ' + what + ':', name: o.p1 + '%', mode: 'math', keys: 'fraction', after: u }, { label: t(o.p2 + '\\%') + ' ' + what + ':', name: o.p2 + '%', mode: 'math', keys: 'fraction', after: u }],
+            [{ label: t(o.p1 + '\\%') + ' ' + what + ':', name: o.p1 + '%', mode: 'math', keys: 'fraction', placeholder: 'a number', after: u }, { label: t(o.p2 + '\\%') + ' ' + what + ':', name: o.p2 + '%', mode: 'math', keys: 'fraction', placeholder: 'a number', after: u }],
             [numC(X, [[Y, 'u8x-mix-swap', 'You swapped the amounts: the mixture is closer to ' + t((Math.abs(p - o.p1) < Math.abs(p - o.p2) ? o.p1 : o.p2) + '\\%') + ', so there is more of that one.']]), numC(Y, [[X, 'u8x-mix-swap', 'You swapped the amounts.']])],
             [String(cl(X)), String(cl(Y))], t(nf(X)) + ' ' + u + ' of the ' + t(o.p1 + '\\%') + ' and ' + t(nf(Y)) + ' ' + u + ' of the ' + t(o.p2 + '\\%') + ' ' + what,
             'Let ' + t('x') + ' and ' + t('y') + ' be the amounts of the ' + t(o.p1 + '\\%') + ' and ' + t(o.p2 + '\\%') + ' ' + what + ':<br>' + t('x+y=' + nf(VV)) + '<br>' + t(nf(o.p1 / 100) + 'x+' + nf(o.p2 / 100) + 'y=' + nf(p / 100) + '(' + nf(VV) + ')=' + nf(p * VV / 100)) + '<br>Substitute ' + t('y=' + nf(VV) + '-x') + ': ' + t(nf((o.p1 - o.p2) / 100) + 'x=' + nf((p - o.p2) * VV / 100)) + ', so ' + t('x=' + nf(X)) + ' and ' + t('y=' + nf(Y)) + '.',
@@ -535,7 +535,7 @@
             function (o) { var s = o.k * (o.t1 + o.t2) / 2, w = o.k * (o.t2 - o.t1) / 2, D = o.k * o.t1 * o.t2; return Number.isInteger(s) && Number.isInteger(w) && s >= c.spd[0] && s <= c.spd[1] && w >= c.cur[0] && w <= c.cur[1] && D >= c.D[0] && D <= c.D[1]; });
           var s = o.k * (o.t1 + o.t2) / 2, w = o.k * (o.t2 - o.t1) / 2, D = o.k * o.t1 * o.t2, g1 = s + w, g2 = s - w;
           var pr = B.fields('A ' + c.v + ' travels ' + t(F(D)) + ' km ' + c.with + ' in ' + t(o.t1) + ' h. The return trip, ' + c.against + ', takes ' + t(o.t2) + ' h. Find the speed of the ' + c.v + ' ' + c.still + ' and the speed of the ' + c.med + '.',
-            [{ label: 'Speed of the ' + c.v + ' ' + c.still + ':', name: c.v, mode: 'math', keys: 'fraction', after: 'km/h' }, { label: 'Speed of the ' + c.med + ':', name: c.med, mode: 'math', keys: 'fraction', after: 'km/h' }],
+            [{ label: 'Speed of the ' + c.v + ' ' + c.still + ':', name: c.v, mode: 'math', keys: 'fraction', placeholder: 'a number', after: 'km/h' }, { label: 'Speed of the ' + c.med + ':', name: c.med, mode: 'math', keys: 'fraction', placeholder: 'a number', after: 'km/h' }],
             [numC(s, [[w, 'u8x-wind-swap', 'That’s the speed of the ' + c.med + '. The ' + c.v + '’s own speed is the larger one.'], [g1, 'u8x-ground', 'That’s the speed ' + c.with + ' (' + c.v + ' + ' + c.med + '). Use it in a system: ' + t('s+w=' + g1) + ' and ' + t('s-w=' + g2) + '.'], [g2, 'u8x-ground', 'That’s the speed ' + c.against + ' (' + c.v + ' − ' + c.med + '). Set up a system with both speeds.']]),
               numC(w, [[s, 'u8x-wind-swap', 'That’s the ' + c.v + '’s own speed. The ' + c.med + ' is the smaller one.'], [g1 - g2, 'u8x-ground', 'That’s the difference between the two speeds. The ' + c.med + ' adds on one way and takes away the other way, so it is half of that.']])],
             [String(s), String(w)], c.v + ' ' + t(s) + ' km/h, ' + c.med + ' ' + t(w) + ' km/h',
@@ -578,7 +578,7 @@
           var opts = [{ html: O.one, right: kind === 'one', why: 'Compare: ' + t(k) + ' times the first equation is ' + t(eqT([[k * a, 'x'], [k * b, 'y']], k * c)) + '. The ' + t('x') + '- and ' + t('y') + '-terms of the second equation match that, so the slopes are equal.' },
             { html: O.none, right: kind === 'none', why: kind === 'one' ? 'The ' + t('y') + '-coefficient ' + t(B2) + ' is not ' + t(k) + ' times ' + t(b) + ', so the slopes differ.' : 'The constant ' + t(C2) + ' is also ' + t(k) + ' times ' + t(c) + ', so the whole equation is a multiple: the same line.' },
             { html: O.inf, right: kind === 'inf', why: kind === 'one' ? 'The ' + t('y') + '-coefficient ' + t(B2) + ' is not ' + t(k) + ' times ' + t(b) + ', so this is not a multiple of the first equation.' : 'Only the left side is ' + t(k) + ' times the first equation; ' + t(k + '\\times ' + pT(c) + '=' + k * c) + ', not ' + t(C2) + '.' },
-            { html: kind === 'one' ? 'No solution — both equations have the same ' + t('x') + '-term ratio.' : 'One solution — the numbers in the two equations are different.', why: kind === 'one' ? 'Compare <b>all</b> the coefficients: the ' + t('y') + '-terms are not in the same ratio, so the slopes are different.' : 'Different numbers don’t mean different lines: check whether the second equation is a multiple of the first.' }];
+            { html: kind === 'one' ? 'No solution — the ' + t('x') + '-term of the second equation is ' + t(k) + ' times the ' + t('x') + '-term of the first, so the lines are parallel.' : 'One solution — the numbers in the two equations are different.', why: kind === 'one' ? 'Compare <b>all</b> the coefficients: the ' + t('y') + '-terms are not in the same ratio, so the slopes are different.' : 'Different numbers don’t mean different lines: check whether the second equation is a multiple of the first.' }];
           return mc(r, 'Without solving, how many solutions does the system ' + t(e1) + ' and ' + t(e2) + ' have?', opts,
             t(k) + ' times the first equation is ' + t(eqT([[k * a, 'x'], [k * b, 'y']], k * c)) + '. Compare it with ' + t(e2) + '.<br>' + O[kind],
             ['Multiply the first equation by ' + t(k) + ' and compare it with the second.', 'Same left side and same constant: same line. Same left side, different constant: parallel lines.'], 'review count ' + kind);
@@ -601,7 +601,7 @@
           var a = o.a, b = o.b, c = o.c, k = o.k, e1 = eqT([[a, 'x'], [b, 'y']], c), B2 = k * b, A2 = k * a, C2 = k * c;
           var e2 = 'ax' + (B2 < 0 ? '-' : '+') + Math.abs(B2) + 'y=d';
           var pr = B.fields('The system ' + t(e1) + ' and ' + t(e2) + ' has infinitely many solutions. Determine the values of ' + t('a') + ' and ' + t('d') + '.',
-            [{ label: t('a') + ' =', name: t('a'), mode: 'math', keys: 'fraction' }, { label: t('d') + ' =', name: t('d'), mode: 'math', keys: 'fraction' }],
+            [{ label: t('a') + ' =', name: t('a'), mode: 'math', keys: 'fraction', placeholder: 'a number' }, { label: t('d') + ' =', name: t('d'), mode: 'math', keys: 'fraction', placeholder: 'a number' }],
             [numC(A2, [[a, 'u8x-k-unscaled', 'The ' + t('y') + '-coefficient went from ' + t(b) + ' to ' + t(B2) + ': the whole equation was multiplied by ' + t(k) + ', so ' + t('a') + ' is ' + t(k) + ' times ' + t(a) + '.'], [-A2, 'u8x-c-sign', 'Check the sign: the multiplier is ' + t(k) + '.']]),
               numC(C2, [[c, 'u8x-k-unscaled', 'Infinitely many solutions means the same line: the constant is multiplied by ' + t(k) + ' too.'], [-C2, 'u8x-c-sign', 'Check the sign: the multiplier is ' + t(k) + '.']])],
             [String(A2), String(C2)], t('a=' + A2 + ',\\ d=' + C2),
