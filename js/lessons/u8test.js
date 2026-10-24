@@ -28,7 +28,7 @@
     'u8t-6-same': 'Wrote the same line (infinitely many) instead', 'u8t-6-cross': 'Line crosses the given line (one solution)', 'u8t-6-parallel': 'Parallel line instead of the same line', 'u8t-6-misses': 'Line misses the required point',
     'u8t-distribute': 'Bracket multiplied into the first term only', 'u8t-move-const': 'Sign slip moving the constant', 'u8t-elim-rhs': 'Right sides combined the wrong way',
     'u8t-rhs-unscaled': 'Right side not scaled', 'u8t-clear-one-side': 'Fractions cleared on one side only', 'u8t-clear': 'Fractions cleared wrongly', 'u8t-frac-left': 'Fractions not all cleared',
-    'u8t-res-true': 'Got a true statement (0 = 0) for a no-solution system', 'u8t-res-false': 'Got a false statement for an infinitely-many system', 'u8t-res-not-elim': 'A variable left after eliminating', 'u8t-res-eq': 'Result not written as an equation',
+    'u8t-res-true': 'Got a true statement (0 = 0) for a no-solution system', 'u8t-res-arith': 'False statement, but the constant worked out wrongly', 'u8t-res-false': 'Got a false statement for an infinitely-many system', 'u8t-res-not-elim': 'A variable left after eliminating', 'u8t-res-eq': 'Result not written as an equation',
     'u8t-ab-swap': 'Point substituted with the coordinates swapped', 'u8t-sys-one': 'One equation of the system right, the other wrong', 'u8t-sys-derived': 'Equation true for the answer but not a translation',
     'u8t-sum-diff': 'Sum and difference mixed up', 'u8t-diff-order': 'Difference subtracted in the wrong order', 'u8t-facts-swap': 'Totals attached to the wrong facts',
     'u8t-rhs-count': 'Used the count as the money total', 'u8t-price-swap': 'Prices matched to the wrong items', 'u8t-no-prices': 'Left out the prices',
@@ -45,7 +45,7 @@
     'u8t-cls-kind': 'b', 'u8t-cls-eqs': 'b', 'u8t-several': 'n', 'u8t-two-slips': 'b', 'u8t-nodiv': 's', 'u8t-neg': 's',
     'u8t-k-mult': 'b', 'u8t-k-sign': 's', 'u8t-k-copy': 'b', 'u8t-6-same': 'n', 'u8t-6-cross': 'n', 'u8t-6-parallel': 'b', 'u8t-6-misses': 'n',
     'u8t-distribute': 'b', 'u8t-move-const': 's', 'u8t-elim-rhs': 's', 'u8t-rhs-unscaled': 's', 'u8t-clear-one-side': 'b', 'u8t-clear': 'n',
-    'u8t-res-true': 'b', 'u8t-res-false': 'b', 'u8t-res-not-elim': 'n', 'u8t-ab-swap': 'b', 'u8t-sys-one': 'b', 'u8t-sys-derived': 'n',
+    'u8t-res-true': 'b', 'u8t-res-arith': 's', 'u8t-res-false': 'b', 'u8t-res-not-elim': 'n', 'u8t-ab-swap': 'b', 'u8t-sys-one': 'b', 'u8t-sys-derived': 'n',
     'u8t-sum-diff': 'b', 'u8t-diff-order': 's', 'u8t-facts-swap': 'n', 'u8t-rhs-count': 'b', 'u8t-price-swap': 'b', 'u8t-no-prices': 'n',
     'u8t-mix-rhs': 'b', 'u8t-mix-scale': 's', 'u8t-mix-swap': 'b', 'u8t-mix-total': 'b', 'u8t-pct-dec': 'b', 'u8t-rate-swap': 'b', 'u8t-int-total': 'n',
     'u8t-dist-speed': 'b', 'u8t-with-against': 'b', 'u8t-time-speed': 'b', 'u8t-one-way': 'b', 'u8t-concl': 'b', 'u8t-time': 'n',
@@ -576,7 +576,7 @@
     return find(function () { return q11Build(kind, r.int(1, 5), nz(r, -5, 5), nz(r, -9, 9), r.pick([-2, -3, 2, 3, -2, -4]), nz(r, -12, 12)); },
       function (s) { return gcd(s.a1, s.b1) === 1 && s.c2 !== 0 && Math.abs(s.c2) <= 30 && Math.abs(s.b1) !== s.a1; }, null) || q11Build(kind, 2, -3, 5, -2, 18);
   }
-  function resChk(kind) {
+  function resChk(kind, D) {
     return function (resp) {
       var s = String(resp == null ? '' : resp).trim(); if (!s) return form('empty', 'Type the equation you get, e.g. ' + t('0=12') + '.');
       var sides = s.split('='); if (sides.length !== 2 || !sides[0].trim() || !sides[1].trim()) return form('u8t-res-eq', 'Type the equation you get after adding or subtracting, e.g. ' + t('0=12') + '.');
@@ -882,10 +882,10 @@
           { id: '11a', outcome: 'RF9', level: 'PRG', make: function (r, s) {
             var key = '0=' + nT(s.D), mk = -s.k;
             var p = fieldsPart('Multiply the first equation so that a variable will cancel, then add the equations. What equation do you get?', [{ label: 'Result:', name: 'Result', mode: 'math', keys: 'eq', placeholder: 'e.g. 0 = 5' }],
-              [resChk(s.kind)], [key], t(key),
+              [resChk(s.kind, s.D)], [key], t(key),
               'Multiply the first equation by ' + t(mk) + ': ' + t(gT(mk * s.a1, mk * s.b1, mk * s.c1)) + '.<br>Add ' + t(s.e2) + ': both variables cancel and ' + t(key) + '.<br>' + (s.kind === 'none' ? 'That is a <b>false</b> statement.' : 'That is <b>always true</b>.'),
               ['Multiply the first equation by ' + t(mk) + ', every term.', 'Add the equations: what is left?'], 'special system: result');
-            p.bad = [[s.kind === 'none' ? '0=0' : '0=1']];
+            p.bad = [[s.kind === 'none' ? '0=0' : '0=1']].concat(s.kind === 'none' ? [['0=' + nT(s.D + (s.D > 0 ? 1 : -1))]] : []);
             return p;
           } },
           { id: '11b', outcome: 'RF9', level: 'PRG', make: function (r, s) {
