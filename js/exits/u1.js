@@ -296,6 +296,7 @@
       }
       if (n[0] * X[1] !== c * X[0] * n[1]) {
         if ((c * X[0]) % X[1] !== 0) return wrong('u1x-alg-tails', '<b>' + labels[1] + ':</b> with that subtraction the repeating tails don’t line up, so they don’t cancel. Use one multiplier that moves the block left of the point and one that puts it just right of the point.');
+        if (n[1] !== 1) return wrong('value', '<b>' + labels[1] + ':</b> after subtracting, the repeating tails cancel, so the right side is a whole number.');
         return wrong('u1x-alg-rhs', '<b>' + labels[1] + ':</b> check your subtraction. Line up the two equations — the repeating tails cancel, leaving a whole number.');
       }
       var res = fr(resp[2]);

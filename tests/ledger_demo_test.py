@@ -36,7 +36,7 @@ async def main():
         await pg.screenshot(path=SH + 'exitres.png', full_page=True)
         await pg.click('text=All exit slips'); await pg.wait_for_timeout(300)
         await pg.click('.tab:has-text("Tests")'); await pg.wait_for_selector('.tt-card')
-        await pg.click('.tt-card .btn-primary'); await pg.wait_for_selector('.tt-live-head', timeout=20000)
+        await pg.click('.tt-card:not(.tt-card-ready) .btn-primary'); await pg.wait_for_selector('.tt-live-head', timeout=20000)
         await pg.wait_for_timeout(75000); await pg.screenshot(path=SH + 'tlive.png', full_page=True)
         live = await pg.inner_text('.tt-chips'); print('live:', live); assert '1\nlocked' in live or '1 locked' in live.replace('\n', ' ')
         await pg.click('.tt-live tr:has-text("Ethan Wilson") .btn:has-text("Unlock")'); await pg.wait_for_timeout(6000)

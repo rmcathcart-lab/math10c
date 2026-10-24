@@ -68,7 +68,7 @@ async def main():
         await tp.click('.tt-top .btn-primary:has-text("Save")'); await tp.wait_for_selector('.tt-card')
         # students sign in and sit on the home page
         a = await student(b, 'Ava Brown', '1111', errs); bn = await student(b, 'Ben Lee', '2222', errs)
-        await tp.click('.tt-card .btn-primary'); await tp.wait_for_selector('.tt-live-head', timeout=15000)
+        await tp.click('.tt-card:not(.tt-card-ready) .btn-primary'); await tp.wait_for_selector('.tt-live-head', timeout=15000)
         # ---- the pop-up ----
         s = await wait_view(a, 'pending'); await wait_view(bn, 'pending')
         await a.screenshot(path=SHOTS + 'tm_s_pending.png')
