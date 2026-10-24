@@ -24,13 +24,14 @@
     'u2x-not-given-exp': 'Didn’t use the exponent asked for', 'u2x-one-num': 'Added 1 to the numerator of the exponent only',
     'u2x-add-den': 'Added the tops and the bottoms of fractional exponents', 'u2x-eval-part': 'One of the two powers evaluated wrongly',
     'u2x-power-only': 'Took the root but forgot the power (or the reverse)', 'u2x-missed-factor': 'Didn’t apply the outside exponent to every factor',
-    'u2x-sign-final': 'Sign of the answer wrong', 'u2x-sci-mult': 'Multiplied the powers of 10 instead of adding their exponents', 'u2x-base-is-number': 'Used the number itself as the base'
+    'u2x-sign-final': 'Sign of the answer wrong', 'u2x-sci-mult': 'Multiplied the powers of 10 instead of adding their exponents', 'u2x-base-is-number': 'Used the number itself as the base',
+    'u2x-given': 'Gave back the expression from the question (no work)'
   });
   HW.addPartial({
     'u2x-mult-exp': 'b', 'u2x-add-exp': 'b', 'u2x-div-exp': 'b', 'u2x-base-times-exp': 'n', 'u2x-coef-not-raised': 'b', 'u2x-coef-times-exp': 'b', 'u2x-coef-added': 'b',
     'u2x-neg-base': 'b', 'u2x-even-neg': 's', 'u2x-odd-neg': 's', 'u2x-zero-pow': 'n', 'u2x-base-same': 'n', 'u2x-opposite': 'n', 'u2x-coef-side': 'b', 'u2x-no-flip': 'b',
     'u2x-sub-neg': 's', 'u2x-coef-pos-power': 'b', 'u2x-root-div': 'n', 'u2x-coef-in': 'b', 'u2x-neg-value': 'n', 'u2x-index-power': 'b', 'u2x-not-given-exp': 'n',
-    'u2x-one-num': 'b', 'u2x-add-den': 'b', 'u2x-eval-part': 's', 'u2x-power-only': 'b', 'u2x-missed-factor': 'b', 'u2x-sign-final': 's', 'u2x-sci-mult': 'b', 'u2x-base-is-number': 'n'
+    'u2x-one-num': 'b', 'u2x-add-den': 'b', 'u2x-eval-part': 's', 'u2x-power-only': 'b', 'u2x-missed-factor': 'b', 'u2x-sign-final': 's', 'u2x-sci-mult': 'b', 'u2x-base-is-number': 'n', 'u2x-given': 'n'
   });
 
   /* ---------- rationals and LaTeX ---------- */
@@ -106,10 +107,23 @@
     f.texs = L.map(function (x) { return x.tex; });
     return f;
   }
+  /* the question's own expression typed back is "right value, wrong form" to K.expo (2/3 in a test): no work was done, so
+     mark it wrong (no credit). Compared by structure, ignoring brackets and \frac vs / */
+  function nast(a) { if (!a || typeof a !== 'object') return a; if (a.t === 'paren') return nast(a.a); var o = {}; Object.keys(a).sort().forEach(function (k) { if (k !== 'frac' && k !== 'imp' && k !== 's' && k !== 'dec') o[k] = nast(a[k]); }); return o; }
+  function sig(tex) { var p = ex.parse(String(tex == null ? '' : tex)); return p.ok ? JSON.stringify(nast(p.ast)) : null; }
+  function maths(html) { var o = [], re = /\\\(([\s\S]*?)\\\)/g, m; while ((m = re.exec(String(html)))) o.push(m[1]); return o; }
+  function guard(chk, givens) {
+    var gs = givens.map(sig).filter(Boolean);
+    return function (resp) {
+      var res = chk(resp);
+      if (res && res.v === 'form' && typeof resp === 'string') { var s = sig(resp); if (s && gs.indexOf(s) >= 0) return wrong('u2x-given', 'That is the expression you were given. Use the exponent laws to work it out.'); }
+      return res;
+    };
+  }
   /* one exponent-law answer box */
   function XP(prompt, target, opt, sol, hints, text, kn) {
     opt = opt || {}; if (kn) opt.diag = kn;
-    var p = P.expo(prompt, target, opt, sol, hints, text); p.check = EX(target, opt);
+    var p = P.expo(prompt, target, opt, sol, hints, text); p.check = guard(EX(target, opt), maths(prompt));
     p.bad = kn ? kn.texs.slice() : [];
     return p;
   }
@@ -140,7 +154,7 @@
             if (kind === 'prod') { var m = r.int(2, 6), n = r.int(1, 5); return { m: m, n: n, E: m + n }; }
             if (kind === 'quot') { var n2 = r.int(4, 15), d = r.int(2, lim); return { m: n2 + d, n: n2, E: d }; }
             var a = r.int(2, 3), c = r.int(2, 3); return { m: a, n: c, E: a * c };
-          }, function (v) { return v.E >= 2 && v.E <= lim && v.m !== v.n; }, { m: 3, n: 2, E: 5 });
+          }, function (v) { return v.E >= 2 && v.E <= lim && (kind === 'pow' || v.m !== v.n); }, null) || (kind === 'prod' ? { m: 3, n: 2, E: 5 } : kind === 'quot' ? { m: 7, n: 4, E: 3 } : { m: 2, n: 2, E: 4 });
           if (kind === 'prod') { tx = b + '^{' + v.m + '}\\times ' + b + '^{' + v.n + '}'; wrongs = [[b + '^{' + v.m * v.n + '}', 'u2x-mult-exp', 'Same base, multiplying: <b>add</b> the exponents (product law).']]; }
           else if (kind === 'quot') { tx = '\\dfrac{' + b + '^{' + v.m + '}}{' + b + '^{' + v.n + '}}'; wrongs = [[b + '^{' + (v.m / v.n % 1 ? v.m + v.n : v.m / v.n) + '}', v.m / v.n % 1 ? 'u2x-add-exp' : 'u2x-div-exp', 'Same base, dividing: <b>subtract</b> the exponents (quotient law).']]; }
           else { tx = '\\left(' + b + '^{' + v.m + '}\\right)^{' + v.n + '}'; wrongs = [[b + '^{' + (v.m + v.n) + '}', 'u2x-add-exp', 'A power of a power: <b>multiply</b> the exponents.']]; }
@@ -148,7 +162,7 @@
           var kn = known(wrongs, b + '^{' + e + '}');
           var p = P.fields('Write ' + t(tx) + ' as a single power, then evaluate it.',
             [{ name: 'Single power', label: 'Single power:', mode: 'math', keys: 'expr' }, { name: 'Value', label: 'Value:' }],
-            [EX(b + '^{' + e + '}', { form: 'single-power', diag: kn }), K.number(val, function (x) { if (x === b * e) return { code: 'u2x-base-times-exp', hint: t(b + '^{' + e + '}') + ' means ' + t(b) + ' used as a factor ' + t(e) + ' times, not ' + t(b + '\\times ' + e) + '.' }; return null; })],
+            [guard(EX(b + '^{' + e + '}', { form: 'single-power', diag: kn }), [tx]), K.number(val, function (x) { if (x === b * e) return { code: 'u2x-base-times-exp', hint: t(b + '^{' + e + '}') + ' means ' + t(b) + ' used as a factor ' + t(e) + ' times, not ' + t(b + '\\times ' + e) + '.' }; return null; })],
             [b + '^{' + e + '}', String(val)], t(tx + '=' + b + '^{' + e + '}=' + F(val)), law + ', and ' + t(b + '^{' + e + '}=' + F(val)) + '.',
             ['Same base: product law adds exponents, quotient law subtracts, power of a power multiplies.', 'Then multiply ' + t(b) + ' by itself ' + t(e) + ' times.'], 'single power ' + tx);
           p.bad = kn.texs.map(function (w) { return [w, String(val)]; }).concat(b * e !== val ? [[b + '^{' + e + '}', String(b * e)]] : []);
@@ -284,7 +298,7 @@
           else if (kind === 'recip') { k = r.int(2, 5); var n = k <= 3 ? r.int(3, 4) : 3; tx = '\\dfrac{1}{' + k + '^{-' + n + '}}'; ans = R(Math.pow(k, n)); sol = t(tx + '=' + k + '^{' + n + '}=' + Math.pow(k, n)) + ': a power with a negative exponent in the denominator moves up with a positive exponent.'; wr = [['\\frac{1}{' + Math.pow(k, n) + '}', 'u2x-no-flip', t('\\frac{1}{' + k + '^{-' + n + '}}=' + k + '^{' + n + '}') + ': the negative power in the denominator moves up to the numerator.'], ['-' + Math.pow(k, n), 'u2x-opposite', 'A negative exponent means reciprocal, not negative.']]; }
           else { k = r.int(3, 9); tx = k + '^{0}\\times ' + k + '^{-2}'; ans = R(1, k * k); sol = t(tx + '=1\\times\\frac{1}{' + k + '^{2}}=\\frac{1}{' + k * k + '}') + '.'; wr = [['0', 'u2x-zero-pow', t(k + '^{0}=1') + ', not ' + t('0') + '.'], ['-' + k * k, 'u2x-opposite', 'A negative exponent means reciprocal: ' + t(k + '^{-2}=\\frac{1}{' + k + '^{2}}') + '.'], [String(k * k), 'u2x-no-flip', t(k + '^{-2}') + ' is the <b>reciprocal</b> of ' + t(k + '^{2}') + '.']]; }
           var kn = known(wr, frT(ans));
-          var p = P.math('<b>Without a calculator</b>, evaluate ' + t(tx) + '.', exactChk(ans, kn), frT(ans), sol, ['A negative exponent means reciprocal: ' + t('a^{-n}=\\frac{1}{a^{n}}') + ' and ' + t('\\frac{1}{a^{-n}}=a^{n}') + '.'], 'evaluate ' + tx, { keys: 'fraction' });
+          var p = P.math('<b>Without a calculator</b>, evaluate ' + t(tx) + '.', guard(exactChk(ans, kn), [tx]), frT(ans), sol, ['A negative exponent means reciprocal: ' + t('a^{-n}=\\frac{1}{a^{n}}') + ' and ' + t('\\frac{1}{a^{-n}}=a^{n}') + '.'], 'evaluate ' + tx, { keys: 'fraction' });
           p.bad = kn.texs.slice();
           return p;
         } },
@@ -324,7 +338,7 @@
           var vk = known([[v.p + '^{' + (v.e1 + v.e2 - v.e3) + '}', 'u2x-base-same', 'Rewrite ' + t(B1) + ' and ' + t(B2) + ' as powers of ' + t(v.p) + ' first.'], ['-' + frT(val), 'u2x-opposite', 'A negative exponent means reciprocal, not negative.'], [frT(inv(val)), 'u2x-no-flip', 'Check the sign of the exponent: ' + t(T) + (v.E < 0 ? ' is a reciprocal.' : ' is a whole number.')]], frT(val));
           var p = P.fields('Evaluate ' + t(tx) + '. Give it as a single power of ' + t(v.p) + ', then as a number.',
             [{ name: 'Single power', label: 'Single power of ' + t(v.p) + ':', mode: 'math', keys: 'expr' }, { name: 'Value', label: 'Value:', mode: 'math', keys: 'expr' }],
-            [EX(T, { form: 'single-power', positive: false, diag: kn }), exactChk(val, vk)], [T, frT(val)], t(tx + '=' + T + '=' + frT(val)),
+            [guard(EX(T, { form: 'single-power', positive: false, diag: kn }), [tx]), guard(exactChk(val, vk), [tx])], [T, frT(val)], t(tx + '=' + T + '=' + frT(val)),
             t(B1 + '=' + v.p + '^{' + v.k1 + '}') + ' and ' + t(B2 + '=' + v.p + '^{' + v.k2 + '}') + ', so the expression is ' + t('\\frac{' + v.p + '^{' + v.k1 * v.e1 + '}\\cdot ' + v.p + '^{' + v.e2 + '}}{' + v.p + '^{' + v.k2 * v.e3 + '}}') + ' (power of a power).<br>' +
               t(v.p + '^{' + v.k1 * v.e1 + '+' + v.e2 + '-(' + v.k2 * v.e3 + ')}=' + T + '=' + frT(val)) + (v.E < 0 ? ' (a negative exponent means reciprocal).' : '.'),
             ['Write ' + t(B1) + ' and ' + t(B2) + ' as powers of ' + t(v.p) + ', then use the power of a power law.', 'Product law: add exponents; quotient law: subtract (watch the signs). Then evaluate.'], 'powers of ' + v.p + ': ' + tx);
@@ -383,7 +397,7 @@
         { id: '1a', outcome: 'AN3', level: 'BEG', make: function (r) {
           var n = r.pick([2, 2, 3, 3, 4, 5]), base = n === 2 ? r.pick([4, 6, 7, 8, 9, 11, 12, 15, 20, 30, 40, 50, 60]) : r.pick(powTable(n, n === 3 ? 1000 : n === 4 ? 625 : 243)), N = Math.pow(base, n);
           var kn = known([[String(N / n % 1 ? N * n : N / n), 'u2x-root-div', 'An exponent of ' + t('\\frac{1}{' + n + '}') + ' means the ' + K.rootName(n) + ' root, not dividing by ' + t(n) + '.']], String(base));
-          var p = P.math('<b>Without a calculator</b>, evaluate ' + t(F(N) + '^{\\frac{1}{' + n + '}}') + '.', exactChk(base, kn), String(base),
+          var p = P.math('<b>Without a calculator</b>, evaluate ' + t(F(N) + '^{\\frac{1}{' + n + '}}') + '.', guard(exactChk(base, kn), [F(N) + '^{\\frac{1}{' + n + '}}', N + '^{\\frac{1}{' + n + '}}']), String(base),
             t(F(N) + '^{\\frac{1}{' + n + '}}=' + rootT(n, F(N)) + '=' + base) + ' because ' + t(base + '^{' + n + '}=' + F(N)) + '.',
             ['An exponent of ' + t('\\frac{1}{n}') + ' means the ' + t('n') + 'th root: ' + t('a^{\\frac{1}{n}}=\\sqrt[n]{a}') + '.'], 'evaluate ' + N + '^(1/' + n + ')', { keys: 'fraction' });
           p.bad = kn.texs.slice();
@@ -407,7 +421,7 @@
           var wr = [[frT(rpow(root, v.p)), 'u2x-no-flip', 'The negative exponent means <b>reciprocal</b>: ' + t('a^{-\\frac{m}{n}}=\\frac{1}{a^{\\frac{m}{n}}}') + '.'], ['-' + frT(ans), 'u2x-neg-value', 'A negative exponent never makes the value negative.']];
           if (v.p > 1) wr.push([frT(inv(root)), 'u2x-power-only', 'You took the ' + K.rootName(v.q) + ' root and the reciprocal — now raise it to the power ' + t(v.p) + '.']);
           var kn = known(wr, frT(ans));
-          var p = P.math('Evaluate ' + t(bT + '^{' + e + '}') + '.', exactChk(ans, kn), frT(ans),
+          var p = P.math('Evaluate ' + t(bT + '^{' + e + '}') + '.', guard(exactChk(ans, kn), [bT + '^{' + e + '}', (v.frac ? '(' + baseR[0] + '/' + baseR[1] + ')' : String(baseR[0])) + '^{' + e + '}']), frT(ans),
             t(bT + '^{' + e + '}=' + (v.frac ? '\\left(\\frac{' + baseR[1] + '}{' + baseR[0] + '}\\right)^{\\frac{' + v.p + '}{' + v.q + '}}' : '\\frac{1}{' + F(baseR[0]) + '^{\\frac{' + v.p + '}{' + v.q + '}}}')) + ' (negative exponent: reciprocal).<br>' +
               t(rootT(v.q, v.frac ? '\\frac{' + baseR[1] + '}{' + baseR[0] + '}' : F(baseR[0])) + '=' + frT(v.frac ? inv(root) : root)) + ', then to the power ' + t(v.p) + ': ' + t(v.frac ? '\\left(' + frT(inv(root)) + '\\right)^{' + v.p + '}=' + frT(ans) : '\\frac{1}{' + v.b + (v.p > 1 ? '^{' + v.p + '}' : '') + '}=' + frT(ans)) + '.',
             ['Negative exponent: take the reciprocal. Denominator of the exponent: the root. Numerator: the power.', 'Take the root first so the numbers stay small.'], 'evaluate ' + baseR.join('/') + '^(' + e + ')', { keys: 'fraction' });
@@ -454,7 +468,7 @@
           var rk = known([[rootT(e[0], pw(x, e[1])), 'u2x-index-power', IDX]], rT);
           var p = P.fields('Simplify ' + t(tx) + '.',
             [{ name: 'Power', label: 'Power:', mode: 'math', keys: 'expo', vars: [x] }, { name: 'Radical form', label: 'Radical form:', mode: 'math', keys: 'expo', vars: [x] }],
-            [EX(powT, { form: 'power', diag: kn }), EX(rT, { form: 'radical', diag: rk })], [powT, rT], 'Power: ' + t(powT) + '; radical form: ' + t(rT),
+            [guard(EX(powT, { form: 'power', diag: kn }), [tx]), guard(EX(rT, { form: 'radical', diag: rk }), [tx])], [powT, rT], 'Power: ' + t(powT) + '; radical form: ' + t(rT),
             (kind === 'times' ? 'Product law (add the exponents, with a common denominator): ' + t(tx + '=' + x + '^{' + eT([v.a, v.b]) + '+\\frac{' + v.n * v.b + '}{' + v.b + '}}=' + powT) : 'Power of a power (multiply the exponents): ' + t(tx + '=' + x + '^{' + eT([w.a, w.b]) + '\\times ' + eT([w.b, w.c]) + '}=' + powT)) + '.<br>Radical form — the denominator is the index: ' + t(powT + '=' + rT) + '.',
             ['Use the exponent law with the fractions exactly (common denominators to add).', IDX], 'rational exponent law ' + tx);
           p.bad = kn.texs.map(function (k0) { return [k0, rT]; }).concat(rk.texs.map(function (k0) { return [powT, k0]; }));

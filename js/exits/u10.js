@@ -16,9 +16,15 @@
     'u10x-cm3-l': 'Exit 10: litres not changed to cm³ (1 L = 1000 cm³)',
     'u10x-same-unit': 'Exit 10: subtracted lengths in different units',
     'u10x-yd-in': 'Exit 10: used the wrong number of inches in a yard',
-    'u10x-slant-sub': 'Exit 10: working back from the surface area, solved the formula wrongly'
+    'u10x-slant-sub': 'Exit 10: working back from the surface area, solved the formula wrongly',
+    'u10x-round-down': 'Exit 10: rounded a count of whole items down (some would be missing)',
+    'u10x-no-convert': 'Exit 10: divided (or subtracted) metres and feet without converting',
+    'u10x-area-units': 'Exit 10: changed cm² to m² by dividing by 100 (it is 10 000)',
+    'u10x-m3-l': 'Exit 10: left the volume in m³ (1 m³ = 1000 L)',
+    'u10x-ft-in-mix': 'Exit 10: multiplied feet by inches without changing to one unit'
   });
-  HW.addPartial({ 'u10x-ref-count': 'n', 'u10x-ref-unit': 'b', 'u10x-rate-one': 'b', 'u10x-cm3-l': 's', 'u10x-same-unit': 'n', 'u10x-yd-in': 'b', 'u10x-slant-sub': 'b' });
+  HW.addPartial({ 'u10x-ref-count': 'n', 'u10x-ref-unit': 'b', 'u10x-rate-one': 'b', 'u10x-cm3-l': 's', 'u10x-same-unit': 'n', 'u10x-yd-in': 'b', 'u10x-slant-sub': 'b',
+    'u10x-round-down': 'b', 'u10x-no-convert': 'n', 'u10x-area-units': 'b', 'u10x-m3-l': 's', 'u10x-ft-in-mix': 'n' });
 
   /* ---------------- numbers ---------------- */
   function rd(x, dp) { return K.roundTo(x, dp); }
@@ -273,7 +279,7 @@
     { what: 'the width of a laptop screen', unit: 'in', est: function (r) { return r.int(11, 16); }, meas: function (r, e) { return e + r.pick([-1, 1]) * r.pick([0.5, 0.75, 1.25, 1.5, 1.75, 2]); } }];
   HW.defineExit({
     lesson: 'u10l1', calc: true, outcome: 'M1',
-    blurb: 'An estimate from a personal referent, how far off an estimate is (as a percent), and reading a vernier caliper or a micrometer.',
+    blurb: 'An estimate from a personal referent, how far off an estimate is (as a percent), reading a vernier caliper or a micrometer, and working backwards from a measurement to what the instrument shows.',
     questions: [
       { num: '1', outcome: 'M1', stem: 'Use the referent to estimate the measurement.', parts: [
         { id: '1', outcome: 'M1', level: 'BEG', make: function (r) {
@@ -343,7 +349,7 @@
     { from: 'mL', to: 'L', v: function (r) { return r.int(25, 950); } }, { from: 'L', to: 'mL', v: function (r) { return r.int(12, 95) / 10; } }];
   HW.defineExit({
     lesson: 'u10l2', calc: true, outcome: 'M2',
-    blurb: 'An SI conversion with prefixes, a rate conversion by unit analysis, and a conversion between imperial and SI.',
+    blurb: 'An SI conversion with prefixes, a rate conversion by unit analysis, a conversion between imperial and SI, and buying whole imperial boards for a metric plan.',
     questions: [
       { num: '1', outcome: 'M2', stem: 'Use the metric prefixes (each step on the number line is a factor of 10).', parts: [
         { id: '1', outcome: 'M2', level: 'BEG', make: function (r) {
@@ -409,7 +415,7 @@
   /* ---------------- 10.3 ---------------- */
   HW.defineExit({
     lesson: 'u10l3', calc: true, outcome: 'M3',
-    blurb: 'Volume and surface area of a rectangular prism, the surface area of a closed cylinder, and working back from a cylinder’s capacity to its diameter.',
+    blurb: 'Volume and surface area of a rectangular prism, the surface area of a closed cylinder, working back from a cylinder’s capacity to its diameter, and the paint needed for several cylinders (some faces unpainted).',
     questions: [
       { num: '1', outcome: 'M3', stem: 'A right rectangular prism.', parts: [
         { id: '1', outcome: 'M3', level: 'BEG', make: function (r) {
@@ -565,7 +571,7 @@
       sol: t(nT(n) + '\\text{ m}=' + nT(n * 100) + '\\text{ cm}') + ', and ' + t(nT(n * 100) + '\\div ' + s + '=' + nT(n * 100 / s)) + ' spans.' }; } }];
   HW.defineExit({
     lesson: 'u10l6', calc: true, outcome: 'M3',
-    blurb: 'Unit 10 review mix: an SI length calculation (M2), counting a personal referent (M1), the curved surface area of a cylinder (M3) and a speed conversion (M2).',
+    blurb: 'Unit 10 review mix: an SI length calculation (M2), counting a personal referent (M1), the curved surface area of a cylinder (M3) and the capacity in litres of a tank measured in feet and inches (M2).',
     questions: [
       { num: '1', outcome: 'M2', stem: 'Change to one unit before you subtract.', parts: [
         { id: '1', outcome: 'M2', level: 'BEG', make: function (r) {
