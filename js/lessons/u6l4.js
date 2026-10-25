@@ -1,7 +1,8 @@
 /* Math 10C · Unit 6 · Lesson 4 — Characteristics of Linear Graphs (RF5; RF4 for "is it linear?")
  * Assignment questions 1–14 (u6_L04.tex). This lesson has no Extra Practice sheet: the extras (11 questions) are new,
  * in the style of the assignment, with fresh contexts (Jordan's uneven table, a candle / battery / tank draining,
- * sign conditions on intercepts, number of intercepts, slope from intercepts, segments with an open end).
+ * sign conditions on intercepts, number of intercepts, slope from intercepts, segments with an open end), plus a
+ * Mastery challenge (extras 12–19, all MAS: RF4 12–15, RF5 16–19) modelled on the Unit 7 test's RF4 / RF5 Mastery boxes.
  * Every part is a generator that keeps the booklet question's structure (equal / unequal x-steps, a fractional slope,
  * an intercept that is not in the table, an origin line, a vertical line, a decreasing segment, a context that runs
  * past the table) and changes the numbers; the booklet's numbers are among the possible values.
@@ -313,6 +314,161 @@
     return signW(-L.b / L.a) + ' slope; ' + t('x') + '-intercept ' + t(L.a) + ', ' + t('y') + '-intercept ' + t(L.b);
   }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  /* ================= Mastery challenge (extras 12–19): RF4 12–15, RF5 16–19 =================
+   * Modelled on the RF4 / RF5 Mastery boxes of the Unit 7 test (u7_test_A.tex): two readings → the start and a target,
+   * a table with unequal steps, words → ordered pairs, intercepts / domain / range worked out rather than read off. */
+  HW.addCodes({
+    'u6m-from-zero': 'Ignored the starting value', 'u6m-col': 'Picked the wrong column', 'u6m-unchanged': 'Gave the wrong value back', 'u6m-avg': 'Averaged neighbours with unequal x-steps',
+    'u6m-vert': 'Sketch: vertical line', 'u6m-flip': 'Run over rise', 'u6m-slope': 'Sketch: wrong slope', 'u6m-price': 'Gave the price per item as the fee', 'u6m-per-ticket': 'Divided the total by the number of items',
+    'u6m-zero': 'Put the 0-item cost in the range', 'u6m-cap': 'Range started at 0 (it started part full)', 'u6m-diag': 'Segment: the other diagonal', 'u6m-seg': 'Segment: right box, wrong segment',
+    'u6m-nosqrt': 'Forgot the square root', 'u6m-half': 'Area: forgot the ½', 'u6m-from-reading': 'Measured from a reading, not from t = 0'
+  });
+  function rnd2(x) { return Math.round(x * 100) / 100; }
+  function nearR(a, b) { return Math.abs(a - b) < 0.011; }
+  function nearL(a, b) { return Math.abs(a - b) < 1e-5; }   // a drawn line's slope / intercept is rounded to 6 places
+  function slT(x) { for (var q = 1; q <= 12; q++) { var p = Math.round(x * q); if (Math.abs(p / q - x) < 1e-5) return nT([p, q]); } return String(Math.round(x * 100) / 100); }
+
+  /* Q12: two readings → the start and a target */
+  var GROW = [
+    { id: 'plant', dir: 1, rates: [1.5, 2.5, 3.5, 4.5], S: [4, 12], t1: [2, 4], gap: [3, 5], tw: 'week', tq: 'weeks', u: 'cm',
+      text: function (o) { return 'A sunflower seedling grows at a constant rate. ' + t(o.t1) + ' weeks after it was planted it is ' + t(dT(o.y1)) + ' cm tall, and ' + t(o.t2) + ' weeks after it was planted it is ' + t(dT(o.y2)) + ' cm tall.'; },
+      q1: 'Height when planted:', q2: function (o) { return 'Weeks after planting until it is ' + t(dT(o.H)) + ' cm tall:'; }, b4: '', af: 'cm', start: 'when it was planted' },
+    { id: 'candle', dir: -1, rates: [1.5, 2.5], S: [28, 40], t1: [1, 3], gap: [2, 4], tw: 'hour', tq: 'hours', u: 'cm',
+      text: function (o) { return 'A candle burns down at a constant rate. ' + t(o.t1) + ' hour' + (o.t1 > 1 ? 's' : '') + ' after it was lit it is ' + t(dT(o.y1)) + ' cm tall, and ' + t(o.t2) + ' hours after it was lit it is ' + t(dT(o.y2)) + ' cm tall.'; },
+      q1: 'Height when lit:', q2: function (o) { return 'Hours after lighting until it is ' + t(dT(o.H)) + ' cm tall:'; }, b4: '', af: 'cm', start: 'when it was lit' },
+    { id: 'save', dir: 1, rates: [12, 15, 18, 24], S: [40, 90], t1: [2, 4], gap: [3, 5], tw: 'week', tq: 'weeks', u: 'dollars', money: true,
+      text: function (o) { return 'Maya already had some money saved, and now she adds the same amount every week. After ' + t(o.t1) + ' weeks she has $' + o.y1 + ', and after ' + t(o.t2) + ' weeks she has $' + o.y2 + '.'; },
+      q1: 'Amount she started with:', q2: function (o) { return 'Weeks until she has $' + o.H + ':'; }, b4: '$', af: '', start: 'when she started' }];
+  function growShared(r) {
+    var c = r.pick(GROW);
+    for (var g = 0; g < 400; g++) {
+      var rate = r.pick(c.rates), S = c.money ? 5 * r.int(c.S[0] / 5, c.S[1] / 5) : r.int(c.S[0], c.S[1]), t1 = r.int(c.t1[0], c.t1[1]), t2 = t1 + r.int(c.gap[0], c.gap[1]);
+      var nMin = t2 + 2, nMax = c.dir > 0 ? t2 + 10 : Math.floor((S - 3) / rate);
+      if (nMax < nMin) continue;
+      var n = r.int(nMin, nMax);
+      return { c: c, rate: rate, S: S, t1: t1, t2: t2, n: n, y1: cl(S + c.dir * rate * t1), y2: cl(S + c.dir * rate * t2), H: cl(S + c.dir * rate * n) };
+    }
+    c = GROW[0]; return { c: c, rate: 3.5, S: 8, t1: 3, t2: 7, n: 12, y1: 18.5, y2: 32.5, H: 50 };
+  }
+
+  /* Q13: one y-value copied wrongly (unequal x-steps) */
+  function wrongEntry(r) {
+    for (var g = 0; g < 500; g++) {
+      var q = r.pick([1, 1, 2]), p = r.pick(nz(-4, 4).filter(function (z) { return gcd(z, q) === 1; })), b = r.int(-6, 6);
+      var st = [0, 1, 2, 3].map(function () { return r.pick([1, 2, 3, 4]) * q; });
+      if (allSame(st) || st.filter(function (s) { return s === st[0]; }).length > 2) continue;
+      var xs = [q * r.int(-4, 0)]; st.forEach(function (s) { xs.push(xs[xs.length - 1] + s); });
+      if (xs[4] > 16) continue;
+      var ys = xs.map(function (x) { return p * x / q + b; }), w = r.int(0, 4), sh = ys.slice();
+      sh[w] = ys[w] + r.pick([-3, -2, -1, 1, 2, 3]);
+      if (ys.concat(sh).some(function (y) { return Math.abs(y) > 40; })) continue;
+      return { xs: xs, ys: ys, sh: sh, w: w, p: p, q: q, m: p / q, b: b };
+    }
+    return { xs: [0, 1, 3, 4, 8], ys: [5, 7, 11, 13, 21], sh: [5, 7, 12, 13, 21], w: 2, p: 2, q: 1, m: 2, b: 5 };
+  }
+
+  /* Q14: a table whose points are all off the grid → draw the line */
+  function offGrid(r) {
+    for (var g = 0; g < 500; g++) {
+      var q = r.pick([1, 2, 2, 3]), p = r.pick(nz(-3, 3).filter(function (z) { return gcd(z, q) === 1; })), b = r.int(-3, 3);
+      if (Math.abs(b + p) > 4 || Math.abs(b - p) > 4 || (q === 1 && Math.abs(p) === 1 && r.chance(0.7))) continue;
+      var cand = rng(-30, 30).filter(function (k) { return Math.abs(k) >= 7 && Math.abs(k % q) === 0; });
+      var xs = r.shuffle(cand).slice(0, 4).sort(function (u, v) { return u - v; });
+      if (allSame(diffs(xs))) continue;
+      var ys = xs.map(function (x) { return p * x / q + b; });
+      if (ys.some(function (y) { return Math.abs(y) > 45; })) continue;
+      return { p: p, q: q, m: p / q, b: b, xs: xs, ys: ys };
+    }
+    return { p: -1, q: 2, m: -0.5, b: 3, xs: [-12, 8, 14, 20], ys: [9, -1, -4, -7] };
+  }
+
+  /* Q15: words → ordered pairs of a discrete linear relation */
+  var TIX = [
+    { id: 'tix', fee: [3, 9], price: [11, 19], feeName: 'Booking fee', unit: 'ticket', units: 'tickets',
+      text: function (o) { return 'An online ticket site charges a booking fee on every order plus the same price for each ticket. An order of ' + t(o.n1) + ' tickets costs $' + o.C1 + ' and an order of ' + t(o.n2) + ' tickets costs $' + o.C2 + '. Every order is for ' + t('1') + ' to ' + t(o.N) + ' tickets. Let ' + t('C') + ' be the cost (in dollars) of an order of ' + t('n') + ' tickets.'; } },
+    { id: 'bowl', fee: [3, 6], price: [5, 9], feeName: 'Shoe rental fee', unit: 'game', units: 'games',
+      text: function (o) { return 'A bowling alley charges a one-time shoe rental fee plus the same price for each game. Bowling ' + t(o.n1) + ' games costs $' + o.C1 + ' and bowling ' + t(o.n2) + ' games costs $' + o.C2 + '. A visit is ' + t('1') + ' to ' + t(o.N) + ' games. Let ' + t('C') + ' be the cost (in dollars) of bowling ' + t('n') + ' games.'; } }];
+  function tixShared(r) {
+    var c = r.pick(TIX), fee, price;
+    for (var g = 0; g < 100; g++) { fee = r.int(c.fee[0], c.fee[1]); price = r.int(c.price[0], c.price[1]); if (fee !== price) break; }
+    var N = r.int(5, 6), n1 = r.int(2, 3), n2 = n1 + r.int(2, 3);
+    var cost = function (n) { return fee + price * n; };
+    return { c: c, fee: fee, price: price, N: N, n1: n1, n2: n2, C1: cost(n1), C2: cost(n2), Cs: rng(1, N).map(cost) };
+  }
+  function listT(a) { return '\\{' + a.join(',\\ ') + '\\}'; }
+
+  /* Q16: domain and range from two readings */
+  var DRC = [
+    { id: 'bat', v: 'C', un: 'percentage points', rates: [4, 5, 6, 8], T: [10, 20], max: 100, minS: 50, u: '\\%', tu: 'h', tw: 'hour', tq: 'hours',
+      text: function (o) { return 'A phone battery drains at a constant rate after the phone is unplugged. ' + t(o.t1) + ' hour' + (o.t1 > 1 ? 's' : '') + ' after it is unplugged the battery is at ' + t(o.y1 + '\\%') + ', and ' + t(o.t2) + ' hours after it is unplugged it is at ' + t(o.y2 + '\\%') + '. Let ' + t('C') + ' be the charge (%) ' + t('t') + ' hours after it is unplugged, until the battery is empty.'; },
+      end: 'the battery is empty' },
+    { id: 'balloon', v: 'h', un: 'm', rates: [15, 20, 25], T: [12, 20], max: 500, minS: 150, u: '\\text{ m}', tu: 'min', tw: 'minute', tq: 'minutes',
+      text: function (o) { return 'A hot-air balloon descends at a constant rate until it lands. ' + t(o.t1) + ' minute' + (o.t1 > 1 ? 's' : '') + ' after it starts to descend it is ' + t(o.y1) + ' m above the ground, and ' + t(o.t2) + ' minutes after it starts to descend it is ' + t(o.y2) + ' m above the ground. Let ' + t('h') + ' be its height (m) ' + t('t') + ' minutes after it starts to descend, until it lands.'; },
+      end: 'the balloon lands' },
+    { id: 'tank', v: 'V', un: 'L', fill: true, rates: [12, 15, 20, 25], N: [10, 20], u: '\\text{ L}', tu: 'min', tw: 'minute', tq: 'minutes',
+      text: function (o) { return 'A tank already holds some water when a pump starts to fill it at a constant rate. ' + t(o.t1) + ' minute' + (o.t1 > 1 ? 's' : '') + ' after the pump starts the tank holds ' + t(o.y1) + ' L, and ' + t(o.t2) + ' minutes after the pump starts it holds ' + t(o.y2) + ' L. The pump stops when the tank is full, at ' + t(o.cap) + ' L. Let ' + t('V') + ' be the volume (L) ' + t('t') + ' minutes after the pump starts, until it stops.'; },
+      end: 'the tank is full' }];
+  function drcShared(r) {
+    var c = r.pick(DRC);
+    for (var g = 0; g < 500; g++) {
+      var rate = r.pick(c.rates), t1 = r.int(1, 3), t2 = t1 + r.int(2, 4), o;
+      if (c.fill) {
+        var S0 = 10 * r.int(5, 20), N = r.int(c.N[0], c.N[1]);
+        if (t2 > N - 2) continue;
+        o = { c: c, rate: rate, t1: t1, t2: t2, S: S0, T: N, cap: S0 + rate * N, y1: S0 + rate * t1, y2: S0 + rate * t2 };
+      } else {
+        var T = r.int(c.T[0], c.T[1]), S = rate * T;
+        if (S > c.max || S < c.minS || t2 > T - 2) continue;
+        o = { c: c, rate: rate, t1: t1, t2: t2, S: S, T: T, y1: S - rate * t1, y2: S - rate * t2 };
+      }
+      return o;
+    }
+    c = DRC[0]; return { c: c, rate: 8, t1: 2, t2: 5, S: 96, T: 12, y1: 80, y2: 56 };
+  }
+
+  /* Q17: the segment that fills a domain × range box, picked by the sign of its y-intercept */
+  var SEGPAD = { x: [-6, 6], y: [-6, 6], grid: 1, labels: 2, mode: 'lines', defaultEnd: 'closed', max: 340 };
+  var SEG_HELP = '<br><small>Use <b>╱ Line</b>: tap one endpoint, then the other endpoint twice to finish. The ends start as solid dots.</small>';
+  function boxSeg(r) {
+    for (var g = 0; g < 600; g++) {
+      var xlo = r.int(-5, -1), xhi = r.int(1, 5), ylo = r.int(-5, 1), yhi = r.int(ylo + 3, 5);
+      if (xhi - xlo < 4 || yhi > 5 || yhi < -1) continue;
+      var f = -xlo / (xhi - xlo), yr = cl(ylo + (yhi - ylo) * f), yf = cl(yhi - (yhi - ylo) * f);
+      if (Math.abs(yr) < 0.4 || Math.abs(yf) < 0.4 || Math.sign(yr) === Math.sign(yf)) continue;
+      var pos = r.chance(0.5), rise = (yr > 0) === pos, w = xhi - xlo;
+      return { xlo: xlo, xhi: xhi, ylo: ylo, yhi: yhi, yr: yr, yf: yf, pos: pos, rise: rise, yrF: ex.norm(ylo * w - (yhi - ylo) * xlo, w), yfF: ex.norm(yhi * w + (yhi - ylo) * xlo, w) };
+    }
+    return { xlo: -2, xhi: 4, ylo: -3, yhi: 3, yr: -1, yf: 1, pos: true, rise: false, yrF: [-1, 1], yfF: [1, 1] };
+  }
+
+  /* Q18: slope + triangle area → intercepts */
+  function areaLine(r) {
+    for (var g = 0; g < 300; g++) {
+      var A = r.int(2, 8), Bv = r.int(2, 8);
+      if (A === Bv || gcd(A, Bv) === Math.min(A, Bv) && r.chance(0.5)) continue;
+      var a = r.pick([-1, 1]) * A, b = r.pick([-1, 1]) * Bv;
+      return { a: a, b: b, A: A, Bv: Bv, m: ex.norm(-b, a), area: A * Bv / 2 };
+    }
+    return { a: 6, b: 4, A: 6, Bv: 4, m: [-2, 3], area: 12 };
+  }
+
+  /* Q19: slope, y-intercept and domain → range and (maybe) an x-intercept */
+  function segRange(r) {
+    var want = r.chance(0.5);
+    for (var g = 0; g < 800; g++) {
+      var q = r.pick([1, 2, 3]), p = r.pick(nz(-4, 4).filter(function (z) { return gcd(z, q) === 1; })), b = r.pick(nz(-6, 6));
+      var x1 = -q * r.int(1, 3), x2 = q * r.int(1, 3);
+      if (x2 - x1 < 3) continue;
+      var y1 = p * x1 / q + b, y2 = p * x2 / q + b, X = cl(-b * q / p);
+      if (Math.abs(X * 2 - Math.round(X * 2)) > 1e-9 || near(X, x1) || near(X, x2) || Math.abs(y1) > 15 || Math.abs(y2) > 15) continue;
+      var inside = X > x1 && X < x2;
+      if (inside !== want) continue;
+      var opL = r.pick(['\\le ', '<', '<']), opR = opL === '<' ? r.pick(['\\le ', '\\le ', '<']) : '<';
+      return { p: p, q: q, b: b, x1: x1, x2: x2, y1: y1, y2: y2, X: X, inside: inside, opL: opL, opR: opR };
+    }
+    return { p: -2, q: 3, b: 4, x1: -3, x2: 9, y1: 6, y2: -2, X: 6, inside: true, opL: '\\le ', opR: '<' };
+  }
 
   HW.defineLesson({
     id: 'u6l4', unit: 6, num: '4', title: 'Characteristics of Linear Graphs', outcome: 'RF5',
@@ -815,6 +971,211 @@
             { why: function (id, got) { var it = items[Number(id.slice(1))]; return { code: got === '0' ? 'row-zero' : 'row', hint: (got === '0' ? 'Every line crosses at least one axis, so no line has 0 intercepts. ' : '') + it.why }; } },
             items.map(function (it) { return it.html + ': ' + (it.w === 'inf' ? 'infinitely many' : it.w) + ' — ' + it.why; }).join('<br>'),
             ['Sketch each line quickly. Watch out for lines that are one of the axes.'], 'number of intercepts');
+        } }] },
+
+      /* ---------------- Mastery challenge ---------------- */
+      { num: '12', section: 'Mastery challenge', shared: growShared, stem: function (o) { return o.c.text(o); }, parts: [
+        { id: 'e12', level: 'MAS', outcome: 'RF4', make: function (r, o) {
+          var c = o.c, gap = o.t2 - o.t1, d = cl(o.y2 - o.y1), sg = c.dir > 0 ? '+' : '-';
+          var fmt = function (x) { return c.money ? '$' + dT(x) : t(dT(x)) + ' ' + c.u; };
+          var chkS = K.number(o.S, function (v) {
+            if (near(v, o.y1)) return { code: 'nr-first-y', hint: fmt(o.y1) + ' is the value ' + t(o.t1) + ' ' + c.tq + ' in. You want the value ' + c.start + ' (at ' + t('0') + ' ' + c.tq + '): step back ' + t(o.t1) + ' ' + c.tq + '.' };
+            if (near(v, o.y1 - d * o.t1)) return { code: 'ctx-rate-step', hint: t(dT(Math.abs(d))) + ' is the change over ' + t(gap) + ' ' + c.tq + ', not over one ' + c.tw + '. Divide by ' + t(gap) + ' to get the rate first.' };
+            if (near(v, 2 * o.y1 - o.S)) return { code: 'nr-start-sign', hint: 'Going back in time the value was ' + (c.dir > 0 ? '<b>smaller</b>' : '<b>larger</b>') + ' — ' + (c.dir > 0 ? 'subtract' : 'add') + ' the change, don’t ' + (c.dir > 0 ? 'add' : 'subtract') + ' it.' };
+            return null;
+          });
+          var chkN = K.number(o.n, function (v) {
+            if (near(v, o.n - o.t2)) return { code: 'u6m-from-reading', hint: 'That counts from the ' + t(o.t2) + '-' + c.tw + ' reading. Count the ' + c.tq + ' from ' + c.start + ' (time ' + t('0') + ').' };
+            if (near(v, o.n - o.t1)) return { code: 'u6m-from-reading', hint: 'That counts from the ' + t(o.t1) + '-' + c.tw + ' reading. Count from ' + t('0') + ' ' + c.tq + '.' };
+            if (c.dir > 0 && near(v, cl(o.H / o.rate))) return { code: 'u6m-from-zero', hint: 'That treats the start as ' + t('0') + '. It started at ' + fmt(o.S) + ', so only ' + fmt(o.H - o.S) + ' has to be added.' };
+            if (near(v, cl(Math.abs(o.H - o.S) / Math.abs(d)))) return { code: 'ctx-rate-step', hint: 'You divided by the change over ' + t(gap) + ' ' + c.tq + '. Divide by the change per ' + c.tw + ' instead.' };
+            return null;
+          });
+          var sol = 'Rate: ' + t('\\dfrac{' + dT(o.y2) + '-' + dT(o.y1) + '}{' + o.t2 + '-' + o.t1 + '}=\\dfrac{' + dT(d) + '}{' + gap + '}=' + dT(c.dir * o.rate)) + (c.money ? ' dollars' : ' ' + c.u) + ' per ' + c.tw + '.<br>' +
+            'Start (' + t('0') + ' ' + c.tq + '): step back ' + t(o.t1) + ' ' + c.tq + ' from the first reading: ' + t(dT(o.y1) + (c.dir > 0 ? '-' : '+') + o.t1 + '(' + dT(o.rate) + ')=' + o.S) + ', so ' + fmt(o.S) + '.<br>' +
+            'Target: it has to change by ' + fmt(Math.abs(o.H - o.S)) + ' from the start, at ' + fmt(o.rate) + ' per ' + c.tw + ': ' + t(dT(Math.abs(o.H - o.S)) + '\\div ' + dT(o.rate) + '=' + o.n) + ' ' + c.tq + '. (Check: ' + t(o.S + sg + o.n + '(' + dT(o.rate) + ')=' + dT(o.H)) + ' ✓)';
+          var p = B.fields('Answer both. (A calculator is fine.)', [fNum(c.q1, c.b4, c.af), fNum(c.q2(o), '', c.tq)], [chkS, chkN], [String(o.S), String(o.n)],
+            c.q1 + ' ' + fmt(o.S) + '<br>' + c.q2(o) + ' ' + t(o.n) + ' ' + c.tq, sol,
+            ['Find the rate first: the change between the two readings ÷ the time between them.', 'The start is at time ' + t('0') + ': step back from the first reading. Then work out how many ' + c.tq + ' it takes to get from the start to the target.'],
+            'mastery: start and target from two readings (' + c.id + ')');
+          p.bad = [[dT(o.y1), String(o.n)], [String(o.S), String(o.n - o.t2)]];
+          return p;
+        } }] },
+
+      { num: '13', stem: 'Kai knows that the relation in this table is linear, but he copied <b>one</b> of its ' + t('y') + '-values wrongly.', parts: [
+        { id: 'e13', level: 'MAS', outcome: 'RF4', make: function (r) {
+          var o = wrongEntry(r), xs = o.xs, sh = o.sh, w = o.w, dx = diffs(xs), dyS = diffs(sh);
+          var nb = w > 0 ? w - 1 : 1;
+          var chkX = K.number(xs[w], function (v) {
+            if (xs.indexOf(v) < 0) return { code: 'value', hint: 'Give one of the ' + t('x') + '-values in the table: the column whose ' + t('y') + '-value is wrong.' };
+            return { code: 'u6m-col', hint: 'Test your choice: leave out the column ' + t('x=' + v) + ' and work out ' + t('\\frac{\\Delta y}{\\Delta x}') + ' for the other four columns. If ' + t('x=' + v) + ' were the wrong one, those rates would all be equal — they aren’t.' };
+          });
+          var chkY = K.number(o.ys[w], function (v) {
+            if (near(v, sh[w])) return { code: 'u6m-unchanged', hint: t(sh[w]) + ' is the value in the table — the one that is wrong. Use the slope to find what it should be.' };
+            if (w > 0 && w < 4 && dx[w - 1] !== dx[w] && near(v, (sh[w - 1] + sh[w + 1]) / 2)) return { code: 'u6m-avg', hint: 'Halfway between the neighbours only works when the ' + t('x') + '-steps on both sides are equal. Here they are ' + t(dx[w - 1]) + ' and ' + t(dx[w]) + ', so use the slope instead.' };
+            return null;
+          });
+          var rates = dyS.map(function (d, i) { return '\\tfrac{' + d + '}{' + dx[i] + '}' + (near(d / dx[i], o.m) ? '=' + nT([o.p, o.q]) : '\\ne ' + nT([o.p, o.q])); });
+          var sol = 'The ' + t('x') + '-steps are ' + t(dx.join(',\\ ')) + ' (not equal), so compare rates ' + t('\\frac{\\Delta y}{\\Delta x}') + ' from column to column:<br>' + t(rates.join(',\\quad ')) + '.<br>' +
+            'The rate is ' + t(nT([o.p, o.q])) + ' everywhere except ' + (w === 0 || w === 4 ? 'at the ' + (w === 0 ? 'first' : 'last') + ' step' : 'on both sides of ' + t('x=' + xs[w])) + ', so the wrong value is at ' + t('x=' + xs[w]) + '.<br>' +
+            'From ' + t(ptT([xs[nb], sh[nb]])) + ', move ' + t(Math.abs(xs[w] - xs[nb])) + ' ' + (xs[w] > xs[nb] ? 'right' : 'left') + ': ' + t('y=' + sh[nb] + (xs[w] - xs[nb] < 0 ? '-' : '+') + Math.abs(xs[w] - xs[nb]) + '\\left(' + nT([o.p, o.q]) + '\\right)=' + o.ys[w]) + ' (not ' + t(sh[w]) + ').';
+          var p = B.fields(tbl(xs, sh) + 'Which column has the wrong ' + t('y') + '-value, and what should that ' + t('y') + '-value be?', [fNum('Wrong column:', t('x=')), fNum('Correct value:', t('y='))], [chkX, chkY],
+            [String(xs[w]), String(o.ys[w])], 'The column ' + t('x=' + xs[w]) + ' is wrong; its ' + t('y') + '-value should be ' + t(o.ys[w]) + '.', sol,
+            ['The ' + t('x') + '-steps are not equal, so compare ' + t('\\frac{\\text{change in }y}{\\text{change in }x}') + ' for each pair of neighbouring columns.', 'One wrong ' + t('y') + '-value spoils the rates on both sides of it (only one rate, if it is at an end). The rates that agree give the slope.'],
+            'mastery: find the wrong table entry');
+          p.bad = [[String(xs[(w + 1) % 5]), String(o.ys[w])], [String(xs[w]), String(sh[w])]];
+          return p;
+        } }] },
+
+      { num: '14', stem: 'The table represents a linear relation, and its graph is a line.', parts: [
+        { id: 'e14', level: 'MAS', outcome: 'RF4', make: function (r) {
+          var o = offGrid(r), dys = diffs(o.ys), dxs = diffs(o.xs), mT = nT([o.p, o.q]);
+          var chk = sketchChk(function (i) {
+            if (i.count === Infinity) return axisHint(i);
+            if (i.vertical) return { code: 'u6m-vert', hint: 'A vertical line has an undefined slope, but this table has a constant rate of change. Work out ' + t('\\frac{\\Delta y}{\\Delta x}') + '.' };
+            if (!nearL(i.slope, o.m)) {
+              if (nearL(i.slope, -o.m)) return { code: 'sk-slope-sign', hint: 'Your line ' + (i.slope > 0 ? 'rises' : 'falls') + ' from left to right, but in the table ' + t('y') + ' ' + (o.m > 0 ? 'increases' : 'decreases') + ' as ' + t('x') + ' increases.' };
+              if (i.slope !== 0 && nearL(i.slope, 1 / o.m)) return { code: 'u6m-flip', hint: 'Your line’s slope is run over rise. Slope = change in ' + t('y') + ' ÷ change in ' + t('x') + '.' };
+              if (dys.some(function (d) { return nearL(i.slope, d); })) return { code: 'dy-only', hint: 'That slope is a change in ' + t('y') + ' only. Divide each change in ' + t('y') + ' by its change in ' + t('x') + '.' };
+              return { code: 'u6m-slope', hint: 'Your line has slope ' + t(slT(i.slope)) + '. Work out the table’s rate of change, ' + t('\\frac{\\Delta y}{\\Delta x}') + ', and use it.' };
+            }
+            if (!nearL(i.yint, o.b)) return { code: 'sk-k', hint: 'Right slope! But your line crosses the ' + t('y') + '-axis at ' + t(slT(i.yint)) + '. Use the rate to work back from a row of the table to ' + t('x=0') + '.' };
+            return null;
+          });
+          var x0 = o.xs.reduce(function (u, v) { return Math.abs(v) < Math.abs(u) ? v : u; }), y0 = o.p * x0 / o.q + o.b;
+          var sol = 'Rate of change: ' + t(dys.map(function (d, i) { return '\\tfrac{' + d + '}{' + dxs[i] + '}'; }).join('=') + '=' + mT) + ' every time.<br>' +
+            t('y') + '-intercept: from ' + t(ptT([x0, y0])) + ' move ' + t(Math.abs(x0)) + ' ' + (x0 > 0 ? 'left' : 'right') + ' to reach ' + t('x=0') + ': ' + t('y=' + y0 + (x0 > 0 ? '-' : '+') + Math.abs(x0) + '\\left(' + mT + '\\right)=' + o.b) + '.<br>' +
+            'So the line passes through ' + t(ptT([0, o.b])) + ' and, ' + t(o.q) + ' right and ' + t(Math.abs(o.p)) + ' ' + (o.p > 0 ? 'up' : 'down') + ', ' + t(ptT([o.q, o.b + o.p])) + '. Draw the line through them, with arrows at both ends.';
+          var p = B.graph(tbl(o.xs, o.ys) + 'None of these points fits on the grid. Draw the graph of the relation on the grid.' + PAD_HELP, pad(), chk, lineDr([0, o.b], [o.q, o.b + o.p]), sol,
+            ['First find the rate of change: ' + t('\\frac{\\Delta y}{\\Delta x}') + ' (the ' + t('x') + '-steps are not equal).', 'Then use the rate to work back from a row of the table to ' + t('x=0') + '. That point, and one more step of the slope, are on the grid.'],
+            'mastery: graph a table that is off the grid');
+          var sh = o.b < 3 ? 1 : -1;
+          p.good = [lineDr([-o.q, o.b - o.p], [o.q, o.b + o.p])];
+          p.bad = [lineDr([0, o.b], [o.q, o.b - o.p]), lineDr([0, o.b + sh], [o.q, o.b + sh + o.p]), lineDr([0, o.b], [o.q, o.b + o.p], 'closed', 'closed')];
+          return p;
+        } }] },
+
+      { num: '15', shared: tixShared, stem: function (o) { return o.c.text(o); }, parts: [
+        { id: 'e15', level: 'MAS', outcome: 'RF4', make: function (r, o) {
+          var c = o.c, Rt = listT(o.Cs), Dl = listT(rng(1, o.N)), withFee = listT([o.fee].concat(o.Cs)), cont = '\\{C\\mid ' + o.Cs[0] + '\\le C\\le ' + o.Cs[o.N - 1] + ',\\ C\\in\\mathbb{R}\\}';
+          var chkF = K.number(o.fee, function (v) {
+            if (near(v, o.price)) return { code: 'u6m-price', hint: '$' + o.price + ' is the price of each extra ' + c.unit + '. The fee is what is left of the cost once the ' + c.units + ' are paid for.' };
+            if (nearR(v, rnd2(o.C1 / o.n1)) || nearR(v, rnd2(o.C2 / o.n2))) return { code: 'u6m-per-ticket', hint: 'Dividing the total by the number of ' + c.units + ' shares the fee out among them. Find the price of one more ' + c.unit + ' from the two orders first.' };
+            if (near(v, o.C1 - (o.C2 - o.C1))) return { code: 'stepback', hint: 'You stepped back ' + t(o.n2 - o.n1) + ' ' + c.units + ' from the ' + t(o.n1) + '-' + c.unit + ' cost. To reach ' + t('0') + ' ' + c.units + ' you step back ' + t(o.n1) + '.' };
+            return null;
+          });
+          var chkR = K.set(Rt, { v: 'C', other: Dl, otherName: 'domain', wrong: [{ is: withFee, code: 'u6m-zero', hint: 'Not $' + o.fee + ': that would be the cost of ' + t('0') + ' ' + c.units + ', and ' + t('n=0') + ' isn’t possible here — the smallest value of ' + t('n') + ' is ' + t('1') + '.' }] });
+          var fld = fSet('Range', 'C'); fld.placeholder = 'e.g. {5, 10, 15, 20}';
+          var pairs = rng(1, o.N).map(function (n, i) { return '(' + n + ',\\ ' + o.Cs[i] + ')'; }).join(',\\ ');
+          var sol = 'Price per ' + c.unit + ': ' + t('\\dfrac{' + o.C2 + '-' + o.C1 + '}{' + o.n2 + '-' + o.n1 + '}=\\dfrac{' + (o.C2 - o.C1) + '}{' + (o.n2 - o.n1) + '}=' + o.price) + ' dollars.<br>' +
+            c.feeName + ': take off the ' + t(o.n1) + ' ' + c.units + ': ' + t(o.C1 + '-' + o.n1 + '(' + o.price + ')=' + o.fee) + ', so $' + o.fee + '.<br>' +
+            'Only whole numbers of ' + c.units + ' from ' + t('1') + ' to ' + t(o.N) + ' are possible, so the relation is the separate points ' + t(pairs) + ' (not a solid line, and ' + t('(0,\\ ' + o.fee + ')') + ' is not one of them).<br>Range: ' + t(Rt) + '.';
+          var p = B.fields('Determine the ' + c.feeName.toLowerCase() + ', and list the range of this relation.', [fNum(c.feeName + ':', '$'), fld], [chkF, chkR], [String(o.fee), Rt],
+            c.feeName + ': $' + o.fee + '<br>Range: ' + t(Rt), sol,
+            ['Find the price of one more ' + c.unit + ' from the two costs: change in cost ÷ change in the number of ' + c.units + '.', 'Only whole numbers of ' + c.units + ' make sense, so list every possible cost — and check the smallest possible value of ' + t('n') + '.'],
+            'mastery: words to ordered pairs (' + c.id + ')');
+          p.bad = [[String(o.price), Rt], [String(o.fee), withFee], [String(o.fee), cont], [String(o.fee), Dl]];
+          return p;
+        } }] },
+
+      { num: '16', shared: drcShared, stem: function (o) { return o.c.text(o); }, parts: [
+        { id: 'e16', level: 'MAS', outcome: 'RF5', make: function (r, o) {
+          var c = o.c, v = c.v, Dt = between('t', 0, o.T), Rt = c.fill ? between(v, o.S, o.cap) : between(v, 0, o.S);
+          var lateT = c.fill ? o.T - o.t1 : o.T - o.t1;
+          var dW = [{ is: between('t', o.t1, o.t2), code: 'ctx-dom-table', hint: 'Those are only the times of the two readings. The situation starts at ' + t('t=0') + ' and ends when ' + c.end + '.' },
+            { is: between('t', 0, lateT), code: 'u6m-from-reading', hint: 'That is how long it takes <b>after</b> the ' + t(o.t1) + '-' + c.tw + ' reading. Measure from ' + t('t=0') + ' — add the ' + t(o.t1) + ' ' + c.tq + ' already gone.' },
+            { is: '\\{t\\mid t\\ge 0,\\ t\\in\\mathbb{R}\\}', code: 'set-arrow', hint: 'The situation stops when ' + c.end + ' — the domain has an end value.' }];
+          var rW = [{ is: c.fill ? between(v, o.y1, o.y2) : between(v, o.y2, o.y1), code: 'ctx-dom-table', hint: 'Those are only the two readings. Find the value at ' + t('t=0') + ' and the value when ' + c.end + '.' }];
+          if (c.fill) rW.push({ is: between(v, 0, o.cap), code: 'u6m-cap', hint: 'The tank wasn’t empty when the pump started. Work back from a reading to its volume at ' + t('t=0') + '.' });
+          var rateT = t('\\dfrac{' + o.y2 + '-' + o.y1 + '}{' + o.t2 + '-' + o.t1 + '}=\\dfrac{' + (o.y2 - o.y1) + '}{' + (o.t2 - o.t1) + '}=' + (c.fill ? '' : '-') + o.rate);
+          var sol = 'Rate: ' + rateT + ' ' + c.un + ' per ' + c.tw + '.<br>' +
+            'At ' + t('t=0') + ': ' + t(o.y1 + (c.fill ? '-' : '+') + o.t1 + '(' + o.rate + ')=' + o.S) + '.<br>' +
+            (c.fill ? 'Full: it must gain ' + t(o.cap + '-' + o.S + '=' + (o.cap - o.S)) + ', which takes ' + t((o.cap - o.S) + '\\div ' + o.rate + '=' + o.T) + ' ' + c.tq + '.'
+              : 'It reaches ' + t('0') + ' (' + c.end + ') after ' + t(o.S + '\\div ' + o.rate + '=' + o.T) + ' ' + c.tq + ' — the ' + t('t') + '-intercept.') + '<br>' +
+            'So ' + t('t') + ' runs from ' + t('0') + ' to ' + t(o.T) + ', and ' + t(v) + ' from ' + t(c.fill ? o.S : 0) + ' to ' + t(c.fill ? o.cap : o.S) + ':<br>Domain ' + t(Dt) + ', Range ' + t(Rt) + '.';
+          return drPart('State the domain and the range for this situation. (A calculator is fine.)', Dt, Rt,
+            { v: 't', w: v, dWrong: dW, rWrong: rW, bad: [[between('t', o.t1, o.t2), Rt], [Dt, rW[0].is], [between('t', 0, lateT), Rt]].concat(c.fill ? [[Dt, between(v, 0, o.cap)]] : []) },
+            sol, ['Find the rate from the two readings, then the value at ' + t('t=0') + '.', 'The domain ends when ' + c.end + ': how long does that take from ' + t('t=0') + '?'], 'mastery: domain and range from two readings (' + c.id + ')');
+        } }] },
+
+      { num: '17', parts: [
+        { id: 'e17', level: 'MAS', outcome: 'RF5', make: function (r) {
+          var o = boxSeg(r), Dt = between('x', o.xlo, o.xhi), Rt = between('y', o.ylo, o.yhi);
+          var R1 = [o.xlo, o.ylo], R2 = [o.xhi, o.yhi], F1 = [o.xlo, o.yhi], F2 = [o.xhi, o.ylo];
+          var key = o.rise ? lineDr(R1, R2, 'closed', 'closed') : lineDr(F1, F2, 'closed', 'closed'), other = o.rise ? lineDr(F1, F2, 'closed', 'closed') : lineDr(R1, R2, 'closed', 'closed');
+          var yo = o.rise ? o.yf : o.yr, yoF = o.rise ? o.yfF : o.yrF, ykF = o.rise ? o.yrF : o.yfF, sw = o.pos ? 'positive' : 'negative';
+          var exact = K.graphExact(key, { wrong: [{ is: other, code: 'u6m-diag', hint: 'This segment has exactly the right domain and range — but it crosses the ' + t('y') + '-axis at ' + t('y=' + nT(yoF)) + ', which is ' + signW(yo) + '. One other segment has the same domain and range.' }] });
+          var rules = K.graphRules({ domain: Dt, range: Rt });
+          var chk = function (resp) {
+            var a = exact(resp); if (a.v === 'correct' || a.code !== 'graph') return a;
+            var b = rules(resp); if (b.v !== 'correct') return b;
+            return wrong('u6m-seg', 'Your graph has the right domain and range, but it isn’t one straight segment from corner to corner. Draw a single segment.');
+          };
+          var mR = nT([o.yhi - o.ylo, o.xhi - o.xlo]), mF = nT([o.ylo - o.yhi, o.xhi - o.xlo]);
+          var sol = 'The domain and range fix a box: ' + t('x') + ' from ' + t(o.xlo) + ' to ' + t(o.xhi) + ' and ' + t('y') + ' from ' + t(o.ylo) + ' to ' + t(o.yhi) + '. A straight segment that uses all of both must join opposite corners of that box, so there are only two candidates:<br>' +
+            '• rising, ' + t(ptT(R1)) + ' to ' + t(ptT(R2)) + ': slope ' + t(mR) + ', ' + t('y') + '-intercept ' + t(o.ylo + '+' + (-o.xlo) + '\\left(' + mR + '\\right)=' + nT(o.yrF)) + ';<br>' +
+            '• falling, ' + t(ptT(F1)) + ' to ' + t(ptT(F2)) + ': slope ' + t(mF) + ', ' + t('y') + '-intercept ' + t(o.yhi + '+' + (-o.xlo) + '\\left(' + mF + '\\right)=' + nT(o.yfF)) + '.<br>' +
+            'Only the <b>' + (o.rise ? 'rising' : 'falling') + '</b> one has a ' + sw + ' ' + t('y') + '-intercept (' + t(nT(ykF)) + '). Both endpoints are solid dots (' + t('\\le') + ').';
+          var p = B.graph('Draw the line segment that has domain ' + t(Dt) + ', range ' + t(Rt) + ', and a <b>' + sw + '</b> ' + t('y') + '-intercept.' + SEG_HELP, Object.assign({}, SEGPAD), chk, key, sol,
+            ['The domain and range tell you how far the segment reaches left, right, down and up. Which two segments use exactly that much?', 'For each candidate, find where it crosses the ' + t('y') + '-axis: start at its left endpoint and use its slope to move to ' + t('x=0') + '.'],
+            'mastery: segment from domain, range and y-intercept sign');
+          p.good = [o.rise ? lineDr(R2, R1, 'closed', 'closed') : lineDr(F2, F1, 'closed', 'closed')];
+          p.bad = [other, o.rise ? lineDr(R1, R2) : lineDr(F1, F2), o.rise ? lineDr(R1, R2, 'open', 'closed') : lineDr(F1, F2, 'closed', 'open')];
+          return p;
+        } }] },
+
+      { num: '18', parts: [
+        { id: 'e18', level: 'MAS', outcome: 'RF5', make: function (r) {
+          var o = areaLine(r), mT = nT(o.m), mAbs = [Math.abs(o.m[0]), o.m[1]], coef = ex.norm(o.b, o.a);
+          var dx = function (v) {
+            if (nearR(Math.abs(v), o.A * o.A)) return { code: 'u6m-nosqrt', hint: t(o.A * o.A) + ' is ' + t('a^{2}') + '. Take the square root to get the intercept.' };
+            if (nearR(Math.abs(v), rnd2(o.A / Math.SQRT2))) return { code: 'u6m-half', hint: 'Area of a triangle = ' + t('\\tfrac{1}{2}') + ' × base × height, so ' + t('|a|\\,|b|') + ' is <b>twice</b> the area.' };
+            return null;
+          };
+          var dy = function (v) {
+            if (nearR(v, rnd2(-o.a / rv(o.m)))) return { code: 'u6m-flip', hint: 'From ' + t('(a,\\ 0)') + ' to ' + t('(0,\\ b)') + ' the slope is ' + t('\\frac{b-0}{0-a}=-\\frac{b}{a}') + ', so ' + t('b=-m\\,a') + ' — multiply, don’t divide.' };
+            if (nearR(Math.abs(v), o.Bv * o.Bv)) return { code: 'u6m-nosqrt', hint: 'Check: is ' + t('\\tfrac{1}{2}|a|\\,|b|') + ' equal to the area with that value?' };
+            return null;
+          };
+          var sameSign = rv(o.m) < 0;
+          var sol = 'Call the intercepts ' + t('a') + ' (on the ' + t('x') + '-axis) and ' + t('b') + ' (on the ' + t('y') + '-axis). The slope from ' + t('(a,\\ 0)') + ' to ' + t('(0,\\ b)') + ' is ' + t('-\\frac{b}{a}') + ', so ' + t('b=-m\\,a=' + (rv(coef) === 1 ? '' : rv(coef) === -1 ? '-' : nT(coef)) + 'a') + '.<br>' +
+            'The triangle has legs ' + t('|a|') + ' and ' + t('|b|') + ': ' + t('\\tfrac{1}{2}|a|\\,|b|=\\tfrac{1}{2}\\cdot ' + nT(mAbs) + '\\,a^{2}=' + dT(o.area)) + ', so ' + t('a^{2}=\\dfrac{2(' + dT(o.area) + ')}{' + nT(mAbs) + '}=' + (o.A * o.A)) + ' and ' + t('|a|=' + o.A) + '.<br>' +
+            'Signs: the slope is ' + signW(rv(o.m)) + ', so ' + t('a') + ' and ' + t('b') + ' have ' + (sameSign ? 'the same sign' : 'opposite signs') + '; ' + t('b') + ' is ' + signW(o.b) + ', so ' + t('a=' + o.a) + ' and ' + t('b=' + o.b) + '.<br>' +
+            'Check: slope ' + t('-\\frac{' + o.b + '}{' + o.a + '}=' + mT) + ' ✓, area ' + t('\\tfrac{1}{2}(' + o.A + ')(' + o.Bv + ')=' + dT(o.area)) + ' ✓.';
+          var p = B.fields('A line has slope ' + t(mT) + '. The line and the two axes form a triangle with an area of ' + t(dT(o.area)) + ' square units, and the line’s ' + t('y') + '-intercept is ' + signW(o.b) + '. Determine both intercepts. (A calculator is fine.)',
+            [fNum(t('x') + '-intercept:'), fNum(t('y') + '-intercept:')], [valChk(o.a, { v: 'x', other: o.b, diag: dx }), valChk(o.b, { v: 'y', other: o.a, diag: dy })], [String(o.a), String(o.b)],
+            t('x') + '-intercept ' + t(o.a) + ', ' + t('y') + '-intercept ' + t(o.b), sol,
+            ['Call the intercepts ' + t('a') + ' and ' + t('b') + '. The slope from ' + t('(a,\\ 0)') + ' to ' + t('(0,\\ b)') + ' links them: write ' + t('b') + ' in terms of ' + t('a') + '.', 'The triangle’s legs are ' + t('|a|') + ' and ' + t('|b|') + ', so its area is ' + t('\\tfrac{1}{2}|a|\\,|b|') + '. Sketch it to get the signs right.'],
+            'mastery: intercepts from slope and triangle area');
+          p.bad = [[String(o.b), String(o.a)], [String(-o.a), String(o.b)], [String(o.a), String(-o.b)]];
+          return p;
+        } }] },
+
+      { num: '19', parts: [
+        { id: 'e19', level: 'MAS', outcome: 'RF5', make: function (r) {
+          var o = segRange(r), mT = nT([o.p, o.q]), Dt = between('x', o.x1, o.x2, o.opL, o.opR);
+          var Rt = o.p > 0 ? between('y', o.y1, o.y2, o.opL, o.opR) : between('y', o.y2, o.y1, o.opR, o.opL);
+          var closedR = o.p > 0 ? between('y', o.y1, o.y2) : between('y', o.y2, o.y1);
+          var noOpen = o.opL !== '<' && o.opR !== '<';
+          var chkR = K.set(Rt, { v: 'y', other: Dt, otherName: 'domain' });
+          var chkX = valChk(o.inside ? o.X : null, { v: 'x', other: o.b, none: true,
+            notNone: 'The whole line would cross the ' + t('x') + '-axis at ' + t('x=' + nT(o.X)) + ' — but that is outside the domain, so this segment stops before it reaches the ' + t('x') + '-axis. Press <b>none</b>.',
+            saidNone: 'Check: the line reaches ' + t('y=0') + ' at an ' + t('x') + '-value inside the domain, so the segment does cross the ' + t('x') + '-axis.' });
+          var fx = fMath(t('x') + '-intercept:', 'e.g. 3, 1.5 or none', 'set', true);
+          var at = function (x, y) { return t('x=' + x) + ': ' + t('y=' + o.b + (x < 0 ? '-' : '+') + Math.abs(x) + '\\left(' + mT + '\\right)=' + y); };
+          var openNote = noOpen ? '' : ' An endpoint left out of the domain (' + t('<') + ') is left out of the range too, so its ' + t('y') + '-value gets ' + t('<') + '.';
+          var sol = 'Endpoints: ' + at(o.x1, o.y1) + ' and ' + at(o.x2, o.y2) + '.<br>' +
+            'Range (smaller ' + t('y') + ' first): ' + t(Rt) + '.' + openNote + '<br>' +
+            t('x') + '-intercept: the line reaches ' + t('y=0') + ' when ' + t('x=-\\dfrac{b}{m}=-\\dfrac{' + o.b + '}{' + mT + '}=' + nT(o.X)) + ', which is ' + (o.inside ? 'inside the domain, so the ' + t('x') + '-intercept is ' + t(nT(o.X)) + '.' : '<b>outside</b> the domain, so the segment has <b>no</b> ' + t('x') + '-intercept.');
+          var keyX = o.inside ? nT(o.X) : 'none';
+          var p = B.fields('A line segment has slope ' + t(mT) + ', a ' + t('y') + '-intercept of ' + t(o.b) + ', and domain ' + t(Dt) + '. State its range, and its ' + t('x') + '-intercept (press <b>none</b> if the segment doesn’t reach the ' + t('x') + '-axis).',
+            [fSet('Range', 'y'), fx], [chkR, chkX], [Rt, keyX],
+            'Range: ' + t(Rt) + '<br>' + t('x') + '-intercept: ' + (o.inside ? t(nT(o.X)) : 'none'), sol,
+            ['Find the ' + t('y') + '-value at each end of the domain: start at ' + t('(0,\\ ' + o.b + ')') + ' and use the slope.', 'For the ' + t('x') + '-intercept, find where the line reaches ' + t('y=0') + ' — then check that this ' + t('x') + ' is inside the domain.'],
+            'mastery: range and x-intercept of a segment');
+          p.bad = [[Rt, o.inside ? 'none' : nT(o.X)]].concat(noOpen ? [] : [[closedR, keyX]]);
+          if (o.inside && !Number.isInteger(o.X)) p.good = [[Rt, dT(o.X)]];
+          return p;
         } }] }
     ]
   });
