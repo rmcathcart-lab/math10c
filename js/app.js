@@ -347,7 +347,7 @@
       foot.appendChild(ab);
     }
     // email the teacher: opens the student's mail app with a subject that says who it's from
-    var em = el('a', 'btn home-about-btn', 'Email the Teacher');
+    var em = el('a', 'btn home-about-btn', 'Email Mr. Cathcart');
     em.href = 'mailto:' + TEACHER_EMAIL + '?subject=' + encodeURIComponent('Math 10C' + (session && session.name ? ' question from ' + session.name : ' question'));
     em.title = 'Email Mr. Cathcart (' + TEACHER_EMAIL + ')';
     foot.appendChild(em);
