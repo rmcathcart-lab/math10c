@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Math 10C Course Outline 2026–27</title>
+<!-- The official Math 10C course outline. Built to a PDF by tests/build_outline.py (Chromium print, US Letter):
+     assets/outline/math10c-course-outline.pdf. The unit table and the outcomes come from js/catalog.js and js/outcomes.js,
+     so they stay in step with the site. Facts in the text follow Ryan's decisions (intro lesson, grading rules, retests). -->
+<style>
+@font-face { font-family: "Barlow Condensed"; font-weight: 700; src: url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 800; src: url(fonts/barlow-condensed-latin-800-normal.woff2) format("woff2"); }
+:root {
+  --ink: #1c2230; --ink2: #3a4254; --muted: #6a7182; --line: #e2ddd1; --line2: #efebe2; --paper: #ffffff;
+  --brand: #0f5f5a; --brand2: #13807a; --brand-soft: #e3f1ef; --amber: #a8650a; --amber-soft: #fff4dd;
+}
+@page { size: Letter; margin: 0.55in 0.6in 0.6in; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body { font: 9pt/1.38 Inter, "Inter Display", system-ui, sans-serif; font-feature-settings: "ss01", "cv11"; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+h1, h2, h3 { font-family: "Barlow Condensed", Inter, sans-serif; font-weight: 800; margin: 0; letter-spacing: .005em; }
+h2 { font-size: 16pt; color: var(--brand); line-height: 1.05; margin: 0 0 5pt; }
+h3 { font-size: 11.5pt; font-weight: 700; color: var(--ink); margin: 0 0 2pt; }
+p { margin: 0 0 6pt; }
+b, strong { font-weight: 650; }
+a { color: var(--brand); text-decoration: none; }
+.sec { margin: 0 0 11pt; break-inside: avoid; }
+.page-break { break-before: page; }
+.muted { color: var(--muted); }
+.small { font-size: 8.4pt; }
+
+/* ---------- masthead ---------- */
+.mast { display: grid; grid-template-columns: 52pt 1fr auto; gap: 12pt; align-items: center; padding-bottom: 10pt; border-bottom: 2.5pt solid var(--brand); margin-bottom: 11pt; }
+.mast img { width: 52pt; height: auto; display: block; }
+.mast .kick { font: 700 9pt/1 Inter, sans-serif; color: var(--brand2); letter-spacing: .02em; margin-bottom: 4pt; }
+.mast h1 { font-size: 29pt; white-space: nowrap; line-height: .92; color: var(--ink); }
+.mast h1 span { color: var(--brand); }
+.mast .yr { font: 800 22pt/1 "Barlow Condensed", sans-serif; color: var(--brand); text-align: right; }
+.mast .yr small { display: block; font: 600 8.4pt/1.3 Inter, sans-serif; color: var(--muted); margin-top: 4pt; }
+
+/* ---------- contact strip ---------- */
+.contact { display: grid; grid-template-columns: 1.05fr 1.35fr 1.25fr 1.6fr; gap: 0; border: 1pt solid var(--line); border-radius: 7pt; margin-bottom: 14pt; overflow: hidden; }
+.contact > div { padding: 6pt 9pt; border-right: 1pt solid var(--line); }
+.contact > div:last-child { border-right: 0; }
+.contact .lab { font: 700 7.6pt/1 Inter, sans-serif; color: var(--muted); margin-bottom: 3pt; }
+.contact .val { font-weight: 600; font-size: 9.4pt; line-height: 1.3; }
+.contact .val small { display: block; font-weight: 400; color: var(--ink2); font-size: 8.2pt; }
+.contact .qr { display: flex; gap: 8pt; align-items: center; background: var(--brand-soft); }
+.contact .qr svg { width: 46pt; height: 46pt; display: block; background: #fff; border-radius: 3pt; }
+
+/* ---------- two columns ---------- */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16pt; }
+.cols > .sec { margin-bottom: 0; }
+
+/* ---------- routes diagram ---------- */
+.routes { display: grid; grid-template-columns: auto 14pt auto 14pt auto; align-items: center; row-gap: 5pt; margin: 6pt 0 4pt; font-size: 8.6pt; }
+.routes .bx { border: 1.2pt solid var(--line); border-radius: 5pt; padding: 3pt 7pt; text-align: center; font-weight: 600; white-space: nowrap; }
+.routes .here { background: var(--brand); border-color: var(--brand); color: #fff; grid-row: span 2; align-self: stretch; display: flex; align-items: center; justify-content: center; }
+.routes .ar { text-align: center; color: var(--muted); }
+.routes .opt { border-style: dashed; color: var(--ink2); font-weight: 500; }
+
+/* ---------- unit table ---------- */
+table { border-collapse: collapse; width: 100%; }
+.units td, .units th { padding: 2.4pt 6pt; border-bottom: 1pt solid var(--line2); text-align: left; vertical-align: middle; }
+.units th { font: 700 7.8pt/1 Inter, sans-serif; color: var(--muted); border-bottom: 1.2pt solid var(--line); }
+.units .un { width: 30pt; }
+.units .chip { display: inline-block; min-width: 22pt; text-align: center; font: 800 10.5pt/1.25 "Barlow Condensed", sans-serif; color: #fff; border-radius: 4pt; padding: 1pt 4pt; }
+.units .tt { font-weight: 600; }
+.units .n, .units .oc { white-space: nowrap; }
+.units .n { text-align: center; width: 42pt; }
+.units .oc { font-weight: 600; color: var(--ink2); width: 110pt; }
+.units tfoot td { border-bottom: 0; padding-top: 6pt; font-weight: 600; color: var(--ink2); }
+
+/* ---------- outcomes ---------- */
+.strand { margin-bottom: 7pt; break-inside: avoid; }
+.strand h3 { color: var(--brand); }
+.oc-row { display: grid; grid-template-columns: 24pt 1fr; gap: 5pt; padding: 1.8pt 0; border-bottom: 1pt solid var(--line2); break-inside: avoid; font-size: 8.3pt; line-height: 1.3; }
+.oc-row:last-child { border-bottom: 0; }
+.oc-row .code { font: 800 10pt/1.35 "Barlow Condensed", sans-serif; color: var(--brand); }
+.oc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16pt; }
+
+/* ---------- indicators ---------- */
+.ind td { padding: 2pt 6pt; border-bottom: 1pt solid var(--line2); vertical-align: top; }
+.ind td:first-child { white-space: nowrap; width: 150pt; }
+.ind .pc { white-space: nowrap; font-weight: 650; text-align: right; width: 50pt; font-variant-numeric: tabular-nums; }
+.ind .tag { display: inline-block; font: 800 9.5pt/1.3 "Barlow Condensed", sans-serif; border-radius: 3pt; padding: 0 4pt; margin-right: 5pt; min-width: 27pt; text-align: center; }
+.ind .nm { font-weight: 600; }
+
+.callout { border-left: 3pt solid var(--brand2); background: var(--brand-soft); padding: 7pt 10pt; border-radius: 0 6pt 6pt 0; margin: 6pt 0 0; }
+.callout.amber { border-color: #d99a2b; background: var(--amber-soft); }
+.boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5pt; margin: 4pt 0 5pt; }
+.boxes > div { border: 1pt solid var(--line); border-radius: 5pt; padding: 4pt 7pt; font-size: 8.4pt; line-height: 1.3; }
+.boxes b { display: block; font: 800 10.5pt/1.2 "Barlow Condensed", sans-serif; }
+ul.tight { margin: 2pt 0 6pt; padding-left: 13pt; }
+ul.tight li { margin: 0 0 2.5pt; }
+ol.steps { margin: 3pt 0 6pt; padding-left: 15pt; }
+ol.steps li { margin-bottom: 2.5pt; }
+.policy { font-size: 8.4pt; color: var(--ink2); border-top: 1pt solid var(--line); padding-top: 7pt; margin-top: 4pt; }
+.sign { display: grid; grid-template-columns: 1.3fr 1.3fr 0.8fr; gap: 14pt; margin-top: 12pt; font-size: 8.2pt; color: var(--muted); }
+.sign div { border-top: 1pt solid var(--ink2); padding-top: 3pt; }
+</style>
+</head>
+<body>
+
+<!-- ======================= page 1 ======================= -->
+<header class="mast">
+  <img src="../../lessons/assets/intro/croxford-cavaliers.png" alt="Croxford Cavaliers crest">
+  <div>
+    <div class="kick">W.H. Croxford High School · Mathematics Department</div>
+    <h1>Mathematics <span>10C</span> Course Outline</h1>
+  </div>
+  <div class="yr">2026–27<small>5 credits</small></div>
+</header>
+
+<div class="contact">
+  <div><div class="lab">Teacher</div><div class="val">Mr. Ryan Cathcart<small>Room 2997</small></div></div>
+  <div><div class="lab">Email</div><div class="val"><a href="mailto:rcathcart@rvschools.ab.ca">rcathcart@rvschools.ab.ca</a><small>Students and parents welcome</small></div></div>
+  <div><div class="lab">Google Classroom</div><div class="val">Code given in class<small>Website link, files, announcements</small></div></div>
+  <div class="qr"><div id="qr"></div><div><div class="lab">Class website</div><div class="val" style="font-size:8.6pt">rmcathcart-lab<br>.github.io/math10c<small>Lessons, practice, calendar, tests</small></div></div></div>
+</div>
+
+<div class="cols">
+  <section class="sec">
+    <h2>About the course</h2>
+    <p>Math 10C is the first course on two of Alberta’s high school math routes. It builds the algebra, number sense, graphing and measurement that every later course leans on: factoring, exponents, linear relations, functions, systems of equations and right-triangle trigonometry.</p>
+    <div class="routes" aria-label="Math routes after Math 10C">
+      <div class="bx here">Math 10C</div><div class="ar">→</div><div class="bx">Math 20-1</div><div class="ar">→</div><div class="bx">Math 30-1 <span class="muted">(+ Math 31)</span></div>
+      <div class="ar">→</div><div class="bx">Math 20-2</div><div class="ar">→</div><div class="bx">Math 30-2</div>
+    </div>
+    <p class="small muted" style="margin-top:4pt">Most students come to Math 10C from Math 9; some take the optional Math 15 first. A high school diploma needs 100 credits, including a 20-level math.</p>
+    <p style="margin-top:8pt"><b>Success in math is mostly persistence.</b> Everyone in this room can do well in this course by doing the practice, asking questions early and learning from mistakes. Wrong answers are where the learning happens.</p>
+  </section>
+  <section class="sec">
+    <h2>A typical class</h2>
+    <ol class="steps">
+      <li><b>Arrive ready</b>: laptop charged, calculator, pencil and paper on your desk.</li>
+      <li><b>Warm-up</b> on the board while attendance is taken.</li>
+      <li><b>Lesson</b>: I teach from the class website. Take notes on paper, or print the notes booklet for the unit.</li>
+      <li><b>Practice</b> on the website: new numbers every time, hints when you’re stuck, and your level on each outcome.</li>
+      <li><b>Exit slip</b> almost every day: a short check on today’s outcome, written on the website.</li>
+    </ol>
+    <p class="small muted">Classes run about 88 minutes, bell to bell. The class calendar on the website shows each day’s lesson and every test date, and it is always up to date.</p>
+  </section>
+</div>
+
+<section class="sec" style="margin-top:13pt">
+  <h2>The course at a glance</h2>
+  <table class="units" id="units">
+    <thead><tr><th class="un">Unit</th><th>Topic</th><th class="n">Lessons</th><th class="oc">Outcomes</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4" id="units-total"></td></tr></tfoot>
+  </table>
+</section>
+
+<!-- ======================= page 2 ======================= -->
+<section class="sec">
+  <h2>What you will learn: the 18 outcomes</h2>
+  <p class="small muted">From Alberta Education’s Mathematics 10–12 Program of Studies (2008). These outcomes are what you are assessed on.</p>
+  <div class="oc-cols" id="outcomes"></div>
+</section>
+
+<section class="sec">
+  <h2>How you are assessed</h2>
+  <p>Math 10C uses <b>outcomes-based assessment</b>. Your mark shows which outcomes you can do and how well, not how many points you collected. For each outcome you earn an <b>indicator</b>. On a unit test, it reads straight from three boxes of questions:</p>
+  <div class="boxes">
+    <div><b style="color:#2a7a4a">Beginning box</b>the core skill</div>
+    <div><b style="color:#1f5aa8">Progressing box</b>the skill in typical questions</div>
+    <div><b style="color:#6b3fa0">Mastery box</b>harder, multi-step and new situations</div>
+  </div>
+  <p>A box is <b>secure</b> when you earn ¾ of its points and <b>half done</b> at ½:</p>
+  <table class="ind" id="ind"></table>
+</section>
+<section class="sec">
+  <h2>From outcomes to your report card</h2>
+  <div class="cols">
+    <div>
+      <h3>Part marks and unit grades</h3>
+      <p>Questions can earn part marks: a small slip keeps ⅔ of the point, and a bigger but reasonable mistake keeps ⅓. Your <b>unit grade</b> is the average of the unit’s outcomes. Exit slips check one or two outcomes from the day’s lesson, at the highest level you answer correctly.</p>
+    </div>
+    <div>
+      <h3>Your final mark</h3>
+      <p>Your report card mark comes from your grades on the 18 outcomes. Everything you do <b>in class</b> adds evidence for the outcomes it covers: unit tests, exit slips, practice in class, the game Lorebound played in class, and the three <b>cumulative exams</b> that every Math 10C class at Croxford writes. When I make a judgment call on an outcome, I use what I’ve seen you do in class.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= page 3 ======================= -->
+<section class="sec">
+  <div class="cols">
+    <div>
+      <h2>Tests and exit slips</h2>
+      <p>Unit tests and exit slips are written <b>on the class website</b>, in class, on your laptop. They pop up full screen when I launch them, and every student gets their own numbers. Tests end at the end of class. <b>Leaving the test window, switching tabs or leaving full screen submits your work and locks the test</b>; only I can unlock it.</p>
+      <p>Once I release the results, you see your answers, the correct answers and a worked solution for each question.</p>
+      <h3>Missed a test?</h3>
+      <p>Make it up at the <b>Test Centre</b> in the Learning Commons, Fridays 2:15–3:45. Fill out the missed-assessment form first. If you miss your Test Centre time, you lose that chance.</p>
+      <h3 style="margin-top:7pt">Practice and due dates</h3>
+      <p>Each lesson’s practice is on the website, with a due date on the class calendar. Due dates set the pace, so you’re ready for the exit slip and the unit test. Practice isn’t marked down for being late, since marks come from work in class, but unfinished practice matters for retests.</p>
+    </div>
+    <div>
+      <h2>Retests: earn another try</h2>
+      <p>A retest is earned with practice, and your <b>best result counts</b>, so a retest can only help.</p>
+      <ol class="steps">
+        <li><b>Do the practice.</b> Finish every required question in the unit without seeing the solution. (Saw one? Redo a new version without it.)</li>
+        <li><b>Request a retest.</b> The button appears on that unit on your home page.</li>
+        <li><b>Write it in class.</b> I open a retest just for you, with new numbers, while the class works.</li>
+      </ol>
+      <p>Want another retest after that? Finish <b>all the extra practice</b> in the unit first.</p>
+      <div class="callout"><b>Medals.</b> Every outcome has a medal beside your name on the website, from Rust (Not Meeting) up to Diamond (Mastery). It shows the best level you have reached from practice in class or a unit test.</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="cols">
+    <div>
+      <h2>What to bring every day</h2>
+      <ul class="tight">
+        <li><b>Laptop or Chromebook</b>, charged. Croxford is a bring-your-own-device school; ask the office about borrowing a Chromebook for the year.</li>
+        <li><b>Scientific calculator</b> with SIN, COS and TAN keys, like the TI-30XIIS (about $15–20). Not your phone. A few loaners are available in class.</li>
+        <li><b>Pencil, eraser</b> and <b>paper or a notebook</b> for notes (or your printed notes booklet).</li>
+      </ul>
+      <h3>Calculators</h3>
+      <p>Math 10C follows Alberta Education’s calculator rules. Graphing calculators are not used. A calculator is <b>not allowed</b> if it gives exact answers such as 3√2 instead of decimals, stores programs or notes, or has anything wireless (for example the Casio fx-991 or TI-30XS MultiView). Not sure about yours? Bring it in and we’ll check it.</p>
+    </div>
+    <div>
+      <h2>Expectations</h2>
+      <ul class="tight">
+        <li><b>Be on time and ready</b> to start when the bell goes.</li>
+        <li><b>Phones off and away</b> during class (the provincial rule). If you leave the room, your phone stays with me; take the hall pass, one person at a time.</li>
+        <li><b>Compassionate Cavs:</b> be kind, encourage each other, and listen when someone is teaching. This is a room where you can be wrong out loud.</li>
+        <li><b>Own your learning.</b> Missed a class? The lesson, notes and practice are on the website: catch up before the next class and ask me about anything unclear.</li>
+      </ul>
+      <h3>Getting help</h3>
+      <p>Asking early is the biggest predictor of doing well. Ask during work time in class (that’s what it’s for), use the hints in the practice, or come see me at lunch or before or after school. The only time I won’t help is during a test.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <h2>Academic integrity</h2>
+  <div class="cols">
+    <div>
+      <p>Every assessment must show <b>your own</b> thinking. On tests and exit slips, any of these is cheating:</p>
+      <ul class="tight">
+        <li>talking to or communicating with anyone, by any means;</li>
+        <li>using notes, devices, websites or apps that weren’t allowed;</li>
+        <li>using <b>AI</b> or photo-solver apps for any part of the work;</li>
+        <li>sharing questions or answers with students who haven’t written yet.</li>
+      </ul>
+    </div>
+    <div>
+      <p>On practice, copying someone’s work costs you the practice. AI and solver apps are fine for <i>checking</i> your work, not for producing it.</p>
+      <p>When academic dishonesty happens, I will talk with you and contact home. It can mean a 0 on that assessment, or an alternate assessment of the outcome at my discretion. Serious or repeated cases are referred to administration.</p>
+    </div>
+  </div>
+  <h2 style="margin-top:12pt">For parents and guardians</h2>
+  <div class="cols">
+    <div><p>Marks are posted in <b>PowerSchool</b> by outcome: an indicator for each outcome a unit test or exit slip has covered, plus each unit grade.</p></div>
+    <div><p>For the day-to-day picture, ask your student to show you their home page on the class website: their level on every outcome, their medals, what’s due and the next test date.</p></div>
+  </div>
+  <p class="policy">This course follows Rocky View Schools <b>AP 360</b>, Assessment and Communication of Student Learning, and <b>AP 223</b>, Student Reassessment (rockyview.ab.ca), and the Croxford student handbook. Questions about this outline? Email <a href="mailto:rcathcart@rvschools.ab.ca">rcathcart@rvschools.ab.ca</a>.</p>
+</section>
+
+<script src="../../js/catalog.js"></script>
+<script src="../../js/outcomes.js"></script>
+<script src="../../lessons/js/vendor/qrcode.js"></script>
+<script>
+(function () {
+  var HW = window.HW;
+  // the units, in their unit colours
+  var tb = document.querySelector('#units tbody'), total = 0;
+  HW.CATALOG.forEach(function (u) {
+    var n = u.lessons.filter(function (l) { return !l.intro; }).length; total += n;
+    var c = HW.unitColor(u.unit), tr = document.createElement('tr');
+    tr.innerHTML = '<td class="un"><span class="chip" style="background:' + c.solid + '">' + u.unit + '</span></td><td class="tt">' + u.title + '</td><td class="n">' + n + '</td><td class="oc">' + u.outcomes + '</td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('units-total').textContent = total + ' lessons, a unit test at the end of every unit, and three department cumulative exams. Dates for your class are on the class calendar.';
+  // the 18 outcomes, by strand, in the official wording
+  var strands = [['Algebra and Number', /^AN/], ['Relations and Functions', /^RF/], ['Measurement', /^M\d/]];
+  var host = document.getElementById('outcomes'), cols = [document.createElement('div'), document.createElement('div')];
+  strands.forEach(function (s, si) {
+    var box = document.createElement('div'); box.className = 'strand';
+    box.innerHTML = '<h3>' + s[0] + '</h3>';
+    Object.keys(HW.OUTCOME_TEXT).filter(function (k) { return s[1].test(k); }).forEach(function (k) {
+      var o = HW.OUTCOME_TEXT[k], txt = o.text;
+      if (o.list) txt += ' ' + o.list.map(function (x) { return x.replace(/\.$/, ''); }).join('; ') + (o.after ? ' ' + o.after : '.');
+      var row = document.createElement('div'); row.className = 'oc-row';
+      row.innerHTML = '<div class="code">' + k + '</div><div>' + txt.replace(/:\s/, ': ') + '</div>';
+      box.appendChild(row);
+    });
+    cols[si === 0 ? 0 : si === 1 ? 1 : 0].appendChild(box);
+  });
+  cols.forEach(function (c) { host.appendChild(c); });
+  // the indicators: names, percents, and how they read from the three boxes on a unit test
+  var IND = [
+    ['MAS', 'Mastery', '85–100', 'Beginning, Progressing and Mastery boxes all secure.', '#5b2a86', '#efe3fa'],
+    ['ADV', 'Advancing', '75–85', 'Beginning and Progressing secure; at least half of Mastery.', '#6b3fa0', '#f3ecfb'],
+    ['PRG', 'Progressing', '65–75', 'Beginning and Progressing secure.', '#1f5aa8', '#e4eefb'],
+    ['EMG', 'Emerging', '55–65', 'Beginning secure; at least half of Progressing.', '#2f6fbf', '#ecf3fc'],
+    ['BEG', 'Beginning', '45–55', 'Beginning box secure.', '#2a7a4a', '#e3f3e9'],
+    ['LIM', 'Limited', '25–45', 'At least half of the Beginning box.', '#8a6a14', '#fbf2d9'],
+    ['NM', 'Not Meeting', '0–25', 'Less than half of the Beginning box.', '#a3362f', '#fbe5e3'],
+    ['IE', 'Insufficient Evidence', '—', 'Not enough work yet to judge, such as a missed test not yet made up.', '#555c6b', '#eef0f3']
+  ];
+  document.getElementById('ind').innerHTML = IND.map(function (r) {
+    return '<tr><td><span class="tag" style="color:' + r[4] + ';background:' + r[5] + '">' + r[0] + '</span><span class="nm">' + r[1] + '</span></td><td class="small">' + r[3] + '</td><td class="pc">' + r[2] + (r[2] === '—' ? '' : '%') + '</td></tr>';
+  }).join('');
+  // the class website QR
+  try { var q = window.qrcode(0, 'M'); q.addData('https://rmcathcart-lab.github.io/math10c/'); q.make(); document.getElementById('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 1, scalable: true }); } catch (e) {}
+  document.body.setAttribute('data-ready', '1');
+})();
+</script>
+</body>
+</html>
