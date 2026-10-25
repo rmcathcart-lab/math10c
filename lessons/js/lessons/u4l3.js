@@ -5,6 +5,7 @@
  * 1 by x, a unit tile is 1 by 1. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -656,5 +657,42 @@ function mountExplainers() {
   const defs = { tileRect, tileNeg, expandGrid, twoVar, pairTable, inspectA, inspectB, inspectC, errorCheck };
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
+
+/* ============ Stand Up Break! — factor x² + bx + c at the whiteboards ============ */
+function trin(a, b, c, v) { // a·v² + b·v + c as LaTeX
+  const t = (k, s, first) => (k === 0 ? '' : (k < 0 ? '-' : first ? '' : '+') + (Math.abs(k) === 1 && s ? '' : Math.abs(k)) + s);
+  return (t(a, v + '^2', true) + t(b, v) + t(c, '')) || '0';
+}
+const lin = (v, p) => '(' + v + (p < 0 ? '-' : '+') + Math.abs(p) + ')';
+function pairQ(r, lo, hi, mixed) { // two integers p, q (not opposites) for (v + p)(v + q)
+  for (;;) {
+    const p = r.int(lo, hi) * (mixed ? r.sign() : 1), q = r.int(lo, hi) * (mixed ? r.sign() : 1);
+    if (p + q === 0) continue;
+    if (mixed && p > 0 && q > 0) continue;
+    return [p, q].sort((x, y) => y - x);
+  }
+}
+const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+function plain(r, v, lo, hi, mixed) { // v² + bv + c = (v + p)(v + q)
+  const [p, q] = pairQ(r, lo, hi, mixed), b = p + q, c = p * q, Q = trin(1, b, c, v);
+  return { q: Q, a: [sumProd(b, c, p, q), Q + '=' + lin(v, p) + lin(v, q)] };
+}
+standup('u4l3', {
+  intro: 'Factor the trinomial at your whiteboard station. Check by expanding before you call it done.',
+  levels: {
+    BEG: (r) => plain(r, r.pick(['x', 'x', 'x', 'a', 'n']), 1, 9, false),   // b and c positive
+    PRG: (r) => plain(r, r.pick(['x', 'x', 'x', 'm', 't']), 1, 12, true),   // a negative b or c
+    MAS: (r) => {
+      const v = r.pick(['x', 'x', 'y', 'k']);
+      if (r.chance(0.3)) return plain(r, v, 6, 16, true);                     // big numbers: lots of factor pairs to search
+      // a common factor first: k(v² + bv + c), or k·v²(v² + bv + c)
+      const k = r.pick([2, 3, 4, 5, -1, -2, -3]), [p, q] = pairQ(r, 1, 9, r.chance(0.75)), b = p + q, c = p * q, withV = r.chance(0.3);
+      const term = (co, pw, first) => (co === 0 ? '' : (co < 0 ? '-' : first ? '' : '+') + (Math.abs(co) === 1 && pw ? '' : Math.abs(co)) + pw);
+      const Q = withV ? term(k, v + '^4', true) + term(k * b, v + '^3') + term(k * c, v + '^2') : trin(k, k * b, k * c, v);
+      const g = (k === -1 ? '-' : String(k)) + (withV ? v + '^2' : ''), gl = (k === -1 && !withV ? '-1' : g);
+      return { q: Q, a: ['\\text{GCF } ' + gl + ':\\quad ' + g + '(' + trin(1, b, c, v) + ')', sumProd(b, c, p, q), Q + '=' + g + lin(v, p) + lin(v, q)] };
+    }
+  }
+});
 
 mountFigures(); mountWarm(); mountExplainers();

@@ -113,6 +113,7 @@ function doGet(e) {
     if (a === 'setblock') return json_(setBlock_(p['class'], p.block), cb);
     if (a === 'setnoschool') return json_(setNoSchool_(p.dates), cb);
     if (a === 'setbell') return json_(setBell_(p.bell), cb);
+    if (a === 'setlopts') return json_(setLopts_(p['class'], p.standup), cb);
     if (a === 'setcal') return json_(setCal_(p['class'], p.cal, p.all === '1'), cb);
     if (a === 'calsync') return json_(setCalSync_(p.on === '1'), cb);
     if (a === 'tests') return json_(testsList_(), cb);
@@ -398,7 +399,15 @@ function classByBlock_(block) {
 function cal_(klass) {
   var c = classOf_(klass); if (!c) return { ok: true, cal: null, noSchool: noSchool_(), error: 'unknown class' };
   var v = cachedProp_('CAL:' + c.code);
-  return { ok: true, 'class': c.code, label: c.label || c.code, cal: v && v.start ? v : null, noSchool: noSchool_(), sync: calSync_() };
+  return { ok: true, 'class': c.code, label: c.label || c.code, cal: v && v.start ? v : null, noSchool: noSchool_(), sync: calSync_(), lopts: lopts_(c.code) };
+}
+/* lesson-page options for a class (the teaching site reads them with the calendar). standup: Stand Up Break cards on/off. */
+function lopts_(code) { var v = list_('LOPTS:' + code); return { standup: !(v && v.standup === false) }; }
+function setLopts_(klass, standup) {
+  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  var on = !(standup === '0' || standup === 0 || standup === false || standup === 'false');
+  save_('LOPTS:' + c.code, { standup: on });
+  return { ok: true, lopts: lopts_(c.code) };
 }
 /* CALSYNC: "keep all class calendars the same" (the ledger then saves every change to every class with all=1) */
 function calSync_() { return props_().getProperty('CALSYNC') === '1'; }

@@ -88,7 +88,7 @@
   /* the class calendar, for the header's Launch Today's Lesson and the Lessons pop-up */
   function loadCal() {
     var k = st.klass;
-    api('cal', { 'class': k }).then(function (d) { if (k !== st.klass || !d || !d.ok) return; st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; drawTop(); }).catch(function () {});
+    api('cal', { 'class': k }).then(function (d) { if (k !== st.klass || !d || !d.ok) return; st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; st.lopts = d.lopts || null; drawTop(); }).catch(function () {});
   }
   function pollLive() { // every 10 s on any tab: the header's "signed in" count; the Live tab redraws
     if (!st.D || document.visibilityState !== 'visible') return;
@@ -532,6 +532,7 @@
       var nsn = (st.noSchool || []).length, nsr = el('p', 'small', 'No-school days: <b>' + nsn + '</b> set. They’re picked on a month view in the <b>Calendar</b> tab (Days off…), and they apply to every class: lessons move along and in-class time doesn’t count on those days. ');
       var nsb = el('button', 'btn btn-small', 'Open the calendar'); nsb.type = 'button'; nsb.addEventListener('click', function () { st.tab = 'calendar'; ls('hw:ttab', 'calendar'); render(); }); nsr.appendChild(nsb); p2.appendChild(nsr);
       body.appendChild(p2);
+      body.appendChild(lessonsPanel(c));
       if (st.bell) body.appendChild(bellPanel());
 
       body.appendChild(studentsPanel(c));
@@ -742,6 +743,25 @@
     return p;
   }
   function siteUrl() { var u = location.href.split('#')[0].split('?')[0]; return u.replace(/teacher\/?(index\.html)?$/, ''); }
+  /* Lessons: Stand Up Break cards (whiteboard stations) on or off for this class. The lesson pages read it with the class
+     calendar (cal → lopts), so it applies wherever the lesson is opened with this class's block (?class=B). */
+  function lessonsPanel(c) {
+    var p = el('div', 'panel'); p.appendChild(el('h3', '', 'Lessons'));
+    var on = !(st.lopts && st.lopts.standup === false), lab = el('label', 'lopt-row');
+    var cb = el('input'); cb.type = 'checkbox'; cb.checked = on;
+    lab.appendChild(cb); lab.appendChild(el('span', '', '<b>Stand Up Break!</b> questions in the lessons'));
+    p.appendChild(lab);
+    p.appendChild(el('p', 'small muted', 'A whiteboard-stations question partway through a lesson, with new numbers at three levels, a timer and random groups from this class list. Turn it off and those cards are left out of the lessons for ' + esc(c.label) + (c.block && String(c.label).indexOf('Block ' + c.block) < 0 ? ' (Block ' + esc(c.block) + ')' : '') + '. ' + (c.block ? '' : 'Set this class’s block above so the lessons can find it.')));
+    cb.addEventListener('change', function () {
+      cb.disabled = true;
+      api('setlopts', { 'class': c.code, standup: cb.checked ? 1 : 0 }).then(function (d) {
+        cb.disabled = false;
+        if (!d || !d.ok) { cb.checked = !cb.checked; flash(p, d && d.error === 'unknown action' ? 'The ledger needs the new backend code first: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : 'Couldn’t save: ' + (d && d.error)); return; }
+        st.lopts = d.lopts; flash(p, cb.checked ? 'Stand Up Breaks are on for this class.' : 'Stand Up Breaks are off for this class.');
+      }, function () { cb.disabled = false; cb.checked = !cb.checked; flash(p, 'Couldn’t reach the ledger.'); });
+    });
+    return p;
+  }
   function flash(node, msg) { var f = el('div', 'flash', esc(msg)); node.appendChild(f); setTimeout(function () { f.remove(); }, 3500); }
   function download(name, rows) {
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');

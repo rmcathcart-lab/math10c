@@ -419,3 +419,5 @@ button.rt-test:hover { border-color: #9aa6b8; }
 /* ready-made tests and exit slips */
 .tt-sub { font-size: 13px; color: var(--ink-2, #4b5563); margin: -2px 0 4px; line-height: 1.3; }
 .tt-edited { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+.lopt-row { display: flex; align-items: center; gap: 9px; font-size: 15px; cursor: pointer; margin: 2px 0 6px; }
+.lopt-row input { width: 18px; height: 18px; accent-color: var(--brand, #0f5f5a); }
