@@ -229,6 +229,170 @@
     return { p: ps0[0], q: qs[0], L: thru([ps0[0], 0], [0, qs[0]]) };
   }
 
+  /* ---------- Mastery challenge (Extra 17–20, RF6): relating each form to its graph, worked backwards ---------- */
+  HW.addCodes({
+    'l5m-coef-sign': 'Slope of Ax + By + C = 0 used with the wrong sign', 'l5m-coef-flip': 'Slope of Ax + By + C = 0 taken as −B/A', 'l5m-c-sign': 'Sign slip solving for the last coefficient',
+    'l5m-c-carry': 'Last coefficient built on a wrong one', 'l5m-sg-one': 'Drew more than one line', 'l5m-sg-hv': 'Drew a horizontal or vertical line', 'l5m-sg-p': 'Line misses the given point',
+    'l5m-sg-slope': 'Slope sign not deduced from the signs of A and B', 'l5m-sg-yint': 'y-intercept sign not deduced from the signs of B and C', 'l5m-sg-origin': 'Line through the origin (C would be 0)',
+    'l5m-mix-own': 'Graphed one of the given lines instead', 'l5m-mix-axis': 'Used the other intercept'
+  });
+  function rnz5(r, a, b) { var v; do { v = r.int(a, b); } while (v === 0); return v; }
+  function lin3(A, B, C) { var s = ''; [[A, 'x'], [B, 'y'], [C, '']].forEach(function (tm) { var c = tm[0]; if (!c) return; var ab = Math.abs(c); s += (c < 0 ? '-' : (s ? '+' : '')) + (ab === 1 && tm[1] ? '' : ab) + tm[1]; }); return (s || '0') + '=0'; }
+  function subT(A, B, P0) { return A + '(' + P0[0] + ')' + (B < 0 ? '' : '+') + B + '(' + P0[1] + ')'; }
+  var MSL = [[1, 2], [2, 3], [3, 4], [1, 3], [3, 2], [2, 1], [3, 1], [4, 3], [1, 4], [2, 5], [3, 5], [5, 2]];
+  function numAlt(ans, alts) {
+    return K.number(ans, function (v) { for (var i = 0; i < alts.length; i++) if (alts[i] && Math.abs(v - alts[i].v) < 1e-9 && Math.abs(v - ans) > 1e-9) return { code: alts[i].code, hint: alts[i].hint }; return null; });
+  }
+
+  /* E17: the graph is Ax + By + C = 0 with one coefficient given — find the other two */
+  function m17(r) {
+    for (var g = 0; g < 500; g++) {
+      var a = r.pick(MSL), m = fr(r.pick([1, -1]) * a[0], a[1]), P1 = [r.int(-5, 3), r.int(-5, 5)], k = a[1] === 1 ? r.pick([1, 2, 3]) : a[1] === 2 ? r.pick([1, 2]) : 1;
+      var P2 = [P1[0] + k * m[1], P1[1] + k * m[0]];
+      if (Math.abs(P2[0]) > 5 || Math.abs(P2[1]) > 5 || P2[0] - P1[0] < 2) continue;
+      var L = ms(m, P1); if (L.C === 0) continue;
+      var mode = r.pick(['A', 'B', 'B', 'C']), kk = r.pick([2, 2, 3, 4]), A = kk * L.A, Bc = kk * L.B, C = kk * L.C;
+      if (Math.max(Math.abs(A), Math.abs(Bc), Math.abs(C)) > 48) continue;
+      return { m: m, P1: P1, P2: P2, L: L, mode: mode, A: A, B: Bc, C: C };
+    }
+    return { m: [2, 3], P1: [-4, -1], P2: [2, 3], L: line(2, -3, 5), mode: 'B', A: 4, B: -6, C: 10 };
+  }
+  function m17Part(sh) {
+    var m = sh.m, P1 = sh.P1, P2 = sh.P2, A = sh.A, Bc = sh.B, C = sh.C, mode = sh.mode, dx = P2[0] - P1[0], dy = P2[1] - P1[1], b = yInt(sh.L), val = { A: A, B: Bc, C: C };
+    var unk = ['A', 'B', 'C'].filter(function (k) { return k !== mode; });
+    var SL = 'In ' + t('Ax+By+C=0') + ' the slope is ' + t('-\\frac{A}{B}') + ' (solve for ' + t('y') + ' to see it).';
+    var subH = 'Substitute a marked point into ' + t('Ax+By+C=0') + ' and solve for ' + t('C') + ' carefully: ' + t('C=-(Ax+By)') + '.';
+    var alts = { A: [{ v: -A, code: 'l5m-coef-sign', hint: SL + ' Check the sign.' }], B: [{ v: -Bc, code: mode === 'C' ? 'l5m-c-sign' : 'l5m-coef-sign', hint: mode === 'C' ? 'In ' + t('Ax+By+C=0') + ' the ' + t('y') + '-intercept is ' + t('-\\frac{C}{B}') + '. Check the sign.' : SL + ' Check the sign.' }], C: [{ v: -C, code: 'l5m-c-sign', hint: subH }] };
+    if (mode === 'B') {
+      if ((Bc * m[1]) % m[0] === 0) alts.A.push({ v: -Bc * m[1] / m[0], code: 'l5m-coef-flip', hint: 'The slope is ' + t('-\\frac{A}{B}') + ' — the coefficient of ' + t('x') + ' goes on top.' });
+      alts.C.push({ v: A * P1[0] - Bc * P1[1], code: 'l5m-c-carry', hint: 'Your ' + t('C') + ' fits a wrong value of ' + t('A') + '. Find ' + t('A') + ' first, then substitute a marked point.' });
+    } else if (mode === 'A') {
+      if ((A * m[0]) % m[1] === 0) alts.B.push({ v: -A * m[0] / m[1], code: 'l5m-coef-flip', hint: 'The slope is ' + t('-\\frac{A}{B}') + ' — the coefficient of ' + t('x') + ' goes on top.' });
+      alts.C.push({ v: -A * P1[0] + Bc * P1[1], code: 'l5m-c-carry', hint: 'Your ' + t('C') + ' fits a wrong value of ' + t('B') + '. Find ' + t('B') + ' first, then substitute a marked point.' });
+    }
+    var sl = 'Slope from the marked points ' + ptt(P1) + ' and ' + ptt(P2) + ': ' + t('m=\\frac{' + dy + '}{' + dx + '}' + (gcd(dy, dx) > 1 || m[1] === 1 || dy < 0 ? '=' + fT(m) : '')) + '.';
+    var mP = '\\left(' + fT(m) + '\\right)', s;
+    if (mode === 'B') s = sl + '<br>' + SL + ' So ' + t('-\\frac{A}{' + Bc + '}=' + fT(m)) + ', which gives ' + t('A=-' + mP + '(' + Bc + ')=' + A) + '.<br>Substitute ' + ptt(P1) + ': ' + t(subT(A, Bc, P1) + '+C=0') + ', so ' + t((A * P1[0] + Bc * P1[1]) + '+C=0') + ' and ' + t('C=' + C) + '.';
+    else if (mode === 'A') s = sl + '<br>' + SL + ' So ' + t('-\\frac{' + A + '}{B}=' + fT(m)) + ', that is ' + t('-' + A + '=' + mP + 'B') + ', which gives ' + t('B=' + Bc) + '.<br>Substitute ' + ptt(P1) + ': ' + t(subT(A, Bc, P1) + '+C=0') + ', so ' + t((A * P1[0] + Bc * P1[1]) + '+C=0') + ' and ' + t('C=' + C) + '.';
+    else s = sl + '<br>The ' + t('y') + '-intercept: substitute ' + ptt(P1) + ' into ' + t('y=' + fT(m) + 'x+b') + ': ' + t('b=' + P1[1] + '-' + mP + '(' + P1[0] + ')=' + fT(b)) + '.<br>In ' + t('Ax+By+C=0') + ' the ' + t('y') + '-intercept is ' + t('-\\frac{C}{B}') + ': ' + t('-\\frac{' + C + '}{B}=' + fT(b)) + ', so ' + t('B=' + Bc) + '.<br>' + SL + ' So ' + t('-\\frac{A}{' + Bc + '}=' + fT(m)) + ', which gives ' + t('A=' + A) + '.';
+    s += '<br>The equation is ' + t(lin3(A, Bc, C)) + '. <b>Check</b> with ' + ptt(P2) + ': ' + t(subT(A, Bc, P2) + (C < 0 ? '' : '+') + C + '=0') + ' ✓';
+    var giv = t(mode + '=' + val[mode]);
+    return K.P.fields('The line on the grid is the graph of an equation ' + t('Ax+By+C=0') + ' in which ' + giv + '. Determine ' + t(unk[0]) + ' and ' + t(unk[1]) + '.',
+      unk.map(function (k) { return { label: t(k + '='), name: k }; }), unk.map(function (k) { return numAlt(val[k], alts[k]); }), unk.map(function (k) { return String(val[k]); }),
+      unk.map(function (k) { return t(k + '=' + val[k]); }).join(', ') + ' — the line ' + t(lin3(A, Bc, C)), s,
+      ['Find the slope from the two marked points. ' + SL, mode === 'C' ? 'Find the ' + t('y') + '-intercept ' + t('b') + ' as well: in general form it equals ' + t('-\\frac{C}{B}') + '.' : 'Use the slope to get the missing coefficient of ' + t(mode === 'B' ? 'x' : 'y') + ', then substitute a marked point to find ' + t('C') + '.'], 'coefficients of general form from a graph (given ' + mode + ')');
+  }
+
+  /* E18: only the signs of A, B, C are known — draw a line through P that could be the graph */
+  function m18(r) {
+    for (var g = 0; g < 500; g++) {
+      var sB = r.pick([1, -1]), sC = r.pick([1, -1]), sm = -sB, sb = -sC * sB, P = [rnz5(r, -5, 5), rnz5(r, -5, 5)], good = [], badb = [], bads = [];
+      for (var x = -8; x <= 8; x++) for (var y = -8; y <= 8; y++) {
+        var dx = x - P[0], dy = y - P[1]; if (!dx || !dy || Math.abs(dx) > 4 || Math.abs(dy) > 6) continue;
+        var mm = fr(dy, dx), bb = P[1] - dy / dx * P[0]; if (Math.abs(bb) < 1e-9) continue;
+        var rec = { Q: [x, y], m: mm, L: ms(mm, P) };
+        if (Math.sign(dy / dx) === sm && Math.sign(bb) === sb) good.push(rec); else if (Math.sign(dy / dx) === sm) badb.push(rec); else bads.push(rec);
+      }
+      var gl = good.filter(function (q) { return Math.abs(q.Q[0] - P[0]) <= 3 && Math.abs(q.Q[1] - P[1]) <= 4; });
+      if (gl.length < 3 || !badb.length || !bads.length) continue;
+      var key = r.pick(gl), alt = good.filter(function (q) { return !sameL(q.L, key.L); })[0];
+      return { sB: sB, sC: sC, sm: sm, sb: sb, P: P, key: key, alt: alt, badb: r.pick(badb), bads: r.pick(bads) };
+    }
+    var P0 = [2, 3], k0 = { Q: [4, 4], m: [1, 2], L: ms([1, 2], P0) };
+    return { sB: -1, sC: 1, sm: 1, sb: 1, P: P0, key: k0, alt: { Q: [3, 5], m: [2, 1], L: ms([2, 1], P0) }, badb: { Q: [3, 6], m: [3, 1], L: ms([3, 1], P0) }, bads: { Q: [3, 2], m: [-1, 1], L: ms([-1, 1], P0) } };
+  }
+  function m18Part(sh) {
+    var P = sh.P, sm = sh.sm, sb = sh.sb, Lk = sh.key.L, Bs = sh.sB > 0 ? 'B>0' : 'B<0', Cs = sh.sC > 0 ? 'C>0' : 'C<0';
+    var slT = 'With ' + t('A>0') + ' and ' + t(Bs) + ', the slope ' + t('-\\frac{A}{B}') + ' is <b>' + (sm > 0 ? 'positive' : 'negative') + '</b>: the line ' + (sm > 0 ? 'rises' : 'falls') + ' from left to right.';
+    var ybT = 'With ' + t(Cs) + ' and ' + t(Bs) + ', the ' + t('y') + '-intercept ' + t('-\\frac{C}{B}') + ' is <b>' + (sb > 0 ? 'positive' : 'negative') + '</b>: the line crosses the ' + t('y') + '-axis ' + (sb > 0 ? 'above' : 'below') + ' the origin.';
+    var check = function (resp) {
+      var v = DR.norm(resp); if (DR.empty(v)) return form('empty', 'Draw your answer on the grid first.');
+      var g = DR.geom(v), ks = Object.keys(g.lines);
+      if (!ks.length) return wrong('l5-points-only', 'Draw a <b>line</b> (Line tool) through ' + ptt(P) + ', with arrows on both ends.');
+      if (ks.length > 1) return wrong('l5m-sg-one', 'Draw just <b>one</b> line — the graph of one equation.');
+      var S = g.lines[ks[0]];
+      if (Math.abs(S.A * P[0] + S.B * P[1] - S.C) > 1e-6) return wrong('l5m-sg-p', 'Your line has to pass through ' + ptt(P) + '.');
+      if (S.A === 0) return wrong('l5m-sg-hv', 'A horizontal line has no ' + t('x') + '-term (' + t('A=0') + '), but here ' + t('A>0') + '.');
+      if (S.B === 0) return wrong('l5m-sg-hv', 'A vertical line has no ' + t('y') + '-term (' + t('B=0') + '), but here ' + t('B') + ' is not ' + t('0') + '.');
+      var m = -S.A / S.B, b = S.C / S.B;
+      if (Math.sign(m) !== sm) return wrong('l5m-sg-slope', 'Your line ' + (m > 0 ? 'rises' : 'falls') + '. Solve for ' + t('y') + ': ' + t('y=-\\frac{A}{B}x-\\frac{C}{B}') + '. ' + slT);
+      if (Math.abs(b) < 1e-9) return wrong('l5m-sg-origin', 'Your line passes through the origin, so ' + t('C') + ' would be ' + t('0') + '. ' + ybT);
+      if (Math.sign(b) !== sb) return wrong('l5m-sg-yint', 'Right direction — but your line crosses the ' + t('y') + '-axis ' + (b > 0 ? 'above' : 'below') + ' the origin. ' + ybT);
+      if (!(S.iv.length === 1 && !isFinite(S.iv[0].lo) && !isFinite(S.iv[0].hi))) return wrong('graph-arrows', 'Right line — but a line keeps going: put <b>arrows</b> on both ends.');
+      if (g.pts.length) return wrong('l5m-sg-one', 'Your line works — remove the extra point' + (g.pts.length > 1 ? 's' : '') + ' that ' + (g.pts.length > 1 ? 'are' : 'is') + ' not on it.');
+      return ok();
+    };
+    var Q = sh.key.Q, p = K.P.graph('In the equation ' + t('Ax+By+C=0') + ' the numbers ' + t('A') + ', ' + t('B') + ' and ' + t('C') + ' are not given, but you know that ' + t('A>0') + ', ' + t(Bs) + ' and ' + t(Cs) + '. Draw a line through ' + ptt(P) + ' that <b>could</b> be the graph of this equation. (Many lines are possible.)',
+      pad(W8), check, lineV(Lk, W8),
+      'Solve for ' + t('y') + ': ' + t('y=-\\frac{A}{B}x-\\frac{C}{B}') + '.<br>' + slT + '<br>' + ybT + '<br>(Then the ' + t('x') + '-intercept ' + t('-\\frac{C}{A}') + ' is ' + (sh.sC > 0 ? 'negative' : 'positive') + '.)<br>So any line through ' + ptt(P) + ' that ' + (sm > 0 ? 'rises' : 'falls') + ' and crosses the ' + t('y') + '-axis ' + (sb > 0 ? 'above' : 'below') + ' the origin works — for example the line through ' + ptt(P) + ' and ' + ptt(Q) + ', ' + t(gen(Lk)) + ': ' + t('A=' + Lk.A + ',\\ B=' + Lk.B + ',\\ C=' + Lk.C) + ' ✓',
+      ['Solve ' + t('Ax+By+C=0') + ' for ' + t('y') + '. What <b>sign</b> do the slope ' + t('-\\frac{A}{B}') + ' and the ' + t('y') + '-intercept ' + t('-\\frac{C}{B}') + ' have?', 'A negative divided by a negative is positive. Then pick a second point so the line through ' + ptt(P) + ' has the right direction and crosses the ' + t('y') + '-axis on the right side of the origin.'], 'sign reasoning: sketch Ax+By+C=0 (' + Bs + ', ' + Cs + ')');
+    p.bad = [lineV(sh.badb.L, W8), lineV(sh.bads.L, W8), segV(Lk, W8)];
+    if (sh.alt) p.good = [lineV(sh.alt.L, W8)];
+    return p;
+  }
+
+  /* E19: line K takes its slope from one given line and an intercept from the other (general vs slope–point form) */
+  function m19(r) {
+    for (var g = 0; g < 800; g++) {
+      var v = r.int(0, 3), slopeG = v === 0 || v === 2, yKind = v < 2;
+      var a = r.pick(MSL), c = r.pick(MSL), mG = fr(r.pick([1, -1]) * a[0], a[1]), mS = fr(r.pick([1, -1]) * c[0], c[1]);
+      if (mG[0] * mS[1] === mS[0] * mG[1]) continue;
+      var t0 = rnz5(r, -6, 6), off = rnz5(r, -6, 6); if (off === t0) continue;
+      var I = yKind ? [0, t0] : [t0, 0], mK = slopeG ? mG : mS, K0 = ms(mK, I), hand = ms(slopeG ? mS : mG, I), giver = ms(mK, yKind ? [0, off] : [off, 0]);
+      var G = slopeG ? giver : hand, S = slopeG ? hand : giver;
+      if (Math.abs(G.B) < 2 || G.A < 2) continue;
+      var sp = lat(S, [-7, 7], [-7, 7]).filter(function (p) { return p[0] !== 0 && p[1] !== 0; }); if (!sp.length) continue;
+      var onK = lat(K0, W8[0], W8[1]).filter(function (p) { return p[0] !== I[0] || p[1] !== I[1]; }); if (onK.length < 2) continue;
+      return { slopeG: slopeG, yKind: yKind, mG: mG, mS: mS, mK: mK, t0: t0, I: I, K: K0, G: G, S: S, P1: r.pick(sp), hand: hand, giver: giver, Q: onK[0] };
+    }
+    return { slopeG: true, yKind: true, mG: [2, 3], mS: [-1, 2], mK: [2, 3], t0: 2, I: [0, 2], K: mb([2, 3], 2), G: line(2, -3, 12), S: mb([-1, 2], 2), P1: [-2, 3], hand: mb([-1, 2], 2), giver: line(2, -3, 12), Q: [3, 4] };
+  }
+  function m19Part(sh) {
+    var G = sh.G, S = sh.S, P1 = sh.P1, mK = sh.mK, I = sh.I, t0 = sh.t0, ax = sh.yKind ? 'y' : 'x', sN = sh.slopeG ? 'G' : 'S', iN = sh.slopeG ? 'S' : 'G';
+    var slS = sh.slopeG ? 'Slope of line G: in ' + t('Ax+By+C=0') + ' the slope is ' + t('-\\frac{A}{B}=-\\frac{' + G.A + '}{' + G.B + '}=' + fT(mK)) + '.' : 'Slope of line S: slope–point form shows it directly, ' + t('m=' + fT(mK)) + '.';
+    var inS;
+    if (sh.slopeG) inS = sh.yKind ? t('y') + '-intercept of line S: let ' + t('x=0') + ': ' + t('y' + sg(-P1[1]) + '=' + fT(sh.mS) + '(0' + sg(-P1[0]) + ')') + ', so ' + t('y=' + t0) + '.' : t('x') + '-intercept of line S: let ' + t('y=0') + ': ' + t('0' + sg(-P1[1]) + '=' + fT(sh.mS) + '(x' + sg(-P1[0]) + ')') + ', so ' + t('x=' + t0) + '.';
+    else inS = sh.yKind ? t('y') + '-intercept of line G: let ' + t('x=0') + ': ' + t(lin3(0, G.B, G.C)) + ', so ' + t('y=' + t0) + '.' : t('x') + '-intercept of line G: let ' + t('y=0') + ': ' + t(lin3(G.A, 0, G.C)) + ', so ' + t('x=' + t0) + '.';
+    var W = [{ L: sh.giver, code: 'l5m-mix-own', hint: 'That is line ' + sN + ' itself. It has the right slope, but ' + t('K') + ' must have the same ' + t(ax) + '-intercept as line ' + iN + '.' },
+      { L: sh.hand, code: 'l5m-mix-own', hint: 'That is line ' + iN + ' itself. It has the right ' + t(ax) + '-intercept, but ' + t('K') + ' must have the same slope as line ' + sN + '.' }];
+    var other = sh.yKind ? xInt(sh.hand) : yInt(sh.hand);
+    if (other[1] === 1 && other[0] !== 0) W.push({ L: ms(mK, sh.yKind ? [other[0], 0] : [0, other[0]]), code: 'l5m-mix-axis', hint: 'You used the ' + t(sh.yKind ? 'x' : 'y') + '-intercept of line ' + iN + '. ' + t('K') + ' shares its <b>' + t(ax) + '</b>-intercept.' });
+    if (sh.slopeG) W.push({ L: ms([-mK[0], mK[1]], I), code: 'l5-gr-sign', hint: 'Check the slope of line G: in ' + t('Ax+By+C=0') + ' it is ' + t('-\\frac{A}{B}') + ', with the minus sign.' });
+    else if (sh.yKind) W.push({ L: ms(mK, [0, -t0]), code: 'l5-gr-isign', hint: 'Check the sign when you solve ' + t(lin3(0, G.B, G.C)) + ' for ' + t('y') + '.' });
+    if (sh.slopeG && sh.yKind) W.push({ L: ms(mK, [0, P1[1]]), code: 'l5-gr-y1', hint: t(String(P1[1])) + ' isn’t the ' + t('y') + '-intercept of line S — it is the ' + t('y') + '-coordinate of the point ' + ptt(P1) + '. Set ' + t('x=0') + ' in its equation.' });
+    return gpart('Line ' + t('K') + ' has the same <b>slope</b> as line ' + sN + ' and the same <b>' + t(ax) + '-intercept</b> as line ' + iN + '. Graph line ' + t('K') + '.', sh.K, W8,
+      { wrong: W, anchor: [{ p: I, hint: 'Your line goes through the right ' + t(ax) + '-intercept, ' + ptt(I) + '. Now check the slope: it comes from line ' + sN + '.' }], placeHint: t('K') + ' must pass through the ' + t(ax) + '-intercept of line ' + iN + '.' },
+      slS + '<br>' + inS + '<br>So ' + t('K') + ' passes through ' + ptt(I) + ' with slope ' + t(fT(mK)) + ': plot ' + ptt(I) + ', step ' + stepT(mK) + ' (or back the other way) to reach points such as ' + ptt(sh.Q) + ', and draw the line with arrows. (' + t('K') + ': ' + t(si(sh.K)) + '.)',
+      ['Read each piece from the line that hands it over, using the form it is written in: the slope from line ' + sN + ', the ' + t(ax) + '-intercept from line ' + iN + '.', sh.yKind ? 'For a ' + t('y') + '-intercept, set ' + t('x=0') + '.' : 'For an ' + t('x') + '-intercept, set ' + t('y=0') + '.'], 'graph K: slope from ' + sN + ', ' + ax + '-intercept from ' + iN);
+  }
+
+  /* E20: slope–point form whose point is off the grid */
+  function m20(r) {
+    for (var g = 0; g < 800; g++) {
+      var a = r.pick(MSL), m = fr(r.pick([1, -1]) * a[0], a[1]), P0 = [r.int(-14, 14), r.int(-14, 14)];
+      if (Math.max(Math.abs(P0[0]), Math.abs(P0[1])) < 10 || Math.min(Math.abs(P0[0]), Math.abs(P0[1])) < 3) continue;
+      var L = ms(m, P0), on = lat(L, W8[0], W8[1]); if (on.length < 3) continue;
+      var Lf = ms(m, [-P0[0], -P0[1]]); if (sameL(Lf, L)) continue;
+      // the first on-grid lattice point reached by stepping the slope from P0
+      var best = null; for (var j = -12; j <= 12; j++) { var X = [P0[0] + j * m[1], P0[1] + j * m[0]]; if (Math.abs(X[0]) <= 8 && Math.abs(X[1]) <= 8 && (!best || Math.abs(j) < Math.abs(best.j))) best = { j: j, X: X }; }
+      if (!best || Math.abs(best.j) < 2) continue;
+      return { m: m, P: P0, L: L, j: best.j, X: best.X, X2: [best.X[0] + Math.sign(best.j) * m[1], best.X[1] + Math.sign(best.j) * m[0]] };
+    }
+    return { m: [2, 3], P: [-10, -12], L: ms([2, 3], [-10, -12]), j: 3, X: [-1, -6], X2: [2, -4] };
+  }
+  function m20Part(sh) {
+    var m = sh.m, P0 = sh.P, Lo = sh.L, j = sh.j, n = Math.abs(j), stp = j > 0 ? stepT(m) : (m[0] < 0 ? 'up ' + (-m[0]) : 'down ' + m[0]) + ', left ' + m[1], b = yInt(Lo);
+    var X2in = Math.abs(sh.X2[0]) <= 8 && Math.abs(sh.X2[1]) <= 8;
+    return gpart('Graph ' + t(ps(Lo, P0)) + ' on the grid.', Lo, W8, {
+      wrong: [{ L: ms(m, [-P0[0], -P0[1]]), code: 'l5-gr-pt', hint: 'The numbers in the brackets have the <b>opposite</b> signs to the coordinates: the point is ' + ptt(P0) + '.' },
+        { L: ms([-m[0], m[1]], P0), code: 'l5-gr-sign', hint: 'Check the direction: the slope ' + t(fT(m)) + ' is ' + (m[0] < 0 ? 'negative — the line falls' : 'positive — the line rises') + ' from left to right.' },
+        { L: ms([m[1] * (m[0] < 0 ? -1 : 1), Math.abs(m[0])], P0), code: 'l5-gr-flip', hint: 'Slope is <b>rise over run</b>: ' + t('m=' + fT(m)) + ' means ' + stepT(m) + '.' }],
+      anchor: [{ p: P0, hint: 'Your line goes through ' + ptt(P0) + ' — good. Now check the slope: ' + t('m=' + fT(m)) + ' means ' + stepT(m) + '.' }],
+      placeHint: 'It must pass through ' + ptt(P0) + ', the point the equation hands you (off the grid).' },
+      'The equation hands you the point ' + ptt(P0) + ' and the slope ' + t(fT(m)) + ' — but ' + ptt(P0) + ' is <b>off the grid</b>.<br>Step the slope from it toward the grid: ' + n + ' steps of ' + stp + ' (' + t('x') + ' changes by ' + t(j * m[1]) + ', ' + t('y') + ' by ' + t(j * m[0]) + ') reach ' + ptt(sh.X) + ', which is on the grid' + (X2in ? '; one more step gives ' + ptt(sh.X2) : '') + '.<br>(Or find the ' + t('y') + '-intercept: ' + t('x=0') + ' gives ' + t('y=' + P0[1] + '+' + '\\left(' + fT(m) + '\\right)(0' + sg(-P0[0]) + ')=' + fT(b)) + '.)<br>Draw the line through the on-grid points, with arrows.',
+      ['Which point and slope does the equation hand you? Where is that point?', 'You can step the slope as many times as you like — keep stepping until you land on the grid.'], 'graph slope-point, point off the grid');
+  }
+
   HW.defineLesson({
     id: 'u7l5', unit: 7, num: '5', title: 'Graphing Linear Equations: A Strategy for Every Form', outcome: 'RF6',
     blurb: 'Pick the fastest hand-graphing strategy for the form you are given — slope and y-intercept, a point and the slope, or the two intercepts — graph two lines on one grid, and recover an equation from a table.',
@@ -968,7 +1132,16 @@
             { html: '1. Always solve for ' + t('y') + ' first. 2. Plot ' + t('b') + ' and step ' + t('m') + '. 3. Use a table if ' + t('m') + ' is a fraction.', why: t('x=4') + ' can’t be solved for ' + t('y') + ', and a fractional slope is easy to step.' },
             { html: '1. If it is in general form, use the intercepts. 2. Otherwise use a table of values. 3. Vertical lines have slope 0.', why: t('3x-5y-4=0') + ' is general form with fractional intercepts, and a vertical line’s slope is undefined, not 0.' }],
             'Start from the form. Slope forms: plot the point and step (this covers ' + t('y=\\frac{5}{2}x') + ', from the origin). One variable: horizontal/vertical (' + t('x=4') + '). General form: intercepts if ' + t('A') + ' and ' + t('B') + ' divide ' + t('C') + '; otherwise a table (' + t('3x-5y-4=0') + ').', ['Test each flowchart on ' + t('y=\\frac{5}{2}x') + ', ' + t('x=4') + ' and ' + t('3x-5y-4=0') + '.'], 'MC flowchart');
-        } }] }
+        } }] },
+      /* ---- Mastery challenge (RF6) ---- */
+      { num: '17', section: 'Mastery challenge', shared: m17,
+        stem: function (sh) { return 'The line on the grid passes through the two marked lattice points.' + fig(sh.L, W6, { marks: [sh.P1, sh.P2], max: 260 }); },
+        parts: [{ id: 'e17', level: 'MAS', outcome: 'RF6', make: function (r, sh) { return m17Part(sh); } }] },
+      { num: '18', shared: m18, parts: [{ id: 'e18', level: 'MAS', outcome: 'RF6', make: function (r, sh) { return m18Part(sh); } }] },
+      { num: '19', shared: m19,
+        stem: function (sh) { return 'Two lines are given in different forms.<br>' + nw('<b>Line G:</b> ' + t(gen(sh.G))) + '<br>' + nw('<b>Line S:</b> ' + t(ps(sh.S, sh.P1))); },
+        parts: [{ id: 'e19', level: 'MAS', outcome: 'RF6', make: function (r, sh) { return m19Part(sh); } }] },
+      { num: '20', shared: m20, parts: [{ id: 'e20', level: 'MAS', outcome: 'RF6', make: function (r, sh) { return m20Part(sh); } }] }
     ]
   });
 })(window);

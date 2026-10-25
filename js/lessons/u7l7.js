@@ -221,6 +221,49 @@
         return { M: [1, 4], C: [-5, 6], D: [7, 2], mCD: Q(-1, 3), n: Q(3), T: L3(3, -1, 1), Pt: [2, 7] };
       }
   function PP(r) { var h, v; do { h = rnz(r, -7, 7); v = rnz(r, -7, 7); } while (Math.abs(h) === Math.abs(v)); return { P: [h, v] }; }
+  /* ---------------- Mastery challenge (Extra 21–22, RF7): the equation from a condition, worked backwards ---------------- */
+  HW.addCodes({ 'l7m-area-sign': 'Intercept on the wrong side of the origin', 'l7m-area-b': 'Used the area as the y-intercept', 'l7m-area-swap': 'Used the x-intercept distance as b',
+    'l7m-cm-swap': 'Read “b is c times m” backwards', 'l7m-cm-sign': 'Sign slip solving for the slope' });
+  function MAS21(r) {
+    for (var g = 0; g < 300; g++) {
+      var pq = r.pick([[1, 2], [2, 3], [3, 4], [1, 3], [3, 2], [2, 1], [3, 1], [4, 3], [1, 4], [2, 5], [5, 2], [4, 1], [3, 5], [5, 3]]), j = r.pick([1, 2, 2, 3]), p = pq[0], q = pq[1];
+      if ((p * q * j * j) % 2 || p * j > 12 || q * j > 15) continue;
+      var sm = r.pick([1, -1]), sb = r.pick([1, -1]), m = Q(sm * p, q), b = sb * p * j;
+      return { p: p, q: q, j: j, sm: sm, sb: sb, m: m, b: b, xi: -sb * sm * q * j, S: p * q * j * j / 2, L: lineMB(m, b) };
+    }
+    return { p: 3, q: 2, j: 2, sm: -1, sb: 1, m: Q(-3, 2), b: 6, xi: 4, S: 12, L: lineMB(Q(-3, 2), 6) };
+  }
+  function MAS21Part(o) {
+    var m = o.m, b = o.b, L = o.L, pj = o.p * o.j, qj = o.q * o.j, side = o.sb > 0 ? 'positive' : 'negative';
+    return lineP('A line has slope ' + t(qT(m)) + ' and crosses the <b>' + side + '</b> ' + t('y') + '-axis. The line and the two axes enclose a triangle with an area of ' + t(o.S) + ' square units. Determine the equation of the line in <b>slope–intercept form</b>.', L,
+      { form: 'slope-intercept', wrong: [
+        { is: lineMB(m, -b), code: 'l7m-area-sign', hint: 'That triangle has the right area, but your line crosses the ' + (o.sb > 0 ? 'negative' : 'positive') + ' ' + t('y') + '-axis. Choose the sign of ' + t('b') + ' to match the question.' },
+        { is: lineMB(m, o.sb * o.S), code: 'l7m-area-b', hint: 'The area is not the ' + t('y') + '-intercept. Write the area in terms of ' + t('b') + ': ' + t('\\frac{1}{2}\\times') + '(the two intercept distances).' },
+        { is: lineMB(m, o.sb * qj), code: 'l7m-area-swap', hint: 'Your ' + t('b') + ' is the distance to the <b>' + t('x') + '</b>-intercept. Solve the area equation for ' + t('b') + ', the ' + t('y') + '-intercept.' }] },
+      'Let the ' + t('y') + '-intercept be ' + t('(0,\\ b)') + ', with ' + t('b' + (o.sb > 0 ? '>' : '<') + '0') + '.<br>' + t('x') + '-intercept: ' + t('0=' + qT(m) + 'x+b') + ' gives ' + t('x=' + term(Q(-o.q, o.sm * o.p), 'b', true)) + '.<br>' +
+        'The triangle is right-angled at the origin, with legs ' + t('|b|') + ' and ' + t(term(Q(o.q, o.p), '|b|', true)) + ':<br>' + t('\\frac{1}{2}\\,|b|\\cdot ' + term(Q(o.q, o.p), '|b|', true) + '=' + o.S) + ', so ' + t('b^{2}=\\frac{2(' + o.S + ')(' + o.p + ')}{' + o.q + '}=' + pj * pj) + ' and ' + t('|b|=' + pj) + '.<br>' +
+        'The line crosses the ' + side + ' ' + t('y') + '-axis, so ' + t('b=' + b) + ': ' + t(sT(L)) + '.<br><b>Check.</b> Intercepts ' + t(ptT([0, b])) + ' and ' + t(ptT([o.xi, 0])) + ': area ' + t('\\frac{1}{2}(' + pj + ')(' + qj + ')=' + o.S) + ' ✓',
+      ['Call the ' + t('y') + '-intercept ' + t('b') + '. Set ' + t('y=0') + ' to write the ' + t('x') + '-intercept in terms of ' + t('b') + '.', 'Area of the triangle ' + t('=\\frac{1}{2}\\times') + '(distance to the ' + t('x') + '-intercept)' + t('\\times') + '(distance to the ' + t('y') + '-intercept). Solve for ' + t('b') + ', then pick its sign.'], 'line from slope and triangle area');
+  }
+  function MAS22(r) {
+    for (var g = 0; g < 400; g++) {
+      var c = r.pick([2, 3, 4, 5]), h = rnz(r, -7, 7), k = rnz(r, -9, 9);
+      if (h + c === 0) continue;
+      var m = Q(k, h + c); if (m[1] > 6 || Math.abs(qv(m)) > 5) continue;
+      var b = qm(m, c);
+      return { c: c, h: h, k: k, m: m, b: b, L: lineMB(m, b) };
+    }
+    return { c: 3, h: 2, k: 7, m: Q(7, 5), b: Q(21, 5), L: lineMB(Q(7, 5), Q(21, 5)) };
+  }
+  function MAS22Part(o) {
+    var c = o.c, h = o.h, k = o.k, m = o.m, b = o.b, L = o.L, P = [h, k], wd = ['', '', 'twice', 'three times', 'four times', 'five times'][c], W = [];
+    var bs = Q(k, c * h + 1); W.push({ is: lineMB(qm(bs, c), bs), code: 'l7m-cm-swap', hint: 'In your line the <b>slope</b> is ' + wd + ' the ' + t('y') + '-intercept. Here it is the other way round: ' + t('b=' + c + 'm') + '.' });
+    if (h !== c) { var m2 = Q(k, h - c); W.push({ is: lineMB(m2, qm(m2, c)), code: 'l7m-cm-sign', hint: 'Substitute ' + t('P') + ' into ' + t('y=mx+' + c + 'm') + ' again: ' + t(k + '=' + h + 'm+' + c + 'm') + '. Collect the ' + t('m') + '-terms carefully.' }); }
+    return lineP('A line passes through ' + t('P' + ptT(P)) + ', and its ' + t('y') + '-intercept is <b>' + wd + '</b> its slope. Determine the equation of the line in <b>general form</b>.', L, { form: 'general', wrong: W },
+      'Call the slope ' + t('m') + '. Then ' + t('b=' + c + 'm') + ', so the line is ' + t('y=mx+' + c + 'm') + ' — only one unknown.<br>' + t('P') + ' is on the line: ' + t(k + '=m(' + h + ')+' + c + 'm') + ', so ' + t(k + '=' + term(h + c, 'm', true)) + ' and ' + t('m=' + qT(m)) + '.<br>' +
+        'Then ' + t('b=' + c + '\\left(' + qT(m) + '\\right)=' + qT(b)) + ': ' + t(sT(L)) + ' ⟹ ' + t(gT(L)) + '.<br><b>Check.</b> ' + t(qT(b) + '=' + c + '\\times\\left(' + qT(m) + '\\right)') + ' ✓, and ' + t('P') + ': ' + t(sub(L, P) + '=0') + ' ✓',
+      ['Write the line as ' + t('y=mx+b') + ' with ' + t('b=' + c + 'm') + ' — one unknown, ' + t('m') + '.', 'Substitute ' + t('P' + ptT(P)) + ' and solve for ' + t('m') + '.'], 'line through P with b = c·m');
+  }
   var EXTRA = [
     /* ---------------- Part A — Q1 ---------------- */
     { num: '1', section: 'Extra practice A — One line, every form', shared: ep1,
@@ -1202,7 +1245,10 @@
         { id: 'e20f', sub: 'f', level: 'EMG', outcome: 'RF4', make: function (r, o) {
           return B.approx('Express pond B’s rate in kilograms per day, to the nearest hundredth. (Is pond B growing any faster in that wording?)', o.avg / 7, 2, { after: 'kg per day', diag: function (v) { return Math.abs(v - K.roundTo(o.avg * 7, 2)) < 1e-9 ? { code: 'unit-conv', hint: 'A week is 7 days, so the rate per day is smaller: divide by 7.' } : null; } },
             t(numDec(o.avg) + '\\div 7=' + dec(Math.floor(o.avg / 7 * 10000) / 10000) + '\\ldots\\approx ' + K.roundTo(o.avg / 7, 2).toFixed(2)) + ' kg per day. <b>No</b> — same pond, same growth; only the unit of time (and so the number) changed.', ['Divide the weekly rate by 7.'], 'rate per day');
-        } }] }
+        } }] },
+    /* ---------------- Mastery challenge (RF7) ---------------- */
+    { num: '21', section: 'Mastery challenge', shared: MAS21, parts: [{ id: 'e21', level: 'MAS', outcome: 'RF7', make: function (r, o) { return MAS21Part(o); } }] },
+    { num: '22', shared: MAS22, parts: [{ id: 'e22', level: 'MAS', outcome: 'RF7', make: function (r, o) { return MAS22Part(o); } }] }
   ];
 
   HW.defineLesson({
