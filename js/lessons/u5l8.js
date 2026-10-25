@@ -1504,6 +1504,104 @@
           numDiag(rt, [{ v: dd / dt, code: 'per-min', hint: 'That is km per <b>minute</b>. Multiply by ' + t('60') + ' for km/h.' }, { v: (d1 + dd) / (t1 + dt) * 60, code: 'wrong-line', hint: 'Use the <b>changes</b>: ' + t((d1 + dd) + '-' + d1) + ' km over ' + t((t1 + dt) + '-' + t1) + ' min.' }, { v: dt / dd, code: 'rate-flip', hint: 'Rate = change in distance ÷ change in time.' }, { v: dd, code: 'rate-unit', hint: 'That is the change in distance. Divide by the time in hours.' }]),
           'Rise: ' + t((d1 + dd) + '-' + d1 + '=' + dd + units('km')) + '. Run: ' + t(dt + units('min') + '=' + fr(dt / 60) + units('h')) + '. ' + t('\\text{rate}=' + dd + '\\div ' + fr(dt / 60) + '=' + rt + units('km/h')) + '.', ['Find the change in distance and the change in time; change minutes to hours.'], 'rate from two points ' + rt);
         p.good = [('00' + rt).slice(-3)]; return p;
+      } }] },
+
+    /* ---------------- Mastery challenge (RF1) ---------------- */
+    { num: '19', section: 'Mastery challenge', stem: function (s) {
+        return 'Water runs into an empty ' + s.v.name + ' from ' + s.src + ' at a constant rate until it is full to the rim. The ' + s.v.name + ' has ' + s.v.desc + '. The dashed line in the picture marks the ' + s.v.sh + '.' + vaseSvg(s.v, s.H1);
+      }, shared: function (r) { return { v: r.pick(VASES), H1: r.pick([2, 3, 4]), src: r.pick(['a tap', 'a hose', 'a jug held steady', 'a measuring pump']) }; }, parts: [
+      { id: 'e19', level: 'MAS', outcome: 'RF1', make: function (r, s) {
+        var v = s.v, H1 = s.H1, key = poly(VKEY[v.id][H1]);
+        var inp = spad({ xTitle: 'Time', yTitle: 'Height of water', bg: { segs: [{ pts: [[0, 6], [12, 6]], dash: true, color: '#aab1bd' }, { pts: [[0, H1], [12, H1]], dash: true, color: '#c9ced6' }] } });
+        var bad = VASES.filter(function (o) { return o.id !== v.id; }).map(function (o) { return poly(VKEY[o.id][H1]); }).concat([poly([[0, 0], [10, 6]])]);
+        return storyPart('Sketch the height of the water against time, from empty to full. On the grid the upper dashed line is the rim and the lower dashed line is the ' + v.sh + ', at the same heights as in the picture. (Shape only: no scale.)', inp, vaseCheck(v, H1), key,
+          v.sol, ['Split the ' + v.name + ' at the ' + v.sh + '. For each part ask: as the water rises, does the width stay the same, get wider, or get narrower?', 'Same width: a straight piece. Getting wider: flatter and flatter. Getting narrower: steeper and steeper. Then compare the two pieces that meet at the ' + v.sh + '.'],
+          'sketch: two-part vase ' + v.id, bad);
+      } }] },
+    { num: '20', stem: function (c) {
+        return c.nm[0] + ' sets off from a trailhead and walks along a trail at a steady pace. The graph shows ' + c.nm[0] + '’s distance from the trailhead.' +
+          ctx({ X: 130, Y: c.D + 1, gx: 10, gy: 1, xt: 'Time since ' + c.nm[0] + ' set off (min)', yt: 'Distance (km)', segs: [{ pts: [[0, 0], [120, c.D]], end: 'closed' }], xT: tickList(20, 120, 20), yT: tickList(c.D > 8 ? 2 : 1, c.D, c.D > 8 ? 2 : 1),
+            notes: [{ x: 84, y: c.D * 0.7, dx: -10, dy: -10, text: c.nm[0], anchor: 'end', bold: true, color: C1 }], aria: 'distance from the trailhead against time' });
+      }, shared: function (r) { return chase(r); }, parts: [
+      { id: 'e20', level: 'MAS', outcome: 'RF1', make: function (r, c) {
+        var a = c.nm[0], b = c.nm[1], hd = c.va * c.t0 / 60;
+        if (c.mode === 'when') {
+          var tb = c.tc - c.t0, f = [numBox('Catch-up time:', 'min after ' + a + ' set off'), numBox('Distance from the trailhead:', 'km')];
+          var p = K.P.fields(b + ' leaves the trailhead ' + t(c.t0) + ' minutes after ' + a + ' and cycles along the same trail at a steady ' + t(c.vb + units('km/h')) + '. When does ' + b + ' catch up with ' + a + ', and how far from the trailhead are they then? (Give the time in minutes after ' + a + ' set off.)', f,
+            [K.number(c.tc, numDiag(c.tc, [{ v: tb, code: 'head-start', hint: 'That is how long ' + b + ' cycles. The question asks for the time after <b>' + a + '</b> set off: add the ' + t(c.t0) + '-minute head start.' },
+              { v: c.vb * c.t0 / (c.vb + c.va), code: 'catch-rate', hint: b + ' closes the gap at the <b>difference</b> of the two speeds, not their sum: ' + t(c.vb + '-' + c.va) + ' km/h.' },
+              { v: c.tc / 60, code: 'min-not-h', hint: 'Give the time in <b>minutes</b>.' }, { v: tb / 60, code: 'min-not-h', hint: 'Give the time in <b>minutes after ' + a + ' set off</b>.' }])),
+              K.number(c.d, numDiag(c.d, [{ v: c.va * tb / 60, code: 'head-start', hint: 'That is how far ' + a + ' walks while ' + b + ' cycles. ' + a + ' also had a ' + t(c.t0) + '-minute head start.' }, { v: c.vb * c.tc / 60, code: 'head-start', hint: b + ' only cycles for ' + t(tb) + ' minutes, not ' + t(c.tc) + '.' }, { v: c.d * 60, code: 'min-not-h', hint: 'The speeds are per <b>hour</b>: change the minutes to hours first.' }]))],
+            [String(c.tc), dn(c.d)], t(c.tc + units('min')) + ' after ' + a + ' set off, ' + t(dn(c.d) + units('km')) + ' from the trailhead',
+            'From the graph ' + a + ' walks ' + t(c.D + units('km')) + ' in ' + t('120' + units('min') + '=2' + units('h')) + ', so ' + a + '’s speed is ' + t(c.va + units('km/h')) + '.<br>Head start: in ' + t(c.t0) + ' min ' + a + ' walks ' + t(c.va + '\\times\\frac{' + c.t0 + '}{60}=' + dn(hd) + units('km')) + '.<br>' +
+              b + ' gains ' + t(c.vb + '-' + c.va + '=' + (c.vb - c.va) + units('km/h')) + ', so the gap closes after ' + t(dn(hd) + '\\div ' + (c.vb - c.va) + '=' + fr(tb / 60) + units('h') + '=' + tb + units('min')) + ' of cycling.<br>That is ' + t(c.t0 + '+' + tb + '=' + c.tc) + ' min after ' + a + ' set off, at ' + t(c.vb + '\\times ' + fr(tb / 60) + '=' + dn(c.d) + units('km')) + ' from the trailhead. Check: ' + a + ' walks ' + t(c.va + '\\times ' + fr(c.tc / 60) + '=' + dn(c.d) + units('km')) + ' ✓',
+            ['Read ' + a + '’s speed off the graph first.', 'When ' + b + ' catches up, both are the same distance from the trailhead. How big is ' + a + '’s head start, and how fast does ' + b + ' close it?'], 'catch-up time and place');
+          p.bad = [[String(tb), dn(c.d)], [String(c.tc), dn(c.va * tb / 60)]];
+          return p;
+        }
+        var dt = c.ta - c.t0;
+        return numPart(b + ' leaves the trailhead ' + t(c.t0) + ' minutes after ' + a + ', cycles along the same trail at a steady speed, and catches up with ' + a + ' exactly ' + t(c.dm + units('km')) + ' from the trailhead. How fast does ' + b + ' cycle, in km/h?', c.vb,
+          [{ v: 60 * c.dm / c.ta, code: 'head-start', hint: 'That speed would take ' + b + ' the full ' + t(c.ta) + ' minutes. ' + b + ' left ' + t(c.t0) + ' minutes late, so had only ' + t(c.ta + '-' + c.t0) + ' minutes to cover the ' + t(c.dm + units('km')) + '.' },
+            { v: c.dm / dt, code: 'per-min', hint: 'That is kilometres per <b>minute</b>. Change the minutes to hours (or multiply by ' + t('60') + ').' },
+            { v: dt / c.dm, code: 'rate-flip', hint: 'Speed = distance ÷ time, not time ÷ distance.' }, { v: c.va, code: 'wrong-line', hint: 'That is ' + a + '’s speed. ' + b + ' covers the same distance in less time.' },
+            { v: 60 * c.dm / (c.ta + c.t0), code: 'head-start', hint: b + ' leaves <b>later</b> than ' + a + ', so ' + b + ' has less time, not more: subtract the ' + t(c.t0) + ' minutes.' }],
+          'From the graph ' + a + ' walks at ' + t(c.D + '\\div 2=' + c.va + units('km/h')) + ' and reaches ' + t(c.dm + units('km')) + ' at ' + t(c.ta + units('min')) + ' — that is when ' + b + ' catches up.<br>' + b + ' left at ' + t(c.t0 + units('min')) + ', so took ' + t(c.ta + '-' + c.t0 + '=' + dt + units('min') + '=' + fr(dt / 60) + units('h')) + ' to cycle ' + t(c.dm + units('km')) + ':<br>' + t('\\text{speed}=' + c.dm + '\\div ' + fr(dt / 60) + '=' + c.vb + units('km/h')) + '.',
+          ['When does ' + a + ' reach ' + t(c.dm + units('km')) + '? Read it off the graph.', 'How long did ' + b + ' have to ride that far?'], 'catch-up: cyclist speed', { after: 'km/h' });
+      } }] },
+    { num: '21', stem: function (g) {
+        var X = Math.ceil((g.Dm + 60) / 100) * 100, Y = Math.ceil((g.V0 + 6) / 10) * 10;
+        return 'On a road trip, a car’s trip computer logged ' + t('V') + ', the gas left in the tank (L), against ' + t('d') + ', the distance driven (km), but only for part of the trip: the graph shows the log from ' + t(g.d1 + units('km')) + ' to ' + t(g.d2 + units('km')) + '. The car started the trip with a full tank at ' + t('d=0') + ' and used gas at the same steady rate the whole way.' +
+          ctx({ X: X, Y: Y, gx: 50, gy: 5, xt: 'Distance driven, d (km)', yt: 'Gas left, V (L)', segs: [{ pts: [[g.d1, g.V1], [g.d2, g.V2]], start: 'closed', end: 'closed' }], xT: tickList(100, X - 50, 100), yT: tickList(10, Y - 5, 10),
+            notes: [{ x: g.d1, y: g.V1, dx: 6, dy: -9, text: '(' + g.d1 + ', ' + g.V1 + ')', anchor: 'start', size: 11.5 }, { x: g.d2, y: g.V2, dx: 6, dy: -9, text: '(' + g.d2 + ', ' + g.V2 + ')', anchor: 'start', size: 11.5 }], aria: 'gas left against distance driven, for part of a trip' });
+      }, shared: function (r) { return fuelLog(r); }, parts: [
+      { id: 'e21', level: 'MAS', outcome: 'RF1', make: function (r, g) {
+        var m = g.m, am = -m, f = [numBox('Rate of change of V:', 'L/km'), numBox('Gas in the full tank:', 'L'), numBox('Distance on a full tank until empty:', 'km')];
+        var p = K.P.fields('Find the rate of change of ' + t('V') + ' (with its sign), how much gas a full tank holds, and how far the car can be driven on a full tank before it runs out of gas.', f,
+          [K.number(m, numDiag(m, [{ v: am, code: 'rate-sign', hint: 'Check the sign: the gas left goes <b>down</b> as the distance goes up, so the rate of change is negative.' }, { v: (g.d2 - g.d1) / (g.V2 - g.V1), code: 'rate-flip', hint: 'Rate of change = change in gas ÷ change in distance (vertical ÷ horizontal), in L per km.' },
+            { v: -(g.d2 - g.d1) / (g.V2 - g.V1), code: 'rate-flip', hint: 'Rate of change = change in gas ÷ change in distance (vertical ÷ horizontal), in L per km.' }, { v: 100 * m, code: 'rate-unit', hint: 'That is the change per <b>100</b> km. The question asks for L per km.' }, { v: -100 * m, code: 'rate-unit', hint: 'That is the gas used per <b>100</b> km. The question asks for the rate of change in L per km (with its sign).' }])),
+            K.number(g.V0, numDiag(g.V0, [{ v: g.V1, code: 'extrap-start', hint: 'That is the gas left at ' + t(g.d1 + units('km')) + ', where the log starts. The car had already driven ' + t(g.d1 + units('km')) + ' by then: work backwards and add back the gas used.' },
+              { v: g.V1 - am * g.d1, code: 'rate-sign', hint: 'Going <b>back</b> to ' + t('d=0') + ' there is <b>more</b> gas in the tank, not less: add the gas used in the first ' + t(g.d1 + units('km')) + '.' }, { v: g.V2, code: 'extrap-start', hint: 'That is the gas left at the end of the log. Work back to ' + t('d=0') + '.' }])),
+            K.number(g.Dm, numDiag(g.Dm, [{ v: g.V2 / am, code: 'extrap-end', hint: 'That is how much <b>farther</b> the car can go after the ' + t(g.d2 + units('km')) + ' already driven. The question asks for the whole distance on a full tank.' },
+              { v: g.V1 / am, code: 'extrap-end', hint: 'That is how much farther the car can go after ' + t(g.d1 + units('km')) + '. Start from the full tank at ' + t('d=0') + '.' }, { v: g.V0 * am, code: 'rate-flip', hint: 'Divide the gas in the tank by the gas used per km.' }]))],
+          [dn(m), String(g.V0), String(g.Dm)], t(dn(m) + units('L/km')) + '; ' + t(g.V0 + units('L')) + '; ' + t(g.Dm + units('km')),
+          'Rate of change: ' + t('\\frac{' + g.V2 + '-' + g.V1 + '}{' + g.d2 + '-' + g.d1 + '}=\\frac{' + (g.V2 - g.V1) + '}{' + (g.d2 - g.d1) + '}=' + dn(m) + units('L/km')) + ': the car uses ' + t(dn(am) + units('L')) + ' of gas for every km.<br>' +
+            'Full tank (the ' + t('V') + '-intercept): back up ' + t(g.d1 + units('km')) + ' from ' + t('(' + g.d1 + ',\\ ' + g.V1 + ')') + ': ' + t(g.V1 + '+' + dn(am) + '\\times ' + g.d1 + '=' + g.V1 + '+' + dn(am * g.d1) + '=' + g.V0 + units('L')) + '.<br>' +
+            'Empty (the ' + t('d') + '-intercept): ' + t(g.V0 + '\\div ' + dn(am) + '=' + g.Dm + units('km')) + '. Check from the end of the log: ' + t(g.d2 + '+' + g.V2 + '\\div ' + dn(am) + '=' + g.d2 + '+' + dn(g.V2 / am) + '=' + g.Dm) + ' ✓',
+          ['Find the rate of change from the two logged points first.', 'Extend the line both ways: back to ' + t('d=0') + ' (full tank) and forward to ' + t('V=0') + ' (empty). How much gas is used in ' + t(g.d1 + units('km')) + '?'], 'fuel log: rate and both intercepts');
+        p.bad = [[dn(am), String(g.V0), String(g.Dm)], [dn(m), String(g.V1), String(g.Dm)], [dn(m), String(g.V0), dn(g.V2 / am)]];
+        return p;
+      } }] },
+    { num: '22', stem: function (s) {
+        var X = s.T + 5, vm = Math.max.apply(null, s.v), Y = Math.ceil((vm + 8) / 6) * 6, segs = [];
+        s.v.forEach(function (v, i) { segs.push({ pts: [[s.t[i], v], [s.t[i + 1], v]] }); if (i + 1 < s.v.length) segs.push({ pts: [[s.t[i + 1], v], [s.t[i + 1], s.v[i + 1]]], dash: true, color: '#aab1bd' }); });
+        var sp = s.v.filter(function (v, i, a) { return v > 0 && a.indexOf(v) === i; }).sort(function (a, b) { return a - b; });
+        return 'The graph shows the <b>speed</b> of ' + s.who + ' on a trip along a straight road, always moving away from its starting point (it never turns back). Each change of speed is treated as instant (the dashed lines).' +
+          ctx({ X: X, Y: Y, gx: 5, gy: 6, xt: 'Time (min)', yt: 'Speed (km/h)', segs: segs, xT: s.t.slice(1).map(function (x) { return [x, String(x)]; }), yT: sp.map(function (v) { return [v, String(v)]; }), aria: 'speed against time for a trip with a stop' });
+      }, shared: function (r) { return speedTrip(r); }, parts: [
+      { id: 'e22', level: 'MAS', outcome: 'RF1', make: function (r, s) {
+        var X = s.T + 5, Y = s.D + 1, n = s.v.length, right = s.t.map(function (x, i) { return [x, s.c[i]]; });
+        var inp = { x: [0, X], y: [0, Y], grid: 5, gridY: 1, labels: 10, labelsY: s.D > 10 ? 2 : 1, firstQuadrant: true, xName: ' ', yName: ' ', xTitle: 'Time (min)', yTitle: 'Distance from start (km)',
+          unitX: 310 / X, unitY: 230 / Y, snapX: 5, snapY: 1, tools: ['line'], max: 380 };
+        var legs = s.v.map(function (v, i) { return v * s.dt[i] / 60; });
+        var own = [[0, 0]]; legs.forEach(function (L, i) { own.push([s.t[i + 1], s.v[i] ? L : own[own.length - 1][1]]); });
+        var nostop = [[0, 0]]; legs.forEach(function (L, i) { if (s.v[i]) { var q = nostop[nostop.length - 1]; nostop.push([q[0] + s.dt[i], q[1] + L]); } });
+        var wr = [{ is: poly(own), code: 'dist-vs-travel', hint: 'The vertical axis is the <b>total</b> distance from the start, so each stage begins where the last one ended: add each stage’s distance to the total so far.' },
+          { is: poly(nostop), code: 'one-stop', hint: 'Where is the stop? While the speed is ' + t('0') + ' the car is not moving, so its distance doesn’t change: a <b>flat</b> piece for those minutes, and the later stages start later.' },
+          { is: poly([[0, 0], [s.T, s.D]]), code: 'avg-speed', hint: 'One straight line would mean one steady speed for the whole trip. Each stage has its own speed, so it is its own straight piece with its own steepness (and the stop is flat).' }];
+        var exact = K.graphExact(poly(right), { wrong: wr });
+        var chk = function (v) {
+          var res = exact(v); if (res.v !== 'wrong' || res.hint) return res;
+          var ph = DR.phases(v);
+          if (ph.vertical) return wrong('story-vertical', 'A vertical piece would mean covering distance in no time. The <b>speed</b> can change instantly, but the distance changes only as time passes.');
+          if (ph.phases.some(function (p) { return p.dir === 'down'; })) return wrong('story-dir', 'The car never turns back, so its distance from the start never goes down. (A graph that goes down copies the shape of the speed graph.)');
+          return wrong(res.code, 'Work out one stage at a time: distance in a stage = speed × time in hours (minutes ÷ 60). Each corner is (end time of the stage, total distance so far). Start at ' + t('(0,\\ 0)') + ' and join the corners with straight segments.');
+        };
+        var pp = K.P.graph('Draw the graph of its <b>distance from the start</b> (km) against time (min).', inp, chk, poly(right),
+          legs.map(function (L, i) { return 'Stage ' + (i + 1) + ' (' + s.t[i] + '–' + s.t[i + 1] + ' min): ' + (s.v[i] ? t(s.v[i] + '\\times\\frac{' + s.dt[i] + '}{60}=' + dn(L) + units('km')) + ', total ' + t(dn(s.c[i + 1]) + units('km')) : 'speed ' + t('0') + ': stopped, total stays ' + t(dn(s.c[i + 1]) + units('km')) + ' (flat)'); }).join('<br>') +
+            '<br>Corners: ' + right.map(function (q) { return t('(' + q[0] + ',' + dn(q[1]) + ')'); }).join(', ') + '. Each moving stage is a straight piece (a constant speed is a constant rate of change); the faster the stage, the steeper the piece.',
+          ['Distance in each stage = speed × time. The speeds are per hour, the times in minutes.', 'Distance from the start adds up stage by stage. What does a speed of 0 look like on a distance graph?'], 'speed graph to distance graph');
+        pp.bad = [poly(own), poly(nostop), poly([[0, 0], [s.T, s.D]]), poly(right.slice(0, n))].filter(function (b) { return JSON.stringify(b) !== JSON.stringify(poly(right)); });
+        return pp;
       } }] }
   ];
 
@@ -1540,6 +1638,127 @@
   function flaskSvg(wideBottom) {
     var p = wideBottom ? 'M44 6 L44 52 L20 52 L20 100 L80 100 L80 52 L56 52 L56 6' : 'M20 6 L20 54 L44 54 L44 100 L56 100 L56 54 L80 54 L80 6';
     return '<svg class="fig-svg" viewBox="0 0 100 108" style="max-width:90px" role="img" aria-label="the flask"><rect width="100" height="108" fill="#fff"/><path d="' + p + '" fill="#e6f2f1" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+  }
+
+  /* ---------- Mastery challenge helpers (Extra 19–22) ---------- */
+  HW.addCodes({ 'head-start': 'Left out (or misused) the head start', 'catch-rate': 'Closing speed wrong (added the speeds)', 'extrap-start': 'Used a logged point as the starting value', 'extrap-end': 'Distance to empty measured from the wrong point' });
+  /* EP19: a two-part vase filled at a constant rate. lo / hi: how the height rises below / above the shoulder ('straight' |
+   * 'gentler' | 'steeper'); after: the rise just above the shoulder is 'flatter' or 'steeper' than just below it (where the width
+   * is continuous and a straight part meets a curved one). w: full widths (px) at the base, the shoulder and the rim. */
+  var VASES = [
+    { id: 'trumpet', lo: 'straight', hi: 'gentler', after: 'flatter', w: [22, 22, 72], name: 'trumpet vase', sh: 'shoulder', desc: 'a narrow straight stem at the bottom; above the shoulder it flares out, wider and wider up to the rim',
+      afterHint: 'Just above the shoulder the vase is already wider than the stem, so the water rises <b>more slowly</b> there than in the stem: your curve should start out less steep than the straight piece.',
+      sol: '<b>Straight, then flatter and flatter.</b> The stem has the same width all the way up, so the water rises at a constant (fast) rate: one steep straight piece up to the shoulder. Above it the vase keeps getting wider, so each centimetre needs more water: the curve gets flatter and flatter, starting less steep than the stem, until the rim.' },
+    { id: 'beaker', lo: 'gentler', hi: 'straight', after: 'flatter', w: [18, 64, 64], name: 'flared beaker', sh: 'shoulder', desc: 'a cone-shaped bottom that widens up to the shoulder, then straight vertical sides up to the rim',
+      afterHint: 'The straight top part is as wide as the widest part of the cone, so it fills <b>more slowly</b> than any part below: the straight piece should be less steep than the last piece of your curve.',
+      sol: '<b>Flatter and flatter, then straight.</b> The cone widens, so the water rises quickly at first and then more and more slowly: a curve that flattens out up to the shoulder. Above it the width stays the same (the widest it gets), so the rise is one straight piece, less steep than any part of the curve.' },
+    { id: 'jar', lo: 'straight', hi: 'steeper', after: 'steeper', w: [64, 64, 20], name: 'jar', sh: 'shoulder', desc: 'straight vertical sides up to the shoulder, then a top that narrows toward a small opening',
+      afterHint: 'Just above the shoulder the top is already narrower than the straight sides, so the water rises <b>faster</b> there: your curve should start out steeper than the straight piece.',
+      sol: '<b>Straight, then steeper and steeper.</b> Below the shoulder the width never changes, so the water rises at a constant (slow) rate: one gentle straight piece. Above it the jar narrows, so each centimetre needs less water: the curve gets steeper and steeper, starting steeper than the straight piece, until the rim.' },
+    { id: 'bottle', lo: 'steeper', hi: 'straight', after: 'steeper', w: [64, 20, 20], name: 'bottle', sh: 'shoulder', desc: 'a bottom that narrows from a wide base up to the shoulder, then a narrow straight neck up to the rim',
+      afterHint: 'The neck is as narrow as the narrowest part below it, so it fills <b>faster</b> than any part of the bottom: the straight piece should be steeper than the last piece of your curve.',
+      sol: '<b>Steeper and steeper, then straight.</b> The bottom narrows, so the water creeps up at first and then rises faster and faster: a curve that gets steeper up to the shoulder. The neck has the same (narrowest) width all the way, so it is one straight piece, steeper than any part of the curve.' },
+    { id: 'belly', lo: 'gentler', hi: 'steeper', w: [20, 72, 20], name: 'round-bellied vase', sh: 'widest point', desc: 'a small base; it widens up to its widest point, then narrows again to a small opening at the rim',
+      sol: '<b>Flatter and flatter, then steeper and steeper.</b> Below the widest point the vase widens, so the rise slows down; above it the vase narrows, so the rise speeds up again. The graph is least steep at the height of the widest point.' },
+    { id: 'waist', lo: 'steeper', hi: 'gentler', w: [66, 18, 66], name: 'hourglass vase', sh: 'narrow waist', desc: 'a wide base; it narrows to a thin waist, then widens again up to the rim',
+      sol: '<b>Steeper and steeper, then flatter and flatter.</b> Below the waist the vase narrows, so the rise speeds up; above it the vase widens, so the rise slows down again. The graph is steepest at the height of the waist.' }];
+  /* one correct sketch for each vase and shoulder height (whole-number corners on the 12 × 8 story pad; the rim is at 6) */
+  var VKEY = {
+    trumpet: { 2: [[0, 0], [1, 2], [2, 3], [4, 4], [12, 6]], 3: [[0, 0], [1, 3], [2, 4], [4, 5], [8, 6]], 4: [[0, 0], [1, 4], [2, 5], [4, 6]] },
+    beaker: { 2: [[0, 0], [1, 1], [3, 2], [12, 6]], 3: [[0, 0], [1, 2], [2, 3], [8, 6]], 4: [[0, 0], [1, 2], [2, 3], [4, 4], [12, 6]] },
+    jar: { 2: [[0, 0], [6, 2], [8, 3], [9, 4], [10, 6]], 3: [[0, 0], [8, 3], [10, 4], [12, 6]], 4: [[0, 0], [9, 4], [11, 5], [12, 6]] },
+    bottle: { 2: [[0, 0], [3, 1], [4, 2], [5, 6]], 3: [[0, 0], [3, 1], [5, 2], [6, 3], [7, 6]], 4: [[0, 0], [3, 1], [5, 2], [7, 4], [8, 6]] },
+    belly: { 2: [[0, 0], [1, 1], [3, 2], [6, 3], [8, 4], [10, 6]], 3: [[0, 0], [1, 2], [2, 3], [4, 4], [6, 6]], 4: [[0, 0], [1, 2], [2, 3], [4, 4], [7, 5], [8, 6]] },
+    waist: { 2: [[0, 0], [3, 1], [4, 2], [5, 4], [6, 5], [8, 6]], 3: [[0, 0], [3, 1], [5, 2], [6, 3], [7, 5], [8, 6]], 4: [[0, 0], [3, 1], [4, 2], [5, 4], [6, 5], [8, 6]] } };
+  function vaseSvg(v, H1) {
+    var top = 8, bot = 104, Y = function (h) { return bot - (bot - top) * h / 6; }, hs = [0, H1, 6];
+    var L = hs.map(function (h, i) { return [50 - v.w[i] / 2, Y(h)]; }), R = hs.map(function (h, i) { return [50 + v.w[i] / 2, Y(h)]; });
+    var d = 'M' + [L[2], L[1], L[0], R[0], R[1], R[2]].map(function (p) { return p[0] + ' ' + p[1]; }).join(' L');
+    return '<svg class="fig-svg" viewBox="0 0 100 112" style="max-width:100px" role="img" aria-label="the ' + v.name + '"><rect width="100" height="112" fill="#fff"/><path d="' + d + '" fill="#e6f2f1" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round"/>' +
+      '<line x1="3" y1="' + Y(H1) + '" x2="97" y2="' + Y(H1) + '" stroke="#8a93a3" stroke-width="1.2" stroke-dasharray="4 3"/></svg>';
+  }
+  function vaseCheck(v, H1) {
+    var part = { lo: 'bottom part (below the ' + v.sh + ')', hi: 'top part (above the ' + v.sh + ')' };
+    var why = {
+      straight: function (w) { return 'The ' + w + ' has vertical sides: its width never changes, so every second’s water adds the same height. Draw that part as <b>one straight piece</b>.'; },
+      gentler: function (w) { return 'The ' + w + ' gets <b>wider</b> as it goes up, so each centimetre of height needs more water than the one below and the water rises more and more slowly: draw <b>a curve that gets flatter and flatter</b> (a few short pieces, each less steep than the one before).'; },
+      steeper: function (w) { return 'The ' + w + ' gets <b>narrower</b> as it goes up, so each centimetre of height needs less water than the one below and the water rises faster and faster: draw <b>a curve that gets steeper and steeper</b> (a few short pieces, each steeper than the one before).'; } };
+    function kindOk(arr, kind) {
+      if (kind === 'straight') return arr.length === 1;
+      if (arr.length < 2) return false;
+      for (var i = 1; i < arr.length; i++) if (kind === 'gentler' ? !(arr[i].m < arr[i - 1].m - 1e-9) : !(arr[i].m > arr[i - 1].m + 1e-9)) return false;
+      return true;
+    }
+    return function (resp) {
+      if (DR.empty(resp)) return form('empty', 'Draw your graph first: tap where it starts, then each corner in turn, left to right; tap the last point again to finish.');
+      var ph = DR.phases(resp);
+      if (ph.vertical) return wrong('story-vertical', 'A vertical piece would mean the water level jumps in no time. Water runs in at a steady rate, so the level rises gradually.');
+      if (DR.notFunction(resp)) return wrong('story-fn', 'Your graph goes back on itself: at one time it shows two heights. Draw it left to right, one height at each time.');
+      if (ph.gaps.length) return wrong('story-gap', 'Your graph has a jump or a gap — the pieces should join end to end.');
+      var P = ph.phases.slice();
+      if (!P.length) return wrong('story-lines', 'Draw the graph as a line: tap where it starts, then each corner in turn, and tap the last point again to finish.');
+      if (P.length > 1 && P[P.length - 1].dir === 'flat' && near(P[P.length - 1].y0, 6)) P.pop(); // staying full after the rim is fine
+      if (!near(P[0].y0, 0)) return wrong('story-start', 'The ' + v.name + ' starts empty: start the graph at height ' + t('0') + '.');
+      var nd = P.filter(function (p) { return p.dir !== 'up'; })[0];
+      if (nd) return wrong('story-dir', nd.dir === 'flat' ? 'Water keeps running in at the same rate the whole time, so the water level never stays still until the ' + v.name + ' is full: no flat parts below the rim.' : 'Water is only ever added, so the water level never goes down.');
+      if (!near(P[P.length - 1].y1, 6)) return wrong('story-end', 'Fill it right to the rim: end the graph on the upper dashed line (height ' + t('6') + ').');
+      var k = -1, lo, hi, i;
+      for (i = 0; i < P.length - 1; i++) if (near(P[i].y1, H1)) k = i;
+      if (k >= 0) { lo = P.slice(0, k + 1); hi = P.slice(k + 1); }
+      else {
+        if (v.lo === 'straight' || v.hi === 'straight') return wrong('story-height', 'The shape of the ' + v.name + ' changes at the ' + v.sh + ', the lower dashed line (height ' + t(H1) + '). Put a corner of your graph exactly on that line, where the steepness changes: one kind of rise below it, another above it.');
+        for (i = 0; i < P.length; i++) if (P[i].y0 < H1 - 1e-9 && P[i].y1 > H1 + 1e-9) break;
+        lo = P.slice(0, i + 1); hi = P.slice(i); // a curve may run smoothly through the widest / narrowest point
+      }
+      if (!kindOk(lo, v.lo)) return wrong('story-bend', why[v.lo](part.lo));
+      if (!kindOk(hi, v.hi)) return wrong('story-bend', why[v.hi](part.hi));
+      if (v.after) { var a = lo[lo.length - 1].m, b = hi[0].m; if (v.after === 'flatter' ? !(b < a - 1e-9) : !(b > a + 1e-9)) return wrong('story-steep', v.afterHint); }
+      return ok();
+    };
+  }
+  /* EP20: a walker on a 120-minute graph and a cyclist who leaves later. mode 'when': find the catch-up time and place;
+   * mode 'speed': the catch-up point is given, find the cyclist's speed */
+  function chase(r) {
+    var nm = [r.pick(['Ava', 'Nia', 'Grace', 'Iris', 'Lena', 'Hana', 'Zoe']), r.pick(['Ben', 'Owen', 'Theo', 'Ravi', 'Kofi', 'Mateo', 'Sam'])];
+    if (r.chance(0.5)) nm = [nm[1], nm[0]];
+    for (var k = 0; k < 5000; k++) {
+      var va = r.pick([4, 5, 6]), D = 2 * va, t0 = r.pick([10, 12, 15, 18, 20, 24, 30, 36, 40, 45]);
+      if (r.chance(0.55)) {
+        var vb = r.pick([12, 15, 16, 18, 20, 24]), tc = vb * t0 / (vb - va), d = va * tc / 60;
+        if (Math.abs(tc - Math.round(tc)) > 1e-9 || tc > 110 || tc - t0 < 5 || Math.abs(d * 10 - Math.round(d * 10)) > 1e-9) continue;
+        return { mode: 'when', nm: nm, va: va, D: D, t0: t0, vb: vb, tc: Math.round(tc), d: Math.round(d * 10) / 10 };
+      }
+      var dm = r.int(2, D - 1), ta = 60 * dm / va, w = 60 * dm / (ta - t0);
+      if (ta % 10 || ta - t0 < 10 || Math.abs(w - Math.round(w)) > 1e-9 || w < 2 * va || w > 30) continue;
+      return { mode: 'speed', nm: nm, va: va, D: D, t0: t0, dm: dm, ta: ta, vb: w };
+    }
+  }
+  /* EP21: a fuel log for part of a trip (V = V0 + m d); both intercepts are off the logged segment */
+  function fuelLog(r) {
+    for (var k = 0; k < 5000; k++) {
+      var V0 = r.pick([40, 45, 48, 50, 54, 55, 56, 60, 64, 65, 70]), Dm = r.pick([400, 450, 500, 550, 600, 640, 700, 720, 750, 800, 875]), am = V0 / Dm;
+      if (Math.abs(am * 1000 - Math.round(am * 1000)) > 1e-9 || am < 0.05 || am > 0.15) continue;
+      var d1 = 50 * r.int(2, Math.floor(Dm / 100)), d2 = d1 + 50 * r.int(4, 8);
+      if (d2 > Dm - 100) continue;
+      var V1 = V0 - am * d1, V2 = V0 - am * d2;
+      if (Math.abs(V1 - Math.round(V1)) > 1e-9 || Math.abs(V2 - Math.round(V2)) > 1e-9) continue;
+      return { V0: V0, Dm: Dm, m: -Math.round(am * 1000) / 1000, d1: d1, d2: d2, V1: Math.round(V1), V2: Math.round(V2) };
+    }
+  }
+  /* EP22: four constant-speed stages, one of them a stop; every corner of the distance graph on the 5 min × 1 km grid */
+  function speedTrip(r) {
+    var who = r.pick(['a delivery van', 'a taxi', 'a city bus', 'Mira’s car', 'a pizza scooter', 'a farm truck']);
+    for (var k = 0; k < 5000; k++) {
+      var stop = r.pick([1, 2]), v = [], dt = [];
+      for (var i = 0; i < 4; i++) { v.push(i === stop ? 0 : r.pick([12, 24, 30, 36, 48, 60])); dt.push(r.pick([5, 10, 15, 20])); }
+      if (v.some(function (x, j) { return j && x === v[j - 1]; })) continue;
+      var legs = v.map(function (x, j) { return x * dt[j] / 60; });
+      if (legs.some(function (L) { return Math.abs(L - Math.round(L)) > 1e-9; })) continue;
+      var tt = [0], c = [0]; dt.forEach(function (x, j) { tt.push(tt[j] + x); c.push(c[j] + legs[j]); });
+      if (c[4] < 6 || c[4] > 16 || tt[4] > 70) continue;
+      var mv = v.filter(function (x) { return x > 0; }); if (mv[0] === mv[mv.length - 1] && mv.length === 3 && mv[1] === mv[0]) continue;
+      return { who: who, v: v, dt: dt, t: tt, c: c, T: tt[4], D: c[4] };
+    }
   }
 
   HW.defineLesson({

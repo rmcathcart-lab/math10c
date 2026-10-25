@@ -1785,7 +1785,86 @@
             return null;
           }, t('x^{2}-' + (b === 1 ? '' : b) + 'x=' + c) + '<br>' + t('x^{2}-' + (b === 1 ? '' : b) + 'x-' + c + '=0') + '<br>' + t('(x-' + p + ')(x+' + (-q) + ')=0') + '<br>' + t('x=' + p) + ' or ' + t('x=' + q) + ', so ' + t('p=' + p) + ', ' + t('q=' + q) + '<br>' + t('p-q=' + p + '-(' + q + ')=' + (p - q)),
             ['Move ' + t(c) + ' to the left side and factor.'], 'EP NR p-q');
+        } }] },
+      /* ---------------- Mastery challenge (RF8) ---------------- */
+      { num: '22', section: 'Mastery challenge', shared: modelShared,
+        stem: function (sh) { var c = sh.c; return t(c.f + '(' + c.v + ')') + ' is ' + c.what + '. It changes at a constant rate, and ' + t(c.f + '(' + sh.a1 + ')=' + nf(sh.y1)) + ' and ' + t(c.f + '(' + sh.a2 + ')=' + nf(sh.y2)) + '.'; }, parts: [
+        { id: 'e22', level: 'MAS', outcome: 'RF8', make: function (r, sh) {
+          var c = sh.c, f = c.f, v = c.v, m = sh.m, b0 = sh.b0, rhs = lin([[b0, ''], [m, v]]), fv = f + '(' + v + ')', k = sh.k, x = sh.x;
+          var eq = convChk('fn', { T: P(rhs), v: v, name: f, reqName: true, wrong: [
+            { is: P(lin([[sh.y1, ''], [m, v]])), code: 'start-read', hint: t(nf(sh.y1)) + ' is the output at ' + t(v + '=' + sh.a1) + ', not at the start. Work backwards to ' + t(f + '(0)') + ': undo ' + t(sh.a1) + ' ' + c.step + (sh.a1 === 1 ? '' : 's') + ' of change.' },
+            { is: P(lin([[b0, ''], [-m, v]])), code: 'rate-sign', hint: 'Check the sign of the rate: the output goes ' + (m < 0 ? 'down' : 'up') + ' from ' + t(nf(sh.y1)) + ' to ' + t(nf(sh.y2)) + '.' },
+            { is: P(lin([[sh.y1 + m * sh.a1, ''], [m, v]])), code: 'start-read', hint: 'Going back from ' + t(v + '=' + sh.a1) + ' to ' + t(v + '=0') + ' <b>undoes</b> the change: the output at the start was ' + (m < 0 ? 'higher' : 'lower') + ' than ' + t(nf(sh.y1)) + '. Check your value of ' + t(f + '(0)') + ' with ' + t(f + '(' + sh.a1 + ')=' + nf(sh.y1)) + '.' }] });
+          var fl = [{ label: '(a) Equation:', name: 'equation', mode: 'math', keys: EQK, vars: [v, f], placeholder: 'e.g. ' + f + '(' + v + ') = 2' + v + ' + 5' }, { label: '(b) ' + t(v + '='), name: 'solution', mode: 'math', keys: 'fraction', after: c.unit }];
+          var sv = K.value(x, { diag: function (u) {
+            if (same(u, cl(b0 + m * k))) return { code: 'ev-instead', hint: t(nf(k)) + ' is an <b>output</b> (' + c.outW + '), so solve ' + t(f + '(' + v + ')=' + nf(k)) + ' for ' + t(v) + '; don’t substitute it as an input.' };
+            if (same(u, cl((k - sh.y1) / m))) return { code: 'start-read', hint: 'That is the ' + c.step + 's counted from ' + t(v + '=' + sh.a1) + ', not from the start.' };
+            if (same(u, -x)) return { code: 'ext-sign', hint: 'Check the signs when you move ' + t(nf(b0)) + ' across and divide by ' + t(nf(m)) + '.' };
+            return null; } });
+          var p = BF('(a) Write an equation for ' + t(fv) + ' in function notation.<br>(b) ' + c.ask(k, fv) + ' (Use your equation from (a).)', fl, [eq, sv], [fv + '=' + rhs, nf(x)], t(fv + '=' + rhs) + '<br>' + t(v + '=' + nf(x)) + ' ' + c.unit,
+            '(a) Rate of change: ' + t('\\frac{' + nf(sh.y2) + '-' + nf(sh.y1) + '}{' + sh.a2 + '-' + sh.a1 + '}=\\frac{' + nf(sh.y2 - sh.y1) + '}{' + (sh.a2 - sh.a1) + '}=' + nf(m)) + ' ' + c.rateW + '.<br>Work back to the start: ' + t(f + '(0)=' + nf(sh.y1) + (m < 0 ? '+' : '-') + nf(Math.abs(m)) + '(' + sh.a1 + ')=' + nf(b0)) + ', so ' + t(fv + '=' + rhs) + '. Check: ' + t(f + '(' + sh.a2 + ')=' + nf(b0) + (m < 0 ? '-' : '+') + nf(Math.abs(m)) + '(' + sh.a2 + ')=' + nf(sh.y2)) + ' ✓<br>' +
+              '(b) ' + t(nf(k)) + ' is the output, so solve ' + t(fv + '=' + nf(k)) + ':<br>' + t(rhs + '=' + nf(k)) + '<br>' + t(lin([[m, v]]) + '=' + nf(cl(k - b0))) + '<br>' + t(v + '=' + nf(x)) + ': ' + c.mean(x, k) + '.',
+            ['Find the rate of change from the two statements, then work back to ' + t(f + '(0)') + ', the starting value.', 'In (b) you are given an output: set the rule equal to it and solve for ' + t(v) + '.'], 'MAS model from two statements');
+          p.good = [[rhs + '=' + fv, nf(x)]];
+          p.bad = [[fv + '=' + lin([[sh.y1, ''], [m, v]]), nf(x)], [fv + '=' + rhs, nf(cl(b0 + m * k))], ['y=' + rhs, nf(x)]];
+          return p;
+        } }] },
+      { num: '23', shared: sumShared, stem: function (sh) { return 'The graph of a function ' + t('f') + ' is shown.' + sh.fig; }, parts: [
+        { id: 'e23', level: 'MAS', outcome: 'RF8', make: function (r, sh) {
+          var a = sh.a, c = sh.c, b = sh.b, eqs = 'f(x)=f(' + a + ')+f(' + c + ')';
+          var setEq = function (A, X) { return A.length === X.length && A.every(function (u) { return X.some(function (w) { return same(u, w); }); }); };
+          var p = solsPart('Solve ' + t(eqs) + '. Give every solution.', sh.sols, { b: b, graph: true, diag: function (A) {
+            if (sh.sAdd && setEq(A, sh.sAdd)) return { code: 'fn-add', hint: t('f(' + a + ')+f(' + c + ')') + ' is not ' + t('f(' + (a + c) + ')') + ': find each output separately — ' + t('f(' + a + ')') + ' and ' + t('f(' + c + ')') + ' — then add them.' };
+            if (A.length === 1 && same(A[0], b) && !sh.sols.some(function (w) { return same(w, b); })) return { code: 'ev-instead', hint: t(nf(b)) + ' is the value of the right side, an <b>output</b>. Now solve: find every ' + t('x') + ' where the graph is at height ' + t(nf(b)) + '.' };
+            if (setEq(A, sh.sA) || setEq(A, sh.sC)) return { code: 'fn-one', hint: 'The right side is the <b>sum</b> of two outputs: ' + t('f(' + a + ')') + ' and ' + t('f(' + c + ')') + '. Add them first, then read across at that height.' };
+            if (setEq(A, [a, c])) return { code: 'fn-one', hint: t(a) + ' and ' + t(c) + ' are the inputs on the right side. Work out the right side (a height), then find the inputs that give that height.' };
+            return null; } },
+            'Read up or down from each input: ' + t('f(' + a + ')=' + nf(sh.fa)) + ' and ' + t('f(' + c + ')=' + nf(sh.fc)) + ', so the equation is ' + t('f(x)=' + nf(sh.fa) + (sh.fc < 0 ? '' : '+') + nf(sh.fc) + '=' + nf(b)) + '.<br>' +
+              'Draw the horizontal line ' + t('y=' + nf(b)) + ' and follow it across the whole graph: it meets the graph ' + (sh.sols.length === 2 ? 'twice' : sh.sols.length + ' times') + ', at ' + t(solsKey(sh.sols)) + '.' + (sh.sAdd ? ' (Careful: ' + t('f(' + a + ')+f(' + c + ')') + ' is not ' + t('f(' + (a + c) + ')=' + nf(sh.fAdd)) + '.)' : ''),
+            ['First work out the right side: it is a number (an output).', 'Then read across at that height and count every point where the line meets the graph.'], 'MAS solve f(x)=f(a)+f(c)');
+          p.good = [solsKey(sh.sols.slice().reverse())];
+          p.bad = [solsKey(sh.sols.slice(0, -1)), 'x=' + nf(b)].concat(sh.sAdd ? [solsKey(sh.sAdd)] : []).concat([solsKey(sh.sA)]).filter(function (s) { return s !== solsKey(sh.sols); });
+          return p;
         } }] }
     ]
   });
+  /* ---------------- Mastery challenge helpers ---------------- */
+  HW.addCodes({ 'start-read': 'Used a later value as the starting value', 'fn-add': 'Treated f(a) + f(c) as f(a + c)', 'fn-one': 'Used only one of the outputs' });
+  /* Extra 22: a linear model known only from two later values. c.ask(k, fv) words part (b); c.mean(x, k) explains the answer */
+  function modelShared(r) {
+    var C = [
+      { f: 'B', v: 't', what: 'the charge left in a phone battery, as a percent, ' + t('t') + ' hours after it is unplugged', ms: [-4, -5, -6, -8], b0: [84, 100], ks: [10, 15, 20, 25], unit: 'h', step: 'hour', outW: 'a charge', rateW: 'percent per hour',
+        ask: function (k, fv) { return 'The phone warns that its battery is low when the charge reaches ' + t(k + '\\%') + '. Solve ' + t(fv + '=' + k) + ' to find how many hours after unplugging that happens.'; }, mean: function (x, k) { return 'the low-battery warning comes on ' + t(nf(x)) + ' hours after unplugging'; } },
+      { f: 'W', v: 't', what: 'the volume of water, in litres, left in a rain barrel ' + t('t') + ' minutes after its drain valve is opened', ms: [-3, -4, -5, -6, -8], b0: [150, 240], ks: [20, 30, 40, 50, 60], unit: 'min', step: 'minute', outW: 'a volume', rateW: 'litres per minute',
+        ask: function (k, fv) { return 'Solve ' + t(fv + '=' + k) + ' to find when only ' + t(k) + ' L of water is left in the barrel.'; }, mean: function (x, k) { return t(k) + ' L is left ' + t(nf(x)) + ' minutes after the valve is opened'; } },
+      { f: 'S', v: 'w', what: 'the money, in dollars, in a student’s savings account ' + t('w') + ' weeks after she starts saving the same amount every week', ms: [15, 20, 25, 30, 35, 40], b0: [40, 300], ks: [600, 750, 800, 900, 1000, 1200], unit: 'weeks', step: 'week', outW: 'an amount of money', rateW: 'dollars per week',
+        ask: function (k, fv) { return 'She wants ' + t('\\$' + k) + ' for a used bike. Solve ' + t(fv + '=' + k) + ' to find after how many weeks she has exactly enough.'; }, mean: function (x, k) { return 'she has ' + t('\\$' + k) + ' after ' + t(nf(x)) + ' weeks'; } },
+      { f: 'T', v: 'm', what: 'the temperature, in °C, inside an oven ' + t('m') + ' minutes after it is switched on (while it heats up)', ms: [8, 9, 12, 15, 16], b0: [20, 24], ks: [180, 190, 200, 220], unit: 'min', step: 'minute', outW: 'a temperature', rateW: 'degrees per minute',
+        ask: function (k, fv) { return 'A recipe needs the oven at ' + t(k + '^{\\circ}\\text{C}') + '. Solve ' + t(fv + '=' + k) + ' to find how many minutes the oven takes to reach it.'; }, mean: function (x, k) { return 'the oven reaches ' + t(k + '^{\\circ}\\text{C}') + ' after ' + t(nf(x)) + ' minutes'; } }];
+    for (var g = 0; g < 5000; g++) {
+      var c = r.pick(C), m = r.pick(c.ms), b0 = c.f === 'S' ? 10 * r.int(c.b0[0] / 10, c.b0[1] / 10) : r.int(c.b0[0], c.b0[1]), a1 = r.int(1, 4), a2 = a1 + r.int(2, 6), k = r.pick(c.ks);
+      var y1 = b0 + m * a1, y2 = b0 + m * a2, x = cl((k - b0) / m);
+      if (y2 <= 0 || x <= a2 || Math.abs(x * 4 - Math.round(x * 4)) > 1e-9 || (m < 0 ? k >= y2 : k <= y2)) continue;
+      if ((c.f === 'W' && b0 % 5) || same(b0 + m * k, x)) continue; // f(k) = x would let "evaluate instead of solve" pass
+      return { c: c, m: m, b0: b0, a1: a1, a2: a2, y1: y1, y2: y2, k: k, x: x };
+    }
+  }
+  /* Extra 23: a zigzag f with integer corners; f(x) = f(a) + f(c) has 2–4 solutions, all on whole or half units */
+  function sumShared(r) {
+    var XS = [[-6, -3, -1, 2, 5], [-6, -4, -1, 1, 4, 6], [-5, -2, 0, 3, 6], [-6, -2, 1, 3, 6], [-6, -3, 0, 2, 4, 6]];
+    for (var g = 0; g < 5000; g++) {
+      var xs = r.pick(XS), V = xs.map(function (x) { return [x, r.int(-4, 4)]; }), okk = true, i;
+      for (i = 1; i < V.length; i++) { var dy = V[i][1] - V[i - 1][1], dx = V[i][0] - V[i - 1][0]; if (!dy || Math.abs(dy) > 2 * dx || (i > 1 && (dy > 0) === (V[i - 1][1] - V[i - 2][1] > 0))) okk = false; }
+      if (!okk) continue;
+      var ins = rng(xs[0], xs[xs.length - 1]).filter(function (x) { var y = pwAt(V, x); return Math.abs(y - Math.round(y)) < 1e-9; });
+      var a = r.pick(ins), c = r.pick(ins.filter(function (x) { return x !== a; })), fa = pwAt(V, a), fc = pwAt(V, c), b = fa + fc;
+      if (!fa || !fc || Math.abs(b) > 4 || same(b, fa) || same(b, fc)) continue;
+      var S0 = pwSols(V, b); if (S0.ints.length || S0.pts.length < 2 || S0.pts.some(function (x) { return Math.abs(2 * x - Math.round(2 * x)) > 1e-9; })) continue;
+      var sAdd = null, fAdd = pwAt(V, a + c);
+      if (isFinite(fAdd) && !same(fAdd, b)) { var SA = pwSols(V, fAdd); if (!SA.ints.length && SA.pts.length) sAdd = SA.pts; }
+      var lim = pwMin(V) < -4 || pwMax(V) > 4; if (lim) continue;
+      return { V: V, a: a, c: c, fa: fa, fc: fc, b: b, sols: S0.pts, sAdd: sAdd, fAdd: fAdd, sA: pwSols(V, fa).pts, sC: pwSols(V, fc).pts,
+        fig: pwGraph(V, { x: [-7, 7], y: [-5, 5], labels: 2, yName: 'f(x)', max: 320, aria: 'graph of f made of straight pieces' }) };
+    }
+  }
 })(window);
