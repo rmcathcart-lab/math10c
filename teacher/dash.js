@@ -9,7 +9,7 @@
   var HW = root.HW, L = HW.Ledger, el = HW.el, esc = HW.esc, cfg = root.HW_CONFIG || {};
   var view = document.getElementById('view'), top = document.getElementById('topbar');
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
-  var st = { key: ls('hw:tkey') || '', classes: [], klass: ls('hw:tclass') || '', D: null, tab: ls('hw:ttab') || 'live', scope: ls('hw:tscope') || 'class', rule: ls('hw:trule') || 'hint', lesson: Object.keys(HW.lessons)[0], student: null, loading: false, liveTimer: null, dashTimer: null, sortP: 'name' };
+  var st = { key: ls('hw:tkey') || '', classes: [], klass: ls('hw:tclass') || '', D: null, tab: ls('hw:ttab') || 'live', scope: ls('hw:tscope') || 'class', rule: ls('hw:trule2') || 'first', /* the practice level counts first-try answers (Ryan, 2026-10-25); hw:trule2 so an older saved choice doesn't override it */ lesson: Object.keys(HW.lessons)[0], student: null, loading: false, liveTimer: null, dashTimer: null, sortP: 'name' };
   var LV = HW.LEVELS, LVN = HW.LEVEL_NAMES;
   function realApi(action, params) { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
   /* the demo class (teacher/demo.js) answers its own requests in the browser; everything else goes to the ledger */
@@ -320,7 +320,7 @@
     var outs = outcomesBuilt(), ss = students();
     var bar = el('div', 'opt-row'); bar.appendChild(scopeSeg());
     bar.appendChild(el('span', 'small muted', 'A level counts when the student answered a question at that level correctly'));
-    var seg = el('div', 'seg'); [['first', 'on the first try'], ['hint', 'first try or after a hint'], ['any', 'even after the answer was shown']].forEach(function (r) { var b = el('button', st.rule === r[0] ? 'on' : '', r[1]); b.type = 'button'; b.addEventListener('click', function () { st.rule = r[0]; ls('hw:trule', r[0]); st.derived = null; render(); }); seg.appendChild(b); });
+    var seg = el('div', 'seg'); [['first', 'on the first try'], ['hint', 'first try or after a hint'], ['any', 'even after the answer was shown']].forEach(function (r) { var b = el('button', st.rule === r[0] ? 'on' : '', r[1]); b.type = 'button'; b.addEventListener('click', function () { st.rule = r[0]; ls('hw:trule2', r[0]); st.derived = null; render(); }); seg.appendChild(b); });
     bar.appendChild(seg); body.appendChild(bar);
     outs.forEach(function (o) {
       var sec = el('section', 'panel');

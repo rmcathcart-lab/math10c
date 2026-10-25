@@ -194,21 +194,22 @@
   root.addEventListener('hashchange', route);
 
   /* ---------------- home ---------------- */
-  /* the student's level on each outcome of a unit: the highest question level answered correctly on the first try or after a hint */
+  /* the student's level on each outcome of a unit: the highest question level answered correctly on the first try (no hint,
+     no wrong try first; Ryan, 2026-10-25) */
   function unitLevels(u) {
     var LV = HW.LEVELS, best = {}, outs = String(u.outcomes || '').split(/\s*·\s*/).filter(Boolean);
     u.lessons.forEach(function (c) {
       var lesson = HW.lessons[c.id]; if (!lesson) return;
       lesson.items.forEach(function (it) {
         var r = (S.lessons[lesson.id] || { items: {} }).items[it.id];
-        if (!r || r.s !== 'done' || (r.credit !== 'first' && r.credit !== 'hint')) return;
+        if (!r || r.s !== 'done' || r.credit !== 'first') return;
         if (it.outcome === 'EXT') return; // extension lessons (e.g. distance and midpoint) don't count toward a level
         if (outs.indexOf(it.outcome) < 0) outs.push(it.outcome);
         if (best[it.outcome] == null || LV.indexOf(it.level) > LV.indexOf(best[it.outcome])) best[it.outcome] = it.level;
       });
     });
     var wrap = el('span', 'unit-levels', '<span class="ulv-note">Your level:</span>');
-    wrap.title = 'Your level on each outcome: the hardest level of question you have answered correctly on the first try or after a hint.';
+    wrap.title = 'Your level on each outcome: the hardest level of question you have answered correctly on the first try.';
     outs.forEach(function (o) {
       var lv = best[o], i = lv ? LV.indexOf(lv) : -1, dots = '';
       for (var k = 0; k < LV.length; k++) dots += '<i class="' + (k <= i ? 'on lvbg-' + lv : '') + '"></i>';
@@ -364,7 +365,7 @@
   }
   /* ---------------- outcome medals (js/medals.js) ----------------
    * One medal per outcome beside "Hi, …", at the student's best level: the higher of their practice level (the hardest
-   * question right on the first try or after a hint, as in "Your level") and their level on released tests and exit slips.
+   * question right on the first try, as in "Your level") and their level on released tests and exit slips.
    * A medal that's new or higher since this device last showed them opens big, once. */
   function practiceTiers() {
     var best = {};
@@ -372,7 +373,7 @@
       var lesson = HW.lessons[lid]; if (lesson.test) return;
       var items = (S.lessons[lid] || { items: {} }).items;
       lesson.items.forEach(function (it) {
-        var r = items[it.id]; if (!r || r.s !== 'done' || (r.credit !== 'first' && r.credit !== 'hint') || it.outcome === 'EXT') return;
+        var r = items[it.id]; if (!r || r.s !== 'done' || r.credit !== 'first' || it.outcome === 'EXT') return;
         var t = HW.Medals.tierOf(it.level); if (best[it.outcome] == null || t > best[it.outcome].tier) best[it.outcome] = { tier: t, src: 'from practice' };
       });
     });
