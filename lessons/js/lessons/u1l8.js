@@ -7,6 +7,7 @@
  */
 import { h, fmt, Explainer, primeFactors, decimal } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -754,3 +755,57 @@ function guardCalcDemos() {
 }
 
 mountExplainers(); mountWarmup(); mountTable(); mountTapQ(); mountMachine(); guardCalcDemos();
+
+/* ============ Stand Up Break! — entire ↔ mixed radicals with index 3 and higher, at the whiteboards (lessons/js/standup.js) ============ */
+const suN = (n) => { const s = String(Math.abs(n)); return (n < 0 ? '-' : '') + (s.length > 3 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : s); };
+const suRt = (n, x) => (n === 2 ? `\\sqrt{${x}}` : `\\sqrt[${n}]{${x}}`);
+const suLab = (i) => '\\text{(' + 'abcdef'[i] + ')}\\ ';
+const suGrid = (items) => '\\def\\arraystretch{1.8}\\begin{array}{ll}' + items.map((x, j) => (j ? '\\hspace{2.5em}' : '') + suLab(j) + '{' + x + '}').join(' & ') + '\\end{array}';
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+const suFree = (m, n) => suPF(m).every(([, e]) => e < n);          // no perfect n-th power factor (other than 1)
+const suPar = (c) => (c < 0 ? `(${c})` : String(c));
+/* entire → mixed: index n, radicand s·kⁿ·m */
+function suToMixed(r, n, ks, lo, hi, neg, primes) {
+  for (;;) {
+    const k = r.pick(ks), m = r.int(2, 12), s = neg && n % 2 ? -1 : 1, X = s * k ** n * m;
+    if (!suFree(m, n) || Math.abs(X) < lo || Math.abs(X) > hi) continue;
+    const t = suRt(n, suN(X)), out = (s < 0 ? '-' : '') + k + suRt(n, m);
+    return { t, w: (primes ? `${suN(Math.abs(X))}=${suPow(suPF(Math.abs(X)))}:\\ ` : '') + `${t}=${suRt(n, suN(s * k ** n) + '\\times' + m)}=${out}` };
+  }
+}
+/* mixed → entire: c·ⁿ√m */
+function suToEntire(c, n, m) {
+  const t = (c === -1 ? '-' : c) + suRt(n, m);
+  if (c < 0 && n % 2 === 0) return { t, w: `{${t}}=-${suRt(n, Math.abs(c) + '^' + n + '\\times' + m)}=-${suRt(n, suN(Math.abs(c) ** n * m))}\\quad(\\text{even index: the } - \\text{ stays outside})` };
+  return { t, w: `{${t}}=${suRt(n, suPar(c) + '^' + n + '\\times' + m)}=${suRt(n, suN(c ** n * m))}` };
+}
+function suFracEntire(r) { // Example 2(c): a fraction in front of a cube root
+  for (;;) {
+    const q = r.int(2, 5), p = r.int(1, 5) * (r.chance(0.3) ? -1 : 1), m = r.pick([2, 3, 4, 5, 6, 9, 10, 12, 16, 24, 32, 54]);
+    if (gcd(p, q) !== 1 || Math.abs(p) === 1 && r.chance(0.5)) continue;
+    let A = p ** 3 * m, B = q ** 3; const g = gcd(A, B); A /= g; B /= g;
+    if (B === 1 && r.chance(0.5)) continue;
+    const co = (p < 0 ? '-' : '') + `\\dfrac{${Math.abs(p)}}{${q}}`, t = co + suRt(3, m);
+    const res = B === 1 ? suRt(3, suN(A)) : suRt(3, (A < 0 ? '-' : '') + `\\dfrac{${suN(Math.abs(A))}}{${suN(B)}}`);
+    return { t, w: `{${t}}=${suRt(3, `\\left(${co}\\right)^3\\times${m}`)}=${suRt(3, `${p < 0 ? '-' : ''}\\tfrac{${Math.abs(p) ** 3}}{${q ** 3}}\\times${m}`)}=${res}` };
+  }
+}
+const suTwo = (A, B, text) => ({ text, q: suGrid([A.t, B.t]), a: [A, B].map((x, i) => suLab(i) + x.w) });
+standup('u1l8', {
+  intro: 'The index is the group size: pull out the largest perfect power, or send the coefficient back in as that power. Watch the sign.',
+  levels: {
+    BEG: (r) => { let A, B; do { A = suToMixed(r, 3, [2, 3, 4, 5, 6], 16, 2200); B = suToMixed(r, 3, [2, 3, 4, 5], 16, 1000); } while (A.t === B.t); // Example 1(a)
+      return suTwo(A, B, 'Convert each radical to a mixed radical in simplest form.'); },
+    PRG: (r) => { // Example 1(b, c) and Example 2(a, b, d)
+      const A = r.pick([() => suToMixed(r, 3, [2, 3, 4, 5], 16, 1500, true), () => suToMixed(r, 4, [2, 3], 32, 900), () => suToMixed(r, 5, [2, 3], 64, 1500, r.chance(0.5))])();
+      const n = r.pick([3, 3, 4, 5]), B = suToEntire(r.pick(n === 5 ? [-2, 2] : n === 4 ? [-2, -3, 2, 3] : [-2, -3, -4, -5, 2, 3, 4, 5]), n, r.pick(n === 3 ? [2, 3, 4, 5, 6, 7, 9, 10, 11] : [2, 3, 5, 6, 7]));
+      return { text: '<b>(a)</b> Convert to a mixed radical in simplest form. <b>(b)</b> Convert to an entire radical.', q: suGrid([A.t, B.t]), a: [A, B].map((x, i) => suLab(i) + x.w) };
+    },
+    MAS: (r) => { // big radicands (use prime factors), and a fraction or a negative coefficient going back in
+      const A = r.pick([() => suToMixed(r, 3, [6, 7, 8, 9, 10], 400, 7000, r.chance(0.5), true), () => suToMixed(r, 4, [3, 4, 5], 160, 4000, false, true), () => suToMixed(r, 5, [2, 3, 4], 64, 3500, r.chance(0.5), true)])();
+      const B = r.chance(0.6) ? suFracEntire(r) : (() => { const n = r.pick([4, 5]), c = r.pick([-2, -3]); return suToEntire(c, n, r.pick([2, 3, 5, 6])); })();
+      return { text: '<b>(a)</b> Convert to a mixed radical in simplest form. <b>(b)</b> Convert to an entire radical.', q: suGrid([A.t, B.t]), a: [A, B].map((x, i) => suLab(i) + x.w) };
+    }
+  }
+});

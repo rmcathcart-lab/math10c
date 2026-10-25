@@ -1,5 +1,6 @@
 /* Math 10C · Unit 1 · Lesson 1 — Prime Building Blocks of Numbers: the explainers on this page. */
 import { h, fmt, Explainer, FactorTree, factors, isPrime, primeFactors, primesUpTo, productHTML, expHTML, decimal, quickReason } from '../explain.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -475,3 +476,36 @@ mountExplainers(); mountTree(); mountWarmup(); mountPrimeList();
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — factors, prime factors and prime-or-composite at the whiteboards (lessons/js/standup.js) ============ */
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suIsP = (n) => n > 1 && suPF(n).length === 1 && suPF(n)[0][1] === 1;
+const suDivs = (n) => { const d = []; for (let i = 1; i <= n; i++) if (n % i === 0) d.push(i); return d; };
+const suPairs = (n) => { const o = []; for (let i = 1; i * i <= n; i++) if (n % i === 0) o.push(i + '\\times ' + n / i); return n + '=' + o.join('=') ; };
+const suMul = (f) => f.map(([p, e]) => Array(e).fill(p).join('\\times ')).join('\\times ');
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+standup('u1l1', {
+  intro: 'Work it out together at your whiteboard. Show your factor pairs or your tests so anyone can check them.',
+  levels: {
+    BEG: (r) => { // Example 1: list the factors and count them
+      let n; do n = r.int(18, 99); while (suIsP(n) || suDivs(n).length < (r.chance(0.2) ? 3 : 6));
+      const d = suDivs(n);
+      return { text: 'State the factors of this number, and how many factors it has.', q: String(n), a: [suPairs(n), d.join(',\\ ') + '\\qquad(' + d.length + '\\text{ factors})'] };
+    },
+    PRG: (r) => { // Example 3: factors, prime factors, product of primes
+      let n; do n = r.int(40, 160); while (suPF(n).length < 2 || suPF(n).reduce((s, x) => s + x[1], 0) < 3 || suDivs(n).length > 12);
+      const d = suDivs(n), f = suPF(n);
+      return { text: '<b>(a)</b> State the factors. <b>(b)</b> State the prime factors. <b>(c)</b> Write it as a product of prime factors.', q: String(n),
+        a: ['\\text{(a) }' + d.join(',\\ '), '\\text{(b) }' + f.map((x) => x[0]).join(',\\ '), '\\text{(c) }' + n + '=' + suMul(f) + (f.some((x) => x[1] > 1) ? '=' + suPow(f) : '')] };
+    },
+    MAS: (r) => { // Example 2, harder: no factor of 2, 3 or 5, so the tests go up to the square root
+      let n;
+      if (r.chance(0.45)) { const P = [7, 11, 13, 17, 19, 23]; do n = r.pick(P) * r.pick(P); while (n < 77 || n > 400); }
+      else { do n = r.int(101, 399); while (!suIsP(n)); }
+      const k = Math.floor(Math.sqrt(n)), tests = [2, 3, 5, 7, 11, 13, 17, 19].filter((p) => p <= k), p = suPF(n)[0][0];
+      const a = ['\\sqrt{' + n + '}<' + (k + 1) + '\\ \\ (' + (k + 1) + '^2=' + (k + 1) ** 2 + '):\\ \\text{test } ' + tests.join(',\\ ')];
+      if (suIsP(n)) return { text: 'Prime or composite? Show which primes you test. If it is composite, write it as a product of two factors.', q: String(n), a: a.concat(['\\text{none of them divides } ' + n]), atext: '<b>Prime</b>' };
+      return { text: 'Prime or composite? Show which primes you test. If it is composite, write it as a product of two factors.', q: String(n), a: a.concat([n + '\\div ' + p + '=' + n / p + ',\\ \\text{so } ' + n + '=' + p + '\\times ' + n / p]), atext: '<b>Composite</b>' };
+    }
+  }
+});

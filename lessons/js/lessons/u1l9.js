@@ -3,6 +3,7 @@
  * the booklet's own numbers after the class has worked them by hand. */
 import { h, fmt as fmt0, Explainer, FactorTree, isPrime, primeFactors, primesUpTo, productHTML, expHTML, decimal, quickReason } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const fmt = (n) => fmt0(n).replace(/\u2009/g, '\u202f'); // narrow no-break space: never splits a number across lines
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
@@ -757,3 +758,44 @@ function drawNumberLine() { // Example 9's printed number line
 }
 
 mountExplainers(); mountTree5(); mountWarmup(); mountBlanks(); drawNumberLine();
+
+/* ============ Stand Up Break! — review: prime factorization, GCF and LCM, perfect powers (lessons/js/standup.js) ============ */
+const suN = (n) => { const s = String(n); return s.length > 3 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : s; };
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+const suVal = (f) => f.reduce((s, [p, e]) => s * p ** e, 1);
+const suCnt = (n) => suPF(n).reduce((s, x) => s + x[1], 0);
+function suLadder(n) { const st = []; let m = n; for (const [p, e] of suPF(n)) for (let i = 0; i < e; i++) { m /= p; st.push('\\div' + p + '=' + suN(m)); } return suN(n) + st.join(',\\ '); }
+standup('u1l9', {
+  intro: 'Every question here starts the same way: break the numbers into primes. Then decide what the question needs.',
+  levels: {
+    BEG: (r) => { // Example 1: a prime factorization of a four-digit number
+      let n; do n = r.int(1000, 9999); while (suPF(n).slice(-1)[0][0] < 11 || suPF(n).slice(-1)[0][0] > (r.chance(0.2) ? 17 : 13) || suPF(n).length < 3 || suCnt(n) < 4 || suCnt(n) > 7);
+      const f = suPF(n);
+      return { text: 'Use a division ladder to write this number as a product of prime factors in exponent form. Then list its prime factors.', q: suN(n),
+        a: [suLadder(n), suN(n) + '=' + suPow(f), '\\text{prime factors: }' + f.map((x) => x[0]).join(',\\ ')] };
+    },
+    PRG: (r) => { // Example 3: the GCF (and LCM) of two four-digit numbers
+      for (;;) {
+        const P = [2, 3, 5, 7, 11, 13, 17, 19], g = r.pick([6, 10, 12, 14, 15, 18, 21, 22, 26, 33, 35, 39, 42]);
+        const u = r.pick(P) * r.pick(P), v = r.pick(P) * r.pick(P), a = g * u, b = g * v;
+        if (gcd(u, v) !== 1 || a < 1000 || b < 1000 || a > 9999 || b > 9999 || a === b) continue;
+        const L = a / g * b, [x, y] = a < b ? [a, b] : [b, a];
+        return { text: 'Find the <b>GCF</b> and the <b>LCM</b> of these numbers. Leave the LCM as a product of primes.', q: suN(x) + '\\ \\text{and}\\ ' + suN(y),
+          a: [suN(x) + '=' + suPow(suPF(x)) + ',\\quad ' + suN(y) + '=' + suPow(suPF(y)), '\\text{GCF}=' + suPow(suPF(g)) + '=' + g, '\\text{LCM}=' + suPow(suPF(L)) + '=' + suN(L)] };
+      }
+    },
+    MAS: (r) => { // Lesson 3, Example 5 and this lesson's Example 5: the smallest multiplier for a perfect square or cube
+      for (;;) {
+        const k = r.pick([2, 3]), P = r.shuffle([2, 3, 5, 7, 11]).slice(0, r.pick([2, 3, 3])).sort((a, b) => a - b), f = P.map((p) => [p, r.int(1, k === 2 ? 4 : 5)]), n = suVal(f);
+        const need = f.map(([p, e]) => [p, (k - e % k) % k]).filter((x) => x[1]), M = suVal(need), X = n * M, root = Math.round(X ** (1 / k));
+        if (n < 40 || n > 5000 || M === 1 || M >= n || X > 1e6 || root ** k !== X) continue;
+        const sq = k === 2, g = f.map(([p, e]) => [p, (e + (k - e % k) % k) / k]);
+        return { text: `Find the smallest whole number this number must be multiplied by to give a <b>perfect ${sq ? 'square' : 'cube'}</b>. Then state the ${sq ? 'square' : 'cube'} root of the result.`, q: suN(n),
+          a: [suN(n) + '=' + suPow(f) + ':\\ \\text{need }' + suPow(need) + '\\ \\text{more' + (sq ? ' (even exponents)' : ' (multiples of 3)') + '}',
+            '\\times' + suN(M) + ':\\quad ' + suN(n) + '\\times' + suN(M) + '=' + suN(X) + '=' + suPow(f.map(([p, e]) => [p, e + (k - e % k) % k])),
+            (sq ? '\\sqrt{' : '\\sqrt[3]{') + suN(X) + '}=' + suPow(g) + '=' + suN(root)] };
+      }
+    }
+  }
+});

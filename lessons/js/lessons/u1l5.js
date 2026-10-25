@@ -1,6 +1,7 @@
 /* Math 10C · Unit 1 · Lesson 5 — Classifying the Real Number System: the explainers and widgets on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const absTex = (s) => String(s).replace(/\|([^|]*)\|/g, '\\lvert $1 \\rvert');
 const T = (s) => tex(absTex(s));
@@ -895,3 +896,80 @@ addEventListener('load', () => setTimeout(equalizeParts, 60));
 if (document.fonts) document.fonts.ready.then(() => setTimeout(equalizeParts, 60));
 
 mountExplainers(); mountWarmup(); mountPowGrid('sq-grid', 15, 2, 'sq'); mountPowGrid('cb-grid', 10, 3, 'cb'); mountNumberLines();
+
+/* ============ Stand Up Break! — sort numbers into sets, and estimate roots, at the whiteboards (lessons/js/standup.js) ============ */
+const suLab = (i) => '\\text{(' + 'abcdef'[i] + ')}\\ ';
+const suGrid = (items, cols) => { const rows = []; for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols).map((x, j) => (j ? '\\hspace{2.5em}' : '') + suLab(i + j) + '{' + x + '}').join(' & ')); return '\\def\\arraystretch{1.7}\\begin{array}{' + 'l'.repeat(cols) + '}' + rows.join('\\\\') + '\\end{array}'; };
+const suSq = (n) => Math.round(Math.sqrt(n)) ** 2 === n;
+const suG = (a, b) => (b ? suG(b, a % b) : a);
+const suSETS = { // Example 1: { t, val, sets }
+  nat: (r) => (r.chance(0.5) ? { t: String(r.int(2, 40)), val: '', s: 'R,\\ Q,\\ I,\\ W,\\ N' } : (() => { const k = r.int(2, 12); return { t: `\\sqrt{${k * k}}`, val: '=' + k, s: 'R,\\ Q,\\ I,\\ W,\\ N' }; })()),
+  zero: (r) => (r.chance(0.5) ? { t: '0', val: '', s: 'R,\\ Q,\\ I,\\ W' } : (() => { const b = r.int(2, 9); return { t: `\\dfrac{0}{${b}}`, val: '=0', s: 'R,\\ Q,\\ I,\\ W' }; })()),
+  neg: (r) => r.pick([() => ({ t: String(-r.int(2, 40)), val: '' }), () => { const k = r.int(2, 12); return { t: `-\\sqrt{${k * k}}`, val: '=-' + k }; }, () => { const k = r.int(2, 4); return { t: `\\sqrt[3]{-${k ** 3}}`, val: '=-' + k }; }])(),
+  rat: (r) => r.pick([
+    () => { let a, b; do { b = r.int(2, 9); a = r.int(1, 3 * b); } while (suG(a, b) !== 1 || a % b === 0); return { t: (r.chance(0.4) ? '-' : '') + `\\dfrac{${a}}{${b}}`, val: '' }; },
+    () => { const x = r.int(11, 99) / 10 * (r.chance(0.4) ? -1 : 1); return { t: String(x), val: '' }; },
+    () => { const d = r.int(1, 8); return { t: `0.\\overline{${d}}`, val: '' }; },
+    () => { const k = r.int(2, 9); return { t: `\\sqrt{\\tfrac{1}{${k * k}}}`, val: `=\\tfrac{1}{${k}}` }; },
+    () => { const m = r.int(2, 9); return { t: `\\sqrt{${m * m / 100}}`, val: '=' + m / 10 }; }])(),
+  irr: (r) => r.pick([
+    () => { let n; do n = r.int(2, 60); while (suSq(n)); return { t: (r.chance(0.3) ? '-' : '') + `\\sqrt{${n}}`, val: '' }; },
+    () => ({ t: '\\pi', val: '' }),
+    () => { const d = r.int(1, 9); return { t: `${r.int(0, 3)}.${d}0${d}00${d}000${d}\\ldots`, val: '' }; }])()
+};
+const suSetOf = { neg: 'R,\\ Q,\\ I', rat: 'R,\\ Q', irr: 'R,\\ \\overline{Q}' };
+const suNear = (x, k) => Math.abs(x - k) < 0.35; // a clear whole-number estimate
+function suRoot(r, lo, hi) { for (;;) { const s = r.int(lo, hi), m = s * s + r.pick([-2, -1, 1, 2, 3]); if (m > 1 && !suSq(m) && suNear(Math.sqrt(m), s)) return [m, s]; } }
+const suT = (x) => (Math.round(x * 10) / 10).toFixed(1);
+function suSig(r, big) { // Example 3: one significant digit, by pairing digits from the decimal point
+  for (;;) {
+    if (big) {
+      const N = r.int(1000, 999999), dec = r.chance(0.4) ? r.int(1, 9) : null, D = String(N), g = Math.ceil(D.length / 2), lead = +D.slice(0, D.length - 2 * (g - 1));
+      const m = Math.round(Math.sqrt(lead));
+      if (m < 1 || m > 9 || Math.abs(Math.sqrt(lead) % 1 - 0.5) < 0.12 || Math.round(Math.sqrt(N) / 10 ** (g - 1)) !== m) continue;
+      const pairs = [String(lead)]; for (let i = D.length - 2 * (g - 1); i < D.length; i += 2) pairs.push(D.slice(i, i + 2));
+      const x = fmtNum(D + (dec != null ? '.' + dec : ''));
+      return { t: `\\sqrt{${x}}`, a: `\\text{pairs } ${pairs.join('\\,|\\,')}:\\ ${g}\\text{ digits; }\\sqrt{${lead}}\\approx${m},\\ \\text{so }\\sqrt{${x}}\\approx${fmtNum(String(m * 10 ** (g - 1)))}` };
+    }
+    const A = r.int(10, 899), j = r.int(1, 3), M = A / 10, m = Math.round(Math.sqrt(M));
+    if (A % 10 === 0 || m < 1 || m > 9 || Math.abs(Math.sqrt(M) % 1 - 0.5) < 0.12) continue;
+    const s = String(A), x = fmtNum('0.' + '0'.repeat(2 * j + 1 - s.length) + s);
+    return { t: `\\sqrt{${x}}`, a: `${x}=${M}\\times10^{-${2 * j}},\\ \\sqrt{${M}}\\approx${m},\\ \\text{so }\\sqrt{${x}}\\approx${m}\\times10^{-${j}}=${(m / 10 ** j).toFixed(j)}` };
+  }
+}
+standup('u1l5', {
+  intro: 'Work it out together at your whiteboard. Estimate first; the answer key has the calculator value for checking.',
+  levels: {
+    BEG: (r) => { // Example 1: every set a number belongs to
+      let xs; do { const ks = r.shuffle(['nat', 'neg', 'rat', 'irr', r.chance(0.3) ? 'zero' : 'rat']).slice(0, 3); xs = ks.map((k) => Object.assign(suSETS[k](r), { k })); } while (new Set(xs.map((x) => x.t)).size < 3);
+      return { text: 'List <b>every</b> set each number belongs to (<i>N, W, I, Q, Q&#772;, R</i>), from the largest set to the smallest.', q: suGrid(xs.map((x) => x.t), 3),
+        a: xs.map((x, i) => suLab(i) + '{' + x.t + '}' + x.val + ':\\quad ' + (x.s || suSetOf[x.k])) };
+    },
+    PRG: (r) => { // Example 2(b): estimate a whole expression to the nearest whole number
+      let m, s, n, t, a, b, minus, est, act;
+      do { [m, s] = suRoot(r, 2, 9); [n, t] = suRoot(r, 2, 9); a = r.int(2, 5); b = r.int(1, 5); minus = r.chance(0.4); est = a * s + (minus ? -1 : 1) * b * t; act = a * Math.sqrt(m) + (minus ? -1 : 1) * b * Math.sqrt(n); }
+      while (n === m || est < 2 || Math.abs(est - act) > 2);
+      const cb = b === 1 ? '' : b;
+      return { text: 'Estimate the value mentally, to the nearest whole number.', q: `${a}\\sqrt{${m}}${minus ? '-' : '+'}${cb}\\sqrt{${n}}`,
+        a: [`\\sqrt{${m}}\\approx${s},\\ \\ \\sqrt{${n}}\\approx${t}`, `${a}(${s})${minus ? '-' : '+'}${b === 1 ? t : b + '(' + t + ')'}=${est}`, `(\\text{actual value}\\approx${suT(act)})`] };
+    },
+    MAS: (r) => {
+      if (r.chance(0.6)) { const A = suSig(r, true), B = suSig(r, false), sw = r.chance(0.5), xs = sw ? [B, A] : [A, B];
+        return { text: 'Estimate each square root to <b>one significant digit</b>.', q: suGrid(xs.map((x) => x.t), 2), a: xs.map((x, i) => suLab(i) + x.a) }; }
+      for (;;) { // Example 2(d): a root inside a root, from the inside out
+        if (r.chance(0.5)) {
+          const n = r.int(20, 400); if (suSq(n)) continue;
+          const s1 = Math.round(Math.sqrt(n)), s2 = Math.round(Math.sqrt(s1));
+          if (!suNear(Math.sqrt(n), s1) || !suNear(Math.sqrt(s1), s2) || Math.round(Math.sqrt(Math.sqrt(n))) !== s2) continue;
+          return { text: 'Estimate mentally, to the nearest whole number. Work from the inside out.', q: `\\sqrt{\\sqrt{${n}}}`,
+            a: [`\\sqrt{${n}}\\approx${s1},\\ \\ \\text{then }\\sqrt{${s1}}\\approx${s2}`, `\\approx${s2}\\quad(\\text{actual value}\\approx${suT(Math.sqrt(Math.sqrt(n)))})`] };
+        }
+        const k = r.int(2, 40), m = r.int(5, 120); if (suSq(m)) continue;
+        const s1 = Math.round(Math.sqrt(m)), s2 = Math.round(Math.sqrt(k + s1)), act = Math.sqrt(k + Math.sqrt(m));
+        if (!suNear(Math.sqrt(m), s1) || !suNear(Math.sqrt(k + s1), s2) || Math.round(act) !== s2 || suSq(k + s1) && r.chance(0.5)) continue;
+        return { text: 'Estimate mentally, to the nearest whole number. Work from the inside out.', q: `\\sqrt{${k}+\\sqrt{${m}}}`,
+          a: [`\\sqrt{${m}}\\approx${s1},\\ \\ \\text{so } ${k}+${s1}=${k + s1}`, `\\sqrt{${k + s1}}\\approx${s2}\\quad(\\text{actual value}\\approx${suT(act)})`] };
+      }
+    }
+  }
+});

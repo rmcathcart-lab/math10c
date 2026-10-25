@@ -2,6 +2,7 @@
  * and the cicada timeline. (The perfect-square / perfect-cube explainers and the locker warm-up moved to Lesson 3.) */
 import { h, fmt, Explainer, factors, primeFactors, productHTML, expHTML, decimal } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -632,3 +633,52 @@ mountFigures(); mountExplainers(); mountHotdogs(); mountWarmup();
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — GCF and LCM by prime factorization at the whiteboards (lessons/js/standup.js) ============ */
+const suN = (n) => { const s = String(n); return s.length > 3 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : s; };
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+const suEq = (n) => { const p = suPow(suPF(n)); return p === String(n) ? suN(n) : p + '=' + suN(n); };     // 2^2\times3=12, or just 7
+const suFacts = (v) => v.map((n) => suN(n) + '=' + suPow(suPF(n))).join(',\\quad ');
+const suList = (v) => v.slice(0, -1).map(suN).join(',\\ ') + (v.length > 2 ? ',' : '') + '\\ \\text{and}\\ ' + suN(v[v.length - 1]);
+const suNone = (v) => v.every((a) => v.every((b) => a === b || b % a));                    // no number divides another
+const suGcfL = (v) => '\\text{GCF}=' + suEq(v.reduce(gcd));
+const suLcmL = (v) => '\\text{LCM}=' + suEq(v.reduce(lcm));
+function suPick(r, k, lo, hi, ok) { for (;;) { const v = Array.from({ length: k }, () => r.int(lo, hi)).sort((a, b) => a - b); if (new Set(v).size === k && suNone(v) && ok(v)) return v; } }
+function suAsk(v, which) { // which: 'g', 'l' or 'gl'
+  const what = which === 'g' ? 'the <b>GCF</b>' : which === 'l' ? 'the <b>LCM</b>' : 'the <b>GCF</b> and the <b>LCM</b>';
+  return { text: 'Use prime factorization to find ' + what + ' of these numbers.', q: suList(v),
+    a: [suFacts(v)].concat(which.includes('g') ? [suGcfL(v)] : [], which.includes('l') ? [suLcmL(v)] : []) };
+}
+standup('u1l2', {
+  intro: 'Write each number as a product of primes first, then build the GCF (lowest powers) or the LCM (highest powers).',
+  levels: {
+    BEG: (r) => { // Examples 2(a) and 4(a): two numbers, one tool
+      const g = r.chance(0.5);
+      const v = suPick(r, 2, 12, 99, (v) => { const G = v.reduce(gcd); return G >= (g ? 4 : 2) && v.reduce(lcm) <= 600 && suPF(v[0]).length + suPF(v[1]).length >= 3; });
+      return suAsk(v, g ? 'g' : 'l');
+    },
+    PRG: (r) => { // Examples 2 and 4: bigger pairs (both tools), or three numbers (one tool)
+      if (r.chance(0.55)) return suAsk(suPick(r, 2, 60, 400, (v) => v.reduce(gcd) >= 6 && v.reduce(lcm) <= 5000), 'gl');
+      const g = r.chance(0.5);
+      return suAsk(suPick(r, 3, 12, 99, (v) => (g ? v.reduce(gcd) >= 3 : v.reduce(lcm) <= 1200)), g ? 'g' : 'l');
+    },
+    MAS: (r) => {
+      if (r.chance(0.55)) return suAsk(suPick(r, 3, 60, 450, (v) => v.reduce(gcd) >= 4 && v.reduce(lcm) <= 20000), 'gl'); // Example 2(c), both tools
+      // numbers given in exponent form: lowest / highest power of each prime
+      for (;;) {
+        const P = r.shuffle([2, 3, 5, 7, 11]).slice(0, r.pick([3, 3, 4])).sort((a, b) => a - b);
+        const ea = P.map(() => r.int(0, 4)), eb = P.map(() => r.int(0, 4));
+        const fa = P.map((p, i) => [p, ea[i]]).filter((x) => x[1]), fb = P.map((p, i) => [p, eb[i]]).filter((x) => x[1]);
+        const fg = P.map((p, i) => [p, Math.min(ea[i], eb[i])]).filter((x) => x[1]), fl = P.map((p, i) => [p, Math.max(ea[i], eb[i])]).filter((x) => x[1]);
+        if (fa.length < 2 || fb.length < 2 || fg.length < 1 || fg.length === fl.length && fg.every((x, i) => x[1] === fl[i][1])) continue;
+        if (ea.every((e, i) => e <= eb[i]) || eb.every((e, i) => e <= ea[i])) continue; // one divides the other: too easy
+        const val = (f) => f.reduce((s, [p, e]) => s * p ** e, 1), G = val(fg), L = val(fl);
+        if (G > 3000) continue;
+        return { text: 'Find the <b>GCF</b> and the <b>LCM</b> of <i>a</i> and <i>b</i>. Leave them in exponent form, then give the GCF as a number.',
+          q: 'a=' + suPow(fa) + ',\\qquad b=' + suPow(fb),
+          a: ['\\text{GCF}=' + suPow(fg) + (fg.length > 1 || fg[0][1] > 1 ? '=' + suN(G) : ''), '\\text{LCM}=' + suPow(fl) + (L <= 1e7 ? '=' + suN(L) : '')] };
+      }
+    }
+  }
+});

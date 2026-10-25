@@ -1,6 +1,7 @@
 /* Math 10C · Unit 1 · Lesson 4 — Rational Numbers, Irrational Numbers, and Decimal Patterns: explainers and widgets. */
 import { h, fmt, Explainer, primeFactors } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -772,3 +773,65 @@ mountExplainers(); mountWarmup(); mountCircles(); mountExampleLine();
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — rational or irrational, and ordering on a number line, at the whiteboards (lessons/js/standup.js) ============ */
+const suLab = (i) => '\\text{(' + 'abcdef'[i] + ')}\\ ';
+const suGrid = (items, cols) => { const rows = []; for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols).map((x, j) => (j ? '\\hspace{2.5em}' : '') + suLab(i + j) + '{' + x + '}').join(' & ')); return '\\def\\arraystretch{1.7}\\begin{array}{' + 'l'.repeat(cols) + '}' + rows.join('\\\\') + '\\end{array}'; };
+const suSq = (n) => Math.round(Math.sqrt(n)) ** 2 === n;
+function suDec(a, b) { // a/b (a, b > 0) as a decimal, with a bar over the repeating block
+  const ip = Math.floor(a / b), digs = [], seen = {}; let rem = a % b;
+  while (rem && !(rem in seen)) { seen[rem] = digs.length; rem *= 10; digs.push(Math.floor(rem / b)); rem %= b; }
+  if (!rem) return ip + (digs.length ? '.' + digs.join('') : '');
+  return ip + '.' + digs.slice(0, seen[rem]).join('') + '\\overline{' + digs.slice(seen[rem]).join('') + '}';
+}
+const suKINDS = { // one number of each kind: { t: LaTeX, val: '=…' (its value, if useful), why: a short reason, rat }
+  term: (r) => { const b = r.pick([4, 8, 5, 20, 25, 16, 40]); let a; do a = r.int(1, 3 * b); while (gcd(a, b) !== 1); return { t: `\\dfrac{${a}}{${b}}`, val: '=' + suDec(a, b), why: 'terminates', rat: true }; },
+  rep: (r) => { const b = r.pick([3, 6, 9, 11, 12, 15]); let a; do a = r.int(1, 2 * b); while (gcd(a, b) !== 1); return { t: `\\dfrac{${a}}{${b}}`, val: '=' + suDec(a, b), why: 'repeats', rat: true }; },
+  sqP: (r) => { if (r.chance(0.4)) { let m; do m = r.int(11, 19); while (m % 10 === 0); return { t: `\\sqrt{${m * m / 100}}`, val: '=' + m / 10, why: m / 10 + '\\times' + m / 10 + '=' + m * m / 100, rat: true }; }
+    const k = r.int(4, 15), s = r.chance(0.35) ? '-' : ''; return { t: `${s}\\sqrt{${k * k}}`, val: '=' + s + k, why: k * k + '\\text{ is a perfect square}', rat: true }; },
+  sqN: (r) => { let n; do n = r.int(2, 99); while (suSq(n)); const s = r.chance(0.3) ? '-' : ''; return { t: `${s}\\sqrt{${n}}`, val: '', why: n + '\\text{ is not a perfect square}', rat: false }; },
+  repD: (r) => { const I = r.int(0, 5), pre = r.chance(0.4) ? String(r.int(1, 9)) : ''; let blk; do blk = Array.from({ length: r.int(1, 3) }, () => r.int(0, 9)).join(''); while (/^(\d)\1*$/.test(blk) && blk.length > 1 || /^[09]+$/.test(blk));
+    return { t: `${I}.${pre}` + (blk.length > 1 ? (pre ? '\\,' : '') + Array(3).fill(blk).join('\\,') : blk.repeat(6)) + '\\ldots', val: '', why: '\\text{the block } ' + blk + '\\text{ repeats}', rat: true }; },
+  pat: (r) => { const I = r.int(0, 7), c = r.int(1, 9); let d; do d = r.int(0, 9); while (d === c); let s = ''; for (let k = 1; s.length < 8; k++) s += String(d).repeat(k) + c;
+    return { t: `${I}.${s}\\ldots`, val: '', why: '\\text{the run of } ' + d + '\\text{s grows: no block repeats}', rat: false }; },
+  pi: (r) => (r.chance(0.6) ? { t: '\\pi', val: '', why: '\\text{never ends, never repeats}', rat: false } : { t: '\\dfrac{22}{7}', val: '=' + suDec(22, 7), why: '\\text{a fraction (close to } \\pi)', rat: true }),
+  dec: (r) => { const x = (r.chance(0.3) ? -1 : 1) * r.int(101, 999) / r.pick([100, 1000]); return { t: String(x), val: '', why: 'terminates', rat: true }; }
+};
+function suClassify(r) {
+  for (;;) {
+    const ks = r.shuffle(Object.keys(suKINDS)).slice(0, 4), xs = ks.map((k) => suKINDS[k](r));
+    if (!xs.some((x) => x.rat) || xs.every((x) => x.rat)) continue;
+    return { text: 'Classify each number as <b>rational</b> or <b>irrational</b>. Give a short reason.', q: suGrid(xs.map((x) => x.t), 2),
+      a: xs.map((x, i) => suLab(i) + '{' + x.t + '}' + x.val + ':\\ \\textbf{' + (x.rat ? 'rational' : 'irrational') + '}\\quad(' + (/^[a-z]+$/.test(x.why) ? '\\text{' + x.why + '}' : x.why) + ')') };
+  }
+}
+/* ordering: each number is { t, v, root: radicand (for roots, compared without estimating), approx: LaTeX } */
+const suR1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
+const suORD = {
+  root: (r, s = 1) => { let n; do n = r.int(2, 110); while (suSq(n)); return { t: (s < 0 ? '-' : '') + `\\sqrt{${n}}`, v: s * Math.sqrt(n), root: s * n }; },
+  kroot: (r, s = 1) => { let k, m; do { k = r.int(2, 4); m = r.int(2, 12); } while (suSq(m) || k * k * m > 130); return { t: (s < 0 ? '-' : '') + `${k}\\sqrt{${m}}`, v: s * k * Math.sqrt(m), root: s * k * k * m, eq: (s < 0 ? '-' : '') + `\\sqrt{${k * k * m}}` }; },
+  small: (r) => { const d = r.pick([1, 2, 3, 5, 6, 7, 8]); return { t: `\\sqrt{0.${d}}`, v: Math.sqrt(d / 10), root: d / 10 }; },
+  pi: () => ({ t: '\\pi', v: Math.PI }),
+  frac: (r, s = 1) => { let a, b; do { b = r.int(2, 5); a = r.int(b + 1, 10 * b); } while (gcd(a, b) !== 1); return { t: (s < 0 ? '-' : '') + `\\dfrac{${a}}{${b}}`, v: s * a / b, is: b === 3 ? null : String(s * a / b) }; },
+  dec: (r, s = 1) => { const x = r.int(11, 99) / 10; return { t: String(s * x), v: s * x, exact: true }; }
+};
+function suOrder(r, kinds, neg) {
+  for (;;) {
+    const xs = kinds.map((k, i) => suORD[k](r, i === neg ? -1 : 1)), srt = xs.slice().sort((a, b) => a.v - b.v);
+    if (new Set(xs.map((x) => x.t)).size < xs.length) continue;
+    let ok = true;
+    for (let i = 1; i < srt.length && ok; i++) { const a = srt[i - 1], b = srt[i], both = a.root != null && b.root != null && Math.sign(a.root) === Math.sign(b.root); ok = b.v - a.v >= (both ? 0.15 : 0.4); }
+    if (!ok) continue;
+    const ap = (x) => x.t + (x.eq ? '=' + x.eq : '') + (x.is ? '=' + x.is : '\\approx' + suR1(x.v));
+    return { text: 'Without a calculator, place these numbers in order from <b>least to greatest</b>.', q: xs.map((x) => x.t).join(',\\quad '),
+      a: [xs.filter((x) => !x.exact).map(ap).join(',\\ \\ '), srt.map((x) => x.t).join('<')] };
+  }
+}
+standup('u1l4', {
+  intro: 'Talk it through as a group: decide what kind of number each one is, or squeeze each root between perfect squares.',
+  levels: {
+    BEG: (r) => suClassify(r),                                                   // Examples 1–2
+    PRG: (r) => suOrder(r, r.shuffle(['root', 'root', r.pick(['root', 'kroot']), r.pick(['pi', 'frac', 'dec'])]), -1),   // Example 3
+    MAS: (r) => { const ks = r.shuffle(['small', 'kroot', 'root', r.pick(['pi', 'frac']), r.pick(['root', 'frac', 'dec'])]); return suOrder(r, ks, ks.findIndex((k) => k === 'root' || k === 'frac' || k === 'dec')); } // with a negative
+  }
+});

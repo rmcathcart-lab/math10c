@@ -1,6 +1,7 @@
 /* Math 10C · Unit 1 · Lesson 6 — Roots of Real Numbers: the explainers and widgets on this page. */
 import { h, fmt, Explainer, primeFactors, factors } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -764,3 +765,53 @@ mountExplainers(); mountWarmup(); mountBlanks(); mountPowers(); mountChecks();
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — evaluate radicals of any index at the whiteboards (lessons/js/standup.js) ============ */
+const suN = (n) => { const s = String(Math.abs(n)); return (n < 0 ? '-' : '') + (s.length > 3 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : s); };
+const suRt = (n, x) => (n === 2 ? `\\sqrt{${x}}` : `\\sqrt[${n}]{${x}}`);
+const suLab = (i) => '\\text{(' + 'abcdef'[i] + ')}\\ ';
+const suGrid = (items, cols) => { const rows = []; for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols).map((x, j) => (j ? '\\hspace{2.5em}' : '') + suLab(i + j) + '{' + x + '}').join(' & ')); return '\\def\\arraystretch{1.8}\\begin{array}{' + 'l'.repeat(cols) + '}' + rows.join('\\\\') + '\\end{array}'; };
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+const suP = (b, n) => (b < 0 ? `(${b})` : b) + '^' + n;                                   // (-5)^3
+/* one radical { t, w: worked answer } — kinds for the levels below */
+function suPerfect(n, k, sgn = 1) { const x = sgn * k ** n, v = sgn * k; return { t: suRt(n, suN(x)), w: `=${v}\\quad(${suP(v, n)}=${suN(x)})`, v }; }
+const suK = {
+  sq: (r) => suPerfect(2, r.int(6, 15)),
+  cb: (r) => suPerfect(3, r.int(2, 6), r.chance(0.5) ? -1 : 1),
+  q4: (r) => suPerfect(4, r.int(2, 4)),
+  q5: (r) => suPerfect(5, r.int(2, 3), r.chance(0.5) ? -1 : 1),
+  nr: (r) => { const n = r.pick([2, 4]), k = n === 2 ? r.int(3, 10) : r.int(2, 3); return { t: suRt(n, '-' + k ** n), w: ':\\ \\text{even index, negative radicand: not a real number}' }; },
+  out: (r) => { const n = r.pick([2, 4]), k = n === 2 ? r.int(4, 12) : r.int(2, 3); return { t: '-' + suRt(n, k ** n), w: `=-${k}\\quad(\\text{the } - \\text{ is outside})`, v: -k }; },
+  coef: (r) => { const n = r.pick([2, 3, 4]), k = n === 2 ? r.int(3, 12) : n === 3 ? r.int(2, 5) : r.pick([2, 3, 10]), s = n === 3 && r.chance(0.5) ? -1 : 1, c = r.pick([-2, -3, 2, 3, 4, 5]), v = c * s * k;
+    return { t: c + suRt(n, suN(s * k ** n)), w: `=${c}\\times${s * k < 0 ? '(' + s * k + ')' : s * k}=${v}`, v }; },
+  frac: (r) => { let a, b; const n = r.pick([2, 3, 5]); do { a = r.int(1, n === 5 ? 3 : n === 3 ? 5 : 9); b = r.int(2, n === 5 ? 3 : n === 3 ? 5 : 11); } while (a === b || suG(a, b) !== 1);
+    const s = n > 2 && r.chance(0.4) ? '-' : ''; return { t: suRt(n, `${s}\\dfrac{${a ** n}}{${b ** n}}`), w: `=${s}\\dfrac{${a}}{${b}}\\quad(${suP(a, n)}=${a ** n},\\ ${suP(b, n)}=${b ** n})` }; },
+  dec: (r) => r.pick([() => { const k = r.int(2, 9); return { t: `\\sqrt{${(k * k / 100).toFixed(2)}}`, w: `=${k / 10}\\quad(${k / 10}\\times${k / 10}=${(k * k / 100).toFixed(2)})` }; },
+    () => { const k = r.int(1, 5), s = r.chance(0.5) ? '-' : ''; return { t: `\\sqrt[3]{${s}${(k ** 3 / 1000).toFixed(3)}}`, w: `=${s}${k / 10}\\quad(${s ? '(-' + k / 10 + ')' : k / 10}^3=${s}${(k ** 3 / 1000).toFixed(3)})` }; }])(),
+  negodd: (r) => { const n = r.pick([3, 5]), k = n === 3 ? r.int(2, 6) : 2; return { t: '-' + suRt(n, '-' + k ** n), w: `=-(-${k})=${k}`, v: k }; }
+};
+function suG(a, b) { return b ? suG(b, a % b) : a; }
+function suPickK(r, kinds, k, ok = () => true) { for (;;) { const ks = r.shuffle(kinds).slice(0, k), xs = ks.map((q) => suK[q](r)); if (new Set(xs.map((x) => x.t)).size === k && ok(ks)) return xs; } }
+const suAsk = (xs, cols) => ({ text: 'Evaluate, where possible, using the real number system.', q: suGrid(xs.map((x) => x.t), cols), a: xs.map((x, i) => suLab(i) + '{' + x.t + '}' + x.w) });
+standup('u1l6', {
+  intro: 'Ask: what number, used as a factor that many times, makes the radicand? Watch the index and the signs.',
+  levels: {
+    BEG: (r) => suAsk(suPickK(r, ['sq', 'cb', 'q4', 'q5', 'nr', 'out'], 3), 3),          // Example 1
+    PRG: (r) => suAsk(suPickK(r, ['coef', 'frac', 'dec', 'negodd', 'coef', 'cb'], 3, (ks) => ks.filter((q) => q === 'coef').length < 2 || r.chance(0.3)), 3), // Example 2(a)
+    MAS: (r) => {
+      // (a) a big radicand: find the root from its prime factors
+      const n = r.pick([3, 4, 5, 6]), k = n === 3 ? r.pick([12, 14, 15, 18, 21, 24]) : n === 4 ? r.int(5, 9) : n === 5 ? r.int(4, 6) : r.int(2, 4), s = n % 2 && r.chance(0.5) ? -1 : 1, X = k ** n, f = suPF(X), g = f.map(([p, e]) => [p, e / n]);
+      const A = { t: suRt(n, suN(s * X)), w: s < 0 ? `:\\ ${suN(X)}=${suPow(f)},\\ \\text{so the root is }-(${suPow(g)})=${-k}` : `:\\ ${suN(X)}=${suPow(f)},\\ \\text{so the root is }${suPow(g)}${g.length > 1 || g[0][1] > 1 ? '=' + k : ''}` };
+      // (b) two radicals with different indices, combined
+      let B; for (;;) {
+        const a = suK[r.pick(['cb', 'q4', 'q5', 'sq'])](r), b = suK[r.pick(['cb', 'q4', 'q5'])](r), c1 = r.pick([2, 3, 4, -2]), c2 = r.pick([1, 2, 3]), minus = r.chance(0.5);
+        if (a.t === b.t) continue;
+        const v = c1 * a.v + (minus ? -1 : 1) * c2 * b.v, pv = (x) => (x < 0 ? '(' + x + ')' : x);
+        B = { t: `${c1}${a.t}${minus ? '-' : '+'}${c2 === 1 ? '' : c2}${b.t}`, w: `:\\ ${a.t}=${a.v},\\ ${b.t}=${b.v};\\ \\ ${c1}(${a.v})${minus ? '-' : '+'}${c2 === 1 ? pv(b.v) : c2 + '(' + b.v + ')'}=${v}` };
+        break;
+      }
+      return { text: 'Evaluate. For (a), use prime factors.', q: suGrid([A.t, B.t], 2), a: [A, B].map((x, i) => suLab(i) + '{' + x.t + '}' + x.w) };
+    }
+  }
+});

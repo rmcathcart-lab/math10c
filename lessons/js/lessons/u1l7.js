@@ -1,6 +1,7 @@
 /* Math 10C · Unit 1 · Lesson 7 — Entire and Mixed Radicals: the explainers and warm-up on this page. */
 import { h, fmt, Explainer, factors, primeFactors } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -749,3 +750,38 @@ function mountExplainers() {
 }
 
 mountTexBlanks(); mountBlanks(); mountSpiral(); mountExplainers();
+
+/* ============ Stand Up Break! — entire radicals to mixed radicals at the whiteboards (lessons/js/standup.js) ============ */
+const suN = (n) => { const s = String(n); return s.length > 3 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : s; };
+const suLab = (i) => '\\text{(' + 'abcdef'[i] + ')}\\ ';
+const suGrid = (items) => '\\def\\arraystretch{1.8}\\begin{array}{ll}' + items.map((x, j) => (j ? '\\hspace{2.5em}' : '') + suLab(j) + '{' + x + '}').join(' & ') + '\\end{array}';
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+const suCo = (p, q = 1) => { const g = gcd(p, q); p /= g; q /= g; return q === 1 ? (p === 1 ? '' : p === -1 ? '-' : String(p)) : (p < 0 ? '-' : '') + `\\dfrac{${Math.abs(p)}}{${q}}`; }; // a coefficient in front of a root
+const suM = (k, m) => `${k === 1 ? '' : k === -1 ? '-' : k}\\sqrt{${m}}`;
+function suKM(r, ks, ms, lo, hi) { for (;;) { const k = r.pick(ks), m = r.pick(ms), n = k * k * m; if (n >= lo && n <= hi) return [k, m, n]; } }
+const suSplit = (k, m, n) => `\\sqrt{${suN(n)}}=\\sqrt{${k * k}\\times${m}}=${suM(k, m)}`;
+function suTwo(r, gen, text) { let A, B; do { A = gen[0](r); B = gen[1](r); } while (A.t === B.t); return { text, q: suGrid([A.t, B.t]), a: [A, B].map((x, i) => suLab(i) + x.w) }; }
+const suPlain = (ks, ms, lo, hi) => (r) => { const [k, m, n] = suKM(r, ks, ms, lo, hi); return { t: `\\sqrt{${suN(n)}}`, w: suSplit(k, m, n) }; };
+const suCoef = (r) => { const c = r.pick([2, 3, 4, 5, -2, -3]), [k, m, n] = suKM(r, [2, 3, 4, 5, 6, 7, 8], [2, 3, 5, 6, 7], 8, 300);
+  return { t: `${c}\\sqrt{${n}}`, w: `{${c}\\sqrt{${n}}}=${c}\\times${suM(k, m)}=${suM(c * k, m)}` }; };
+const suFracCo = (ks) => (r) => { // Example 3(b): a fraction in front
+  for (;;) { const q = r.int(2, 6), p = r.int(1, q + 3) * (r.chance(0.3) ? -1 : 1), [k, m, n] = suKM(r, ks, [2, 3, 5, 6, 7], 8, 2000);
+    if (gcd(Math.abs(p), q) !== 1 || (k % q && r.chance(0.6))) continue;
+    return { t: `${suCo(p, q)}\\sqrt{${suN(n)}}`, w: `{${suCo(p, q)}\\sqrt{${suN(n)}}}=${suCo(p, q)}\\times${suM(k, m)}=${suCo(p * k, q)}\\sqrt{${m}}` }; } };
+const suQuot = (ks) => (r) => { // Example 3(c): a fraction underneath
+  for (;;) { const d = r.int(2, 9), [k, m, n] = suKM(r, ks, [2, 3, 5, 6, 7, 10, 11, 13], 2, 1000), g = gcd(k, d);
+    if (n % (d * d) === 0) continue; // it would simplify to a whole number
+    const res = d / g === 1 ? suM(k / g, m) : `\\dfrac{${k / g === 1 ? '' : k / g}\\sqrt{${m}}}{${d / g}}`;
+    return { t: `\\sqrt{\\dfrac{${suN(n)}}{${d * d}}}`, w: `\\sqrt{\\dfrac{${suN(n)}}{${d * d}}}=\\dfrac{\\sqrt{${suN(n)}}}{\\sqrt{${d * d}}}=\\dfrac{${k === 1 ? '' : k}\\sqrt{${m}}}{${d}}` + (g > 1 ? '=' + res : '') }; } };
+standup('u1l7', {
+  intro: 'Pull the largest perfect square out of the radicand. Check that nothing under the root still has a perfect-square factor.',
+  levels: {
+    BEG: (r) => suTwo(r, [suPlain([2, 3, 4, 5, 6], [2, 3, 5, 6, 7, 10, 11], 8, 300), suPlain([2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 3, 5, 6, 7], 8, 300)], 'Convert each radical to a mixed radical in simplest form.'),   // Example 2
+    PRG: (r) => suTwo(r, [suCoef, r.chance(0.5) ? suFracCo([2, 3, 4, 5, 6, 8]) : suQuot([1, 1, 2, 3])], 'Convert each radical to a mixed radical in simplest form.'),                                     // Example 3
+    MAS: (r) => { // big radicands where the largest square is hard to spot, and fractions that simplify
+      const big = (r) => { const [k, m, n] = suKM(r, [11, 12, 13, 14, 15, 16, 18, 20, 24], [2, 3, 5, 6, 7], 300, 2500); return { t: `\\sqrt{${suN(n)}}`, w: `${suN(n)}=${suPow(suPF(n))}:\\ \\sqrt{${suN(n)}}=\\sqrt{${suN(k * k)}\\times${m}}=${suM(k, m)}` }; };
+      return suTwo(r, [big, r.chance(0.5) ? suFracCo([4, 6, 8, 9, 10, 12]) : suQuot([2, 3, 4, 5, 6])], 'Convert each radical to a mixed radical in simplest form.');
+    }
+  }
+});

@@ -3,6 +3,7 @@
  * "powers" (why the exponents double / triple), "multiplier" and "sides" are new. */
 import { h, fmt, Explainer, factors, primeFactors, productHTML, expHTML } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -403,3 +404,49 @@ function mountExplainers() {
 }
 
 mountFigures(); mountExplainers(); mountLockers(); mountWarmup();
+
+/* ============ Stand Up Break! — perfect square or perfect cube? by prime factorization (lessons/js/standup.js) ============ */
+const suN = (n) => { const s = String(n); return s.length > 3 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : s; };
+function suPF(n) { const f = []; for (let p = 2; p * p <= n; p++) { let e = 0; while (n % p === 0) { n /= p; e++; } if (e) f.push([p, e]); } if (n > 1) f.push([n, 1]); return f; }
+const suPow = (f) => f.map(([p, e]) => (e > 1 ? p + '^{' + e + '}' : String(p))).join('\\times ');
+const suTop = (n) => suPF(n).slice(-1)[0][0]; // largest prime factor
+const suVal = (f) => f.reduce((s, [p, e]) => s * p ** e, 1);
+function suTest(n, k) { // is n a perfect square (k = 2) or cube (k = 3)? The worked answer from its prime factorization.
+  const f = suPF(n), sq = k === 2, rt = sq ? '\\sqrt{' + suN(n) + '}' : '\\sqrt[3]{' + suN(n) + '}', bad = f.filter((x) => x[1] % k);
+  const text = sq ? 'Use prime factorization to decide whether this number is a <b>perfect square</b>. If it is, state its square root.'
+    : 'Use prime factorization to decide whether this number is a <b>perfect cube</b>. If it is, state its cube root.';
+  const a = [suN(n) + '=' + suPow(f)];
+  if (!bad.length) {
+    const g = f.map(([p, e]) => [p, e / k]);
+    a.push((sq ? '\\text{all exponents even}' : '\\text{all exponents multiples of 3}') + '\\ \\Rightarrow\\ \\text{perfect ' + (sq ? 'square' : 'cube') + '}');
+    a.push(rt + '=' + suPow(g) + (suPow(g) === String(suVal(g)) ? '' : '=' + suN(suVal(g))));
+  } else a.push('\\text{the exponent of } ' + bad.map((x) => x[0]).join(' \\text{ and } ') + (sq ? '\\text{ is odd}' : '\\text{ is not a multiple of 3}') + '\\ \\Rightarrow\\ \\text{not a perfect ' + (sq ? 'square' : 'cube') + '}');
+  return { text, q: suN(n), a };
+}
+standup('u1l3', {
+  intro: 'Break the number into primes (a division ladder works well), then look only at the exponents.',
+  levels: {
+    BEG: (r) => { // Examples 1–2: perfect square or not
+      let n;
+      if (r.chance(0.6)) { let k; do k = r.int(12, 70); while (suPF(k).length < 2 || k % 10 === 0 || suTop(k) > 11); n = k * k; }
+      else { do { const k = r.int(6, 45); n = k * k * r.pick([2, 3, 5, 7]); } while (n < 200 || n > 5000 || n % 100 === 0 || suPF(n).length < 2 || suTop(n) > 7); }
+      return suTest(n, 2);
+    },
+    PRG: (r) => { // Example 3: perfect cube or not
+      let n;
+      if (r.chance(0.6)) { let k; do k = r.int(6, 30); while (suPF(k).length < 2 || k % 10 === 0 || suTop(k) > 7); n = k ** 3; }
+      else { do { const k = r.int(3, 20); n = k ** 3 * r.pick([2, 3, 5, 4, 9]); } while (n < 300 || n > 20000 || n % 1000 === 0 || suPF(n).length < 2 || suTop(n) > 7); }
+      return suTest(n, 3);
+    },
+    MAS: (r) => { // bigger numbers with a prime like 11, 13, 17 or 19 hiding in them
+      const k = r.pick([2, 3]), B = r.pick([11, 13, 17, 19]), lim = k === 2 ? 60000 : 80000;
+      for (;;) {
+        const S = r.shuffle([2, 3, 5, 7]).slice(0, r.pick([1, 2])).sort((a, b) => a - b);
+        const f = S.map((p) => [p, k * r.pick(k === 2 ? [1, 1, 2] : [1])]).concat([[B, k]]);
+        if (r.chance(0.45)) { const i = r.int(0, f.length - 1); f[i] = [f[i][0], f[i][1] + r.pick(k === 2 ? [-1, 1] : [-1, 1, -2])]; } // one exponent off
+        const n = suVal(f.filter((x) => x[1] > 0));
+        if (n >= 1000 && n <= lim) return suTest(n, k);
+      }
+    }
+  }
+});
