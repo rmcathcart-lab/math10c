@@ -16,7 +16,7 @@ async def main():
         b = await p.chromium.launch(); ctx = await b.new_context(viewport={'width': 1180, 'height': 820}, service_workers='block')
         for pat in ('**/fonts.googleapis.com/**', '**/cdn.jsdelivr.net/**', '**/script.google.com/**'): await ctx.route(pat, lambda r: r.abort())
         await ctx.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
-        await ctx.add_init_script("localStorage.setItem('ink:teacher', JSON.stringify('x'))")
+        await ctx.add_init_script("localStorage.setItem('hw:tkey', 'testkey')")  # signed in to the Teacher Ledger only
         pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.goto(BASE + 'lessons/u4/l3/?class=B'); await pg.wait_for_selector('.su-cur .su-q')
         for lv in ['PRG', 'MAS']: await pg.click('.su-lv.su-lv-' + lv); await pg.click('.su-new')
