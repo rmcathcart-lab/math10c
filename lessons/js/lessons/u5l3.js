@@ -7,6 +7,7 @@ import {
   h, tex, add, box, Graph, ValueTable, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pairTex, texNum, svgEl, liveCtx, pulse, arrowHead, COLORS, fit
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const RED = COLORS.red, BLUE = COLORS.blue, TEAL = COLORS.teal, AMB = COLORS.amber, PUR = COLORS.purple, GRN = COLORS.green;
@@ -446,3 +447,74 @@ mountDive();
 mountEx4();
 export const explainers = mountExplainers({ meetAxes, subst, sameLine, crossTouch, lineCount, context, interp });
 export const _test = { MEET, SUB, LC, IP };
+
+/* ============ Stand Up Break! — intercepts: substitute y = 0, then x = 0 (lessons/js/standup.js) ============ */
+const suGcd = (a, b) => (b ? suGcd(b, a % b) : Math.abs(a));
+function suT(terms) { // [[coef, 'x^2'], [coef, 'y'], [const, '']] → LaTeX with signs; zero terms dropped
+  let s = '';
+  terms.forEach(([k, v]) => {
+    if (k === 0) return;
+    const a = Math.abs(k), body = (a === 1 && v ? '' : a) + v;
+    s += (k < 0 ? '-' : s ? '+' : '') + body;
+  });
+  return s || '0';
+}
+const suR = (v) => String(Math.round(v * 10) / 10); // to the nearest tenth
+function suLine(r, pos) { // a line through (p, 0) and (0, q): qx + py = pq, reduced
+  let p, q; do { p = r.int(1, 9) * (pos ? 1 : r.sign()); q = r.int(1, 9) * (pos ? 1 : r.sign()); } while (Math.abs(p) === Math.abs(q) || Math.abs(p * q) < 6);
+  const g = suGcd(p, q) * (q < 0 ? -1 : 1), A = q / g, B = p / g, C = p * q / g;
+  return { p, q, A, B, C };
+}
+const suPts = (xs, ys) => xs.map((x) => `(${x},\\ 0)`).concat(ys.map((y) => `(0,\\ ${y})`)).join(',\\ ');
+standup('u5l3', {
+  intro: 'Find every intercept at your whiteboard station: y = 0 for the x-intercepts, x = 0 for the y-intercept. Write each intercept point as an ordered pair.',
+  levels: {
+    BEG: (r) => {
+      if (r.chance(0.3)) { // y = mx + b
+        let m, p; do { m = r.int(1, 5) * r.sign(); p = r.int(-6, 6); } while (p === 0);
+        const b = -m * p, eq = `y=${suT([[m, 'x'], [b, '']])}`;
+        return { text: 'Determine the <i>x</i>-intercept and the <i>y</i>-intercept. Write each intercept point as an ordered pair.', q: eq,
+          a: [`y=0:\\ 0=${suT([[m, 'x'], [b, '']])} \\Rightarrow ${suT([[m, 'x']])}=${-b} \\Rightarrow x=${p}`, `x=0:\\ y=${b}`, suPts([p], [b])] };
+      }
+      const { p, q, A, B, C } = suLine(r, true), eq = `${suT([[A, 'x'], [B, 'y']])}=${C}`;
+      return { text: 'Determine the <i>x</i>-intercept and the <i>y</i>-intercept. Write each intercept point as an ordered pair.', q: eq,
+        a: [`y=0:\\ ${suT([[A, 'x']])}=${C}${A === 1 ? '' : ' \\Rightarrow x=' + p}`, `x=0:\\ ${suT([[B, 'y']])}=${C}${B === 1 ? '' : ' \\Rightarrow y=' + q}`, suPts([p], [q])] };
+    },
+    PRG: (r) => {
+      const k = r.pick(['line', 'line', 'circle', 'circle', 'para']);
+      if (k === 'line') { // general form with negatives: Ax + By + C = 0
+        const { p, q, A, B, C } = suLine(r, false), eq = `${suT([[A, 'x'], [B, 'y'], [-C, '']])}=0`;
+        return { text: 'Determine the <i>x</i>-intercept and the <i>y</i>-intercept. Write each intercept point as an ordered pair.', q: eq,
+          a: [`y=0:\\ ${suT([[A, 'x'], [-C, '']])}=0 \\Rightarrow x=${p}`, `x=0:\\ ${suT([[B, 'y'], [-C, '']])}=0 \\Rightarrow y=${q}`, suPts([p], [q])] };
+      }
+      if (k === 'circle') { // x² + y² = r²: two of each; sometimes not a perfect square
+        const n = r.chance(0.5) ? r.int(2, 12) ** 2 : r.pick([8, 10, 12, 18, 20, 24, 27, 32, 40, 45, 48, 50, 60, 72, 75, 80, 90, 98]);
+        const rt = Math.sqrt(n), sq = Number.isInteger(rt), v = sq ? String(rt) : suR(rt);
+        return { text: 'Determine the <i>x</i>-intercepts and the <i>y</i>-intercepts (to the nearest tenth where needed). Write each intercept point as an ordered pair.', q: `x^2+y^2=${n}`,
+          a: [`y=0:\\ x^2=${n} \\Rightarrow x=\\pm${sq ? v : '\\sqrt{' + n + '}\\approx\\pm' + v}`, `x=0:\\ y^2=${n} \\Rightarrow y=\\pm${sq ? v : '\\sqrt{' + n + '}\\approx\\pm' + v}`, suPts([v, '-' + v], [v, '-' + v])] };
+      }
+      // y = x² − c: two x-intercepts ±√c
+      const c = r.chance(0.5) ? r.int(2, 9) ** 2 : r.pick([2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 15, 20, 30]), rt = Math.sqrt(c), sq = Number.isInteger(rt), v = sq ? String(rt) : suR(rt);
+      return { text: 'Determine the <i>x</i>-intercepts and the <i>y</i>-intercept (to the nearest tenth where needed). Write each intercept point as an ordered pair.', q: `y=x^2-${c}`,
+        a: [`y=0:\\ x^2=${c} \\Rightarrow x=\\pm${sq ? v : '\\sqrt{' + c + '}\\approx\\pm' + v}`, `x=0:\\ y=0^2-${c}=-${c}`, suPts([v, '-' + v], ['-' + c])] };
+    },
+    MAS: (r) => {
+      const k = r.pick(['fac', 'fac', 'fac', 'gcf', 'gcf', 'sq', 'ell']);
+      const text = 'Determine every <i>x</i>-intercept and <i>y</i>-intercept. Write each intercept point as an ordered pair.';
+      if (k === 'ell') { // ax² + by² = c with whole-number intercepts
+        let p, q, L; do { p = r.int(2, 7); q = r.int(2, 7); L = (p * p * q * q) / suGcd(p * p, q * q); } while (p === q || L > 900);
+        const a = L / (p * p), b = L / (q * q);
+        return { text, q: `${suT([[a, 'x^2'], [b, 'y^2']])}=${L}`,
+          a: [`y=0:\\ ${suT([[a, 'x^2']])}=${L} \\Rightarrow x^2=${p * p} \\Rightarrow x=\\pm${p}`, `x=0:\\ ${suT([[b, 'y^2']])}=${L} \\Rightarrow y^2=${q * q} \\Rightarrow y=\\pm${q}`, suPts([p, -p], [q, -q])] };
+      }
+      if (k === 'sq') { // a perfect square: the graph touches the x-axis once
+        const h = r.int(2, 9) * r.sign(), eq = suT([[1, 'x^2'], [-2 * h, 'x'], [h * h, '']]);
+        return { text, q: `y=${eq}`, a: [`y=0:\\ 0=(${suT([[1, 'x'], [-h, '']])})^2 \\Rightarrow x=${h}\\ \\text{(only one)}`, `x=0:\\ y=${h * h}`, suPts([h], [h * h])] };
+      }
+      let p, q; do { p = r.int(-9, 9); q = r.int(-9, 9); } while (p === 0 || q === 0 || p === q || p === -q);
+      const a = k === 'gcf' ? r.pick([2, 3, 4, 5, -1, -2, -3]) : 1, b = -(p + q), c = p * q, eq = suT([[a, 'x^2'], [a * b, 'x'], [a * c, '']]);
+      const fac = `${a === 1 ? '' : a === -1 ? '-' : a}(${suT([[1, 'x'], [-p, '']])})(${suT([[1, 'x'], [-q, '']])})`;
+      return { text, q: `y=${eq}`, a: [`y=0:\\ 0=${fac}`, `x=${p}\\ \\text{or}\\ x=${q};\\quad x=0:\\ y=${a * c}`, suPts([p, q], [a * c])] };
+    }
+  }
+});

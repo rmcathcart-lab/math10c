@@ -7,6 +7,7 @@ import {
   h, tex, add, box, Graph, NumberLine, MappingDiagram, stamp, stampIn, mountExplainers, pop, fadeIn, sleep,
   pairTex, texNum, svgEl, anim, pulse
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const AMB = '#c27a0e', PUR = '#7b4fc4';
@@ -619,3 +620,160 @@ const vlt = {
 /* =============================== mount =============================== */
 mountStatic();
 export const explainers = mountExplainers({ wanted, discCont, notation, ioAxes, shadow, intercepts, machine, costModel, readGraph, fwdBack, vlt });
+
+/* ============ Stand Up Break! — unit review, first half: domain and range from a graph, intercepts (lessons/js/standup.js) ============ */
+/* ---- Stand Up Break figures: a coordinate grid drawn from the generated numbers (big labels for the projector) ---- */
+const SU_INK = '#1c2230', SU_GRID = '#d3d8df', SU_C = '#1f5aa8';
+const suF = (v) => +v.toFixed(1);
+const suNum = (v) => String(v).replace('-', '−');
+function suPlane(o, draw, label) { // o: { x0, x1, y0, y1, lab: label every lab units, xl, yl }; draw(X, Y, u) → SVG
+  const u = o.u || Math.max(18, Math.min(32, Math.floor(340 / Math.max(o.x1 - o.x0, o.y1 - o.y0)))), p = 16, lab = o.lab || 2;
+  const W = (o.x1 - o.x0) * u + 2 * p, H = (o.y1 - o.y0) * u + 2 * p;
+  const X = (x) => suF(p + (x - o.x0) * u), Y = (y) => suF(p + (o.y1 - y) * u);
+  const ax = Math.min(Math.max(0, o.y0), o.y1), ay = Math.min(Math.max(0, o.x0), o.x1); // where the axes sit
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let x = Math.ceil(o.x0); x <= o.x1; x++) s += `<line x1="${X(x)}" y1="${Y(o.y0)}" x2="${X(x)}" y2="${Y(o.y1)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  for (let y = Math.ceil(o.y0); y <= o.y1; y++) s += `<line x1="${X(o.x0)}" y1="${Y(y)}" x2="${X(o.x1)}" y2="${Y(y)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  s += `<g stroke="${SU_INK}" stroke-width="2" fill="${SU_INK}"><line x1="${X(o.x0)}" y1="${Y(ax)}" x2="${X(o.x1)}" y2="${Y(ax)}"/><line x1="${X(ay)}" y1="${Y(o.y0)}" x2="${X(ay)}" y2="${Y(o.y1)}"/>` +
+    `<path d="M${X(o.x1)} ${Y(ax)}l-9 -5v10z M${X(ay)} ${Y(o.y1)}l-5 9h10z" stroke="none"/></g>`;
+  const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+  for (let x = Math.ceil(o.x0 / lab) * lab; x < o.x1; x += lab) if (x !== ay && x > o.x0) s += `<text x="${X(x)}" y="${Y(ax) + 23}" text-anchor="middle" ${halo}>${suNum(x)}</text>`;
+  for (let y = Math.ceil(o.y0 / lab) * lab; y < o.y1; y += lab) if (y !== ax && y > o.y0) s += `<text x="${X(ay) - 7}" y="${Y(y) + 7}" text-anchor="end" ${halo}>${suNum(y)}</text>`;
+  s += `<text x="${X(o.x1) - 4}" y="${Y(ax) - 9}" text-anchor="end" font-style="italic" font-size="22" ${halo}>${o.xl || 'x'}</text>` +
+    `<text x="${X(ay) + 9}" y="${Y(o.y1) + 15}" font-style="italic" font-size="22" ${halo}>${o.yl || 'y'}</text>`;
+  s += draw(X, Y, u);
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${label || 'graph'}" font-family="KaTeX_Main, 'Times New Roman', serif" font-size="21" fill="${SU_INK}">${s}</svg>`;
+}
+const suDot = (X, Y, x, y, hollow) => `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" fill="${hollow ? '#fff' : SU_C}" stroke="${SU_C}" stroke-width="2.6"/>`;
+function suArrowHead(X, Y, x, y, dx, dy) { // a filled arrowhead at (x, y) pointing along (dx, dy) (graph units)
+  const px = dx * (X(1) - X(0)), py = dy * (Y(1) - Y(0)), L = Math.hypot(px, py) || 1, ux = px / L, uy = py / L, tx = X(x), ty = Y(y);
+  const bx = tx - 14 * ux, by = ty - 14 * uy;
+  return `<path d="M${suF(tx)} ${suF(ty)}L${suF(bx - 6.5 * uy)} ${suF(by + 6.5 * ux)}L${suF(bx + 6.5 * uy)} ${suF(by - 6.5 * ux)}Z" fill="${SU_C}"/>`;
+}
+const suPath = (X, Y, pts) => `<polyline points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="${SU_C}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+/* ---- domain and range of a graph made of line segments: vertices pts (x increasing); each end 'solid', 'hollow' or 'arrow' ---- */
+function suSet(v, lo, loIn, hi, hiIn) { // set-builder notation over the reals
+  const c = lo == null && hi == null ? '' : lo == null ? `${v}${hiIn ? '\\le ' : '<'}${hi}` : hi == null ? `${v}${loIn ? '\\ge ' : '>'}${lo}` : `${lo}${loIn ? '\\le ' : '<'}${v}${hiIn ? '\\le ' : '<'}${hi}`;
+  return `\\{${v}\\mid ${c ? c + ',\\ ' : ''}${v}\\in\\mathbb{R}\\}`;
+}
+const suList = (vals) => `\\{${[...new Set(vals)].sort((a, b) => a - b).join(',\\ ')}\\}`;
+function suDR(pts, e0, e1) {
+  const n = pts.length - 1, inc = (i) => (i === 0 ? e0 !== 'hollow' : i === n ? e1 !== 'hollow' : true);
+  const out0 = e0 === 'arrow' ? Math.sign(pts[0][1] - pts[1][1]) : 0, out1 = e1 === 'arrow' ? Math.sign(pts[n][1] - pts[n - 1][1]) : 0;
+  const ys = pts.map((p) => p[1]), mn = Math.min(...ys), mx = Math.max(...ys);
+  return {
+    D: suSet('x', e0 === 'arrow' ? null : pts[0][0], e0 !== 'hollow', e1 === 'arrow' ? null : pts[n][0], e1 !== 'hollow'),
+    R: suSet('y', out0 < 0 || out1 < 0 ? null : mn, pts.some((p, i) => p[1] === mn && inc(i)), out0 > 0 || out1 > 0 ? null : mx, pts.some((p, i) => p[1] === mx && inc(i)))
+  };
+}
+function suArrowTip(a, b) { // the arrow tip just past a, continuing the direction b → a
+  const dx = a[0] - b[0], dy = a[1] - b[1], L = Math.hypot(dx, dy);
+  return [a[0] + 0.8 * dx / L, a[1] + 0.8 * dy / L];
+}
+function suDRFig(pts, e0, e1, W) { // W: half-width of the window (vertices within ±(W−1))
+  return suPlane({ x0: -W, x1: W, y0: -W, y1: W }, (X, Y) => {
+    const n = pts.length - 1, line = pts.slice();
+    let s = '';
+    if (e0 === 'arrow') { const t = suArrowTip(pts[0], pts[1]); line.unshift(t); s += suArrowHead(X, Y, t[0], t[1], pts[0][0] - pts[1][0], pts[0][1] - pts[1][1]); }
+    if (e1 === 'arrow') { const t = suArrowTip(pts[n], pts[n - 1]); line.push(t); s += suArrowHead(X, Y, t[0], t[1], pts[n][0] - pts[n - 1][0], pts[n][1] - pts[n - 1][1]); }
+    s = suPath(X, Y, line) + s;
+    if (e0 !== 'arrow') s += suDot(X, Y, pts[0][0], pts[0][1], e0 === 'hollow');
+    if (e1 !== 'arrow') s += suDot(X, Y, pts[n][0], pts[n][1], e1 === 'hollow');
+    return s;
+  }, 'graph of a relation');
+}
+function suPoly(r, k, W, opt = {}) { // k segments, integer vertices within ±(W−1), x increasing, no two vertices at once the same y-extreme trouble
+  for (;;) {
+    const m = W - 1, xs = [r.int(-m, -m + 3)];
+    for (let i = 0; i < k; i++) xs.push(xs[i] + r.int(opt.dxMin || 1, opt.dxMax || 4));
+    if (xs[k] > m) continue;
+    const ys = xs.map(() => r.int(-m, m));
+    let ok = true;
+    for (let i = 0; i < k; i++) { const dy = ys[i + 1] - ys[i]; if ((!opt.flat && dy === 0) || Math.abs(dy) > 3 * (xs[i + 1] - xs[i])) ok = false; }
+    for (let i = 1; i < k; i++) if ((ys[i] - ys[i - 1]) * (ys[i + 1] - ys[i]) > 0 && Math.abs((ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1]) - (ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i])) < 0.4) ok = false; // a visible corner
+    if (!ok) continue;
+    return xs.map((x, i) => [x, ys[i]]);
+  }
+}
+const suGcd = (a, b) => (b ? suGcd(b, a % b) : Math.abs(a));
+function suT(terms) { // [[coef, 'x^2'], [coef, 'y'], [const, '']] → LaTeX with signs; zero terms dropped
+  let s = '';
+  terms.forEach(([k, v]) => {
+    if (k === 0) return;
+    const a = Math.abs(k), body = (a === 1 && v ? '' : a) + v;
+    s += (k < 0 ? '-' : s ? '+' : '') + body;
+  });
+  return s || '0';
+}
+const suR = (v) => String(Math.round(v * 10) / 10); // to the nearest tenth
+function suSample(f, t0, t1, keep) { // points f(t) for t in [t0, t1], the first unbroken run that stays on the grid
+  const out = []; let started = false;
+  for (let t = t0; t <= t1 + 1e-9; t += 0.05) { const p = f(t); if (keep(p)) { out.push(p); started = true; } else if (started) break; }
+  return out;
+}
+const suIn = (p) => Math.abs(p[0]) <= 5.6 && Math.abs(p[1]) <= 5.6;
+function suLine9(r, pos) { // a line through (p, 0) and (0, q): qx + py = pq, reduced
+  let p, q; do { p = r.int(1, 9) * (pos ? 1 : r.sign()); q = r.int(1, 9) * (pos ? 1 : r.sign()); } while (Math.abs(p) === Math.abs(q) || Math.abs(p * q) < 6);
+  const g = suGcd(p, q) * (q < 0 ? -1 : 1);
+  return { p, q, A: q / g, B: p / g, C: p * q / g };
+}
+const suDRq = 'State the domain and range of the relation graphed below.';
+const suIq = 'Determine the <i>x</i>-intercept and the <i>y</i>-intercept. Write each intercept point as an ordered pair.';
+const suH2 = (v) => String(Math.round(v * 100) / 100); // to the nearest hundredth
+const suFr = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = suGcd(n, d); n /= g; d /= g; return d === 1 ? String(n) : (n < 0 ? '-' : '') + `\\tfrac{${Math.abs(n)}}{${d}}`; };
+const suEq2 = (v) => (Math.abs(v * 100 - Math.round(v * 100)) < 1e-9 ? '=' : '\\approx ');
+function suCurveFig(pts, arrows) {
+  return suPlane({ x0: -6, x1: 6, y0: -6, y1: 6 }, (X, Y) => {
+    let s = suPath(X, Y, pts);
+    if (arrows) { const n = pts.length - 1; s += suArrowHead(X, Y, pts[0][0], pts[0][1], pts[0][0] - pts[3][0], pts[0][1] - pts[3][1]) + suArrowHead(X, Y, pts[n][0], pts[n][1], pts[n][0] - pts[n - 3][0], pts[n][1] - pts[n - 3][1]); }
+    return s;
+  }, 'graph of a relation');
+}
+standup('u5l9', {
+  intro: 'Review at your whiteboard station: domain and range are the graph’s shadows; for intercepts, put y = 0, then x = 0.',
+  levels: {
+    BEG: (r) => {
+      const k = r.pick(['dots', 'seg', 'line', 'line']);
+      if (k === 'dots') {
+        const xs = r.shuffle([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]).slice(0, r.int(4, 6)), ys = xs.map(() => r.int(-5, 5)); if (r.chance(0.6)) ys[1] = ys[0];
+        return { q: '', text: suDRq, fig: suPlane({ x0: -6, x1: 6, y0: -6, y1: 6 }, (X, Y) => xs.map((x, i) => suDot(X, Y, x, ys[i])).join(''), 'separate points'), a: [`D=${suList(xs)}`, `R=${suList(ys)}`] };
+      }
+      if (k === 'seg') { const pts = suPoly(r, 1, 6, { dxMin: 3, dxMax: 9 }), dr = suDR(pts, 'solid', 'solid'); return { q: '', text: suDRq, fig: suDRFig(pts, 'solid', 'solid', 6), a: [`D=${dr.D}`, `R=${dr.R}`] }; }
+      const { p, q, A, B, C } = suLine9(r, r.chance(0.5));
+      return { text: suIq, q: `${suT([[A, 'x'], [B, 'y']])}=${C}`, a: [`y=0:\\ ${suT([[A, 'x']])}=${C}${A === 1 ? '' : ' \\Rightarrow x=' + p}`, `x=0:\\ ${suT([[B, 'y']])}=${C}${B === 1 ? '' : ' \\Rightarrow y=' + q}`, `(${p},\\ 0),\\ (0,\\ ${q})`] };
+    },
+    PRG: (r) => {
+      const k = r.pick(['hund', 'hund', 'ray', 'curve', 'curve']);
+      if (k === 'hund') { // intercepts to the nearest hundredth (Example 4)
+        let A, B, C; do { A = r.int(2, 9) * r.sign(); B = r.int(2, 9) * r.sign(); C = r.int(-20, 20); } while (C === 0 || (C % A === 0 && C % B === 0) || suGcd(suGcd(A, B), C) > 1 || A < 0);
+        const xi = C / A, yi = C / B, eq = `${suT([[A, 'x'], [B, 'y'], [-C, '']])}=0`;
+        return { text: 'To the nearest hundredth, determine the <i>x</i>-intercept and the <i>y</i>-intercept.', q: eq,
+          a: [`y=0:\\ ${suT([[A, 'x']])}=${C} \\Rightarrow x=${suFr(C, A)}${Number.isInteger(xi) ? '' : suEq2(xi) + suH2(xi)}`, `x=0:\\ ${suT([[B, 'y']])}=${C} \\Rightarrow y=${suFr(C, B)}${Number.isInteger(yi) ? '' : suEq2(yi) + suH2(yi)}`] };
+      }
+      if (k === 'ray') {
+        const pts = suPoly(r, r.int(1, 2), 6, { dxMin: 2, dxMax: 5 }), [e0, e1] = r.pick([['hollow', 'arrow'], ['arrow', 'hollow'], ['solid', 'arrow'], ['arrow', 'arrow'], ['solid', 'hollow']]);
+        const dr = suDR(pts, e0, e1);
+        return { q: '', text: suDRq + ' Arrows mean the graph continues.', fig: suDRFig(pts, e0, e1, 6), a: [`D=${dr.D}`, `R=${dr.R}`] };
+      }
+      // a curve with arrows, like Example 3: a parabola opening up or down, or one opening sideways
+      const h = r.int(-3, 3), v = r.int(-3, 3), s = r.sign(), side = r.chance(0.5);
+      const pts = side ? suSample((t) => [h + s * 0.5 * (t - v) ** 2, t], v - 7, v + 7, suIn) : suSample((t) => [t, v + s * 0.5 * (t - h) ** 2], h - 7, h + 7, suIn);
+      const a = side ? [`D=${suSet('x', s > 0 ? h : null, true, s > 0 ? null : h, true)}`, `R=${suSet('y', null, true, null, true)}`]
+        : [`D=${suSet('x', null, true, null, true)}`, `R=${suSet('y', s > 0 ? v : null, true, s > 0 ? null : v, true)}`];
+      return { q: '', text: suDRq + ' The curve continues forever in the directions of the arrows.', fig: suCurveFig(pts, true), a };
+    },
+    MAS: (r) => {
+      if (r.chance(0.55)) { // Example 5: the product of the intercepts of px² ± qy = c
+        let p, sx, c, q, dv; do { p = r.int(1, 6); sx = r.int(1, 5); c = p * sx * sx; dv = [...Array(c).keys()].map((i) => i + 1).filter((d) => c % d === 0 && d > 1 && c / d <= 30); q = dv.length ? r.pick(dv) : 0; } while (!q || c < 4);
+        const sg = r.sign(), yi = sg > 0 ? c / q : -c / q, prod = -sx * sx * yi; // y-intercept from ±qy = c
+        return { text: `The graph of the relation below has <i>x</i>-intercepts <i>a</i> and <i>b</i>, and <i>y</i>-intercept <i>c</i>. Determine the value of the product <i>abc</i>.`,
+          q: `${suT([[p, 'x^2'], [sg * q, 'y']])}=${c}`,
+          a: [`y=0:\\ ${suT([[p, 'x^2']])}=${c}${p === 1 ? '' : ' \\Rightarrow x^2=' + sx * sx} \\Rightarrow x=\\pm${sx}`, `x=0:\\ ${suT([[sg * q, 'y']])}=${c} \\Rightarrow y=${yi}`, `abc=(${sx})(${-sx})(${yi})=${prod}`] };
+      }
+      const k = r.int(3, 4), [e0, e1] = r.pick([['solid', 'hollow'], ['hollow', 'hollow'], ['hollow', 'arrow'], ['arrow', 'hollow'], ['solid', 'arrow']]);
+      let pts; do { pts = suPoly(r, k, 6, { dxMin: 1, dxMax: 4, flat: true }); } while (Math.max(...pts.map((p) => p[1])) - Math.min(...pts.map((p) => p[1])) < 4 || (e0 === 'arrow' && pts[0][1] === pts[1][1]) || (e1 === 'arrow' && pts[k][1] === pts[k - 1][1]));
+      const dr = suDR(pts, e0, e1);
+      return { q: '', text: suDRq + (e0 === 'arrow' || e1 === 'arrow' ? ' The graph continues in the direction of the arrow.' : ''), fig: suDRFig(pts, e0, e1, 6), a: [`D=${dr.D}`, `R=${dr.R}`] };
+    }
+  }
+});

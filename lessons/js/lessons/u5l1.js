@@ -5,6 +5,7 @@ import {
   Graph, NumberLine, ValueTable, h, tex, add, box, pop, fadeIn, appear, sleep, tween, pairTex, texNum, svgEl,
   stamp, stampIn, mountExplainers, anim, pulse, COLORS, arrowHead, drawIn
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const C = COLORS;
@@ -782,3 +783,50 @@ export const explainers = mountExplainers({ plotPoint, quadrants, matchGrow, mat
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — a growing pattern: table → equation → forwards and backwards (lessons/js/standup.js) ============ */
+const suLin = (m, b, v) => (m === 1 ? '' : m) + v + (b === 0 ? '' : (b > 0 ? '+' : '-') + Math.abs(b)); // m·v + b
+const SU_PAT = [ // [what is counted, its letter, the figure's name, its letter]
+  ['tiles', 'T', 'Figure', 'n'], ['dots', 'D', 'Figure', 'n'], ['matchsticks', 'M', 'Figure', 'n'], ['toothpicks', 'P', 'Figure', 'n'],
+  ['squares', 'S', 'Figure', 'f'], ['beads', 'B', 'Step', 's'], ['chairs', 'C', 'Arrangement', 'n'], ['blocks', 'K', 'Stage', 'g']
+];
+function suTable(v, y, ns, f) { // a two-row table of values: figure numbers ns, counts f(n)
+  return '\\begin{array}{|c|' + ns.map(() => 'c').join('|') + '|}\\hline ' + v + ' & ' + ns.join(' & ') + '\\\\ \\hline ' + y + ' & ' + ns.map(f).join(' & ') + '\\\\ \\hline\\end{array}';
+}
+standup('u5l1', {
+  intro: 'Find the pattern’s equation at your whiteboard station, then use it. Check the equation against the table before you move on.',
+  levels: {
+    BEG: (r) => { // the table starts at Figure 1; equation, then forwards
+      const [thing, Y, fig, v] = r.pick(SU_PAT), d = r.int(2, 7), c = r.int(1, 6), N = r.int(12, 60), f = (n) => d * n + c;
+      return { text: `${fig} <i>${v}</i> of a growing pattern uses <i>${Y}</i> ${thing}. Write an equation for <i>${Y}</i> in terms of <i>${v}</i>, then find the number of ${thing} in ${fig} ${N}.`,
+        q: suTable(v, Y, [1, 2, 3, 4], f),
+        a: [`${Y}=${suLin(d, c, v)}\\quad(\\text{+${d} each time})`, `${Y}=${d}(${N})+${c}=${f(N)}`] };
+    },
+    PRG: (r) => { // the table starts later (sometimes a negative constant); equation, then backwards
+      const [thing, Y, fig, v] = r.pick(SU_PAT), d = r.int(3, 9), k = r.int(2, 4), N = r.int(25, 90);
+      let c; do { c = r.int(-6, 7); } while (c === 0 || d + c <= 0);
+      const f = (n) => d * n + c, V = f(N);
+      return { text: `${fig} <i>${v}</i> of a growing pattern uses <i>${Y}</i> ${thing}. Write an equation for <i>${Y}</i> in terms of <i>${v}</i>. Which ${fig.toLowerCase()} uses exactly ${V} ${thing}?`,
+        q: suTable(v, Y, [k, k + 1, k + 2, k + 3], f),
+        a: [`\\text{+${d} each time: } ${f(k)}=${d}(${k})+b,\\ b=${c}`, `${Y}=${suLin(d, c, v)}`, `${d}${v}=${V - c} \\Rightarrow ${v}=${N}`] };
+    },
+    MAS: (r) => {
+      const [thing, Y, fig, v] = r.pick(SU_PAT);
+      if (r.chance(0.5)) { // two patterns: where do they match?
+        const d1 = r.int(4, 9), d2 = r.int(1, d1 - 2), a1 = r.int(2, 9), N = r.int(5, 16), c1 = a1 - d1, c2 = c1 + (d1 - d2) * N, b1 = c2 + d2;
+        const A = (n) => a1 + d1 * (n - 1), B = (n) => b1 + d2 * (n - 1);
+        return { text: `Two growing patterns of ${thing} (${fig} 1, 2, 3, 4, …). Write an equation for each, then find the ${fig.toLowerCase()} number where both use the same number of ${thing}.`,
+          q: `\\begin{array}{l}\\text{A: } ${[1, 2, 3, 4].map(A).join(',\\ ')},\\ \\dots\\\\ \\text{B: } ${[1, 2, 3, 4].map(B).join(',\\ ')},\\ \\dots\\end{array}`,
+          a: [`A=${suLin(d1, c1, v)},\\quad B=${suLin(d2, c2, v)}`, `${d1 - d2 === 1 ? '' : d1 - d2}${v}=${c2 - c1} \\Rightarrow ${v}=${N}`, `\\text{both use } ${A(N)}`] };
+      }
+      // could a figure use exactly V? (about half the time it can't: the solution isn't a whole number)
+      const d = r.int(3, 9); let c; do { c = r.int(-4, 8); } while (c === 0 || d + c <= 0);
+      const f = (n) => d * n + c, yes = r.chance(0.45);
+      let V = f(r.int(30, 99)); if (!yes) V += r.int(1, d - 1);
+      const n = (V - c) / d, nT = String(Math.round(n * 100) / 100);
+      return { text: `${fig} <i>${v}</i> of a growing pattern uses <i>${Y}</i> ${thing}. Could a ${fig.toLowerCase()} use exactly ${V} ${thing}? Explain with an equation.`,
+        q: suTable(v, Y, [1, 2, 3, 4], f),
+        a: [`${suLin(d, c, v)}=${V} \\Rightarrow ${d}${v}=${V - c}`, yes ? `${v}=${n}:\\ \\textbf{Yes}\\ (\\text{${fig} ${n}})` : `${v}=\\tfrac{${V - c}}{${d}}\\approx ${nT}`, yes ? '' : `\\textbf{No}:\\ \\text{not a whole number}`] };
+    }
+  }
+});

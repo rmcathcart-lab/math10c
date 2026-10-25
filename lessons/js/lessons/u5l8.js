@@ -3,6 +3,7 @@
  * Every "story" explainer plays a scene (bathtub, garage, car, kangaroo, kiln, cyclist, phone) in step with a
  * tracer running along its graph. Colours: increasing green, decreasing red, constant slate. */
 import { h, tex, fmt, add, box, Graph, svgEl, mountExplainers, pop, fadeIn, appear, sleep, tween, linear, stamp, stampIn, pulse, anim, COLORS } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -690,3 +691,81 @@ const sketch = {
 /* =============================== mount =============================== */
 mountStatic();
 export const explainers = mountExplainers({ bath, pieces, rate, garage, vlt, shapes, ex2, sketch });
+
+/* ============ Stand Up Break! — reading the story of a real-world graph: increasing, decreasing, constant, rate of change (lessons/js/standup.js) ============ */
+const SU_RW = [ // quantity, its unit, rate unit, time unit, time step, quantity step, words while increasing / decreasing
+  { q: 'Volume of water', qu: 'L', ru: 'L/min', tu: 'min', ts: 2, qs: 20, up: 'the tank is filling', down: 'the tank is draining', thing: 'volume of water in the tank' },
+  { q: 'Cars in the lot', qu: 'cars', ru: 'cars/h', tu: 'h', ts: 1, qs: 20, up: 'more cars are arriving than leaving', down: 'cars are leaving', thing: 'number of cars in the parking lot' },
+  { q: 'Distance from home', qu: 'm', ru: 'm/min', tu: 'min', ts: 5, qs: 200, up: 'she is walking away from home', down: 'she is walking back toward home', thing: 'distance from home' },
+  { q: 'Oven temperature', qu: '°C', ru: '°C/min', tu: 'min', ts: 5, qs: 25, min: 1, up: 'the oven is heating up', down: 'the oven is cooling down', thing: 'oven temperature' },
+  { q: 'People in the store', qu: 'people', ru: 'people/h', tu: 'h', ts: 1, qs: 15, up: 'shoppers are arriving', down: 'shoppers are leaving', thing: 'number of people in the store' },
+  { q: 'Battery charge', qu: '%', ru: '%/h', tu: 'h', ts: 1, qs: 10, up: 'the phone is charging', down: 'the battery is draining', thing: 'battery charge' },
+  { q: 'Depth of water', qu: 'cm', ru: 'cm/min', tu: 'min', ts: 3, qs: 6, up: 'the bath is filling', down: 'the bath is draining', thing: 'depth of the bath water' }
+];
+const SU_LET = 'ABCDEFGH';
+function suStory(r, kmin, kmax, lo = 0) { // vertices in grid units (time 0, 1, …; quantity 0–8): at least one flat piece, neighbouring pieces differ
+  for (;;) {
+    const k = r.int(kmin, kmax), pts = [[0, r.pick([lo, r.int(lo, 4), r.int(lo, 6)])]];
+    let flat = 0, ok = true;
+    for (let i = 0; i < k; i++) {
+      const [t, y] = pts[i], prev = i ? Math.sign(y - pts[i - 1][1]) : 9;
+      let dy, tries = 0; do { dy = r.int(-5, 5); tries++; } while (tries < 50 && (y + dy < lo || y + dy > 8 || Math.sign(dy) === prev || (dy === 0 && flat >= 2)));
+      if (tries >= 50) { ok = false; break; }
+      if (dy === 0) flat++;
+      pts.push([t + r.int(1, 3), y + dy]);
+    }
+    if (ok && flat >= 1 && flat < k && pts[k][0] <= 12 && pts.some((p, i) => i && p[1] > pts[i - 1][1]) && pts.some((p, i) => i && p[1] < pts[i - 1][1])) return pts;
+  }
+}
+function suStoryFig(C, pts) {
+  const T = Math.max(8, pts[pts.length - 1][0]), ux = Math.floor(340 / T), uy = 30, L = 74, top = 22, Wd = L + T * ux + 26, Hd = top + 8 * uy + 62;
+  const X = (t) => L + t * ux, Y = (q) => top + (8 - q) * uy, ink = '#1c2230', c = '#1f5aa8';
+  const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+  let s = `<rect x="0" y="0" width="${Wd}" height="${Hd}" rx="10" fill="#fff"/>`;
+  for (let t = 0; t <= T; t++) s += `<line x1="${X(t)}" y1="${Y(0)}" x2="${X(t)}" y2="${Y(8)}" stroke="#d3d8df"/>` + `<text x="${X(t)}" y="${Y(0) + 22}" text-anchor="middle">${t * C.ts}</text>`;
+  for (let q = 0; q <= 8; q++) s += `<line x1="${X(0)}" y1="${Y(q)}" x2="${X(T)}" y2="${Y(q)}" stroke="#d3d8df"/>` + (q % 2 === 0 ? `<text x="${X(0) - 7}" y="${Y(q) + 6}" text-anchor="end">${q * C.qs}</text>` : '');
+  s += `<g stroke="${ink}" stroke-width="2"><line x1="${X(0)}" y1="${Y(0)}" x2="${X(T)}" y2="${Y(0)}"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(8)}"/></g>`;
+  s += `<text x="${(X(0) + X(T)) / 2}" y="${Hd - 8}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="17">Time (${C.tu})</text>`;
+  s += `<text transform="translate(18 ${(Y(0) + Y(8)) / 2}) rotate(-90)" text-anchor="middle" font-family="system-ui, sans-serif" font-size="17">${C.q} (${C.qu})</text>`;
+  s += `<polyline points="${pts.map(([t, q]) => X(t) + ',' + Y(q)).join(' ')}" fill="none" stroke="${c}" stroke-width="3.4" stroke-linejoin="round"/>`;
+  pts.forEach(([t, q], i) => {
+    const lo = i > 0 && i < pts.length - 1 && pts[i - 1][1] > q && pts[i + 1][1] > q, dy = lo && q > 0 ? 26 : -11;
+    s += `<circle cx="${X(t)}" cy="${Y(q)}" r="5" fill="${c}"/><text x="${X(t)}" y="${Y(q) + dy}" text-anchor="middle" font-weight="700" font-family="system-ui, sans-serif" font-size="19" ${halo}>${SU_LET[i]}</text>`;
+  });
+  return `<svg viewBox="0 0 ${Wd} ${Hd}" width="${Wd}" role="img" aria-label="${C.q} against time" font-family="KaTeX_Main, 'Times New Roman', serif" font-size="18" fill="${ink}">${s}</svg>`;
+}
+const suSeg = (i) => `${SU_LET[i]}\\text{ to }${SU_LET[i + 1]}`;
+const suRateV = (C, pts, i) => ((pts[i + 1][1] - pts[i][1]) * C.qs) / ((pts[i + 1][0] - pts[i][0]) * C.ts);
+const suRT = (v) => String(Math.round(v * 100) / 100); // a rate, to the nearest hundredth
+const suRE = (v) => (Math.abs(v * 100 - Math.round(v * 100)) < 1e-9 ? '=' : '\\approx ') + suRT(v);
+const suU = (C) => `\\text{ ${C.ru.replace('%', '\\%')}}`;
+standup('u5l8', {
+  intro: 'Read the graph’s story at your whiteboard station: left to right, piece by piece. Rate of change = change in the quantity ÷ change in time.',
+  levels: {
+    BEG: (r) => {
+      const C = r.pick(SU_RW), pts = suStory(r, 4, 5, C.min), n = pts.length - 1, kind = (i) => Math.sign(pts[i + 1][1] - pts[i][1]);
+      const list = (s) => [...Array(n).keys()].filter((i) => kind(i) === s).map(suSeg).join(',\\ ');
+      return { q: '', text: `The graph shows the ${C.thing}. During which intervals is it increasing? decreasing? constant?`, fig: suStoryFig(C, pts),
+        a: [`\\text{increasing: } ${list(1)}`, `\\text{decreasing: } ${list(-1)}`, `\\text{constant: } ${list(0)}`] };
+    },
+    PRG: (r) => {
+      const C = r.pick(SU_RW), pts = suStory(r, 4, 5, C.min), n = pts.length - 1, segs = [...Array(n).keys()];
+      const i = r.pick(segs.filter((j) => pts[j + 1][1] !== pts[j][1])), dq = (pts[i + 1][1] - pts[i][1]) * C.qs, dt = (pts[i + 1][0] - pts[i][0]) * C.ts;
+      const up = segs.filter((j) => pts[j + 1][1] > pts[j][1]), tot = up.reduce((s, j) => s + (pts[j + 1][0] - pts[j][0]) * C.ts, 0);
+      return { q: '', text: `The graph shows the ${C.thing}. (a) Determine the rate of change from ${SU_LET[i]} to ${SU_LET[i + 1]}, with units. (b) For how long, in total, was it increasing?`, fig: suStoryFig(C, pts),
+        a: [`\\text{(a) } \\dfrac{${pts[i + 1][1] * C.qs}-${pts[i][1] * C.qs}}{${pts[i + 1][0] * C.ts}-${pts[i][0] * C.ts}}=\\dfrac{${dq}}{${dt}}${suRE(dq / dt)}${suU(C)}`,
+          `\\text{(b) } ${up.map((j) => (pts[j + 1][0] - pts[j][0]) * C.ts).join('+')}=${tot}\\text{ ${C.tu}}\\quad(${up.map(suSeg).join(',\\ ')})`] };
+    },
+    MAS: (r) => { // the fastest change (biggest size of rate, rising or falling) and what it means
+      const C = r.pick(SU_RW);
+      for (;;) {
+        const pts = suStory(r, 5, 6, C.min), n = pts.length - 1, rates = [...Array(n).keys()].map((i) => suRateV(C, pts, i)), mags = rates.map(Math.abs), top = Math.max(...mags);
+        if (mags.filter((m) => Math.abs(m - top) < 1e-9).length > 1 || mags.filter((m) => m > 0).length < 3) continue;
+        const i = mags.indexOf(top), others = [...Array(n).keys()].filter((j) => j !== i && mags[j] > 0);
+        return { q: '', text: `The graph shows the ${C.thing}. Which segment shows the fastest rate of change? Determine that rate, with units, and describe what is happening during it.`, fig: suStoryFig(C, pts),
+          a: [`${others.map((j) => `${SU_LET[j]}${SU_LET[j + 1]}:\\ ${suRT(rates[j])}`).join(',\\ ')}`, `\\textbf{${SU_LET[i]} to ${SU_LET[i + 1]}}:\\ \\dfrac{${(pts[i + 1][1] - pts[i][1]) * C.qs}}{${(pts[i + 1][0] - pts[i][0]) * C.ts}}${suRE(rates[i])}${suU(C)}`],
+          atext: `Fastest: ${SU_LET[i]} to ${SU_LET[i + 1]}, where ${rates[i] > 0 ? C.up : C.down} (compare sizes, ignore the sign).` };
+      }
+    }
+  }
+});

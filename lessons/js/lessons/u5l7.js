@@ -6,6 +6,7 @@ import {
   h, tex, add, box, fmt, Graph, ValueTable, stamp, stampIn, mountExplainers, pop, fadeIn, appear, pulse, sleep, tween,
   pairTex, svgEl, liveCtx, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 /* KaTeX allowing \htmlClass (to colour the input variable inside an expression) */
@@ -742,3 +743,115 @@ const rocket = {
 mountWarm();
 mountFigures();
 export const explainers = mountExplainers({ swap, machine, fwdBack, sweep, exThree, candle, limits, pool, cost, rocket });
+
+/* ============ Stand Up Break! — reading a function's graph forwards, f(a), and backwards, f(x) = b (lessons/js/standup.js) ============ */
+/* ---- Stand Up Break figures: a coordinate grid drawn from the generated numbers (big labels for the projector) ---- */
+const SU_INK = '#1c2230', SU_GRID = '#d3d8df', SU_C = '#1f5aa8';
+const suF = (v) => +v.toFixed(1);
+const suNum = (v) => String(v).replace('-', '−');
+function suPlane(o, draw, label) { // o: { x0, x1, y0, y1, lab: label every lab units, xl, yl }; draw(X, Y, u) → SVG
+  const u = o.u || Math.max(18, Math.min(32, Math.floor(340 / Math.max(o.x1 - o.x0, o.y1 - o.y0)))), p = 16, lab = o.lab || 2;
+  const W = (o.x1 - o.x0) * u + 2 * p, H = (o.y1 - o.y0) * u + 2 * p;
+  const X = (x) => suF(p + (x - o.x0) * u), Y = (y) => suF(p + (o.y1 - y) * u);
+  const ax = Math.min(Math.max(0, o.y0), o.y1), ay = Math.min(Math.max(0, o.x0), o.x1); // where the axes sit
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let x = Math.ceil(o.x0); x <= o.x1; x++) s += `<line x1="${X(x)}" y1="${Y(o.y0)}" x2="${X(x)}" y2="${Y(o.y1)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  for (let y = Math.ceil(o.y0); y <= o.y1; y++) s += `<line x1="${X(o.x0)}" y1="${Y(y)}" x2="${X(o.x1)}" y2="${Y(y)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  s += `<g stroke="${SU_INK}" stroke-width="2" fill="${SU_INK}"><line x1="${X(o.x0)}" y1="${Y(ax)}" x2="${X(o.x1)}" y2="${Y(ax)}"/><line x1="${X(ay)}" y1="${Y(o.y0)}" x2="${X(ay)}" y2="${Y(o.y1)}"/>` +
+    `<path d="M${X(o.x1)} ${Y(ax)}l-9 -5v10z M${X(ay)} ${Y(o.y1)}l-5 9h10z" stroke="none"/></g>`;
+  const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+  for (let x = Math.ceil(o.x0 / lab) * lab; x < o.x1; x += lab) if (x !== ay && x > o.x0) s += `<text x="${X(x)}" y="${Y(ax) + 23}" text-anchor="middle" ${halo}>${suNum(x)}</text>`;
+  for (let y = Math.ceil(o.y0 / lab) * lab; y < o.y1; y += lab) if (y !== ax && y > o.y0) s += `<text x="${X(ay) - 7}" y="${Y(y) + 7}" text-anchor="end" ${halo}>${suNum(y)}</text>`;
+  s += `<text x="${X(o.x1) - 4}" y="${Y(ax) - 9}" text-anchor="end" font-style="italic" font-size="22" ${halo}>${o.xl || 'x'}</text>` +
+    `<text x="${X(ay) + 9}" y="${Y(o.y1) + 15}" font-style="italic" font-size="22" ${halo}>${o.yl || 'y'}</text>`;
+  s += draw(X, Y, u);
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${label || 'graph'}" font-family="KaTeX_Main, 'Times New Roman', serif" font-size="21" fill="${SU_INK}">${s}</svg>`;
+}
+const suDot = (X, Y, x, y, hollow) => `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" fill="${hollow ? '#fff' : SU_C}" stroke="${SU_C}" stroke-width="2.6"/>`;
+function suArrowHead(X, Y, x, y, dx, dy) { // a filled arrowhead at (x, y) pointing along (dx, dy) (graph units)
+  const px = dx * (X(1) - X(0)), py = dy * (Y(1) - Y(0)), L = Math.hypot(px, py) || 1, ux = px / L, uy = py / L, tx = X(x), ty = Y(y);
+  const bx = tx - 14 * ux, by = ty - 14 * uy;
+  return `<path d="M${suF(tx)} ${suF(ty)}L${suF(bx - 6.5 * uy)} ${suF(by + 6.5 * ux)}L${suF(bx + 6.5 * uy)} ${suF(by - 6.5 * ux)}Z" fill="${SU_C}"/>`;
+}
+const suPath = (X, Y, pts) => `<polyline points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="${SU_C}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+/* ---- a function graph made of line segments with whole-number corners (slopes ±1, ±2), and reading it both ways ---- */
+function suZig(r, lo = -6, hi = 6, ylo = -5, yhi = 5, kmin = 3) {
+  for (;;) {
+    const pts = [[r.int(lo, lo + 2), r.int(ylo + 1, yhi - 1)]];
+    let dir = r.sign();
+    while (pts[pts.length - 1][0] < hi - 3) {
+      const [x, y] = pts[pts.length - 1], s = dir * r.pick([1, 1, 2]), dx = r.int(1, 3), ny = y + s * dx;
+      if (ny < ylo || ny > yhi) { dir = -dir; continue; }
+      pts.push([x + dx, ny]); dir = -dir;
+    }
+    if (pts.length - 1 >= kmin && pts[pts.length - 1][0] <= hi) return pts;
+  }
+}
+const suAt = (pts, x) => { for (let i = 0; i < pts.length - 1; i++) { const [x1, y1] = pts[i], [x2, y2] = pts[i + 1]; if (x >= x1 && x <= x2) return y1 + (y2 - y1) * (x - x1) / (x2 - x1); } return null; };
+function suSolve(pts, b) { // every x with f(x) = b (null if a flat piece sits at that height)
+  const xs = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+    if (y1 === y2) { if (y1 === b) return null; continue; }
+    if ((b - y1) * (b - y2) <= 0) { const x = x1 + (b - y1) * (x2 - x1) / (y2 - y1); if (!xs.some((v) => Math.abs(v - x) < 1e-9)) xs.push(x); }
+  }
+  return xs.sort((a, b) => a - b);
+}
+const suZigFig = (pts, ends, name) => suPlane({ x0: -7, x1: 7, y0: -7, y1: 7 }, (X, Y) => {
+  const n = pts.length - 1;
+  let s = suPath(X, Y, pts);
+  [[0, ends[0]], [n, ends[1]]].forEach(([i, e]) => { s += suDot(X, Y, pts[i][0], pts[i][1], e === 'hollow'); });
+  return s;
+}, 'graph of the function ' + name);
+function suSet(v, lo, loIn, hi, hiIn) { // set-builder notation over the reals
+  const c = lo == null && hi == null ? '' : lo == null ? `${v}${hiIn ? '\\le ' : '<'}${hi}` : hi == null ? `${v}${loIn ? '\\ge ' : '>'}${lo}` : `${lo}${loIn ? '\\le ' : '<'}${v}${hiIn ? '\\le ' : '<'}${hi}`;
+  return `\\{${v}\\mid ${c ? c + ',\\ ' : ''}${v}\\in\\mathbb{R}\\}`;
+}
+const suList = (vals) => `\\{${[...new Set(vals)].sort((a, b) => a - b).join(',\\ ')}\\}`;
+const suNm = () => ['f', 'g', 'h', 'm', 'p', 'k'];
+const suHt = (F, v) => `<i>${F}</i>(${v === 'x' ? '<i>x</i>' : String(v).replace('-', '−')})`;
+const suXs = (xs) => (xs.length ? xs.map((x) => 'x=' + x).join(',\\ ') : '\\text{no solution}');
+standup('u5l7', {
+  intro: 'Read the graph at your whiteboard station. f(a): start on the x-axis. f(x) = b: start on the y-axis and count every point at that height.',
+  levels: {
+    BEG: (r) => { // a line: one forwards reading, one backwards reading
+      const F = r.pick(suNm()), [dx, dy] = r.pick([[1, 1], [1, -1], [1, 2], [1, -2], [2, 1], [2, -1], [3, 1], [3, -1], [3, 2], [2, 3]]);
+      const x0 = r.int(-2, 2), y0 = r.int(-2, 2), f = (x) => y0 + dy * (x - x0) / dx;
+      let a, b, xb; do { a = x0 + dx * r.int(-3, 3); b = y0 + dy * r.int(-3, 3); xb = x0 + dx * (b - y0) / dy; } while (Math.abs(f(a)) > 6 || Math.abs(a) > 6 || Math.abs(xb) > 6 || a === xb || b === f(a));
+      const end = (s) => { let t = 0; while (Math.abs(x0 + s * (t + 0.05) * dx) <= 6.6 && Math.abs(y0 + s * (t + 0.05) * dy) <= 6.6) t += 0.05; return [x0 + s * t * dx, y0 + s * t * dy]; };
+      const A = end(-1), B = end(1);
+      return { q: '', text: `The graph of <i>y</i> = ${suHt(F, 'x')} is shown. Find ${suHt(F, a)}. Then solve ${suHt(F, 'x')} = ${String(b).replace('-', '−')}.`,
+        fig: suPlane({ x0: -7, x1: 7, y0: -7, y1: 7 }, (X, Y) => suPath(X, Y, [A, B]) + suArrowHead(X, Y, A[0], A[1], -dx, -dy) + suArrowHead(X, Y, B[0], B[1], dx, dy), 'graph of a line'),
+        a: [`${F}(${a})=${f(a)}\\quad \\text{(up from } x=${a}\\text{)}`, `${F}(x)=${b}:\\ x=${xb}\\quad \\text{(across from } y=${b}\\text{)}`] };
+    },
+    PRG: (r) => { // a zig-zag: two values, f(0), and an equation with two or more solutions
+      const F = r.pick(suNm());
+      for (;;) {
+        const pts = suZig(r), x0 = pts[0][0], x1 = pts[pts.length - 1][0];
+        if (x0 > 0 || x1 < 0 || Math.max(...pts.map((p) => p[1])) - Math.min(...pts.map((p) => p[1])) < 4) continue;
+        const bs = []; for (let b = -5; b <= 5; b++) { const s = suSolve(pts, b); if (s && s.length >= 2 && s.every(Number.isInteger)) bs.push(b); }
+        if (!bs.length) continue;
+        const b = r.pick(bs), a = r.pick(pts.slice(1, -1).map((p) => p[0]).filter((x) => x !== 0).concat([x1])), xs = suSolve(pts, b);
+        return { q: '', text: `The graph of <i>y</i> = ${suHt(F, 'x')} is shown. Find ${suHt(F, a)} and ${suHt(F, 0)}. Then solve ${suHt(F, 'x')} = ${String(b).replace('-', '−')}.`,
+          fig: suZigFig(pts, ['solid', 'solid'], F),
+          a: [`${F}(${a})=${suAt(pts, a)},\\qquad ${F}(0)=${suAt(pts, 0)}`, `${F}(x)=${b}:\\ ${suXs(xs)}`] };
+      }
+    },
+    MAS: (r) => { // count every solution (sometimes none), then the domain and range
+      const F = r.pick(suNm());
+      for (;;) {
+        const pts = suZig(r, -6, 6, -5, 5, 4), ys = pts.map((p) => p[1]), mx = Math.max(...ys), mn = Math.min(...ys), e1 = r.chance(0.4) ? 'hollow' : 'solid';
+        const n = pts.length - 1;
+        if (mx - mn < 4) continue;
+        if (e1 === 'hollow' && (ys[n] === mx || ys[n] === mn)) continue; // keep the range simple: the hollow end isn't an extreme
+        const bs = []; for (let b = -5; b <= 5; b++) { if (b === ys[n] && e1 === 'hollow') continue; const s = suSolve(pts, b); if (s && s.length >= 3 && s.every(Number.isInteger)) bs.push(b); }
+        let b;
+        if (r.chance(0.2) && mx < 6) b = mx + r.int(1, 6 - mx); else if (bs.length) b = r.pick(bs); else continue;
+        const xs = b > mx ? [] : suSolve(pts, b);
+        return { q: '', text: `The graph of <i>y</i> = ${suHt(F, 'x')} is shown. Solve ${suHt(F, 'x')} = ${String(b).replace('-', '−')}. Then state the domain and range of <i>${F}</i>.`,
+          fig: suZigFig(pts, ['solid', e1], F),
+          a: [`${F}(x)=${b}:\\ ${suXs(xs)}`, `D=${suSet('x', pts[0][0], true, pts[n][0], e1 === 'solid')}`, `R=${suSet(F + '(x)', mn, true, mx, true)}`] };
+      }
+    }
+  }
+});

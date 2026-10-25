@@ -5,6 +5,7 @@ import {
   h, tex, add, box, Graph, ValueTable, MappingDiagram, stamp, stampIn, checkCard, mountExplainers,
   pop, fadeIn, pulse, sleep, pairTex, svgEl, arrowHead, liveCtx, drawIn, fit
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 /* KaTeX with \htmlClass allowed (so parts of an expression can be coloured or highlighted) */
@@ -622,3 +623,65 @@ export const _test = { MC, RP, FB, SB, LE, GF, NL, OK };
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — evaluate f(a) forwards; solve g(x) = b backwards (lessons/js/standup.js) ============ */
+const suGcd = (a, b) => (b ? suGcd(b, a % b) : Math.abs(a));
+function suT(terms) { // [[coef, 'x^2'], [coef, 'y'], [const, '']] → LaTeX with signs; zero terms dropped
+  let s = '';
+  terms.forEach(([k, v]) => {
+    if (k === 0) return;
+    const a = Math.abs(k), body = (a === 1 && v ? '' : a) + v;
+    s += (k < 0 ? '-' : s ? '+' : '') + body;
+  });
+  return s || '0';
+}
+const suR = (v) => String(Math.round(v * 10) / 10); // to the nearest tenth
+const suB = (v) => (v < 0 ? `(${v})` : String(v)); // brackets around a negative input
+const suH = (F, v) => `<i>${F}</i>(${String(v).replace('-', '−')})`; // f(−2) as HTML words
+const suNames = ['f', 'g', 'h', 'P', 'k', 'q'];
+function suSub(terms, v) { // a rule [[coef, power]] with the input v substituted, brackets and all: 3(−2)^2-5(−2)+1
+  let s = '';
+  terms.forEach(([k, p]) => {
+    if (k === 0) return;
+    const a = Math.abs(k), body = p === 0 ? String(a) : (a === 1 ? '' : a) + '(' + v + ')' + (p > 1 ? '^' + p : '');
+    s += (k < 0 ? '-' : s ? '+' : '') + body;
+  });
+  return s;
+}
+const suEval = (terms, x) => terms.reduce((s, [k, p]) => s + k * x ** p, 0);
+const suRule = (terms, v) => suT(terms.map(([k, p]) => [k, p === 0 ? '' : p === 1 ? v : v + '^' + p]));
+standup('u5l6', {
+  intro: 'Work it out at your whiteboard station. Brackets around every input, then follow the order of operations.',
+  levels: {
+    BEG: (r) => { // evaluate at two inputs (one negative)
+      const F = r.pick(suNames), quad = r.chance(0.4);
+      const terms = quad ? [[r.pick([1, 1, 2, 3]), 2], [r.int(-9, 9), 0]] : [[r.int(2, 9) * r.pick([1, 1, -1]), 1], [r.int(-12, 12) || 5, 0]];
+      const a = r.int(1, 9), b = -r.int(1, 6);
+      return { text: `Evaluate ${suH(F, a)} and ${suH(F, b)}.`, q: `${F}(x)=${suRule(terms, 'x')}`,
+        a: [a, b].map((v) => `${F}(${v})=${suSub(terms, v)}=${suEval(terms, v)}`) };
+    },
+    PRG: (r) => { // two functions, a combination of values
+      const quad = [[r.pick([1, 1, 2, -1]), 2], [r.int(-6, 6), 1], [r.int(-9, 9), 0]], lin = [[r.int(1, 6) * r.pick([1, -1]), 1], [r.int(2, 12), 0]];
+      const p = -r.int(1, 4), q = r.int(-3, 5), fp = suEval(quad, p), gq = suEval(lin, q), form = r.int(0, 2);
+      const ex = [`f(${p})-g(${q})`, `2f(${p})+g(${q})`, `f(${p})+3g(${q})`][form], val = [fp - gq, 2 * fp + gq, fp + 3 * gq][form];
+      const exH = [`${suH('f', p)} − ${suH('g', q)}`, `2${suH('f', p)} + ${suH('g', q)}`, `${suH('f', p)} + 3${suH('g', q)}`][form];
+      const comb = [`${fp}-${suB(gq)}`, `2(${fp})+${suB(gq)}`, `${fp}+3(${gq})`][form];
+      return { text: `Evaluate ${exH}.`, q: `\\begin{array}{l}f(x)=${suRule(quad, 'x')}\\\\ g(x)=${suRule(lin, 'x')}\\end{array}`,
+        a: [`f(${p})=${suSub(quad, p)}=${fp}`, `g(${q})=${suSub(lin, q)}=${gq}`, `${ex}=${comb}=${val}`] };
+    },
+    MAS: (r) => {
+      const F = r.pick(['g', 'h', 'k', 'P']);
+      if (r.chance(0.3)) { // a cubic, the way Example 3 asks it
+        const terms = [[r.int(1, 4) * r.pick([1, 1, -1]), 3], [r.int(-6, 6) || -3, 1], [r.int(-5, 9), 0]], p = -r.int(1, 3), q = r.int(2, 5);
+        return { text: `Determine ${suH(F, p)} and the image of ${q} under <i>${F}</i>.`, q: `${F}(x)=${suRule(terms, 'x')}`,
+          a: [`${F}(${p})=${suSub(terms, p)}=${suEval(terms, p)}`, `${F}(${q})=${suSub(terms, q)}=${suEval(terms, q)}`] };
+      }
+      // a linear function: an expression as the input, then solve backwards
+      const m = r.int(2, 9) * r.pick([1, 1, -1]), b = r.int(-12, 12) || 7, x0 = r.int(-9, 12), V = m * x0 + b, rule = suT([[m, 'x'], [b, '']]);
+      const e = r.pick([['a', 1, r.int(1, 5)], ['a', 1, -r.int(1, 5)], ['t', r.int(2, 5), 0], ['a', 2, -1], ['a', 3, 2]]), [L, c1, c0] = e;
+      const inner = suT([[c1, L], [c0, '']]), mid = c1 === 1 && c0 === 0 ? '' : `=${m}(${inner})${b >= 0 ? '+' : ''}${b}`;
+      return { text: `Write <i>${F}</i>(<i>${inner.replace('-', '−')}</i>) in simplest form. Then solve <i>${F}</i>(<i>x</i>) = ${String(V).replace('-', '−')}.`, q: `${F}(x)=${rule}`,
+        a: [`${F}(${inner})${mid}=${suT([[m * c1, L], [m * c0 + b, '']])}`, `${rule}=${V} \\Rightarrow ${suT([[m, 'x']])}=${V - b} \\Rightarrow x=${x0}`] };
+    }
+  }
+});

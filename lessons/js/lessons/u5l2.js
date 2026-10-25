@@ -6,6 +6,7 @@ import {
   h, tex, add, box, Graph, ValueTable, MappingDiagram, stamp, stampIn, mountExplainers, pop, fadeIn, pulse,
   sleep, tween, anim, drawIn, svgEl, fit, linear
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const IV = '#c27a0e', DV = '#7b4fc4', RED = '#c93a33', TEAL = '#13807a';
@@ -687,3 +688,81 @@ function mountWarm() {
 mountFigures();
 mountWarm();
 export const explainers = mountExplainers({ sixViews, causeEffect, fuelStory, spotRule, exCheck, eqToGraph, linTest, linOrNot });
+
+/* ============ Stand Up Break! — independent and dependent variables, inputs and outputs (lessons/js/standup.js) ============ */
+const SU_VARS = [['t', 'h'], ['n', 'C'], ['d', 'm'], ['x', 'y'], ['p', 'v'], ['s', 'F'], ['a', 'b'], ['k', 'w'], ['r', 'A'], ['D', 'm'], ['q', 'P'], ['g', 'T']];
+const suUniq = (a) => [...new Set(a)];
+const suPair = (x, y) => `(${x},\\ ${y})`;
+const suL = (vals) => vals.map((v) => `{${v}}`).join(',\\ '); // braces keep a leading minus sign unary after \text
+function suArrowFig(L, R, links, nl, nr, back) { // arrow diagram: values L (left oval), R (right oval); links [i, j]; back: arrows point right → left
+  const n = Math.max(L.length, R.length), gap = 46, H = 70 + gap * n, cy = 46 + gap * n / 2, xl = 95, xr = 315, ink = '#1c2230', c = '#1f5aa8';
+  const yAt = (k, m) => cy + (k - (m - 1) / 2) * gap;
+  let s = `<rect x="0" y="0" width="410" height="${H}" rx="10" fill="#fff"/>`;
+  [[xl, L, nl], [xr, R, nr]].forEach(([x, vals, nm]) => {
+    s += `<ellipse cx="${x}" cy="${cy}" rx="58" ry="${gap * n / 2 + 16}" fill="#f3efe7" stroke="${ink}" stroke-width="2"/>`;
+    s += `<text x="${x}" y="24" text-anchor="middle" font-style="italic" font-size="24">${nm}</text>`;
+    vals.forEach((v, k) => { s += `<text x="${x}" y="${yAt(k, vals.length) + 8}" text-anchor="middle" font-size="23">${String(v).replace('-', '−')}</text>`; });
+  });
+  links.forEach(([i, j]) => {
+    let x1 = xl + 30, y1 = yAt(i, L.length), x2 = xr - 30, y2 = yAt(j, R.length);
+    if (back) [x1, y1, x2, y2] = [x2, y2, x1, y1];
+    const L2 = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L2, uy = (y2 - y1) / L2, bx = x2 - 13 * ux, by = y2 - 13 * uy;
+    s += `<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${c}" stroke-width="2.6"/><path d="M${x2} ${y2}L${(bx - 6 * uy).toFixed(1)} ${(by + 6 * ux).toFixed(1)}L${(bx + 6 * uy).toFixed(1)} ${(by - 6 * ux).toFixed(1)}Z" fill="${c}"/>`;
+  });
+  return `<svg viewBox="0 0 410 ${H}" width="410" role="img" aria-label="arrow diagram" font-family="KaTeX_Main, 'Times New Roman', serif" fill="${ink}">${s}</svg>`;
+}
+const SU_CTX = [ // [independent letter, words, unit, dependent letter, words, unit, inputs, rule]
+  ['p', 'the admission price', 'dollars', 'v', 'the number of visitors to a museum that day', '', [8, 10, 12, 14, 16], (p) => 700 - 35 * p],
+  ['d', 'the distance of a taxi ride', 'km', 'F', 'the fare', 'dollars', [2, 4, 5, 8, 10], (d) => 3.5 + 2 * d],
+  ['t', 'the time a candle has burned', 'hours', 'h', 'the height of the candle', 'cm', [1, 2, 3, 4, 6], (t) => 24 - 3 * t],
+  ['n', 'the number of hours worked', '', 'P', 'the pay earned', 'dollars', [3, 5, 6, 8, 10], (n) => 16 * n],
+  ['a', 'the age of a puppy', 'weeks', 'm', 'the puppy’s mass', 'kg', [4, 8, 12, 16], (a) => Math.round((0.8 * a + 1) * 10) / 10],
+  ['s', 'the speed of a car', 'km/h', 'd', 'the car’s stopping distance', 'm', [40, 50, 60, 80, 100], (s) => s * s / 100 + s / 5],
+  ['k', 'the number of toppings', '', 'C', 'the cost of a pizza', 'dollars', [1, 2, 3, 4, 5], (k) => 12 + 1.5 * k],
+  ['t', 'the time a pot of water has been heated', 'minutes', 'T', 'the water temperature', '°C', [1, 2, 3, 5, 8], (t) => 20 + 9 * t],
+  ['b', 'the number of tables pushed together', '', 'c', 'the number of chairs needed', '', [1, 2, 3, 5, 6], (b) => 2 * b + 2],
+  ['d', 'the distance driven', 'km', 'f', 'the fuel left in the tank', 'litres', [100, 200, 300, 400], (d) => Math.round((60 - 0.08 * d) * 10) / 10],
+  ['h', 'the hours of video watched', '', 'B', 'the phone’s battery charge', 'percent', [1, 2, 3, 4, 5], (h) => 100 - 12 * h],
+  ['s', 'the side length of a square tile', 'cm', 'A', 'the area of the tile', 'cm²', [2, 3, 5, 6, 8], (s) => s * s],
+  ['n', 'the number of hoses filling a pool', '', 't', 'the time to fill it', 'hours', [1, 2, 3, 4, 6], (n) => 12 / n],
+  ['w', 'the number of weeks of practice', '', 'M', 'the time needed to run 5 km', 'minutes', [1, 2, 4, 6, 8], (w) => 34 - w]
+];
+standup('u5l2', {
+  intro: 'At your whiteboard station: decide which variable depends on the other, then list the inputs and outputs. Each value is listed once.',
+  levels: {
+    BEG: (r) => { // ordered pairs or a table (Example 1)
+      const [X, Y] = r.pick(SU_VARS), n = r.int(4, 5), xs = r.shuffle([...Array(r.chance(0.3) ? 19 : 14)].map((_, i, A) => i + 16 - A.length)).slice(0, n); // distinct inputs, sometimes negative
+      const ys = xs.map(() => r.int(2, 40)); if (r.chance(0.7)) ys[r.int(1, n - 1)] = ys[0]; // an output used twice
+      const table = r.chance(0.4), ux = suUniq(xs), uy = suUniq(ys);
+      return { text: `State (i) the independent variable, (ii) the dependent variable, (iii) the list of inputs and (iv) the list of outputs.`,
+        q: table ? `\\begin{array}{|c|${xs.map(() => 'c').join('|')}|}\\hline ${X} & ${xs.join(' & ')}\\\\ \\hline ${Y} & ${ys.join(' & ')}\\\\ \\hline\\end{array}` : `${suPair(X, Y)}:\\ ${xs.map((x, i) => suPair(x, ys[i])).join(',\\ ')}`,
+        a: [`\\text{(i) independent: } ${X}\\qquad \\text{(ii) dependent: } ${Y}`, `\\text{(iii) inputs: } ${suL(ux)}`, `\\text{(iv) outputs: } ${suL(uy)}`] };
+    },
+    PRG: (r) => {
+      const [X, Y] = r.pick(SU_VARS);
+      if (r.chance(0.35)) { // an equation: which letter is the output? sometimes written backwards
+        const m = r.int(2, 9) * r.pick([1, 1, -1]), b = r.int(3, 40), k = r.int(2, 9), rhs = `${m}${X}+${b}`;
+        const eq = r.chance(0.4) ? `${rhs}=${Y}` : `${Y}=${rhs}`;
+        const sq = r.chance(0.3), eq2 = sq ? (r.chance(0.5) ? `${Y}=${Math.abs(m)}${X}^2` : `${Math.abs(m)}${X}^2=${Y}`) : eq, out = sq ? Math.abs(m) * k * k : m * k + b;
+        return { text: `For the relation below, state the independent and dependent variables. Then find the output when the input is ${k}.`, q: eq2,
+          a: [`${Y} \\text{ is on its own, so } ${Y} \\text{ is the output}`, `\\text{independent: } ${X}\\qquad \\text{dependent: } ${Y}`, `${Y}=${sq ? Math.abs(m) + '(' + k + ')^2' : m + '(' + k + ')+' + b}=${out}`] };
+      }
+      // an arrow diagram: a repeated output, sometimes an input with two arrows, sometimes arrows pointing left
+      const nl = r.int(3, 4), nr = r.int(2, 3), pool = r.shuffle([...Array(20)].map((_, i) => i + 1)), Lv = pool.slice(0, nl).sort((a, b) => a - b), Rv = pool.slice(nl, nl + nr).sort((a, b) => a - b);
+      let links; do { links = Lv.map((_, i) => [i, r.int(0, nr - 1)]); if (r.chance(0.3)) { const i = r.int(0, nl - 1); links.push([i, (links[i][1] + 1) % nr]); } }
+      while (Rv.some((_, j) => !links.some((l) => l[1] === j)));
+      const back = r.chance(0.4), inV = back ? Rv : Lv, outV = back ? Lv : Rv, [nameL, nameR] = back ? [Y, X] : [X, Y];
+      return { q: '', text: 'State (i) the independent variable, (ii) the dependent variable, (iii) the list of inputs and (iv) the list of outputs.',
+        fig: suArrowFig(Lv, Rv, links, nameL, nameR, back),
+        a: [`\\text{arrows start at } ${X}:\\ \\text{(i) } ${X}\\quad \\text{(ii) } ${Y}`, `\\text{(iii) inputs: } ${suL(inV)}`, `\\text{(iv) outputs: } ${suL(outV)}`] };
+    },
+    MAS: (r) => { // words: which depends on which? then write the data as ordered pairs in the right order
+      const [X, xw, xu, Y, yw, yu, xsAll, f] = r.pick(SU_CTX), xs = r.shuffle(xsAll).slice(0, 3).sort((a, b) => a - b), cap = (s) => s[0].toUpperCase() + s.slice(1);
+      const xn = `${xw}, <i>${X}</i>${xu ? ' (' + xu + ')' : ''}`, yn = `${yw}, <i>${Y}</i>${yu ? ' (' + yu + ')' : ''}`;
+      const sent = r.pick([`${cap(yn)}, depends on ${xn}.`, `${cap(xn)}, affects ${yn}.`, `${cap(yn)}, is related to ${xn}.`, `${cap(xn)}, is related to ${yn}.`]);
+      const data = xs.map((x) => `<i>${Y}</i>&nbsp;=&nbsp;${f(x)} when <i>${X}</i>&nbsp;=&nbsp;${x}`).join('; ');
+      return { q: '', text: `${sent} <br>Data: ${data}.<br>State the independent and dependent variables, then write the data as ordered pairs.`,
+        a: [`\\text{independent: } ${X}\\qquad \\text{dependent: } ${Y}`, `${suPair(X, Y)}:\\ ${xs.map((x) => suPair(x, f(x))).join(',\\ ')}`] };
+    }
+  }
+});

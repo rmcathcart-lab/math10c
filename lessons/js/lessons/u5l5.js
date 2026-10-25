@@ -12,6 +12,7 @@ import {
   h, tex, add, box, Graph, MappingDiagram, ValueTable, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pulse, anim, linear, pairTex, texNum, svgEl, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(String(s));
 const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u5l5-panel ' + cls, title ? `<div class="u5l5-ph">${title}</div>` : ''), w, hh), x, y);
@@ -544,3 +545,122 @@ function mountWarmup() {
 mountFigures();
 mountWarmup();
 export const explainers = mountExplainers({ birthday, twoRel, nested, threeViews, whyVertical, vlt, sixWays, sixForms });
+
+/* ============ Stand Up Break! — function or not? (lessons/js/standup.js) ============ */
+/* ---- Stand Up Break figures: a coordinate grid drawn from the generated numbers (big labels for the projector) ---- */
+const SU_INK = '#1c2230', SU_GRID = '#d3d8df', SU_C = '#1f5aa8';
+const suF = (v) => +v.toFixed(1);
+const suNum = (v) => String(v).replace('-', '−');
+function suPlane(o, draw, label) { // o: { x0, x1, y0, y1, lab: label every lab units, xl, yl }; draw(X, Y, u) → SVG
+  const u = o.u || Math.max(18, Math.min(32, Math.floor(340 / Math.max(o.x1 - o.x0, o.y1 - o.y0)))), p = 16, lab = o.lab || 2;
+  const W = (o.x1 - o.x0) * u + 2 * p, H = (o.y1 - o.y0) * u + 2 * p;
+  const X = (x) => suF(p + (x - o.x0) * u), Y = (y) => suF(p + (o.y1 - y) * u);
+  const ax = Math.min(Math.max(0, o.y0), o.y1), ay = Math.min(Math.max(0, o.x0), o.x1); // where the axes sit
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let x = Math.ceil(o.x0); x <= o.x1; x++) s += `<line x1="${X(x)}" y1="${Y(o.y0)}" x2="${X(x)}" y2="${Y(o.y1)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  for (let y = Math.ceil(o.y0); y <= o.y1; y++) s += `<line x1="${X(o.x0)}" y1="${Y(y)}" x2="${X(o.x1)}" y2="${Y(y)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  s += `<g stroke="${SU_INK}" stroke-width="2" fill="${SU_INK}"><line x1="${X(o.x0)}" y1="${Y(ax)}" x2="${X(o.x1)}" y2="${Y(ax)}"/><line x1="${X(ay)}" y1="${Y(o.y0)}" x2="${X(ay)}" y2="${Y(o.y1)}"/>` +
+    `<path d="M${X(o.x1)} ${Y(ax)}l-9 -5v10z M${X(ay)} ${Y(o.y1)}l-5 9h10z" stroke="none"/></g>`;
+  const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+  for (let x = Math.ceil(o.x0 / lab) * lab; x < o.x1; x += lab) if (x !== ay && x > o.x0) s += `<text x="${X(x)}" y="${Y(ax) + 23}" text-anchor="middle" ${halo}>${suNum(x)}</text>`;
+  for (let y = Math.ceil(o.y0 / lab) * lab; y < o.y1; y += lab) if (y !== ax && y > o.y0) s += `<text x="${X(ay) - 7}" y="${Y(y) + 7}" text-anchor="end" ${halo}>${suNum(y)}</text>`;
+  s += `<text x="${X(o.x1) - 4}" y="${Y(ax) - 9}" text-anchor="end" font-style="italic" font-size="22" ${halo}>${o.xl || 'x'}</text>` +
+    `<text x="${X(ay) + 9}" y="${Y(o.y1) + 15}" font-style="italic" font-size="22" ${halo}>${o.yl || 'y'}</text>`;
+  s += draw(X, Y, u);
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${label || 'graph'}" font-family="KaTeX_Main, 'Times New Roman', serif" font-size="21" fill="${SU_INK}">${s}</svg>`;
+}
+const suDot = (X, Y, x, y, hollow) => `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" fill="${hollow ? '#fff' : SU_C}" stroke="${SU_C}" stroke-width="2.6"/>`;
+function suArrowHead(X, Y, x, y, dx, dy) { // a filled arrowhead at (x, y) pointing along (dx, dy) (graph units)
+  const px = dx * (X(1) - X(0)), py = dy * (Y(1) - Y(0)), L = Math.hypot(px, py) || 1, ux = px / L, uy = py / L, tx = X(x), ty = Y(y);
+  const bx = tx - 14 * ux, by = ty - 14 * uy;
+  return `<path d="M${suF(tx)} ${suF(ty)}L${suF(bx - 6.5 * uy)} ${suF(by + 6.5 * ux)}L${suF(bx + 6.5 * uy)} ${suF(by - 6.5 * ux)}Z" fill="${SU_C}"/>`;
+}
+const suPath = (X, Y, pts) => `<polyline points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="${SU_C}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+function suArrowFig(L, R, links, nl, nr, back) { // arrow diagram: values L (left oval), R (right oval); links [i, j]; back: arrows point right → left
+  const n = Math.max(L.length, R.length), gap = 46, H = 70 + gap * n, cy = 46 + gap * n / 2, xl = 95, xr = 315, ink = '#1c2230', c = '#1f5aa8';
+  const yAt = (k, m) => cy + (k - (m - 1) / 2) * gap;
+  let s = `<rect x="0" y="0" width="410" height="${H}" rx="10" fill="#fff"/>`;
+  [[xl, L, nl], [xr, R, nr]].forEach(([x, vals, nm]) => {
+    s += `<ellipse cx="${x}" cy="${cy}" rx="58" ry="${gap * n / 2 + 16}" fill="#f3efe7" stroke="${ink}" stroke-width="2"/>`;
+    s += `<text x="${x}" y="24" text-anchor="middle" font-style="italic" font-size="24">${nm}</text>`;
+    vals.forEach((v, k) => { s += `<text x="${x}" y="${yAt(k, vals.length) + 8}" text-anchor="middle" font-size="23">${String(v).replace('-', '−')}</text>`; });
+  });
+  links.forEach(([i, j]) => {
+    let x1 = xl + 30, y1 = yAt(i, L.length), x2 = xr - 30, y2 = yAt(j, R.length);
+    if (back) [x1, y1, x2, y2] = [x2, y2, x1, y1];
+    const L2 = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / L2, uy = (y2 - y1) / L2, bx = x2 - 13 * ux, by = y2 - 13 * uy;
+    s += `<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${c}" stroke-width="2.6"/><path d="M${x2} ${y2}L${(bx - 6 * uy).toFixed(1)} ${(by + 6 * ux).toFixed(1)}L${(bx + 6 * uy).toFixed(1)} ${(by - 6 * ux).toFixed(1)}Z" fill="${c}"/>`;
+  });
+  return `<svg viewBox="0 0 410 ${H}" width="410" role="img" aria-label="arrow diagram" font-family="KaTeX_Main, 'Times New Roman', serif" fill="${ink}">${s}</svg>`;
+}
+function suCurve(X, Y, pts, arrows) { // a sampled curve; arrowheads at both ends when it runs off the grid
+  let s = suPath(X, Y, pts);
+  if (arrows) {
+    const n = pts.length - 1, a = pts[0], b = pts[3], c = pts[n], d = pts[n - 3];
+    s += suArrowHead(X, Y, a[0], a[1], a[0] - b[0], a[1] - b[1]) + suArrowHead(X, Y, c[0], c[1], c[0] - d[0], c[1] - d[1]);
+  }
+  return s;
+}
+function suSample(f, t0, t1, keep) { // points f(t) for t in [t0, t1], the first unbroken run that stays on the grid
+  const out = []; let started = false;
+  for (let t = t0; t <= t1 + 1e-9; t += 0.05) { const p = f(t); if (keep(p)) { out.push(p); started = true; } else if (started) break; }
+  return out;
+}
+const suIn = (p) => Math.abs(p[0]) <= 5.6 && Math.abs(p[1]) <= 5.6;
+const suP = (x, y) => `(${x},\\ ${y})`;
+standup('u5l5', {
+  intro: 'Decide at your whiteboard station: is the relation a function? Justify it: name an input with two outputs, or explain why there isn’t one.',
+  levels: {
+    BEG: (r) => { // a list of ordered pairs
+      const n = r.int(5, 6), xs = r.shuffle([...Array(16)].map((_, i) => i - 6)).slice(0, n), ys = xs.map(() => r.int(-5, 12)), isF = r.chance(0.5);
+      let pairs = xs.map((x, i) => [x, ys[i]]), j = -1, y2 = 0;
+      if (isF) { if (r.chance(0.6)) pairs[r.int(1, n - 1)][1] = pairs[0][1]; } // a repeated output is fine
+      else { j = r.int(0, n - 1); do { y2 = r.int(-5, 12); } while (y2 === pairs[j][1]); pairs.splice(r.int(0, n), 0, [xs[j], y2]); pairs = pairs.slice(); }
+      const outs = pairs.map((p) => p[1]), rep = outs.find((y, i) => outs.indexOf(y) !== i);
+      return { text: 'Is this relation a function? Justify your answer.', q: pairs.map((p) => suP(p[0], p[1])).join(',\\ '),
+        a: isF ? [`\\text{No input repeats: each has one output}`, rep != null ? `\\text{(the output ${rep} repeats: that is allowed)}` : '', `\\textbf{Function}`]
+          : [`\\text{The input } {${xs[j]}} \\text{ has two outputs: } ${suP(xs[j], ys[j])},\\ ${suP(xs[j], y2)}`, `\\textbf{Not a function}`] };
+    },
+    PRG: (r) => {
+      const isF = r.chance(0.5);
+      if (r.chance(0.5)) { // an arrow diagram
+        const nl = r.int(3, 4), nr = r.int(2, nl), pool = r.shuffle([...Array(24)].map((_, i) => i - 4)), Lv = pool.slice(0, nl).sort((a, b) => a - b), Rv = pool.slice(nl, nl + nr).sort((a, b) => a - b);
+        let links, j = -1;
+        do { links = Lv.map((_, i) => [i, r.int(0, nr - 1)]); if (!isF) { j = r.int(0, nl - 1); links.push([j, (links[j][1] + r.int(1, nr - 1)) % nr]); } }
+        while (Rv.some((_, k) => !links.some((l) => l[1] === k)));
+        const two = links.filter((l) => l[0] === j).map((l) => Rv[l[1]]).sort((a, b) => a - b);
+        return { q: '', text: 'Is this relation a function? Justify your answer.', fig: suArrowFig(Lv, Rv, links, 'x', 'y', false),
+          a: isF ? [`\\text{Each input has exactly one arrow leaving it}`, `\\textbf{Function}`] : [`${Lv[j]} \\text{ has two arrows: to } {${two[0]}} \\text{ and } {${two[1]}}`, `\\textbf{Not a function}`] };
+      }
+      // separate points on a grid
+      const n = r.int(5, 6), xs = r.shuffle([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]).slice(0, n), pts = xs.map((x) => [x, r.int(-5, 5)]);
+      let j = -1, y2 = 0;
+      if (!isF) { j = r.int(0, n - 1); do { y2 = r.int(-5, 5); } while (Math.abs(y2 - pts[j][1]) < 2); pts.push([xs[j], y2]); }
+      return { q: '', text: 'Is the relation graphed below a function? Justify your answer.',
+        fig: suPlane({ x0: -6, x1: 6, y0: -6, y1: 6 }, (X, Y) => pts.map((p) => suDot(X, Y, p[0], p[1])).join(''), 'separate points'),
+        a: isF ? [`\\text{Every vertical line meets at most one point}`, `\\textbf{Function}`] : [`\\text{The line } x=${xs[j]} \\text{ meets } ${suP(xs[j], Math.max(y2, pts[j][1]))} \\text{ and } ${suP(xs[j], Math.min(y2, pts[j][1]))}`, `\\textbf{Not a function}`] };
+    },
+    MAS: (r) => { // a curve: if it isn't a function, write two ordered pairs that prove it
+      const kind = r.pick(['circle', 'circle', 'side', 'side', 'sideV', 'para', 'para', 'vee', 'semi']), h = r.int(-2, 2), k = r.int(-2, 2);
+      const text = 'Is the relation graphed below a function? If it is not, write two ordered pairs from the graph that prove it.';
+      const grid = (draw) => suPlane({ x0: -6, x1: 6, y0: -6, y1: 6 }, draw, 'graph of a relation');
+      const yes = [`\\text{Every vertical line crosses at most once}`, `\\textbf{Function}`];
+      if (kind === 'circle' || kind === 'semi') {
+        const rr = r.int(2, 3), up = r.chance(0.5), pts = [];
+        for (let t = 0; t <= (kind === 'semi' ? Math.PI : 2 * Math.PI) + 1e-9; t += Math.PI / 60) pts.push([h + rr * Math.cos(t), k + (up ? 1 : -1) * rr * Math.sin(t)]);
+        if (kind === 'semi') return { q: '', text, fig: grid((X, Y) => suPath(X, Y, pts) + suDot(X, Y, h - rr, k) + suDot(X, Y, h + rr, k)), a: yes };
+        return { q: '', text, fig: grid((X, Y) => suPath(X, Y, pts)), a: [`\\text{The line } x=${h} \\text{ crosses twice: } ${suP(h, k + rr)},\\ ${suP(h, k - rr)}`, `\\textbf{Not a function}`] };
+      }
+      if (kind === 'side' || kind === 'sideV') { // opens left or right: x = ±(y − k)² + h, or x = ±|y − k| + h
+        const a = r.sign(), f = kind === 'side' ? (t) => [h + a * (t - k) ** 2, t] : (t) => [h + a * 1.5 * Math.abs(t - k), t];
+        const d = kind === 'side' ? 1 : 2, xd = kind === 'side' ? h + a : h + a * 3;
+        const pts = suSample(f, k - 6, k + 6, suIn);
+        return { q: '', text, fig: grid((X, Y) => suCurve(X, Y, pts, true)), a: [`\\text{The line } x=${xd} \\text{ crosses twice: } ${suP(xd, k + d)},\\ ${suP(xd, k - d)}`, `\\textbf{Not a function}`] };
+      }
+      const a = r.pick([1, -1, 0.5, -0.5]), m = r.pick([-2, -1, -0.5, 0.5, 1, 2]);
+      const f = kind === 'para' ? (t) => [t, k + a * (t - h) ** 2] : kind === 'vee' ? (t) => [t, k + 2 * a * Math.abs(t - h)] : (t) => [t, k + m * (t - h)];
+      const pts = suSample(f, -6, 6, suIn);
+      return { q: '', text, fig: grid((X, Y) => suCurve(X, Y, pts, true)), a: yes };
+    }
+  }
+});

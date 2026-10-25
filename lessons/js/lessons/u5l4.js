@@ -5,6 +5,7 @@ import {
   h, tex, add, box, fmt, Graph, NumberLine, ValueTable, MappingDiagram, Flowchart, mountExplainers,
   pop, fadeIn, appear, pulse, sleep, tween, linear, pairTex, texNum, svgEl, liveCtx, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 /* KaTeX that allows \htmlClass, so pieces of one expression can be lit one at a time */
@@ -657,3 +658,113 @@ function mountFigures() {
 mountFigures();
 mountWarm();
 mountExplainers({ collect, setRead, shadow, dots, arrows, ends, circle, realWorld, which });
+
+/* ============ Stand Up Break! — domain and range from a graph (lessons/js/standup.js) ============ */
+/* ---- Stand Up Break figures: a coordinate grid drawn from the generated numbers (big labels for the projector) ---- */
+const SU_INK = '#1c2230', SU_GRID = '#d3d8df', SU_C = '#1f5aa8';
+const suF = (v) => +v.toFixed(1);
+const suNum = (v) => String(v).replace('-', '−');
+function suPlane(o, draw, label) { // o: { x0, x1, y0, y1, lab: label every lab units, xl, yl }; draw(X, Y, u) → SVG
+  const u = o.u || Math.max(18, Math.min(32, Math.floor(340 / Math.max(o.x1 - o.x0, o.y1 - o.y0)))), p = 16, lab = o.lab || 2;
+  const W = (o.x1 - o.x0) * u + 2 * p, H = (o.y1 - o.y0) * u + 2 * p;
+  const X = (x) => suF(p + (x - o.x0) * u), Y = (y) => suF(p + (o.y1 - y) * u);
+  const ax = Math.min(Math.max(0, o.y0), o.y1), ay = Math.min(Math.max(0, o.x0), o.x1); // where the axes sit
+  let s = `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let x = Math.ceil(o.x0); x <= o.x1; x++) s += `<line x1="${X(x)}" y1="${Y(o.y0)}" x2="${X(x)}" y2="${Y(o.y1)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  for (let y = Math.ceil(o.y0); y <= o.y1; y++) s += `<line x1="${X(o.x0)}" y1="${Y(y)}" x2="${X(o.x1)}" y2="${Y(y)}" stroke="${SU_GRID}" stroke-width="1"/>`;
+  s += `<g stroke="${SU_INK}" stroke-width="2" fill="${SU_INK}"><line x1="${X(o.x0)}" y1="${Y(ax)}" x2="${X(o.x1)}" y2="${Y(ax)}"/><line x1="${X(ay)}" y1="${Y(o.y0)}" x2="${X(ay)}" y2="${Y(o.y1)}"/>` +
+    `<path d="M${X(o.x1)} ${Y(ax)}l-9 -5v10z M${X(ay)} ${Y(o.y1)}l-5 9h10z" stroke="none"/></g>`;
+  const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+  for (let x = Math.ceil(o.x0 / lab) * lab; x < o.x1; x += lab) if (x !== ay && x > o.x0) s += `<text x="${X(x)}" y="${Y(ax) + 23}" text-anchor="middle" ${halo}>${suNum(x)}</text>`;
+  for (let y = Math.ceil(o.y0 / lab) * lab; y < o.y1; y += lab) if (y !== ax && y > o.y0) s += `<text x="${X(ay) - 7}" y="${Y(y) + 7}" text-anchor="end" ${halo}>${suNum(y)}</text>`;
+  s += `<text x="${X(o.x1) - 4}" y="${Y(ax) - 9}" text-anchor="end" font-style="italic" font-size="22" ${halo}>${o.xl || 'x'}</text>` +
+    `<text x="${X(ay) + 9}" y="${Y(o.y1) + 15}" font-style="italic" font-size="22" ${halo}>${o.yl || 'y'}</text>`;
+  s += draw(X, Y, u);
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${label || 'graph'}" font-family="KaTeX_Main, 'Times New Roman', serif" font-size="21" fill="${SU_INK}">${s}</svg>`;
+}
+const suDot = (X, Y, x, y, hollow) => `<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" fill="${hollow ? '#fff' : SU_C}" stroke="${SU_C}" stroke-width="2.6"/>`;
+function suArrowHead(X, Y, x, y, dx, dy) { // a filled arrowhead at (x, y) pointing along (dx, dy) (graph units)
+  const px = dx * (X(1) - X(0)), py = dy * (Y(1) - Y(0)), L = Math.hypot(px, py) || 1, ux = px / L, uy = py / L, tx = X(x), ty = Y(y);
+  const bx = tx - 14 * ux, by = ty - 14 * uy;
+  return `<path d="M${suF(tx)} ${suF(ty)}L${suF(bx - 6.5 * uy)} ${suF(by + 6.5 * ux)}L${suF(bx + 6.5 * uy)} ${suF(by - 6.5 * ux)}Z" fill="${SU_C}"/>`;
+}
+const suPath = (X, Y, pts) => `<polyline points="${pts.map(([x, y]) => X(x) + ',' + Y(y)).join(' ')}" fill="none" stroke="${SU_C}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+/* ---- domain and range of a graph made of line segments: vertices pts (x increasing); each end 'solid', 'hollow' or 'arrow' ---- */
+function suSet(v, lo, loIn, hi, hiIn) { // set-builder notation over the reals
+  const c = lo == null && hi == null ? '' : lo == null ? `${v}${hiIn ? '\\le ' : '<'}${hi}` : hi == null ? `${v}${loIn ? '\\ge ' : '>'}${lo}` : `${lo}${loIn ? '\\le ' : '<'}${v}${hiIn ? '\\le ' : '<'}${hi}`;
+  return `\\{${v}\\mid ${c ? c + ',\\ ' : ''}${v}\\in\\mathbb{R}\\}`;
+}
+const suList = (vals) => `\\{${[...new Set(vals)].sort((a, b) => a - b).join(',\\ ')}\\}`;
+function suDR(pts, e0, e1) {
+  const n = pts.length - 1, inc = (i) => (i === 0 ? e0 !== 'hollow' : i === n ? e1 !== 'hollow' : true);
+  const out0 = e0 === 'arrow' ? Math.sign(pts[0][1] - pts[1][1]) : 0, out1 = e1 === 'arrow' ? Math.sign(pts[n][1] - pts[n - 1][1]) : 0;
+  const ys = pts.map((p) => p[1]), mn = Math.min(...ys), mx = Math.max(...ys);
+  return {
+    D: suSet('x', e0 === 'arrow' ? null : pts[0][0], e0 !== 'hollow', e1 === 'arrow' ? null : pts[n][0], e1 !== 'hollow'),
+    R: suSet('y', out0 < 0 || out1 < 0 ? null : mn, pts.some((p, i) => p[1] === mn && inc(i)), out0 > 0 || out1 > 0 ? null : mx, pts.some((p, i) => p[1] === mx && inc(i)))
+  };
+}
+function suArrowTip(a, b) { // the arrow tip just past a, continuing the direction b → a
+  const dx = a[0] - b[0], dy = a[1] - b[1], L = Math.hypot(dx, dy);
+  return [a[0] + 0.8 * dx / L, a[1] + 0.8 * dy / L];
+}
+function suDRFig(pts, e0, e1, W) { // W: half-width of the window (vertices within ±(W−1))
+  return suPlane({ x0: -W, x1: W, y0: -W, y1: W }, (X, Y) => {
+    const n = pts.length - 1, line = pts.slice();
+    let s = '';
+    if (e0 === 'arrow') { const t = suArrowTip(pts[0], pts[1]); line.unshift(t); s += suArrowHead(X, Y, t[0], t[1], pts[0][0] - pts[1][0], pts[0][1] - pts[1][1]); }
+    if (e1 === 'arrow') { const t = suArrowTip(pts[n], pts[n - 1]); line.push(t); s += suArrowHead(X, Y, t[0], t[1], pts[n][0] - pts[n - 1][0], pts[n][1] - pts[n - 1][1]); }
+    s = suPath(X, Y, line) + s;
+    if (e0 !== 'arrow') s += suDot(X, Y, pts[0][0], pts[0][1], e0 === 'hollow');
+    if (e1 !== 'arrow') s += suDot(X, Y, pts[n][0], pts[n][1], e1 === 'hollow');
+    return s;
+  }, 'graph of a relation');
+}
+function suPoly(r, k, W, opt = {}) { // k segments, integer vertices within ±(W−1), x increasing, no two vertices at once the same y-extreme trouble
+  for (;;) {
+    const m = W - 1, xs = [r.int(-m, -m + 3)];
+    for (let i = 0; i < k; i++) xs.push(xs[i] + r.int(opt.dxMin || 1, opt.dxMax || 4));
+    if (xs[k] > m) continue;
+    const ys = xs.map(() => r.int(-m, m));
+    let ok = true;
+    for (let i = 0; i < k; i++) { const dy = ys[i + 1] - ys[i]; if ((!opt.flat && dy === 0) || Math.abs(dy) > 3 * (xs[i + 1] - xs[i])) ok = false; }
+    for (let i = 1; i < k; i++) if ((ys[i] - ys[i - 1]) * (ys[i + 1] - ys[i]) > 0 && Math.abs((ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1]) - (ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i])) < 0.4) ok = false; // a visible corner
+    if (!ok) continue;
+    return xs.map((x, i) => [x, ys[i]]);
+  }
+}
+const SU_PT = (p) => `(${p[0]},\\ ${p[1]})`;
+standup('u5l4', {
+  intro: 'State the domain and range of the graph at your whiteboard station. Solid dot: included. Hollow dot: not included. Arrow: it keeps going.',
+  levels: {
+    BEG: (r) => {
+      if (r.chance(0.5)) { // separate dots → lists
+        const xs = r.shuffle([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]).slice(0, r.int(4, 6));
+        const ys = xs.map(() => r.int(-5, 5)); if (r.chance(0.6)) ys[1] = ys[0]; // a repeated y-value
+        const pts = xs.map((x, i) => [x, ys[i]]);
+        return { q: '', text: 'State the domain and range of the relation graphed below.',
+          fig: suPlane({ x0: -6, x1: 6, y0: -6, y1: 6 }, (X, Y) => pts.map((p) => suDot(X, Y, p[0], p[1])).join(''), 'separate points'),
+          a: [`D=${suList(xs)}`, `R=${suList(ys)}`] };
+      }
+      const pts = suPoly(r, 1, 6, { dxMin: 3, dxMax: 9 }), dr = suDR(pts, 'solid', 'solid'); // one segment, both ends solid
+      return { q: '', text: 'State the domain and range of the relation graphed below.', fig: suDRFig(pts, 'solid', 'solid', 6), a: [`D=${dr.D}`, `R=${dr.R}`] };
+    },
+    PRG: (r) => {
+      const kind = r.pick(['seg', 'ray', 'ray', 'vee']);
+      let pts, e0, e1;
+      if (kind === 'seg') { pts = suPoly(r, 1, 6, { dxMin: 3, dxMax: 9 }); [e0, e1] = r.pick([['solid', 'hollow'], ['hollow', 'solid'], ['hollow', 'hollow']]); }
+      else if (kind === 'ray') { pts = suPoly(r, 1, 6, { dxMin: 2, dxMax: 6 }); [e0, e1] = r.pick([['solid', 'arrow'], ['hollow', 'arrow'], ['arrow', 'solid'], ['arrow', 'hollow']]); }
+      else { do { pts = suPoly(r, 2, 6, { dxMin: 2, dxMax: 5 }); } while ((pts[1][1] - pts[0][1]) * (pts[2][1] - pts[1][1]) >= 0); e0 = e1 = 'arrow'; } // a V or a tent
+      const dr = suDR(pts, e0, e1);
+      return { q: '', text: 'State the domain and range of the relation graphed below.' + (e0 === 'arrow' || e1 === 'arrow' ? ' The graph continues in the direction of each arrow.' : ''),
+        fig: suDRFig(pts, e0, e1, 6), a: [`D=${dr.D}`, `R=${dr.R}`] };
+    },
+    MAS: (r) => { // three or four pieces; a hollow end, maybe an arrow; the lowest or highest point is often in the middle
+      const k = r.int(3, 4), [e0, e1] = r.pick([['solid', 'hollow'], ['hollow', 'solid'], ['hollow', 'hollow'], ['hollow', 'arrow'], ['arrow', 'hollow'], ['solid', 'arrow'], ['arrow', 'solid']]);
+      let pts; do { pts = suPoly(r, k, 6, { dxMin: 1, dxMax: 4, flat: true }); } while (Math.max(...pts.map((p) => p[1])) - Math.min(...pts.map((p) => p[1])) < 4 || (e0 === 'arrow' && pts[0][1] === pts[1][1]) || (e1 === 'arrow' && pts[k][1] === pts[k - 1][1]));
+      const dr = suDR(pts, e0, e1);
+      return { q: '', text: 'State the domain and range of the relation graphed below.' + (e0 === 'arrow' || e1 === 'arrow' ? ' The graph continues in the direction of the arrow.' : ''),
+        fig: suDRFig(pts, e0, e1, 6), a: [`D=${dr.D}`, `R=${dr.R}`] };
+    }
+  }
+});
