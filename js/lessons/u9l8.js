@@ -19,7 +19,8 @@
     'trig-complement': 'Used 180° instead of 90° for the other acute angle', 'trig-cofunction': 'Cofunction mix-up (gave the same-angle ratio)',
     'trig-opp-adj': 'Opposite and adjacent swapped', 'trig-hyp-name': 'Hypotenuse named wrongly', 'trig-base-angle': 'Gave a base angle instead of the apex angle',
     'trig-wrong-side': 'Used the wrong side (an edge instead of the diagonal)', 'trig-angle-diff': 'Subtracted or added angles instead of lengths',
-    'trig-scale': 'Scaled the angle along with the sides', 'trig-neg-root': 'Kept the negative root', 'trig-frac-dec': 'Fraction with decimals inside'
+    'trig-scale': 'Scaled the angle along with the sides', 'trig-neg-root': 'Kept the negative root', 'trig-frac-dec': 'Fraction with decimals inside',
+    'trig-poly-centre': 'Regular polygon: central angle not 360° ÷ n (or not halved)', 'trig-poly-height': 'Regular polygon: used the corner distance as the triangle’s height'
   });
 
   /* ---------------- small helpers ---------------- */
@@ -1296,6 +1297,46 @@
                 ['All three are equal, because they are all made by the same cable.', t('\\angle CAB') + ' doesn’t even involve the cable. Each angle measures a different turn.'],
                 [t('\\angle GAB=\\angle GAC+\\angle CAB') + ' exactly.', 'The turns are in different planes, so the angles don’t simply add — but ' + t('\\angle GAB') + ' is still the largest.']],
               t('\\angle CAB') + ' is horizontal (how far the cable’s shadow swings from ' + t('AB') + '); ' + t('\\angle GAC') + ' is vertical (how far the cable lifts off its shadow); ' + t('\\angle GAB') + ' combines both turns, so it is the largest. Each of the other two is a “shadow” of ' + t('\\angle GAB') + ' on one plane.', ['Compare: which angle needs both a sideways turn and a lift?'], 'three angles at A');
+          } }] },
+      /* ---------- Mastery: build the right triangle inside a regular polygon ---------- */
+      { num: '21', section: 'Mastery challenge',
+        shared: function (r) { return gen(r, function (r) { var n = r.pick([5, 7, 8, 9, 10, 12]), s = d1(r, 1.2, 3.6), h = 180 / n, R = s / 2 / T.sin(h), ap = s / 2 / T.tan(h); return { n: n, s: s, h: h, R: R, ap: ap, area: n * s * ap / 2, rot: r.int(0, 1) }; }, function (o) { return safe(o.R, 2) && safe(o.area, 1) && Math.abs(o.R * 100 % 1 - 0.5) > 0.1 && Math.abs(o.area * 10 % 1 - 0.5) > 0.1; }); },
+        stem: function (s) {
+          var PN = { 5: 'pentagon', 7: 'heptagon', 8: 'octagon', 9: 'nonagon', 10: 'decagon', 12: 'dodecagon' }, pts = { O: [0, 0] }, segs = [], c = 360 / s.n;
+          for (var i = 0; i < s.n; i++) { var g = -90 - s.h + i * c; pts['V' + i] = [s.R * T.cos(g), s.R * T.sin(g)]; }
+          for (i = 0; i < s.n; i++) segs.push(i === 0 ? ['V0', 'V1', s1(s.s) + ' m', { width: 2.4 }] : ['V' + i, 'V' + ((i + 1) % s.n), { width: 2.4 }]);
+          var fig = HW.fig({ pts: pts, segs: segs, names: false, extra: [{ type: 'eye', at: [0, 0] }, { type: 'text', at: [0.13 * s.R, 0.11 * s.R], text: 'O', size: 14 }], width: 230, aria: 'regular ' + PN[s.n] + ' with centre O' });
+          return 'A gazebo floor is a <b>regular ' + PN[s.n] + '</b>: ' + s.n + ' equal sides of ' + t(s1(s.s)) + ' m and ' + s.n + ' equal angles. Its centre ' + t('O') + ' is the same distance from every corner, and the same distance from the middle of every side.' + fig;
+        },
+        parts: [
+          { id: 'e21', level: 'MAS', outcome: 'M4', make: function (r, s) {
+            var n = s.n, h = s.h, ss = s1(s.s), half = rnd(s.s / 2, 2), c = 360 / n, hs = String(rnd(h, 4)), cs = String(rnd(c, 4));
+            var ap2 = s.s / 2 / T.tan(c), rh = s.s / 2 / T.sin(c);
+            var altsR = [
+              { v: rh, code: 'trig-poly-centre', hint: 'The ' + n + ' triangles from ' + t('O') + ' share the ' + t('360^\\circ') + ' at the centre, so each has ' + t(dg(cs)) + ' there — and the <b>right</b> triangle (cut by the perpendicular to the side) has half of that, ' + t(dg(hs)) + '.' },
+              { v: s.s / T.sin(h), code: 'trig-half', hint: 'The perpendicular from ' + t('O') + ' halves the side too: the leg opposite the ' + t(dg(hs)) + ' angle is ' + t(String(half)) + ' m, not ' + t(ss) + ' m.' },
+              { v: s.ap, code: 'trig-ratio', hint: 'That is the distance from ' + t('O') + ' to the <b>middle of a side</b> (adjacent to the angle at ' + t('O') + '). The distance to a corner is the hypotenuse: SOH.' },
+              { v: s.s / 2 / T.cos(h), code: 'trig-ratio', hint: 'The half-side is <b>opposite</b> the angle at ' + t('O') + ', and the corner distance is the hypotenuse: SOH, not CAH.' },
+              { v: s.s / 2 * T.sin(h), code: 'trig-inv', hint: 'The unknown is the hypotenuse, in the <b>denominator</b>: ' + t('r=\\dfrac{\\text{half-side}}{\\sin(\\text{angle})}') + ' — divide.' },
+              { v: s.s / 2 / Math.sin(h), code: 'trig-rad', hint: 'Your calculator seems to be in <b>radian</b> mode. Switch it to <b>degrees</b> (DEG).' }];
+            var altsA = [
+              { v: n * s.s * s.ap, code: 'trig-area-half', hint: 'Each of the ' + n + ' triangles has area ' + t('\\tfrac12\\times\\text{base}\\times\\text{height}') + ' — don’t forget the ' + t('\\tfrac12') + '.' },
+              { v: n * s.s * s.R / 2, code: 'trig-poly-height', hint: 'The height of each triangle from ' + t('O') + ' is the distance to the <b>middle</b> of a side (perpendicular to the side), not the slanted distance to a corner.' },
+              { v: s.s * s.ap / 2, code: 'trig-one-piece', hint: 'That is the area of <b>one</b> of the ' + n + ' triangles that make up the floor.' },
+              { v: n * s.s * ap2 / 2, code: 'trig-poly-centre', hint: 'The angle at ' + t('O') + ' in the right triangle is half of ' + t(dg(cs)) + ', i.e. ' + t(dg(hs)) + '.' },
+              { v: n * s.s * rnd(s.ap, 1) / 2, code: 'trig-early', hint: 'Close — that comes from rounding the height to a tenth first. Keep every digit of it and round only the area.' },
+              { v: n * s.s * (s.s / 2 / Math.tan(h)) / 2, code: 'trig-rad', hint: 'Your calculator seems to be in <b>radian</b> mode. Switch it to <b>degrees</b> (DEG).' }];
+            var sol = 'Join ' + t('O') + ' to the two ends of one side: an isosceles triangle with two sides ' + t('r') + ' and base ' + t(ss) + ' m. The ' + n + ' such triangles fill the ' + t('360^\\circ') + ' around ' + t('O') + ', so the angle at ' + t('O') + ' is ' + t('360^\\circ\\div ' + n + '=' + dg(cs)) + '.<br>' +
+              'The perpendicular from ' + t('O') + ' to the side (its height ' + t('a') + ') cuts it into two right triangles, halving the angle and the side: angle ' + t(dg(hs)) + ' at ' + t('O') + ', opposite leg ' + t(String(half)) + ' m, hypotenuse ' + t('r') + ', adjacent leg ' + t('a') + '.<br>' +
+              'SOH: ' + t('r=\\dfrac{' + half + '}{\\sin ' + dg(hs) + '}=' + fx(s.R, 4) + '\\ldots\\approx ' + fx(s.R, 2)) + ' m<br>' +
+              'TOA: ' + t('a=\\dfrac{' + half + '}{\\tan ' + dg(hs) + '}=' + fx(s.ap, 4) + '\\ldots') + ' m (keep it unrounded)<br>' +
+              'Area ' + t('=' + n + '\\times\\tfrac12(' + ss + ')(' + fx(s.ap, 4) + ')=' + fx(s.area, 4) + '\\ldots\\approx ' + fx(s.area, 1)) + ' m²<br>' +
+              'Check: ' + t('\\sqrt{r^2-a^2}=\\sqrt{' + fx(s.R, 4) + '^2-' + fx(s.ap, 4) + '^2}\\approx ' + fx(Math.sqrt(s.R * s.R - s.ap * s.ap), 2)) + ' m, which is half a side ✓.';
+            return fieldsPart('Let ' + t('r') + ' be the distance from ' + t('O') + ' to each corner. Determine ' + t('r') + ' to the nearest hundredth of a metre and the area ' + t('A') + ' of the floor to the nearest tenth of a square metre.',
+              [nf('r=', s.R, 2, 'm', altsR), nf('A=', s.area, 1, 'm²', altsA)], sol,
+              ['Join ' + t('O') + ' to the two ends of one side. What is the angle at ' + t('O') + ' in that triangle? Now split it into two right triangles.',
+                'In each right triangle the angle at ' + t('O') + ' is ' + t('\\tfrac12(360^\\circ\\div ' + n + ')') + ' and the leg opposite it is half a side. The floor is ' + n + ' isosceles triangles: area ' + t('=' + n + '\\times\\tfrac12\\times\\text{base}\\times\\text{height}') + '.'],
+              'MAS regular ' + n + '-gon side ' + ss);
           } }] }
     ]
 

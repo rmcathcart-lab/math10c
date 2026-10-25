@@ -38,7 +38,9 @@
     'ch-other-piece': 'Solved for the other piece of the base',
     'ch-not-rounded': 'Didn’t round the shared side (asked to)',
     'ch-seg-name': 'Side not named with two letters (nudge)',
-    'ch-ab': 'Runner not named with A or B (nudge)'
+    'ch-ab': 'Runner not named with A or B (nudge)',
+    'ch-canal-bottom': 'Used the whole top width (the flat bottom not taken off)',
+    'ch-canal-equal': 'Treated the two sloping banks as equal'
   });
 
   /* ---------------- numbers ---------------- */
@@ -1292,6 +1294,43 @@
             radAlt(function (T) { return T.atan((s.ad * T.tan(s.a) + s.bc) / s.ad); })]),
             t('\\triangle ABD') + ': ' + t('DB=' + g1(s.ad) + TAN(s.a) + '=' + v4(s.db)) + ' m (unrounded)<br>' + t('DC=DB+BC=' + v4(s.db) + '+' + g1(s.bc) + '=' + v4(s.dc)) + ' m<br>' + t('\\triangle ADC') + ': ' + t('\\angle DAC=\\tan^{-1}\\left(' + fr(v4(s.dc), g1(s.ad)) + '\\right)=' + v4(s.ang) + '^\\circ\\approx ' + dg(fx(s.ang, 0))),
             ['Find ' + t('DB') + ' in ' + t('\\triangle ABD') + ', then ' + t('DC=DB+BC') + '.', 'In ' + t('\\triangle ADC') + ', ' + t('DC') + ' is opposite ' + t('\\angle DAC') + ' and ' + t('AD') + ' is adjacent.'], 'NR: ∠DAC', true);
+        } }] });
+    /* ---------- Mastery: neither bank triangle can be solved first ---------- */
+    E.push({ num: '19', section: 'Mastery challenge',
+      shared: function (r) {
+        return gen(r, function (r) { return { h0: tenth(r, 1.6, 3.8), al: r.int(28, 50), be: r.int(40, 68), w: tenth(r, 2.5, 7.0), fl: r.chance(0.5) }; },
+          function (p) { var o = { al: p.al, be: p.be, w: p.w, fl: p.fl }; o.ka = 1 / Tg.tan(p.al); o.kb = 1 / Tg.tan(p.be); o.W = rd(p.w + p.h0 * (o.ka + o.kb), 1); o.h = (o.W - p.w) / (o.ka + o.kb); o.xa = o.h * o.ka; o.xb = o.h * o.kb; return o; },
+          function (s) { return s.be - s.al >= 8 && Math.abs(s.al + s.be - 90) >= 4 && s.h >= 1.2 && Math.abs((s.h * 100) % 1 - 0.5) > 0.1; }, { h0: 2.4, al: 34, be: 55, w: 4.0, fl: false });
+      },
+      stem: function (s) {
+        var A = s.fl ? s.be : s.al, B = s.fl ? s.al : s.be, xa = s.h / Tg.tan(A), mid = xa + s.w / 2;
+        var F = fig({ pts: { P: [0, s.h], Q: [s.W, s.h], R: [xa + s.w, 0], S: [xa, 0], M: [mid, 0], N: [mid, s.h] },
+          segs: [['P', 'Q', g1(s.W) + ' m'], ['S', 'R', g1(s.w) + ' m', { side: 1 }], ['P', 'S'], ['Q', 'R'], ['M', 'N', { dash: 1, width: 1.5, color: '#6a7182' }]],
+          right: [['M', 'R', 'N']], angles: [['P', 'Q', 'S', A + '°', { r: 30 }], ['Q', 'P', 'R', B + '°', { r: 30 }]], names: false, width: 360,
+          extra: [{ type: 'text', at: [mid + (A < B ? -1 : 1) * 0.035 * s.W, s.h * 0.45], text: 'd' }], aria: 'trapezoid cross-section of a canal' });
+        return 'The cross-section of an irrigation canal is a trapezoid. Its flat bottom is ' + t(g1(s.w)) + ' m wide, and the water surface, level with the tops of the banks, is ' + t(g1(s.W)) + ' m wide. The depth of the canal is ' + t('d') + '. One bank slopes at ' + t(dg(s.al)) + ' to the horizontal and the other at ' + t(dg(s.be)) + '.' + F;
+      },
+      parts: [
+        { id: 'e19', level: 'MAS', outcome: 'M4', make: function (r, s) {
+          var gap = s.W - s.w, Ws = g1(s.W), ws = g1(s.w), CA = '\\dfrac{1}{' + TAN(s.al) + '}', CB = '\\dfrac{1}{' + TAN(s.be) + '}';
+          var alts = [
+            { v: s.W / (s.ka + s.kb), code: 'ch-canal-bottom', hint: 'The two sloping pieces fill only the part of the surface that is <b>not</b> above the flat bottom: they add to ' + t(Ws + '-' + ws) + ' m, not ' + t(Ws) + ' m.' },
+            { v: gap / 2 * Tg.tan(s.al), code: 'ch-canal-equal', hint: 'The banks slope at different angles, so the two horizontal pieces are <b>not</b> equal — you can’t just halve ' + t(Ws + '-' + ws) + '. Write each piece in terms of the depth ' + t('d') + ' and add them.' },
+            { v: gap / 2 * Tg.tan(s.be), code: 'ch-canal-equal', hint: 'The banks slope at different angles, so the two horizontal pieces are <b>not</b> equal — you can’t just halve ' + t(Ws + '-' + ws) + '. Write each piece in terms of the depth ' + t('d') + ' and add them.' },
+            { v: gap / (Tg.tan(s.al) + Tg.tan(s.be)), code: 'ch-inverted', hint: 'In each bank triangle the depth is OPPOSITE the angle and the horizontal piece is ADJACENT: ' + t('\\tan(\\text{angle})=\\frac{d}{\\text{piece}}') + ', so piece ' + t('=\\frac{d}{\\tan(\\text{angle})}') + ' — divide by the tangent.' },
+            { v: gap / (1 / Tg.sin(s.al) + 1 / Tg.sin(s.be)), code: 'ch-ratio', hint: 'The depth and the horizontal piece are the two legs of each bank triangle: that is TOA, not SOH.' },
+            { v: gap / (rd(s.ka, 2) + rd(s.kb, 2)), code: 'ch-early', hint: earlyH(t('1\\div\\tan') + ' of each angle') },
+            { v: gap / (rd(s.ka, 1) + rd(s.kb, 1)), code: 'ch-early', hint: earlyH(t('1\\div\\tan') + ' of each angle') },
+            radAlt(function (T) { return gap / (1 / T.tan(s.al) + 1 / T.tan(s.be)); })];
+          var sol = 'Drop a perpendicular from each bottom corner up to the water surface. That cuts the trapezoid into a rectangle (' + t(ws) + ' m wide) and two right triangles, one under each bank, both with height ' + t('d') + ' (the depth). <b>Neither</b> triangle has a known side, so write each horizontal piece in terms of ' + t('d') + ':<br>' +
+            'Bank at ' + t(dg(s.al)) + ': ' + t('d') + ' is opposite, the piece is adjacent (TOA): piece ' + t('=' + fr('d', TAN(s.al))) + '. &nbsp; Bank at ' + t(dg(s.be)) + ': piece ' + t('=' + fr('d', TAN(s.be))) + '.<br>' +
+            'The two pieces and the bottom make up the surface: ' + t(fr('d', TAN(s.al)) + '+' + ws + '+' + fr('d', TAN(s.be)) + '=' + Ws) + '<br>' +
+            t('d\\left(' + CA + '+' + CB + '\\right)=' + Ws + '-' + ws + '=' + g1(gap)) + '<br>' +
+            t('d=' + fr(g1(gap), v4(s.ka) + '+' + v4(s.kb)) + '=' + v4(s.h) + '\\approx ' + fx(s.h, 2)) + ' m<br>' +
+            'Check: pieces ' + t(fr(v4(s.h), TAN(s.al)) + '=' + v4(s.xa)) + ' and ' + t(fr(v4(s.h), TAN(s.be)) + '=' + v4(s.xb)) + ', and ' + t(v4(s.xa) + '+' + ws + '+' + v4(s.xb) + '=' + fx(s.xa + s.w + s.xb, 2)) + ' m ✓ (the surface width). With the rounded depth, ' + t(fx(s.h, 2) + '\\left(' + CA + '+' + CB + '\\right)+' + ws + '\\approx ' + fx(rd(s.h, 2) * (s.ka + s.kb) + s.w, 2)) + ' m, which rounds to ' + t(Ws) + ' m ✓.';
+          return near('Determine the depth of the canal, to the nearest hundredth of a metre.', s.h, 2, 'm', alts, sol,
+            ['Drop a perpendicular from each bottom corner to the surface: you get a rectangle and two right triangles of height ' + t('d') + '. Write each triangle’s horizontal piece in terms of ' + t('d') + '.',
+              'The two pieces add to ' + t(Ws + '-' + ws) + ' m. Set up that equation and solve for ' + t('d') + '.'], 'MAS canal depth ' + Ws + '/' + ws + ' at ' + s.al + '°/' + s.be + '°');
         } }] });
     return E;
   }

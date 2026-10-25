@@ -141,7 +141,8 @@
     'units-cents': 'Answer in cents instead of dollars', 'rounded-count': 'Rounded the solution before checking it', 'nr-x-only': 'Gave one variable, not the combination asked for', 'digits-reversed': 'Gave the reversed number',
     'digits-pair': 'Gave the digits, not the number', 'first-diff-const': 'Assumed constant first differences', 'n-offset': 'Used the wrong term number', 'ab-swap': 'Swapped a and b', 'flat-missing': 'Forgot the flat part of a pledge',
     'rate-fixed': 'Fixed fee and rate mixed up', 'round-down': 'Rounded a count down when it had to round up', 'rev-direction': '“More / less” reversed in the digit equation', 'digits-diff': 'Reversal changes the number by 9 × (difference), not the difference',
-    'max-wrong': 'Largest possible total computed wrongly', 'not-whole': 'Booking with a fraction of a vehicle', 'booking-wrong': 'Proposed booking doesn’t fit the request', 'same-request': 'Kept the impossible request', 'sign-count': 'Sign of a negative count', 'added-eqs': 'Added the equations instead of subtracting'
+    'max-wrong': 'Largest possible total computed wrongly', 'not-whole': 'Booking with a fraction of a vehicle', 'booking-wrong': 'Proposed booking doesn’t fit the request', 'same-request': 'Kept the impossible request', 'sign-count': 'Sign of a negative count', 'added-eqs': 'Added the equations instead of subtracting',
+    'swapbuy-direction': 'Swapped bill: “more / less” direction reversed', 'swapbuy-diff': 'Used the difference as the swapped bill'
   });
 
   /* ======================= assignment generators ======================= */
@@ -1270,7 +1271,45 @@
               { html: 'The algebra must be wrong, because a time can’t come out negative.', why: 'The pair satisfies both equations — the algebra is right. The negative time shows that the <b>log</b> is impossible.' },
               { html: 'Round ' + o.nm[1] + '’s time to 0 h and the log is fine.', why: 'With ' + t('b=0') + ', ' + o.nm[0] + ' covers at most ' + (o.ra * o.H) + ' m² in ' + o.H + ' h — still short of ' + o.A2 + '.' }],
             t('b=' + frT(bF[0], bF[1])) + ' is negative — impossible — and ' + o.nm[0] + '’s ' + t(frT(aF[0], aF[1])) + ' h alone exceeds the ' + o.H + ' h logged. The most ' + o.H + ' hours can cover is ' + t(o.H + '\\times ' + o.ra + '=' + o.ra * o.H) + ' m²; since ' + t(o.A2 + '>' + o.ra * o.H) + ', <b>the log must be wrong</b>.', ['Compare the claimed area with the largest possible area.'], 'impossible log');
+          } }] },
+      /* ---------- Mastery: the second equation comes from a "what if" ---------- */
+      { num: '20', section: 'Mastery challenge', shared: swapBuy,
+        stem: function (o) { return o.nm + ' bought some ' + o.A + ' at ' + Dh(o.pa) + ' each and some ' + o.B + ' at ' + Dh(o.pb) + ' each, and the bill came to ' + Dh(o.T) + '. Had the two counts been the other way around — as many ' + o.A + ' as there actually were ' + o.B + ', and as many ' + o.B + ' as there actually were ' + o.A + ' — the bill would have been ' + Dh(o.D) + ' <b>' + (o.more ? 'more' : 'less') + '</b>.'; },
+        parts: [
+          { id: 'e20', level: 'MAS', outcome: 'RF9', make: function (r, o) {
+            var L1 = [o.pa, o.pb, -o.T], L2 = [o.pb, o.pa, -o.T2], S = o.pa + o.pb, Df = o.pb - o.pa, sg = o.more ? '+' : '-';
+            var dirP = solve2(L1, [o.pb, o.pa, -(o.more ? o.T - o.D : o.T + o.D)]), dP = solve2(L1, [o.pb, o.pa, -o.D]);
+            var W = [];
+            if (dirP) W.push({ v: dirP, code: 'swapbuy-direction', hint: 'Check the direction: the swapped bill is ' + Dh(o.D) + ' <b>' + (o.more ? 'more' : 'less') + '</b> than ' + Dh(o.T) + ', so it is ' + t(D(o.T) + sg + D(o.D) + '=' + D(o.T2)) + '.' });
+            if (dP) W.push({ v: dP, code: 'swapbuy-diff', hint: Dh(o.D) + ' is the <b>difference</b> between the two bills, not the swapped bill itself. The swapped bill is ' + t(D(o.T) + sg + D(o.D) + '=' + D(o.T2)) + '.' });
+            var sol = 'Let ' + t('x') + ' be the number of ' + o.A + ' and ' + t('y') + ' the number of ' + o.B + ' actually bought.<br>' +
+              'Actual bill: ' + t(N(o.pa) + 'x+' + N(o.pb) + 'y=' + N(o.T)) + '<br>' +
+              'Swapped counts (' + t('y') + ' ' + o.A + ' and ' + t('x') + ' ' + o.B + '): ' + t(N(o.pa) + 'y+' + N(o.pb) + 'x=' + N(o.T) + sg + N(o.D) + '=' + N(o.T2)) + ', i.e. ' + t(N(o.pb) + 'x+' + N(o.pa) + 'y=' + N(o.T2)) + '<br>' +
+              '<b>Add</b> the equations: ' + t(N(S) + 'x+' + N(S) + 'y=' + N(o.T + o.T2)) + ', so ' + t('x+y=' + (o.x + o.y)) + '.<br>' +
+              '<b>Subtract</b> (second − first): ' + t(N(Df) + 'x-' + N(Df) + 'y=' + N(o.T2 - o.T)) + ', so ' + t('x-y=' + (o.x - o.y)) + '.<br>' +
+              'Add these: ' + t('2x=' + (2 * o.x)) + ', ' + t('x=' + o.x) + '; then ' + t('y=' + (o.x + o.y) + '-' + o.x + '=' + o.y) + '.<br>' +
+              chk('Check: ' + t(N(o.pa) + '(' + o.x + ')+' + N(o.pb) + '(' + o.y + ')=' + N(o.T))) + ' and ' + chk(t(N(o.pa) + '(' + o.y + ')+' + N(o.pb) + '(' + o.x + ')=' + N(o.T2))) + ', which is ' + Dh(o.D) + ' ' + (o.more ? 'more' : 'less') + '.<br>' +
+              '<b>' + o.nm + ' bought ' + o.x + ' ' + o.A + ' and ' + o.y + ' ' + o.B + '.</b>';
+            return numsP('How many ' + o.A + ' and how many ' + o.B + ' did ' + o.nm + ' actually buy?', [{ label: cap(o.A) + ':' }, { label: cap(o.B) + ':' }], [o.x, o.y],
+              { names: ['number of ' + o.A, 'number of ' + o.B], sys: [L1, L2], sysNames: ['the actual bill', 'the swapped bill'], wrong: W,
+                swapHint: 'Those are the counts of the <b>swapped</b> order — they would cost ' + Dh(o.T2) + '. Which count of ' + o.A + ' gives the actual bill of ' + Dh(o.T) + '?',
+                bad: W.map(function (w) { return w.v.map(plain); }) },
+              sol,
+              ['Let ' + t('x') + ' and ' + t('y') + ' be the numbers of ' + o.A + ' and ' + o.B + ' actually bought. Write the actual bill, then the bill for the swapped counts: there would be ' + t('y') + ' ' + o.A + ' and ' + t('x') + ' ' + o.B + '.',
+                'The swapped bill is ' + t(D(o.T) + sg + D(o.D)) + '. Try adding the two equations, then subtracting them.'],
+              'MAS swapped counts ' + o.x + '/' + o.y + ' at ' + o.pa + '/' + o.pb + (o.more ? ' more ' : ' less ') + o.D);
           } }] }
     ]
   });
+  function swapBuy(r) {
+    var items = [['pens', 'notebooks', [125, 150, 175, 200, 225, 250], [350, 400, 450, 500, 550, 600]], ['muffins', 'sandwiches', [200, 225, 250, 275, 300], [550, 600, 650, 700, 750]], ['packs of trading cards', 'comic books', [300, 350, 400, 450], [700, 750, 800, 850, 900, 950]], ['bags of soil', 'potted plants', [600, 650, 700, 750, 800], [1200, 1250, 1350, 1400, 1500]]];
+    var book = { it: items[0], ca: 150, cb: 450, x: 7, y: 11 };
+    var c = gen(function () {
+      var it = r.pick(items), ca = r.pick(it[2]), cb = r.pick(it[3]), x = r.int(3, 18), y = r.int(3, 18);
+      if (x === y || Math.abs(x - y) < 2) return null;
+      return { it: it, ca: ca, cb: cb, x: x, y: y };
+    }, book);
+    var T = (c.ca * c.x + c.cb * c.y) / 100, T2 = (c.ca * c.y + c.cb * c.x) / 100;
+    return { nm: r.pick(['Ravi', 'Maya', 'Tomas', 'Aiko', 'Lena', 'Owen', 'Priya', 'Jonah']), A: c.it[0], B: c.it[1], pa: c.ca / 100, pb: c.cb / 100, x: c.x, y: c.y, T: T, T2: T2, D: Math.round(Math.abs(T2 - T) * 100) / 100, more: T2 > T };
+  }
 })(window);

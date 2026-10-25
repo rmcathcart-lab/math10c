@@ -20,7 +20,8 @@
     'from-horizontal': 'Measured from the horizontal instead of the vertical', 'other-T': 'Gave the other angle at the diagonals’ intersection',
     'round-direction': 'Rounded the wrong way for a limit', 'not-rounded': 'Didn’t round the side first (as asked)', 'student-error': 'Repeated the student’s error',
     'smaller-angle': 'Gave the smaller acute angle', 'sum-not-product': 'Added instead of multiplied', 'face-angle': 'Used the face-diagonal angle', 'inverse-used': 'Used an inverse ratio when the angle is known',
-    'ratio-sin': 'Chose sin⁻¹', 'ratio-cos': 'Chose cos⁻¹', 'ratio-tan': 'Chose tan⁻¹'
+    'ratio-sin': 'Chose sin⁻¹', 'ratio-cos': 'Chose cos⁻¹', 'ratio-tan': 'Chose tan⁻¹',
+    'ladder-window': 'Used the flattest safe angle where the window height is the real limit', 'ladder-order': 'Least / greatest distance from the wrong angle', 'ladder-swap': 'Least and greatest distances in each other’s boxes'
   });
 
   /* ---------- small helpers ---------- */
@@ -984,6 +985,69 @@
               { html: 'Only the ' + t('45^{\\circ}') + ' angle stays the same.', why: 'The space-diagonal triangle always has legs in the ratio ' + t('\\sqrt{2}:1') + ', whatever the edge.' },
               { html: 'They all get ' + (s2 > s.s ? 'larger' : 'smaller') + ' because the cube is ' + (s2 > s.s ? 'bigger' : 'smaller') + '.', why: 'A bigger cube is the same shape. The edge length cancels out of every ratio.' }],
               'All three angles are unchanged. Every length in the ' + t(s2) + ' cm cube is ' + t(frac(s2, s.s)) + ' of the matching length, so every ratio of two lengths is the same — the edge length cancels before the inverse ratio is taken.', [], 'similar cubes');
+          } }] },
+      /* ---------------- Mastery: two conditions on one ladder ---------------- */
+      { num: '22', section: 'Mastery challenge',
+        shared: function (r) {
+          return search(r, function (r) {
+            var L = r.int(50, 90) / 10, a = r.int(60, 67), b = r.int(73, 78), lo = Math.ceil(L * TR.sin(a + 2) * 10), hi = Math.floor(L * TR.sin(b - 2) * 10);
+            if (lo > hi) return null;
+            var H = r.int(lo, hi) / 10, thH = TR.asin(H / L);
+            return { L: L, a: a, b: b, H: H, thH: thH, least: L * TR.cos(b), most: Math.sqrt(L * L - H * H), fl: r.chance(0.5) };
+          }, function (s) { return s.thH >= s.a + 1.5 && s.thH <= s.b - 1.5 && safe(s.least, 2, 0.1) && safe(s.most, 2, 0.1) && s.most - s.least >= 0.25; });
+        },
+        stem: function (s) {
+          var th = (s.thH + s.b) / 2, d = s.L * TR.cos(th), yT = s.L * TR.sin(th), w = 0.16 * s.L, m = s.fl ? -1 : 1;
+          var X = function (x) { return m * x; };
+          var gx = X(-w - 0.1 * s.L);
+          var fig = HW.fig({ pts: { O: [0, 0], F: [X(d), 0], T: [0, yT], D0: [gx, 0], D1: [gx, s.H] },
+            segs: [['F', 'T', s.L.toFixed(1) + ' m'], ['D0', 'D1', s.H.toFixed(1) + ' m', { width: 1.2, color: '#6a7182' }], ['O', 'F']],
+            right: [['O', 'F', 'T']], angles: [['F', 'O', 'T', 'θ', { r: 26 }]], names: false, width: 280, height: 330,
+            extra: [{ type: 'building', at: [X(-w / 2), 0], w: w, h: s.L * 1.02 }, { type: 'ground', y: 0, x0: gx, x1: X(d * 1.3 + 0.2) }, { type: 'dash', from: [gx, s.H], to: [0, s.H], color: '#2b3340' }, { type: 'text', at: [X(-w / 2), s.H - 0.06 * s.L], text: 'sill', size: 12 }],
+            aria: 'ladder against a wall below a window sill' });
+          return 'A painter leans a ' + t(s.L.toFixed(1)) + ' m ladder against a vertical wall on level ground. To reach a window, the top of the ladder must be <b>at least</b> ' + t(s.H.toFixed(1)) + ' m up the wall (the sill). For safety, the angle ' + t('\\theta') + ' between the ladder and the ground must be <b>at least</b> ' + t(s.a + '^{\\circ}') + ' and <b>at most</b> ' + t(s.b + '^{\\circ}') + '. The diagram shows one possible position.' + fig;
+        },
+        parts: [
+          { id: 'e22', level: 'MAS', outcome: 'M4', make: function (r, s) {
+            var L = s.L, H = s.H, Ls = L.toFixed(1), Hs = H.toFixed(1), topA = L * TR.sin(s.a), topB = L * TR.sin(s.b);
+            var altsL = [
+              { v: L * TR.sin(s.b), code: 'wrong-ratio', hint: 'The distance from the wall is the leg <b>adjacent</b> to the ground angle, and the ladder is the hypotenuse: CAH, not SOH.' },
+              { v: L * TR.cos(s.a), code: 'ladder-order', hint: 'That is where the foot goes for the <b>flattest</b> ladder (' + t(s.a + '^{\\circ}') + '). The foot is closest to the wall when the ladder is <b>steepest</b>.' },
+              { v: H / TR.tan(s.b), code: 'wrong-triangle', hint: 'At ' + t(s.b + '^{\\circ}') + ' the top of the ladder is above the sill, not at ' + t(Hs) + ' m. Use the ladder itself (the hypotenuse, ' + t(Ls) + ' m): CAH.' },
+              { v: L * Math.cos(s.b), code: 'radian', hint: 'Your calculator seems to be in <b>radian</b> mode. Switch it to <b>degree</b> mode.' },
+              { v: s.most, code: 'ladder-order', hint: 'That is the <b>greatest</b> distance. The least distance comes from the steepest safe angle, ' + t(s.b + '^{\\circ}') + '.' }];
+            var altsG = [
+              { v: L * TR.cos(s.a), code: 'ladder-window', hint: 'At ' + t(s.a + '^{\\circ}') + ' the top reaches only ' + t(Ls + '\\sin ' + s.a + '^{\\circ}\\approx ' + fx(topA, 2)) + ' m — below the ' + t(Hs) + ' m sill. Here the <b>window</b>, not the ' + t(s.a + '^{\\circ}') + ' limit, decides how far out the foot can go.' },
+              { v: Math.sqrt(L * L + H * H), code: 'pyth-add', hint: 'The ladder is the hypotenuse: ' + t('d^{2}=' + Ls + '^{2}-' + Hs + '^{2}') + ' — subtract the squares.' },
+              { v: H / TR.tan(s.a), code: 'wrong-triangle', hint: 'With its top on the sill <b>and</b> an angle of ' + t(s.a + '^{\\circ}') + ', the ladder would have to be longer than ' + t(Ls) + ' m. Find the angle at which the ' + t(Ls) + ' m ladder just reaches the sill.' },
+              { v: L * TR.cos(Math.round(s.thH)), code: 'early-round', hint: 'Close — that comes from rounding the angle first. Keep every digit of ' + t('\\theta=\\sin^{-1}\\left(' + frac(Hs, Ls) + '\\right)') + ' (or use the Pythagorean theorem).' },
+              { v: L * TR.cos(rd(s.thH, 1)), code: 'early-round', hint: 'Close — that comes from rounding the angle first. Keep every digit of ' + t('\\theta=\\sin^{-1}\\left(' + frac(Hs, Ls) + '\\right)') + ' (or use the Pythagorean theorem).' },
+              { v: L * Math.cos(s.thH), code: 'radian', hint: 'Your calculator seems to be in <b>radian</b> mode for the cosine. Switch it to <b>degree</b> mode.' },
+              { v: s.least, code: 'ladder-order', hint: 'That is the <b>least</b> distance. A flatter ladder puts its foot farther out — as far as the window allows.' }];
+            var cL = K.near(s.least, 2, { alts: altsL }), cG = K.near(s.most, 2, { alts: altsG }), base = K.fields([cL, cG], { labels: ['Least distance', 'Greatest distance'] });
+            var keys = [fx(s.least, 2), fx(s.most, 2)];
+            var check = function (resp) {
+              resp = resp || [];
+              var u = HW.parse.number(String(resp[0] == null ? '' : resp[0])), v = HW.parse.number(String(resp[1] == null ? '' : resp[1]));
+              if (u.ok && v.ok && Math.abs(u.value - s.most) < 0.006 && Math.abs(v.value - s.least) < 0.006) return K.wrong('ladder-swap', 'Both distances are right, but they are in each other’s boxes: the steepest ladder has its foot <b>closest</b> to the wall.');
+              return base(resp);
+            };
+            var bL = fx(s.least + 0.01, 2), bG = fx(L * TR.cos(s.a), 2);
+            var sol = 'The ladder is the hypotenuse (' + t(Ls) + ' m). From ' + t('\\theta') + ': the foot’s distance from the wall is ADJACENT (CAH, ' + t('d=' + Ls + '\\cos\\theta') + ') and the height reached is OPPOSITE (SOH, ' + t('h=' + Ls + '\\sin\\theta') + ').<br>' +
+              '<b>Least distance.</b> The steeper the ladder, the closer its foot. The steepest safe angle is ' + t(s.b + '^{\\circ}') + ': ' + t('d=' + Ls + '\\cos ' + s.b + '^{\\circ}=' + v4(s.least) + '\\approx ' + fx(s.least, 2)) + ' m. (Its top is at ' + t(Ls + '\\sin ' + s.b + '^{\\circ}\\approx ' + fx(topB, 2)) + ' m, above the sill ✓.)<br>' +
+              '<b>Greatest distance.</b> A flatter ladder puts its foot farther out but its top lower. At the flattest safe angle, ' + t(s.a + '^{\\circ}') + ', the top is only at ' + t(Ls + '\\sin ' + s.a + '^{\\circ}\\approx ' + fx(topA, 2)) + ' m — below the ' + t(Hs) + ' m sill. So the window sets this limit: the top is exactly at the sill when ' + t('\\sin\\theta=' + frac(Hs, Ls)) + ', ' + t('\\theta=' + v4(s.thH) + '^{\\circ}') + ' (between ' + t(s.a + '^{\\circ}') + ' and ' + t(s.b + '^{\\circ}') + ', so it is safe).<br>' +
+              t('d=' + Ls + '\\cos ' + v4(s.thH) + '^{\\circ}=' + v4(s.most) + '\\approx ' + fx(s.most, 2)) + ' m &nbsp;(or by Pythagoras, ' + t('\\sqrt{' + Ls + '^{2}-' + Hs + '^{2}}') + ').<br>' +
+              '<b>The foot must be from ' + t(fx(s.least, 2)) + ' m to ' + t(fx(s.most, 2)) + ' m from the wall.</b><br>' +
+              'Check at that precision: foot at ' + t(fx(s.least, 2)) + ' m gives ' + t('\\theta=\\cos^{-1}\\left(' + frac(fx(s.least, 2), Ls) + '\\right)\\approx ' + fx(TR.acos(rd(s.least, 2) / L), 1) + '^{\\circ}') + ' (≈ ' + t(s.b + '^{\\circ}') + ' ✓); foot at ' + t(fx(s.most, 2)) + ' m gives a top height of ' + t('\\sqrt{' + Ls + '^{2}-' + fx(s.most, 2) + '^{2}}\\approx ' + fx(Math.sqrt(L * L - rd(s.most, 2) * rd(s.most, 2)), 2)) + ' m (≈ the ' + t(Hs) + ' m sill ✓).';
+            var p = K.P.fields('Where can the foot of the ladder go? Give the <b>least</b> and the <b>greatest</b> possible distance from the foot of the ladder to the wall, each to the nearest hundredth of a metre.',
+              [{ label: 'Least distance:', after: 'm', name: 'Least distance' }, { label: 'Greatest distance:', after: 'm', name: 'Greatest distance' }], [cL, cG], keys,
+              'Least distance: ' + t(keys[0]) + ' m<br>Greatest distance: ' + t(keys[1]) + ' m', sol,
+              ['The foot’s distance from the wall is ' + t(Ls + '\\cos\\theta') + ' and the height reached is ' + t(Ls + '\\sin\\theta') + '. Which safe angle puts the foot closest to the wall?',
+                'Now try the flattest safe angle: does the top still reach the sill? If not, find the angle at which the top is exactly at the sill (' + t('\\sin\\theta=' + frac(Hs, Ls)) + ').'],
+              'MAS ladder ' + Ls + ' m, ' + s.a + '–' + s.b + '°, sill ' + Hs + ' m');
+            p.check = check;
+            p.bad = [[keys[1], keys[0]], [keys[0], bG], [fx(L * TR.sin(s.b), 2), keys[1]], [bL, fx(s.most + 0.02, 2)]];
+            return p;
           } }] }
     ]
   });

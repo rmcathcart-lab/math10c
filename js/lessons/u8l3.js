@@ -27,7 +27,10 @@
     'sub-dist': 'Substitution: bracket not multiplied out',
     'sub-divide': 'Isolating x: did not divide every term',
     'addsub': 'Chose add vs subtract wrongly',
-    'eq-other': 'Did a different combination than the one asked'
+    'eq-other': 'Did a different combination than the one asked',
+    'coef-roles': 'Unknown coefficients: a and b put in each other’s places in one equation',
+    'coef-xy': 'Unknown coefficients: x- and y-coordinates substituted the wrong way round',
+    'coef-sign': 'Unknown coefficients: lost the minus sign of a term'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -1061,6 +1064,33 @@
             ['Solve the system first (both equations need scaling), then evaluate ' + t(ex) + '.'], 'NR ' + ex + ': ' + e.join(', '));
           p._eqs = e; p._sol = d.P; p._V = ['x', 'y'];
           return p;
+        } }] },
+      /* ---------------- Mastery: the coefficients are the unknowns (working backwards) ---------------- */
+      { num: '20', section: 'Mastery challenge', parts: [
+        { id: 'e20', level: 'MAS', outcome: 'RF9', make: function (r) {
+          var d = find(r, function (r) {
+            var a = pickNZ(r, -7, 7), b = pickNZ(r, -7, 7), p = pickNZ(r, -5, 5), q = pickNZ(r, -5, 5);
+            if (Math.abs(a) === Math.abs(b) || Math.abs(p) === Math.abs(q)) return null;
+            var c1 = a * p + b * q, c2 = b * p - a * q; if (!c1 || !c2) return null;
+            return { a: a, b: b, p: p, q: q, c1: c1, c2: c2 };
+          }, { a: 3, b: -2, p: 4, q: 1, c1: 10, c2: -11 });
+          var V = ['a', 'b'], S = [[d.p, d.q, d.c1], [-d.q, d.p, d.c2]], pt = t('(' + d.p + ',\\ ' + d.q + ')');
+          var e1 = 'ax+by=' + d.c1, e2 = 'bx-ay=' + d.c2, O1 = [d.a, d.b, d.c1], O2 = [d.b, -d.a, d.c2];
+          var pre = 'The solution ' + pt + ' makes both equations true, so substitute ' + t('x=' + d.p) + ' and ' + t('y=' + d.q) + '. Now ' + t('a') + ' and ' + t('b') + ' are the unknowns:<br>' +
+            t('a(' + d.p + ')+b(' + d.q + ')=' + d.c1 + '\\ \\Rightarrow\\ ' + eqT(S[0], V)) + '<br>' +
+            t('b(' + d.p + ')-a(' + d.q + ')=' + d.c2 + '\\ \\Rightarrow\\ ' + eqT(S[1], V)) + ' &nbsp;(' + t('a') + '-term written first)';
+          var post = 'So the system is ' + t(eqT(O1, ['x', 'y'])) + ' and ' + t(eqT(O2, ['x', 'y'])) + '. Check ' + pt + ' in the <b>original</b> equations: ' + t(subT(O1, [d.p, d.q]) + '\\ \\checkmark') + ' and ' + t(subT(O2, [d.p, d.q]) + '\\ \\checkmark') + '.';
+          return solveP({
+            prompt: 'In the system ' + t(sysT(e1, e2)) + ' the letters ' + t('a') + ' and ' + t('b') + ' are constants (notice that they trade places in the second equation). The solution of the system is ' + pt + '. Determine ' + t('a') + ' and ' + t('b') + '. Give your answer as an ordered pair ' + t('(a,\\ b)') + '.',
+            S: S, V: V, pre: pre, post: post,
+            alts: [
+              { S: [[d.p, d.q, d.c1], [d.p, -d.q, d.c2]], code: 'coef-roles', hint: 'Look at the second equation again: there ' + t('b') + ' multiplies ' + t('x') + ' and ' + t('a') + ' multiplies ' + t('y') + '. Substituting gives ' + t('b(' + d.p + ')-a(' + d.q + ')=' + d.c2) + '.' },
+              { S: [[d.q, d.p, d.c1], [-d.p, d.q, d.c2]], code: 'coef-xy', hint: 'In the point ' + pt + ' the first number is ' + t('x') + ' and the second is ' + t('y') + ': substitute ' + t('x=' + d.p) + ' and ' + t('y=' + d.q) + '.' },
+              { S: [[d.p, d.q, d.c1], [d.q, d.p, d.c2]], code: 'coef-sign', hint: 'Keep the minus sign in ' + t('-ay') + ': with ' + t('y=' + d.q) + ' it becomes ' + t('-a(' + d.q + ')=' + lin([-d.q], ['a']) ) + '.' }],
+            hints: ['The unknowns are now ' + t('a') + ' and ' + t('b') + '. Substitute ' + t('x=' + d.p) + ' and ' + t('y=' + d.q) + ' into each equation: you get a system in ' + t('a') + ' and ' + t('b') + '.',
+              'Careful with the second equation: there ' + t('b') + ' multiplies ' + t('x') + ' and ' + t('a') + ' multiplies ' + t('y') + '. Then solve the new system by elimination and check in the original equations.'],
+            text: 'MAS find a, b: ' + e1 + ', ' + e2 + ' through (' + d.p + ',' + d.q + ')'
+          });
         } }] }
     ]
   });
