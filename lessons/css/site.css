@@ -681,12 +681,18 @@ a.lp-row:hover { background: #f4f2ec; }
 .su-qtext { margin-top: 10px; font-size: 19px; color: var(--ink); }
 .su-q { margin: 8px 0 2px; overflow-x: auto; }
 .su-q.big .katex-display { font-size: 2.15em; margin: .35em 0 .2em; }
-.su-ans { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--su-line); color: var(--ok); }
+.su-ans { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--su-line); color: var(--ok); overflow-x: auto; }
 .su-ans .katex-display { margin: .2em 0; font-size: 1.25em; }
 .su-earlier { margin-top: 14px; }
 .su-earlier-h { font: 700 14px/1 var(--font); color: var(--muted); margin-bottom: 8px; }
-.su-old-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
-.su-old { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fff; }
+.su-old-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 10px; align-items: start; }
+.su-old { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fff; min-width: 0; overflow: hidden; }
+.su-old .su-qtop { gap: 7px; }
+.su-old .su-qn { white-space: nowrap; }
+.su-old .su-ans-b { white-space: nowrap; }
+.su-old .su-ans { font-size: 13px; overflow-x: auto; }
+.su-old .su-ans .katex-display { font-size: 1.1em; margin: .25em 0; text-align: left; }
+.su-old .su-ans .katex-display > .katex { text-align: left; }
 .su-old .su-qn { font-size: 13px; color: var(--ink2); }
 .su-old .su-chip { font-size: 12px; padding: 4px 8px; }
 .su-old .su-ans-b { font-size: 12.5px; padding: 5px 8px; }
