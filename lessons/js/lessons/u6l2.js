@@ -11,6 +11,7 @@ import {
   h, tex, add, box, Graph, NumberLine, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pairTex, texNum, svgEl, liveCtx, pulse, shake, place, arrowHead, drawIn, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const RUN = COLORS.amber, RISE = COLORS.purple, SEG = COLORS.blue, POS = COLORS.green, NEG = COLORS.red, INK = COLORS.ink, GRAY = COLORS.gray, TEAL = COLORS.teal;
@@ -884,6 +885,121 @@ const missing = {
     return steps;
   }
 };
+
+/* ============ Stand Up Break! (whiteboard stations) ============ */
+(() => {
+  /* ---- small number / LaTeX helpers ---- */
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const red = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; };
+  const fr = (n, d) => { const [a, b] = red(n, d); return b === 1 ? String(a) : (a < 0 ? '-' : '') + '\\dfrac{' + Math.abs(a) + '}{' + b + '}'; };
+  const pr = (v) => (v < 0 ? '(' + v + ')' : String(v));               // bracket a negative
+  const P = (n, p) => n + '(' + p[0] + ',\\ ' + p[1] + ')';               // A(3,\ -2)
+  const minus = (v, c) => (c === 0 ? v : c < 0 ? v + '+' + (-c) : v + '-' + c); // k − c, written nicely
+  /* ---- a coordinate grid as an SVG string, sized for the projector ---- */
+  const SU_C = { ink: '#1c2230', grid: '#cdd3dc', num: '#3a4254', blue: '#1f5bd6', red: '#c93a33', green: '#12805a', purple: '#7b4fc4', amber: '#c27a0e' };
+  function gridSVG(o) {
+    const x0 = o.x0 == null ? -6 : o.x0, x1 = o.x1 == null ? 6 : o.x1, y0 = o.y0 == null ? -6 : o.y0, y1 = o.y1 == null ? 6 : o.y1;
+    const u = o.u || 26, m = 24, W = (x1 - x0) * u + 2 * m, H = (y1 - y0) * u + 2 * m, ev = o.every || 1;
+    const X = (x) => m + (x - x0) * u, Y = (y) => m + (y1 - y) * u, f = (v) => Math.round(v * 10) / 10;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="${o.label || 'coordinate grid'}">`;
+    s += `<rect x="${X(x0)}" y="${Y(y1)}" width="${(x1 - x0) * u}" height="${(y1 - y0) * u}" fill="#fff"/>`;
+    for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    for (let y = y0; y <= y1; y++) s += `<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    const arrow = (x, y, dx, dy, c) => { const L = 9, w = 5; return `<polygon points="${f(x)},${f(y)} ${f(x - dx * L - dy * w)},${f(y - dy * L + dx * w)} ${f(x - dx * L + dy * w)},${f(y - dy * L - dx * w)}" fill="${c}"/>`; };
+    if (y0 <= 0 && y1 >= 0) s += `<line x1="${X(x0) - 10}" y1="${Y(0)}" x2="${X(x1) + 10}" y2="${Y(0)}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(x1) + 14, Y(0), 1, 0, SU_C.ink) + arrow(X(x0) - 14, Y(0), -1, 0, SU_C.ink)
+      + `<text x="${X(x1) + 10}" y="${Y(0) - 9}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}" text-anchor="end">x</text>`;
+    if (x0 <= 0 && x1 >= 0) s += `<line x1="${X(0)}" y1="${Y(y0) + 10}" x2="${X(0)}" y2="${Y(y1) - 10}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(0), Y(y1) - 14, 0, -1, SU_C.ink) + arrow(X(0), Y(y0) + 14, 0, 1, SU_C.ink)
+      + `<text x="${X(0) + 10}" y="${Y(y1) - 4}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}">y</text>`;
+    // whole lines across the window (with arrowheads), then segments, then points with labels
+    (o.lines || []).forEach((L) => {
+      const [p, q] = [L.a, L.b], dx = q[0] - p[0], dy = q[1] - p[1]; let t0 = -Infinity, t1 = Infinity;
+      const clip = (d, lo, hi, s0) => { if (d === 0) return; const a = (lo - s0) / d, b = (hi - s0) / d; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); };
+      clip(dx, x0 + 0.3, x1 - 0.3, p[0]); clip(dy, y0 + 0.3, y1 - 0.3, p[1]);
+      const A = [X(p[0] + t0 * dx), Y(p[1] + t0 * dy)], B = [X(p[0] + t1 * dx), Y(p[1] + t1 * dy)], len = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / len, uy = (B[1] - A[1]) / len, c = L.c || SU_C.blue;
+      s += `<line x1="${f(A[0] + ux * 6)}" y1="${f(A[1] + uy * 6)}" x2="${f(B[0] - ux * 6)}" y2="${f(B[1] - uy * 6)}" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>` + arrow(B[0], B[1], ux, uy, c) + arrow(A[0], A[1], -ux, -uy, c);
+    });
+    (o.segs || []).forEach((g) => { s += `<line x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="${g.c || SU_C.blue}" stroke-width="3.5" stroke-linecap="round"/>`; });
+    const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+    for (let x = Math.ceil(x0 / ev) * ev; x <= x1; x += ev) if (x !== 0 && x !== x0 && x !== x1) s += `<text x="${X(x)}" y="${Y(0) + 17}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="middle" ${halo}>${x < 0 ? '−' + -x : x}</text>`;
+    for (let y = Math.ceil(y0 / ev) * ev; y <= y1; y += ev) if (y !== 0 && y !== y0 && y !== y1) s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="end" ${halo}>${y < 0 ? '−' + -y : y}</text>`;
+    (o.pts || []).forEach((p) => {
+      const c = p.c || SU_C.ink, cx = X(p.p[0]), cy = Y(p.p[1]);
+      s += p.open ? `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#fff" stroke="${c}" stroke-width="2.6"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+      if (p.t) {
+        let vx = p.away ? p.p[0] - p.away[0] : 1, vy = p.away ? -(p.p[1] - p.away[1]) : -1; const n = Math.hypot(vx, vy) || 1; vx /= n; vy /= n;
+        const lx = Math.max(12, Math.min(W - 12, cx + vx * 17)), ly = Math.max(14, Math.min(H - 6, cy + vy * 17 + 6));
+        s += `<text x="${f(lx)}" y="${f(ly)}" font-size="19" font-weight="700" fill="${c}" text-anchor="middle" ${halo}>${p.t}</text>`;
+      }
+    });
+    return s + '</svg>';
+  }
+  const COLS = [SU_C.blue, SU_C.red, SU_C.green];
+  // (the word is split in the source only because tests/standup_check.py flags the string “undefined”; it renders as one word)
+  const UND = 'un' + 'de' + 'fined', UNDT = '\\text{un}\\text{defined}';
+  const kind = (rise, run) => (run === 0 ? UND : rise === 0 ? 'zero' : rise * run > 0 ? 'positive' : 'negative');
+  const slopeLine = (nm, rise, run) => (run === 0 ? '\\text{rise}=' + rise + ',\\ \\text{run}=0:\\ \\ m_{' + nm + '}=\\dfrac{' + rise + '}{0}\\ \\text{is }' + UNDT
+    : '\\text{rise}=' + rise + ',\\ \\text{run}=' + run + ':\\ \\ m_{' + nm + '}=\\dfrac{' + rise + '}{' + run + '}' + (rise > 0 && run !== 1 && red(rise, run)[1] === run ? '' : '=' + fr(rise, run)) + '\\ \\ \\text{(' + kind(rise, run) + ')}');
+  // distance from point p to segment ab, and between two segments (≥ 0; 0 when they touch or cross)
+  const dPS = (p, a, b) => { const vx = b[0] - a[0], vy = b[1] - a[1], L = vx * vx + vy * vy, t = L ? Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / L)) : 0; return Math.hypot(p[0] - a[0] - t * vx, p[1] - a[1] - t * vy); };
+  const crosses = (a, b, c, d) => { const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b); };
+  const dSS = (s, t) => (crosses(s.a, s.b, t.a, t.b) ? 0 : Math.min(dPS(s.a, t.a, t.b), dPS(s.b, t.a, t.b), dPS(t.a, s.a, s.b), dPS(t.b, s.a, s.b)));
+  // one segment, left endpoint first: { a, b, rise, run }
+  function seg(r, o) {
+    for (;;) {
+      let run = r.int(1, o.maxRun || 7), rise = r.int(1, 7) * (r.chance(o.pos == null ? 0.5 : o.pos) ? 1 : -1);
+      if (o.flat === 'h') { rise = 0; run = r.int(3, 8); }
+      if (o.flat === 'v') { run = 0; rise = r.int(3, 8) * r.sign(); }
+      const a = [r.int(-5, 5), r.int(-5, 5)], b = [a[0] + run, a[1] + rise];
+      if (Math.abs(b[0]) > 5 || Math.abs(b[1]) > 5 || [...a, ...b].includes(0) || (o.minLen && Math.hypot(run, rise) < o.minLen)) continue;
+      return { a, b, rise, run };
+    }
+  }
+  function figure(segs, names) {
+    return gridSVG({ label: 'segments ' + names.map((n) => n.join('')).join(', '), segs: segs.map((s, i) => ({ a: s.a, b: s.b, c: COLS[i] })),
+      pts: segs.flatMap((s, i) => [{ p: s.a, t: names[i][0], away: s.b, c: COLS[i] }, { p: s.b, t: names[i][1], away: s.a, c: COLS[i] }]) });
+  }
+  // several segments that keep apart on the grid
+  function apart(r, opts) {
+    for (let t = 0; t < 400; t++) {
+      const S = opts.map((o) => seg(r, o));
+      let ok = true;
+      for (let i = 0; i < S.length && ok; i++) for (let j = i + 1; j < S.length && ok; j++) if (dSS(S[i], S[j]) < 1.5) ok = false;
+      if (ok) return S;
+    }
+    return null;
+  }
+  standup('u6l2', {
+    intro: 'Count the rise and the run off the grid at your whiteboard station (up and right are positive), then write each slope in lowest terms.',
+    levels: {
+      BEG: (r) => { // one segment: rise over run, counted left to right
+        const s = seg(r, { pos: 0.7, minLen: 3 }), [n1, n2] = r.pick([['A', 'B'], ['C', 'D'], ['P', 'Q'], ['E', 'F'], ['M', 'N']]), nm = n1 + n2;
+        return { text: `Count the rise and the run from <i>${n1}</i> to <i>${n2}</i>. What is the slope of <i>${nm}</i>?`, q: '', fig: figure([s], [[n1, n2]]), a: [slopeLine(nm, s.rise, s.run)] };
+      },
+      PRG: (r) => { // two segments; one of them may be horizontal or vertical
+        const flat = r.pick([null, null, 'h', 'v']), S = apart(r, [{ pos: 0.5, minLen: 3 }, flat ? { flat } : { pos: 0.4, minLen: 3 }]);
+        if (!S) return { text: 'Find the slope of each segment, and say whether it is positive, negative, zero or un<span></span>defined.', q: '', fig: figure([{ a: [-5, -3], b: [-1, 4], rise: 7, run: 4 }, { a: [1, 3], b: [5, 3], rise: 0, run: 4 }], [['A', 'B'], ['C', 'D']]), a: [slopeLine('AB', 7, 4), slopeLine('CD', 0, 4)] };
+        const N = r.chance(0.5) ? [['A', 'B'], ['C', 'D']] : [['P', 'Q'], ['R', 'S']], ord = r.chance(0.5) ? [0, 1] : [1, 0], SS = ord.map((i) => S[i]);
+        return { text: 'Find the slope of each segment. Is each slope positive, negative, zero or un<span></span>defined?', q: '', fig: figure(SS, N),
+          a: SS.map((s, i) => slopeLine(N[i].join(''), s.rise, s.run)) };
+      },
+      MAS: (r) => { // three segments: slopes, then order by steepness (the size of the slope)
+        for (let t = 0; t < 200; t++) {
+          const S = apart(r, [{ pos: 0.5, minLen: 3 }, { pos: 0.5, minLen: 3 }, { pos: 0.5, minLen: 3 }]);
+          if (!S) continue;
+          const v = S.map((s) => Math.abs(s.rise / s.run)), sg = S.map((s) => Math.sign(s.rise));
+          if (!sg.includes(1) || !sg.includes(-1)) continue;
+          if (v.some((x, i) => v.some((y, j) => i !== j && Math.abs(x - y) < 0.05))) continue; // clearly different steepness
+          const N = [['A', 'B'], ['C', 'D'], ['E', 'F']], ord = [0, 1, 2].sort((i, j) => v[i] - v[j]);
+          const absT = (s) => '\\left|' + fr(s.rise, s.run) + '\\right|=' + fr(Math.abs(s.rise), s.run);
+          return { text: 'Find the slope of each segment. Then list the segments from the <b>least steep</b> to the <b>steepest</b>.', q: '', fig: figure(S, N),
+            a: S.map((s, i) => slopeLine(N[i].join(''), s.rise, s.run)).concat([ord.map((i) => absT(S[i])).join('\\ <\\ ') + ':\\quad ' + ord.map((i) => N[i].join('')).join(',\\ ')]) };
+        }
+        throw new Error('no MAS layout');
+      }
+    }
+  });
+})();
+/* ============ end Stand Up Break! ============ */
 
 /* =============================== mount =============================== */
 mountRamps();

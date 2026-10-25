@@ -13,6 +13,7 @@ import {
   h, tex, add, box, Graph, ValueTable, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pairTex, texNum, svgEl, place, pulse, rightMark, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const AMB = COLORS.amber, PUR = COLORS.purple, BLUE = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, TEAL = COLORS.teal, INK = COLORS.ink, GRAY = '#8b909b';
@@ -820,6 +821,179 @@ function mountStatic() {
     [['A', -3, -1, 'sw'], ['B', 1, 5, 'ne'], ['C', -5, 3, 'nw'], ['D', 3, -3, 'se'], ['E', 2, 4, 'ne'], ['F', 5, -4, 'se']].forEach(([n, x, y, p]) => G.point(x, y, { color: INK, r: 6, label: T(n), pos: p }));
   }
 }
+
+/* ============ Stand Up Break! (whiteboard stations) ============ */
+(() => {
+  /* ---- small number / LaTeX helpers ---- */
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const red = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; };
+  const fr = (n, d) => { const [a, b] = red(n, d); return b === 1 ? String(a) : (a < 0 ? '-' : '') + '\\dfrac{' + Math.abs(a) + '}{' + b + '}'; };
+  const pr = (v) => (v < 0 ? '(' + v + ')' : String(v));               // bracket a negative
+  const P = (n, p) => n + '(' + p[0] + ',\\ ' + p[1] + ')';               // A(3,\ -2)
+  const minus = (v, c) => (c === 0 ? v : c < 0 ? v + '+' + (-c) : v + '-' + c); // k − c, written nicely
+  /* ---- a coordinate grid as an SVG string, sized for the projector ---- */
+  const SU_C = { ink: '#1c2230', grid: '#cdd3dc', num: '#3a4254', blue: '#1f5bd6', red: '#c93a33', green: '#12805a', purple: '#7b4fc4', amber: '#c27a0e' };
+  function gridSVG(o) {
+    const x0 = o.x0 == null ? -6 : o.x0, x1 = o.x1 == null ? 6 : o.x1, y0 = o.y0 == null ? -6 : o.y0, y1 = o.y1 == null ? 6 : o.y1;
+    const u = o.u || 26, m = 24, W = (x1 - x0) * u + 2 * m, H = (y1 - y0) * u + 2 * m, ev = o.every || 1;
+    const X = (x) => m + (x - x0) * u, Y = (y) => m + (y1 - y) * u, f = (v) => Math.round(v * 10) / 10;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="${o.label || 'coordinate grid'}">`;
+    s += `<rect x="${X(x0)}" y="${Y(y1)}" width="${(x1 - x0) * u}" height="${(y1 - y0) * u}" fill="#fff"/>`;
+    for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    for (let y = y0; y <= y1; y++) s += `<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    const arrow = (x, y, dx, dy, c) => { const L = 9, w = 5; return `<polygon points="${f(x)},${f(y)} ${f(x - dx * L - dy * w)},${f(y - dy * L + dx * w)} ${f(x - dx * L + dy * w)},${f(y - dy * L - dx * w)}" fill="${c}"/>`; };
+    if (y0 <= 0 && y1 >= 0) s += `<line x1="${X(x0) - 10}" y1="${Y(0)}" x2="${X(x1) + 10}" y2="${Y(0)}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(x1) + 14, Y(0), 1, 0, SU_C.ink) + arrow(X(x0) - 14, Y(0), -1, 0, SU_C.ink)
+      + `<text x="${X(x1) + 10}" y="${Y(0) - 9}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}" text-anchor="end">x</text>`;
+    if (x0 <= 0 && x1 >= 0) s += `<line x1="${X(0)}" y1="${Y(y0) + 10}" x2="${X(0)}" y2="${Y(y1) - 10}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(0), Y(y1) - 14, 0, -1, SU_C.ink) + arrow(X(0), Y(y0) + 14, 0, 1, SU_C.ink)
+      + `<text x="${X(0) + 10}" y="${Y(y1) - 4}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}">y</text>`;
+    // whole lines across the window (with arrowheads), then segments, then points with labels
+    (o.lines || []).forEach((L) => {
+      const [p, q] = [L.a, L.b], dx = q[0] - p[0], dy = q[1] - p[1]; let t0 = -Infinity, t1 = Infinity;
+      const clip = (d, lo, hi, s0) => { if (d === 0) return; const a = (lo - s0) / d, b = (hi - s0) / d; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); };
+      clip(dx, x0 + 0.3, x1 - 0.3, p[0]); clip(dy, y0 + 0.3, y1 - 0.3, p[1]);
+      const A = [X(p[0] + t0 * dx), Y(p[1] + t0 * dy)], B = [X(p[0] + t1 * dx), Y(p[1] + t1 * dy)], len = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / len, uy = (B[1] - A[1]) / len, c = L.c || SU_C.blue;
+      s += `<line x1="${f(A[0] + ux * 6)}" y1="${f(A[1] + uy * 6)}" x2="${f(B[0] - ux * 6)}" y2="${f(B[1] - uy * 6)}" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>` + arrow(B[0], B[1], ux, uy, c) + arrow(A[0], A[1], -ux, -uy, c);
+    });
+    (o.segs || []).forEach((g) => { s += `<line x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="${g.c || SU_C.blue}" stroke-width="3.5" stroke-linecap="round"/>`; });
+    const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+    for (let x = Math.ceil(x0 / ev) * ev; x <= x1; x += ev) if (x !== 0 && x !== x0 && x !== x1) s += `<text x="${X(x)}" y="${Y(0) + 17}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="middle" ${halo}>${x < 0 ? '−' + -x : x}</text>`;
+    for (let y = Math.ceil(y0 / ev) * ev; y <= y1; y += ev) if (y !== 0 && y !== y0 && y !== y1) s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="end" ${halo}>${y < 0 ? '−' + -y : y}</text>`;
+    (o.pts || []).forEach((p) => {
+      const c = p.c || SU_C.ink, cx = X(p.p[0]), cy = Y(p.p[1]);
+      s += p.open ? `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#fff" stroke="${c}" stroke-width="2.6"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+      if (p.t) {
+        let vx = p.away ? p.p[0] - p.away[0] : 1, vy = p.away ? -(p.p[1] - p.away[1]) : -1; const n = Math.hypot(vx, vy) || 1; vx /= n; vy /= n;
+        const lx = Math.max(12, Math.min(W - 12, cx + vx * 17)), ly = Math.max(14, Math.min(H - 6, cy + vy * 17 + 6));
+        s += `<text x="${f(lx)}" y="${f(ly)}" font-size="19" font-weight="700" fill="${c}" text-anchor="middle" ${halo}>${p.t}</text>`;
+      }
+    });
+    return s + '</svg>';
+  }
+  function simp(N) { let k = 1, m = N; for (let q = 2; q * q <= m; q++) while (m % (q * q) === 0) { m /= q * q; k *= q; } return { k, m }; }
+  const rootSteps = (N) => { const { k, m } = simp(N); if (m === 1) return '\\sqrt{' + N + '}=' + k; if (k === 1) return '\\sqrt{' + N + '}'; return '\\sqrt{' + N + '}=\\sqrt{' + k * k + '\\times' + m + '}=' + k + '\\sqrt{' + m + '}'; };
+  const NAMES = [['A', 'B'], ['C', 'D'], ['P', 'Q'], ['E', 'F'], ['G', 'H'], ['K', 'L']];
+  const pt = (r, lo, hi) => [r.int(lo, hi), r.int(lo, hi)];
+  const neg = (pts) => pts.some((p) => p[0] < 0 || p[1] < 0);
+  const raw = (dy, dx) => '\\dfrac{' + dy + '}{' + dx + '}';
+  const simpl = (dy, dx) => (dx === 1 ? '=' + dy : (red(dy, dx)[1] === dx && dy > 0) ? '' : '=' + fr(dy, dx));
+  const mSteps = (nm, A, B) => { const dy = B[1] - A[1], dx = B[0] - A[0]; return 'm_{' + nm + '}=\\dfrac{' + B[1] + '-' + pr(A[1]) + '}{' + B[0] + '-' + pr(A[0]) + '}=' + raw(dy, dx) + simpl(dy, dx); };
+  const midSteps = (A, B) => 'M\\left(\\dfrac{' + A[0] + '+' + pr(B[0]) + '}{2},\\ \\dfrac{' + A[1] + '+' + pr(B[1]) + '}{2}\\right)=' + P('M', [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2]).slice(1);
+  const distSteps = (nm, A, B) => { const dx = B[0] - A[0], dy = B[1] - A[1], N = dx * dx + dy * dy; return [nm + '=\\sqrt{' + pr(dx) + '^2+' + pr(dy) + '^2}=\\sqrt{' + dx * dx + '+' + dy * dy + '}', '=' + rootSteps(N)]; };
+  const negRecip = (n, d) => fr(-d, n);                                  // the perpendicular slope to n/d
+  // a pair of points for a slope: rise/run in lowest terms after cancelling a common factor sometimes
+  function slopePair(r, lo, hi) {
+    for (;;) {
+      const A = pt(r, lo, hi), B = pt(r, lo, hi);
+      if (A[0] === B[0] || A[1] === B[1] || !neg([A, B])) continue;
+      return [A, B];
+    }
+  }
+  // ---- Beginning: one tool, one step ----
+  function begDist(r) {
+    for (;;) {
+      const [A, B] = slopePair(r, -9, 9), dx = B[0] - A[0], dy = B[1] - A[1], N = dx * dx + dy * dy;
+      if (N > 300 || N < 20) continue;
+      const [n1, n2] = r.pick(NAMES);
+      return { text: `Find the <b>exact</b> distance between <i>${n1}</i> and <i>${n2}</i>.`, q: P(n1, A) + '\\qquad ' + P(n2, B), a: distSteps(n1 + n2, A, B) };
+    }
+  }
+  function begMid(r) {
+    for (;;) {
+      const A = pt(r, -12, 12), B = pt(r, -12, 12);
+      if ((A[0] + B[0]) % 2 || (A[1] + B[1]) % 2 || A[0] === B[0] || A[1] === B[1] || !neg([A, B])) continue;
+      const [n1, n2] = r.pick(NAMES);
+      return { text: `Find the midpoint <i>M</i> of <i>${n1 + n2}</i>.`, q: P(n1, A) + '\\qquad ' + P(n2, B), a: [midSteps(A, B)] };
+    }
+  }
+  function begSlope(r) {
+    const [A, B] = slopePair(r, -10, 10), [n1, n2] = r.pick(NAMES);
+    return { text: `Find the slope of <i>${n1 + n2}</i>, in lowest terms.`, q: P(n1, A) + '\\qquad ' + P(n2, B), a: [mSteps(n1 + n2, A, B)] };
+  }
+  // ---- Progressing: two steps ----
+  function prgEnd(r) { // a missing endpoint from the midpoint
+    for (;;) {
+      const E = pt(r, -9, 9), M = pt(r, -8, 8), F = [2 * M[0] - E[0], 2 * M[1] - E[1]];
+      if (E[0] === M[0] || E[1] === M[1] || Math.abs(F[0]) > 15 || Math.abs(F[1]) > 15 || !neg([E, M])) continue;
+      const [n1, n2] = r.pick(NAMES);
+      return { text: `<i>M</i> is the midpoint of <i>${n1 + n2}</i>. Find the coordinates of <i>${n2}</i>.`, q: P(n1, E) + '\\qquad ' + P('M', M),
+        a: ['\\dfrac{' + E[0] + '+x}{2}=' + M[0] + '\\ \\Rightarrow\\ ' + E[0] + '+x=' + 2 * M[0] + '\\ \\Rightarrow\\ x=' + F[0],
+          '\\dfrac{' + E[1] + '+y}{2}=' + M[1] + '\\ \\Rightarrow\\ ' + E[1] + '+y=' + 2 * M[1] + '\\ \\Rightarrow\\ y=' + F[1], P(n2, F)] };
+    }
+  }
+  const SL = (() => { const o = []; for (let q = 1; q <= 5; q++) for (let p = -5; p <= 5; p++) if (p && gcd(p, q) === 1) o.push([p, q]); return o; })();
+  function prgParPerp(r) { // parallel, perpendicular or neither?
+    for (;;) {
+      const [p, q] = r.pick(SL), kind = r.pick(['par', 'perp', 'perp', 'neither']);
+      let [p2, q2] = kind === 'par' ? [p, q] : kind === 'perp' ? [-q, p] : r.pick([[q, p], [-p, q], [p + r.sign(), q]]);
+      if (p2 === 0 || (kind === 'neither' && (p2 * q === p * q2 || p * p2 === -q * q2))) continue;
+      if (q2 < 0) { p2 = -p2; q2 = -q2; }
+      const k1 = r.int(1, 3) * r.sign(), k2 = r.int(1, 3) * r.sign(), G = pt(r, -8, 8), J = pt(r, -8, 8), H = [G[0] + q * k1, G[1] + p * k1], K = [J[0] + q2 * k2, J[1] + p2 * k2];
+      if ([H, K].some((v) => Math.abs(v[0]) > 14 || Math.abs(v[1]) > 14) || !neg([G, H, J, K])) continue;
+      const verdict = kind === 'par' ? '\\text{equal slopes: }\\textbf{parallel}' : kind === 'perp' ? fr(p, q) + '\\times' + (p2 < 0 ? '\\left(' + fr(p2, q2) + '\\right)' : fr(p2, q2)) + '=-1:\\ \\textbf{perpendicular}'
+        : '\\text{not equal, product }' + fr(p * p2, q * q2) + '\\ne-1:\\ \\textbf{neither}';
+      return { text: '<i>GH</i> joins <i>G</i> and <i>H</i>; <i>JK</i> joins <i>J</i> and <i>K</i>. Are the segments parallel, perpendicular or neither?', q: '\\begin{gathered}' + P('G', G) + '\\quad ' + P('H', H) + '\\\\ ' + P('J', J) + '\\quad ' + P('K', K) + '\\end{gathered}',
+        a: [mSteps('GH', G, H), mSteps('JK', J, K), verdict] };
+    }
+  }
+  function prgGraph(r) { // read a line on the grid: slope, intercepts, domain and range
+    for (;;) {
+      const a = r.int(-6, 6), b = r.int(-6, 6); if (!a || !b || Math.abs(a) + Math.abs(b) < 4) continue;
+      const run = Math.abs(a), rise = a < 0 ? b : -b;
+      return { text: 'For the line shown, state the slope, both intercepts, and the domain and range.', q: '',
+        fig: gridSVG({ x0: -7, x1: 7, y0: -7, y1: 7, u: 22, label: 'a line through (' + a + ', 0) and (0, ' + b + ')', lines: [{ a: [a, 0], b: [0, b] }], pts: [{ p: [a, 0] }, { p: [0, b] }] }),
+        a: ['\\text{run}=' + run + ',\\ \\text{rise}=' + rise + ':\\ \\ m=' + fr(rise, run) + ',\\quad x\\text{-int }{' + a + '},\\ \\ y\\text{-int }{' + b + '}',
+          '\\text{D: }\\{x\\mid x\\in\\mathbb{R}\\}\\qquad \\text{R: }\\{y\\mid y\\in\\mathbb{R}\\}'] };
+    }
+  }
+  // ---- Mastery: several tools at once ----
+  function masBisect(r) { // midpoint, exact length and the perpendicular slope of one segment
+    for (;;) {
+      const A = pt(r, -9, 9), B = pt(r, -9, 9), dx = B[0] - A[0], dy = B[1] - A[1];
+      if ((A[0] + B[0]) % 2 || (A[1] + B[1]) % 2 || !dx || !dy || !neg([A, B]) || dx * dx + dy * dy > 340) continue;
+      const [n1, n2] = r.pick(NAMES), nm = n1 + n2, [pn, pd] = red(dy, dx);
+      return { text: `For <i>${nm}</i>, find (a) its midpoint <i>M</i>, (b) its exact length, and (c) the slope of a line perpendicular to <i>${nm}</i>.`, q: P(n1, A) + '\\qquad ' + P(n2, B),
+        a: ['(a)\\ ' + midSteps(A, B), '(b)\\ ' + distSteps(nm, A, B).join(''), '(c)\\ ' + mSteps(nm, A, B) + ',\\ \\ m_\\perp=' + negRecip(pn, pd)] };
+    }
+  }
+  function masUnknown(r) { // an unknown coordinate from a parallel or perpendicular condition
+    for (;;) {
+      const [p, q] = r.pick(SL), perp = r.chance(0.5), k = r.int(1, 2) * r.sign(), M = pt(r, -8, 8), N = [M[0] + q * k, M[1] + p * k];
+      const [tp, tq] = perp ? red(-q, p) : [p, q];                               // the slope KL must have
+      const j = r.int(1, 3) * r.sign(), L = pt(r, -8, 8), Kx = L[0] - tq * j, y = L[1] - tp * j, dx = L[0] - Kx;   // K(Kx, y)
+      if ([N, [Kx, y]].some((v) => Math.abs(v[0]) > 14 || Math.abs(v[1]) > 14) || !neg([M, N, L])) continue;
+      return { text: `<i>KL</i> is <b>${perp ? 'perpendicular' : 'parallel'}</b> to <i>MN</i>. Find the value of <i>y</i>.`, q: '\\begin{gathered}K(' + Kx + ',\\ y)\\quad ' + P('L', L) + '\\\\ ' + P('M', M) + '\\quad ' + P('N', N) + '\\end{gathered}',
+        a: [mSteps('MN', M, N) + (perp ? ',\\ \\ \\text{so } m_{KL}=' + fr(tp, tq) : ''),
+          '\\dfrac{' + L[1] + '-y}{' + L[0] + '-' + pr(Kx) + '}=' + fr(tp, tq) + '\\ \\Rightarrow\\ ' + L[1] + '-y=' + dx + '\\times' + (tp < 0 || tq > 1 ? '\\left(' + fr(tp, tq) + '\\right)' : fr(tp, tq)) + '=' + (L[1] - y),
+          'y=' + y] };
+    }
+  }
+  const CTX = [
+    { what: 'the depth of snow on a deck, <i>d</i> (cm), every 2 hours after a warm spell begins', x: 't', y: 'd', xu: 'h', yu: 'cm', st: 2, start: 'cm of snow when the warm spell begins', end: 'the snow is gone after' },
+    { what: 'the water in a draining tank, <i>V</i> (L), every few minutes', x: 't', y: 'V', xu: 'min', yu: 'L', st: 3, start: 'L in the tank at the start', end: 'the tank is empty after' },
+    { what: 'the fuel left in a boat, <i>F</i> (L), every few hours of a trip', x: 't', y: 'F', xu: 'h', yu: 'L', st: 2, start: 'L of fuel at the start of the trip', end: 'the fuel runs out after' }
+  ];
+  function masTable(r) { // a context table: slope with units, both intercepts with meaning, domain and range
+    for (;;) {
+      const c = r.pick(CTX), rate = r.int(2, 6), n = r.int(6, 10) * c.st, S = rate * n, step = c.st;
+      if (S > 120) continue;
+      const xs = [0, 1, 2, 3].map((i) => i * step), ys = xs.map((x) => S - rate * x);
+      const tab = '\\begin{array}{c|cccc}' + c.x + '\\ (\\text{' + c.xu + '})&' + xs.join('&') + '\\\\ \\hline ' + c.y + '\\ (\\text{' + c.yu + '})&' + ys.join('&') + '\\end{array}';
+      return { text: `The table shows ${c.what}. Show that the relation is linear and state the slope with its units. Then find both intercepts and say what they mean, and state the domain and range.`, q: tab,
+        a: ['\\text{Equal steps of } ' + step + '\\text{ ' + c.xu + '};\\ ' + c.y + '\\text{ drops } ' + rate * step + '\\text{ ' + c.yu + ' each time: linear}', 'm=\\dfrac{-' + rate * step + '\\text{ ' + c.yu + '}}{' + step + '\\text{ ' + c.xu + '}}=-' + rate + '\\text{ ' + c.yu + '/' + c.xu + '}',
+          '\\text{D: }\\{' + c.x + '\\mid 0\\le ' + c.x + '\\le ' + n + ',\\ ' + c.x + '\\in\\mathbb{R}\\}\\qquad \\text{R: }\\{' + c.y + '\\mid 0\\le ' + c.y + '\\le ' + S + ',\\ ' + c.y + '\\in\\mathbb{R}\\}'],
+        atext: `${c.y}-intercept ${S}: ${S} ${c.start}. ${c.x}-intercept ${S} ÷ ${rate} = ${n}: ${c.end} ${n} ${c.xu === 'h' ? 'hours' : 'minutes'}.` };
+    }
+  }
+  standup('u6l5', {
+    intro: 'Pick the right tool (length, midpoint, slope or intercepts) and show every step at your whiteboard station.',
+    levels: {
+      BEG: (r) => r.pick([begDist, begMid, begSlope])(r),
+      PRG: (r) => r.pick([prgEnd, prgParPerp, prgGraph])(r),
+      MAS: (r) => r.pick([masBisect, masUnknown, masTable])(r)
+    }
+  });
+})();
+/* ============ end Stand Up Break! ============ */
 
 /* =============================== mount =============================== */
 mountStatic();

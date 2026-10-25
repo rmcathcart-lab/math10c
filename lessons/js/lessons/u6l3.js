@@ -10,6 +10,7 @@ import {
   h, tex, add, box, Graph, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   svgEl, liveCtx, pulse, rightMark, drawIn, COLORS, col
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const AMB = COLORS.amber, PUR = COLORS.purple, BLUE = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, TEAL = COLORS.teal, INK = COLORS.ink;
@@ -685,6 +686,111 @@ const dialK = {
     ];
   }
 };
+
+/* ============ Stand Up Break! (whiteboard stations) ============ */
+(() => {
+  /* ---- small number / LaTeX helpers ---- */
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const red = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; };
+  const fr = (n, d) => { const [a, b] = red(n, d); return b === 1 ? String(a) : (a < 0 ? '-' : '') + '\\dfrac{' + Math.abs(a) + '}{' + b + '}'; };
+  const pr = (v) => (v < 0 ? '(' + v + ')' : String(v));               // bracket a negative
+  const P = (n, p) => n + '(' + p[0] + ',\\ ' + p[1] + ')';               // A(3,\ -2)
+  const minus = (v, c) => (c === 0 ? v : c < 0 ? v + '+' + (-c) : v + '-' + c); // k − c, written nicely
+  /* ---- a coordinate grid as an SVG string, sized for the projector ---- */
+  const SU_C = { ink: '#1c2230', grid: '#cdd3dc', num: '#3a4254', blue: '#1f5bd6', red: '#c93a33', green: '#12805a', purple: '#7b4fc4', amber: '#c27a0e' };
+  function gridSVG(o) {
+    const x0 = o.x0 == null ? -6 : o.x0, x1 = o.x1 == null ? 6 : o.x1, y0 = o.y0 == null ? -6 : o.y0, y1 = o.y1 == null ? 6 : o.y1;
+    const u = o.u || 26, m = 24, W = (x1 - x0) * u + 2 * m, H = (y1 - y0) * u + 2 * m, ev = o.every || 1;
+    const X = (x) => m + (x - x0) * u, Y = (y) => m + (y1 - y) * u, f = (v) => Math.round(v * 10) / 10;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="${o.label || 'coordinate grid'}">`;
+    s += `<rect x="${X(x0)}" y="${Y(y1)}" width="${(x1 - x0) * u}" height="${(y1 - y0) * u}" fill="#fff"/>`;
+    for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    for (let y = y0; y <= y1; y++) s += `<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    const arrow = (x, y, dx, dy, c) => { const L = 9, w = 5; return `<polygon points="${f(x)},${f(y)} ${f(x - dx * L - dy * w)},${f(y - dy * L + dx * w)} ${f(x - dx * L + dy * w)},${f(y - dy * L - dx * w)}" fill="${c}"/>`; };
+    if (y0 <= 0 && y1 >= 0) s += `<line x1="${X(x0) - 10}" y1="${Y(0)}" x2="${X(x1) + 10}" y2="${Y(0)}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(x1) + 14, Y(0), 1, 0, SU_C.ink) + arrow(X(x0) - 14, Y(0), -1, 0, SU_C.ink)
+      + `<text x="${X(x1) + 10}" y="${Y(0) - 9}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}" text-anchor="end">x</text>`;
+    if (x0 <= 0 && x1 >= 0) s += `<line x1="${X(0)}" y1="${Y(y0) + 10}" x2="${X(0)}" y2="${Y(y1) - 10}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(0), Y(y1) - 14, 0, -1, SU_C.ink) + arrow(X(0), Y(y0) + 14, 0, 1, SU_C.ink)
+      + `<text x="${X(0) + 10}" y="${Y(y1) - 4}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}">y</text>`;
+    // whole lines across the window (with arrowheads), then segments, then points with labels
+    (o.lines || []).forEach((L) => {
+      const [p, q] = [L.a, L.b], dx = q[0] - p[0], dy = q[1] - p[1]; let t0 = -Infinity, t1 = Infinity;
+      const clip = (d, lo, hi, s0) => { if (d === 0) return; const a = (lo - s0) / d, b = (hi - s0) / d; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); };
+      clip(dx, x0 + 0.3, x1 - 0.3, p[0]); clip(dy, y0 + 0.3, y1 - 0.3, p[1]);
+      const A = [X(p[0] + t0 * dx), Y(p[1] + t0 * dy)], B = [X(p[0] + t1 * dx), Y(p[1] + t1 * dy)], len = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / len, uy = (B[1] - A[1]) / len, c = L.c || SU_C.blue;
+      s += `<line x1="${f(A[0] + ux * 6)}" y1="${f(A[1] + uy * 6)}" x2="${f(B[0] - ux * 6)}" y2="${f(B[1] - uy * 6)}" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>` + arrow(B[0], B[1], ux, uy, c) + arrow(A[0], A[1], -ux, -uy, c);
+    });
+    (o.segs || []).forEach((g) => { s += `<line x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="${g.c || SU_C.blue}" stroke-width="3.5" stroke-linecap="round"/>`; });
+    const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+    for (let x = Math.ceil(x0 / ev) * ev; x <= x1; x += ev) if (x !== 0 && x !== x0 && x !== x1) s += `<text x="${X(x)}" y="${Y(0) + 17}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="middle" ${halo}>${x < 0 ? '−' + -x : x}</text>`;
+    for (let y = Math.ceil(y0 / ev) * ev; y <= y1; y += ev) if (y !== 0 && y !== y0 && y !== y1) s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="end" ${halo}>${y < 0 ? '−' + -y : y}</text>`;
+    (o.pts || []).forEach((p) => {
+      const c = p.c || SU_C.ink, cx = X(p.p[0]), cy = Y(p.p[1]);
+      s += p.open ? `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#fff" stroke="${c}" stroke-width="2.6"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+      if (p.t) {
+        let vx = p.away ? p.p[0] - p.away[0] : 1, vy = p.away ? -(p.p[1] - p.away[1]) : -1; const n = Math.hypot(vx, vy) || 1; vx /= n; vy /= n;
+        const lx = Math.max(12, Math.min(W - 12, cx + vx * 17)), ly = Math.max(14, Math.min(H - 6, cy + vy * 17 + 6));
+        s += `<text x="${f(lx)}" y="${f(ly)}" font-size="19" font-weight="700" fill="${c}" text-anchor="middle" ${halo}>${p.t}</text>`;
+      }
+    });
+    return s + '</svg>';
+  }
+  const NAMES = [['P', 'Q'], ['A', 'B'], ['C', 'D'], ['M', 'N'], ['R', 'S'], ['W', 'Z']];
+  const SLOPES = () => { const out = []; for (let q = 1; q <= 6; q++) for (let p = -7; p <= 7; p++) if (p !== 0 && gcd(p, q) === 1) out.push([p, q]); return out; };
+  const SL = SLOPES();
+  const raw = (dy, dx) => '\\dfrac{' + dy + '}{' + dx + '}';
+  const simpl = (dy, dx) => (dx === 1 ? '=' + dy : (red(dy, dx)[0] === dy && red(dy, dx)[1] === dx && dy > 0) ? '' : '=' + fr(dy, dx));
+  // m_AB from the formula, all the steps: (y_B − y_A)/(x_B − x_A) = raw = lowest terms
+  const mSteps = (nm, A, B) => { const dy = B[1] - A[1], dx = B[0] - A[0]; return (nm ? 'm_{' + nm + '}' : '') + '=\\dfrac{' + B[1] + '-' + pr(A[1]) + '}{' + B[0] + '-' + pr(A[0]) + '}=' + raw(dy, dx) + simpl(dy, dx); };
+  const neg = (pts) => pts.some((p) => p[0] < 0 || p[1] < 0);
+  standup('u6l3', {
+    intro: 'Use the slope formula at your whiteboard station: same order top and bottom, and bracket every negative coordinate.',
+    levels: {
+      BEG: (r) => { // the slope formula with negative coordinates
+        for (;;) {
+          const [p, q] = r.pick(SL), k = r.int(1, 3), s = r.sign(), A = [r.int(-10, 10), r.int(-10, 10)], B = [A[0] + s * q * k, A[1] + s * p * k];
+          if (Math.abs(B[0]) > 12 || Math.abs(B[1]) > 12 || !neg([A, B]) || q * k < 2) continue;
+          const [n1, n2] = r.pick(NAMES);
+          return { text: `Use the slope formula to find the slope of <i>${n1 + n2}</i>, in lowest terms.`, q: P(n1, A) + '\\qquad ' + P(n2, B), a: ['m_{' + n1 + n2 + '}=\\dfrac{y_' + n2 + '-y_' + n1 + '}{x_' + n2 + '-x_' + n1 + '}', mSteps(null, A, B)] };
+        }
+      },
+      PRG: (r) => { // three points: collinear or not?
+        for (;;) {
+          const [p, q] = r.pick(SL), k1 = r.int(1, 3), k2 = r.int(1, 3), X = [r.int(-9, 6), r.int(-12, 12)];
+          const Y = [X[0] + q * k1, X[1] + p * k1], Z = [Y[0] + q * k2, Y[1] + p * k2], on = r.chance(0.55);
+          if (!on) Z[1] += r.pick([-2, -1, 1, 2]);
+          if ([X, Y, Z].some((v) => Math.abs(v[0]) > 15 || Math.abs(v[1]) > 15) || !neg([X, Y, Z])) continue;
+          const nm = r.pick([['X', 'Y', 'Z'], ['A', 'B', 'C'], ['P', 'Q', 'R'], ['D', 'E', 'F']]), [a, b, c] = nm;
+          const m1 = mSteps(a + b, X, Y), m2 = mSteps(b + c, Y, Z);
+          return { text: `Are <i>${a}</i>, <i>${b}</i> and <i>${c}</i> collinear? Use slopes to prove your answer.`, q: P(a, X) + '\\quad ' + P(b, Y) + '\\quad ' + P(c, Z),
+            a: [m1, m2, on ? 'm_{' + a + b + '}=m_{' + b + c + '}\\ \\text{and they share } ' + b + ':\\ \\textbf{collinear}' : 'm_{' + a + b + '}\\ne m_{' + b + c + '}:\\ \\textbf{not collinear}'] };
+        }
+      },
+      MAS: (r) => {
+        for (;;) {
+          const [p, q] = r.pick(SL);
+          if (r.chance(0.5)) { // a point W(x, w) on the line through two points: find w
+            const k = r.int(1, 3), X = [r.int(-9, 4), r.int(-12, 12)], Z = [X[0] + 3 * q * k, X[1] + 3 * p * k], j = r.int(1, 3 * k - 1), xw = X[0] + q * j, w = X[1] + p * j;
+            if ([X, Z].some((v) => Math.abs(v[0]) > 18 || Math.abs(v[1]) > 20) || !neg([X, Z])) continue;
+            const nm = r.pick([['X', 'Z', 'W'], ['A', 'C', 'B'], ['P', 'R', 'Q']]), [a, c, b] = nm, dx = xw - X[0], m = p / q;
+            return { text: `<i>${a}</i>, <i>${b}</i> and <i>${c}</i> are collinear. Find the value of <i>k</i>.`, q: P(a, X) + '\\quad ' + b + '(' + xw + ',\\ k)\\quad ' + P(c, Z),
+              a: [mSteps(a + c, X, Z), '\\dfrac{k-' + pr(X[1]) + '}{' + xw + '-' + pr(X[0]) + '}=' + fr(p, q) + '\\ \\Rightarrow\\ \\dfrac{' + minus('k', X[1]) + '}{' + dx + '}=' + fr(p, q),
+                minus('k', X[1]) + '=' + dx + '\\times' + (m < 0 || q > 1 ? '\\left(' + fr(p, q) + '\\right)' : fr(p, q)) + '=' + p * dx / q + '\\ \\Rightarrow\\ k=' + w] };
+          }
+          // A(k, y_A) to B(x_B, y_B) has a given slope: find k
+          const j = r.int(1, 3) * r.sign(), A1 = r.int(-10, 10), B = [r.int(-8, 8), A1 + p * j], k = B[0] - q * j, dy = B[1] - A1;
+          if (Math.abs(B[1]) > 14 || Math.abs(k) > 15 || !neg([[k, A1], B])) continue;
+          const [n1, n2] = r.pick(NAMES);
+          return { text: `The segment joining <i>${n1}</i> and <i>${n2}</i> has the slope shown. Find the value of <i>k</i>.`,
+            q: n1 + '(k,\\ ' + A1 + ')\\qquad ' + P(n2, B) + '\\qquad m_{' + n1 + n2 + '}=' + fr(p, q),
+            a: ['\\dfrac{' + B[1] + '-' + pr(A1) + '}{' + B[0] + '-k}=' + fr(p, q) + '\\ \\Rightarrow\\ \\dfrac{' + dy + '}{' + B[0] + '-k}=' + fr(p, q),
+              q === 1 ? B[0] + '-k=' + (p === 1 ? dy : '\\dfrac{' + dy + '}{' + p + '}=' + dy / p) : p + '(' + B[0] + '-k)=' + q + '(' + dy + ')\\ \\Rightarrow\\ ' + B[0] + '-k=\\dfrac{' + q * dy + '}{' + p + '}=' + (q * dy / p),
+              'k=' + k] };
+        }
+      }
+    }
+  });
+})();
+/* ============ end Stand Up Break! ============ */
 
 /* =============================== mount =============================== */
 mountOrchard();

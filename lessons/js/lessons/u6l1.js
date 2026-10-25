@@ -11,6 +11,7 @@ import {
   h, tex, add, box, Graph, NumberLine, RightTriangle, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pairTex, texNum, svgEl, liveCtx, pulse, rightMark, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const AMB = COLORS.amber, PUR = COLORS.purple, BLUE = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, INK = COLORS.ink;
@@ -857,6 +858,142 @@ const backward = {
     ];
   }
 };
+
+/* ============ Stand Up Break! (whiteboard stations) ============ */
+(() => {
+  /* ---- small number / LaTeX helpers ---- */
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const red = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; };
+  const fr = (n, d) => { const [a, b] = red(n, d); return b === 1 ? String(a) : (a < 0 ? '-' : '') + '\\dfrac{' + Math.abs(a) + '}{' + b + '}'; };
+  const pr = (v) => (v < 0 ? '(' + v + ')' : String(v));               // bracket a negative
+  const P = (n, p) => n + '(' + p[0] + ',\\ ' + p[1] + ')';               // A(3,\ -2)
+  const minus = (v, c) => (c === 0 ? v : c < 0 ? v + '+' + (-c) : v + '-' + c); // k − c, written nicely
+  /* ---- a coordinate grid as an SVG string, sized for the projector ---- */
+  const SU_C = { ink: '#1c2230', grid: '#cdd3dc', num: '#3a4254', blue: '#1f5bd6', red: '#c93a33', green: '#12805a', purple: '#7b4fc4', amber: '#c27a0e' };
+  function gridSVG(o) {
+    const x0 = o.x0 == null ? -6 : o.x0, x1 = o.x1 == null ? 6 : o.x1, y0 = o.y0 == null ? -6 : o.y0, y1 = o.y1 == null ? 6 : o.y1;
+    const u = o.u || 26, m = 24, W = (x1 - x0) * u + 2 * m, H = (y1 - y0) * u + 2 * m, ev = o.every || 1;
+    const X = (x) => m + (x - x0) * u, Y = (y) => m + (y1 - y) * u, f = (v) => Math.round(v * 10) / 10;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="${o.label || 'coordinate grid'}">`;
+    s += `<rect x="${X(x0)}" y="${Y(y1)}" width="${(x1 - x0) * u}" height="${(y1 - y0) * u}" fill="#fff"/>`;
+    for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    for (let y = y0; y <= y1; y++) s += `<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    const arrow = (x, y, dx, dy, c) => { const L = 9, w = 5; return `<polygon points="${f(x)},${f(y)} ${f(x - dx * L - dy * w)},${f(y - dy * L + dx * w)} ${f(x - dx * L + dy * w)},${f(y - dy * L - dx * w)}" fill="${c}"/>`; };
+    if (y0 <= 0 && y1 >= 0) s += `<line x1="${X(x0) - 10}" y1="${Y(0)}" x2="${X(x1) + 10}" y2="${Y(0)}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(x1) + 14, Y(0), 1, 0, SU_C.ink) + arrow(X(x0) - 14, Y(0), -1, 0, SU_C.ink)
+      + `<text x="${X(x1) + 10}" y="${Y(0) - 9}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}" text-anchor="end">x</text>`;
+    if (x0 <= 0 && x1 >= 0) s += `<line x1="${X(0)}" y1="${Y(y0) + 10}" x2="${X(0)}" y2="${Y(y1) - 10}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(0), Y(y1) - 14, 0, -1, SU_C.ink) + arrow(X(0), Y(y0) + 14, 0, 1, SU_C.ink)
+      + `<text x="${X(0) + 10}" y="${Y(y1) - 4}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}">y</text>`;
+    // whole lines across the window (with arrowheads), then segments, then points with labels
+    (o.lines || []).forEach((L) => {
+      const [p, q] = [L.a, L.b], dx = q[0] - p[0], dy = q[1] - p[1]; let t0 = -Infinity, t1 = Infinity;
+      const clip = (d, lo, hi, s0) => { if (d === 0) return; const a = (lo - s0) / d, b = (hi - s0) / d; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); };
+      clip(dx, x0 + 0.3, x1 - 0.3, p[0]); clip(dy, y0 + 0.3, y1 - 0.3, p[1]);
+      const A = [X(p[0] + t0 * dx), Y(p[1] + t0 * dy)], B = [X(p[0] + t1 * dx), Y(p[1] + t1 * dy)], len = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / len, uy = (B[1] - A[1]) / len, c = L.c || SU_C.blue;
+      s += `<line x1="${f(A[0] + ux * 6)}" y1="${f(A[1] + uy * 6)}" x2="${f(B[0] - ux * 6)}" y2="${f(B[1] - uy * 6)}" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>` + arrow(B[0], B[1], ux, uy, c) + arrow(A[0], A[1], -ux, -uy, c);
+    });
+    (o.segs || []).forEach((g) => { s += `<line x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="${g.c || SU_C.blue}" stroke-width="3.5" stroke-linecap="round"/>`; });
+    const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+    for (let x = Math.ceil(x0 / ev) * ev; x <= x1; x += ev) if (x !== 0 && x !== x0 && x !== x1) s += `<text x="${X(x)}" y="${Y(0) + 17}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="middle" ${halo}>${x < 0 ? '−' + -x : x}</text>`;
+    for (let y = Math.ceil(y0 / ev) * ev; y <= y1; y += ev) if (y !== 0 && y !== y0 && y !== y1) s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="end" ${halo}>${y < 0 ? '−' + -y : y}</text>`;
+    (o.pts || []).forEach((p) => {
+      const c = p.c || SU_C.ink, cx = X(p.p[0]), cy = Y(p.p[1]);
+      s += p.open ? `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#fff" stroke="${c}" stroke-width="2.6"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+      if (p.t) {
+        let vx = p.away ? p.p[0] - p.away[0] : 1, vy = p.away ? -(p.p[1] - p.away[1]) : -1; const n = Math.hypot(vx, vy) || 1; vx /= n; vy /= n;
+        const lx = Math.max(12, Math.min(W - 12, cx + vx * 17)), ly = Math.max(14, Math.min(H - 6, cy + vy * 17 + 6));
+        s += `<text x="${f(lx)}" y="${f(ly)}" font-size="19" font-weight="700" fill="${c}" text-anchor="middle" ${halo}>${p.t}</text>`;
+      }
+    });
+    return s + '</svg>';
+  }
+  function simp(N) { let k = 1, m = N; for (let q = 2; q * q <= m; q++) while (m % (q * q) === 0) { m /= q * q; k *= q; } return { k, m }; }
+  const isSq = (N) => simp(N).m === 1;
+  const rootSteps = (N) => { const { k, m } = simp(N); if (m === 1) return '\\sqrt{' + N + '}=' + k; if (k === 1) return '\\sqrt{' + N + '}'; return '\\sqrt{' + N + '}=\\sqrt{' + k * k + '\\times' + m + '}=' + k + '\\sqrt{' + m + '}'; };
+  const root = (N) => { const { k, m } = simp(N); return m === 1 ? String(k) : (k === 1 ? '' : k) + '\\sqrt{' + m + '}'; };
+  const hund = (x) => (Math.round(x * 100) / 100).toFixed(2), tenth = (x) => (Math.round(x * 10) / 10).toFixed(1);
+  const NAMES = [['A', 'B'], ['C', 'D'], ['P', 'Q'], ['M', 'N'], ['R', 'S'], ['E', 'F'], ['J', 'K']];
+  const TRIPLES = [[3, 4, 5], [4, 3, 5], [6, 8, 10], [8, 6, 10], [5, 12, 13], [12, 5, 13], [8, 15, 17], [15, 8, 17], [9, 12, 15], [12, 9, 15]];
+  // a slanted segment on the grid: run and rise counted off the picture, then Pythagoras
+  function onGrid(r) {
+    for (;;) {
+      const a = r.int(2, 8), b = r.int(1, 8), N = a * a + b * b, A = [r.int(-6, 6), r.int(-6, 6)], B = [A[0] + r.sign() * a, A[1] + r.sign() * b];
+      if (isSq(N) || Math.abs(B[0]) > 6 || Math.abs(B[1]) > 6 || [...A, ...B].includes(0)) continue; // off the axes: easier to read
+      const [n1, n2] = r.pick(NAMES), nm = n1 + n2;
+      return {
+        text: `Find the length of <i>${nm}</i>: as an exact value in simplest radical form, and to the nearest hundredth.`,
+        q: '',
+        fig: gridSVG({ label: 'segment ' + nm, segs: [{ a: A, b: B }], pts: [{ p: A, t: n1, away: B }, { p: B, t: n2, away: A }] }),
+        a: [P(n1, A) + ',\\ ' + P(n2, B) + ':\\quad \\text{run}=' + a + ',\\ \\ \\text{rise}=' + b,
+          nm + '^2=' + a + '^2+' + b + '^2=' + a * a + '+' + b * b + '=' + N,
+          nm + '=' + rootSteps(N) + '\\approx' + hund(Math.sqrt(N))]
+      };
+    }
+  }
+  // the distance formula with negatives: an answer that simplifies
+  function formula(r) {
+    for (;;) {
+      const g = r.int(2, 6), a = r.int(1, 5), b = r.int(1, 5), dx = r.sign() * g * a, dy = r.sign() * g * b, N = dx * dx + dy * dy;
+      if (isSq(N)) continue;
+      const A = [r.int(-15, 15), r.int(-15, 15)], B = [A[0] + dx, A[1] + dy];
+      if (Math.abs(B[0]) > 18 || Math.abs(B[1]) > 18 || ![...A, ...B].some((v) => v < 0)) continue;
+      const [n1, n2] = r.pick(NAMES), nm = n1 + n2;
+      return {
+        text: `Use the distance formula. Find the exact length of <i>${nm}</i> in simplest radical form, then round it to the nearest hundredth.`,
+        q: P(n1, A) + '\\qquad ' + P(n2, B),
+        a: ['x_2-x_1=' + B[0] + '-' + pr(A[0]) + '=' + dx + ',\\quad y_2-y_1=' + B[1] + '-' + pr(A[1]) + '=' + dy,
+          nm + '=\\sqrt{' + pr(dx) + '^2+' + pr(dy) + '^2}=\\sqrt{' + dx * dx + '+' + dy * dy + '}',
+          '=' + rootSteps(N) + '\\approx' + hund(Math.sqrt(N))]
+      };
+    }
+  }
+  // working backwards: an unknown coordinate from a given length (two answers)
+  function backwards(r) {
+    const T = r.pick(TRIPLES), [n1, n2] = r.pick(NAMES), nm = n1 + n2, A = [r.int(-6, 6), r.int(-6, 6)], dk = r.sign() * T[0];
+    if (r.chance(0.5)) { // B(k, y_B): the y-difference is known
+      const by = A[1] + dk, k1 = A[0] + T[1], k2 = A[0] - T[1];
+      return {
+        text: `<i>${nm}</i> is ${T[2]} units long. Find both possible values of <i>k</i>.`,
+        q: P(n1, A) + '\\qquad ' + n2 + '(k,\\ ' + by + ')',
+        a: ['(' + minus('k', A[0]) + ')^2+(' + by + '-' + pr(A[1]) + ')^2=' + T[2] + '^2\\ \\Rightarrow\\ (' + minus('k', A[0]) + ')^2+' + T[0] * T[0] + '=' + T[2] * T[2],
+          '(' + minus('k', A[0]) + ')^2=' + T[1] * T[1] + '\\ \\Rightarrow\\ ' + minus('k', A[0]) + '=\\pm' + T[1],
+          'k=' + k2 + '\\ \\text{ or }\\ k=' + k1]
+      };
+    }
+    const bx = A[0] + dk, k1 = A[1] + T[1], k2 = A[1] - T[1];
+    return {
+      text: `<i>${nm}</i> is ${T[2]} units long. Find both possible values of <i>k</i>.`,
+      q: P(n1, A) + '\\qquad ' + n2 + '(' + bx + ',\\ k)',
+      a: ['(' + bx + '-' + pr(A[0]) + ')^2+(' + minus('k', A[1]) + ')^2=' + T[2] + '^2\\ \\Rightarrow\\ ' + T[0] * T[0] + '+(' + minus('k', A[1]) + ')^2=' + T[2] * T[2],
+        '(' + minus('k', A[1]) + ')^2=' + T[1] * T[1] + '\\ \\Rightarrow\\ ' + minus('k', A[1]) + '=\\pm' + T[1],
+        'k=' + k2 + '\\ \\text{ or }\\ k=' + k1]
+    };
+  }
+  // the perimeter of a triangle: three distances, rounded only at the end
+  function perimeter(r) {
+    for (;;) {
+      const V = [0, 1, 2].map(() => [r.int(-7, 7), r.int(-7, 7)]), cross = (V[1][0] - V[0][0]) * (V[2][1] - V[0][1]) - (V[1][1] - V[0][1]) * (V[2][0] - V[0][0]);
+      const sides = [[0, 1], [1, 2], [2, 0]].map(([i, j]) => { const dx = V[j][0] - V[i][0], dy = V[j][1] - V[i][1]; return { dx, dy, N: dx * dx + dy * dy }; });
+      if (Math.abs(cross) < 12 || sides.some((s) => s.N < 10 || s.dx === 0 || s.dy === 0) || sides.every((s) => isSq(s.N))) continue;
+      const nm = r.pick([['P', 'Q', 'R'], ['A', 'B', 'C'], ['D', 'E', 'F'], ['K', 'L', 'M']]), seg = (i) => nm[i] + nm[(i + 1) % 3];
+      const tot = sides.reduce((t, s) => t + Math.sqrt(s.N), 0);
+      return {
+        text: `Find the perimeter of triangle <i>${nm.join('')}</i>, to the nearest tenth of a unit.`,
+        q: P(nm[0], V[0]) + '\\quad ' + P(nm[1], V[1]) + '\\quad ' + P(nm[2], V[2]),
+        a: sides.map((s, i) => seg(i) + '=\\sqrt{' + pr(s.dx) + '^2+' + pr(s.dy) + '^2}=\\sqrt{' + s.N + '}' + (isSq(s.N) ? '=' + root(s.N) : '\\approx' + hund(Math.sqrt(s.N))))
+          .concat(['\\text{Perimeter}=' + sides.map((s) => (isSq(s.N) ? root(s.N) : '\\sqrt{' + s.N + '}')).join('+') + '\\approx' + tenth(tot) + '\\text{ units}'])
+      };
+    }
+  }
+  standup('u6l1', {
+    intro: 'Find the length at your whiteboard station: run and rise first, then square, add and take the root. Exact answer first, decimal last.',
+    levels: {
+      BEG: onGrid,                                                   // count run and rise off the grid, Pythagoras
+      PRG: formula,                                                  // distance formula with negatives, simplest radical form
+      MAS: (r) => (r.chance(0.5) ? backwards(r) : perimeter(r))      // a missing coordinate (two answers), or a perimeter
+    }
+  });
+})();
+/* ============ end Stand Up Break! ============ */
 
 /* =============================== mount =============================== */
 mountWifi();

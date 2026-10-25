@@ -12,6 +12,7 @@ import {
   h, tex, add, box, place, Graph, ValueTable, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep,
   tween, pairTex, texNum, svgEl, liveCtx, pulse, arrowHead, drawIn, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(String(s));
 const RED = COLORS.red, BLUE = COLORS.blue, AMB = COLORS.amber, PUR = COLORS.purple, GRN = COLORS.green, INK = COLORS.ink, GRAY = COLORS.gray;
@@ -761,6 +762,152 @@ const match = {
     ];
   }
 };
+
+/* ============ Stand Up Break! (whiteboard stations) ============ */
+(() => {
+  /* ---- small number / LaTeX helpers ---- */
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const red = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return [n / g, d / g]; };
+  const fr = (n, d) => { const [a, b] = red(n, d); return b === 1 ? String(a) : (a < 0 ? '-' : '') + '\\dfrac{' + Math.abs(a) + '}{' + b + '}'; };
+  const pr = (v) => (v < 0 ? '(' + v + ')' : String(v));               // bracket a negative
+  const P = (n, p) => n + '(' + p[0] + ',\\ ' + p[1] + ')';               // A(3,\ -2)
+  const minus = (v, c) => (c === 0 ? v : c < 0 ? v + '+' + (-c) : v + '-' + c); // k − c, written nicely
+  /* ---- a coordinate grid as an SVG string, sized for the projector ---- */
+  const SU_C = { ink: '#1c2230', grid: '#cdd3dc', num: '#3a4254', blue: '#1f5bd6', red: '#c93a33', green: '#12805a', purple: '#7b4fc4', amber: '#c27a0e' };
+  function gridSVG(o) {
+    const x0 = o.x0 == null ? -6 : o.x0, x1 = o.x1 == null ? 6 : o.x1, y0 = o.y0 == null ? -6 : o.y0, y1 = o.y1 == null ? 6 : o.y1;
+    const u = o.u || 26, m = 24, W = (x1 - x0) * u + 2 * m, H = (y1 - y0) * u + 2 * m, ev = o.every || 1;
+    const X = (x) => m + (x - x0) * u, Y = (y) => m + (y1 - y) * u, f = (v) => Math.round(v * 10) / 10;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="${o.label || 'coordinate grid'}">`;
+    s += `<rect x="${X(x0)}" y="${Y(y1)}" width="${(x1 - x0) * u}" height="${(y1 - y0) * u}" fill="#fff"/>`;
+    for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    for (let y = y0; y <= y1; y++) s += `<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="${SU_C.grid}" stroke-width="1"/>`;
+    const arrow = (x, y, dx, dy, c) => { const L = 9, w = 5; return `<polygon points="${f(x)},${f(y)} ${f(x - dx * L - dy * w)},${f(y - dy * L + dx * w)} ${f(x - dx * L + dy * w)},${f(y - dy * L - dx * w)}" fill="${c}"/>`; };
+    if (y0 <= 0 && y1 >= 0) s += `<line x1="${X(x0) - 10}" y1="${Y(0)}" x2="${X(x1) + 10}" y2="${Y(0)}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(x1) + 14, Y(0), 1, 0, SU_C.ink) + arrow(X(x0) - 14, Y(0), -1, 0, SU_C.ink)
+      + `<text x="${X(x1) + 10}" y="${Y(0) - 9}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}" text-anchor="end">x</text>`;
+    if (x0 <= 0 && x1 >= 0) s += `<line x1="${X(0)}" y1="${Y(y0) + 10}" x2="${X(0)}" y2="${Y(y1) - 10}" stroke="${SU_C.ink}" stroke-width="2"/>` + arrow(X(0), Y(y1) - 14, 0, -1, SU_C.ink) + arrow(X(0), Y(y0) + 14, 0, 1, SU_C.ink)
+      + `<text x="${X(0) + 10}" y="${Y(y1) - 4}" font-size="17" font-style="italic" font-weight="600" fill="${SU_C.ink}">y</text>`;
+    // whole lines across the window (with arrowheads), then segments, then points with labels
+    (o.lines || []).forEach((L) => {
+      const [p, q] = [L.a, L.b], dx = q[0] - p[0], dy = q[1] - p[1]; let t0 = -Infinity, t1 = Infinity;
+      const clip = (d, lo, hi, s0) => { if (d === 0) return; const a = (lo - s0) / d, b = (hi - s0) / d; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); };
+      clip(dx, x0 + 0.3, x1 - 0.3, p[0]); clip(dy, y0 + 0.3, y1 - 0.3, p[1]);
+      const A = [X(p[0] + t0 * dx), Y(p[1] + t0 * dy)], B = [X(p[0] + t1 * dx), Y(p[1] + t1 * dy)], len = Math.hypot(B[0] - A[0], B[1] - A[1]), ux = (B[0] - A[0]) / len, uy = (B[1] - A[1]) / len, c = L.c || SU_C.blue;
+      s += `<line x1="${f(A[0] + ux * 6)}" y1="${f(A[1] + uy * 6)}" x2="${f(B[0] - ux * 6)}" y2="${f(B[1] - uy * 6)}" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>` + arrow(B[0], B[1], ux, uy, c) + arrow(A[0], A[1], -ux, -uy, c);
+    });
+    (o.segs || []).forEach((g) => { s += `<line x1="${X(g.a[0])}" y1="${Y(g.a[1])}" x2="${X(g.b[0])}" y2="${Y(g.b[1])}" stroke="${g.c || SU_C.blue}" stroke-width="3.5" stroke-linecap="round"/>`; });
+    const halo = 'paint-order="stroke" stroke="#fff" stroke-width="4" stroke-linejoin="round"';
+    for (let x = Math.ceil(x0 / ev) * ev; x <= x1; x += ev) if (x !== 0 && x !== x0 && x !== x1) s += `<text x="${X(x)}" y="${Y(0) + 17}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="middle" ${halo}>${x < 0 ? '−' + -x : x}</text>`;
+    for (let y = Math.ceil(y0 / ev) * ev; y <= y1; y += ev) if (y !== 0 && y !== y0 && y !== y1) s += `<text x="${X(0) - 6}" y="${Y(y) + 5}" font-size="14" font-weight="600" fill="${SU_C.num}" text-anchor="end" ${halo}>${y < 0 ? '−' + -y : y}</text>`;
+    (o.pts || []).forEach((p) => {
+      const c = p.c || SU_C.ink, cx = X(p.p[0]), cy = Y(p.p[1]);
+      s += p.open ? `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#fff" stroke="${c}" stroke-width="2.6"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+      if (p.t) {
+        let vx = p.away ? p.p[0] - p.away[0] : 1, vy = p.away ? -(p.p[1] - p.away[1]) : -1; const n = Math.hypot(vx, vy) || 1; vx /= n; vy /= n;
+        const lx = Math.max(12, Math.min(W - 12, cx + vx * 17)), ly = Math.max(14, Math.min(H - 6, cy + vy * 17 + 6));
+        s += `<text x="${f(lx)}" y="${f(ly)}" font-size="19" font-weight="700" fill="${c}" text-anchor="middle" ${halo}>${p.t}</text>`;
+      }
+    });
+    return s + '</svg>';
+  }
+  const SET = (v, lo, hi, opL, opR) => '\\{' + v + '\\mid ' + lo + opL + v + opR + hi + ',\\ ' + v + '\\in\\mathbb{R}\\}';
+  // a first-quadrant graph of a real situation: axis titles, a scale on each axis, one segment from (0, S) to (T, 0)
+  function storySVG(o) {
+    const L = 64, B = 50, Tp = 16, Rt = 22, gw = 380, gh = 230, W = L + gw + Rt, H = Tp + gh + B, xs = gw / o.xmax, ys = gh / o.ymax;
+    const X = (x) => L + x * xs, Y = (y) => Tp + gh - y * ys;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="${o.label}">`;
+    s += `<rect x="${L}" y="${Tp}" width="${gw}" height="${gh}" fill="#fff"/>`;
+    for (let x = 0; x <= o.xmax; x += o.xstep) s += `<line x1="${X(x)}" y1="${Y(0)}" x2="${X(x)}" y2="${Y(o.ymax)}" stroke="${SU_C.grid}"/>` + `<text x="${X(x)}" y="${Y(0) + 19}" font-size="15" font-weight="600" fill="${SU_C.num}" text-anchor="middle">${x}</text>`;
+    for (let y = 0; y <= o.ymax; y += o.ystep) s += `<line x1="${X(0)}" y1="${Y(y)}" x2="${X(o.xmax)}" y2="${Y(y)}" stroke="${SU_C.grid}"/>` + `<text x="${X(0) - 7}" y="${Y(y) + 5}" font-size="15" font-weight="600" fill="${SU_C.num}" text-anchor="end">${y}</text>`;
+    s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(o.xmax)}" y2="${Y(0)}" stroke="${SU_C.ink}" stroke-width="2"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(o.ymax)}" stroke="${SU_C.ink}" stroke-width="2"/>`;
+    s += `<text x="${L + gw / 2}" y="${H - 8}" font-size="16" font-weight="700" fill="${SU_C.ink}" text-anchor="middle">${o.xt}</text>`;
+    s += `<text transform="translate(17 ${Tp + gh / 2}) rotate(-90)" font-size="16" font-weight="700" fill="${SU_C.ink}" text-anchor="middle">${o.yt}</text>`;
+    s += `<line x1="${X(0)}" y1="${Y(o.S)}" x2="${X(o.T)}" y2="${Y(0)}" stroke="${SU_C.blue}" stroke-width="3.5" stroke-linecap="round"/>`;
+    s += `<circle cx="${X(0)}" cy="${Y(o.S)}" r="5.5" fill="${SU_C.blue}"/><circle cx="${X(o.T)}" cy="${Y(0)}" r="5.5" fill="${SU_C.blue}"/>`;
+    return s + '</svg>';
+  }
+  const STORIES = [
+    { what: 'the water left in an office water cooler as staff drink it at a steady rate', v: 'V', t: 't', yu: 'L', xu: 'days', yt: 'Water left (L)', xt: 'Time (days)', start: 'the jug holds {S} L at the start', end: 'the jug is empty after {T} days', rate: 'the water goes down {r} L every day', Ts: [4, 5, 6, 8], rs: [2, 3, 4, 5] },
+    { what: 'the charge left on a phone that drains steadily', v: 'C', t: 't', yu: '%', xu: 'h', yt: 'Charge (%)', xt: 'Time (h)', start: 'the phone starts at {S}% charge', end: 'the battery is dead after {T} hours', rate: 'the phone loses {r}% every hour', Ts: [4, 5, 8, 10], rs: [5, 10], maxS: 100 },
+    { what: 'the depth of snow on a deck as it melts at a steady rate', v: 'd', t: 't', yu: 'cm', xu: 'h', yt: 'Snow depth (cm)', xt: 'Time (h)', start: 'there are {S} cm of snow when the melting starts', end: 'the snow is all gone after {T} hours', rate: 'the snow gets {r} cm shallower every hour', Ts: [6, 8, 10, 12], rs: [2, 3, 4, 5] },
+    { what: 'the height of a candle as it burns at a steady rate', v: 'h', t: 't', yu: 'cm', xu: 'h', yt: 'Candle height (cm)', xt: 'Time (h)', start: 'the candle is {S} cm tall when it is lit', end: 'the candle has burned down after {T} hours', rate: 'the candle gets {r} cm shorter every hour', Ts: [5, 6, 8, 10], rs: [2, 3, 4] },
+    { what: 'the fuel left in a generator as it runs at a steady rate', v: 'F', t: 't', yu: 'L', xu: 'h', yt: 'Fuel left (L)', xt: 'Time (h)', start: 'the tank holds {S} L when the generator starts', end: 'the tank is empty after {T} hours', rate: 'the generator uses {r} L every hour', Ts: [4, 5, 6, 8, 10], rs: [3, 4, 5, 6] },
+    { what: 'the money left on a bus pass as it is used at a steady rate', v: 'M', t: 'w', yu: '$', xu: 'weeks', yt: 'Money left ($)', xt: 'Time (weeks)', start: 'the pass starts with ${S}', end: 'the money runs out after {T} weeks', rate: 'the pass loses ${r} every week', Ts: [4, 5, 6, 8], rs: [5, 10, 15] }
+  ];
+  const fill = (s, o) => s.replace(/\{(\w)\}/g, (m, k) => o[k]);
+  function story(r) {
+    for (;;) {
+      const st = r.pick(STORIES), T = r.pick(st.Ts), rt = r.pick(st.rs), S = T * rt;
+      if (S > (st.maxS || 100) || S < 12) continue;
+      const ystep = [2, 4, 5, 10, 20].find((k) => S % k === 0 && S / k <= 10), xstep = T <= 6 ? 1 : T % 2 === 0 ? 2 : 1;
+      if (!ystep) continue;
+      const ymax = S + (S / ystep < 8 ? ystep : 0), xmax = T + xstep, one = { days: 'day', weeks: 'week' }[st.xu] || st.xu;
+      const yNum = (v) => (st.yu === '$' ? '\\$' + v : st.yu === '%' ? v + '\\%' : v + '\\text{ ' + st.yu + '}');
+      return {
+        text: `The graph shows ${st.what}. <b>(a)</b> State both intercepts and what each one means. <b>(b)</b> Find the slope, with units, and say what it means. <b>(c)</b> State the domain and range.`,
+        q: '',
+        fig: storySVG({ label: st.yt + ' against ' + st.xt, xmax, xstep, ymax, ystep, S, T, yt: st.yt, xt: st.xt }),
+        atext: `(a) Vertical intercept ${st.yu === '$' ? '$' + S : S + (st.yu === '%' ? '%' : ' ' + st.yu)}: ${fill(st.start, { S })}. Horizontal intercept ${T}: ${fill(st.end, { T })}.<br>(b) Slope: ${fill(st.rate, { r: rt })}.`,
+        a: ['(0,\\ ' + S + ')\\to(' + T + ',\\ 0):\\quad m=\\dfrac{-' + yNum(S) + '}{' + T + '\\text{ ' + st.xu + '}}=-' + yNum(rt) + '\\text{/' + one + '}',
+          '\\text{D: }' + SET(st.t, 0, T, '\\le ', '\\le ') + '\\qquad \\text{R: }' + SET(st.v, 0, S, '\\le ', '\\le ')]
+      };
+    }
+  }
+  // a segment on the grid with one open and one closed end: intercepts, domain and range
+  function segment(r) {
+    for (;;) {
+      const dx = r.int(1, 3), dy = r.int(1, 3) * r.sign(); if (gcd(dx, dy) !== 1) continue;
+      const k = r.int(-3, 3) || 2, b = dy * k, xi = -k * dx;                       // through (0, b) and (xi, 0)
+      const lo = Math.min(0, -k) - r.int(1, 2), hi = Math.max(0, -k) + r.int(1, 2); // segment from t = lo to t = hi, both intercepts inside
+      const A = [lo * dx, b + lo * dy], B = [hi * dx, b + hi * dy];
+      if ([...A, ...B].some((v) => Math.abs(v) > 6) || b === 0) continue;
+      const openA = r.chance(0.5), yA = A[1], yB = B[1], ylo = Math.min(yA, yB), yhi = Math.max(yA, yB), openLo = (yA < yB) === openA; // is the lower y the open end?
+      return {
+        text: 'The line segment has one <b>closed</b> endpoint (filled dot) and one <b>open</b> endpoint (hollow dot). State its <i>x</i>-intercept, <i>y</i>-intercept and slope, and its domain and range.',
+        q: '',
+        fig: gridSVG({ label: 'a line segment', segs: [{ a: A, b: B }], pts: [{ p: A, open: openA, c: SU_C.blue }, { p: B, open: !openA, c: SU_C.blue }] }),
+        a: ['x\\text{-intercept }{' + xi + '},\\quad y\\text{-intercept }{' + b + '},\\quad m=' + fr(dy, dx),
+          '\\text{D: }' + SET('x', A[0], B[0], openA ? '<' : '\\le ', openA ? '\\le ' : '<'),
+          '\\text{R: }' + SET('y', ylo, yhi, openLo ? '<' : '\\le ', openLo ? '\\le ' : '<')]
+      };
+    }
+  }
+  standup('u6l4', {
+    intro: 'Read the line at your whiteboard station: where it crosses each axis, its slope, and (when asked) its domain and range.',
+    levels: {
+      BEG: (r) => { // a line through two integer intercepts: intercepts and slope
+        for (;;) {
+          const a = r.int(-6, 6), b = r.int(-6, 6); if (!a || !b || Math.abs(a) + Math.abs(b) < 4) continue;
+          const run = Math.abs(a), rise = a < 0 ? b : -b, L = a < 0 ? [a, 0] : [0, b], R = a < 0 ? [0, b] : [a, 0];
+          return { text: 'State the <i>x</i>-intercept, the <i>y</i>-intercept and the slope of the line.', q: '',
+            fig: gridSVG({ x0: -7, x1: 7, y0: -7, y1: 7, u: 22, label: 'a line through (' + a + ', 0) and (0, ' + b + ')', lines: [{ a: [a, 0], b: [0, b] }], pts: [{ p: [a, 0] }, { p: [0, b] }] }),
+            a: ['x\\text{-intercept }{' + a + '},\\quad y\\text{-intercept }{' + b + '}',
+              '(' + L[0] + ',\\ ' + L[1] + ')\\to(' + R[0] + ',\\ ' + R[1] + '):\\ \\text{run}=' + run + ',\\ \\text{rise}=' + rise + ',\\ \\ m=\\dfrac{' + rise + '}{' + run + '}' + (rise > 0 && run !== 1 && red(rise, run)[1] === run ? '' : '=' + fr(rise, run))] };
+        }
+      },
+      PRG: (r) => { // a table: linear (divide when the steps are unequal), slope, both intercepts
+        for (;;) {
+          const q = r.pick([1, 1, 2, 3]), p = r.int(1, 4) * r.sign(); if (gcd(p, q) !== 1) continue;
+          const kk = r.int(-4, 4); if (!kk) continue;
+          const X0 = q * kk, B0 = -p * kk;                                      // x-intercept X0, y-intercept B0, slope p/q
+          const uneven = r.chance(0.5), steps = uneven ? r.shuffle([1, 2, 3]).concat([r.int(1, 2)]) : [1, 1, 1, 1].map(() => 1), mult = uneven ? 1 : r.pick([1, 2]);
+          const start = q * r.int(-5, 1), xs = [start]; steps.forEach((s) => xs.push(xs[xs.length - 1] + q * s * mult));
+          const ys = xs.map((x) => (p * x) / q + B0);
+          if (Math.abs(B0) > 16 || ys.some((y) => Math.abs(y) > 30) || xs.some((x) => Math.abs(x) > 20)) continue;
+          const hasY = xs.includes(0), hasX = ys.includes(0); if (hasY && hasX) continue;          // at most one intercept in the table
+          const tab = '\\begin{array}{c|' + 'c'.repeat(xs.length) + '}x&' + xs.join('&') + '\\\\ \\hline y&' + ys.join('&') + '\\end{array}';
+          const qs = xs.slice(1).map((x, i) => '\\tfrac{' + (ys[i + 1] - ys[i]) + '}{' + (x - xs[i]) + '}');
+          return { text: 'Show that the table represents a linear relation. Then state its slope, its <i>x</i>-intercept and its <i>y</i>-intercept.', q: tab,
+            a: ['\\dfrac{\\Delta y}{\\Delta x}:\\ ' + qs.join(',\\ ') + '\\ \\text{all equal }{' + fr(p, q) + '}:\\ \\text{linear, } m=' + fr(p, q),
+              'y\\text{-intercept }{' + B0 + '}\\ (\\text{at } x=0),\\quad x\\text{-intercept }{' + X0 + '}\\ (\\text{where } y=0)'],
+            atext: (hasX || hasY) ? '' : 'Neither intercept is in the table: keep the pattern going (or work back from the slope) until x = 0 and y = 0.' };
+        }
+      },
+      MAS: (r) => (r.chance(0.55) ? story(r) : segment(r))
+    }
+  });
+})();
+/* ============ end Stand Up Break! ============ */
 
 /* =============================== mount =============================== */
 mountWarm();
