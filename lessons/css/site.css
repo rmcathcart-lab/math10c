@@ -683,6 +683,13 @@ a.lp-row:hover { background: #f4f2ec; }
 .su-q.big .katex-display { font-size: 2.15em; margin: .35em 0 .2em; }
 .su-ans { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--su-line); color: var(--ok); overflow-x: auto; }
 .su-ans .katex-display { margin: .2em 0; font-size: 1.25em; }
+.su-fig { display: flex; justify-content: center; margin: 6px 0 2px; }
+.su-fig svg { max-width: 100%; height: auto; }
+.su-fig.big svg { max-height: 300px; }
+.su-old .su-fig svg { max-height: 150px; }
+.su-old .su-qtext { font-size: 14px; margin-top: 6px; }
+.su-atext { color: var(--ok); font-size: 17px; margin: 4px 0; }
+.su-old .su-atext { font-size: 13.5px; }
 .su-earlier { margin-top: 14px; }
 .su-earlier-h { font: 700 14px/1 var(--font); color: var(--muted); margin-bottom: 8px; }
 .su-old-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 10px; align-items: start; }

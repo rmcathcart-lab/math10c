@@ -1,8 +1,10 @@
 /* "Stand Up Break!" — a whiteboard-stations question in the middle of a lesson (Building Thinking Classrooms style).
  *
  * In the lesson page:   <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u4l3"></section>
- * In the lesson module: standup('u4l3', { title, intro, levels: { BEG: (r) => ({ q, a }), PRG: …, MAS: … } })
- *   q and a are LaTeX (a can be an array of steps). r is a small random helper (int, pick, sign, chance).
+ * In the lesson module: standup('u4l3', { intro, levels: { BEG: (r) => ({ q, a }), PRG: …, MAS: … } })
+ *   q and a are LaTeX (a can be an array of steps). Optional: text (HTML shown above q: a short instruction or a word
+ *   problem; q may then be empty), fig (HTML/SVG figure shown under the question), atext (HTML answer lines, for words).
+ *   r is a small random helper (int, pick, sign, chance, shuffle).
  *
  * What it does
  *   - one question at a time, big for the projector, with a difficulty meter (Beginning / Progressing / Mastery);
@@ -28,7 +30,7 @@ const ICON = {
   renew: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4v4.5H15"/></svg>'
 };
 
-function rnd() {
+export function rnd() {
   const int = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
   return { int, pick: (arr) => arr[int(0, arr.length - 1)], sign: () => (Math.random() < 0.5 ? -1 : 1), chance: (p) => Math.random() < p,
     shuffle: (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = int(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; } };
@@ -65,6 +67,7 @@ function classInfo(block) { // { code, label, standup } for a block letter
 }
 /* ======================================================================================== */
 export function standup(id, def) {
+  (window.__standups = window.__standups || {})[id] = def; // for tests/standup_check.py
   const card = document.querySelector(`[data-standup="${id}"]`); if (!card) return;
   // a student looking at the teacher's shared notes (the same rule as share.js): the questions, but no timer or class list
   // (only a device signed in with the teacher key for the lesson notes gets the timer and groups; view only doesn't — Ryan, 2026-10-24)
@@ -104,8 +107,9 @@ export function standup(id, def) {
     const steps = Array.isArray(q.a) ? q.a : [q.a];
     return `<div class="su-qtop"><span class="su-qn">Question ${q.n}</span>${levelChip(q.level)}<button type="button" class="su-ans-b no-ink">Answer</button></div>` +
       (q.text ? `<div class="su-qtext">${q.text}</div>` : '') +
-      `<div class="su-q${big ? ' big' : ''}">${tex(q.q, true)}</div>` +
-      `<div class="su-ans" hidden>${steps.map((s) => `<div>${tex(s, true)}</div>`).join('')}</div>`;
+      (q.q ? `<div class="su-q${big ? ' big' : ''}">${tex(q.q, true)}</div>` : '') +
+      (q.fig ? `<div class="su-fig${big ? ' big' : ''}">${q.fig}</div>` : '') +
+      `<div class="su-ans" hidden>${(q.atext ? [`<div class="su-atext">${q.atext}</div>`] : []).concat(steps.filter((s) => s != null && s !== '').map((s) => `<div>${tex(s, true)}</div>`)).join('')}</div>`;
   }
   function wireAns(box) {
     const b = box.querySelector('.su-ans-b'), a = box.querySelector('.su-ans');
@@ -113,7 +117,7 @@ export function standup(id, def) {
   }
   function addQ(level) {
     const gen = def.levels[level]; if (!gen) return;
-    let q = null; for (let t = 0; t < 30 && !q; t++) { const x = gen(rnd()); if (x && !state.qs.some((o) => o.q === x.q)) q = x; }
+    let q = null; for (let t = 0; t < 30 && !q; t++) { const x = gen(rnd()); if (x && !state.qs.some((o) => o.q === x.q && o.text === x.text)) q = x; }
     if (!q) q = gen(rnd());
     q.level = level; q.n = ++state.n; state.qs.push(q);
     render();
