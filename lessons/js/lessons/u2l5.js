@@ -1,6 +1,7 @@
 /* Math 10C · Unit 2 · Lesson 5 — Simplifying with Rational Exponents: the explainers and warm-up on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -664,3 +665,97 @@ function mountExplainers() {
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
 mountQuake(); mountExplainers();
+
+/* ============ Stand Up Break! — the exponent laws with rational exponents, at the whiteboards ============ */
+standup('u2l5', (() => {
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const F = (n, d = 1) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; };
+  const add = (a, b) => F(a[0] * b[1] + b[0] * a[1], a[1] * b[1]), sub = (a, b) => add(a, [-b[0], b[1]]), times = (a, b) => F(a[0] * b[0], a[1] * b[1]);
+  const lcm = (a, b) => (a * b) / gcd(a, b);
+  const sl = (f) => (f[1] === 1 ? String(f[0]) : f[0] + '/' + f[1]);                                                  // 9/4 (in a final exponent)
+  const fr = (f) => (f[1] === 1 ? String(f[0]) : (f[0] < 0 ? '-' : '') + '\\frac{' + Math.abs(f[0]) + '}{' + f[1] + '}'); // \frac94 (in the working)
+  const frp = (f) => (f[0] < 0 ? '\\left(' + fr(f) + '\\right)' : fr(f));
+  const pw = (v, f) => (f[0] === 0 ? '' : f[0] === f[1] ? v : v + '^{' + sl(f) + '}');
+  const rt = (n, s) => (n === 2 ? '\\sqrt{' + s + '}' : '\\sqrt[' + n + ']{' + s + '}');
+  const fT = (c) => (c[1] === 1 ? String(c[0]) : (c[0] < 0 ? '-' : '') + '\\frac{' + Math.abs(c[0]) + '}{' + c[1] + '}');
+  /* the finished answer: coefficient c = [n, d], letters [[v, exponent]], every exponent positive */
+  const fin = (c, vs) => {
+    const T = vs.filter(([, f]) => f[0] > 0).map(([v, f]) => pw(v, f)).join(''), B = vs.filter(([, f]) => f[0] < 0).map(([v, f]) => pw(v, [-f[0], f[1]])).join('');
+    const n = Math.abs(c[0]), d = c[1], s = c[0] < 0 ? '-' : '';
+    if (!B && d === 1) return s + (n === 1 && T ? '' : n) + T;
+    return s + '\\dfrac{' + ((n === 1 && T ? '' : n) + T) + '}{' + ((d === 1 && B ? '' : d) + B) + '}';
+  };
+  /* exponent working, full size on its own line: w:\ \frac54+1=\frac54+\frac44=\frac94 (sg = +1 add, −1 subtract) */
+  const addW = (v, a, b, sg) => {
+    const res = sg > 0 ? add(a, b) : sub(a, b), L = lcm(a[1], b[1]), op = sg > 0 ? '+' : '-';
+    let s = v + '\\!:\\ ' + fr(a) + op + frp(b);
+    const raw = [a[0] * L / a[1] + (sg > 0 ? 1 : -1) * b[0] * L / b[1], L];
+    if (a[1] !== b[1]) s += '=' + fr([a[0] * L / a[1], L]) + op + frp([b[0] * L / b[1], L]);
+    if (L !== res[1]) s += '=' + fr(raw); // not in lowest terms yet
+    return { res, s: s + '=' + fr(res) };
+  };
+  const mulW = (v, a, b) => { const raw = [a[0] * b[0], a[1] * b[1]], res = F(raw[0], raw[1]); return { res, s: v + '\\!:\\ ' + fr(a) + '\\times' + frp(b) + '=' + fr(raw) + (raw[0] === res[0] && raw[1] === res[1] ? '' : '=' + fr(res)) }; };
+  const EXP = []; for (let d = 2; d <= 6; d++) for (let n = 1; n <= 2 * d + 1; n++) if (gcd(n, d) === 1) EXP.push([n, d]);
+  const ex = (r, neg) => { const e = r.pick(EXP); return neg && r.chance(neg) ? [-e[0], e[1]] : e; };
+  const ok = (f) => f[0] !== 0 && f[1] <= 12 && Math.abs(f[0]) <= 24;
+  const LET = ['x', 'w', 't', 'b', 'c', 'd', 'k', 'm', 'n', 'y'];
+  const one = (v, f) => (f[0] === f[1] ? v : v + '^{' + sl(f) + '}'); // as written in a question
+  return {
+    intro: 'Simplify at your whiteboard station. Final answer: one power per base, exponent fully simplified and positive.',
+    levels: {
+      BEG: (r) => { // Example 1 (a)–(c): one law, fraction arithmetic in the exponent
+        const v = r.pick(LET), t = r.pick(['p', 'p', 'q', 'q', 'pp']);
+        for (;;) {
+          const a = r.chance(0.15) ? [1, 1] : ex(r), b = ex(r);
+          if (t === 'pp') { if (a[1] === 1) continue; const w = mulW(v, a, b); if (!ok(w.res) || w.res[1] === 1 && r.chance(0.7)) continue; return { q: '\\left(' + one(v, a) + '\\right)^{' + sl(b) + '}', a: [w.s, '=' + fin([1, 1], [[v, w.res]])] }; }
+          const w = addW(v, a, b, t === 'p' ? 1 : -1); if (!ok(w.res) || (w.res[1] === 1 && r.chance(0.7)) || (t === 'p' && a[1] === b[1] && r.chance(0.5))) continue;
+          return { q: t === 'p' ? one(v, a) + '\\times ' + one(v, b) : one(v, a) + '\\div ' + one(v, b), a: [w.s, '=' + fin([1, 1], [[v, w.res]])] };
+        }
+      },
+      PRG: (r) => {
+        const v = r.pick(LET), t = r.pick(['p', 'q', 'q', 'pw', 'rad']);
+        for (;;) {
+          if (t === 'pw') { // Example 1 (g): the exponent hits the number too
+            const [k, n] = r.pick([[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [2, 3], [3, 3], [4, 3], [5, 3], [2, 4], [3, 4], [2, 5]]), m = r.pick([1, 2, 3, 4, 5].filter((x) => gcd(x, n) === 1 && k ** x <= 250)), e = ex(r, 0.25), neg = r.chance(0.25);
+            const E = [neg ? -m : m, n], w = mulW(v, e, E), C = neg ? [1, k ** m] : [k ** m, 1]; if (!ok(w.res) || w.res[1] === 1 && r.chance(0.6)) continue;
+            return { q: '\\left(' + k ** n + one(v, e) + '\\right)^{' + sl(E) + '}', a: [k ** n + '^{' + sl(E) + '}=' + (neg ? '\\dfrac{1}{' + (m === 1 ? rt(n, k ** n) : '\\left(' + rt(n, k ** n) + '\\right)^{' + m + '}') + '}=' + fT(C) : (m === 1 ? rt(n, k ** n) : '\\left(' + rt(n, k ** n) + '\\right)^{' + m + '}') + '=' + k ** m) + ';\\quad ' + w.s, '=' + fin(C, [[v, w.res]])] };
+          }
+          if (t === 'rad') { // Example 3 (a)–(c): the root takes the number and the letter
+            const [k, n] = r.pick([[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [10, 2], [20, 2], [2, 3], [3, 3], [4, 3], [5, 3], [10, 3], [2, 4], [3, 4], [2, 5]]), a = r.int(1, 12), e = F(a, n);
+            if (e[1] === 1 && r.chance(0.8)) continue;
+            return { q: rt(n, k ** n + one(v, [a, 1])), a: ['=' + k ** n + '^{1/' + n + '}' + v + '^{' + a + '/' + n + '}', '=' + k + pw(v, e)] };
+          }
+          // Example 1 (e), (f): coefficients and exponents, separately
+          const a = ex(r, 0.3), b = ex(r, 0.5);
+          if (t === 'p') {
+            const c1 = r.int(2, 9), c2 = r.int(2, 9) * (r.chance(0.2) ? -1 : 1), w = addW(v, a, b, 1); if (!ok(w.res)) continue;
+            return { q: c1 + one(v, a) + '\\times' + (c2 < 0 ? '\\left(' + c2 + one(v, b) + '\\right)' : c2 + one(v, b)), a: [c1 + '\\times' + (c2 < 0 ? '(' + c2 + ')' : c2) + '=' + c1 * c2 + ';\\quad ' + w.s, '=' + fin([c1 * c2, 1], [[v, w.res]])] };
+          }
+          const g = r.int(2, 9), k = r.int(2, 7), up = r.chance(0.5), c1 = up ? g * k : g, c2 = up ? g : g * k, C = F(c1, c2), w = addW(v, a, b, -1); if (!ok(w.res)) continue;
+          return { q: '\\dfrac{' + c1 + one(v, a) + '}{' + c2 + one(v, b) + '}', a: ['\\frac{' + c1 + '}{' + c2 + '}=' + fT(C) + ';\\quad ' + w.s, '=' + fin(C, [[v, w.res]])] };
+        }
+      },
+      MAS: (r) => {
+        const v = r.pick(LET), t = r.pick(['rr', 'rr', 'quo', 'pq']);
+        for (;;) {
+          if (t === 'pq') { // Example 1 (d): a quotient to a negative fraction power
+            const [x, y] = r.pick([['r', 's'], ['x', 'y'], ['a', 'b'], ['m', 'n'], ['p', 'q']]), a = r.int(1, 6), b = r.int(1, 6), E = [-r.pick([1, 1, 2, 3, 4, 5]), r.pick([2, 3, 4, 5, 6])];
+            if (gcd(E[0], E[1]) !== 1 || a === b) continue;
+            const ea = times([a, 1], [-E[0], E[1]]), eb = times([b, 1], [-E[0], E[1]]); if (ea[1] === 1 && eb[1] === 1) continue;
+            return { q: '\\left(\\dfrac{' + one(x, [a, 1]) + '}{' + one(y, [b, 1]) + '}\\right)^{' + sl(E) + '}', a: ['=\\left(\\dfrac{' + one(y, [b, 1]) + '}{' + one(x, [a, 1]) + '}\\right)^{' + sl([-E[0], E[1]]) + '}\\quad\\text{(flip, exponent positive)}', '=\\dfrac{' + y + '^{' + b + '\\times' + sl([-E[0], E[1]]) + '}}{' + x + '^{' + a + '\\times' + sl([-E[0], E[1]]) + '}}=\\dfrac{' + pw(y, eb) + '}{' + pw(x, ea) + '}'] };
+          }
+          // Example 3 (d), (e): radicals times (or over) radicals, written as ax^n
+          const n1 = r.pick([2, 2, 3, 3, 4, 5]), n2 = r.pick([2, 3, 3, 4, 6].filter((x) => x !== n1)), a1 = r.int(1, 7), a2 = r.int(1, 5), e1 = F(a1, n1), e2 = F(a2, n2);
+          if (e1[1] === 1 || e2[1] === 1) continue; // a radical that is really a whole power is too easy here
+          const R = (c, n, a) => (c === 1 ? '' : c) + rt(n, one(v, [a, 1]));
+          if (t === 'rr') {
+            const c1 = r.int(1, 6), c2 = r.int(2, 6), w = addW(v, e1, e2, 1); if (!ok(w.res) || w.res[1] === 1) continue;
+            return { q: R(c1, n1, a1) + '\\times ' + R(c2, n2, a2), a: ['=' + (c1 === 1 ? '' : c1) + pw(v, e1) + '\\times ' + c2 + pw(v, e2), (c1 === 1 ? '' : c1 + '\\times' + c2 + '=' + c1 * c2 + ';\\quad ') + w.s, '=' + fin([c1 * c2, 1], [[v, w.res]])] };
+          }
+          const c2 = r.int(1, 4), c1 = c2 * r.int(2, 5), w = addW(v, e1, e2, -1); if (!ok(w.res) || w.res[0] <= 0 || w.res[1] === 1) continue;
+          return { q: '\\dfrac{' + R(c1, n1, a1) + '}{' + R(c2, n2, a2) + '}', a: ['=\\dfrac{' + (c1 === 1 ? '' : c1) + pw(v, e1) + '}{' + (c2 === 1 ? '' : c2) + pw(v, e2) + '}', (c2 === 1 ? '' : '\\frac{' + c1 + '}{' + c2 + '}=' + c1 / c2 + ';\\quad ') + w.s, '=' + fin([c1 / c2, 1], [[v, w.res]])] };
+        }
+      }
+    }
+  };
+})());

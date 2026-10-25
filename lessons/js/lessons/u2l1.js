@@ -1,6 +1,7 @@
 /* Math 10C · Unit 2 · Lesson 1 — Understanding Powers and the Exponent Laws: the explainers and warm-up on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -766,3 +767,54 @@ mountFigures(); mountPhones(); mountCrackPoll(); mountTexBlanks(); mountLawTable
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — evaluate powers at the whiteboards (the fence, negative bases, zero exponents) ============ */
+standup('u2l1', (() => {
+  const pw = (b, e) => b + '^{' + e + '}';
+  const times = (f, n) => Array(n).fill(f).join('\\times ');
+  const sg = (v, first) => (first ? String(v) : (v < 0 ? '-' : '+') + Math.abs(v)); // a value written into a sum
+  const kn = (r) => r.pick([[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [2, 3], [3, 3], [4, 3], [5, 3], [2, 4], [3, 4], [2, 5], [10, 3]]);
+  /* −k^n next to (−k)^n: the fence holds only k in the first, all of −k in the second */
+  const outside = (k, n) => (n === 0 ? [pw('-' + k, 0), '-\\left(' + pw(k, 0) + '\\right)=-1', -1] : [pw('-' + k, n), '-(' + times(k, n) + ')=' + -Math.pow(k, n), -Math.pow(k, n)]);
+  const inside = (k, n) => (n === 0 ? [pw('(-' + k + ')', 0), '1', 1] : [pw('(-' + k + ')', n), times('(-' + k + ')', n) + '=' + Math.pow(-k, n), Math.pow(-k, n)]);
+  return {
+    intro: 'Evaluate at your whiteboard station, no calculator. Watch the fence: which base does each exponent belong to?',
+    levels: {
+      BEG: (r) => { // −k^n and (−k)^n side by side (Example 3), now and then with a zero exponent (Example 4)
+        const [k, n0] = kn(r), n = r.chance(0.15) ? 0 : n0, A = outside(k, n), B = inside(k, n), pair = r.chance(0.5) ? [A, B] : [B, A];
+        return { text: 'Evaluate both.', q: '\\text{(a) }\\ {' + pair[0][0] + '}\\qquad\\quad\\text{(b) }\\ {' + pair[1][0] + '}',
+          a: ['\\text{(a) }\\ {' + pair[0][0] + '}=' + pair[0][1], '\\text{(b) }\\ {' + pair[1][0] + '}=' + pair[1][1]],
+          atext: n === 0 ? 'The exponent 0 turns only what is inside its fence into 1.' : n % 2 ? 'Odd exponent: the two agree.' : 'Even exponent: different signs. Only the brackets put the minus inside the fence.' };
+      },
+      PRG: (r) => {
+        if (r.chance(0.5)) { // a coefficient times a power with a negative base: c(−k)^n, −c(−k)^n
+          const [k, n] = r.pick([[2, 2], [2, 3], [2, 4], [2, 5], [3, 2], [3, 3], [3, 4], [4, 2], [4, 3], [5, 2], [5, 3], [6, 2], [7, 2]]), c = r.pick([2, 3, 4, 5, -2, -3, -1]);
+          const P = Math.pow(-k, n), Q = (c === -1 ? '-' : String(c)) + pw('(-' + k + ')', n);
+          return { q: Q, a: [pw('(-' + k + ')', n) + '=' + P + '\\quad\\text{(' + (n % 2 ? 'odd' : 'even') + ' exponent)}', Q + '=' + c + '\\times' + (P < 0 ? '(' + P + ')' : P) + '=' + c * P] };
+        }
+        // a fraction in the fence, or only its numerator
+        const [p, q] = r.pick([[1, 2], [1, 3], [2, 3], [3, 4], [1, 4], [2, 5], [3, 5], [4, 5], [1, 5], [5, 6], [3, 7], [2, 7]]), n = q <= 4 && r.chance(0.5) ? 3 : 2;
+        const kind = r.pick(['neg', 'neg', 'out']);
+        if (kind === 'neg') { // (−p/q)^n
+          const v = Math.pow(p, n), w = Math.pow(q, n), s = n % 2 ? '-' : '';
+          return { q: pw('\\left(-\\dfrac{' + p + '}{' + q + '}\\right)', n), a: ['=\\dfrac{' + pw('(-' + p + ')', n) + '}{' + pw(q, n) + '}', '=' + s + '\\dfrac{' + v + '}{' + w + '}'] };
+        }
+        return { q: '-' + pw('\\left(\\dfrac{' + p + '}{' + q + '}\\right)', n), a: ['=-\\dfrac{' + pw(p, n) + '}{' + pw(q, n) + '}\\quad\\text{(the minus is outside the fence)}', '=-\\dfrac{' + Math.pow(p, n) + '}{' + Math.pow(q, n) + '}'] };
+      },
+      MAS: (r) => { // three powers in one sum: −a^n, (−b)^m and a zero exponent, then add the values
+        const [a, n] = r.pick([[2, 2], [2, 3], [2, 4], [2, 5], [3, 2], [3, 3], [3, 4], [4, 2], [4, 3], [5, 2], [6, 2], [7, 2]]);
+        let b, m; do { [b, m] = r.pick([[2, 2], [2, 3], [2, 4], [3, 2], [3, 3], [4, 2], [4, 3], [5, 2], [5, 3], [6, 2]]); } while (b === a);
+        const c = r.int(2, 9), d = r.int(2, 6);
+        const zero = r.pick([[pw('(-' + c + ')', 0), 1], [pw('\\left(' + pw(c, 2) + '\\right)', 0), 1], [d + pw('\\left(' + pw(c, 3) + '\\right)', 0), d], [pw('(-' + c + ')', 0), 1]]);
+        const terms = r.shuffle([{ s: -1, body: pw(a, n), v: Math.pow(a, n) },
+          { s: r.sign(), body: pw('(-' + b + ')', m), v: Math.pow(-b, m) },
+          { s: r.sign(), body: zero[0], v: zero[1] }]);
+        const Q = terms.map((t, i) => (t.s < 0 ? '-' : i ? '+' : '') + t.body).join('');
+        const vals = terms.map((t) => t.s * t.v), tot = vals.reduce((x, y) => x + y, 0);
+        const each = terms.map((t) => (t.s < 0 ? '-' : '') + t.body + '=' + t.s * t.v).join(',\\qquad ');
+        return { q: Q, a: [each, '=' + vals.map((v, i) => sg(v, i === 0)).join('') + '=' + tot] };
+      }
+    }
+  };
+})());
+

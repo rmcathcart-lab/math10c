@@ -1,6 +1,7 @@
 /* Math 10C · Unit 2 · Lesson 4 — Rational Exponents and Radicals: the explainers and the piano warm-up on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -606,3 +607,79 @@ function mountExplainers() {
 }
 
 mountPiano(); mountExplainers();
+
+/* ============ Stand Up Break! — evaluate rational-exponent powers at the whiteboards ============ */
+standup('u2l4', (() => {
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const fT = (n, d) => { const g = gcd(n, d); n /= g; d /= g; return d === 1 ? String(n) : (n < 0 ? '-' : '') + '\\dfrac{' + Math.abs(n) + '}{' + d + '}'; };
+  const rt = (n, a) => (n === 2 ? '\\sqrt{' + a + '}' : '\\sqrt[' + n + ']{' + a + '}');
+  const pw = (b, e) => (e === 1 ? b : b + '^{' + e + '}');
+  /* every perfect power a = r^n with an exponent m/n (lowest terms) whose answer r^m stays workable by hand */
+  const POW = [];
+  [[2, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]], [3, [2, 3, 4, 5, 10]], [4, [2, 3, 10]], [5, [2, 3]], [6, [2]]].forEach(([n, rs]) => rs.forEach((r) => {
+    for (let m = 1; m <= 6; m++) if (gcd(m, n) === 1 && r ** m <= 1000) POW.push({ r, n, m, a: r ** n });
+  }));
+  const pick = (r, f) => r.pick(POW.filter(f));
+  const fb = (s, n, d) => (d === 1 ? (s ? '(' + s + n + ')' : String(n)) : '\\left(' + s + '\\dfrac{' + n + '}{' + d + '}\\right)'); // a fraction as a base, ready for an exponent
+  const root = (p, neg) => (p.m === 1 ? rt(p.n, (neg ? '-' : '') + p.a) : '\\left(' + rt(p.n, (neg ? '-' : '') + p.a) + '\\right)^{' + p.m + '}');
+  const powv = (p, neg) => (p.m === 1 ? String(neg ? -p.r : p.r) : pw(neg ? '(-' + p.r + ')' : p.r, p.m));
+  return {
+    intro: 'Evaluate at your whiteboard station, no calculator. The denominator is the root, the numerator is the power: take the root first.',
+    levels: {
+      BEG: (r) => { // Example 1 (a), (b): a positive base, a positive exponent
+        const p = pick(r, (x) => x.m > 1 || r.chance(0.15)), V = p.r ** p.m;
+        return { q: p.a + '^{' + p.m + '/' + p.n + '}', a: p.m > 1 ? ['=' + root(p) + '=' + powv(p), '=' + V] : '=' + root(p) + '=' + V };
+      },
+      PRG: (r) => {
+        const t = r.pick(['neg', 'neg', 'base', 'out', 'frac', 'frac']);
+        if (t === 'neg') { // Example 1 (c): a negative exponent flips
+          const p = pick(r, (x) => x.r ** x.m <= 400), V = p.r ** p.m;
+          return { q: p.a + '^{-' + p.m + '/' + p.n + '}', a: ['=\\dfrac{1}{' + p.a + '^{' + p.m + '/' + p.n + '}}=\\dfrac{1}{' + root(p) + '}', '=\\dfrac{1}{' + powv(p) + '}' + (p.m > 1 ? '=\\dfrac{1}{' + V + '}' : '')] };
+        }
+        if (t === 'base') { // Example 2 (a): a negative base under an odd root
+          const p = pick(r, (x) => x.n % 2 === 1), V = (-p.r) ** p.m;
+          return { q: '(-' + p.a + ')^{' + p.m + '/' + p.n + '}', a: ['=' + root(p, true) + (p.m > 1 ? '=' + powv(p, true) : ''), '=' + V + '\\quad\\text{(odd root of a negative is negative' + (p.m > 1 ? '; ' + (p.m % 2 ? 'odd' : 'even') + ' power' : '') + ')}'] };
+        }
+        if (t === 'out') { // Example 2 (b): the minus waits outside
+          const p = pick(r, (x) => x.m > 1), V = p.r ** p.m;
+          return { q: '-' + p.a + '^{' + p.m + '/' + p.n + '}', a: ['=-\\left(' + p.a + '^{' + p.m + '/' + p.n + '}\\right)=-' + root(p), '=-' + powv(p) + '=-' + V] };
+        }
+        // Example 3 (a): a fraction base, root the top and the bottom
+        const n = r.pick([2, 2, 2, 3, 3, 4]), ms = { 2: [1, 3, 3], 3: [1, 2, 2], 4: [1, 3] }[n];
+        for (;;) {
+          const p = r.int(1, n === 2 ? 10 : 5), q = r.int(2, n === 2 ? 10 : 5), m = r.pick(ms);
+          if (p === q || gcd(p, q) !== 1 || p ** m > 1000 || q ** m > 1000 || (n === 4 && (p > 3 || q > 3))) continue;
+          const P = p ** n, Q = q ** n;
+          if (m === 1) return { q: '\\left(\\dfrac{' + P + '}{' + Q + '}\\right)^{1/' + n + '}', a: '=\\dfrac{' + rt(n, P) + '}{' + rt(n, Q) + '}=' + fT(p, q) };
+          return { q: '\\left(\\dfrac{' + P + '}{' + Q + '}\\right)^{' + m + '/' + n + '}', a: ['=\\left(\\dfrac{' + rt(n, P) + '}{' + rt(n, Q) + '}\\right)^{' + m + '}=' + pw(fb('', p, q), m), '=' + fT(p ** m, q ** m)] };
+        }
+      },
+      MAS: (r) => {
+        const t = r.pick(['frac', 'frac', 'pyth', 'sum', 'sum']);
+        if (t === 'frac') { // Example 3 (b): a fraction base and a negative exponent (a negative fraction when the root is odd)
+          for (;;) {
+            const n = r.pick([2, 2, 3, 3, 3]), m = r.pick(n === 2 ? [1, 3] : [1, 2, 2, 4]), p = r.int(1, n === 2 ? 9 : 5), q = r.int(2, n === 2 ? 9 : 5), neg = n === 3 && r.chance(0.5);
+            if (p === q || gcd(p, q) !== 1 || p ** m > 1000 || q ** m > 1000 || (m === 1 && r.chance(0.6))) continue;
+            const P = p ** n, Q = q ** n, s = neg ? '-' : '', sv = neg && m % 2 ? -1 : 1;
+            const flip = fb(s, Q, P) + '^{' + m + '/' + n + '}';
+            return { q: '\\left(' + s + '\\dfrac{' + P + '}{' + Q + '}\\right)^{-' + m + '/' + n + '}',
+              a: ['=' + flip + '\\quad\\text{(flip, exponent positive)}', (m === 1 ? '' : '=' + pw(fb(s, q, p), m)) + '=' + fT(sv * q ** m, p ** m)] };
+          }
+        }
+        if (t === 'pyth') { // Example 1 (d): brackets first, then the power
+          const [a, b, c] = r.pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [7, 24, 25], [9, 12, 15], [12, 16, 20], [20, 21, 29]]);
+          const k = c <= 10 ? r.pick([1, -1, 3, -3]) : r.pick([1, -1]), C = c * c, minus = r.chance(0.35);
+          const Q = minus ? '\\left(' + pw(c, 2) + '-' + pw(b, 2) + '\\right)^{' + k + '/2}' : '\\left(' + pw(a, 2) + '+' + pw(b, 2) + '\\right)^{' + k + '/2}';
+          const base = minus ? a : c, B2 = base * base, inner = minus ? C + '-' + b * b + '=' + B2 : a * a + '+' + b * b + '=' + B2, K = Math.abs(k);
+          const val = k > 0 ? String(base ** K) : '\\dfrac{1}{' + base ** K + '}';
+          return { q: Q, a: ['\\text{brackets first: }' + inner, '=' + B2 + '^{' + k + '/2}=' + (k > 0 ? '' : '\\dfrac{1}{') + (K === 1 ? '\\sqrt{' + B2 + '}' : '\\left(\\sqrt{' + B2 + '}\\right)^{3}') + (k > 0 ? '' : '}') + '=' + val] };
+        }
+        // Example 1 again, twice over: a sum or difference of two powers (one with a negative exponent)
+        const p = pick(r, (x) => x.m > 1 && x.r ** x.m <= 125), q = pick(r, (x) => x.r ** x.m <= 9 && x.a !== p.a), A = p.r ** p.m, B = q.r ** q.m, s = r.chance(0.5) ? 1 : -1;
+        return { q: p.a + '^{' + p.m + '/' + p.n + '}' + (s > 0 ? '+' : '-') + q.a + '^{-' + q.m + '/' + q.n + '}',
+          a: [p.a + '^{' + p.m + '/' + p.n + '}=' + root(p) + '=' + A + ',\\qquad ' + q.a + '^{-' + q.m + '/' + q.n + '}=\\dfrac{1}{' + root(q) + '}=\\dfrac{1}{' + B + '}',
+            '=' + A + (s > 0 ? '+' : '-') + '\\dfrac{1}{' + B + '}=' + fT(A * B + s, B)] };
+      }
+    }
+  };
+})());

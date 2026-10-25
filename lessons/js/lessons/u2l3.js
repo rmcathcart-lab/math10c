@@ -1,6 +1,7 @@
 /* Math 10C · Unit 2 · Lesson 3 — Negative Exponents and Scientific Notation: the warm-up and the explainers on this page. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -944,3 +945,107 @@ function mountExplainers() {
 }
 
 mountBall(); mountHalve(); mountSigns(); mountExplainers();
+
+/* ============ Stand Up Break! — negative exponents at the whiteboards ============ */
+standup('u2l3', (() => {
+  /* monomials with a fraction coefficient: { c: [num, den], e: { x: 2, y: -1 } } (letters keep their first-seen order) */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const fr = (n, d = 1) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; };
+  const mono = (c, e = {}) => ({ c: Array.isArray(c) ? fr(c[0], c[1]) : [c, 1], e: { ...e } });
+  const mul = (a, b) => { const e = { ...a.e }; for (const k in b.e) e[k] = (e[k] || 0) + b.e[k]; return { c: fr(a.c[0] * b.c[0], a.c[1] * b.c[1]), e }; };
+  const powr = (a, k) => { const e = {}; for (const v in a.e) e[v] = a.e[v] * k; const n = Math.pow(a.c[0], Math.abs(k)), d = Math.pow(a.c[1], Math.abs(k)); return { c: k >= 0 ? fr(n, d) : fr(d, n), e }; };
+  const div = (a, b) => mul(a, powr(b, -1));
+  const vt = (v, e) => (e === 0 ? '' : e === 1 ? v : v + '^{' + e + '}');
+  const vars = (e, f = (x) => x) => Object.keys(e).map((v) => vt(v, f(e[v]))).join('');
+  const fT = (c) => (c[1] === 1 ? String(c[0]) : (c[0] < 0 ? '-' : '') + '\\frac{' + Math.abs(c[0]) + '}{' + c[1] + '}');
+  const coefT = (c, has) => (has && c[1] === 1 && Math.abs(c[0]) === 1 ? (c[0] < 0 ? '-' : '') : fT(c));
+  /* as written in a question: 6x^{4}, -a^{-3}b, 5 (exponents as given, 0 kept out) */
+  const inT = (m) => { const vs = vars(m.e); return coefT(m.c, !!vs) + vs; };
+  /* with negative exponents still showing: \frac{1}{3}x^{-1}y^{2} */
+  const rawT = (m) => inT({ c: m.c, e: Object.fromEntries(Object.entries(m.e).filter(([, x]) => x !== 0)) });
+  /* the finished answer: positive exponents only, letters with negative exponents (and any denominator) under the bar */
+  const posT = (m) => {
+    const top = Object.fromEntries(Object.entries(m.e).filter(([, x]) => x > 0)), bot = Object.fromEntries(Object.entries(m.e).filter(([, x]) => x < 0));
+    const T = vars(top), B = vars(bot, (x) => -x), n = Math.abs(m.c[0]), d = m.c[1], s = m.c[0] < 0 ? '-' : '';
+    if (!B && d === 1) return s + (n === 1 && T ? '' : n) + T;
+    return s + '\\dfrac{' + ((n === 1 && T ? '' : n) + T) + '}{' + ((d === 1 && B ? '' : d) + B) + '}';
+  };
+  const pn = (x) => (x < 0 ? '(' + x + ')' : String(x)); // a number written after + − ×
+  /* exponent bookkeeping for one letter: x^{4+5-(-2)}=x^{11} (ops: list of [sign, exponent]) */
+  const expLine = (v, ops) => { let tot = 0; const s = ops.map(([sg, x], i) => { tot += sg * x; return i === 0 ? (sg < 0 ? '-' + pn(x) : String(x)) : (sg < 0 ? '-' : '+') + pn(x); }).join(''); return v + '^{' + s + '}=' + (tot === 0 ? v + '^{0}=1' : vt(v, tot)); };
+  const M = (c, list) => mono(c, Object.fromEntries(list));
+  /* one base at a time: the numbers line, the exponents line (one entry per letter), and the result */
+  const chain = (F, G = []) => {
+    let res = F.reduce(mul, mono(1)); G.forEach((g) => (res = div(res, g)));
+    const cs = F.map((m) => fT(m.c)), ds = G.map((m) => fT(m.c)), lines = [];
+    const NN = F.reduce((x, m) => x * m.c[0], 1), DD = G.reduce((x, m) => x * m.c[0], 1), same = [...F, ...G].every((m) => m.c[1] === 1) && G.length && DD > 0 && gcd(NN, DD) === 1; // a fraction that doesn't reduce: nothing to say
+    if (!same && [...F, ...G].some((m) => !(m.c[0] === 1 && m.c[1] === 1))) {
+      const top = cs.map((c, i) => (i && F[i].c[1] === 1 ? pn(F[i].c[0]) : c)).join('\\times ');
+      lines.push(G.length ? ((F.length === 1 && G.length === 1 && res.c[1] === 1) || F.some((m) => m.c[1] !== 1) ? top + G.map((g) => '\\div ' + pn(g.c[0])).join('') : '\\dfrac{' + top + '}{' + ds.join('\\times ') + '}') + '=' + fT(res.c) : top + '=' + fT(res.c));
+    }
+    const letters = [...new Set([...F, ...G].flatMap((m) => Object.keys(m.e)))];
+    const ex = letters.map((v) => [v, [...F.filter((m) => v in m.e).map((m) => [1, m.e[v]]), ...G.filter((m) => v in m.e).map((m) => [-1, m.e[v]])]]).filter(([, o]) => o.length > 1 || o[0][0] < 0);
+    if (ex.length) lines.push(ex.map(([v, o]) => expLine(v, o)).join(',\\quad '));
+    return { res, lines };
+  };
+  /* a list of factors as written: 6x^{4}\times3x^{5}, or (-8a^{6})(5a^{9}) once a negative turns up */
+  const prodT = (F, brackets) => (brackets || F.some((m) => m.c[0] < 0) ? F.map((m) => '(' + inT(m) + ')').join('') : F.map(inT).join('\\times '));
+  const LET = [['x', 'y', 'z'], ['a', 'b', 'c'], ['m', 'n', 'p'], ['p', 'q', 'r'], ['x', 'y', 'z'], ['s', 't', 'w']];
+  const nz = (r, lo, hi) => { let x; do x = r.int(lo, hi); while (x === 0); return x; };
+  const zero = (m) => Object.values(m.e).every((x) => x === 0);
+  const done = (res) => '=' + (rawT(res) === posT(res) ? '' : rawT(res) + '=') + posT(res);
+  /* a number to an integer power, worked out: 2^{-4}=\dfrac{1}{2^{4}}=\dfrac{1}{16} */
+  const evalP = (b, e) => (e > 0 ? (e === 1 ? '' : '=' + b ** e) : e === 0 ? '=1' : '=\\dfrac{1}{' + b + (e === -1 ? '' : '^{' + -e + '}') + '}' + (e === -1 ? '' : '=\\dfrac{1}{' + b ** -e + '}'));
+  return {
+    intro: 'Simplify at your whiteboard station. Laws first, then rewrite every negative exponent: final answers with positive exponents only.',
+    levels: {
+      BEG: (r) => { // Example 2: one law with negative exponents, then evaluate
+        const t = r.pick(['p', 'p', 'q', 'q', 'pp']);
+        for (;;) {
+          const b = r.int(2, 10), lim = b === 2 ? 6 : b <= 4 ? 4 : b <= 6 ? 3 : 2;
+          let m, n, e, Q, how;
+          if (t === 'pp') { m = r.pick([2, 3, -1, -2, -3]); n = r.pick([-1, -2, 2, 3]); if (m > 0 && n > 0) continue; e = m * n; Q = '\\left(' + b + '^{' + m + '}\\right)^{' + n + '}'; how = b + '^{' + m + '\\times' + pn(n) + '}=' + b + '^{' + e + '}'; }
+          else { m = nz(r, -9, 9); n = nz(r, -9, 9); if (m > 0 && n > 0) continue; e = t === 'p' ? m + n : m - n; Q = t === 'p' ? b + '^{' + m + '}\\times ' + b + '^{' + n + '}' : '\\dfrac{' + b + '^{' + m + '}}{' + b + '^{' + n + '}}'; how = expLine(String(b), [[1, m], [t === 'p' ? 1 : -1, n]]); }
+          if (e === 0 || Math.abs(e) > lim || (e > 0 && e > 3)) continue;
+          return { q: Q, a: [how, evalP(b, e)].filter(Boolean) };
+        }
+      },
+      PRG: (r) => { // Example 4: algebraic expressions, final answer with positive exponents
+        const [v, w] = r.pick(LET), t = r.pick(['pr', 'qu', 'qu', 'neg', 'two']);
+        if (t === 'neg') { // (c v^a)^{-n}
+          const [c, n] = r.pick([[2, 2], [2, 3], [3, 2], [3, 3], [4, 2], [5, 2], [-2, 3], [-3, 3], [-2, 2], [-3, 2], [6, 2], [-4, 3]]), a = r.pick([1, 1, 2, 3]), A = M(c, [[v, a]]), P = powr(A, -n);
+          return { q: '(' + inT(A) + ')^{-' + n + '}', a: ['=\\dfrac{1}{(' + inT(A) + ')^{' + n + '}}=\\dfrac{1}{' + inT(powr(A, n)) + '}' + (c < 0 && n % 2 ? '=' + posT(P) + '\\quad\\text{(odd power: negative)}' : '')] };
+        }
+        for (;;) {
+          let F, G, Q;
+          if (t === 'pr') { F = [M(r.pick([1, 1, 2, 3, 4, -2, -5]), [[v, nz(r, -7, 6)]]), M(r.pick([1, 2, 3, 6, -3]), [[v, nz(r, -7, 4)]])]; G = []; Q = prodT(F); }
+          else if (t === 'qu') { const d = r.int(2, 6), k = r.pick([2, 3, 4, 5]), up = r.chance(0.5); const N = M(up ? d * k : d, [[v, nz(r, -6, 9)]]), D = M(up ? d : d * k, [[v, nz(r, -8, 9)]]); F = [N]; G = [D]; Q = '\\dfrac{' + inT(N) + '}{' + inT(D) + '}'; }
+          else { const d = r.int(2, 5), k = r.int(2, 4), N = M(d * k, [[v, -r.int(1, 6)]]), D = M(r.chance(0.5) ? d : d * k * r.int(2, 3), [[w, -r.int(1, 6)]]); F = [N]; G = [D]; Q = '\\dfrac{' + inT(N) + '}{' + inT(D) + '}'; }
+          if ([...F, ...G].every((m) => Object.values(m.e).every((x) => x > 0))) continue; // at least one negative exponent
+          const { res, lines } = chain(F, G); if (zero(res) || Object.values(res.e).every((x) => x > 0)) continue;
+          return { q: Q, a: [...lines, done(res)] };
+        }
+      },
+      MAS: (r) => {
+        const [x, y, z] = r.pick(LET), t = r.pick(['ex5', 'ex5', 'pw', 'pw2']);
+        const mk = (c, vs) => M(c, vs.map((v) => [v, nz(r, -7, 7)]));
+        for (;;) {
+          let Q, pre = [], F, G;
+          if (t === 'ex5') { // Example 5: a monomial divided by a fraction
+            const three = r.chance(0.4), vs = three ? [x, y, z] : [x, y], A = mk(r.int(2, 9), vs), B = mk(r.int(2, 12), vs), C = mk(1, vs);
+            Q = inT(A) + '\\;\\div\\;\\dfrac{' + inT(B) + '}{' + inT(C) + '}'; pre = ['=' + inT(A) + '\\times\\dfrac{' + inT(C) + '}{' + inT(B) + '}']; F = [A, C]; G = [B];
+          } else if (t === 'pw') { // a bracket to a negative power, over a monomial
+            const [c, n] = r.pick([[2, 2], [3, 2], [2, 3], [-2, 3], [-3, 2], [4, 2]]), A = mk(c, [x, y]), D = mk(r.pick([2, 3, 5, 6]), [x, y]), P = powr(A, -n);
+            Q = '\\dfrac{(' + inT(A) + ')^{-' + n + '}}{' + inT(D) + '}'; pre = ['(' + inT(A) + ')^{-' + n + '}=' + rawT(P)]; F = [P]; G = [D];
+          } else { // a monomial times a bracket to a negative power
+            const [c, n] = r.pick([[2, 2], [-2, 3], [3, 2], [-2, 2], [2, 3], [-3, 2]]), A = mk(r.pick([2, 3, 4, 6, 8, 12, -6]), [x, y]), B = mk(c, [x, y]), P = powr(B, -n);
+            Q = '(' + inT(A) + ')(' + inT(B) + ')^{-' + n + '}'; pre = ['(' + inT(B) + ')^{-' + n + '}=' + rawT(P)]; F = [A, P]; G = [];
+          }
+          const { res, lines } = chain(F, G);
+          if (zero(res) || Object.values(res.e).every((v) => v >= 0) || Object.values(res.e).some((v) => Math.abs(v) > 12) || Math.abs(res.c[0]) > 200 || res.c[1] > 200) continue;
+          return { q: Q, a: [...pre, ...lines, done(res)] };
+        }
+      }
+    }
+  };
+})());
