@@ -67,8 +67,8 @@ function classInfo(block) { // { code, label, standup } for a block letter
 export function standup(id, def) {
   const card = document.querySelector(`[data-standup="${id}"]`); if (!card) return;
   // a student looking at the teacher's shared notes (the same rule as share.js): the questions, but no timer or class list
-  // (the teacher is anyone signed in to the lesson notes or to the Teacher Ledger on this device: same site, same storage)
-  const viewer = !!String(lsGet('ink:api', null) || CONFIG.inkApi || '').trim() && !lsGet('ink:teacher', null) && !(() => { try { return localStorage.getItem('hw:tkey'); } catch (e) { return ''; } })();
+  // (only a device signed in with the teacher key for the lesson notes gets the timer and groups; view only doesn't — Ryan, 2026-10-24)
+  const viewer = !!String(lsGet('ink:api', null) || CONFIG.inkApi || '').trim() && !lsGet('ink:teacher', null);
   const state = { level: lsGet('su:level', 'BEG'), qs: [], n: 0 };
   card.innerHTML = '';
   // --- header ---
