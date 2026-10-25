@@ -1274,8 +1274,126 @@
         var cols = [{ id: 'W', html: 'W', name: 'Trundle wheel' }, { id: 'T', html: 'T', name: 'Tape measure' }, { id: 'R', html: 'R', name: 'Ruler' }, { id: 'V', html: 'C', name: 'Vernier caliper' }, { id: 'M', html: 'M', name: 'Micrometer' }];
         return named(P.grid('Choose the best instrument for each job.<br><small><b>W</b> trundle wheel · <b>T</b> tape measure · <b>R</b> ruler · <b>C</b> vernier caliper · <b>M</b> micrometer</small>', rows, cols, want, { why: function (row) { var i = Number(row.slice(1)); return { code: 'row', hint: 'Check ' + rows[i].html.slice(4) + ': how big is it, and how precisely must it be known?' }; } },
           picks.map(function (p, i) { return rows[i].html + ': <b>' + cols.filter(function (c) { return c.id === p[0]; })[0].name + '</b> — ' + p[1][1] + '.'; }).join('<br>'), ['Trundle wheel: long distances on the ground. Tape: rooms. Ruler: desk-sized, to 1 mm. Caliper: small objects, inside sizes and depths, to 0.05 mm. Micrometer: thicknesses of tiny objects, to 0.01 mm.'], 'best instrument for each job'), rows, cols);
-      } }] }
+      } }] },
+    /* ---------- Mastery challenge (MAS, M1) ---------- */
+    { num: '25', section: 'Mastery challenge', shared: e25Shared,
+      stem: function (sh) { return sh.who + ' needs the thickness of one ' + sh.c.item + ', correct to within ' + t(N(sh.tol)) + ' mm. The only tool is a ruler marked in millimetres, so any reading of it could be off by up to ' + t('0.5') + ' mm. The plan: measure a stack of ' + sh.c.items + ' and divide.'; },
+      parts: [{ id: 'e25', level: 'MAS', outcome: 'M1', make: function (r, sh) { return e25part(sh); } }] },
+    { num: '26', shared: e26Shared,
+      stem: function () { return 'A plumber needs the <b>inside</b> diameter of a short piece of copper pipe, but the inside jaws of her vernier caliper are bent. So she measures the <b>outside</b> diameter with the caliper’s outside jaws, and the thickness of the pipe’s <b>wall</b> (clamped across the wall at the cut end) with a micrometer.'; },
+      parts: [{ id: 'e26', level: 'MAS', outcome: 'M1', make: function (r, sh) { return e26part(sh); } }] },
+    { num: '27', shared: e27Shared,
+      stem: function (sh) { return sh.who + ' doesn’t know how long her pace is, so she first <b>calibrates</b> it. With normal paces, she walks ' + sh.cal + ', and counts ' + t(sh.c) + ' paces. Then she paces the length of ' + sh.obj + ' and counts ' + t(sh.k) + ' paces.'; },
+      parts: [{ id: 'e27', level: 'MAS', outcome: 'M1', make: function (r, sh) { return e27part(sh); } }] },
+    { num: '28', shared: e28Shared,
+      stem: function (sh) { return sh.who + '’s ' + sh.R.name + ' is somewhere between ' + t(sh.R.lo) + ' cm and ' + t(sh.R.hi) + ' cm long — it has never been measured exactly — and she uses ' + t(sh.R.nom) + ' cm as its value. She lays it ' + t(sh.n) + ' times along a wall to decide whether ' + sh.thing + ' that is ' + t(fx(sh.S, 2)) + ' m long will fit along the wall.'; },
+      parts: [{ id: 'e28', level: 'MAS', outcome: 'M1', make: function (r, sh) { return e28part(sh); } }] }
   ];
+
+  /* ---------- Mastery challenge makers ---------- */
+  function bordQ(x, dp) { var f = Math.abs(x) * Math.pow(10, dp); f -= Math.floor(f); return Math.abs(f - 0.5) < 0.04; }
+  /* several acceptable rounded values (unrounded route, or a route through a rounded intermediate); otherwise nearCk's diagnosis */
+  function anyNearCk(xs, dp, alts) {
+    var base = nearCk(xs[0], dp, alts);
+    return function (resp) { var v = num(resp); if (v != null && xs.some(function (x) { return near(v, rnd(x, dp)); })) return ok(); return base(resp); };
+  }
+  var WHO = ['Mr. Singh', 'Ms. Okafor', 'Priya', 'Mateo', 'Leah', 'Hana', 'Ava', 'Jonah'];
+  function e25Shared(r) {
+    var pool = [{ item: 'sheet of printer paper', items: 'sheets', lo: 0.095, hi: 0.11 }, { item: 'playing card', items: 'cards', lo: 0.28, hi: 0.32 },
+      { item: 'sticky note', items: 'sticky notes', lo: 0.07, hi: 0.09 }, { item: 'index card', items: 'index cards', lo: 0.18, hi: 0.23 }, { item: 'page of a dictionary', items: 'pages', lo: 0.04, hi: 0.055 }];
+    for (var g = 0; g < 400; g++) {
+      var c = r.pick(pool), tol = r.pick([0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.01]), n = Math.ceil(0.5 / tol - 1e-9);
+      var th = c.lo + (c.hi - c.lo) * r.int(0, 20) / 20, S = Math.round(n * th), x = S / n;
+      if (S < 4 || bordQ(x, 3)) continue;
+      return { c: c, tol: tol, n: n, S: S, x: x, who: r.pick(WHO) };
+    }
+    return { c: pool[0], tol: 0.004, n: 125, S: 13, x: 0.104, who: 'Mr. Singh' };
+  }
+  function e25part(sh) {
+    var n = sh.n, tol = sh.tol, its = sh.c.items, it = sh.c.item, q = 0.5 / tol, whole = near(q, Math.round(q));
+    var nAlts = [{ v: n - 1, code: 'stack-round-down', hint: 'Too few: with ' + t(n - 1) + ' ' + its + ' the error for one could be ' + t('0.5\\div' + (n - 1) + '\\approx' + fx(0.5 / (n - 1), 5)) + ' mm, which is more than ' + t(N(tol)) + ' mm. ' + (whole ? '' : 'The count must be whole, and rounding down is not enough — round <b>up</b>.') }];
+    if (Math.ceil(1 / tol - 1e-9) !== n) nAlts.push({ v: Math.ceil(1 / tol - 1e-9), code: 'stack-1mm', hint: 'A reading can be off by up to <b>half</b> a millimetre, ' + t('0.5') + ' mm, not a whole millimetre.' });
+    var p = fieldsPart('At the <b>fewest</b>, how many ' + its + ' must the stack contain? Then: the stack of exactly that many ' + its + ' measures ' + t(N(sh.S / 10)) + ' cm. Find the thickness of one ' + it + ', in millimetres, to the nearest thousandth.', [
+      { label: 'Fewest ' + its, x: n, exact: true, alts: nAlts },
+      { label: 'One ' + it, after: 'mm', x: sh.x, dp: 3, alts: [{ v: sh.S / 10 / n, code: 'unit-slip', hint: 'Change the stack’s reading to millimetres first: ' + t(N(sh.S / 10) + '\\text{ cm}=' + sh.S + '\\text{ mm}') + '.' }, { v: n / sh.S, code: 'stack-flip', hint: 'Divide the stack’s thickness by the number of ' + its + ', not the other way round.' }, { v: sh.S, code: 'stack-whole', hint: 'That is the whole stack. Share it among the ' + t(n) + ' ' + its + '.' }] }],
+      'One ' + it + ' is the stack reading ' + t('\\div\\,n') + ', so its possible error is ' + t('0.5\\text{ mm}\\div n') + ' — dividing the reading divides its error too. It must be at most ' + t(N(tol)) + ' mm:<br>' + t('\\dfrac{0.5}{n}\\le' + N(tol) + '\\ \\Rightarrow\\ n\\ge\\dfrac{0.5}{' + N(tol) + '}=' + (whole ? Math.round(q) : fx(q, 2) + '\\ldots')) + (whole ? '' : ', and ' + t('n') + ' is whole, so round <b>up</b>') + ': <b>' + n + ' ' + its + '</b>.<br>Check: ' + t('0.5\\div' + n + '\\approx' + fx(0.5 / n, 5) + '\\le' + N(tol)) + ' ✓, but ' + t('0.5\\div' + (n - 1) + '\\approx' + fx(0.5 / (n - 1), 5) + '>' + N(tol)) + ' ✗.<br>' +
+        'Stack: ' + t(N(sh.S / 10) + '\\text{ cm}=' + sh.S + '\\text{ mm}') + '; one ' + it + ' ' + t('=' + sh.S + '\\div' + n + '=' + fx(sh.x, 5) + '\\ldots\\approx' + fx(sh.x, 3) + '\\text{ mm}') + '.',
+      ['The answer for one ' + it + ' is the stack reading ÷ the number in the stack, so its error is ' + t('0.5') + ' mm ÷ that number. Make that no more than ' + t(N(tol)) + ' mm.', 'Solve ' + t('\\frac{0.5}{n}\\le' + N(tol)) + ' for ' + t('n') + ' — and remember a stack holds a whole number of ' + its + '.'], 'stack size for ' + N(tol) + ' mm');
+    p.key[0] = String(n);
+    return p;
+  }
+  function e26Shared(r) {
+    var M = r.int(20, 58), Nf = r.int(1, 19), h = r.int(2, 7), f = r.int(10, 47);
+    var od = rnd(M + 0.05 * Nf, 4), w = rnd(0.5 * h + 0.01 * f, 4);
+    return { M: M, Nf: Nf, h: h, f: f, od: od, w: w, id: rnd(od - 2 * w, 4) };
+  }
+  function e26part(sh) {
+    var od = sh.od, w = sh.w, id = sh.id;
+    var p = fieldsPart('Read both instruments, then find the <b>inside diameter</b> of the pipe.<div style="margin:6px 0 0"><b>Vernier caliper</b> — outside diameter:</div>' + vernSvg(sh.M, sh.Nf) + '<div style="margin:6px 0 0"><b>Micrometer</b> — thickness of the wall:</div>' + micSvg(sh.h, sh.f), [
+      { label: 'Outside diameter', after: 'mm', x: od, exact: true, dp: 2, alts: vernAlts(sh.M, sh.Nf) },
+      { label: 'Wall thickness', after: 'mm', x: w, exact: true, dp: 2, alts: micAlts(sh.h, sh.f) },
+      { label: 'Inside diameter', after: 'mm', x: id, exact: true, dp: 2, alts: [{ v: od - w, code: 'one-wall', hint: 'A diameter goes right across the pipe, so it passes through the wall <b>twice</b> — once on each side. Subtract two wall thicknesses.' }, { v: od + 2 * w, code: 'walls-added', hint: 'The inside is <b>smaller</b> than the outside: subtract the walls.' }, { v: (od - 2 * w) / 2, code: 'in-radius', hint: 'That is the inside <b>radius</b>. The question asks for the diameter.' }, { v: od - w / 2, code: 'one-wall', hint: 'A diameter crosses the wall on both sides: subtract ' + t('2\\times') + ' the wall thickness.' }] }],
+      '<b>Caliper:</b> coarse ' + t(sh.M + '\\text{ mm}') + ' (last whole mm before the index), fine ' + t(sh.Nf + '\\times0.05=' + fx(0.05 * sh.Nf, 2)) + ' mm, so ' + t(fx(od, 2)) + ' mm.<br><b>Micrometer:</b> sleeve ' + t(fx(0.5 * sh.h, 1)) + ' mm' + (sh.h % 2 ? ' (a half-mm mark is showing)' : '') + ', thimble ' + t(sh.f + '\\times0.01=' + fx(0.01 * sh.f, 2)) + ' mm, so ' + t(fx(w, 2)) + ' mm.<br><b>Inside:</b> a diameter crosses the wall on <b>both</b> sides, so ' + t('d_{\\text{in}}=d_{\\text{out}}-2t=' + fx(od, 2) + '-2(' + fx(w, 2) + ')=' + fx(id, 2)) + ' mm.',
+      ['Read each instrument as usual: coarse reading + fine reading.', 'Sketch the pipe end: a line straight across the inside starts and stops at the wall — how many walls does the outside diameter include that the inside one doesn’t?'], 'pipe inside diameter from caliper and micrometer');
+    p.key = [fx(od, 2), fx(w, 2), fx(id, 2)];
+    return p;
+  }
+  function e27Shared(r) {
+    for (var g = 0; g < 400; g++) {
+      var imp = r.chance(0.5), who = r.pick(['Nadia', 'Rue', 'Hana', 'Zoe', 'Imani', 'Lucia']);
+      if (!imp) {
+        var C = r.pick([{ cal: 'the 100 m straight of the school track', D: 100 }, { cal: 'a 50 m stretch of the track', D: 50 }, { cal: 'a hallway that a tape measure gives as 30 m', D: 30 }]);
+        var pace = r.int(66, 84), c = Math.round(C.D * 100 / pace), k = r.int(90, 190), pc = C.D * 100 / c, est = k * C.D / c, est2 = k * rnd(pc, 1) / 100, dif = k * 0.9 - est, dif2 = k * 0.9 - est2;
+        if (bordQ(pc, 1) || bordQ(est, 0) || rnd(est, 0) !== rnd(est2, 0) || bordQ(dif, 0) || rnd(dif, 0) !== rnd(dif2, 0)) continue;
+        return { imp: false, who: who, cal: C.cal, D: C.D, c: c, k: k, pc: pc, est: est, est2: est2, dif: dif, dif2: dif2, obj: r.pick(['a soccer field', 'the school’s parking lot', 'a city block']) };
+      }
+      var cI = r.int(116, 142), kI = r.int(90, 190), pi = 3600 / cI, eI = kI * 100 / cI, eI2 = kI * rnd(pi, 1) / 36, dI = kI - eI, dI2 = kI - eI2;
+      if (bordQ(pi, 1) || bordQ(eI, 0) || rnd(eI, 0) !== rnd(eI2, 0) || bordQ(dI, 0) || rnd(dI, 0) !== rnd(dI2, 0)) continue;
+      return { imp: true, who: who, cal: 'a football field from goal line to goal line, which is exactly 100 yd', D: 100, c: cI, k: kI, pc: pi, est: eI, est2: eI2, dif: dI, dif2: dI2, obj: r.pick(['a parking lot', 'a baseball outfield fence', 'a city block']) };
+    }
+    return { imp: false, who: 'Nadia', cal: 'the 100 m straight of the school track', D: 100, c: 132, k: 150, pc: 10000 / 132, est: 15000 / 132, est2: 150 * 0.758, dif: 135 - 15000 / 132, dif2: 135 - 150 * 0.758, obj: 'a soccer field' };
+  }
+  function e27part(sh) {
+    var imp = sh.imp, pu = imp ? 'in' : 'cm', du = imp ? 'yd' : 'm', std = imp ? '1 yd (36 in)' : '90 cm', stdTex = imp ? '1\\text{ yd}' : '0.9\\text{ m}';
+    var pAlts = imp ? [{ v: sh.D / sh.c, code: 'unit-slip', hint: 'That is the pace in <b>yards</b>. Give it in inches: ' + t('1\\text{ yd}=36\\text{ in}') + '.' }, { v: sh.c / sh.D * 36, code: 'stack-flip', hint: 'Pace length = distance ÷ number of paces, not the other way round.' }]
+      : [{ v: sh.D / sh.c, code: 'unit-slip', hint: 'That is the pace in <b>metres</b>. Give it in centimetres (' + t('\\times100') + ').' }, { v: sh.c / sh.D * 100, code: 'stack-flip', hint: 'Pace length = distance ÷ number of paces, not the other way round.' }];
+    var eAlts = [{ v: imp ? sh.k : sh.k * 0.9, code: 'used-assumed', hint: 'That uses the textbook pace of ' + std + '. Her calibration shows her own pace is different — use it.' }, { v: sh.k * sh.c / sh.D, code: 'stack-flip', hint: 'More paces means a longer distance: estimate = paces × her pace length.' }];
+    if (!imp) eAlts.push({ v: sh.k * sh.pc, code: 'unit-slip', hint: 'That is in centimetres. Give the estimate in metres.' });
+    else eAlts.push({ v: sh.k * sh.pc, code: 'unit-slip', hint: 'That is in inches. Give the estimate in yards (' + t('\\div36') + ').' });
+    var p = fieldsPart('Find her pace length, to the nearest tenth of ' + (imp ? 'an inch' : 'a centimetre') + ', and her estimate of the length of ' + sh.obj + ', to the nearest ' + (imp ? 'yard' : 'metre') + '. Then: had she simply used the textbook pace of ' + std + ', how much longer would her estimate have been (nearest ' + (imp ? 'yard' : 'metre') + ')?', [
+      { label: 'Her pace', after: pu, x: sh.pc, dp: 1, alts: pAlts },
+      { label: 'Estimate', after: du, x: sh.est, dp: 0, alts: eAlts, check: anyNearCk([sh.est, sh.est2], 0, eAlts), key: fx(sh.est, 0) },
+      { label: 'Longer by', after: du, x: sh.dif, dp: 0, alts: [{ v: imp ? sh.k : sh.k * 0.9, code: 'used-assumed', hint: 'That is the whole textbook estimate. Subtract her own estimate from it.' }], check: anyNearCk([sh.dif, sh.dif2], 0, [{ v: imp ? sh.k : sh.k * 0.9, code: 'used-assumed', hint: 'That is the whole textbook estimate. Subtract her own estimate from it.' }]), key: fx(sh.dif, 0) }],
+      '<b>Calibrate:</b> ' + (imp ? t('100\\text{ yd}=3600\\text{ in}') + ', so her pace is ' + t('\\dfrac{3600}{' + sh.c + '}\\approx' + fx(sh.pc, 1) + '\\text{ in}') : t(sh.D + '\\text{ m}=' + F(sh.D * 100) + '\\text{ cm}') + ', so her pace is ' + t('\\dfrac{' + F(sh.D * 100) + '}{' + sh.c + '}\\approx' + fx(sh.pc, 1) + '\\text{ cm}')) + '.<br>' +
+        '<b>Estimate:</b> ' + t(sh.k + '\\times\\dfrac{' + sh.D + '\\text{ ' + du + '}}{' + sh.c + '}\\approx' + fx(sh.est, 2) + '\\approx' + fx(sh.est, 0) + '\\text{ ' + du + '}') + ' (the same as ' + t(sh.k + '\\times' + fx(sh.pc, 1) + '\\text{ ' + pu + '}') + ', changed to ' + du + ').<br>' +
+        '<b>Textbook pace:</b> ' + t(sh.k + '\\times' + stdTex + '=' + N(imp ? sh.k : sh.k * 0.9) + '\\text{ ' + du + '}') + ', which is ' + t(N(imp ? sh.k : sh.k * 0.9) + '-' + fx(sh.est, 2) + '\\approx' + fx(sh.dif, 0) + '\\text{ ' + du + '}') + ' too long — about ' + t(fx(sh.dif / sh.est * 100, 0) + '\\%') + '. Calibrating the referent removes that error.',
+      ['Her pace = the known distance ÷ the paces she needed to cover it (work in ' + pu + ').', 'The new length = paces counted × her pace. Compare with paces × ' + std + '.'], 'calibrate a pace ' + (imp ? 'yd' : 'm'));
+    return p;
+  }
+  function e28Shared(r) {
+    var R = r.pick([{ name: 'span', pl: 'spans', nom: 20, lo: 19, hi: 21, n: [10, 20] }, { name: 'pace', pl: 'paces', nom: 90, lo: 85, hi: 95, n: [4, 9] }, { name: 'cubit', pl: 'cubits', nom: 45, lo: 43, hi: 47, n: [6, 12] }]);
+    for (var g = 0; g < 300; g++) {
+      var n = r.int(R.n[0], R.n[1]), lo = n * R.lo / 100, hi = n * R.hi / 100, S = rnd(lo + (hi - lo) * r.int(20, 80) / 100, 2);
+      if (S <= lo + 0.01 || S >= hi - 0.01) continue;
+      var need = Math.ceil(S * 100 / R.lo - 1e-9);
+      if (near(S * 100 / R.lo, need) || Math.ceil(S * 100 / R.nom - 1e-9) >= need) continue;
+      return { R: R, n: n, lo: lo, hi: hi, S: S, need: need, who: r.pick(['Leah', 'Ava', 'Mira', 'Tess', 'June', 'Noor']), thing: r.pick(['a bookshelf', 'a sofa', 'a whiteboard', 'a desk', 'a piano']) };
+    }
+    return { R: R, n: R.n[0], lo: R.n[0] * R.lo / 100, hi: R.n[0] * R.hi / 100, S: rnd(R.n[0] * R.nom / 100, 2), need: Math.ceil(R.n[0] * R.nom / R.lo + 1e-9), who: 'Leah', thing: 'a bookshelf' };
+  }
+  function e28part(sh) {
+    var R = sh.R, nomN = Math.ceil(sh.S * 100 / R.nom - 1e-9), hiN = Math.ceil(sh.S * 100 / R.hi - 1e-9), flN = Math.floor(sh.S * 100 / R.lo);
+    var nAlts = [{ v: nomN, code: 'nominal-referent', hint: 'With ' + t(R.nom) + ' cm you only get the <b>estimate</b>. To be <b>sure</b>, the wall must be long enough even if her ' + R.name + ' is as short as it could be: ' + t(R.lo) + ' cm.' }, { v: hiN, code: 'nominal-referent', hint: 'To be sure, assume the <b>shortest</b> possible ' + R.name + ' (' + t(R.lo) + ' cm), not the longest.' }, { v: flN, code: 'stack-round-down', hint: 'Rounding down leaves the wall possibly just short of ' + t(fx(sh.S, 2)) + ' m. The count must make even the shortest wall long enough: round <b>up</b>.' }];
+    var p = fieldsPart('Find the <b>shortest</b> and the <b>longest</b> the wall could be. Then find the fewest ' + R.pl + ' the wall would have to measure for her to be <b>sure</b> that the ' + sh.thing.replace(/^an? /, '') + ' fits.', [
+      { label: 'Shortest', after: 'm', x: rnd(sh.lo, 4), exact: true, alts: [{ v: sh.n * R.nom / 100, code: 'nominal-referent', hint: 'That is her estimate. The shortest possible wall uses the shortest possible ' + R.name + ', ' + t(R.lo) + ' cm.' }].concat(unitAlts(sh.lo, 'm')) },
+      { label: 'Longest', after: 'm', x: rnd(sh.hi, 4), exact: true, alts: [{ v: sh.n * R.nom / 100, code: 'nominal-referent', hint: 'That is her estimate. The longest possible wall uses the longest possible ' + R.name + ', ' + t(R.hi) + ' cm.' }].concat(unitAlts(sh.hi, 'm')) },
+      { label: 'Fewest ' + R.pl + ' to be sure', x: sh.need, exact: true, alts: nAlts }],
+      'The wall is somewhere from ' + t(sh.n + '\\times' + R.lo + '=' + F(sh.n * R.lo) + '\\text{ cm}=' + N(sh.lo) + '\\text{ m}') + ' to ' + t(sh.n + '\\times' + R.hi + '=' + F(sh.n * R.hi) + '\\text{ cm}=' + N(sh.hi) + '\\text{ m}') + '. ' + cap(sh.thing) + ' (' + t(fx(sh.S, 2)) + ' m) is inside that interval, so ' + t(sh.n) + ' ' + R.pl + ' can’t settle it: the ' + sh.thing.replace(/^an? /, '') + ' might fit, or might not.<br>' +
+        'To be sure, even the <b>shortest</b> possible ' + R.name + ' must cover it: ' + t('n\\times' + R.lo + '\\ge' + F(Math.round(sh.S * 100)) + '\\ \\Rightarrow\\ n\\ge\\dfrac{' + F(Math.round(sh.S * 100)) + '}{' + R.lo + '}\\approx' + fx(sh.S * 100 / R.lo, 2)) + ', so round up: <b>' + sh.need + ' ' + R.pl + '</b>. Check: ' + t(sh.need + '\\times' + R.lo + '=' + F(sh.need * R.lo) + '\\ge' + F(Math.round(sh.S * 100)) + '\\text{ cm}') + ' ✓, ' + t((sh.need - 1) + '\\times' + R.lo + '=' + F((sh.need - 1) * R.lo) + '<' + F(Math.round(sh.S * 100)) + '\\text{ cm}') + ' ✗.',
+      ['Shortest wall: every ' + R.name + ' as short as it could be. Longest: every one as long as it could be.', 'For “sure”, the <b>shortest</b> possible wall must still be at least ' + t(fx(sh.S, 2)) + ' m. Solve for the count, then round to a whole number in the safe direction.'], 'referent interval and guarantee');
+    p.key = [String(rnd(sh.lo, 4)), String(rnd(sh.hi, 4)), String(sh.need)];
+    return p;
+  }
 
   /* ---------- extra-practice part makers ---------- */
   function e2err(sh, who, count, val, trueVal) {
@@ -1360,7 +1478,9 @@
     'pct-double': 'Took the area error as exactly double', 'pct-same': 'Took the area error as the length error', 'pct-triple': 'Took the volume error as exactly triple', 'pct-square': 'Squared instead of cubed for a volume',
     'half-perimeter': 'Added only two sides of the rectangle', area: 'Gave the area for a perimeter', 'mixed-referents': 'Added counts of different referents', swapped: 'Swapped which estimate is assumed correct',
     'vern-backwards': 'Vernier: distance past the mark instead of to the next mark', 'vern-zero': 'Vernier: wrong division at a whole millimetre', 'div-over-50': '50 or more thimble divisions not carried',
-    'mic-turn-back': 'Micrometer: gave the turn already made, not the turn left', 'mic-turn-half': 'Micrometer: stopped at the half-millimetre mark'
+    'mic-turn-back': 'Micrometer: gave the turn already made, not the turn left', 'mic-turn-half': 'Micrometer: stopped at the half-millimetre mark',
+    'stack-round-down': 'Rounded a required count down (it must be rounded up)', 'stack-1mm': 'Used 1 mm as a ruler reading error (it is half a millimetre)', 'stack-flip': 'Divided the wrong way round', 'stack-whole': 'Gave the whole stack, not one item',
+    'one-wall': 'Subtracted only one wall thickness from a diameter', 'walls-added': 'Added the wall thickness instead of subtracting', 'in-radius': 'Gave the radius instead of the diameter', 'nominal-referent': 'Used the assumed referent value where a bound was needed'
   });
 
   HW.defineLesson({

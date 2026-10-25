@@ -317,6 +317,146 @@
   var C = 299792458, CKM = 299792.458, YEAR_S = 365.25 * 24 * 3600;
   function sci2(x) { return K.sciTex(x, 2); }
 
+  /* ---------------- Mastery challenge (MAS) makers ---------------- */
+  HW.addCodes({
+    'time-decimal': 'Wrote minutes and seconds as a decimal (5:30 as 5.3 min)', 'round-up-fit': 'Rounded up a size that must fit (round down)', 'round-fit': 'Left a whole-unit answer unrounded',
+    'pieces-round': 'Counted a part piece (pieces per board must be rounded down)', 'other-option': 'Gave the cost of the dearer option', 'ignore-offcuts': 'Divided total length by board length, ignoring the offcuts'
+  });
+  /* rounded answer: any of xs (equivalent routes, e.g. ×0.6214 or ÷1.6093) is accepted; otherwise K.near's diagnosis on xs[0] */
+  function anyNear(xs, dp, alts) {
+    var base = K.near(xs[0], dp, { alts: alts || [] });
+    return wrapUnit(function (resp) { var p = HW.parse.number(resp); if (p.ok && xs.some(function (x) { return near(p.value, rnd(x, dp)); })) return ok(); return base(resp); });
+  }
+  /* two-box (or more) answer with one combined checker per group: groups = [{ n: boxes, check, label }] */
+  function groupCheck(groups) {
+    return function (resp) {
+      resp = resp || []; var at = 0, firstForm = null;
+      for (var i = 0; i < groups.length; i++) {
+        var g = groups[i], sl = resp.slice(at, at + g.n); at += g.n;
+        var res = g.check(g.n === 1 ? (sl[0] == null ? '' : sl[0]) : sl);
+        if (res.v === 'correct') continue;
+        var out = { v: res.v, code: res.code, hint: '<b>' + g.label + ':</b> ' + (res.hint || 'Check this one again.') };
+        if (res.v === 'wrong') return out; if (!firstForm) firstForm = out;
+      }
+      return firstForm || ok();
+    };
+  }
+  var WHO2 = ['Ama', 'Priya', 'Jade', 'Sofia', 'Noor', 'Maya'];
+  function m20Shared(r) {
+    for (var g = 0; g < 300; g++) {
+      var m = r.int(4, 8), s = r.chance(0.1) ? 0 : 5 * r.int(1, 11), P = m + s / 60, kmh = 60 / P, a = kmh * 0.6214, b = kmh / 1.6093;
+      if (bord(a, 1) || bord(b, 1)) continue;
+      return { m: m, s: s, P: P, kmh: kmh, a: a, b: b, who: r.pick(WHO2) };
+    }
+    return { m: 5, s: 30, P: 5.5, kmh: 60 / 5.5, a: 60 / 5.5 * 0.6214, b: 60 / 5.5 / 1.6093, who: 'Ama' };
+  }
+  function m20part(sh) {
+    var ss = (sh.s < 10 ? '0' : '') + sh.s, sec = 60 * sh.m + sh.s, al = [];
+    if (sh.s) al.push(alt(60 / (sh.m + sh.s / 100) * 0.6214, 'time-decimal', t(sh.s + '\\text{ s}') + ' is ' + t('\\tfrac{' + sh.s + '}{60}') + ' of a minute, not ' + t('0.' + ss) + ' min: ' + t(sh.m + '\\text{ min }' + sh.s + '\\text{ s}=' + sec + '\\text{ s}') + '.'));
+    al.push(alt(sh.kmh * 1.6093, 'conv-direction', 'A mile is longer than a kilometre, so there are <b>fewer</b> miles per hour than kilometres per hour: multiply by ' + t('0.6214') + ' (or divide by ' + t('1.6093') + ').'));
+    al.push(alt(sh.kmh, 'stopped-early', 'That is the speed in <b>km/h</b>. Change it to miles per hour.'));
+    al.push(alt(0.6214 / sh.P, 'rate-time', 'That is miles per <b>minute</b>. An hour has ' + t('60') + ' minutes.'));
+    al.push(alt(sh.P * 0.6214, 'rate-flip', 'A pace is <b>time per distance</b> (time for each kilometre). A speed is distance per time: turn the pace over first, ' + t('\\dfrac{1\\text{ km}}{' + sec + '\\text{ s}}') + '.'));
+    return { prompt: 'What speed should she set, in miles per hour, to the nearest tenth?', input: { type: 'number', after: 'mph' }, check: anyNear([sh.a, sh.b], 1, al), key: rnd(sh.a, 1).toFixed(1), answer: t(fx(sh.a, 1)) + ' mph',
+      solution: 'Write the time for one kilometre in a single unit, seconds: ' + t(sh.m + '\\text{ min }' + sh.s + '\\text{ s}=' + sh.m + '(60)+' + sh.s + '=' + sec + '\\text{ s}') + ' (a minute has ' + t('60') + ' seconds, so ' + sh.m + ':' + ss + ' is <b>not</b> ' + t(sh.m + '.' + ss) + ' min).<br>A pace is time per distance, ' + t('\\dfrac{' + sec + '\\text{ s}}{1\\text{ km}}') + '. A speed is distance per time, so turn it over, then convert both units:' +
+        disp(chainT([[1, 'km', sec, 's'], [3600, 's', 1, 'h'], [0.6214, 'mi', 1, 'km']]) + '=' + dS(rnd(sh.a, 4)) + '\\ldots\\text{ mi/h}\\approx ' + q(fx(sh.a, 1), 'mph')) +
+        'Check with ' + t('1\\text{ mi}=1.6093\\text{ km}') + ': ' + t('\\dfrac{3600}{' + sec + '}' + (near(sh.kmh, rnd(sh.kmh, 4)) ? '=' + dS(rnd(sh.kmh, 4)) : '\\approx' + fx(sh.kmh, 4)) + '\\text{ km/h}') + ', and ' + t(fx(sh.kmh, 4) + '\\div1.6093\\approx' + fx(sh.b, 1)) + ' mph — the same. It is smaller than the km/h figure, as it must be: a mile is the longer unit.',
+      hints: ['Write the pace as a decimal number of minutes — there are ' + t('60') + ' seconds in a minute, not ' + t('100') + '.', 'Turn the pace over to get kilometres per minute, then change minutes → hours and kilometres → miles.'], text: 'pace ' + sh.m + ':' + ss + '/km to mph', bad: al.map(function (a) { return fx(a.v, 1); }).filter(function (b) { return Math.abs(Number(b) - rnd(sh.a, 1)) > 1e-9 && Math.abs(Number(b) - rnd(sh.b, 1)) > 1e-9; }) };
+  }
+  function m21Shared(r) {
+    for (var g = 0; g < 500; g++) {
+      var k = r.pick([2, 2.5, 4, 5, 8, 10, 12.5]), d = cl(r.int(30, 160) / 10), D = r.int(15, 220);
+      var x1 = d / 2.54 * k * 1.6093, x2 = d / 2.54 * k / 0.6214, y1 = D * 0.6214 / k * 2.54, y2 = D / 1.6093 / k * 2.54;
+      if (bord(x1, 1) || bord(x2, 1) || bord(y1, 1) || bord(y2, 1) || y1 < 1.5 || y1 > 30 || Math.abs(D - x1) < 5) continue;
+      return { k: k, d: d, D: D, x1: x1, x2: x2, y1: y1, y2: y2, who: r.pick(['Malik', 'Owen', 'Kai', 'Eli', 'Ravi', 'Theo']) };
+    }
+    return { k: 5, d: 7.6, D: 40, x1: 7.6 / 2.54 * 5 * 1.6093, x2: 7.6 / 2.54 * 5 / 0.6214, y1: 40 * 0.6214 / 5 * 2.54, y2: 40 / 1.6093 / 5 * 2.54, who: 'Malik' };
+  }
+  function m21part(sh) {
+    var k = sh.k, d = sh.d, D = sh.D, kT = dS(k);
+    var a1 = [alt(d * k * 1.6093, 'no-convert', 'The scale is per <b>inch</b>, but the map distance is in centimetres. Change it to inches first (' + t('\\div2.54') + ').'), alt(d * 2.54 * k * 1.6093, 'conv-direction', 'An inch is longer than a centimetre, so there are <b>fewer</b> inches: divide by ' + t('2.54') + '.'),
+      alt(d / 2.54 * k, 'stopped-early', 'That is the real distance in <b>miles</b>. Change it to kilometres.'), alt(d / 2.54 * k * 0.6214, 'conv-direction', 'A kilometre is shorter than a mile, so there are <b>more</b> kilometres: multiply by ' + t('1.6093') + '.'), alt(d / 2.54 / k * 1.6093, 'scale-direction', 'Each map inch stands for ' + t(kT) + ' real miles, so multiply the inches by ' + t(kT) + '.')];
+    var a2 = [alt(D / k * 2.54, 'no-convert', 'The scale is in <b>miles</b>: change the ' + t(D) + ' km to miles first.'), alt(D * 0.6214 / k, 'stopped-early', 'That is the map distance in <b>inches</b>. Change it to centimetres (' + t('\\times2.54') + ').'),
+      alt(D * 0.6214 / k / 2.54, 'conv-direction', 'A centimetre is shorter than an inch, so there are <b>more</b> centimetres: multiply by ' + t('2.54') + '.'), alt(D * 1.6093 / k * 2.54, 'conv-direction', 'A mile is longer than a kilometre, so there are <b>fewer</b> miles: multiply by ' + t('0.6214') + ' (or divide by ' + t('1.6093') + ').'), alt(D * 0.6214 * k * 2.54, 'scale-direction', 'Each map inch stands for ' + t(kT) + ' miles, so the map inches are the real miles <b>÷</b> ' + t(kT) + '.')];
+    var p = { prompt: 'Find the actual distance between the two towns, in kilometres, to the nearest tenth. Then: a third town is ' + Q(D, 'km') + ' (in a straight line) from the first town. How far apart should those two towns be on this map, in centimetres, to the nearest tenth?',
+      input: { type: 'fields', fields: [{ name: 'Actual distance', label: 'Actual distance', after: 'km' }, { name: 'Map distance', label: 'Map distance', after: 'cm' }] },
+      check: K.fields([anyNear([sh.x1, sh.x2], 1, a1), anyNear([sh.y1, sh.y2], 1, a2)], { labels: ['Actual distance', 'Map distance'] }),
+      key: [rnd(sh.x1, 1).toFixed(1), rnd(sh.y1, 1).toFixed(1)], answer: 'Actual distance ' + t('\\approx ' + q(fx(sh.x1, 1), 'km')) + '; map distance ' + t('\\approx ' + q(fx(sh.y1, 1), 'cm')),
+      solution: 'The scale is a unit factor between <b>map</b> inches and <b>real</b> miles: ' + t('\\dfrac{' + kT + '\\text{ mi}}{1\\text{ in}}') + '. The ruler gives centimetres, so go cm → in first.' + disp(chainT([[d, 'cm', null, null], [1, 'in', 2.54, 'cm'], [k, 'mi', 1, 'in'], [1.6093, 'km', 1, 'mi']]) + '=' + dS(rnd(sh.x1, 3)) + '\\ldots\\text{ km}\\approx ' + q(fx(sh.x1, 1), 'km')) +
+        'Backwards, the scale factor goes in the other way up (real miles must cancel):' + disp(chainT([[D, 'km', null, null], [0.6214, 'mi', 1, 'km'], [1, 'in', k, 'mi'], [2.54, 'cm', 1, 'in']]) + '=' + dS(rnd(sh.y1, 3)) + '\\ldots\\text{ cm}\\approx ' + q(fx(sh.y1, 1), 'cm')) + '(Using ' + t('1\\text{ mi}=1.6093\\text{ km}') + ' instead gives the same answers to the nearest tenth.)',
+      hints: ['Treat the scale as a conversion factor: ' + t('1\\text{ in (map)}=' + kT + '\\text{ mi (real)}') + '. Change the map centimetres to inches first.', 'For the second part, run the chain backwards: km → mi → map inches → cm.'], text: 'map scale 1 in : ' + k + ' mi' };
+    p.bad = [[fx(d * k * 1.6093, 1), p.key[1]], [p.key[0], fx(D * 0.6214 / k, 1)]].filter(function (b) { return p.check(b).v !== 'correct'; });
+    return p;
+  }
+  function m22Shared(r) {
+    for (var g = 0; g < 500; g++) {
+      var H = cl(r.int(198, 212) / 100), c = r.pick([3, 4, 5, 6, 8, 10]), room = cl(H * 100 - c), ex = room / 2.54, tot = Math.floor(ex + 1e-9), fr = ex - tot;
+      if (fr < 0.5 || fr > 0.93) continue;
+      var sp = cl(H * 100 - tot * 2.54);
+      if (bord(sp, 1)) continue;
+      return { H: H, c: c, room: room, ex: ex, tot: tot, sp: sp };
+    }
+    return { H: 2.03, c: 5, room: 198, ex: 198 / 2.54, tot: 77, sp: cl(203 - 77 * 2.54) };
+  }
+  function m22part(sh) {
+    var H100 = cl(sh.H * 100), tot = sh.tot, up = tot + 1, upSp = cl(H100 - up * 2.54), w = decomp(tot, FTIN), wu = decomp(up, FTIN);
+    var mAlts = [{ total: up, code: 'round-up-fit', hint: t(up + '\\text{ in}=' + fx(up * 2.54, 2) + '\\text{ cm}') + ' leaves only ' + t(fx(upSp, 2) + '\\text{ cm}') + ' of space — less than ' + t(sh.c + '\\text{ cm}') + '. A height that has to <b>fit</b> is rounded <b>down</b>, not to the nearest inch.' }];
+    var noC = Math.floor(H100 / 2.54 + 1e-9), addC = Math.floor((H100 + sh.c) / 2.54 + 1e-9);
+    if (noC !== tot && noC !== up) mAlts.push({ total: noC, code: 'forgot-part', hint: 'That height touches the top of the doorway. Take the ' + t(sh.c + '\\text{ cm}') + ' of space off the doorway height first.' });
+    if (addC !== tot && addC !== up && addC !== noC) mAlts.push({ total: addC, code: 'forgot-part', hint: 'The space is <b>above</b> the head, so subtract it from the doorway height — don’t add it.' });
+    mAlts.push({ total: Math.floor(sh.room * 2.54), code: 'conv-direction', hint: 'An inch is longer than a centimetre, so there are <b>fewer</b> inches: divide by ' + t('2.54') + '.' });
+    var mix = mixedCheck(tot, FTIN, { exact: sh.ex, alts: mAlts });
+    var hCheck = function (resp) {
+      var a = HW.parse.number(String(resp[0] == null ? '' : resp[0]).trim()), b = HW.parse.number(String(resp[1] == null ? '' : resp[1]).trim());
+      if (a.ok && b.ok && Number.isInteger(a.value) && !Number.isInteger(b.value) && Math.abs(12 * a.value + b.value - sh.ex) < 0.6) return form('round-fit', 'Nearly — heights are listed in <b>whole</b> inches. Which way must you round so that there is still at least ' + t(sh.c + '\\text{ cm}') + ' of space?');
+      return mix(resp);
+    };
+    var sAlts = [alt(upSp, 'round-up-fit', 'That is the space left by a height one inch taller. Check the height first: it must leave at least ' + t(sh.c + '\\text{ cm}') + '.'), alt(sh.c, 'stopped-early', 'That is the <b>least</b> space allowed. Find the space your height actually leaves: doorway − height, both in centimetres.'),
+      alt(sh.sp / 2.54, 'no-convert', 'That is the space in inches. Give it in centimetres.'), alt(sh.sp / 100, 'prefix-places', 'That is in metres. Give the space in centimetres.')];
+    var p = { prompt: 'What is the <b>tallest</b> listed height that still leaves at least ' + Q(sh.c, 'cm') + ' of space? Give it in feet and inches. Then find how much space that height actually leaves, in centimetres, to the nearest tenth.',
+      input: { type: 'fields', fields: [{ name: 'Feet', label: 'Tallest height', after: 'ft' }, { name: 'Inches', label: '', after: 'in' }, { name: 'Space left', label: 'Space it leaves', after: 'cm' }] },
+      check: groupCheck([{ n: 2, check: hCheck, label: 'Height' }, { n: 1, check: wrapUnit(K.near(sh.sp, 1, { alts: sAlts })), label: 'Space left' }]),
+      key: [String(w[0]), String(w[1]), rnd(sh.sp, 1).toFixed(1)], answer: t(ftin(w[0], w[1])) + ', leaving ' + t('\\approx ' + q(fx(sh.sp, 1), 'cm')),
+      solution: 'Room for the person: ' + t(dS(H100) + '-' + sh.c + '=' + dS(sh.room) + '\\text{ cm}') + '. In inches: ' + t(dS(sh.room) + '\\div2.54=' + dS(rnd(sh.ex, 3)) + '\\ldots\\text{ in}') + '.<br>Heights are whole inches and the person must <b>fit</b>, so round <b>down</b> — not to the nearest inch: ' + t(tot + '\\text{ in}') + '. (' + t(up + '\\text{ in}=' + fx(up * 2.54, 2) + '\\text{ cm}') + ' would leave only ' + t(fx(upSp, 2) + '\\text{ cm}') + '.)<br>' +
+        t(tot + '\\div12=' + w[0] + '\\text{ R }' + w[1]) + ', so the tallest height is <b>' + t(ftin(w[0], w[1])) + '</b>.<br>Check: ' + t(tot + '\\times2.54=' + fx(tot * 2.54, 2) + '\\text{ cm}') + ', and ' + t(dS(H100) + '-' + fx(tot * 2.54, 2) + '=' + fx(sh.sp, 2) + '\\approx' + fx(sh.sp, 1) + '\\text{ cm}\\ge' + sh.c + '\\text{ cm}') + ' ✓.',
+      hints: ['Work out how much height is left for the person, in centimetres, then change it to inches.', 'The answer must be a whole number of inches that still <b>fits</b> — which way does that make you round?'], text: 'tallest height under a ' + sh.H + ' m door' };
+    p.bad = [[String(wu[0]), String(wu[1]), fx(upSp, 1)], [String(w[0]), String(w[1]), fx(sh.c, 1)]];
+    return p;
+  }
+  function m23Shared(r) {
+    var lens = [8, 10, 12, 14, 16];
+    for (var g = 0; g < 800; g++) {
+      var ab = r.sample(lens, 2).sort(function (x, y) { return x - y; }), N = r.int(6, 18), L = 5 * r.int(14, 46);
+      var mk = function (ft) { var pr = Math.round(ft * r.int(110, 260) / 100) - 0.01, cm = cl(ft * 30.48), qq = cm / L; return { ft: ft, pr: pr, cm: cm, q: qq, per: Math.floor(qq + 1e-9) }; };
+      var A = mk(ab[0]), B = mk(ab[1]);
+      if (A.per < 1 || B.per < 1 || A.per + B.per < 3 || A.pr < 5) continue;
+      if ([A, B].some(function (o) { var f = o.q - o.per; return f < 0.05 || f > 0.95; })) continue;
+      [A, B].forEach(function (o) { o.n = Math.ceil(N / o.per - 1e-9); o.cost = cl(o.n * o.pr); o.rate = o.pr / o.ft; });
+      if (Math.abs(A.cost - B.cost) < 2 || N % A.per === 0 && N % B.per === 0) continue;
+      var best = A.cost < B.cost ? A : B, cheapFt = A.rate < B.rate ? A : B;
+      if (cheapFt === best && g < 600) continue;
+      return { N: N, L: L, A: A, B: B, best: best, other: best === A ? B : A, twist: cheapFt !== best, cheapFt: cheapFt };
+    }
+    var A0 = { ft: 10, pr: 14.99, cm: 304.8, q: 304.8 / 140, per: 2, n: 5, cost: 74.95, rate: 1.499 }, B0 = { ft: 16, pr: 27.99, cm: 487.68, q: 487.68 / 140, per: 3, n: 4, cost: 111.96, rate: 27.99 / 16 };
+    return { N: 10, L: 140, A: A0, B: B0, best: A0, other: B0, twist: false, cheapFt: A0 };
+  }
+  function m23part(sh) {
+    var A = sh.A, B = sh.B, best = sh.best, other = sh.other, N = sh.N, L = sh.L;
+    var perAlts = function (o) { var a = []; if (Math.round(o.q) !== o.per) a.push(alt(Math.round(o.q), 'pieces-round', 'A part piece is no use — only <b>whole</b> ' + t(L + '\\text{ cm}') + ' pieces count: round <b>down</b>.')); var i12 = Math.floor(o.ft * 12 / L); if (i12 !== o.per) a.push(alt(i12, 'no-convert', 'The board is in feet and the pieces in centimetres: change the board length to centimetres first (' + t('\\times30.48') + ').')); return a; };
+    var nw = function (o) { return cl(Math.ceil(N * L / o.cm - 1e-9) * o.pr); }, nwBest = Math.min(nw(A), nw(B));
+    var cAlts = [alt(other.cost, 'other-option', 'That is the cost with the ' + t(other.ft + '\\text{-ft}') + ' boards. Work out both and choose the cheaper.'), alt(cl(N / best.per * best.pr), 'round-up', 'You can’t buy part of a board: round the number of boards <b>up</b>.')];
+    if (nwBest !== best.cost) cAlts.push(alt(nwBest, 'ignore-offcuts', 'Dividing the total length by the board length ignores the offcuts: each board gives only whole pieces. Use your pieces-per-board counts.'));
+    var line = function (o) { return t(o.ft + '\\text{ ft}=' + o.ft + '\\times30.48=' + dS(o.cm) + '\\text{ cm}') + '; ' + t(dS(o.cm) + '\\div' + L + '=' + fx(o.q, 2) + '\\ldots') + ', so <b>' + o.per + '</b> whole piece' + (o.per > 1 ? 's' : '') + ' (the rest is offcut). Boards: ' + t('\\dfrac{' + N + '}{' + o.per + '}' + (N % o.per ? '=' + fx(N / o.per, 2) + '\\ldots\\to' + o.n : '=' + o.n)) + '; cost ' + t(o.n + '\\times\\$' + o.pr.toFixed(2) + '=\\$' + o.cost.toFixed(2)) + '.'; };
+    var p = { prompt: 'How many ' + t(L + '\\text{ cm}') + ' pieces can be cut from one board of each length? Then find the least total cost, if all the boards bought are the same length.',
+      input: { type: 'fields', fields: [{ name: 'Pieces per ' + A.ft + '-ft board', label: 'Per ' + A.ft + '-ft board', after: 'pieces' }, { name: 'Pieces per ' + B.ft + '-ft board', label: 'Per ' + B.ft + '-ft board', after: 'pieces' }, { name: 'Least total cost', label: 'Least total cost', before: t('\\$') }] },
+      check: K.fields([exactCheck(A.per, { alts: perAlts(A), places: false }), exactCheck(B.per, { alts: perAlts(B), places: false }), exactCheck(best.cost, { alts: cAlts, places: false })], { labels: ['Pieces per ' + A.ft + '-ft board', 'Pieces per ' + B.ft + '-ft board', 'Least total cost'] }),
+      key: [String(A.per), String(B.per), best.cost.toFixed(2)], answer: A.per + ' and ' + B.per + ' pieces; least cost ' + t('\\$' + best.cost.toFixed(2)) + ' (' + best.ft + '-ft boards)',
+      solution: '<b>' + A.ft + '-ft boards:</b> ' + line(A) + '<br><b>' + B.ft + '-ft boards:</b> ' + line(B) + '<br>The cheaper choice is the ' + best.ft + '-ft boards: <b>' + t('\\$' + best.cost.toFixed(2)) + '</b>.' + (sh.twist ? ' Notice that the ' + sh.cheapFt.ft + '-ft boards are cheaper <b>per foot</b> (' + t('\\$' + fx(sh.cheapFt.rate, 2)) + ' against ' + t('\\$' + fx((sh.cheapFt === A ? B : A).rate, 2)) + '), yet cost more here, because of the wood wasted in offcuts.' : ''),
+      hints: ['Change each board length to centimetres; the number of pieces is how many whole ' + t(L + '\\text{ cm}') + ' lengths fit (round down).', 'Boards needed = ' + N + ' ÷ pieces per board, rounded <b>up</b>. Then compare the two total costs.'], text: 'boards for ' + N + ' × ' + L + ' cm' };
+    p.bad = [[String(A.per), String(B.per), other.cost.toFixed(2)]].concat(cAlts.map(function (a) { return [String(A.per), String(B.per), a.v.toFixed(2)]; })).filter(function (b) { return p.check(b).v !== 'correct'; });
+    return p;
+  }
+
   HW.defineLesson({
     id: 'u10l2', unit: 10, num: '2', title: 'Converting Units Within and Between SI and Imperial', outcome: 'M2',
     blurb: 'SI prefixes are powers of ten; imperial units each have their own multiplier. Convert with the metric number line, proportions and unit analysis — and check with a benchmark.',
@@ -1056,7 +1196,20 @@
             { html: t('\\dfrac{' + sh.R + '\\text{ ft}}{1\\text{ h}}') + ' — the hours must be on the bottom because we want hours.', why: 'If hours are on the bottom, the answer would be in “per hour”. Hours must end up on <b>top</b>.' },
             { html: 'Either way — the number is the same.', why: 'The numbers are the same, but only one orientation makes ft cancel and leaves hours.' }],
             'The rate goes in as ' + t('\\dfrac{1\\text{ h}}{' + sh.R + '\\text{ ft}}') + ' — inverted from how it was quoted — because feet are on top at that point in the chain. <b>Rule:</b> a rate is a conversion factor between its two units, and like any unit factor it is written whichever way up cancels the unwanted unit.', ['Which unit needs to cancel at that point in the chain?'], 'which way up is the rate');
-        } }] }
+        } }] },
+      /* ---------- Mastery challenge (MAS, M2) ---------- */
+      { num: '20', section: 'Mastery challenge', shared: m20Shared,
+        stem: function (sh) { return sh.who + ' trains for races measured in kilometres, but her treadmill sets its speed in <b>miles per hour</b>. She wants to run at a steady pace of <b>' + sh.m + ':' + (sh.s < 10 ? '0' : '') + sh.s + '</b> per kilometre (' + t(sh.m) + ' min ' + t(sh.s) + ' s for every kilometre).'; },
+        parts: [{ id: 'e20', level: 'MAS', outcome: 'M2', make: function (r, sh) { return m20part(sh); } }] },
+      { num: '21', shared: m21Shared,
+        stem: function (sh) { return 'An old road map is printed with the scale “<b>1 inch represents ' + dS(sh.k) + ' miles</b>”. ' + sh.who + ' has only a centimetre ruler. On the map, two towns are ' + Q(sh.d, 'cm') + ' apart.'; },
+        parts: [{ id: 'e21', level: 'MAS', outcome: 'M2', make: function (r, sh) { return m21part(sh); } }] },
+      { num: '22', shared: m22Shared,
+        stem: function (sh) { return 'A doorway is ' + Q(sh.H, 'm') + ' high. A designer wants at least ' + Q(sh.c, 'cm') + ' of space between the top of a person’s head and the top of the doorway. People’s heights are listed in feet and <b>whole</b> inches.'; },
+        parts: [{ id: 'e22', level: 'MAS', outcome: 'M2', make: function (r, sh) { return m22part(sh); } }] },
+      { num: '23', shared: m23Shared,
+        stem: function (sh) { return 'A carpenter needs ' + t(sh.N) + ' boards, each exactly ' + Q(sh.L, 'cm') + ' long, for a fence. The lumber yard sells boards only in whole lengths: ' + t(sh.A.ft + '\\text{-ft}') + ' boards at ' + t('\\$' + sh.A.pr.toFixed(2)) + ' each, or ' + t(sh.B.ft + '\\text{-ft}') + ' boards at ' + t('\\$' + sh.B.pr.toFixed(2)) + ' each. Pieces can’t be joined end to end, and the saw cuts can be ignored. (' + t('1\\text{ ft}=30.48\\text{ cm}') + ')'; },
+        parts: [{ id: 'e23', level: 'MAS', outcome: 'M2', make: function (r, sh) { return m23part(sh); } }] }
     ]
   });
 })(window);
