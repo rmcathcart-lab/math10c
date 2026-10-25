@@ -17,6 +17,7 @@ import {
   h, tex, add, box, place, Graph, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween, anim,
   pairTex, texNum, svgEl, pulse, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(String(s));
 const B1 = COLORS.blue, A2 = COLORS.amber, SOL = COLORS.purple, RES = COLORS.green, RED = COLORS.red;
@@ -1008,3 +1009,98 @@ export const explainers = mountExplainers({ pets, balance, signs, pencil, scale,
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — solve a system by elimination (lessons/js/standup.js) ============
+ * Systems are built from their solution; the key is worked from the equations: scale by the LCM, add (opposite signs)
+ * or subtract (same signs), solve, back-substitute into the simpler original equation. */
+{
+  const BL = COLORS.blue, AM = COLORS.amber;
+  /* --- exact arithmetic and LaTeX for two-variable linear systems. An equation is { a, b, c }: ax + by = c. --- */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const Q = (n, d = 1) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g + 0, d / g]; };
+  const qT = (q) => (q[1] === 1 ? String(q[0]) : (q[0] < 0 ? '-' : '') + `\\tfrac{${Math.abs(q[0])}}{${q[1]}}`);
+  const qP = (q) => (q[1] === 1 ? `(${q[0]})` : `\\left(${qT(q)}\\right)`);   // a value written in for a variable
+  const tm = (k, v, first) => (k === 0 ? '' : (k < 0 ? '-' : first ? '' : '+') + (Math.abs(k) === 1 && v ? '' : Math.abs(k)) + v);
+  const E = (a, b, c) => (a < 0 || (a === 0 && b < 0) ? { a: -a, b: -b, c: -c + 0 } : { a, b, c: c + 0 });
+  const lhs = (e, X = 'x', Y = 'y') => tm(e.a, X, true) + tm(e.b, Y, !e.a);
+  const eqT = (e, X = 'x', Y = 'y') => lhs(e, X, Y) + '=' + e.c;
+  const parallel = (e, f) => e.a * f.b === e.b * f.a;
+  const half = (s, col) => { const i = s.indexOf('='); return `\\textcolor{${col}}{${s.slice(0, i)}}&\\textcolor{${col}}{${s.slice(i)}}`; };
+  const sysT = (s1, s2) => `\\begin{aligned}${half(s1, BL)}\\\\${half(s2, AM)}\\end{aligned}`;
+  const ptT = (x, y) => `(${qT(x)},\\ ${qT(y)})`;
+  /* p·u + q, written with the positive term first when only one is positive (13 − 3y, 2x − 5) */
+  const linE = (p, u, q) => (p < 0 && q > 0 ? q + tm(p, u, false) : (tm(p, u, true) + (q ? tm(q, '', false) : '')) || '0');
+  /* --- elimination, worked from the equations: scale (by the LCM of one variable's coefficients), add or subtract,
+   * solve, back-substitute into the simpler original equation. v is the variable eliminated. --- */
+  const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
+  function elim(e1, e2, v) {
+    const c1 = v === 'x' ? e1.a : e1.b, c2 = v === 'x' ? e2.a : e2.b, u = v === 'x' ? 'y' : 'x';
+    if (!c1 || !c2) return null;
+    const L = lcm(c1, c2), m1 = L / Math.abs(c1), m2 = L / Math.abs(c2), add = Math.sign(c1) !== Math.sign(c2);
+    const s1 = { a: e1.a * m1, b: e1.b * m1, c: e1.c * m1 }, s2 = { a: e2.a * m2, b: e2.b * m2, c: e2.c * m2 };
+    const sg = add ? 1 : -1, r = { a: s1.a + sg * s2.a, b: s1.b + sg * s2.b, c: s1.c + sg * s2.c };
+    const K = u === 'x' ? r.a : r.b; if (!K) return null;
+    const u0 = Q(r.c, K);
+    const scaled = [m1 > 1 ? `\\text{Eq. 1}\\times${m1}:\\ ${eqT(s1)}` : '', m2 > 1 ? `\\text{Eq. 2}\\times${m2}:\\ ${eqT(s2)}` : ''].filter(Boolean).join('\\qquad ');
+    const comb = `\\text{${add ? 'Add' : 'Subtract'}: } {${tm(K, u, true)}}=${r.c}\\ \\Rightarrow\\ ${u}=${qT(u0)}`;
+    // back-substitute into the original equation with the smaller coefficients
+    const size = (e) => Math.abs(e.a) + Math.abs(e.b) + Math.abs(e.c) / 10;
+    const e = size(e1) <= size(e2) ? e1 : e2, cu = u === 'x' ? e.a : e.b, cv = v === 'x' ? e.a : e.b;
+    const known = (cu === 1 ? '' : cu === -1 ? '-' : String(cu)) + qP(u0), rest = Q(e.c * u0[1] - cu * u0[0], u0[1]), v0 = Q(rest[0], rest[1] * cv);
+    const into = u === 'x' ? known + tm(cv, v, false) : tm(cv, v, true) + (cu < 0 ? '' : '+') + known;
+    const back = `${into}=${e.c}\\ \\Rightarrow\\ ${tm(cv, v, true)}=${qT(rest)}` + (Math.abs(cv) === 1 && cv > 0 ? '' : `\\ \\Rightarrow\\ ${v}=${qT(v0)}`);
+    const x0 = v === 'x' ? v0 : u0, y0 = v === 'x' ? u0 : v0;
+    return { x0, y0, m1, m2, add, scaled, comb, back: `${back}\\qquad ${ptT(x0, y0)}` };
+  }
+  const SOLVE = 'Solve the system by elimination. Check your solution in both equations.';
+  const sysE = (s1, s2) => `\\begin{aligned}{\\small\\text{Eq. 1}}\\quad ${half(s1, BL)}\\\\{\\small\\text{Eq. 2}}\\quad ${half(s2, AM)}\\end{aligned}`;
+  const nz = (r, lo, hi) => r.int(lo, hi) * r.sign();
+  const mk = (cx1, cy1, cx2, cy2, x0, y0) => [E(cx1, cy1, cx1 * x0 + cy1 * y0), E(cx2, cy2, cx2 * x0 + cy2 * y0)];
+  // coefficients for the eliminated variable v (p1, p2) and the other one (q1, q2) → the two equations
+  const build = (v, p1, p2, q1, q2, x0, y0) => (v === 'x' ? mk(p1, q1, p2, q2, x0, y0) : mk(q1, p1, q2, p2, x0, y0));
+  const ok = (e1, e2) => !parallel(e1, e2) && gcd(gcd(e1.a, e1.b), e1.c) === 1 && gcd(gcd(e2.a, e2.b), e2.c) === 1;
+  /* Beginning: one variable already has matching or opposite coefficients: add or subtract directly */
+  function beg(r) {
+    for (;;) {
+      const x0 = r.int(-4, 6), y0 = r.int(-4, 6), v = r.pick(['x', 'y']), p = r.int(1, 5), q1 = nz(r, 1, 6), q2 = nz(r, 1, 6);
+      if (Math.abs(q1) === Math.abs(q2) || x0 === y0 || !x0 || !y0) continue;
+      const [e1, e2] = build(v, p, p * r.sign(), q1, q2, x0, y0);
+      if (!ok(e1, e2)) continue;
+      const s = elim(e1, e2, v); if (!s || s.m1 !== 1 || s.m2 !== 1) continue;
+      return { text: SOLVE, q: sysE(eqT(e1), eqT(e2)), a: [s.comb, s.back] };
+    }
+  }
+  /* Progressing: scale one equation so a pair of coefficients matches or is opposite */
+  function prg(r) {
+    for (;;) {
+      const x0 = r.int(-6, 6), y0 = r.int(-6, 6), v = r.pick(['x', 'y']), p2 = r.int(1, 3), k = r.pick([2, 3, 4]), q1 = nz(r, 1, 7), q2 = nz(r, 1, 7);
+      if (p2 * k > 9 || Math.abs(q1) === Math.abs(q2) || x0 === y0 || !x0 || !y0) continue;
+      let [e1, e2] = build(v, p2 * k * r.sign(), p2 * r.sign(), q1, q2, x0, y0);
+      if (r.chance(0.4)) [e1, e2] = [e2, e1];
+      if (!ok(e1, e2)) continue;
+      const s = elim(e1, e2, v); if (!s || s.m1 * s.m2 === 1) continue;
+      return { text: SOLVE, q: sysE(eqT(e1), eqT(e2)), a: [s.scaled, s.comb, s.back] };
+    }
+  }
+  /* Mastery: neither equation is a multiple-match: scale both (by the LCM); sometimes the answer is a fraction */
+  const noDiv = (a, b) => a % b !== 0 && b % a !== 0;
+  function mas(r) {
+    for (;;) {
+      const cx1 = nz(r, 2, 7), cy1 = nz(r, 2, 7), cx2 = nz(r, 2, 7), cy2 = nz(r, 2, 7);
+      if (!noDiv(cx1, cx2) || !noDiv(cy1, cy2)) continue;
+      const frac = r.chance(0.25);
+      let e1, e2;
+      if (frac) { e1 = E(cx1, cy1, nz(r, 1, 12)); e2 = E(cx2, cy2, nz(r, 1, 12)); }
+      else { const x0 = r.int(-6, 6), y0 = r.int(-6, 6); if (x0 === y0 || !x0 || !y0) continue; [e1, e2] = mk(cx1, cy1, cx2, cy2, x0, y0); }
+      if (!ok(e1, e2)) continue;
+      const lx = lcm(e1.a, e2.a), ly = lcm(e1.b, e2.b), v = lx < ly ? 'x' : ly < lx ? 'y' : r.pick(['x', 'y']);
+      const s = elim(e1, e2, v); if (!s || s.m1 === 1 || s.m2 === 1) continue;
+      if (frac && (s.x0[1] === 1 && s.y0[1] === 1 || Math.max(s.x0[1], s.y0[1]) > 12 || Math.abs(s.x0[0] / s.x0[1]) > 9 || Math.abs(s.y0[0] / s.y0[1]) > 9)) continue;
+      return { text: frac ? 'Solve the system by elimination. Give the solution as exact values (fractions, not decimals).' : SOLVE, q: sysE(eqT(e1), eqT(e2)), a: [s.scaled, s.comb, s.back] };
+    }
+  }
+  standup('u8l3', {
+    intro: 'Make one variable’s coefficients match or be opposites, add or subtract, then back-substitute. Check in both equations.',
+    levels: { BEG: beg, PRG: prg, MAS: mas }
+  });
+}

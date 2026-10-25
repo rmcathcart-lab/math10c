@@ -17,6 +17,7 @@ import {
   h, tex, add, box, Graph, ValueTable, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pairTex, texNum, svgEl, place, pulse, anim, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const BLUE = '#1f5bd6', AMB = '#c27a0e', AMBT = '#b06a07', PUR = '#7b4fc4', GRN = '#12805a', RED = COLORS.red, TEAL = COLORS.teal, INK = COLORS.ink, GRAY = '#9aa0ab';
@@ -697,3 +698,196 @@ function mountStatic() {
 mountStatic();
 export const explainers = mountExplainers({ mobile, howMany, methods, choose, tables, setEq, trip, plans });
 export const _test = { SYS, SQ, PLAN };
+
+/* ============ Stand Up Break! — choose a method, then solve (unit review; lessons/js/standup.js) ============
+ * Beginning: a system ready for one method (y isolated, matching/opposite coefficients, or both y = ...); Progressing:
+ * scale one equation, decimal coefficients (set equal; calculator), or how many solutions; Mastery: two tables of values
+ * (Example 1) or scale both equations. Built from the solution; keys worked from the equations. */
+{
+  const BL = BLUE, AM = AMBT;
+  /* --- exact arithmetic and LaTeX for two-variable linear systems. An equation is { a, b, c }: ax + by = c. --- */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const Q = (n, d = 1) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g + 0, d / g]; };
+  const qT = (q) => (q[1] === 1 ? String(q[0]) : (q[0] < 0 ? '-' : '') + `\\tfrac{${Math.abs(q[0])}}{${q[1]}}`);
+  const qP = (q) => (q[1] === 1 ? `(${q[0]})` : `\\left(${qT(q)}\\right)`);   // a value written in for a variable
+  const tm = (k, v, first) => (k === 0 ? '' : (k < 0 ? '-' : first ? '' : '+') + (Math.abs(k) === 1 && v ? '' : Math.abs(k)) + v);
+  const E = (a, b, c) => (a < 0 || (a === 0 && b < 0) ? { a: -a, b: -b, c: -c + 0 } : { a, b, c: c + 0 });
+  const lhs = (e, X = 'x', Y = 'y') => tm(e.a, X, true) + tm(e.b, Y, !e.a);
+  const eqT = (e, X = 'x', Y = 'y') => lhs(e, X, Y) + '=' + e.c;
+  const parallel = (e, f) => e.a * f.b === e.b * f.a;
+  const half = (s, col) => { const i = s.indexOf('='); return `\\textcolor{${col}}{${s.slice(0, i)}}&\\textcolor{${col}}{${s.slice(i)}}`; };
+  const sysT = (s1, s2) => `\\begin{aligned}${half(s1, BL)}\\\\${half(s2, AM)}\\end{aligned}`;
+  const ptT = (x, y) => `(${qT(x)},\\ ${qT(y)})`;
+  /* p·u + q, written with the positive term first when only one is positive (13 − 3y, 2x − 5) */
+  const linE = (p, u, q) => (p < 0 && q > 0 ? q + tm(p, u, false) : (tm(p, u, true) + (q ? tm(q, '', false) : '')) || '0');
+  /* --- substitution, worked from the equations: isolate v in equation i, substitute into the other, solve, back-substitute.
+   * Returns the answer lines and the solution, or null when the arithmetic isn't usable. --- */
+  function subst(eqs, i, v, o = {}) {
+    const e = eqs[i], f = eqs[1 - i], u = v === 'x' ? 'y' : 'x';
+    const cv = v === 'x' ? e.a : e.b, cu = v === 'x' ? e.b : e.a;    // in the isolated equation: cv·v + cu·u = c
+    const fv = v === 'x' ? f.a : f.b, fu = v === 'x' ? f.b : f.a;    // in the other one
+    if (!cv || !cu || !fv) return null;
+    const d = Math.abs(cv), sg = Math.sign(cv), n0 = sg * e.c, n1 = -sg * cu; // v = (n0 + n1·u)/d
+    if (fv % d) return null;                                            // the denominator must cancel
+    const k = fv / d, K = k * n1 + fu, Qc = k * n0;
+    if (!K) return null;
+    const u0 = Q(f.c - Qc, K), num = linE(n1, u, n0);
+    const vE = d === 1 ? num : (n0 === 0 && n1 < 0 ? `-\\dfrac{${tm(-n1, u, true)}}{${d}}` : `\\dfrac{${num}}{${d}}`);
+    const v0 = Q(n0 * u0[1] + n1 * u0[0], d * u0[1]);
+    const x0 = v === 'x' ? v0 : u0, y0 = v === 'x' ? u0 : v0;
+    const mul = (c, s) => (c === 1 ? `(${s})` : c === -1 ? `-(${s})` : `${c}(${s})`);
+    // the substitution, in x-then-y order: 2(13 − 3y) − y = 5,  4x + 3(2x − 5) = 2,  4(−3y/2) − 5y = 22
+    const vPart = d === 1 ? mul(fv, vE) : `${fv === 1 ? '' : fv === -1 ? '-' : fv}\\left(${vE}\\right)`;
+    const subT = v === 'x' ? vPart + tm(fu, u, false) : (fu ? tm(fu, u, true) + (vPart[0] === '-' ? '' : '+') : '') + vPart;
+    const cancel = d === 1 ? '' : `\\ \\Rightarrow\\ ${v === 'x' ? mul(k, num) + tm(fu, u, false) : tm(fu, u, true) + (k < 0 ? '' : '+') + mul(k, num)}=${f.c}`;
+    const coll = linE(K, u, Qc) + '=' + f.c;
+    // back-substitution into the expression for v: 13 − 3(3), 2(17/10) − 5, −3(−2)/2
+    const c1 = n1 === 1 ? '' : n1 === -1 ? '-' : String(n1);
+    const numSub = n1 < 0 && n0 > 0 ? `${n0}${c1}${qP(u0)}` : `${c1}${qP(u0)}${n0 ? tm(n0, '', false) : ''}`;
+    const back = `${v}=${d === 1 ? numSub : `\\dfrac{${numSub}}{${d}}`}=${qT(v0)}`;
+    return {
+      x0, y0, K, d, u, v,
+      iso: `${eqT(e)}\\ \\Rightarrow\\ ${v}=${vE}`,
+      sub: `${subT}=${f.c}${cancel}\\ \\Rightarrow\\ ${coll}\\ \\Rightarrow\\ ${u}=${qT(u0)}`,
+      back: `${back}\\qquad ${ptT(x0, y0)}`
+    };
+  }
+  /* --- elimination, worked from the equations: scale (by the LCM of one variable's coefficients), add or subtract,
+   * solve, back-substitute into the simpler original equation. v is the variable eliminated. --- */
+  const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
+  function elim(e1, e2, v) {
+    const c1 = v === 'x' ? e1.a : e1.b, c2 = v === 'x' ? e2.a : e2.b, u = v === 'x' ? 'y' : 'x';
+    if (!c1 || !c2) return null;
+    const L = lcm(c1, c2), m1 = L / Math.abs(c1), m2 = L / Math.abs(c2), add = Math.sign(c1) !== Math.sign(c2);
+    const s1 = { a: e1.a * m1, b: e1.b * m1, c: e1.c * m1 }, s2 = { a: e2.a * m2, b: e2.b * m2, c: e2.c * m2 };
+    const sg = add ? 1 : -1, r = { a: s1.a + sg * s2.a, b: s1.b + sg * s2.b, c: s1.c + sg * s2.c };
+    const K = u === 'x' ? r.a : r.b; if (!K) return null;
+    const u0 = Q(r.c, K);
+    const scaled = [m1 > 1 ? `\\text{Eq. 1}\\times${m1}:\\ ${eqT(s1)}` : '', m2 > 1 ? `\\text{Eq. 2}\\times${m2}:\\ ${eqT(s2)}` : ''].filter(Boolean).join('\\qquad ');
+    const comb = `\\text{${add ? 'Add' : 'Subtract'}: } {${tm(K, u, true)}}=${r.c}\\ \\Rightarrow\\ ${u}=${qT(u0)}`;
+    // back-substitute into the original equation with the smaller coefficients
+    const size = (e) => Math.abs(e.a) + Math.abs(e.b) + Math.abs(e.c) / 10;
+    const e = size(e1) <= size(e2) ? e1 : e2, cu = u === 'x' ? e.a : e.b, cv = v === 'x' ? e.a : e.b;
+    const known = (cu === 1 ? '' : cu === -1 ? '-' : String(cu)) + qP(u0), rest = Q(e.c * u0[1] - cu * u0[0], u0[1]), v0 = Q(rest[0], rest[1] * cv);
+    const into = u === 'x' ? known + tm(cv, v, false) : tm(cv, v, true) + (cu < 0 ? '' : '+') + known;
+    const back = `${into}=${e.c}\\ \\Rightarrow\\ ${tm(cv, v, true)}=${qT(rest)}` + (Math.abs(cv) === 1 && cv > 0 ? '' : `\\ \\Rightarrow\\ ${v}=${qT(v0)}`);
+    const x0 = v === 'x' ? v0 : u0, y0 = v === 'x' ? u0 : v0;
+    return { x0, y0, m1, m2, add, scaled, comb, back: `${back}\\qquad ${ptT(x0, y0)}` };
+  }
+  const WHY = 'Choose a method (graphing, substitution or elimination) and say why. Then solve the system and check in both equations.';
+  const nz = (r, lo, hi) => r.int(lo, hi) * r.sign();
+  const mbE = (m, q) => E(-m, 1, q);                                       // y = mx + q
+  const siT = (m, q) => `y=${linE(m, 'x', q)}`;
+  /* setting two y = … expressions equal (the graphing shortcut), with integer or decimal coefficients */
+  function setEq(m1, b1, m2, b2, x0, y0, d = (v) => String(v)) {
+    const M = +(m1 - m2).toFixed(6), B = +(b2 - b1).toFixed(6);
+    const e = (m, b) => `${m === 1 ? '' : m === -1 ? '-' : d(m)}x${b ? (b < 0 ? '-' : '+') + d(Math.abs(b)) : ''}`;
+    const k = (m) => (m === 1 ? '' : m === -1 ? '-' : d(m));
+    return [`${e(m1, b1)}=${e(m2, b2)}\\ \\Rightarrow\\ ${k(M)}x=${d(B)}\\ \\Rightarrow\\ x=${d(x0)}`,
+      `y=${k(m1)}(${d(x0)})${b1 ? (b1 < 0 ? '-' : '+') + d(Math.abs(b1)) : ''}=${d(y0)}\\qquad (${d(x0)},\\ ${d(y0)})`];
+  }
+  const meth = (name, why) => `${W(name)}\\text{: ${why}}`;
+  const W = (s) => `\\textbf{${s}}`;
+
+  /* Beginning: a system that is ready for one method: y already isolated, coefficients already matching/opposite, or both y = … */
+  function beg(r) {
+    for (;;) {
+      const x0 = nz(r, 1, 6), y0 = nz(r, 1, 7), kind = r.pick(['sub', 'elim', 'eq']);
+      if (kind === 'sub') {
+        const m = nz(r, 1, 4), q = y0 - m * x0; if (!q || Math.abs(q) > 9) continue;
+        const a2 = r.int(2, 6), b2 = nz(r, 2, 5), e1 = mbE(m, q), e2 = E(a2, b2, a2 * x0 + b2 * y0);
+        if (parallel(e1, e2) || gcd(a2, b2) !== 1) continue;
+        const s = subst([e1, e2], 0, 'y'); if (!s) continue;
+        return { text: WHY, q: sysT(siT(m, q), eqT(e2)), a: [meth('Substitution', 'y is already isolated'), s.sub, s.back] };
+      }
+      if (kind === 'elim') {
+        const v = r.pick(['x', 'y']), p = r.int(1, 5), q1 = nz(r, 1, 6), q2 = nz(r, 1, 6); if (Math.abs(q1) === Math.abs(q2)) continue;
+        const P2 = p * r.sign(), [e1, e2] = v === 'x' ? [E(p, q1, p * x0 + q1 * y0), E(P2, q2, P2 * x0 + q2 * y0)] : [E(q1, p, q1 * x0 + p * y0), E(q2, P2, q2 * x0 + P2 * y0)];
+        if (parallel(e1, e2) || [e1, e2].some((e) => gcd(gcd(e.a, e.b), e.c) !== 1)) continue;
+        const s = elim(e1, e2, v); if (!s || s.m1 !== 1 || s.m2 !== 1) continue;
+        return { text: WHY, q: sysT(eqT(e1), eqT(e2)), a: [meth('Elimination', `the ${v}-coefficients ${s.add ? 'are opposites' : 'match'}`), s.comb, s.back] };
+      }
+      const m1 = nz(r, 1, 4), m2 = nz(r, 1, 4), b1 = y0 - m1 * x0, b2 = y0 - m2 * x0;
+      if (m1 === m2 || Math.abs(b1) > 9 || Math.abs(b2) > 9) continue;
+      return { text: WHY, q: sysT(siT(m1, b1), siT(m2, b2)), a: [meth('Set equal', 'both are y = ...')].concat(setEq(m1, b1, m2, b2, x0, y0)) };
+    }
+  }
+
+  /* Progressing: scale one equation; decimals (set equal, calculator); or how many solutions */
+  const dd = (v) => String(+v.toFixed(3));
+  function prg(r) {
+    const kind = r.pick(['scale', 'dec', 'count']);
+    for (;;) {
+      if (kind === 'scale') {
+        const x0 = nz(r, 1, 6), y0 = nz(r, 1, 6), v = r.pick(['x', 'y']), p2 = r.int(1, 3), k = r.pick([2, 3, 4]), q1 = nz(r, 1, 7), q2 = nz(r, 1, 7);
+        if (p2 * k > 9 || Math.abs(q1) === Math.abs(q2) || x0 === y0) continue;
+        const P1 = p2 * k * r.sign(), P2 = p2 * r.sign();
+        let [e1, e2] = v === 'x' ? [E(P1, q1, P1 * x0 + q1 * y0), E(P2, q2, P2 * x0 + q2 * y0)] : [E(q1, P1, q1 * x0 + P1 * y0), E(q2, P2, q2 * x0 + P2 * y0)];
+        if (r.chance(0.4)) [e1, e2] = [e2, e1];
+        if (parallel(e1, e2) || [e1, e2].some((e) => Math.abs(e.a) === 1 || Math.abs(e.b) === 1 || gcd(gcd(e.a, e.b), e.c) !== 1)) continue;
+        const s = elim(e1, e2, v); if (!s || s.m1 * s.m2 === 1) continue;
+        return { text: WHY, q: sysT(eqT(e1), eqT(e2)), a: [meth('Elimination', `scale one equation (${v})`), s.scaled, s.comb, s.back] };
+      }
+      if (kind === 'dec') { // in hundredths, so the keys stay exact
+        const X = 5 * r.int(1, 16), m1 = nz(r, 2, 25), m2 = nz(r, 2, 25), b1 = nz(r, 1, 90) * 10, Y = m1 * X + b1;   // x = X/10, m = m/10; b and y in hundredths
+        if (m1 === m2 || m1 * m2 > 0 && r.chance(0.7)) continue;
+        const b2 = Y - m2 * X; if (Math.abs(b2) > 999 || !b2) continue;
+        const x0 = X / 10, y0 = Y / 100, M1 = m1 / 10, M2 = m2 / 10, B1 = b1 / 100, B2 = b2 / 100;
+        if (Math.abs(y0) > 12) continue;
+        return { text: 'Choose a method and say why. Then solve the system. (Calculator allowed.)', q: sysT(`y=${dd(M1)}x${B1 < 0 ? '-' : '+'}${dd(Math.abs(B1))}`, `y=${dd(M2)}x${B2 < 0 ? '-' : '+'}${dd(Math.abs(B2))}`),
+          a: [meth('Set equal', 'decimals, so a graph only estimates')].concat(setEq(M1, B1, M2, B2, x0, y0, (v) => dd(v))) };
+      }
+      // how many solutions?
+      const m = r.pick([1, 2, 3, 4, -1, -2, -3, [1, 2], [-1, 2], [2, 3], [-3, 2]]), q = nz(r, 1, 7), k = r.pick([2, 3, -2, 4]), out = r.pick(['none', 'none', 'inf', 'inf', 'one']);
+      const [mp, mq] = Array.isArray(m) ? m : [m, 1];
+      const base = E(-mp, mq, mq * q);                                         // mq·y = mp·x + mq·q
+      let e2, verdict;
+      if (out === 'inf') { e2 = { a: base.a * k, b: base.b * k, c: base.c * k }; verdict = 'Same slope and same y-intercept: the same line. \\textbf{Infinitely many solutions.}'; }
+      else if (out === 'none') { const sh = nz(r, 1, 5); e2 = { a: base.a * k, b: base.b * k, c: (base.c + sh * mq) * k }; verdict = 'Same slope, different y-intercepts: parallel lines. \\textbf{No solution.}'; }
+      else { const t = E(base.a * k + r.pick([1, -1, 2]), base.b * k, base.c * k + r.int(-6, 6)); if (parallel(t, base)) continue; e2 = t; verdict = 'Different slopes: the lines cross once. \\textbf{One solution.}'; }
+      e2 = E(e2.a, e2.b, e2.c);
+      if (!e2.b) continue;
+      const mT = (e) => qT(Q(-e.a, e.b)), bT = (e) => qT(Q(e.c, e.b));
+      const d1 = mq === 1 ? siT(mp, q) : eqT(base), siE = (e) => { const [p1, q1] = Q(-e.a, e.b), [p2, q2] = Q(e.c, e.b); return 'y=' + (q1 === 1 ? tm(p1, 'x', true) : (p1 < 0 ? '-' : '') + `\\tfrac{${Math.abs(p1)}}{${q1}}x`) + (p2 ? (p2 < 0 ? '-' : '+') + (q2 === 1 ? Math.abs(p2) : `\\tfrac{${Math.abs(p2)}}{${q2}}`) : ''); };
+      return { text: 'How many solutions does the system have: none, one, or infinitely many? Justify your answer without graphing.', q: sysT(d1, eqT(e2)),
+        a: [`\\textcolor{${BL}}{${siE(base)}}:\\ m=${mT(base)},\\ b=${bT(base)}`, `\\textcolor{${AM}}{${siE(e2)}}:\\ m=${mT(e2)},\\ b=${bT(e2)}`, `\\text{${verdict.replace(/\\textbf\{([^}]*)\}/, '}\\textbf{$1}\\text{')}}`] };
+    }
+  }
+
+  /* Mastery: two tables of values (find each line, then the crossing: Example 1), or scale both equations */
+  const NAMES = [['Priya', 'Devon'], ['Mila', 'Jonah'], ['Ayesha', 'Leo'], ['Hana', 'Marcus'], ['Sofia', 'Kai']];
+  function tbl(name, col, xs, ys) {
+    return `\\begin{array}{c}\\textcolor{${col}}{\\textsf{${name}'s line}}\\\\[2pt]\\begin{array}{${'|c'.repeat(xs.length + 1)}|}\\hline x&${xs.join('&')}\\\\\\hline y&${ys.join('&')}\\\\\\hline\\end{array}\\end{array}`;
+  }
+  function masTables(r) {
+    for (;;) {
+      const x0 = nz(r, 1, 5), y0 = nz(r, 1, 8), m1 = nz(r, 1, 3), m2 = nz(r, 1, 3), b1 = y0 - m1 * x0, b2 = y0 - m2 * x0;
+      if (m1 === m2 || Math.abs(b1) > 10 || Math.abs(b2) > 10) continue;
+      const st1 = r.pick([1, 2]), st2 = r.pick([1, 2]), s1 = r.int(-5, 1), s2 = r.int(-5, 1);
+      const xs1 = [0, 1, 2, 3].map((i) => s1 + i * st1), xs2 = [0, 1, 2, 3].map((i) => s2 + i * st2);
+      if (xs1.includes(x0) || xs2.includes(x0)) continue;                    // the crossing can't be read off a table
+      if (xs1.includes(0) && xs2.includes(0) && r.chance(0.6)) continue;     // usually make at least one b be worked out
+      const [n1, n2] = r.pick(NAMES), ys1 = xs1.map((x) => m1 * x + b1), ys2 = xs2.map((x) => m2 * x + b2);
+      const slope = (xs, ys) => `m=\\dfrac{${ys[1]}-${ys[0] < 0 ? `(${ys[0]})` : ys[0]}}{${xs[1]}-${xs[0] < 0 ? `(${xs[0]})` : xs[0]}}=${(ys[1] - ys[0]) / (xs[1] - xs[0])}`;
+      return { text: `Two students each made a table of values for their own straight line. Find each line’s equation in the form <i>y</i> = <i>mx</i> + <i>b</i>, then find the point where the two lines intersect.`,
+        q: `\\small ${tbl(n1, BL, xs1, ys1)}\\\\[6pt]${tbl(n2, AM, xs2, ys2)}`,
+        a: [`\\textcolor{${BL}}{\\text{${n1}}}:\\ ${slope(xs1, ys1)},\\ \\ \\textcolor{${BL}}{${siT(m1, b1)}}`, `\\textcolor{${AM}}{\\text{${n2}}}:\\ ${slope(xs2, ys2)},\\ \\ \\textcolor{${AM}}{${siT(m2, b2)}}`]
+          .concat(setEq(m1, b1, m2, b2, x0, y0)) };
+    }
+  }
+  const noDiv = (a, b) => a % b !== 0 && b % a !== 0;
+  function masScale(r) {
+    for (;;) {
+      const cx1 = nz(r, 2, 7), cy1 = nz(r, 2, 7), cx2 = nz(r, 2, 7), cy2 = nz(r, 2, 7), x0 = nz(r, 1, 6), y0 = nz(r, 1, 6);
+      if (!noDiv(cx1, cx2) || !noDiv(cy1, cy2) || x0 === y0 || gcd(cx1, cy1) !== 1 || gcd(cx2, cy2) !== 1) continue;
+      const e1 = E(cx1, cy1, cx1 * x0 + cy1 * y0), e2 = E(cx2, cy2, cx2 * x0 + cy2 * y0);
+      if (parallel(e1, e2)) continue;
+      const lx = lcm(e1.a, e2.a), ly = lcm(e1.b, e2.b), v = lx <= ly ? 'x' : 'y', s = elim(e1, e2, v); if (!s) continue;
+      return { text: WHY, q: sysT(eqT(e1), eqT(e2)), a: [meth('Elimination', `scale both (LCM ${Math.min(lx, ly)})`), s.scaled, s.comb, s.back] };
+    }
+  }
+  standup('u8l6', {
+    intro: 'Pick the method that suits the system, say why, then solve it at your whiteboard station and check in both equations.',
+    levels: { BEG: beg, PRG: prg, MAS: (r) => (r.chance(0.5) ? masTables(r) : masScale(r)) }
+  });
+}

@@ -14,6 +14,7 @@ import {
   h, tex, add, box, place, Graph, NumberLine, ValueTable, checkCard, stamp, stampIn, mountExplainers, pop, fadeIn, anim,
   sleep, tween, svgEl, liveCtx, pulse, arrowHead, linear, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(String(s));
 const BLUE = COLORS.blue, AMB = COLORS.amber, PUR = COLORS.purple, INK = COLORS.ink, GRAY = COLORS.gray, RED = COLORS.red, GRN = COLORS.green, TEAL = COLORS.teal;
@@ -766,3 +767,85 @@ function med(d) { return d.vc === 'w' ? 'wind' : 'current'; }
 mountWarm();
 export const explainers = mountExplainers({ roundTrip, mixPour, mixSolve, mixLever, dstTri, trip, current, speedSolve });
 export const _test = { RT, MX, MS, ML, TR, CU, SS };
+
+/* ============ Stand Up Break! — mixture and two-leg journeys (lessons/js/standup.js) ============
+ * Cost blends (Beginning), percent-concentration mixtures (Progressing) and two-leg journeys with stops (Mastery): the
+ * sections taught before the card. Each story is built from its answer. The key shows the organizer table, the system
+ * (amount / time blue, value / distance amber), the substitution step, and the answer in words. */
+{
+  const half = (s, col) => { const i = s.indexOf('='); return `${tc(col, s.slice(0, i))}&${tc(col, s.slice(i))}`; };
+  const sysT = (s1, s2) => `\\begin{aligned}${half(s1, BLUE)}\\\\${half(s2, AMB)}\\end{aligned}`;
+  const W = (s) => `\\text{${s}}`;
+  const dec = (v) => String(+v.toFixed(4));                               // 12.5
+  const pc = (r) => (r / 100).toFixed(2);                                 // 30 → 0.30, as the booklet writes rates
+  const money = (v) => (Number.isInteger(v) ? '$' + v : '$' + v.toFixed(2));
+  const co = (v) => (v === 1 ? '' : thin(v));
+  /* a small organizer table (plain HTML: the answer area doesn't render LaTeX in atext) */
+  function table(head, rows) {
+    const td = (s, b) => `<td style="padding:2px 9px;border:1px solid #cfe5da;${b ? 'font-weight:700;' : ''}">${s}</td>`;
+    return `<table style="border-collapse:collapse;margin:6px auto 4px;font-size:.95em;color:inherit;text-align:center"><tr>${head.map((s) => td(s, true)).join('')}</tr>` +
+      rows.map((r) => `<tr>${r.map((s) => td(s)).join('')}</tr>`).join('') + '</table>';
+  }
+  const iv = (s) => `<i>${s}</i>`;
+
+  /* ---------- Beginning: blending by cost per kilogram ---------- */
+  const BLEND = [['premium coffee beans', 'standard coffee beans', 'coffee blend', 18, 30, 9, 16, 'p', 's', 'premium', 'standard'], ['cashews', 'peanuts', 'nut mix', 16, 28, 5, 10, 'c', 'p', 'cashews', 'peanuts'],
+    ['almonds', 'raisins', 'trail mix', 14, 22, 6, 10, 'a', 'r', 'almonds', 'raisins'], ['green tea', 'black tea', 'tea blend', 30, 48, 16, 26, 'g', 'b', 'green', 'black'],
+    ['chocolate candies', 'jelly beans', 'candy mix', 12, 20, 5, 9, 'c', 'j', 'chocolates', 'jelly beans'], ['sunflower seeds', 'millet', 'birdseed mix', 4, 8, 1, 3, 's', 'm', 'sunflower', 'millet']];
+  function beg(r) {
+    for (;;) {
+      const [n1, n2, mix, hlo, hhi, llo, lhi, p, q, k1, k2] = r.pick(BLEND), c1 = r.int(hlo, hhi), c2 = r.int(llo, lhi), a = r.int(4, 40), b = r.int(4, 40);
+      const T = a + b, V = c1 * a + c2 * b, cm = V / T;
+      if (a === b || T % 5 || !Number.isInteger(cm * 2) || cm === c1 || cm === c2) continue;
+      return { text: `A shop blends ${n1} costing ${money(c1)}/kg with ${n2} costing ${money(c2)}/kg. The ${mix} weighs ${T} kg and sells for ${money(cm)}/kg. How many kilograms of each are in the ${mix}?`, q: '',
+        atext: `Let ${iv(p)} be the kg of ${n1} and ${iv(q)} the kg of ${n2}.` +
+          table(['', 'Amount (kg)', 'Rate ($/kg)', 'Value ($)'], [[k1, iv(p), c1, c1 + iv(p)], [k2, iv(q), c2, c2 + iv(q)], ['mix', T, cm, `${cm}(${T}) = ${V}`]]),
+        a: [sysT(`${p}+${q}=${T}`, `${c1}${p}+${c2}${q}=${thin(V)}`),
+          `${q}=${T}-${p}:\\ \\ ${c1}${p}+${c2}(${T}-${p})=${thin(V)}\\ \\Rightarrow\\ ${c1 - c2 === 1 ? '' : c1 - c2}${p}+${thin(c2 * T)}=${thin(V)}\\ \\Rightarrow\\ ${p}=${a},\\quad ${q}=${b}`,
+          `${tc(PUR, a)}${W(` kg of ${n1} and `)}${tc(PUR, b)}${W(` kg of ${n2}`)}`] };
+    }
+  }
+
+  /* ---------- Progressing: blending by percent concentration ---------- */
+  const SOL = [['saline', 'saline', 'mL'], ['acid', 'acid', 'mL'], ['alcohol', 'alcohol', 'mL'], ['antifreeze', 'antifreeze', 'L'], ['juice', 'juice concentrate', 'L'], ['fertilizer', 'fertilizer', 'L']];
+  function prg(r) {
+    for (;;) {
+      const [what, inner, u] = r.pick(SOL), r1 = 5 * r.int(1, 8), r2 = 5 * r.int(r1 / 5 + 2, 19), step = u === 'mL' ? r.pick([10, 25, 50]) : r.pick([1, 2, 5]);
+      const a = step * r.int(2, 12), b = step * r.int(2, 12), V = a + b, salt = (r1 * a + r2 * b) / 100, rm = (100 * salt) / V;
+      if (a === b || !Number.isInteger(rm) || rm % 5 || rm === r1 || rm === r2) continue;
+      return { text: `How much of a ${r1}% ${what} solution and how much of a ${r2}% ${what} solution must be mixed to make ${thin(V)} ${u} of a ${rm}% ${what} solution?`, q: '',
+        atext: `Let ${iv('x')} be the ${u} of ${r1}% solution and ${iv('y')} the ${u} of ${r2}% solution.` +
+          table(['', `Amount (${u})`, 'Rate', `${inner[0].toUpperCase() + inner.slice(1)} (${u})`], [[`${r1}%`, iv('x'), pc(r1), pc(r1) + iv('x')], [`${r2}%`, iv('y'), pc(r2), pc(r2) + iv('y')], [`${rm}% mix`, thin(V), pc(rm), `${pc(rm)}(${thin(V)}) = ${dec(salt)}`]]),
+        a: [sysT(`x+y=${thin(V)}`, `${pc(r1)}x+${pc(r2)}y=${dec(salt)}`),
+          `\\times100:\\ ${r1}x+${r2}y=${thin(r1 * a + r2 * b)};\\quad x=${thin(V)}-y:\\ \\ ${r1}(${thin(V)}-y)+${r2}y=${thin(r1 * a + r2 * b)}\\ \\Rightarrow\\ ${r2 - r1}y=${thin(r1 * a + r2 * b - r1 * V)}`,
+          `y=${b},\\quad x=${a}:\\ \\ ${tc(PUR, `${a}\\text{ ${u}}`)}${W(` of ${r1}% and `)}${tc(PUR, `${b}\\text{ ${u}}`)}${W(` of ${r2}%`)}`.replace(/%/g, '\\%')] };
+    }
+  }
+
+  /* ---------- Mastery: a two-leg journey with stops taken out of the clock time ---------- */
+  const TRIP = [
+    { who: 'A trucker', verb: 'drove', legs: ['on the highway', 'on secondary roads'], v: [[90, 110], [50, 70]], t: [2, 8], stops: [[60, 'a 1-hour fuel stop'], [30, 'a 30-minute rest break'], [45, 'a 45-minute lunch stop']], p: 'h', q: 'r', ask: 'on the highway' },
+    { who: 'A family', verb: 'drove', legs: ['on the highway', 'on city streets'], v: [[90, 110], [40, 60]], t: [1, 6], stops: [[30, 'a 30-minute lunch stop'], [15, 'a 15-minute gas stop'], [45, 'a 45-minute picnic']], p: 'h', q: 'c', ask: 'on the highway' },
+    { who: 'A cyclist', verb: 'rode', legs: ['on the paved trail', 'on gravel roads'], v: [[20, 30], [10, 16]], t: [1, 4], stops: [[30, 'a 30-minute lunch break'], [15, 'a 15-minute water stop']], p: 'p', q: 'g', ask: 'on the paved trail' },
+    { who: 'A canoeist', verb: 'paddled', legs: ['across the lake', 'up the river'], v: [[6, 9], [3, 5]], t: [1, 4], stops: [[30, 'a 30-minute portage rest'], [60, 'a 1-hour lunch on shore']], p: 'l', q: 'r', ask: 'across the lake' }];
+  function mas(r) {
+    for (;;) {
+      const T = r.pick(TRIP), s1 = r.int(...T.v[0]), s2 = r.int(...T.v[1]);
+      if (s1 > 30 && (s1 % 5 || s2 % 5)) continue;
+      const t1 = r.int(T.t[0] * 2, T.t[1] * 2) / 2, t2 = r.int(T.t[0] * 2, T.t[1] * 2) / 2, D = s1 * t1 + s2 * t2;
+      if (t1 === t2 || !Number.isInteger(D)) continue;
+      const st = r.shuffle(T.stops).slice(0, r.pick([1, 2])), stopH = st.reduce((s, x) => s + x[0], 0) / 60, drive = t1 + t2, clock = drive + stopH;
+      if (!Number.isInteger(clock * 4)) continue;
+      const stopsT = st.map((x) => x[1]).join(' and ');
+      return { text: `${T.who} ${T.verb} ${thin(D)} km in ${clock % 1 === 0.25 || clock % 1 === 0.75 ? `${Math.floor(clock)} h ${clock % 1 * 60} min` : dec(clock) + ' hours'}, including ${stopsT}. While moving, the speed was ${s1} km/h ${T.legs[0]} and ${s2} km/h ${T.legs[1]}. How many hours were spent ${T.ask}?`, q: '',
+        atext: `Let ${iv(T.p)} be the hours ${T.legs[0]} and ${iv(T.q)} the hours ${T.legs[1]}. Moving time: ${dec(clock)} − ${dec(stopH)} = ${dec(drive)} h.`,
+        a: [sysT(`${T.p}+${T.q}=${dec(drive)}`, `${s1}${T.p}+${s2}${T.q}=${thin(D)}`),
+          `${T.q}=${dec(drive)}-${T.p}:\\ \\ ${s1}${T.p}+${s2}(${dec(drive)}-${T.p})=${thin(D)}\\ \\Rightarrow\\ ${co(s1 - s2)}${T.p}=${dec(D - s2 * drive)}\\ \\Rightarrow\\ ${T.p}=${dec(t1)}`,
+          `${tc(PUR, dec(t1) + '\\text{ h}')}${W(` ${T.ask} (and `)}${dec(t2)}${W(` h ${T.legs[1]})`)}`] };
+    }
+  }
+  standup('u8l5', {
+    intro: 'Organize it in a table, write two equations, solve, and answer the question in a sentence.',
+    levels: { BEG: beg, PRG: prg, MAS: mas }
+  });
+}

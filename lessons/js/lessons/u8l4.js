@@ -15,6 +15,7 @@ import {
   h, tex, add, box, fit, Graph, Flowchart, stamp, stampIn, checkCard, mountExplainers, pop, fadeIn, appear, sleep,
   tween, pulse, svgEl, liveCtx, drawIn, COLORS, fmt
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const BLUE = COLORS.blue, AMB = COLORS.amber, PUR = COLORS.purple, TEAL = COLORS.teal, RED = COLORS.red, GRN = COLORS.green, INK = COLORS.ink;
 /* \B{…} blue (Eq. 1), \A{…} amber (Eq. 2), \P{…} purple (solution) */
@@ -799,3 +800,125 @@ export const explainers = mountExplainers({
 });
 export const _test = { PIPE, MT, S4, TR, RC, SW, IV, RT };
 void liveCtx; void GRN; void RED;
+
+/* ============ Stand Up Break! — word problems with systems (lessons/js/standup.js) ============
+ * Number relationships (Beginning), perimeter and dimensions (Progressing), money and denominations (Mastery): the
+ * sections taught before the card. Each story is built from its answer, so the numbers come out whole. The key gives the
+ * "Let" line, the system (Eq. 1 blue, Eq. 2 amber), the key solving step, and the answer in words. */
+{
+  const cB = (s) => `\\textcolor{${BLUE}}{${s}}`, cA = (s) => `\\textcolor{${AMB}}{${s}}`;
+  const half = (s, col) => { const i = s.indexOf('='); return `\\textcolor{${col}}{${s.slice(0, i)}}&\\textcolor{${col}}{${s.slice(i)}}`; };
+  const sysT = (s1, s2) => `\\begin{aligned}${half(s1, BLUE)}\\\\${half(s2, AMB)}\\end{aligned}`;
+  const W = (s) => `\\text{${s}}`;
+  const n = tnum;
+  const co = (v) => (v === 1 ? '' : String(v)), mulP = (v, e) => `${co(v)}(${e})`;
+  const NUMW = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+  const TIMES = { 2: 'twice', 3: 'three times', 4: 'four times', 5: 'five times' };
+
+  /* ---------- Beginning: two numbers ---------- */
+  function beg(r) {
+    const kind = r.int(0, 3);
+    for (;;) {
+      const y = r.int(3, 30);
+      let x, text, e2, step;
+      if (kind === 0) { // sum and difference
+        x = r.int(y + 2, 60); const S = x + y, D = x - y;
+        text = `The sum of two numbers is ${S}. Their difference is ${D}. Find the two numbers.`;
+        return out(text, `x+y=${S}`, `x-y=${D}`, `${W('Add: ')}2x=${S + D}\\ \\Rightarrow\\ x=${x},\\quad y=${S}-${x}=${y}`, x, y);
+      }
+      if (kind === 1) { // difference; the larger is k more than twice the smaller
+        const k = r.int(1, 9); x = 2 * y + k; const D = x - y;
+        text = `The difference between two numbers is ${D}. The larger number is ${k} more than twice the smaller number. Find the two numbers.`;
+        return out(text, `x-y=${D}`, `x=2y+${k}`, `(2y+${k})-y=${D}\\ \\Rightarrow\\ y+${k}=${D}\\ \\Rightarrow\\ y=${y},\\quad x=2(${y})+${k}=${x}`, x, y);
+      }
+      if (kind === 2) { // sum; the larger is k less than m times the smaller
+        const m = r.pick([2, 3, 4]), k = r.int(1, 9); x = m * y - k; if (x <= y) continue; const S = x + y;
+        text = `The sum of two numbers is ${S}. The larger number is ${k} less than ${TIMES[m]} the smaller number. Find the two numbers.`;
+        return out(text, `x+y=${S}`, `x=${m}y-${k}`, `(${m}y-${k})+y=${S}\\ \\Rightarrow\\ ${m + 1}y=${S + k}\\ \\Rightarrow\\ y=${y},\\quad x=${m}(${y})-${k}=${x}`, x, y);
+      }
+      // sum; the larger is m times the smaller
+      const m = r.pick([2, 3, 4, 5]); x = m * y; const S = x + y;
+      text = `Two numbers add up to ${S}. The larger number is ${TIMES[m]} the smaller number. Find the two numbers.`;
+      return out(text, `x+y=${S}`, `x=${m}y`, `${m}y+y=${S}\\ \\Rightarrow\\ ${m + 1}y=${S}\\ \\Rightarrow\\ y=${y},\\quad x=${m}(${y})=${x}`, x, y);
+    }
+    function out(text, s1, s2, step, x, y) {
+      return { text, q: '', atext: 'Let <i>x</i> be the larger number and <i>y</i> the smaller number.',
+        a: [sysT(s1, s2), step, `${W('The numbers are ')}\\textcolor{${PUR}}{${x}}${W(' and ')}\\textcolor{${PUR}}{${y}}.`] };
+    }
+  }
+
+  /* ---------- Progressing: a rectangle's perimeter and a length–width relationship ---------- */
+  const RECT = [['garden', 'm', 4, 30], ['dog run', 'm', 3, 20], ['vegetable patch', 'm', 2, 15], ['deck', 'm', 2, 9], ['school field', 'm', 30, 90],
+    ['poster', 'cm', 20, 60], ['picture frame', 'cm', 12, 40], ['skating rink', 'm', 15, 40], ['swimming pool', 'm', 6, 25], ['parking lot', 'm', 20, 60]];
+  function prg(r) {
+    for (;;) {
+      const [obj, u, lo, hi] = r.pick(RECT), w = r.int(lo, hi), kind = r.int(0, 3);
+      let l, rel, eq2, step;
+      if (kind === 0) { const m = r.pick([2, 3]), k = r.int(1, 9); l = m * w + k; rel = `Its length is ${k} ${u} more than ${TIMES[m]} its width.`; eq2 = `l=${m}w+${k}`; step = `(${m}w+${k})+w=HALF\\ \\Rightarrow\\ ${m + 1}w+${k}=HALF\\ \\Rightarrow\\ w=${w}`; }
+      else if (kind === 1) { const m = r.pick([2, 3]), k = r.int(1, 9); l = m * w - k; if (l <= w) continue; rel = `Its length is ${k} ${u} less than ${TIMES[m]} its width.`; eq2 = `l=${m}w-${k}`; step = `(${m}w-${k})+w=HALF\\ \\Rightarrow\\ ${m + 1}w-${k}=HALF\\ \\Rightarrow\\ w=${w}`; }
+      else if (kind === 2) { const k = r.int(2, 15); l = w + k; rel = `Its width is ${k} ${u} less than its length.`; eq2 = `w=l-${k}`; step = `l+(l-${k})=HALF\\ \\Rightarrow\\ 2l-${k}=HALF\\ \\Rightarrow\\ l=${l}`; }
+      else { const m = r.pick([2, 3, 4]); l = m * w; rel = `Its length is ${TIMES[m]} its width.`; eq2 = `l=${m}w`; step = `${m}w+w=HALF\\ \\Rightarrow\\ ${m + 1}w=HALF\\ \\Rightarrow\\ w=${w}`; }
+      const P = 2 * (l + w), H = l + w;
+      const other = kind === 2 ? `w=${l}-${eq2.split('-')[1]}=${w}` : `l=${eq2.slice(2).replace('w', `(${w})`)}=${l}`;
+      return { text: `A rectangular ${obj} has a perimeter of ${n(P)} ${u}. ${rel} Find the dimensions of the ${obj}.`, q: '',
+        atext: `Let <i>l</i> be the length and <i>w</i> the width of the ${obj}, in ${u === 'm' ? 'metres' : 'centimetres'}.`,
+        a: [sysT(`2l+2w=${n(P)}`, eq2), `${W('Halve Eq. 1: ')}l+w=${n(H)}`,
+          step.replace(/HALF/g, n(H)) + `,\\quad ${other}`,
+          `${W(`The ${obj} is `)}\\textcolor{${PUR}}{${l}}${W(` ${u} long and `)}\\textcolor{${PUR}}{${w}}${W(` ${u} wide.`)}`] };
+    }
+  }
+
+  /* ---------- Mastery: one equation counts, the other totals value ---------- */
+  const BILLS = [[5, 10, 'f', 't', 'five-dollar', 'ten-dollar'], [5, 20, 'f', 'w', 'five-dollar', 'twenty-dollar'], [10, 20, 't', 'w', 'ten-dollar', 'twenty-dollar']];
+  const COINS = [[10, 25, 'd', 'q', 'dime', 'quarter', 'dimes'], [5, 25, 'n', 'q', 'nickel', 'quarter', 'nickels'], [100, 200, 'l', 't', 'loonie', 'toonie', 'loonies'], [25, 100, 'q', 'l', 'quarter', 'loonie', 'quarters'], [5, 10, 'n', 'd', 'nickel', 'dime', 'nickels']];
+  const NAMES = ['Maria', 'Jordan', 'Aiden', 'Priya', 'Mateo', 'Sophie', 'Liam', 'Ava', 'Noah', 'Zara'];
+  const EVENTS = [['school play', 'adult', 'student'], ['basketball tournament', 'adult', 'student'], ['band concert', 'adult', 'student'], ['craft fair', 'adult', 'child'], ['science fair', 'adult', 'child']];
+  const dollars = (c) => (c % 100 ? '$' + (c / 100).toFixed(2) : '$' + n(c / 100));
+  // n1 + n2 = N and v1·n1 + v2·n2 = V, solved by substituting n1 = N − n2
+  function countValue(p, q, v1, v2, N, b, N2) {
+    return `${p}=${N}-${q}:\\ \\ ${mulP(v1, `${N}-${q}`)}+${co(v2)}${q}=${n(v1 * N + (v2 - v1) * b)}\\ \\Rightarrow\\ ${n(v1 * N)}+${co(v2 - v1)}${q}=${n(v1 * N + (v2 - v1) * b)}\\ \\Rightarrow\\ ${q}=${b},\\quad ${p}=${N2}`;
+  }
+  function mas(r) {
+    const kind = r.pick(['bills', 'coins', 'tickets', 'more']);
+    for (;;) {
+      const who = r.pick(NAMES);
+      if (kind === 'bills') {
+        const [v1, v2, p, q, w1, w2] = r.pick(BILLS), a = r.int(4, 25), b = r.int(4, 25); if (a === b) continue;
+        const N = a + b, V = v1 * a + v2 * b;
+        return { text: `${who} has a total of $${n(V)} in ${w1} bills and ${w2} bills. There are ${N} bills in all. How many of each kind of bill are there?`, q: '',
+          atext: `Let <i>${p}</i> be the number of ${w1} bills and <i>${q}</i> the number of ${w2} bills.`,
+          a: [sysT(`${p}+${q}=${N}`, `${co(v1)}${p}+${co(v2)}${q}=${n(V)}`), countValue(p, q, v1, v2, N, b, a),
+            `\\textcolor{${PUR}}{${a}}${W(` ${w1} bills and `)}\\textcolor{${PUR}}{${b}}${W(` ${w2} bills`)}`] };
+      }
+      if (kind === 'coins') {
+        const [c1, c2, p, q, w1, w2, pl1] = r.pick(COINS), a = r.int(5, 30), b = r.int(5, 30); if (a === b) continue;
+        const sc = c1 % 100 || c2 % 100 ? 1 : 100, v1 = c1 / sc, v2 = c2 / sc, N = a + b, V = v1 * a + v2 * b;
+        return { text: `A jar holds ${N} coins, all ${pl1} and ${w2}s. The coins are worth ${dollars(V * sc)} altogether. How many of each coin are in the jar?`, q: '',
+          atext: `Let <i>${p}</i> be the number of ${pl1} and <i>${q}</i> the number of ${w2}s.${sc === 1 ? ' Value in cents.' : ' Value in dollars.'}`,
+          a: [sysT(`${p}+${q}=${N}`, `${co(v1)}${p}+${co(v2)}${q}=${n(V)}`), countValue(p, q, v1, v2, N, b, a),
+            `\\textcolor{${PUR}}{${a}}${W(` ${pl1} and `)}\\textcolor{${PUR}}{${b}}${W(` ${w2}s`)}`] };
+      }
+      if (kind === 'tickets') {
+        const [ev, A, S] = r.pick(EVENTS), pa = r.int(8, 15), ps = r.int(3, pa - 2), a = 10 * r.int(5, 30), s = 10 * r.int(5, 30); if (a === s) continue;
+        const N = a + s, R = pa * a + ps * s;
+        return { text: `The ${ev} sold ${N} tickets. ${A[0].toUpperCase() + A.slice(1)} tickets cost $${pa} each and ${S} tickets cost $${ps} each. The ticket sales came to $${n(R)}. How many of each kind of ticket were sold?`, q: '',
+          atext: `Let <i>a</i> be the number of ${A} tickets and <i>s</i> the number of ${S} tickets.`,
+          a: [sysT(`a+s=${N}`, `${pa}a+${ps}s=${n(R)}`), `s=${N}-a:\\ \\ ${pa}a+${ps}(${N}-a)=${n(R)}\\ \\Rightarrow\\ ${pa - ps}a+${n(ps * N)}=${n(R)}\\ \\Rightarrow\\ a=${a},\\quad s=${s}`,
+            `\\textcolor{${PUR}}{${a}}${W(` ${A} tickets and `)}\\textcolor{${PUR}}{${s}}${W(` ${S} tickets`)}`] };
+      }
+      // a count relationship instead of a total: k more of the cheaper coin or bill
+      const [c1, c2, p, q, w1, w2, pl1] = r.pick(COINS.concat(BILLS.map((b) => b.concat([b[4] + ' bills'])))), b = r.int(4, 20), k = r.int(2, 12), a = b + k;
+      const unit = BILLS.some((x) => x[4] === w1) ? 'bill' : 'coin', sc = unit === 'bill' ? 100 : c1 % 100 || c2 % 100 ? 1 : 100;
+      const v1 = unit === 'bill' ? c1 : c1 / sc, v2 = unit === 'bill' ? c2 : c2 / sc, V = v1 * a + v2 * b;
+      const p2 = unit === 'bill' ? `${w2} bills` : `${w2}s`;
+      return { text: `${who} has ${dollars(V * sc)} in ${pl1} and ${p2}. There are ${k} more ${pl1} than ${p2}. How many of each does ${who} have?`, q: '',
+        atext: `Let <i>${p}</i> be the number of ${pl1} and <i>${q}</i> the number of ${p2}.${sc === 1 ? ' Value in cents.' : ''}`,
+        a: [sysT(`${p}=${q}+${k}`, `${co(v1)}${p}+${co(v2)}${q}=${n(V)}`), `${mulP(v1, `${q}+${k}`)}+${co(v2)}${q}=${n(V)}\\ \\Rightarrow\\ ${v1 + v2}${q}+${n(v1 * k)}=${n(V)}\\ \\Rightarrow\\ ${q}=${b},\\quad ${p}=${b}+${k}=${a}`,
+          `\\textcolor{${PUR}}{${a}}${W(` ${pl1} and `)}\\textcolor{${PUR}}{${b}}${W(` ${p2}`)}`] };
+    }
+  }
+  standup('u8l4', {
+    intro: 'All four steps on your whiteboard: let the variables, write two equations, solve, and answer the question in words.',
+    levels: { BEG: beg, PRG: prg, MAS: mas }
+  });
+}

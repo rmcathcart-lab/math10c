@@ -15,6 +15,7 @@ import {
   h, tex, add, box, place, Graph, ValueTable, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, sleep, tween, pulse,
   pairTex, texNum, svgEl, liveCtx, COLORS, num
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(String(s));
 const BLUE = COLORS.blue, AMB = COLORS.amber, PUR = COLORS.purple, GRN = COLORS.green, RED = COLORS.red, INK = COLORS.ink;
@@ -808,3 +809,154 @@ mountWarm();
 mountEx1();
 export const explainers = mountExplainers({ dragLab, readGraph, sameY, byHand, tickets, breakEven, turnSlide, races, count, classify });
 export const _test = { STD, YF, chk, DL, SY, E1, E2, E3, TS, RC, EC, CL };
+
+/* ============ Stand Up Break! — solve a system by graphing, by hand (lessons/js/standup.js) ============
+ * Every system is built from its solution, so the lines cross on grid points. A line is { A, B, C }: Ax + By = C.
+ * The answer shows the lines' starting facts, the crossing point, the check in both original equations, and a small
+ * answer graph (blue line 1, amber line 2, purple crossing). */
+{
+  const BL = COLORS.blue, AM = COLORS.amber, PU = COLORS.purple;
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const tm = (k, v, first) => (k === 0 ? '' : (k < 0 ? '-' : first ? '' : '+') + (Math.abs(k) === 1 && v ? '' : Math.abs(k)) + v);
+  const fr = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g + 0, d / g]; };
+  const frT = (n, d) => { const [p, q] = fr(n, d); return q === 1 ? String(p) : (p < 0 ? '-' : '') + `\\tfrac{${Math.abs(p)}}{${q}}`; };
+  const decT = (n, d) => { const [p, q] = fr(n, d); return q === 1 ? String(p) : q === 2 ? String(p / q) : frT(p, q); }; // 4.5, or ⅓-type fractions
+  const pt = (x, y) => `(${x},\\ ${y})`;
+  const cT = (col, s) => `\\textcolor{${col}}{${s}}`;
+  const L = (A, B, C) => (A < 0 || (A === 0 && B < 0) ? { A: -A, B: -B, C: -C + 0 } : { A, B, C });
+  const gen = (l, X = 'x', Y = 'y') => tm(l.A, X, true) + tm(l.B, Y, !l.A) + '=' + l.C;
+  function si(l) { // y = mx + b, from Ax + By = C
+    const [mp, mq] = fr(-l.A, l.B), [bp, bq] = fr(l.C, l.B);
+    const mx = mp === 0 ? '' : mq === 1 ? tm(mp, 'x', true) : (mp < 0 ? '-' : '') + `\\tfrac{${Math.abs(mp)}}{${mq}}x`;
+    const bt = bp === 0 ? '' : (bp < 0 ? '-' : mx ? '+' : '') + (bq === 1 ? Math.abs(bp) : `\\tfrac{${Math.abs(bp)}}{${bq}}`);
+    return 'y=' + ((mx + bt) || '0');
+  }
+  const slopeT = (l) => frT(-l.A, l.B), intT = (l) => frT(l.C, l.B);
+  const mb = (m, b) => L(-m, 1, b);                       // y = mx + b with integer m, b
+  const parallel = (a, b) => a.A * b.B === a.B * b.A;
+  // the substitution check in an equation as it was written ('si': y = mx + b; 'gen': Ax + By = C)
+  function check(l, form, x, y) {
+    const k = (c, v, first) => (c === 1 ? (first ? '' : '+') : c === -1 ? '-' : (c > 0 && !first ? '+' : '') + c) + `(${v})`;
+    if (form === 'si') { const [mp, mq] = fr(-l.A, l.B), [bp, bq] = fr(l.C, l.B); const m = mq === 1 ? mp : null; return `${y}=` + (m === null ? `${frT(mp, mq)}(${x})` : k(m, x, true)) + (bp ? (bp < 0 ? '-' : '+') + (bq === 1 ? Math.abs(bp) : `\\tfrac{${Math.abs(bp)}}{${bq}}`) : '') + '\\ \\checkmark'; }
+    return (l.A ? k(l.A, x, true) : '') + (l.B ? k(l.B, y, !l.A) : '') + `=${l.C}\\ \\checkmark`;
+  }
+  // lattice points of a line inside a window, nearest the origin first (skipping one point)
+  function lattice(l, w, skip) {
+    const out = [];
+    for (let x = w.x0; x <= w.x1; x++) { const n = l.C - l.A * x; if (n % l.B === 0) { const y = n / l.B; if (y >= w.y0 && y <= w.y1 && !(skip && skip[0] === x && skip[1] === y)) out.push([x, y + 0]); } }
+    return out.sort((p, q) => (p[0] * p[0] + p[1] * p[1]) - (q[0] * q[0] + q[1] * q[1]));
+  }
+  /* a small answer graph: the two lines and the crossing point */
+  function graph(lines, P, w) {
+    const S = 200, pad = 14, sx = S / (w.x1 - w.x0), sy = S / (w.y1 - w.y0);
+    const X = (x) => +(pad + (x - w.x0) * sx).toFixed(1), Y = (y) => +(pad + (w.y1 - y) * sy).toFixed(1);
+    let g = '';
+    for (let x = Math.ceil(w.x0 / w.step) * w.step; x <= w.x1; x += w.step) g += `<line x1="${X(x)}" y1="${Y(w.y0)}" x2="${X(x)}" y2="${Y(w.y1)}" stroke="${x === 0 ? '#3a4254' : '#d5d9e0'}" stroke-width="${x === 0 ? 1.4 : 0.7}"/>`;
+    for (let y = Math.ceil(w.y0 / w.step) * w.step; y <= w.y1; y += w.step) g += `<line x1="${X(w.x0)}" y1="${Y(y)}" x2="${X(w.x1)}" y2="${Y(y)}" stroke="${y === 0 ? '#3a4254' : '#d5d9e0'}" stroke-width="${y === 0 ? 1.4 : 0.7}"/>`;
+    const tick = (x, y, s, anchor) => `<text x="${x}" y="${y}" font-size="9.5" fill="#5b6273" text-anchor="${anchor}">${s}</text>`;
+    for (let x = Math.ceil(w.x0 / w.lab) * w.lab; x <= w.x1; x += w.lab) if (x) g += tick(X(x), Y(Math.max(w.y0, 0)) + 11, String(x).replace('-', '−'), 'middle');
+    for (let y = Math.ceil(w.y0 / w.lab) * w.lab; y <= w.y1; y += w.lab) if (y) g += tick(X(Math.max(w.x0, 0)) - 3, Y(y) + 3, String(y).replace('-', '−'), 'end');
+    lines.forEach(({ l, col }) => {
+      const c = [];
+      if (l.B) [w.x0, w.x1].forEach((x) => c.push([x, (l.C - l.A * x) / l.B]));
+      if (l.A) [w.y0, w.y1].forEach((y) => c.push([(l.C - l.B * y) / l.A, y]));
+      const inn = c.filter(([x, y]) => x >= w.x0 - 1e-9 && x <= w.x1 + 1e-9 && y >= w.y0 - 1e-9 && y <= w.y1 + 1e-9);
+      let best = null, bd = -1;
+      inn.forEach((p) => inn.forEach((q) => { const d = (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2; if (d > bd) { bd = d; best = [p, q]; } }));
+      if (best) g += `<line x1="${X(best[0][0])}" y1="${Y(best[0][1])}" x2="${X(best[1][0])}" y2="${Y(best[1][1])}" stroke="${col}" stroke-width="2.6" stroke-linecap="round"/>`;
+    });
+    g += `<circle cx="${X(P[0])}" cy="${Y(P[1])}" r="4.6" fill="${PU}" stroke="#fff" stroke-width="1.5"/>`;
+    const W = S + 2 * pad;
+    return `<svg viewBox="0 0 ${W} ${W}" width="${W}" height="${W}" style="max-width:100%;height:auto;display:block;margin:4px auto" role="img" aria-label="The two lines cross at (${P[0]}, ${P[1]})">${g}</svg>`;
+  }
+  const W8 = { x0: -8, x1: 8, y0: -8, y1: 8, step: 1, lab: 4 };
+  const half = (e, col) => { const i = e.indexOf('='); return cT(col, e.slice(0, i)) + '&' + cT(col, e.slice(i)); };
+  const sysT = (a, b) => `\\begin{aligned}${half(a, BL)}\\\\${half(b, AM)}\\end{aligned}`;
+  const solve = 'Solve the system by graphing both lines by hand. Then check your solution in both equations.';
+
+  /* Beginning: both lines already y = mx + b, integer slopes */
+  function beg(r) {
+    for (;;) {
+      const m1 = r.pick([1, 2, 3, -1, -2, -3]), m2 = r.pick([1, 2, 3, -1, -2, -3, [1, 2], [-1, 2]]), x0 = r.int(-4, 4), y0 = r.int(-5, 5);
+      if (Array.isArray(m2) && x0 % 2) continue;
+      const M2 = Array.isArray(m2) ? m2[0] / m2[1] : m2;
+      if (m1 === M2) continue;
+      const b1 = y0 - m1 * x0, b2 = y0 - M2 * x0;
+      if (b1 === b2 || Math.abs(b1) > 6 || Math.abs(b2) > 6) continue;
+      const l1 = mb(m1, b1), l2 = Array.isArray(m2) ? L(-m2[0], m2[1], m2[1] * b2) : mb(m2, b2);
+      const e1 = si(l1), e2 = si(l2);
+      return { text: solve, q: sysT(e1, e2),
+        a: [`${cT(BL, `b=${b1},\\ m=${slopeT(l1)}`)}\\qquad ${cT(AM, `b=${b2},\\ m=${slopeT(l2)}`)}`,
+          `\\text{The lines cross at } ${cT(PU, pt(x0, y0))}`,
+          `${check(l1, 'si', x0, y0)}\\qquad ${check(l2, 'si', x0, y0)}`],
+        atext: graph([{ l: l1, col: BL }, { l: l2, col: AM }], [x0, y0], W8) };
+    }
+  }
+  /* Progressing: rearrange first (one or both in general form; a fraction slope sometimes) */
+  function prg(r) {
+    for (;;) {
+      const x0 = r.int(-5, 5), y0 = r.int(-6, 6);
+      // line 1: Ax ± y = C
+      const l1 = (() => { const A = r.pick([1, 2, 3, 4, -2, -3]), B = r.pick([1, -1]); return L(A, B, A * x0 + B * y0); })();
+      let l2, f2;
+      if (r.chance(0.45)) { // y = (p/q)x + b
+        const [p, q] = r.pick([[1, 2], [-1, 2], [1, 3], [-1, 3], [2, 3], [-2, 3], [3, 2], [-3, 2]]);
+        if (x0 % q) continue;
+        l2 = L(-p, q, q * y0 - p * x0); f2 = 'si';
+      } else { const A = r.pick([1, 2, 3, -1, -2, 5]), B = r.pick([1, -1]); l2 = L(A, B, A * x0 + B * y0); f2 = 'gen'; }
+      if (parallel(l1, l2)) continue;
+      const b1 = l1.C / l1.B, b2 = l2.C / l2.B;
+      if (!Number.isInteger(b2) || Math.abs(b1) > 7 || Math.abs(b2) > 7 || b1 === b2) continue;
+      const e1 = gen(l1), e2 = f2 === 'si' ? si(l2) : gen(l2);
+      const rear = (l, e, f) => (f === 'si' ? cT(l === l1 ? BL : AM, e) + `:\\ b=${intT(l)},\\ m=${slopeT(l)}` : cT(l === l1 ? BL : AM, `${e}\\ \\Rightarrow\\ ${si(l)}`));
+      return { text: solve, q: sysT(e1, e2),
+        a: [rear(l1, e1, 'gen'), rear(l2, e2, f2),
+          `\\text{The lines cross at } ${cT(PU, pt(x0, y0))}`, `${check(l1, 'gen', x0, y0)}\\qquad ${check(l2, f2, x0, y0)}`],
+        atext: graph([{ l: l1, col: BL }, { l: l2, col: AM }], [x0, y0], W8) };
+    }
+  }
+  /* Mastery: (a) both in general form with fraction slopes (graph from lattice points or intercepts);
+   *          (b) a two-family ticket story: write the system, graph it in the first quadrant, interpret the crossing */
+  function masA(r) {
+    for (;;) {
+      const x0 = r.int(-4, 4), y0 = r.int(-4, 4);
+      const A1 = r.pick([1, 2, 3, 4, -1, -2]), B1 = r.pick([2, 3, -2, -3]), A2 = r.pick([1, 2, 3, 5, -1, -3]), B2 = r.pick([1, 2, 3, -1, -2, 4]);
+      if (gcd(A1, B1) !== 1 || gcd(A2, B2) !== 1 || Math.abs(B2) === 1 && Math.abs(A2) === 1) continue;
+      const l1 = L(A1, B1, A1 * x0 + B1 * y0), l2 = L(A2, B2, A2 * x0 + B2 * y0);
+      if (parallel(l1, l2) || (l1.A < 0 && l1.B < 0) || (l2.A < 0 && l2.B < 0)) continue;
+      const p1 = lattice(l1, W8, [x0, y0]), p2 = lattice(l2, W8, [x0, y0]);
+      if (p1.length < 2 || p2.length < 2) continue;
+      const pts = (ps) => pt(...ps[0]) + '\\text{ and }' + pt(...ps[1]);
+      return { text: solve + ' (Hint: find two points on each line that land on grid points.)', q: sysT(gen(l1), gen(l2)),
+        a: [`${cT(BL, gen(l1))}:\\ ${pts(p1)}`, `${cT(AM, gen(l2))}:\\ ${pts(p2)}`,
+          `\\text{The lines cross at } ${cT(PU, pt(x0, y0))}`, `${check(l1, 'gen', x0, y0)}\\qquad ${check(l2, 'gen', x0, y0)}`],
+        atext: graph([{ l: l1, col: BL }, { l: l2, col: AM }], [x0, y0], W8) };
+    }
+  }
+  const STORY = [
+    ['zoo', 'adult', 'child'], ['fun run', 'adult', 'child'], ['water park', 'adult', 'child'], ['science centre', 'adult', 'student'],
+    ['bowling alley', 'adult', 'youth'], ['corn maze', 'adult', 'child'], ['hockey game', 'adult', 'student']];
+  const FAM = ['Alvarez', 'Bennett', 'Chen', 'Dubois', 'Okafor', 'Singh', 'Nguyen', 'Kowalski', 'Martel', 'Haddad'];
+  function masB(r) {
+    for (;;) {
+      const x0 = r.int(3, 8), y0 = r.int(1, 5); if (y0 >= x0) continue;
+      const a1 = r.int(1, 3), c1 = r.int(1, 3), a2 = r.int(1, 3), c2 = r.int(1, 4);
+      if (a1 * c2 === a2 * c1) continue;
+      const T1 = a1 * x0 + c1 * y0, T2 = a2 * x0 + c2 * y0, top = Math.max(T1 / a1, T1 / c1, T2 / a2, T2 / c2);
+      if (top > 12) continue;
+      const [s, A, C] = r.pick(STORY), [f1, f2] = r.shuffle(FAM).slice(0, 2), n = Math.ceil(top);
+      const many = (k, w) => `${k} ${w} ticket${k === 1 ? '' : 's'}`;
+      const l1 = L(a1, c1, T1), l2 = L(a2, c2, T2), w = { x0: 0, x1: n, y0: 0, y1: n, step: 1, lab: n > 8 ? 4 : 2 };
+      return { text: `At the ${s}, the ${f1} family pays $${T1} for ${many(a1, A)} and ${many(c1, C)}. The ${f2} family pays $${T2} for ${many(a2, A)} and ${many(c2, C)}. ` +
+          `Let <i>x</i> be the price of one ${A} ticket and <i>y</i> the price of one ${C} ticket, in dollars. Write a system of equations and solve it by graphing.`, q: '',
+        a: [sysT(gen(l1), gen(l2)),
+          `\\text{Intercepts: }${cT(BL, `${pt(0, decT(T1, c1))},\\ ${pt(decT(T1, a1), 0)}`)}\\quad ${cT(AM, `${pt(0, decT(T2, c2))},\\ ${pt(decT(T2, a2), 0)}`)}`,
+          `\\text{The lines cross at } ${cT(PU, pt(x0, y0))}`, `${check(l1, 'gen', x0, y0)}\\qquad ${check(l2, 'gen', x0, y0)}`],
+        atext: `An ${A} ticket costs <b>$${x0}</b> and a${/^[aeiou]/.test(C) ? 'n' : ''} ${C} ticket costs <b>$${y0}</b>.` + graph([{ l: l1, col: BL }, { l: l2, col: AM }], [x0, y0], w) };
+    }
+  }
+  standup('u8l1', {
+    intro: 'Graph both lines by hand on your whiteboard grid, read the crossing point, then check it in both equations.',
+    levels: { BEG: beg, PRG: prg, MAS: (r) => (r.chance(0.5) ? masA(r) : masB(r)) }
+  });
+}

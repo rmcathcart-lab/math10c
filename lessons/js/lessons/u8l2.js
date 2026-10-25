@@ -11,6 +11,7 @@ import {
   h, tex, add, box, place, Graph, stamp, stampIn, mountExplainers, pop, fadeIn, sleep,
   svgEl, liveCtx, pulse, shake, anim, arrowHead, drawIn, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(String(s));
 const BL = COLORS.blue, AM = COLORS.amber, PU = COLORS.purple, GR = COLORS.green, RED = COLORS.red;
@@ -591,3 +592,121 @@ const three = {
 mountWarm();
 export const explainers = mountExplainers({ lift, choose, checkBoth, fracs, exact, expand, vanish, three });
 export const _test = { SUB, CH, CK, FR, EX, XP, VN };
+
+/* ============ Stand Up Break! — solve a system by substitution (lessons/js/standup.js) ============
+ * Systems are built from their solution (or, for exact-fraction answers, solved exactly), and the key is worked from
+ * the equations: isolate, substitute, solve, back-substitute. Equation 1 blue, equation 2 amber, as on the page. */
+{
+  const BL = COLORS.blue, AM = COLORS.amber;
+  /* --- exact arithmetic and LaTeX for two-variable linear systems. An equation is { a, b, c }: ax + by = c. --- */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const Q = (n, d = 1) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g + 0, d / g]; };
+  const qT = (q) => (q[1] === 1 ? String(q[0]) : (q[0] < 0 ? '-' : '') + `\\tfrac{${Math.abs(q[0])}}{${q[1]}}`);
+  const qP = (q) => (q[1] === 1 ? `(${q[0]})` : `\\left(${qT(q)}\\right)`);   // a value written in for a variable
+  const tm = (k, v, first) => (k === 0 ? '' : (k < 0 ? '-' : first ? '' : '+') + (Math.abs(k) === 1 && v ? '' : Math.abs(k)) + v);
+  const E = (a, b, c) => (a < 0 || (a === 0 && b < 0) ? { a: -a, b: -b, c: -c + 0 } : { a, b, c: c + 0 });
+  const lhs = (e, X = 'x', Y = 'y') => tm(e.a, X, true) + tm(e.b, Y, !e.a);
+  const eqT = (e, X = 'x', Y = 'y') => lhs(e, X, Y) + '=' + e.c;
+  const parallel = (e, f) => e.a * f.b === e.b * f.a;
+  const half = (s, col) => { const i = s.indexOf('='); return `\\textcolor{${col}}{${s.slice(0, i)}}&\\textcolor{${col}}{${s.slice(i)}}`; };
+  const sysT = (s1, s2) => `\\begin{aligned}${half(s1, BL)}\\\\${half(s2, AM)}\\end{aligned}`;
+  const ptT = (x, y) => `(${qT(x)},\\ ${qT(y)})`;
+  /* p·u + q, written with the positive term first when only one is positive (13 − 3y, 2x − 5) */
+  const linE = (p, u, q) => (p < 0 && q > 0 ? q + tm(p, u, false) : (tm(p, u, true) + (q ? tm(q, '', false) : '')) || '0');
+  /* --- substitution, worked from the equations: isolate v in equation i, substitute into the other, solve, back-substitute.
+   * Returns the answer lines and the solution, or null when the arithmetic isn't usable. --- */
+  function subst(eqs, i, v, o = {}) {
+    const e = eqs[i], f = eqs[1 - i], u = v === 'x' ? 'y' : 'x';
+    const cv = v === 'x' ? e.a : e.b, cu = v === 'x' ? e.b : e.a;    // in the isolated equation: cv·v + cu·u = c
+    const fv = v === 'x' ? f.a : f.b, fu = v === 'x' ? f.b : f.a;    // in the other one
+    if (!cv || !cu || !fv) return null;
+    const d = Math.abs(cv), sg = Math.sign(cv), n0 = sg * e.c, n1 = -sg * cu; // v = (n0 + n1·u)/d
+    if (fv % d) return null;                                            // the denominator must cancel
+    const k = fv / d, K = k * n1 + fu, Qc = k * n0;
+    if (!K) return null;
+    const u0 = Q(f.c - Qc, K), num = linE(n1, u, n0);
+    const vE = d === 1 ? num : (n0 === 0 && n1 < 0 ? `-\\dfrac{${tm(-n1, u, true)}}{${d}}` : `\\dfrac{${num}}{${d}}`);
+    const v0 = Q(n0 * u0[1] + n1 * u0[0], d * u0[1]);
+    const x0 = v === 'x' ? v0 : u0, y0 = v === 'x' ? u0 : v0;
+    const mul = (c, s) => (c === 1 ? `(${s})` : c === -1 ? `-(${s})` : `${c}(${s})`);
+    // the substitution, in x-then-y order: 2(13 − 3y) − y = 5,  4x + 3(2x − 5) = 2,  4(−3y/2) − 5y = 22
+    const vPart = d === 1 ? mul(fv, vE) : `${fv === 1 ? '' : fv === -1 ? '-' : fv}\\left(${vE}\\right)`;
+    const subT = v === 'x' ? vPart + tm(fu, u, false) : (fu ? tm(fu, u, true) + (vPart[0] === '-' ? '' : '+') : '') + vPart;
+    const cancel = d === 1 ? '' : `\\ \\Rightarrow\\ ${v === 'x' ? mul(k, num) + tm(fu, u, false) : tm(fu, u, true) + (k < 0 ? '' : '+') + mul(k, num)}=${f.c}`;
+    const coll = linE(K, u, Qc) + '=' + f.c;
+    // back-substitution into the expression for v: 13 − 3(3), 2(17/10) − 5, −3(−2)/2
+    const c1 = n1 === 1 ? '' : n1 === -1 ? '-' : String(n1);
+    const numSub = n1 < 0 && n0 > 0 ? `${n0}${c1}${qP(u0)}` : `${c1}${qP(u0)}${n0 ? tm(n0, '', false) : ''}`;
+    const back = `${v}=${d === 1 ? numSub : `\\dfrac{${numSub}}{${d}}`}=${qT(v0)}`;
+    return {
+      x0, y0, K, d, u, v,
+      iso: `${eqT(e)}\\ \\Rightarrow\\ ${v}=${vE}`,
+      sub: `${subT}=${f.c}${cancel}\\ \\Rightarrow\\ ${coll}`,
+      back: `${u}=${qT(u0)},\\quad ${back}\\qquad ${ptT(x0, y0)}`
+    };
+  }
+  const SOLVE = 'Solve the system by substitution. Check your solution in both equations.';
+  const pack = (text, d1, d2, s, given) => ({ text, q: sysT(d1, d2), a: [given ? null : s.iso, s.sub, s.back].filter(Boolean) });
+  /* Beginning: one equation already y = mx + b, or a variable with coefficient 1; positive-leaning integer solution */
+  function beg(r) {
+    for (;;) {
+      const x0 = r.int(-2, 6), y0 = r.int(-2, 6), kind = r.pick(['given', 'given', 'x1', 'y1']);
+      let e1, d1, v;
+      if (kind === 'given') { const m = r.pick([2, 3, 4, -1, -2, -3]), q = y0 - m * x0; if (!q || Math.abs(q) > 9) continue; e1 = E(-m, 1, q); d1 = `y=${linE(m, 'x', q)}`; v = 'y'; }
+      else if (kind === 'x1') { const b = r.pick([2, 3, 4, 5, -2, -3]); e1 = E(1, b, x0 + b * y0); d1 = eqT(e1); v = 'x'; }
+      else { const a = r.pick([2, 3, 4, 5]); e1 = { a, b: 1, c: a * x0 + y0 }; d1 = eqT(e1); v = 'y'; }
+      const a2 = r.int(2, 5), b2 = r.pick([2, 3, 4, 5, -2, -3, -4]), e2 = E(a2, b2, a2 * x0 + b2 * y0);
+      if (parallel(e1, e2) || x0 === y0 || gcd(a2, b2) !== 1) continue;
+      const first = kind === 'given' || r.chance(0.6), eqs = first ? [e1, e2] : [e2, e1];
+      const s = subst(eqs, first ? 0 : 1, v); if (!s) continue;
+      return pack(SOLVE, first ? d1 : eqT(e2), first ? eqT(e2) : d1, s, kind === 'given');
+    }
+  }
+  /* Progressing: isolate a variable whose coefficient is −1 (or 1 with negatives around it); negative solutions */
+  function prg(r) {
+    for (;;) {
+      const x0 = r.int(-6, 6), y0 = r.int(-6, 6); if (x0 >= 0 && y0 >= 0) continue;
+      let e1, v;
+      if (r.chance(0.6)) { const a = r.pick([2, 3, 4, 5, 6, -2, -3]); e1 = E(a, -1, a * x0 - y0); v = 'y'; }
+      else { const b = r.pick([-2, -3, -4, -5, 2, 3]); e1 = E(1, b, x0 + b * y0); v = 'x'; }
+      const a2 = r.pick([2, 3, 4, 5, 6, 7]), b2 = r.pick([2, 3, 4, 5, -2, -3, -4, -5, -6]), e2 = E(a2, b2, a2 * x0 + b2 * y0);
+      if (parallel(e1, e2) || x0 === y0 || gcd(a2, b2) !== 1) continue;
+      const first = r.chance(0.5), eqs = first ? [e1, e2] : [e2, e1];
+      const s = subst(eqs, first ? 0 : 1, v); if (!s) continue;
+      return pack(SOLVE, eqT(eqs[0]), eqT(eqs[1]), s);
+    }
+  }
+  /* Mastery: (i) no coefficient is ±1, so the isolated variable is a fraction that cancels on substituting (Example 2);
+   *          (ii) the lines cross between grid points: exact fraction answers (Example 3) */
+  const swapXY = (e) => E(e.b, e.a, e.c);
+  function masFrac(r) {
+    for (;;) {
+      const x0 = r.int(-5, 5), y0 = r.int(-5, 5); if (!x0 || x0 === y0) continue;
+      const A1 = r.pick([2, 3]), B1 = r.pick([2, 3, 4, 5, -2, -3, -4, -5]), k = r.pick([2, -2, 3]), A2 = k * A1, B2 = r.pick([2, 3, 4, 5, 7, -3, -5, -7]);
+      if (gcd(A1, B1) !== 1 || Math.abs(A2) > 9 || B2 === k * B1 || gcd(A2, B2) !== 1) continue;
+      let e1 = E(A1, B1, A1 * x0 + B1 * y0), e2 = E(A2, B2, A2 * x0 + B2 * y0), v = 'x';
+      if (r.chance(0.4)) { e1 = swapXY(e1); e2 = swapXY(e2); v = 'y'; }
+      const first = r.chance(0.6), eqs = first ? [e1, e2] : [e2, e1];
+      const s = subst(eqs, first ? 0 : 1, v); if (!s) continue;
+      return pack('Solve the system by substitution. No coefficient is 1 or −1, so isolating a variable makes a fraction: keep it exact.', eqT(eqs[0]), eqT(eqs[1]), s);
+    }
+  }
+  function masExact(r) {
+    for (;;) {
+      let e1, v;
+      if (r.chance(0.6)) { const a = r.pick([2, 3, 4, 5]); e1 = E(a, -1, r.pick([-7, -5, -4, -3, -1, 1, 2, 3, 4, 5, 6, 7])); v = 'y'; }
+      else { const b = r.pick([2, 3, -2, -3, -4]); e1 = E(1, b, r.pick([-6, -4, -3, -1, 1, 2, 3, 5, 7])); v = 'x'; }
+      const e2 = E(r.int(2, 6), r.pick([2, 3, 4, 5, -2, -3, -5]), r.pick([-9, -6, -5, -4, -2, -1, 1, 2, 3, 4, 5, 7, 8, 10]));
+      if (parallel(e1, e2) || gcd(gcd(e2.a, e2.b), e2.c) !== 1) continue;
+      const first = r.chance(0.5), eqs = first ? [e1, e2] : [e2, e1];
+      const s = subst(eqs, first ? 0 : 1, v); if (!s) continue;
+      if (s.x0[1] === 1 && s.y0[1] === 1) continue;                     // want a point between the grid lines
+      if (Math.max(s.x0[1], s.y0[1]) > 12 || Math.abs(s.x0[0] / s.x0[1]) > 8 || Math.abs(s.y0[0] / s.y0[1]) > 8) continue;
+      return pack('Solve the system by substitution. Give the solution as exact values (fractions, not decimals).', eqT(eqs[0]), eqT(eqs[1]), s);
+    }
+  }
+  standup('u8l2', {
+    intro: 'Isolate, substitute, solve, back-substitute: work it through at your whiteboard station, then check in both equations.',
+    levels: { BEG: beg, PRG: prg, MAS: (r) => (r.chance(0.5) ? masFrac(r) : masExact(r)) }
+  });
+}
