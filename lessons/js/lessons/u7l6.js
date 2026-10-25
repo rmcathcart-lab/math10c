@@ -15,6 +15,7 @@ import {
   h, tex, add, box, Graph, stamp, stampIn, mountExplainers, pop, fadeIn, appear, tween, linear,
   pairTex, texNum, svgEl, place, drawIn, pulse, fmt, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const RUN = COLORS.amber, RISE = COLORS.purple, LINE = COLORS.blue, BCOL = COLORS.teal, INK = COLORS.ink, GRAY = COLORS.gray,
@@ -802,3 +803,201 @@ mountWarm();
 mountFigures();
 export const explainers = mountExplainers({ sync, sentence, van, routes, parts, trip, secant, pay, machine });
 export const _test = { SY, SE, RT, PT, LEGS, SC, MC, tripF, vanF, payF };
+
+/* ===================== Stand Up Break! (whiteboard stations; ../standup.js) =====================
+ * Exact fractions are [n, d] (d > 0, lowest terms); su* helpers build the LaTeX and the plain-SVG grids. */
+const suGcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const suQ = (n, d = 1) => { if (Array.isArray(n)) [n, d] = n; if (d < 0) { n = -n; d = -d; } const g = suGcd(n, d) || 1; return [n / g + 0, d / g]; };
+const suAdd = (a, b) => { a = suQ(a); b = suQ(b); return suQ(a[0] * b[1] + b[0] * a[1], a[1] * b[1]); };
+const suMul = (a, b) => { a = suQ(a); b = suQ(b); return suQ(a[0] * b[0], a[1] * b[1]); };
+const suNeg = (a) => { a = suQ(a); return [-a[0] + 0, a[1]]; };
+const suInv = (a) => { a = suQ(a); return suQ(a[1], a[0]); };
+const suV = (a) => { a = suQ(a); return a[0] / a[1]; };
+/** LaTeX of a number or [n, d] */
+const suN = (a) => { a = suQ(a); return a[1] === 1 ? String(a[0]) : (a[0] < 0 ? '-' : '') + '\\frac{' + Math.abs(a[0]) + '}{' + a[1] + '}'; };
+/** one term c·v with its sign ('' when c = 0); c a number or [n, d] */
+function suTerm(c, v, first) {
+  const [n, d] = suQ(c); if (n === 0) return '';
+  const a = Math.abs(n), mag = d === 1 ? (a === 1 && v ? '' : String(a)) : '\\frac{' + a + '}{' + d + '}';
+  return (n < 0 ? '-' : first ? '' : '+') + mag + v;
+}
+const suLin = (ts) => { let o = ''; for (const [c, v] of ts) o += suTerm(c, v, o === ''); return o || '0'; };
+const suSI = (m, b) => 'y=' + suLin([[m, 'x'], [b, '']]);
+const suGF = (g) => suLin([[g[0], 'x'], [g[1], 'y'], [g[2], '']]) + '=0';
+const suPt = (x, y) => '(' + suN(x) + ',\\ ' + suN(y) + ')';
+/** A, B, C integers with A ≥ 0 (B > 0 when A = 0) and no common factor */
+function suTidy(A, B, C) { const s = A < 0 || (A === 0 && B < 0) ? -1 : 1, g = suGcd(suGcd(A, B), C) || 1; return [s * A / g + 0, s * B / g + 0, s * C / g + 0]; }
+/** general form [A, B, C] of y = m x + b */
+function suGen(m, b) { m = suQ(m); b = suQ(b); const L = m[1] * b[1] / suGcd(m[1], b[1]); return suTidy(L * m[0] / m[1], -L, L * b[0] / b[1]); }
+/** v − k written tidily: x − 3, x + 4, x */
+const suMinus = (v, k) => (suV(k) === 0 ? v : v + (suV(k) < 0 ? '+' + suN(suNeg(k)) : '-' + suN(k)));
+/** slope–point form y − y1 = m(x − x1) */
+function suSP(m, x1, y1) {
+  const q = suQ(m), c = q[1] === 1 && Math.abs(q[0]) === 1 ? (q[0] < 0 ? '-' : '') : suN(q);
+  return suMinus('y', y1) + '=' + (suV(x1) === 0 ? suTerm(m, 'x', true) : q[0] === 1 && q[1] === 1 ? suMinus('x', x1) : c + '(' + suMinus('x', x1) + ')');
+}
+/** a slope p/q (q > 1, lowest terms), random sign unless pos */
+function suFrac(r, qs = [2, 3, 4, 5], maxP = 5, pos = false) { for (;;) { const q = r.pick(qs), p = r.int(1, maxP); if (suGcd(p, q) === 1 && p !== q) return [p * (pos ? 1 : r.sign()), q]; } }
+/** rise/run as a fraction, then reduced when that changes it */
+const suRR = (rise, run) => { const q = suQ(rise, run); return run === 1 ? String(rise) : '\\frac{' + rise + '}{' + run + '}' + (q[0] === rise && q[1] === run ? '' : '=' + suN(q)); };
+/** c(inner) with a coefficient of ±1 left implicit */
+const suCB = (c, inner) => (c === 1 ? '' : c === -1 ? '-' : String(c)) + '(' + inner + ')';
+/** substitute a point into A x + B y + C: 2(−3) − 1(4) + 2 = 0 ✓ */
+const suCheck = (g, P) => g[0] + '(' + P[0] + ')' + (g[1] < 0 ? '-' : '+') + Math.abs(g[1]) + '(' + P[1] + ')' + (g[2] ? (g[2] < 0 ? '-' : '+') + Math.abs(g[2]) : '') + '=0\\ \\checkmark';
+const suMinusSign = (s) => String(s).replace(/-/g, '−');
+
+/* ---------- a coordinate grid as plain SVG (projector-readable), drawn from the numbers ---------- */
+function suClip(a, d, x0, x1, y0, y1) { // Liang–Barsky: the part of the line a + t·d inside the window
+  let t0 = -Infinity, t1 = Infinity;
+  for (const [p, q] of [[-d[0], a[0] - x0], [d[0], x1 - a[0]], [-d[1], a[1] - y0], [d[1], y1 - a[1]]]) {
+    if (Math.abs(p) < 1e-12) { if (q < 0) return null; continue; }
+    const t = q / p; if (p < 0) t0 = Math.max(t0, t); else t1 = Math.min(t1, t);
+  }
+  return t0 < t1 ? [[a[0] + d[0] * t0, a[1] + d[1] * t0], [a[0] + d[0] * t1, a[1] + d[1] * t1]] : null;
+}
+/** o: { x: [x0, x1], y: [y0, y1], lines: [{ m, b } | { x: k } | { p, q }, color], segs: [{ p, q, color }], pts: [{ p, label, pos, color }],
+ *  w: display width, style } — whole-number window, labels every 2 */
+function suGraph(o) {
+  const [x0, x1] = o.x || [-6, 6], [y0, y1] = o.y || [-6, 6], u = 30, P = 18, fs = 17, INK = '#1c2230';
+  const W = (x1 - x0) * u + 2 * P, H = (y1 - y0) * u + 2 * P;
+  const X = (x) => +(P + (x - x0) * u).toFixed(1), Y = (y) => +(P + (y1 - y) * u).toFixed(1);
+  const L = (a, b, c, d, st) => `<line x1="${X(a)}" y1="${Y(b)}" x2="${X(c)}" y2="${Y(d)}" ${st}/>`;
+  const head = (tip, dir, col) => { // arrowhead at tip pointing along dir (pixel space)
+    const n = Math.hypot(dir[0], dir[1]) || 1, ux = dir[0] / n, uy = dir[1] / n, b = [tip[0] - ux * 15, tip[1] - uy * 15];
+    return `<polygon points="${tip[0].toFixed(1)},${tip[1].toFixed(1)} ${(b[0] - uy * 7).toFixed(1)},${(b[1] + ux * 7).toFixed(1)} ${(b[0] + uy * 7).toFixed(1)},${(b[1] - ux * 7).toFixed(1)}" fill="${col}"/>`;
+  };
+  const halo = 'stroke="#fff" stroke-width="5" stroke-linejoin="round" paint-order="stroke"';
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${o.w || W}" height="${o.w ? Math.round(o.w * H / W) : H}"${o.style ? ` style="${o.style}"` : ''} font-family="system-ui,-apple-system,'Segoe UI',sans-serif" role="img" aria-label="coordinate grid">`;
+  s += `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let i = x0; i <= x1; i++) s += L(i, y0, i, y1, `stroke="${i % 2 ? '#e3e7ee' : '#cfd5df'}" stroke-width="${i % 2 ? 1 : 1.3}"`);
+  for (let j = y0; j <= y1; j++) s += L(x0, j, x1, j, `stroke="${j % 2 ? '#e3e7ee' : '#cfd5df'}" stroke-width="${j % 2 ? 1 : 1.3}"`);
+  // axes with arrows and numbers
+  if (y0 <= 0 && 0 <= y1) {
+    s += L(x0, 0, x1, 0, `stroke="${INK}" stroke-width="2.2"`) + head([X(x1) + 2, Y(0)], [1, 0], INK) + head([X(x0) - 2, Y(0)], [-1, 0], INK);
+    s += `<text x="${X(x1) - 4}" y="${Y(0) - 9}" font-size="${fs + 2}" font-style="italic" font-weight="700" text-anchor="end" fill="${INK}" ${halo}>x</text>`;
+    for (let i = x0 + 1; i < x1; i++) if (i && i % 2 === 0) s += `<text x="${X(i)}" y="${Y(0) + fs + 3}" font-size="${fs}" font-weight="600" text-anchor="middle" fill="#3a4254" ${halo}>${suMinusSign(i)}</text>`;
+  }
+  if (x0 <= 0 && 0 <= x1) {
+    s += L(0, y0, 0, y1, `stroke="${INK}" stroke-width="2.2"`) + head([X(0), Y(y1) - 2], [0, -1], INK) + head([X(0), Y(y0) + 2], [0, 1], INK);
+    s += `<text x="${X(0) + 10}" y="${Y(y1) + fs + 2}" font-size="${fs + 2}" font-style="italic" font-weight="700" fill="${INK}" ${halo}>y</text>`;
+    for (let j = y0 + 1; j < y1; j++) if (j && j % 2 === 0) s += `<text x="${X(0) - 6}" y="${Y(j) + fs * 0.36}" font-size="${fs}" font-weight="600" text-anchor="end" fill="#3a4254" ${halo}>${suMinusSign(j)}</text>`;
+  }
+  for (const g of o.segs || []) s += L(g.p[0], g.p[1], g.q[0], g.q[1], `stroke="${g.color || INK}" stroke-width="3" stroke-linecap="round"`);
+  for (const ln of o.lines || []) {
+    const col = ln.color || '#1f5bd6';
+    const a = ln.x != null ? [ln.x, 0] : ln.p ? ln.p : [0, suV(ln.b)], d = ln.x != null ? [0, 1] : ln.p ? [ln.q[0] - ln.p[0], ln.q[1] - ln.p[1]] : [1, suV(ln.m)];
+    const c = suClip(a, d, x0 + 0.15, x1 - 0.15, y0 + 0.15, y1 - 0.15); if (!c) continue;
+    const A = [X(c[0][0]), Y(c[0][1])], B = [X(c[1][0]), Y(c[1][1])];
+    s += `<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${col}" stroke-width="4" stroke-linecap="round"/>` + head(A, [A[0] - B[0], A[1] - B[1]], col) + head(B, [B[0] - A[0], B[1] - A[1]], col);
+  }
+  const OFF = { ne: [9, -9, 'start'], nw: [-9, -9, 'end'], se: [9, 22, 'start'], sw: [-9, 22, 'end'], n: [0, -12, 'middle'], s: [0, 26, 'middle'], e: [11, 6, 'start'], w: [-11, 6, 'end'] };
+  for (const pt of o.pts || []) {
+    const cx = X(pt.p[0]), cy = Y(pt.p[1]), col = pt.color || INK;
+    s += `<circle cx="${cx}" cy="${cy}" r="6" fill="${col}" stroke="#fff" stroke-width="2"/>`;
+    if (pt.label) { const f = OFF[pt.pos || 'ne']; s += `<text x="${cx + f[0]}" y="${cy + f[1]}" font-size="${fs + 2}" font-weight="800" text-anchor="${f[2]}" fill="${col}" ${halo}>${suMinusSign(pt.label)}</text>`; }
+  }
+  return s + '</svg>';
+}
+/** where to put a point's label so it sits away from the line (slope m) */
+const suPos = (m, side) => (suV(m) >= 0 ? (side ? 'se' : 'nw') : (side ? 'ne' : 'sw'));
+/** a small answer graph for .su-atext */
+const suAnsGraph = (o) => suGraph(Object.assign({ w: 290, style: 'max-width:100%;height:auto;display:block;margin:8px auto 2px' }, o));
+
+/* ---- 7.6: slope in context (Beginning: a rising graph → the rate as a sentence with units; Progressing: a falling
+ *      graph with a decimal rate → the rate, the equation and what b means; Mastery: two measurements in words → the
+ *      rate, the equation, what b means, and when a target is reached) ---- */
+const suD = (v, d = 4) => String(+(+v).toFixed(d));                 // a decimal without float noise
+const suDT = (v) => suD(v).replace(/^(-?\d+)(\d{3})(\.|$)/, '$1\\,$2$3');   // LaTeX, 1 200 → 1\,200
+const suDH = (v) => suD(v).replace(/^(-?\d+)(\d{3})(\.|$)/, '$1&#8239;$2$3').replace('-', '\u2212'); // HTML
+/** a first-quadrant context graph: o = { xmax, xs, ymax, ys, xl, yl, m, b, pts } */
+function suCtx(o) {
+  const pw = 440, ph = 290, ml = 70, mt = 34, mb = 58, mr = 24, W = ml + pw + mr, H = mt + ph + mb, INK = '#1c2230';
+  const X = (x) => +(ml + x / o.xmax * pw).toFixed(1), Y = (y) => +(mt + ph - y / o.ymax * ph).toFixed(1);
+  const halo = 'stroke="#fff" stroke-width="5" stroke-linejoin="round" paint-order="stroke"';
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" role="img" aria-label="graph">`;
+  s += `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let i = 0; i <= o.xmax / o.xs + 1e-9; i++) { const x = X(i * o.xs); s += `<line x1="${x}" y1="${Y(0)}" x2="${x}" y2="${Y(o.ymax)}" stroke="#d9dee6" stroke-width="1.2"/><text x="${x}" y="${Y(0) + 22}" font-size="16" font-weight="600" text-anchor="middle" fill="#3a4254">${suDH(i * o.xs)}</text>`; }
+  for (let j = 0; j <= o.ymax / o.ys + 1e-9; j++) { const y = Y(j * o.ys); s += `<line x1="${X(0)}" y1="${y}" x2="${X(o.xmax)}" y2="${y}" stroke="#d9dee6" stroke-width="1.2"/><text x="${X(0) - 8}" y="${y + 6}" font-size="16" font-weight="600" text-anchor="end" fill="#3a4254">${suDH(j * o.ys)}</text>`; }
+  s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(o.xmax)}" y2="${Y(0)}" stroke="${INK}" stroke-width="2.2"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(o.ymax)}" stroke="${INK}" stroke-width="2.2"/>`;
+  s += `<text x="${X(o.xmax / 2)}" y="${H - 8}" font-size="17" font-weight="700" text-anchor="middle" fill="${INK}">${o.xl}</text>`;
+  s += `<text transform="translate(18 ${Y(o.ymax / 2)}) rotate(-90)" font-size="17" font-weight="700" text-anchor="middle" fill="${INK}">${o.yl}</text>`;
+  // the line from x = 0 across, kept inside the box
+  const f = (x) => o.b + o.m * x; let xe = o.xmax; if (f(xe) < 0) xe = -o.b / o.m; if (f(xe) > o.ymax) xe = (o.ymax - o.b) / o.m;
+  s += `<line x1="${X(0)}" y1="${Y(o.b)}" x2="${X(xe)}" y2="${Y(f(xe))}" stroke="#1f5bd6" stroke-width="4" stroke-linecap="round"/>`;
+  for (const p of o.pts) { // labels on the clear side of the line: above-left / below-right of a rising line, above-right / below-left of a falling one
+    const cx = X(p[0]), cy = Y(p[1]), lab = `(${suDH(p[0])}, ${suDH(p[1])})`, w = 10 * lab.length + 14;
+    const left = o.m > 0 ? cx - w > ml : cx + w > W, dy = (o.m > 0) === left ? -13 : 26;
+    s += `<circle cx="${cx}" cy="${cy}" r="6.5" fill="${INK}" stroke="#fff" stroke-width="2"/><text x="${cx + (left ? -10 : 10)}" y="${cy + dy}" font-size="18" font-weight="800" text-anchor="${left ? 'end' : 'start'}" fill="${INK}" ${halo}>${lab}</text>`;
+  }
+  return s + '</svg>';
+}
+/* contexts: rising ones for Beginning, falling ones (and some rising) for Progressing / Mastery */
+const SU_UP = [
+  { what: 'the distance travelled by a cyclist', y: 'Distance', yu: 'km', x: 'Time', xu: 'h', per: 'hour', Y: 'd', X: 't', rates: [12, 15, 18, 20, 24, 25, 30], b: [0], xmax: 6, xs: 1, noun: 'distance', start: 'starting distance' },
+  { what: 'the temperature inside an oven', y: 'Temperature', yu: '°F', x: 'Time', xu: 'min', per: 'minute', Y: 'T', X: 't', rates: [25, 30, 35, 40, 45, 50, 55], b: [65, 68, 70, 72, 75], xmax: 6, xs: 1, noun: 'temperature', start: 'oven started at' },
+  { what: 'the money in a savings account', y: 'Savings', yu: '$', x: 'Time', xu: 'weeks', per: 'week', Y: 'S', X: 'w', rates: [15, 20, 25, 30, 35, 40], b: [40, 50, 60, 80, 100, 120], xmax: 10, xs: 1, noun: 'amount saved', start: 'opening balance' },
+  { what: 'the height of a sunflower', y: 'Height', yu: 'cm', x: 'Time', xu: 'days', per: 'day', Y: 'h', X: 'd', rates: [2, 3, 4, 5], b: [6, 8, 10, 12, 15], xmax: 10, xs: 1, noun: 'height', start: 'height when planted' },
+  { what: 'the water in a pool being filled', y: 'Volume', yu: 'L', x: 'Time', xu: 'min', per: 'minute', Y: 'V', X: 't', rates: [40, 50, 60, 75, 80], b: [0, 100, 200], xmax: 10, xs: 1, noun: 'volume of water', start: 'water already in the pool' }
+];
+const SU_DOWN = [
+  { what: 'the fuel left in a delivery van', y: 'Fuel', yu: 'L', x: 'Distance', xu: 'km', per: 'km', Y: 'N', X: 'D', rates: [0.08, 0.1, 0.12, 0.15, 0.2, 0.25, 0.4], b: [60, 72, 80, 84, 90, 92], xstep: [20, 40, 50, 100], noun: 'amount of fuel in the tank', start: 'the tank held at the start' },
+  { what: 'the battery charge of a phone', y: 'Charge', yu: '%', x: 'Time', xu: 'h', per: 'hour', Y: 'B', X: 't', rates: [2.5, 4, 5, 6, 7.5, 8, 12.5], b: [80, 90, 95, 100], xstep: [1], noun: 'battery charge', start: 'the charge at the start' },
+  { what: 'the water left in a draining tank', y: 'Water', yu: 'L', x: 'Time', xu: 'min', per: 'minute', Y: 'W', X: 't', rates: [12.5, 15, 17.5, 20, 22.5, 25, 35], b: [450, 500, 600, 640, 700, 750], xstep: [2, 4, 5], noun: 'amount of water in the tank', start: 'the tank held at the start' },
+  { what: 'the height of a burning candle', y: 'Height', yu: 'cm', x: 'Time', xu: 'h', per: 'hour', Y: 'h', X: 't', rates: [0.8, 1.2, 1.5, 1.8, 2.4, 2.5], b: [18, 20, 24, 25, 28, 30], xstep: [1, 2], noun: 'height of the candle', start: 'the candle’s height when it was lit' }
+];
+const suAmt = (v, u) => (u === '$' ? '$' + suDH(v) : u === '%' ? suDH(v) + '%' : suDH(v) + ' ' + u);
+const suSentence = (c, m) => 'The ' + c.noun + ' is <b>' + (m > 0 ? 'increasing' : 'decreasing') + '</b> at the rate of <b>' + suAmt(Math.abs(m), c.yu) + ' per ' + c.per + '</b>.';
+const suSlope = (P, Q) => 'm=\\frac{' + suDT(Q[1]) + '-' + suDT(P[1]) + '}{' + suDT(Q[0]) + '-' + suDT(P[0]) + '}=\\frac{' + suDT(Q[1] - P[1]) + '}{' + suDT(Q[0] - P[0]) + '}=' + suDT((Q[1] - P[1]) / (Q[0] - P[0]));
+const suNiceMax = (v, st) => Math.ceil(v / st - 1e-9) * st;
+function suL6Beg(r) {
+  const c = r.pick(SU_UP), m = r.pick(c.rates), b = r.pick(c.b);
+  const x1 = r.int(1, Math.floor(c.xmax / 2) - 1), x2 = r.int(x1 + 2, c.xmax - 1), P = [x1, b + m * x1], Q = [x2, b + m * x2];
+  const ys = [2, 5, 10, 20, 25, 50, 100, 200, 250].find((s) => (b + m * c.xmax) / s <= 8), ymax = suNiceMax(b + m * c.xmax, ys);
+  const fig = suCtx({ xmax: c.xmax, xs: c.xs, ymax, ys, xl: c.x + ' (' + c.xu + ')', yl: c.y + ' (' + c.yu + ')', m, b, pts: [P, Q] });
+  return { text: 'The graph shows ' + c.what + '. Calculate the slope, then state the rate of change in a sentence with units.<!--' + P + Q + '-->', q: '', fig,
+    a: [suSlope(P, Q)], atext: suSentence(c, m) + ' <span style="color:var(--muted)">(' + c.yu + ' on the vertical axis, ' + c.xu + ' across.)</span>' };
+}
+function suL6Prg(r) {
+  for (;;) {
+    const c = r.pick(SU_DOWN), m = -r.pick(c.rates), b = r.pick(c.b), xs = r.pick(c.xstep), empty = b / -m;
+    const n = Math.max(5, Math.min(8, Math.floor(empty / xs))), xmax = xs * n;
+    if (-m * xmax < 0.4 * b) continue;                    // a line that visibly falls
+    const k1 = r.int(1, Math.floor(n / 2) - 1), k2 = r.int(k1 + 2, n - 1), P = [k1 * xs, +(b + m * k1 * xs).toFixed(4)], Q = [k2 * xs, +(b + m * k2 * xs).toFixed(4)];
+    if (Q[1] < 0 || k2 * xs > xmax) continue;
+    const ys = [2, 5, 10, 20, 25, 50, 100].find((s) => b / s <= 8), ymax = suNiceMax(b, ys);
+    const fig = suCtx({ xmax, xs, ymax, ys, xl: c.x + ', ' + c.X + ' (' + c.xu + ')', yl: c.y + ', ' + c.Y + ' (' + c.yu + ')', m, b, pts: [P, Q] });
+    return { text: 'The graph shows ' + c.what + '. (a) Calculate the slope and say what it means, with units. (b) Write the equation in the form <i>' + c.Y + '</i> = <i>m' + c.X + '</i> + <i>b</i>, and say what <i>b</i> means.<!--' + P + Q + '-->', q: '', fig,
+      a: [suSlope(P, Q), c.Y + '=' + suDT(m) + c.X + '+b:\\quad ' + suDT(P[1]) + '=' + suDT(m) + '(' + suDT(P[0]) + ')+b\\ \\Rightarrow\\ b=' + suDT(b), c.Y + '=' + suDT(m) + c.X + '+' + suDT(b)],
+      atext: suSentence(c, m) + '<br><i>b</i> = ' + suDH(b) + ': ' + c.start + ', ' + suAmt(b, c.yu) + ' (when <i>' + c.X + '</i> = 0).' };
+  }
+}
+const SU_WORDS = [
+  { t: (P, Q) => `A candle burns at a steady rate. After ${suDH(P[0])} h it is ${suDH(P[1])} cm tall; after ${suDH(Q[0])} h it is ${suDH(Q[1])} cm tall.`, Y: 'h', X: 't', yu: 'cm', xu: 'h', noun: 'height of the candle', per: 'hour', start: 'the candle was {b} cm tall when it was lit', goal: 0, ask: 'When will the candle burn out?', ans: (x) => `It burns out after about <b>${suDH(x)} h</b>.`,
+    m: [-0.8, -1.2, -1.5, -1.6, -2, -2.4, -2.5], b: [18, 20, 22, 24, 25, 28, 30], xs: [1, 2, 3, 4, 5, 6, 7] },
+  { t: (P, Q) => `Water drains from a tank at a constant rate. After ${suDH(P[0])} min the tank holds ${suDH(P[1])} L; after ${suDH(Q[0])} min it holds ${suDH(Q[1])} L.`, Y: 'W', X: 't', yu: 'L', xu: 'min', noun: 'amount of water', per: 'minute', start: 'the tank held {b} L at the start', goal: 0, ask: 'When will the tank be empty?', ans: (x) => `The tank is empty after about <b>${suDH(x)} min</b>.`,
+    m: [-12.5, -15, -18, -20, -22.5, -24, -30], b: [480, 500, 540, 600, 650, 720], xs: [4, 5, 6, 8, 10, 12, 15] },
+  { t: (P, Q) => `A hot-air balloon climbs at a steady rate. ${suDH(P[0])} min after the timer starts it is ${suDH(P[1])} m above the ground; after ${suDH(Q[0])} min it is ${suDH(Q[1])} m up.`, Y: 'A', X: 't', yu: 'm', xu: 'min', noun: 'altitude', per: 'minute', start: 'the balloon was {b} m up when the timer started', goal: 1000, ask: 'When will it reach 1000 m?', ans: (x) => `It reaches 1000 m after about <b>${suDH(x)} min</b>.`,
+    m: [35, 40, 45, 48, 55, 60, 75], b: [60, 80, 100, 120, 150, 200], xs: [2, 3, 4, 5, 6, 8] },
+  { t: (P, Q) => `A phone’s charge drops steadily. ${suDH(P[0])} h after Aiden unplugs it, it shows ${suDH(P[1])}%; ${suDH(Q[0])} h after, it shows ${suDH(Q[1])}%.`, Y: 'B', X: 't', yu: '%', xu: 'h', noun: 'battery charge', per: 'hour', start: 'the charge was {b}% when it was unplugged', goal: 20, ask: 'When will it reach the 20% warning?', ans: (x) => `It reaches 20% after about <b>${suDH(x)} h</b>.`,
+    m: [-4, -5, -6, -7.5, -8, -9], b: [85, 90, 95, 100], xs: [1, 2, 3, 4, 5, 6] }
+];
+function suL6Mas(r) {
+  for (;;) {
+    const c = r.pick(SU_WORDS), m = r.pick(c.m), b = r.pick(c.b), [x1, x2] = r.shuffle(c.xs).slice(0, 2).sort((a, z) => a - z);
+    const P = [x1, +(b + m * x1).toFixed(4)], Q = [x2, +(b + m * x2).toFixed(4)], xg = (c.goal - b) / m;
+    if (P[1] <= c.goal && m < 0 || Q[1] <= c.goal && m < 0 || Q[1] >= c.goal && m > 0 || xg <= x2) continue;
+    const xr = Math.round(xg * 10) / 10;
+    return { text: c.t(P, Q) + ' (a) Find the rate of change, with units. (b) Write an equation for <i>' + c.Y + '</i> in terms of <i>' + c.X + '</i>, and say what <i>b</i> means. (c) ' + c.ask + ' (to the nearest tenth)', q: '',
+      a: [suSlope(P, Q) + '\\ \\text{' + c.yu.replace('%', '\\%') + '/' + c.xu + '}', c.Y + '=' + suDT(m) + c.X + '+b:\\ ' + suDT(P[1]) + '=' + suDT(m) + '(' + suDT(P[0]) + ')+b\\ \\Rightarrow\\ b=' + suDT(b) + ';\\quad ' + c.Y + '=' + suDT(m) + c.X + '+' + suDT(b),
+        suDT(c.goal) + '=' + suDT(m) + c.X + '+' + suDT(b) + '\\ \\Rightarrow\\ ' + c.X + '=\\frac{' + suDT(c.goal - b) + '}{' + suDT(m) + '}' + (Math.abs(xg - xr) < 1e-9 ? '=' : '\\approx') + suDT(xr)],
+      atext: suSentence(c, m) + '<br><i>b</i> = ' + suDH(b) + ': ' + c.start.replace('{b}', suDH(b)) + '.<br>' + c.ans(xr) };
+  }
+}
+standup('u7l6', {
+  intro: 'Work from the graph or the story at your whiteboard. Every answer is a sentence with units.',
+  levels: {
+    BEG: (r) => suL6Beg(r),   // a rising graph, two labelled points → “increasing at 25 km per hour”
+    PRG: (r) => suL6Prg(r),   // a falling graph with a decimal rate → the rate, N = mD + b, what b means
+    MAS: (r) => suL6Mas(r)    // two measurements in words → rate, equation, b, and when a target is reached
+  }
+});

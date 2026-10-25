@@ -13,6 +13,7 @@ import {
   h, tex, add, box, Graph, Flowchart, ValueTable, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pairTex, texNum, svgEl, liveCtx, pulse, place, drawIn, rightMark, anim, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const RUN = COLORS.amber, RISE = COLORS.purple, LINE = COLORS.blue, BCOL = COLORS.teal, INK = COLORS.ink, RED = COLORS.red, GRAY = COLORS.gray, SLATE = COLORS.slate;
@@ -754,3 +755,176 @@ mountWarmGraph();
 mountFigures();
 export const explainers = mountExplainers({ assemble, readGraph, spotError, copyTri, turnTri, strategy, flatten, steepen });
 export const _test = { AS, RG, SE, CP, TT, FP, red, fr, eqTex, substTex };
+
+/* ===================== Stand Up Break! (whiteboard stations; ../standup.js) =====================
+ * Exact fractions are [n, d] (d > 0, lowest terms); su* helpers build the LaTeX and the plain-SVG grids. */
+const suGcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; };
+const suQ = (n, d = 1) => { if (Array.isArray(n)) [n, d] = n; if (d < 0) { n = -n; d = -d; } const g = suGcd(n, d) || 1; return [n / g + 0, d / g]; };
+const suAdd = (a, b) => { a = suQ(a); b = suQ(b); return suQ(a[0] * b[1] + b[0] * a[1], a[1] * b[1]); };
+const suMul = (a, b) => { a = suQ(a); b = suQ(b); return suQ(a[0] * b[0], a[1] * b[1]); };
+const suNeg = (a) => { a = suQ(a); return [-a[0] + 0, a[1]]; };
+const suInv = (a) => { a = suQ(a); return suQ(a[1], a[0]); };
+const suV = (a) => { a = suQ(a); return a[0] / a[1]; };
+/** LaTeX of a number or [n, d] */
+const suN = (a) => { a = suQ(a); return a[1] === 1 ? String(a[0]) : (a[0] < 0 ? '-' : '') + '\\frac{' + Math.abs(a[0]) + '}{' + a[1] + '}'; };
+/** one term c·v with its sign ('' when c = 0); c a number or [n, d] */
+function suTerm(c, v, first) {
+  const [n, d] = suQ(c); if (n === 0) return '';
+  const a = Math.abs(n), mag = d === 1 ? (a === 1 && v ? '' : String(a)) : '\\frac{' + a + '}{' + d + '}';
+  return (n < 0 ? '-' : first ? '' : '+') + mag + v;
+}
+const suLin = (ts) => { let o = ''; for (const [c, v] of ts) o += suTerm(c, v, o === ''); return o || '0'; };
+const suSI = (m, b) => 'y=' + suLin([[m, 'x'], [b, '']]);
+const suGF = (g) => suLin([[g[0], 'x'], [g[1], 'y'], [g[2], '']]) + '=0';
+const suPt = (x, y) => '(' + suN(x) + ',\\ ' + suN(y) + ')';
+/** A, B, C integers with A ≥ 0 (B > 0 when A = 0) and no common factor */
+function suTidy(A, B, C) { const s = A < 0 || (A === 0 && B < 0) ? -1 : 1, g = suGcd(suGcd(A, B), C) || 1; return [s * A / g + 0, s * B / g + 0, s * C / g + 0]; }
+/** general form [A, B, C] of y = m x + b */
+function suGen(m, b) { m = suQ(m); b = suQ(b); const L = m[1] * b[1] / suGcd(m[1], b[1]); return suTidy(L * m[0] / m[1], -L, L * b[0] / b[1]); }
+/** v − k written tidily: x − 3, x + 4, x */
+const suMinus = (v, k) => (suV(k) === 0 ? v : v + (suV(k) < 0 ? '+' + suN(suNeg(k)) : '-' + suN(k)));
+/** slope–point form y − y1 = m(x − x1) */
+function suSP(m, x1, y1) {
+  const q = suQ(m), c = q[1] === 1 && Math.abs(q[0]) === 1 ? (q[0] < 0 ? '-' : '') : suN(q);
+  return suMinus('y', y1) + '=' + (suV(x1) === 0 ? suTerm(m, 'x', true) : q[0] === 1 && q[1] === 1 ? suMinus('x', x1) : c + '(' + suMinus('x', x1) + ')');
+}
+/** a slope p/q (q > 1, lowest terms), random sign unless pos */
+function suFrac(r, qs = [2, 3, 4, 5], maxP = 5, pos = false) { for (;;) { const q = r.pick(qs), p = r.int(1, maxP); if (suGcd(p, q) === 1 && p !== q) return [p * (pos ? 1 : r.sign()), q]; } }
+/** rise/run as a fraction, then reduced when that changes it */
+const suRR = (rise, run) => { const q = suQ(rise, run); return run === 1 ? String(rise) : '\\frac{' + rise + '}{' + run + '}' + (q[0] === rise && q[1] === run ? '' : '=' + suN(q)); };
+/** c(inner) with a coefficient of ±1 left implicit */
+const suCB = (c, inner) => (c === 1 ? '' : c === -1 ? '-' : String(c)) + '(' + inner + ')';
+/** substitute a point into A x + B y + C: 2(−3) − 1(4) + 2 = 0 ✓ */
+const suCheck = (g, P) => g[0] + '(' + P[0] + ')' + (g[1] < 0 ? '-' : '+') + Math.abs(g[1]) + '(' + P[1] + ')' + (g[2] ? (g[2] < 0 ? '-' : '+') + Math.abs(g[2]) : '') + '=0\\ \\checkmark';
+const suMinusSign = (s) => String(s).replace(/-/g, '−');
+
+/* ---------- a coordinate grid as plain SVG (projector-readable), drawn from the numbers ---------- */
+function suClip(a, d, x0, x1, y0, y1) { // Liang–Barsky: the part of the line a + t·d inside the window
+  let t0 = -Infinity, t1 = Infinity;
+  for (const [p, q] of [[-d[0], a[0] - x0], [d[0], x1 - a[0]], [-d[1], a[1] - y0], [d[1], y1 - a[1]]]) {
+    if (Math.abs(p) < 1e-12) { if (q < 0) return null; continue; }
+    const t = q / p; if (p < 0) t0 = Math.max(t0, t); else t1 = Math.min(t1, t);
+  }
+  return t0 < t1 ? [[a[0] + d[0] * t0, a[1] + d[1] * t0], [a[0] + d[0] * t1, a[1] + d[1] * t1]] : null;
+}
+/** o: { x: [x0, x1], y: [y0, y1], lines: [{ m, b } | { x: k } | { p, q }, color], segs: [{ p, q, color }], pts: [{ p, label, pos, color }],
+ *  w: display width, style } — whole-number window, labels every 2 */
+function suGraph(o) {
+  const [x0, x1] = o.x || [-6, 6], [y0, y1] = o.y || [-6, 6], u = 30, P = 18, fs = 17, INK = '#1c2230';
+  const W = (x1 - x0) * u + 2 * P, H = (y1 - y0) * u + 2 * P;
+  const X = (x) => +(P + (x - x0) * u).toFixed(1), Y = (y) => +(P + (y1 - y) * u).toFixed(1);
+  const L = (a, b, c, d, st) => `<line x1="${X(a)}" y1="${Y(b)}" x2="${X(c)}" y2="${Y(d)}" ${st}/>`;
+  const head = (tip, dir, col) => { // arrowhead at tip pointing along dir (pixel space)
+    const n = Math.hypot(dir[0], dir[1]) || 1, ux = dir[0] / n, uy = dir[1] / n, b = [tip[0] - ux * 15, tip[1] - uy * 15];
+    return `<polygon points="${tip[0].toFixed(1)},${tip[1].toFixed(1)} ${(b[0] - uy * 7).toFixed(1)},${(b[1] + ux * 7).toFixed(1)} ${(b[0] + uy * 7).toFixed(1)},${(b[1] - ux * 7).toFixed(1)}" fill="${col}"/>`;
+  };
+  const halo = 'stroke="#fff" stroke-width="5" stroke-linejoin="round" paint-order="stroke"';
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${o.w || W}" height="${o.w ? Math.round(o.w * H / W) : H}"${o.style ? ` style="${o.style}"` : ''} font-family="system-ui,-apple-system,'Segoe UI',sans-serif" role="img" aria-label="coordinate grid">`;
+  s += `<rect x="0" y="0" width="${W}" height="${H}" rx="10" fill="#fff"/>`;
+  for (let i = x0; i <= x1; i++) s += L(i, y0, i, y1, `stroke="${i % 2 ? '#e3e7ee' : '#cfd5df'}" stroke-width="${i % 2 ? 1 : 1.3}"`);
+  for (let j = y0; j <= y1; j++) s += L(x0, j, x1, j, `stroke="${j % 2 ? '#e3e7ee' : '#cfd5df'}" stroke-width="${j % 2 ? 1 : 1.3}"`);
+  // axes with arrows and numbers
+  if (y0 <= 0 && 0 <= y1) {
+    s += L(x0, 0, x1, 0, `stroke="${INK}" stroke-width="2.2"`) + head([X(x1) + 2, Y(0)], [1, 0], INK) + head([X(x0) - 2, Y(0)], [-1, 0], INK);
+    s += `<text x="${X(x1) - 4}" y="${Y(0) - 9}" font-size="${fs + 2}" font-style="italic" font-weight="700" text-anchor="end" fill="${INK}" ${halo}>x</text>`;
+    for (let i = x0 + 1; i < x1; i++) if (i && i % 2 === 0) s += `<text x="${X(i)}" y="${Y(0) + fs + 3}" font-size="${fs}" font-weight="600" text-anchor="middle" fill="#3a4254" ${halo}>${suMinusSign(i)}</text>`;
+  }
+  if (x0 <= 0 && 0 <= x1) {
+    s += L(0, y0, 0, y1, `stroke="${INK}" stroke-width="2.2"`) + head([X(0), Y(y1) - 2], [0, -1], INK) + head([X(0), Y(y0) + 2], [0, 1], INK);
+    s += `<text x="${X(0) + 10}" y="${Y(y1) + fs + 2}" font-size="${fs + 2}" font-style="italic" font-weight="700" fill="${INK}" ${halo}>y</text>`;
+    for (let j = y0 + 1; j < y1; j++) if (j && j % 2 === 0) s += `<text x="${X(0) - 6}" y="${Y(j) + fs * 0.36}" font-size="${fs}" font-weight="600" text-anchor="end" fill="#3a4254" ${halo}>${suMinusSign(j)}</text>`;
+  }
+  for (const g of o.segs || []) s += L(g.p[0], g.p[1], g.q[0], g.q[1], `stroke="${g.color || INK}" stroke-width="3" stroke-linecap="round"`);
+  for (const ln of o.lines || []) {
+    const col = ln.color || '#1f5bd6';
+    const a = ln.x != null ? [ln.x, 0] : ln.p ? ln.p : [0, suV(ln.b)], d = ln.x != null ? [0, 1] : ln.p ? [ln.q[0] - ln.p[0], ln.q[1] - ln.p[1]] : [1, suV(ln.m)];
+    const c = suClip(a, d, x0 + 0.15, x1 - 0.15, y0 + 0.15, y1 - 0.15); if (!c) continue;
+    const A = [X(c[0][0]), Y(c[0][1])], B = [X(c[1][0]), Y(c[1][1])];
+    s += `<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="${col}" stroke-width="4" stroke-linecap="round"/>` + head(A, [A[0] - B[0], A[1] - B[1]], col) + head(B, [B[0] - A[0], B[1] - A[1]], col);
+  }
+  const OFF = { ne: [9, -9, 'start'], nw: [-9, -9, 'end'], se: [9, 22, 'start'], sw: [-9, 22, 'end'], n: [0, -12, 'middle'], s: [0, 26, 'middle'], e: [11, 6, 'start'], w: [-11, 6, 'end'] };
+  for (const pt of o.pts || []) {
+    const cx = X(pt.p[0]), cy = Y(pt.p[1]), col = pt.color || INK;
+    s += `<circle cx="${cx}" cy="${cy}" r="6" fill="${col}" stroke="#fff" stroke-width="2"/>`;
+    if (pt.label) { const f = OFF[pt.pos || 'ne']; s += `<text x="${cx + f[0]}" y="${cy + f[1]}" font-size="${fs + 2}" font-weight="800" text-anchor="${f[2]}" fill="${col}" ${halo}>${suMinusSign(pt.label)}</text>`; }
+  }
+  return s + '</svg>';
+}
+/** where to put a point's label so it sits away from the line (slope m) */
+const suPos = (m, side) => (suV(m) >= 0 ? (side ? 'se' : 'nw') : (side ? 'ne' : 'sw'));
+/** a small answer graph for .su-atext */
+const suAnsGraph = (o) => suGraph(Object.assign({ w: 290, style: 'max-width:100%;height:auto;display:block;margin:8px auto 2px' }, o));
+
+/* ---- 7.2: build y = mx + b (Beginning: m and b given, or read off a grid with integer slope; Progressing: a
+ *      fraction slope off a grid, or a parallel line; Mastery: a perpendicular line, from two points, a line or a grid) ---- */
+const SU_EQ = 'Write the equation of the line in the form <i>y</i> = <i>mx</i> + <i>b</i>.';
+/** a line y = mx + b through lattice points of the ±6 window, with two of them */
+function suLattice(r, frac, bMax = 4) {
+  for (;;) {
+    const m = frac ? suFrac(r, [2, 3, 4, 5], 4) : suQ(r.pick([1, 2, 3, 4, -1, -2, -3, -4])), b = r.int(-bMax, bMax);
+    const pts = [-3, -2, -1, 0, 1, 2, 3].map((k) => [k * m[1], b + k * m[0]]).filter(([x, y]) => Math.abs(x) <= 5 && Math.abs(y) <= 5);
+    if (pts.length < 2) continue;
+    return { m, b, pts };
+  }
+}
+const suRiseRun = (P, Q) => 'm=\\frac{\\text{rise}}{\\text{run}}=' + suRR(Q[1] - P[1], Q[0] - P[0]);
+function suL2Given(r) {
+  const m = r.chance(0.5) ? suQ(r.int(1, 9) * r.sign()) : suFrac(r, [2, 3, 4, 5, 7], 6), b = r.int(1, 12) * r.sign();
+  if (r.chance(0.5)) return { text: SU_EQ, q: '\\text{slope } ' + suN(m) + ',\\quad \\text{passes through } ' + suPt(0, b),
+    a: [suPt(0, b) + '\\text{ has } x=0\\text{, so it is the }y\\text{-intercept: } b=' + b, suSI(m, b)] };
+  return { text: SU_EQ, q: '\\text{slope } ' + suN(m) + ',\\quad y\\text{-intercept } ' + b, a: ['m=' + suN(m) + ',\\quad b=' + b, suSI(m, b)] };
+}
+function suL2Graph(r, frac) {
+  const L = suLattice(r, frac), P = [0, L.b], others = L.pts.filter((p) => p[0] !== 0), Q = r.pick(others);
+  const fig = suGraph({ lines: [{ m: L.m, b: L.b }], pts: frac ? [] : [{ p: P }, { p: Q }] });
+  return { text: 'The line passes through points with integer coordinates. ' + SU_EQ + '<!--' + suN(L.m) + ',' + L.b + '-->', q: '', fig,
+    a: ['\\text{lattice points } ' + suPt(P[0], P[1]) + ',\\ ' + suPt(Q[0], Q[1]) + ':\\quad ' + suRiseRun(P, Q), '\\text{crosses the }y\\text{-axis at }' + suPt(0, L.b) + ',\\ b=' + L.b, suSI(L.m, L.b)] };
+}
+function suL2Par(r) {
+  const m = r.chance(0.5) ? suQ(r.int(1, 6) * r.sign()) : suFrac(r, [2, 3, 4, 5], 5), c = r.int(1, 9) * r.sign();
+  let n, b; do { n = r.int(1, 7) * r.sign(); b = r.int(1, 12) * r.sign(); } while (suV(m) === n || b === c);
+  if (r.chance(0.5)) return { text: 'Write the equation of the line that is <b>parallel</b> to <i>L</i><sub>1</sub> and has the same <i>y</i>-intercept as <i>L</i><sub>2</sub>.',
+    q: 'L_1\\!:\\ ' + suSI(m, c) + '\\qquad L_2\\!:\\ ' + suSI(n, b),
+    a: ['\\text{parallel: same slope, } m=' + suN(m) + ';\\quad L_2\\text{ gives } b=' + b, suSI(m, b)] };
+  const k = r.int(1, 9) * r.sign();
+  return { text: 'Write the equation of the line that passes through <i>P</i> and is <b>parallel</b> to <i>L</i>.',
+    q: 'P' + suPt(0, k) + '\\qquad L\\!:\\ ' + suSI(m, c), a: ['\\text{parallel: } m=' + suN(m) + ';\\quad P\\text{ is on the }y\\text{-axis: } b=' + k, suSI(m, k)] };
+}
+function suL2Perp(r) {
+  const t = r.int(1, 3);
+  if (t === 1) { // perpendicular to the line joining two points, through (0, k)
+    for (;;) {
+      const s = r.chance(0.6) ? suFrac(r, [2, 3, 4, 5], 5) : suQ(r.pick([2, 3, 4, 5, -2, -3, -4, -5])), j = r.pick([1, 2, 3, -1, -2, -3]);
+      const P = [r.int(-6, 6), r.int(-6, 6)], Q = [P[0] + j * s[1], P[1] + j * s[0]];
+      if (Math.abs(Q[0]) > 9 || Math.abs(Q[1]) > 9 || !P[0] || !Q[0]) continue;
+      const mp = suNeg(suInv(s)), k = r.int(1, 12) * r.sign(), rise = Q[1] - P[1], run = Q[0] - P[0];
+      return { text: 'Write the equation of the line that passes through <i>R</i> and is <b>perpendicular</b> to the line joining <i>P</i> and <i>Q</i>.',
+        q: 'P' + suPt(P[0], P[1]) + ',\\quad Q' + suPt(Q[0], Q[1]) + ',\\quad R' + suPt(0, k),
+        a: ['m_{PQ}=\\frac{' + Q[1] + '-' + (P[1] < 0 ? '(' + P[1] + ')' : P[1]) + '}{' + Q[0] + '-' + (P[0] < 0 ? '(' + P[0] + ')' : P[0]) + '}=' + suRR(rise, run),
+          '\\text{negative reciprocal: } m=' + suN(mp) + ';\\quad R\\text{ gives } b=' + k, suSI(mp, k)] };
+    }
+  }
+  if (t === 2) { // perpendicular to L1, same y-intercept as L2
+    const s = r.chance(0.6) ? suFrac(r, [2, 3, 4, 5], 5) : suQ(r.pick([2, 3, 4, 5, -2, -3, -4, -5, -1])), c = r.int(1, 9) * r.sign();
+    let n, b; do { n = r.int(1, 6) * r.sign(); b = r.int(1, 12) * r.sign(); } while (b === c);
+    const mp = suNeg(suInv(s));
+    return { text: 'Write the equation of the line that is <b>perpendicular</b> to <i>L</i><sub>1</sub> and has the same <i>y</i>-intercept as <i>L</i><sub>2</sub>.',
+      q: 'L_1\\!:\\ ' + suSI(s, c) + '\\qquad L_2\\!:\\ ' + suSI(n, b),
+      a: ['\\text{negative reciprocal of } ' + suN(s) + ':\\ m=' + suN(mp) + ';\\quad L_2\\text{ gives } b=' + b, suSI(mp, b), '\\text{check: } ' + suN(s) + '\\times' + (suV(mp) < 0 ? '\\left(' + suN(mp) + '\\right)' : suN(mp)) + '=-1'] };
+  }
+  // perpendicular to the line on the grid, through R on the y-axis
+  const L = suLattice(r, r.chance(0.6)), mp = suNeg(suInv(L.m));
+  let k; do { k = r.int(-5, 5); } while (k === L.b);
+  const Q = r.pick(L.pts.filter((p) => p[0] !== 0)), P = [0, L.b];
+  const fig = suGraph({ lines: [{ m: L.m, b: L.b }], pts: [{ p: P }, { p: Q }, { p: [0, k], label: 'R', color: '#c93a33', pos: k > L.b ? 'ne' : 'se' }] });
+  return { text: 'Write the equation of the line that passes through <i>R</i> and is <b>perpendicular</b> to the line on the grid.<!--' + suN(L.m) + ',' + L.b + ',' + k + '-->', q: '', fig,
+    a: ['\\text{grid line: }' + suRiseRun(P, Q), '\\text{perpendicular: } m=' + suN(mp) + ';\\quad R' + suPt(0, k) + '\\text{ gives } b=' + k, suSI(mp, k)] };
+}
+standup('u7l2', {
+  intro: 'Write the equation of the line at your whiteboard. Ask where m comes from and where b comes from, then check with a point.',
+  levels: {
+    BEG: (r) => (r.chance(0.5) ? suL2Given(r) : suL2Graph(r, false)), // m and b given (or (0, k)), or a grid with an integer slope
+    PRG: (r) => (r.chance(0.5) ? suL2Graph(r, true) : suL2Par(r)),    // a fraction slope off a grid, or a parallel line
+    MAS: (r) => suL2Perp(r)                                            // perpendicular: to PQ, to a line, or to a grid line
+  }
+});
