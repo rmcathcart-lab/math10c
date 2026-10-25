@@ -5,6 +5,7 @@
  * polynomial helpers below, so every caption matches the maths. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
@@ -944,3 +945,157 @@ function mountReveals() {
 }
 
 mountExplainers(); mountFigures(); mountNR(); mountWarmup(); mountDeck(); mountReveals();
+
+/* ============ Stand Up Break! (lessons/js/standup.js) — a tiny polynomial kit for the whiteboard questions ============
+ * A polynomial is { key: coefficient }, the key naming the variables and their exponents ('x2y1'; '' for a constant).
+ * A written expression keeps its terms in a list of one-term polynomials, so the answer can show the partial products. */
+const suKey = (e) => Object.keys(e).filter((v) => e[v]).sort().map((v) => v + e[v]).join('');
+const suExp = (k) => { const e = {}; k.replace(/([a-z])(\d+)/g, (_, v, n) => { e[v] = +n; }); return e; };
+const suM = (c, v, n = 1) => (c ? { [suKey(typeof v === 'object' ? v : v ? { [v]: n } : {})]: c } : {}); // c·vⁿ, or c·(exponents)
+const suAdd = (...ps) => { const o = {}; ps.forEach((p) => { for (const k in p) { o[k] = (o[k] || 0) + p[k]; if (!o[k]) delete o[k]; } }); return o; };
+const suMul = (...ps) => ps.reduce((a, b) => {
+  const o = {};
+  for (const i in a) for (const j in b) { const e = suExp(i), f = suExp(j); for (const v in f) e[v] = (e[v] || 0) + f[v]; const k = suKey(e); o[k] = (o[k] || 0) + a[i] * b[j]; if (!o[k]) delete o[k]; }
+  return o;
+}, { '': 1 });
+const suDeg = (k) => Object.values(suExp(k)).reduce((s, n) => s + n, 0);
+const suOrd = (a, b) => { const d = suDeg(b) - suDeg(a); if (d) return d; const ea = suExp(a), eb = suExp(b); for (const v of [...new Set(Object.keys(ea).concat(Object.keys(eb)))].sort()) { const x = (eb[v] || 0) - (ea[v] || 0); if (x) return x; } return 0; };
+const suKeys = (p) => Object.keys(p).sort(suOrd);
+const suMono = (k) => Object.entries(suExp(k)).map(([v, n]) => v + (n > 1 ? '^{' + n + '}' : '')).join('');
+const suTerm = (c, k, first) => { const m = suMono(k), a = Math.abs(c); return (c < 0 ? '-' : first ? '' : '+') + (a === 1 && m ? '' : a) + m; };
+const suTex = (p) => suKeys(p).map((k, i) => suTerm(p[k], k, i === 0)).join('') || '0';
+const suOne = (p) => { const k = Object.keys(p)[0]; return [p[k], k]; };
+const suSeq = (list, cont) => list.filter((p) => Object.keys(p).length).map((p, i) => { const [c, k] = suOne(p); return suTerm(c, k, i === 0 && !cont); }).join('') || '0';
+const suPar = (list) => '(' + suSeq(list) + ')';
+const suP = (list) => suAdd(...list);
+const suTermsOf = (p) => suKeys(p).map((k) => ({ [k]: p[k] }));
+const suParts = (A, B) => A.flatMap((a) => B.map((b) => suMul(a, b)));
+const suL = (v, a, b) => [suM(a, v), suM(b)]; // a·v + b as a written list
+const suDist = (A, B) => A.map((t, i) => { const [c, k] = suOne(t); return suTerm(c, k, i === 0) + suPar(B); }).join(''); // a(…)+b(…)
+const suK = (k) => (k === -1 ? '-' : k === 1 ? '' : String(k)); // a factor written in front of brackets
+const suNz = (r, lo, hi) => { let v = 0; while (!v) v = r.int(lo, hi); return v; };
+const suH = (list) => suSeq(list).replace(/[+-]/g, (m) => (m === '-' ? ' − ' : ' + ')).replace(/[a-z]/g, (c) => '<i>' + c + '</i>'); // a written list as HTML words
+const suLab = (x, y, s, anchor = 'middle', size = 21) => `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-family="KaTeX_Main, 'Times New Roman', serif" fill="#1c2230">${String(s).replace(/[+-]/g, (m) => (m === '-' ? ' − ' : ' + ')).replace(/[a-z]/g, (c) => `<tspan font-style="italic">${c}</tspan>`)}</text>`;
+function suHoleFig(W, H, S, R) { // a W by H rectangle with an S by R hole (S = R: a square) in its interior
+  const x0 = 110, y0 = 26, w = 270, h = 180, hw = 104, hh = S === R ? 104 : 80, hx = x0 + 120, hy = y0 + (h - hh) / 2;
+  return `<svg viewBox="0 0 470 250" width="470" height="250" role="img" aria-label="A ${W} by ${H} rectangle with a ${S} by ${R} piece cut out of its interior">
+    <rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#cfe7e3" stroke="#0f5f5a" stroke-width="2.2"/>
+    <rect x="${hx}" y="${hy}" width="${hw}" height="${hh}" fill="#fff" stroke="#0f5f5a" stroke-width="2"/>
+    ${suLab(x0 + w / 2, y0 + h + 30, W)}${suLab(x0 - 12, y0 + h / 2 + 7, H, 'end')}
+    ${suLab(hx + hw / 2, hy + 28, S, 'middle', 19)}${S === R ? '' : suLab(hx + 8, hy + hh / 2 + 14, R, 'start', 19)}
+  </svg>`;
+}
+function suTriFig(L) { // an isosceles right triangle PQR, right angle at Q
+  const qx = 120, qy = 210, s = 170;
+  return `<svg viewBox="0 0 420 260" width="420" height="260" role="img" aria-label="An isosceles right triangle PQR with legs PQ and QR of length ${L}">
+    <path d="M${qx} ${qy - s}L${qx} ${qy}L${qx + s} ${qy}Z" fill="#cfe7e3" stroke="#0f5f5a" stroke-width="2.2"/>
+    <path d="M${qx} ${qy - 18}h18v18" fill="none" stroke="#0f5f5a" stroke-width="1.6"/>
+    ${suLab(qx - 12, qy - s / 2 + 7, L, 'end')}${suLab(qx + s / 2, qy + 30, L)}
+    <text x="${qx - 6}" y="${qy - s - 8}" font-size="19" font-style="italic" font-family="KaTeX_Main, serif" fill="#1c2230">P</text>
+    <text x="${qx - 22}" y="${qy + 20}" font-size="19" font-style="italic" font-family="KaTeX_Main, serif" fill="#1c2230">Q</text>
+    <text x="${qx + s + 6}" y="${qy + 20}" font-size="19" font-style="italic" font-family="KaTeX_Main, serif" fill="#1c2230">R</text>
+  </svg>`;
+}
+const suFull = (A, B) => { const parts = suParts(A, B); return suPar(A) + suPar(B) + '=' + suSeq(parts) + '=' + suTex(suP(parts)); };
+
+standup('u3l6', {
+  intro: 'Review at your whiteboard station: work it out fully, then check every sign and exponent before you call it done.',
+  levels: {
+    /* degree of a polynomial; expand (x ± a)(x ± b); a monomial times a binomial */
+    BEG: (r) => {
+      const kind = r.pick(['deg', 'two', 'two', 'mono']);
+      if (kind === 'deg') {
+        const [u, w] = r.pick([['m', 'n'], ['x', 'y'], ['a', 'b']]);
+        for (;;) {
+          const ts = [suM(suNz(r, -9, 9), { [u]: r.int(1, 5), [w]: r.int(1, 4) }), suM(suNz(r, -9, 9), r.pick([u, w, 'p']), r.int(2, 7))];
+          if (r.chance(0.5)) ts.push(suM(suNz(r, -9, 9)));
+          const degs = ts.map((t) => suDeg(suOne(t)[1])), top = Math.max(...degs);
+          if (degs.filter((d) => d === top).length > 1) continue;
+          const order = r.shuffle(ts.map((t, i) => i));
+          return {
+            text: 'Find the <b>degree</b> of the polynomial.',
+            q: suSeq(order.map((i) => ts[i])),
+            a: [order.map((i) => { const [c, k] = suOne(ts[i]), e = suExp(k), ps = Object.keys(e).sort().map((v) => e[v]); return suTerm(c, k, true) + ':\\ ' + (ps.length > 1 ? ps.join('+') + '=' : '') + degs[i]; }).join(',\\qquad '),
+              '\\text{the highest: degree } ' + top]
+          };
+        }
+      }
+      const v = r.pick(['x', 'x', 'y', 'b', 'm']);
+      if (kind === 'mono') { // −kxⁿ(axᵐ ± b)
+        const k = r.int(2, 9) * (r.chance(0.7) ? -1 : 1), n = r.int(1, 3), A = [suM(k, v, n)], B = r.chance(0.5) ? [suM(r.int(1, 6), v, r.int(1, 3)), suM(suNz(r, -9, 9))] : [suM(r.int(1, 9)), suM(r.int(1, 6) * r.sign(), v)];
+        const parts = suParts(A, B);
+        return { text: 'Expand.', q: suTerm(k, suKey({ [v]: n }), true) + suPar(B), a: ['=' + B.map((t) => '(' + suTex(A[0]) + ')(' + suTex(t) + ')').join('+'), '=' + suSeq(parts)] };
+      }
+      for (;;) {
+        const a = suNz(r, -9, 9), b = suNz(r, -9, 9); if (a + b === 0) continue;
+        const A = suL(v, 1, a), B = suL(v, 1, b);
+        return { text: 'Expand and simplify.', q: suPar(A) + suPar(B), a: [suPar(A) + suPar(B) + '=' + suSeq(suParts(A, B)), '=' + suTex(suP(suParts(A, B)))] };
+      }
+    },
+    /* P − Q − R from a polynomial out of order; a rectangle with sides (a − x)(b − x); how many terms are left */
+    PRG: (r) => {
+      const kind = r.pick(['pqr', 'pqr', 'rect', 'count']), v = r.pick(['x', 'x', 'y', 'b', 'n']);
+      if (kind === 'pqr') {
+        const d = r.int(3, 6), e2 = r.int(1, d - 1), lc = suNz(r, -9, 9), mc = suNz(r, -9, 9), ct = suNz(r, -20, 20);
+        const ts = [suM(lc, v, d), suM(mc, v, e2), suM(ct)], w = r.pick([[1, 2, 0], [2, 0, 1], [1, 0, 2], [2, 1, 0]]).map((i) => ts[i]);
+        const W = (x) => (x < 0 ? '(' + x + ')' : String(x));
+        const ex = r.pick([['P-Q-R', '<i>P</i> − <i>Q</i> − <i>R</i>', W(lc) + '-' + d + '-' + W(ct), lc - d - ct], ['P+Q+R', '<i>P</i> + <i>Q</i> + <i>R</i>', W(lc) + '+' + d + '+' + W(ct), lc + d + ct],
+          ['PR-Q', '<i>PR</i> − <i>Q</i>', '(' + lc + ')(' + ct + ')-' + d, lc * ct - d], ['Q-P-R', '<i>Q</i> − <i>P</i> − <i>R</i>', d + '-' + W(lc) + '-' + W(ct), d - lc - ct]]);
+        const sub = ex[2];
+        return {
+          text: `The polynomial has leading coefficient <i>P</i>, degree <i>Q</i> and constant term <i>R</i>. Find the value of ${ex[1]}.`,
+          q: suSeq(w),
+          a: ['\\text{descending: }\\ ' + suSeq(ts) + ',\\quad P=' + lc + ',\\ Q=' + d + ',\\ R=' + ct, ex[0] + '=' + sub + '=' + ex[3]]
+        };
+      }
+      if (kind === 'rect') {
+        for (;;) {
+          const a = r.int(2, 12), b = r.int(2, 12); if (a === b) continue;
+          const A = [suM(a), suM(-1, v)], B = [suM(b), suM(-1, v)], parts = suParts(A, B), res = suP(parts);
+          const asc = suKeys(res).reverse().map((k, i) => suTerm(res[k], k, i === 0)).join('');
+          return {
+            text: `A rectangle has length (${suH(A)}) mm and width (${suH(B)}) mm. Write its area as a simplified polynomial.`,
+            q: 'A=' + suPar(A) + suPar(B),
+            a: ['=' + suSeq(parts), '=' + asc + '\\ \\text{mm}^2']
+          };
+        }
+      }
+      const m = r.int(2, 7), n = r.int(1, 9), k2 = r.pick(['sd', 'sd', 'sq', 'sq', 'gen']);
+      const A = [suM(m, v), suM(-n)], B = k2 === 'sd' ? [suM(m, v), suM(n)] : k2 === 'sq' ? A : [suM(m, v), suM(n + r.int(1, 3))];
+      const parts = suParts(A, B), res = suP(parts), nt = Object.keys(res).length;
+      return {
+        text: 'Expand and simplify. How many terms are left?',
+        q: k2 === 'sq' ? suPar(A) + '^2' : r.chance(0.5) ? suPar(A) + suPar(B) : suPar(B) + suPar(A),
+        a: ['=' + suSeq(parts) + '=' + suTex(res)],
+        atext: '<b>' + nt + ' terms</b>' + (nt === 2 ? ' — the outer and inner products are opposites, so they cancel (a difference of squares).' : ' — the outer and inner products don’t cancel.')
+      };
+    },
+    /* whole − hole with a figure; half of a square for an isosceles right triangle */
+    MAS: (r) => {
+      const v = r.pick(['x', 'x', 'x', 'n']);
+      if (r.chance(0.35)) { // ½(mx + n)² with m, n even
+        const m = r.pick([2, 2, 4]), n = 2 * r.int(1, 6), L = [suM(m, v), suM(n)], sq = suP(suParts(L, L)), res = suMul(sq, suM(0.5));
+        const ask = r.pick(['a', 'b', 'c']), val = res[{ a: v + '2', b: v + '1', c: '' }[ask]];
+        return {
+          text: `Triangle <i>PQR</i> is isosceles and right-angled at <i>Q</i>, with legs <i>PQ</i> = <i>QR</i> = ${suH(L)} cm. Its area can be written as <i>a${v}</i>² + <i>b${v}</i> + <i>c</i> cm². Find the value of <i>${ask}</i>.`,
+          q: 'PQ=QR=' + suSeq(L),
+          fig: suTriFig(suSeq(L)),
+          a: ['A=\\tfrac12' + suPar(L) + '^2=\\tfrac12(' + suTex(sq) + ')', '=' + suTex(res) + ',\\quad ' + ask + '=' + val]
+        };
+      }
+      for (;;) {
+        const sqHole = r.chance(0.6), a = r.int(2, 4), b = r.int(1, 8), c = r.int(2, 3), d = r.int(1, 8), e = r.int(1, 4), f = r.int(1, 4);
+        const O1 = suL(v, a, b), O2 = suL(v, c, d), H1 = suL(v, 1, e), H2 = sqHole ? H1 : suL(v, 1, f);
+        if ((!sqHole && e === f) || e >= b || e >= d || (!sqHole && (f >= b || f >= d))) continue; // the hole fits inside for every x > 0
+        const outer = suP(suParts(O1, O2)), hole = suP(suParts(H1, H2)), res = suAdd(outer, suMul(suM(-1), hole));
+        return {
+          q: '', // the question is in the words and the figure
+          text: sqHole ? `A (${suH(O1)}) mm by (${suH(O2)}) mm rectangle has a square of side (${suH(H1)}) mm cut out of its interior. Write the area of the shaded region in the form <i>a${v}</i>² + <i>b${v}</i> + <i>c</i>.`
+            : `A (${suH(O1)}) mm by (${suH(O2)}) mm rectangle has a (${suH(H1)}) mm by (${suH(H2)}) mm rectangle cut out of its interior. Write the area of the shaded region in the form <i>a${v}</i>² + <i>b${v}</i> + <i>c</i>.`,
+          fig: suHoleFig(suSeq(O1), suSeq(O2), suSeq(H1), suSeq(H2)),
+          a: ['\\text{whole: } ' + suFull(O1, O2), '\\text{hole: } ' + (sqHole ? suPar(H1) + '^2=' + suTex(hole) : suFull(H1, H2)), '(' + suTex(outer) + ')-(' + suTex(hole) + ')=' + suTex(res) + '\\ \\text{mm}^2']
+        };
+      }
+    }
+  }
+});

@@ -2,6 +2,7 @@
  * the painted-cube warm-up and the explainers on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -693,3 +694,106 @@ function mountExplainers() {
 }
 
 mountPaint(); mountPrism(); mountReveals(); mountExplainers();
+
+/* ============ Stand Up Break! (lessons/js/standup.js) — a tiny polynomial kit for the whiteboard questions ============
+ * A polynomial is { key: coefficient }, the key naming the variables and their exponents ('x2y1'; '' for a constant).
+ * A written expression keeps its terms in a list of one-term polynomials, so the answer can show the partial products. */
+const suKey = (e) => Object.keys(e).filter((v) => e[v]).sort().map((v) => v + e[v]).join('');
+const suExp = (k) => { const e = {}; k.replace(/([a-z])(\d+)/g, (_, v, n) => { e[v] = +n; }); return e; };
+const suM = (c, v, n = 1) => (c ? { [suKey(typeof v === 'object' ? v : v ? { [v]: n } : {})]: c } : {}); // c·vⁿ, or c·(exponents)
+const suAdd = (...ps) => { const o = {}; ps.forEach((p) => { for (const k in p) { o[k] = (o[k] || 0) + p[k]; if (!o[k]) delete o[k]; } }); return o; };
+const suMul = (...ps) => ps.reduce((a, b) => {
+  const o = {};
+  for (const i in a) for (const j in b) { const e = suExp(i), f = suExp(j); for (const v in f) e[v] = (e[v] || 0) + f[v]; const k = suKey(e); o[k] = (o[k] || 0) + a[i] * b[j]; if (!o[k]) delete o[k]; }
+  return o;
+}, { '': 1 });
+const suDeg = (k) => Object.values(suExp(k)).reduce((s, n) => s + n, 0);
+const suOrd = (a, b) => { const d = suDeg(b) - suDeg(a); if (d) return d; const ea = suExp(a), eb = suExp(b); for (const v of [...new Set(Object.keys(ea).concat(Object.keys(eb)))].sort()) { const x = (eb[v] || 0) - (ea[v] || 0); if (x) return x; } return 0; };
+const suKeys = (p) => Object.keys(p).sort(suOrd);
+const suMono = (k) => Object.entries(suExp(k)).map(([v, n]) => v + (n > 1 ? '^{' + n + '}' : '')).join('');
+const suTerm = (c, k, first) => { const m = suMono(k), a = Math.abs(c); return (c < 0 ? '-' : first ? '' : '+') + (a === 1 && m ? '' : a) + m; };
+const suTex = (p) => suKeys(p).map((k, i) => suTerm(p[k], k, i === 0)).join('') || '0';
+const suOne = (p) => { const k = Object.keys(p)[0]; return [p[k], k]; };
+const suSeq = (list, cont) => list.filter((p) => Object.keys(p).length).map((p, i) => { const [c, k] = suOne(p); return suTerm(c, k, i === 0 && !cont); }).join('') || '0';
+const suPar = (list) => '(' + suSeq(list) + ')';
+const suP = (list) => suAdd(...list);
+const suTermsOf = (p) => suKeys(p).map((k) => ({ [k]: p[k] }));
+const suParts = (A, B) => A.flatMap((a) => B.map((b) => suMul(a, b)));
+const suL = (v, a, b) => [suM(a, v), suM(b)]; // a·v + b as a written list
+const suDist = (A, B) => A.map((t, i) => { const [c, k] = suOne(t); return suTerm(c, k, i === 0) + suPar(B); }).join(''); // a(…)+b(…)
+const suK = (k) => (k === -1 ? '-' : k === 1 ? '' : String(k)); // a factor written in front of brackets
+const suNz = (r, lo, hi) => { let v = 0; while (!v) v = r.int(lo, hi); return v; };
+/* (A)(B): each term of the first times the whole second, the partial products, then collected */
+function suHands(A, B) {
+  const parts = suParts(A, B), res = suP(parts);
+  return { q: suPar(A) + suPar(B), parts, res, a: ['=' + suDist(A, B), '=' + suSeq(parts), '=' + suTex(res)] };
+}
+const suTri = (v, a, b, c) => [suM(a, v, 2), suM(b, v), suM(c)];
+/* an SVG label: letters in italics, spaced operators */
+const suLab = (x, y, s, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="21" font-family="KaTeX_Main, 'Times New Roman', serif" fill="#1c2230">${s.replace(/[+-]/g, (m) => (m === '-' ? ' − ' : ' + ')).replace(/[a-z]/g, (c) => `<tspan font-style="italic">${c}</tspan>`)}</text>`;
+function suBoxFig(L, W, H) { // a rectangular prism: length along the front, width going back, height up
+  const x0 = 70, y0 = 80, w = 220, h = 130, dx = 70, dy = 46;
+  return `<svg viewBox="0 0 420 270" width="420" height="270" role="img" aria-label="A rectangular prism with edges ${L}, ${W} and ${H} centimetres">
+    <path d="M${x0} ${y0} L${x0 + dx} ${y0 - dy} L${x0 + w + dx} ${y0 - dy} L${x0 + w} ${y0} Z" fill="#cfe7e3" stroke="#0f5f5a" stroke-width="2"/>
+    <path d="M${x0 + w} ${y0} L${x0 + w + dx} ${y0 - dy} L${x0 + w + dx} ${y0 + h - dy} L${x0 + w} ${y0 + h} Z" fill="#b5dbd5" stroke="#0f5f5a" stroke-width="2"/>
+    <rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#e3f1ef" stroke="#0f5f5a" stroke-width="2"/>
+    ${suLab(x0 + w / 2, y0 + h + 28, L)}${suLab(x0 - 10, y0 + h / 2 + 7, H, 'end')}${suLab(x0 + w + dx / 2 + 12, y0 + h - dy / 2 + 18, W, 'start')}
+  </svg>`;
+}
+
+standup('u3l4', {
+  intro: 'Expand and simplify at your whiteboard station. Every term shakes hands with every term, then collect like terms.',
+  levels: {
+    /* (x + a)(x² + bx + c), all positive */
+    BEG: (r) => { const v = r.pick(['x', 'x', 'x', 'y', 'a', 'n']); return suHands(suL(v, 1, r.int(1, 6)), suTri(v, 1, r.int(1, 6), r.int(1, 6))); },
+    /* negatives, a coefficient, the trinomial written first, or a power skipped */
+    PRG: (r) => {
+      const v = r.pick(['x', 'x', 'y', 'b', 'm']), kind = r.pick(['bt', 'bt', 'tb', 'skip']);
+      for (;;) {
+        if (kind === 'skip') { // (x² − a)(px³ + bx + c): only some partial products are alike
+          const A = [suM(1, v, 2), suM(suNz(r, -9, 9))], B = [suM(r.int(1, 4), v, 3), suM(suNz(r, -7, 7), v), suM(suNz(r, -9, 9))];
+          const s = suHands(A, B); if (Object.keys(s.res).length < 4) continue;
+          return s;
+        }
+        const m = r.int(1, 4), a = suNz(r, -7, 7), p = r.int(1, 3), b = suNz(r, -7, 7), c = suNz(r, -7, 7);
+        if (a > 0 && b > 0 && c > 0) continue;
+        const A = suL(v, m, a), B = suTri(v, p, b, c), s = kind === 'tb' ? suHands(B, A) : suHands(A, B);
+        if (Object.keys(s.res).length < 3) continue;
+        return s;
+      }
+    },
+    /* three binomials (or a box's volume), or a binomial × trinomial combined with a sum times a difference */
+    MAS: (r) => {
+      const v = r.pick(['x', 'x', 'x', 'n', 'y']), kind = r.pick(['three', 'three', 'three', 'box', 'combo', 'combo']);
+      if (kind === 'combo') { // k(x + a)(x² + bx + c) − (mx + n)(mx − n)
+        for (;;) {
+          const k = r.int(2, 4), A = suL(v, 1, suNz(r, -6, 6)), B = suTri(v, 1, suNz(r, -5, 5), suNz(r, -6, 6)), m = r.int(2, 5), n = r.int(1, 6);
+          const p1 = suP(suParts(A, B)), p2 = suMul(suM(k), p1), d = suAdd(suM(m * m, v, 2), suM(-n * n)), res = suAdd(p2, suMul(suM(-1), d));
+          if (Object.keys(p1).length < 4 || Object.keys(res).length < 4) continue;
+          const sd = '(' + m + v + '+' + n + ')(' + m + v + '-' + n + ')';
+          return {
+            q: k + suPar(A) + suPar(B) + '-' + sd,
+            a: [suPar(A) + suPar(B) + '=' + suSeq(suParts(A, B)) + '=' + suTex(p1),
+              '\\text{times } ' + k + ':\\ ' + suTex(p2) + ',\\qquad ' + sd + '=' + suTex(d),
+              '(' + suTex(p2) + ')-(' + suTex(d) + ')=' + suTex(res)]
+          };
+        }
+      }
+      for (;;) {
+        const box = kind === 'box', a = box ? r.int(1, 6) : suNz(r, -6, 6), b = box ? r.int(1, 6) : suNz(r, -6, 6), m = r.int(1, 3), d = box ? r.int(1, 6) : suNz(r, -6, 6);
+        if (a === b || (!box && a > 0 && b > 0 && d > 0) || (m === 1 && (d === a || d === b))) continue;
+        const A = suL(v, 1, a), B = suL(v, 1, b), C = suL(v, m, d), T = suP(suParts(A, B)), parts = suParts(suTermsOf(T), C), res = suP(parts);
+        if (Object.keys(T).length < 3) continue;
+        const steps = ['\\text{first two: }\\ ' + suPar(A) + suPar(B) + '=' + suTex(T), '(' + suTex(T) + ')' + suPar(C) + '=' + suSeq(parts), '=' + suTex(res)];
+        if (!box) return { q: suPar(A) + suPar(B) + suPar(C), a: steps };
+        const L = suSeq(A), W = suSeq(B), H = suSeq(C);
+        return {
+          text: 'A rectangular prism has the edge lengths shown, in centimetres. Write its volume in the form <i>ax</i>³ + <i>bx</i>² + <i>cx</i> + <i>d</i>.'.replace(/x/g, v),
+          q: 'V=' + suPar(A) + suPar(B) + suPar(C),
+          fig: suBoxFig(L, W, H),
+          a: steps.slice(0, 2).concat(['V=' + suTex(res) + '\\ \\text{cm}^3'])
+        };
+      }
+    }
+  }
+});

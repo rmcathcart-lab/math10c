@@ -5,6 +5,7 @@
  * Colours (every Unit 3 page): x² teal, x amber, 1 slate blue; a negative tile is white with a coloured outline. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -876,3 +877,116 @@ function mountExplainers() {
 }
 
 renderFigures(); mountSocks(); mountMat(); mountReveals(); mountExplainers();
+
+/* ============ Stand Up Break! (lessons/js/standup.js) — a tiny polynomial kit for the whiteboard questions ============
+ * A polynomial is { key: coefficient }, the key naming the variables and their exponents ('x2y1'; '' for a constant).
+ * A written expression keeps its terms in a list of one-term polynomials, so the answer can show the partial products. */
+const suKey = (e) => Object.keys(e).filter((v) => e[v]).sort().map((v) => v + e[v]).join('');
+const suExp = (k) => { const e = {}; k.replace(/([a-z])(\d+)/g, (_, v, n) => { e[v] = +n; }); return e; };
+const suM = (c, v, n = 1) => (c ? { [suKey(typeof v === 'object' ? v : v ? { [v]: n } : {})]: c } : {}); // c·vⁿ, or c·(exponents)
+const suAdd = (...ps) => { const o = {}; ps.forEach((p) => { for (const k in p) { o[k] = (o[k] || 0) + p[k]; if (!o[k]) delete o[k]; } }); return o; };
+const suMul = (...ps) => ps.reduce((a, b) => {
+  const o = {};
+  for (const i in a) for (const j in b) { const e = suExp(i), f = suExp(j); for (const v in f) e[v] = (e[v] || 0) + f[v]; const k = suKey(e); o[k] = (o[k] || 0) + a[i] * b[j]; if (!o[k]) delete o[k]; }
+  return o;
+}, { '': 1 });
+const suDeg = (k) => Object.values(suExp(k)).reduce((s, n) => s + n, 0);
+const suOrd = (a, b) => { const d = suDeg(b) - suDeg(a); if (d) return d; const ea = suExp(a), eb = suExp(b); for (const v of [...new Set(Object.keys(ea).concat(Object.keys(eb)))].sort()) { const x = (eb[v] || 0) - (ea[v] || 0); if (x) return x; } return 0; };
+const suKeys = (p) => Object.keys(p).sort(suOrd);
+const suMono = (k) => Object.entries(suExp(k)).map(([v, n]) => v + (n > 1 ? '^{' + n + '}' : '')).join('');
+const suTerm = (c, k, first) => { const m = suMono(k), a = Math.abs(c); return (c < 0 ? '-' : first ? '' : '+') + (a === 1 && m ? '' : a) + m; };
+const suTex = (p) => suKeys(p).map((k, i) => suTerm(p[k], k, i === 0)).join('') || '0';
+const suOne = (p) => { const k = Object.keys(p)[0]; return [p[k], k]; };
+const suSeq = (list, cont) => list.filter((p) => Object.keys(p).length).map((p, i) => { const [c, k] = suOne(p); return suTerm(c, k, i === 0 && !cont); }).join('') || '0';
+const suPar = (list) => '(' + suSeq(list) + ')';
+const suP = (list) => suAdd(...list);
+const suTermsOf = (p) => suKeys(p).map((k) => ({ [k]: p[k] }));
+const suParts = (A, B) => A.flatMap((a) => B.map((b) => suMul(a, b)));
+const suL = (v, a, b) => [suM(a, v), suM(b)]; // a·v + b as a written list
+const suDist = (A, B) => A.map((t, i) => { const [c, k] = suOne(t); return suTerm(c, k, i === 0) + suPar(B); }).join(''); // a(…)+b(…)
+const suK = (k) => (k === -1 ? '-' : k === 1 ? '' : String(k)); // a factor written in front of brackets
+const SU_NAMES = ['', 'monomial', 'binomial', 'trinomial'];
+const suName = (n) => SU_NAMES[n] || 'polynomial';
+const suIt = (s) => s.split('').map((v) => '<i>' + v + '</i>').join(', '); // variable letters for the answer words
+const suRange = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+const suGcd = (a, b) => (b ? suGcd(b, a % b) : Math.abs(a));
+/* a coefficient num/den on vⁿ: written in the question (\dfrac{2x^2}{3} or \tfrac{2}{3}x^2) and in the answer (\tfrac{2}{3}x^2) */
+function suFr(t, first, style) {
+  const m = t.n ? t.v + (t.n > 1 ? '^{' + t.n + '}' : '') : '', a = Math.abs(t.num), s = t.num < 0 ? '-' : first ? '' : '+';
+  if (t.den === 1) return s + (a === 1 && m ? '' : a) + m;
+  if (style === 'd') return s + '\\dfrac{' + (a === 1 ? '' : a) + m + '}{' + t.den + '}';
+  return s + '\\tfrac{' + a + '}{' + t.den + '}' + m;
+}
+const suCoef = (t) => (t.den === 1 ? String(t.num) : (t.num < 0 ? '-' : '') + '\\tfrac{' + Math.abs(t.num) + '}{' + t.den + '}');
+const suNz = (r, lo, hi) => { let v = 0; while (!v) v = r.int(lo, hi); return v; };
+
+standup('u3l1', {
+  intro: 'Answer every part for the polynomial at your whiteboard station. Look at each term’s exponents and keep each term’s sign.',
+  levels: {
+    /* name it by its terms; degree, leading coefficient and constant term (already in descending order) */
+    BEG: (r) => {
+      const v = r.pick(['x', 'x', 'y', 'm', 'n', 't']), n = r.pick([1, 2, 2, 3, 3, 3, 4, 4]);
+      const d = r.int(Math.max(n - 1, 2), 6);
+      const ex = [d].concat(r.shuffle(suRange(0, d - 1)).slice(0, n - 1)).sort((a, b) => b - a);
+      const ts = ex.map((e, i) => suM(i === 0 ? r.int(1, 9) * (r.chance(0.3) ? -1 : 1) : suNz(r, -9, 9), v, e));
+      const lc = suOne(ts[0])[0], ct = ex[ex.length - 1] === 0 ? suOne(ts[ts.length - 1])[0] : 0;
+      return {
+        text: 'Name this polynomial by its number of terms. Then state its <b>degree</b>, its <b>leading coefficient</b> and its <b>constant term</b>.',
+        q: suSeq(ts),
+        atext: n + (n === 1 ? ' term' : ' terms') + ': <b>' + suName(n) + '</b>' + (ct === 0 ? ' · no term without ' + suIt(v) + ', so the constant term is 0' : ''),
+        a: ['\\text{degree } ' + d, '\\text{leading coefficient } ' + lc, '\\text{constant term } ' + ct]
+      };
+    },
+    /* out of order (and maybe a fraction coefficient): descending order, then leading coefficient, constant term, degree */
+    PRG: (r) => {
+      const v = r.pick(['x', 'x', 'y', 'm', 'p', 'w']), n = r.pick([3, 3, 4]), d = r.int(n === 3 ? 2 : 3, 5);
+      const mid = r.shuffle(suRange(1, d - 1));
+      let ex = [d].concat(mid.slice(0, n - 2));
+      ex.push(r.chance(0.8) || mid.length < n - 1 ? 0 : mid[n - 2]);
+      ex = ex.sort((a, b) => b - a);
+      const ts = ex.map((e, i) => ({ v, n: e, num: i === 0 ? r.int(1, 9) * (r.chance(0.4) ? -1 : 1) : suNz(r, -9, 9), den: 1 }));
+      if (r.chance(0.6)) { // one term gets a fraction coefficient
+        const t = r.pick(ts.filter((x) => x.n > 0)), den = r.pick([2, 3, 4, 5]);
+        let num; do { num = r.int(1, 2 * den); } while (suGcd(num, den) !== 1 || num % den === 0);
+        t.den = den; t.num = num * (r.chance(0.4) ? -1 : 1);
+      }
+      let w; do { w = r.shuffle(ts); } while (w[0].n === d);
+      const style = r.pick(['d', 't']), last = ts[ts.length - 1];
+      return {
+        text: 'Write the polynomial in <b>descending</b> order of ' + suIt(v) + '. Then state its leading coefficient, its constant term and its degree.',
+        q: w.map((t, i) => suFr(t, i === 0, style)).join(''),
+        a: ['\\text{descending: }\\ ' + ts.map((t, i) => suFr(t, i === 0, 't')).join(''),
+          '\\text{leading coefficient } ' + suCoef(ts[0]), '\\text{constant term } ' + (last.n === 0 ? suCoef(last) : '0'), '\\text{degree } ' + d]
+      };
+    },
+    /* several variables: count variables and terms, name it, degree of each term and of the polynomial */
+    MAS: (r) => {
+      const V = r.pick([['x', 'y'], ['x', 'y'], ['m', 'n'], ['a', 'b'], ['p', 'q', 'r'], ['x', 'y', 'z']]), n = r.pick([3, 3, 4]);
+      for (;;) {
+        const ts = [], keys = new Set();
+        while (ts.length < n) {
+          const e = {}; V.forEach((v) => { e[v] = r.chance(V.length === 3 ? 0.45 : 0.3) ? 0 : r.int(1, 5); });
+          if (ts.length === n - 1 && r.chance(0.35)) V.forEach((v) => { e[v] = 0; }); // sometimes a constant term
+          const p = suM(suNz(r, -9, 9), e), k = Object.keys(p)[0];
+          if (keys.has(k) || (k === '' && ts.length < n - 1)) continue;
+          if (k !== '' && r.chance(0.2)) p[k] = p[k] < 0 ? -1 : 1; // a hidden coefficient of 1
+          keys.add(k); ts.push(p);
+        }
+        const degs = ts.map((p) => suDeg(suOne(p)[1])), top = Math.max(...degs);
+        const used = V.filter((v) => ts.some((p) => suExp(suOne(p)[1])[v]));
+        if (degs.filter((x) => x === top).length !== 1 || degs[0] === top || used.length < 2 || top > 9) continue;
+        const items = ts.map((p, i) => {
+          const [c, k] = suOne(p), e = suExp(k), parts = Object.keys(e).sort().map((v) => e[v]);
+          return suTerm(c, k, true) + ':\\ ' + (parts.length > 1 ? parts.join('+') + '=' : '') + degs[i];
+        });
+        const lines = []; for (let i = 0; i < items.length; i += 2) lines.push(items.slice(i, i + 2).join(',\\qquad '));
+        return {
+          text: 'State the number of <b>variables</b> and the number of <b>terms</b>, and name the polynomial. Then find the <b>degree of each term</b> and the <b>degree of the polynomial</b>.',
+          q: suSeq(ts),
+          atext: used.length + ' variables (' + suIt(used.join('')) + ') · ' + n + ' terms: <b>' + suName(n) + '</b>',
+          a: lines.concat(['\\text{degree of the polynomial: the highest, } ' + top])
+        };
+      }
+    }
+  }
+});

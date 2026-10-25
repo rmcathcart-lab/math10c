@@ -1,6 +1,7 @@
 /* Math 10C · Unit 3 · Lesson 2 — Multiplying Monomials and Binomials: the explainers, the garden warm-up and the figures. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -891,3 +892,88 @@ function mountExplainers() {
 }
 
 mountFigures(); mountGarden(); mountReveals(); mountExplainers();
+
+/* ============ Stand Up Break! (lessons/js/standup.js) — a tiny polynomial kit for the whiteboard questions ============
+ * A polynomial is { key: coefficient }, the key naming the variables and their exponents ('x2y1'; '' for a constant).
+ * A written expression keeps its terms in a list of one-term polynomials, so the answer can show the partial products. */
+const suKey = (e) => Object.keys(e).filter((v) => e[v]).sort().map((v) => v + e[v]).join('');
+const suExp = (k) => { const e = {}; k.replace(/([a-z])(\d+)/g, (_, v, n) => { e[v] = +n; }); return e; };
+const suM = (c, v, n = 1) => (c ? { [suKey(typeof v === 'object' ? v : v ? { [v]: n } : {})]: c } : {}); // c·vⁿ, or c·(exponents)
+const suAdd = (...ps) => { const o = {}; ps.forEach((p) => { for (const k in p) { o[k] = (o[k] || 0) + p[k]; if (!o[k]) delete o[k]; } }); return o; };
+const suMul = (...ps) => ps.reduce((a, b) => {
+  const o = {};
+  for (const i in a) for (const j in b) { const e = suExp(i), f = suExp(j); for (const v in f) e[v] = (e[v] || 0) + f[v]; const k = suKey(e); o[k] = (o[k] || 0) + a[i] * b[j]; if (!o[k]) delete o[k]; }
+  return o;
+}, { '': 1 });
+const suDeg = (k) => Object.values(suExp(k)).reduce((s, n) => s + n, 0);
+const suOrd = (a, b) => { const d = suDeg(b) - suDeg(a); if (d) return d; const ea = suExp(a), eb = suExp(b); for (const v of [...new Set(Object.keys(ea).concat(Object.keys(eb)))].sort()) { const x = (eb[v] || 0) - (ea[v] || 0); if (x) return x; } return 0; };
+const suKeys = (p) => Object.keys(p).sort(suOrd);
+const suMono = (k) => Object.entries(suExp(k)).map(([v, n]) => v + (n > 1 ? '^{' + n + '}' : '')).join('');
+const suTerm = (c, k, first) => { const m = suMono(k), a = Math.abs(c); return (c < 0 ? '-' : first ? '' : '+') + (a === 1 && m ? '' : a) + m; };
+const suTex = (p) => suKeys(p).map((k, i) => suTerm(p[k], k, i === 0)).join('') || '0';
+const suOne = (p) => { const k = Object.keys(p)[0]; return [p[k], k]; };
+const suSeq = (list, cont) => list.filter((p) => Object.keys(p).length).map((p, i) => { const [c, k] = suOne(p); return suTerm(c, k, i === 0 && !cont); }).join('') || '0';
+const suPar = (list) => '(' + suSeq(list) + ')';
+const suP = (list) => suAdd(...list);
+const suTermsOf = (p) => suKeys(p).map((k) => ({ [k]: p[k] }));
+const suParts = (A, B) => A.flatMap((a) => B.map((b) => suMul(a, b)));
+const suL = (v, a, b) => [suM(a, v), suM(b)]; // a·v + b as a written list
+const suDist = (A, B) => A.map((t, i) => { const [c, k] = suOne(t); return suTerm(c, k, i === 0) + suPar(B); }).join(''); // a(…)+b(…)
+const suK = (k) => (k === -1 ? '-' : k === 1 ? '' : String(k)); // a factor written in front of brackets
+const suNz = (r, lo, hi) => { let v = 0; while (!v) v = r.int(lo, hi); return v; };
+/* (A)(B) → the four products of the area model, then collected */
+function suTwo(A, B) {
+  const parts = suParts(A, B), res = suP(parts);
+  return { q: suPar(A) + suPar(B), parts, res, a: [suPar(A) + suPar(B) + '=' + suSeq(parts), '=' + suTex(res)] };
+}
+
+standup('u3l2', {
+  intro: 'Expand and simplify at your whiteboard station. Sketch the four-cell area model, then collect like terms.',
+  levels: {
+    /* (x + a)(x + b), all positive */
+    BEG: (r) => { const v = r.pick(['x', 'x', 'x', 'a', 'n', 'y']); return suTwo(suL(v, 1, r.int(1, 9)), suL(v, 1, r.int(1, 9))); },
+    /* (mx + b)(px + d) with a negative, a coefficient on x */
+    PRG: (r) => {
+      const v = r.pick(['x', 'x', 'x', 'a', 'm', 'y']);
+      for (;;) {
+        const m = r.int(1, 4), p = r.int(1, 4), b = suNz(r, -9, 9), d = suNz(r, -9, 9);
+        if ((m === 1 && p === 1) || (b > 0 && d > 0) || m * d + b * p === 0) continue;
+        return suTwo(suL(v, m, b), suL(v, p, d));
+      }
+    },
+    /* two variables, squared variables, or a binomial product combined with a monomial times a binomial */
+    MAS: (r) => {
+      const kind = r.pick(['two', 'two', 'sq', 'mix', 'mix']);
+      if (kind === 'two') {
+        const [u, w] = r.pick([['p', 'q'], ['x', 'y'], ['a', 'b'], ['m', 'n']]);
+        for (;;) {
+          const m = r.int(1, 5), b = suNz(r, -9, 9), p = r.int(1, 4), d = suNz(r, -9, 9);
+          if (m * d + b * p === 0 || (m === 1 && p === 1 && r.chance(0.6))) continue;
+          return suTwo([suM(m, u), suM(b, w)], [suM(p, u), suM(d, w)]);
+        }
+      }
+      if (kind === 'sq') {
+        const v = r.pick(['a', 'x', 'y', 'm']);
+        for (;;) {
+          const m = r.int(1, 3), b = suNz(r, -9, 9), p = r.int(1, 2), d = suNz(r, -9, 9);
+          if (m * d + b * p === 0 || (b > 0 && d > 0)) continue;
+          return suTwo([suM(m, v, 2), suM(b)], [suM(p, v, 2), suM(d)]);
+        }
+      }
+      const v = r.pick(['x', 'x', 'a', 'y']);
+      for (;;) {
+        const A = suL(v, r.int(1, 4), suNz(r, -7, 7)), B = suL(v, r.int(1, 3), suNz(r, -7, 7));
+        const k = r.int(2, 5) * r.sign(), E = suL(v, r.int(1, 3), suNz(r, -6, 6));
+        const p1 = suP(suParts(A, B)), p2 = suMul(suM(k, v), suP(E)), res = suAdd(p1, p2);
+        if (Object.keys(res).length < 2 || Object.keys(p1).length < 3) continue;
+        const mono = suTerm(k, v + '1', false); // ±kx
+        return {
+          q: suPar(A) + suPar(B) + mono + suPar(E),
+          a: [suPar(A) + suPar(B) + '=' + suSeq(suParts(A, B)) + '=' + suTex(p1),
+            suTerm(k, v + '1', true) + suPar(E) + '=' + suTex(p2),
+            suTex(p1) + suSeq(suTermsOf(p2), true) + '=' + suTex(res)]
+        };
+      }
+    }
+  }
+});

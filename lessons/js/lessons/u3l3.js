@@ -1,6 +1,7 @@
 /* Math 10C · Unit 3 · Lesson 3 — Multiplying Polynomials I: Special Products. The explainers and warm-up on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -809,3 +810,92 @@ mountTrick(); mountSquare35(); mountReveals(); mountExplainers();
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! (lessons/js/standup.js) — a tiny polynomial kit for the whiteboard questions ============
+ * A polynomial is { key: coefficient }, the key naming the variables and their exponents ('x2y1'; '' for a constant).
+ * A written expression keeps its terms in a list of one-term polynomials, so the answer can show the partial products. */
+const suKey = (e) => Object.keys(e).filter((v) => e[v]).sort().map((v) => v + e[v]).join('');
+const suExp = (k) => { const e = {}; k.replace(/([a-z])(\d+)/g, (_, v, n) => { e[v] = +n; }); return e; };
+const suM = (c, v, n = 1) => (c ? { [suKey(typeof v === 'object' ? v : v ? { [v]: n } : {})]: c } : {}); // c·vⁿ, or c·(exponents)
+const suAdd = (...ps) => { const o = {}; ps.forEach((p) => { for (const k in p) { o[k] = (o[k] || 0) + p[k]; if (!o[k]) delete o[k]; } }); return o; };
+const suMul = (...ps) => ps.reduce((a, b) => {
+  const o = {};
+  for (const i in a) for (const j in b) { const e = suExp(i), f = suExp(j); for (const v in f) e[v] = (e[v] || 0) + f[v]; const k = suKey(e); o[k] = (o[k] || 0) + a[i] * b[j]; if (!o[k]) delete o[k]; }
+  return o;
+}, { '': 1 });
+const suDeg = (k) => Object.values(suExp(k)).reduce((s, n) => s + n, 0);
+const suOrd = (a, b) => { const d = suDeg(b) - suDeg(a); if (d) return d; const ea = suExp(a), eb = suExp(b); for (const v of [...new Set(Object.keys(ea).concat(Object.keys(eb)))].sort()) { const x = (eb[v] || 0) - (ea[v] || 0); if (x) return x; } return 0; };
+const suKeys = (p) => Object.keys(p).sort(suOrd);
+const suMono = (k) => Object.entries(suExp(k)).map(([v, n]) => v + (n > 1 ? '^{' + n + '}' : '')).join('');
+const suTerm = (c, k, first) => { const m = suMono(k), a = Math.abs(c); return (c < 0 ? '-' : first ? '' : '+') + (a === 1 && m ? '' : a) + m; };
+const suTex = (p) => suKeys(p).map((k, i) => suTerm(p[k], k, i === 0)).join('') || '0';
+const suOne = (p) => { const k = Object.keys(p)[0]; return [p[k], k]; };
+const suSeq = (list, cont) => list.filter((p) => Object.keys(p).length).map((p, i) => { const [c, k] = suOne(p); return suTerm(c, k, i === 0 && !cont); }).join('') || '0';
+const suPar = (list) => '(' + suSeq(list) + ')';
+const suP = (list) => suAdd(...list);
+const suTermsOf = (p) => suKeys(p).map((k) => ({ [k]: p[k] }));
+const suParts = (A, B) => A.flatMap((a) => B.map((b) => suMul(a, b)));
+const suL = (v, a, b) => [suM(a, v), suM(b)]; // a·v + b as a written list
+const suDist = (A, B) => A.map((t, i) => { const [c, k] = suOne(t); return suTerm(c, k, i === 0) + suPar(B); }).join(''); // a(…)+b(…)
+const suK = (k) => (k === -1 ? '-' : k === 1 ? '' : String(k)); // a factor written in front of brackets
+const suNz = (r, lo, hi) => { let v = 0; while (!v) v = r.int(lo, hi); return v; };
+/* a term c·v (c > 0; v may be '' for a number), as written and as squared in the pattern step */
+const suT = (c, v) => (c === 1 && v ? '' : c) + v;
+const suW = (c, v) => (c === 1 || !v ? suT(c, v) : '(' + suT(c, v) + ')');
+/* the special product of the terms A = [c, v] and B = [d, w]: 'sq+' (A+B)², 'sq-' (A−B)², 'sd' (A+B)(A−B) */
+function suSpecial(kind, A, B, swap) {
+  const [c, v] = A, [d, w] = B, tA = suM(c, v), tB = suM(d, w);
+  const P = kind === 'sq-' ? [tA, suMul(tB, suM(-1))] : [tA, tB], Q = kind === 'sd' ? [tA, suMul(tB, suM(-1))] : P;
+  const res = suMul(suP(P), suP(Q));
+  const q = kind === 'sd' ? (swap ? suPar(Q) + suPar(P) : suPar(P) + suPar(Q)) : suPar(P) + '^2';
+  const step = kind === 'sd' ? suW(c, v) + '^2-' + suW(d, w) + '^2'
+    : suW(c, v) + '^2' + (kind === 'sq-' ? '-' : '+') + '2(' + suT(c, v) + ')(' + suT(d, w) + ')+' + suW(d, w) + '^2';
+  // a number first (6 − 5x)(6 + 5x): keep the written order in the answer, as the lesson does
+  const out = !v ? suKeys(res).reverse().map((k, i) => suTerm(res[k], k, i === 0)).join('') : suTex(res);
+  return { q, step, res, out };
+}
+
+standup('u3l3', {
+  intro: 'Spot the pattern, then expand at your whiteboard station. Square the whole term, and check whether there’s a middle term.',
+  levels: {
+    /* (x + a)², (x − a)², (x + a)(x − a) */
+    BEG: (r) => {
+      const v = r.pick(['x', 'x', 'x', 'y', 'a', 'm', 'n']), kind = r.pick(['sq+', 'sq-', 'sd']), s = suSpecial(kind, [1, v], [r.int(1, 12), ''], r.chance(0.5));
+      return { q: s.q, a: ['=' + s.step, '=' + s.out] };
+    },
+    /* (mx ± n)², (mx + ny)², (mx + n)(mx − n), (n − mx)(n + mx), and (−mx + n)² rewritten first */
+    PRG: (r) => {
+      const v = r.pick(['x', 'x', 'y', 'a', 'p']), m = r.int(2, 7), n = r.int(1, 9), roll = r.int(1, 10);
+      if (roll <= 2) { // (−mx + n)²: rewrite as (n − mx)²
+        const s = suSpecial('sq-', [n, ''], [m, v]);
+        return { q: '(-' + suT(m, v) + '+' + n + ')^2', a: ['=(' + n + '-' + suT(m, v) + ')^2', '=' + s.step, '=' + s.out + '=' + suTex(s.res)] };
+      }
+      const two = roll >= 9, B = two ? [r.int(1, 6), ({ x: 'y', y: 'z', a: 'b', p: 'q' })[v]] : [n, ''];
+      if (two && B[0] === m) B[0] = m + 1;
+      const kind = r.pick(['sq+', 'sq-', 'sd']);
+      if (kind === 'sd' && !two && r.chance(0.35)) { // a number first: (n − mx)(n + mx)
+        const s = suSpecial('sd', [n, ''], [m, v], r.chance(0.5));
+        return { q: s.q, a: ['=' + s.step, '=' + s.out] };
+      }
+      const s = suSpecial(kind, [m, v], B, r.chance(0.5));
+      return { q: s.q, a: ['=' + s.step, '=' + s.out] };
+    },
+    /* a number out front: k(mx ± n)², k(mx + n)(mx − n), k(ax + b)(cx + d) — expand first, then distribute */
+    MAS: (r) => {
+      const v = r.pick(['x', 'x', 'p', 'a', 'y']), k = r.pick([2, 3, 4, 5, 6, -1, -2, -3, -4, -5, -6]), roll = r.int(1, 10);
+      let q, inner, res;
+      if (roll <= 3) { // general binomial product
+        for (;;) {
+          const A = suL(v, r.int(1, 5), suNz(r, -7, 7)), B = suL(v, r.int(1, 4), suNz(r, -7, 7)), parts = suParts(A, B);
+          res = suP(parts); if (Object.keys(res).length < 3) continue;
+          q = suK(k) + suPar(A) + suPar(B); inner = suPar(A) + suPar(B) + '=' + suSeq(parts) + '=' + suTex(res); break;
+        }
+      } else {
+        const two = roll === 10, kind = r.pick(['sq+', 'sq-', 'sq-', 'sd']);
+        const s = suSpecial(kind, [r.int(1, 6), v], two ? [r.int(1, 5), v === 'y' ? 'z' : 'y'] : [r.int(1, 9), ''], r.chance(0.5));
+        q = suK(k) + s.q; inner = s.q + '=' + s.step + '=' + suTex(s.res); res = s.res;
+      }
+      return { q, a: ['\\text{expand first: }\\ ' + inner, '\\text{then distribute the } ' + k + ':\\ \\ ' + suK(k) + '(' + suTex(res) + ')=' + suTex(suMul(suM(k), res))] };
+    }
+  }
+});

@@ -2,6 +2,7 @@
  * the Frame It warm-up, the example figures and the explainers on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -678,3 +679,113 @@ mountFrameIt(); mountFigures(); mountExplainers();
 
 /* exposed for automated checks (no effect on the lesson) */
 export const _test = { Poly, partials, LS, FR, GD, BX, EQ };
+
+/* ============ Stand Up Break! (lessons/js/standup.js) — a tiny polynomial kit for the whiteboard questions ============
+ * A polynomial is { key: coefficient }, the key naming the variables and their exponents ('x2y1'; '' for a constant).
+ * A written expression keeps its terms in a list of one-term polynomials, so the answer can show the partial products. */
+const suKey = (e) => Object.keys(e).filter((v) => e[v]).sort().map((v) => v + e[v]).join('');
+const suExp = (k) => { const e = {}; k.replace(/([a-z])(\d+)/g, (_, v, n) => { e[v] = +n; }); return e; };
+const suM = (c, v, n = 1) => (c ? { [suKey(typeof v === 'object' ? v : v ? { [v]: n } : {})]: c } : {}); // c·vⁿ, or c·(exponents)
+const suAdd = (...ps) => { const o = {}; ps.forEach((p) => { for (const k in p) { o[k] = (o[k] || 0) + p[k]; if (!o[k]) delete o[k]; } }); return o; };
+const suMul = (...ps) => ps.reduce((a, b) => {
+  const o = {};
+  for (const i in a) for (const j in b) { const e = suExp(i), f = suExp(j); for (const v in f) e[v] = (e[v] || 0) + f[v]; const k = suKey(e); o[k] = (o[k] || 0) + a[i] * b[j]; if (!o[k]) delete o[k]; }
+  return o;
+}, { '': 1 });
+const suDeg = (k) => Object.values(suExp(k)).reduce((s, n) => s + n, 0);
+const suOrd = (a, b) => { const d = suDeg(b) - suDeg(a); if (d) return d; const ea = suExp(a), eb = suExp(b); for (const v of [...new Set(Object.keys(ea).concat(Object.keys(eb)))].sort()) { const x = (eb[v] || 0) - (ea[v] || 0); if (x) return x; } return 0; };
+const suKeys = (p) => Object.keys(p).sort(suOrd);
+const suMono = (k) => Object.entries(suExp(k)).map(([v, n]) => v + (n > 1 ? '^{' + n + '}' : '')).join('');
+const suTerm = (c, k, first) => { const m = suMono(k), a = Math.abs(c); return (c < 0 ? '-' : first ? '' : '+') + (a === 1 && m ? '' : a) + m; };
+const suTex = (p) => suKeys(p).map((k, i) => suTerm(p[k], k, i === 0)).join('') || '0';
+const suOne = (p) => { const k = Object.keys(p)[0]; return [p[k], k]; };
+const suSeq = (list, cont) => list.filter((p) => Object.keys(p).length).map((p, i) => { const [c, k] = suOne(p); return suTerm(c, k, i === 0 && !cont); }).join('') || '0';
+const suPar = (list) => '(' + suSeq(list) + ')';
+const suP = (list) => suAdd(...list);
+const suTermsOf = (p) => suKeys(p).map((k) => ({ [k]: p[k] }));
+const suParts = (A, B) => A.flatMap((a) => B.map((b) => suMul(a, b)));
+const suL = (v, a, b) => [suM(a, v), suM(b)]; // a·v + b as a written list
+const suDist = (A, B) => A.map((t, i) => { const [c, k] = suOne(t); return suTerm(c, k, i === 0) + suPar(B); }).join(''); // a(…)+b(…)
+const suK = (k) => (k === -1 ? '-' : k === 1 ? '' : String(k)); // a factor written in front of brackets
+/* figures, drawn from the generated numbers (not to scale) */
+const suLab = (x, y, s, anchor = 'middle', size = 21) => `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-family="KaTeX_Main, 'Times New Roman', serif" fill="#1c2230">${String(s).replace(/[+-]/g, (m) => (m === '-' ? ' − ' : ' + ')).replace(/[a-z]/g, (c) => `<tspan font-style="italic">${c}</tspan>`)}</text>`;
+const SU_SH = 'fill="#cfe7e3" stroke="#0f5f5a" stroke-width="2.2"';
+const suDimH = (x1, x2, y) => `<path d="M${x1} ${y}H${x2}M${x1} ${y - 6}v12M${x2} ${y - 6}v12" stroke="#c27a0e" stroke-width="2" fill="none"/>`;
+const suDimV = (x, y1, y2) => `<path d="M${x} ${y1}V${y2}M${x - 6} ${y1}h12M${x - 6} ${y2}h12" stroke="#c27a0e" stroke-width="2" fill="none"/>`;
+function suLFig(W, H, nw, nh) { // a rectangle with a notch cut from its top-right corner; labels: width, height, notch width, notch height
+  const x0 = 110, y0 = 44, w = 250, h = 190, a = 100, b = 80;
+  return `<svg viewBox="0 0 470 280" width="470" height="280" role="img" aria-label="An L-shaped figure: a ${W} by ${H} rectangle with a ${nw} by ${nh} notch cut from its top-right corner">
+    <path d="M${x0} ${y0}H${x0 + w - a}V${y0 + b}H${x0 + w}V${y0 + h}H${x0}Z" ${SU_SH}/>
+    <path d="M${x0 + w - a} ${y0}H${x0 + w}V${y0 + b}" fill="none" stroke="#6a7182" stroke-width="1.6" stroke-dasharray="6 5"/>
+    ${suLab(x0 + w / 2, y0 + h + 30, W)}${suLab(x0 - 12, y0 + h / 2 + 7, H, 'end')}${suLab(x0 + w - a / 2, y0 - 12, nw)}${suLab(x0 + w + 10, y0 + b / 2 + 7, nh, 'start')}
+  </svg>`;
+}
+function suFrameFig(W, H, side, top) { // a shaded frame around an opening: side = width of the left/right borders, top = top/bottom borders
+  const x0 = 110, y0 = 30, w = 260, h = 190, tx = 44, ty = side === top ? 44 : 34;
+  return `<svg viewBox="0 0 470 270" width="470" height="270" role="img" aria-label="A ${W} by ${H} rectangle with a rectangular opening; the frame is ${side} wide at the sides and ${top} wide at the top and bottom">
+    <rect x="${x0}" y="${y0}" width="${w}" height="${h}" ${SU_SH}/>
+    <rect x="${x0 + tx}" y="${y0 + ty}" width="${w - 2 * tx}" height="${h - 2 * ty}" fill="#fff" stroke="#0f5f5a" stroke-width="2"/>
+    ${suLab(x0 + w / 2, y0 + h + 30, W)}${suLab(x0 - 12, y0 + h / 2 + 7, H, 'end')}
+    ${suDimH(x0, x0 + tx, y0 + h * 0.62)}${suLab(x0 + tx / 2, y0 + h * 0.62 - 12, side, 'middle', 19)}
+    ${side === top ? '' : suDimH(x0 + w - tx, x0 + w, y0 + h * 0.62) + suLab(x0 + w - tx / 2, y0 + h * 0.62 - 12, side, 'middle', 19)}
+    ${suDimV(x0 + w * 0.68, y0, y0 + ty)}${suLab(x0 + w * 0.68 + 12, y0 + ty / 2 + 7, top, 'start', 19)}
+    ${side === top ? '' : suDimV(x0 + w * 0.68, y0 + h - ty, y0 + h) + suLab(x0 + w * 0.68 + 12, y0 + h - ty / 2 + 7, top, 'start', 19)}
+  </svg>`;
+}
+const suH = (list) => suSeq(list).replace(/[+-]/g, (m) => (m === '-' ? ' − ' : ' + ')).replace(/[a-z]/g, (c) => '<i>' + c + '</i>'); // a written list as HTML words
+const suFull = (A, B) => { const parts = suParts(A, B); return suPar(A) + suPar(B) + '=' + suSeq(parts) + '=' + suTex(suP(parts)); };
+
+standup('u3l5', {
+  intro: 'Write and simplify the shaded area at your whiteboard station. Expand each product, then subtract the whole notch or opening, in brackets.',
+  levels: {
+    /* bounding box minus a corner notch (smaller constants, so the notch fits inside for every x > 0) */
+    BEG: (r) => {
+      const v = r.pick(['x', 'x', 'x', 'n', 'a']), b = r.int(2, 8), d = r.int(2, 8), A = suL(v, r.int(2, 4), b), B = suL(v, r.int(2, 3), d);
+      const N1 = suL(v, 1, r.int(1, Math.min(4, b - 1))), N2 = suL(v, 1, r.int(1, Math.min(4, d - 1))), box = suP(suParts(A, B)), notch = suP(suParts(N1, N2)), res = suAdd(box, suMul(suM(-1), notch));
+      return {
+        q: '', // the question is in the words and the figure
+        text: `A (${suH(N1)}) by (${suH(N2)}) notch is cut from the corner of a (${suH(A)}) by (${suH(B)}) rectangle. Write the area of the shaded figure as a trinomial.`,
+        fig: suLFig(suSeq(A), suSeq(B), suSeq(N1), suSeq(N2)),
+        a: ['\\text{box: } ' + suFull(A, B), '\\text{notch: } ' + suFull(N1, N2), '\\text{area}=(' + suTex(box) + ')-(' + suTex(notch) + ')=' + suTex(res)]
+      };
+    },
+    /* a frame the same width all the way round: a number, or x itself */
+    PRG: (r) => {
+      const v = r.pick(['x', 'x', 'x', 'n', 'w']);
+      for (;;) {
+        const byX = r.chance(0.45), k = byX ? 0 : r.int(1, 3);
+        const a = byX ? r.int(3, 5) : r.int(1, 4), c = byX ? r.int(3, 5) : r.int(1, 4), b = byX ? r.int(1, 8) : r.int(2 * k + 1, 2 * k + 7), d = byX ? r.int(1, 8) : r.int(2 * k + 1, 2 * k + 7);
+        if (a === 1 && c === 1) continue;
+        const O1 = suL(v, a, b), O2 = suL(v, c, d), I1 = byX ? suL(v, a - 2, b) : suL(v, a, b - 2 * k), I2 = byX ? suL(v, c - 2, d) : suL(v, c, d - 2 * k);
+        const outer = suP(suParts(O1, O2)), inner = suP(suParts(I1, I2)), res = suAdd(outer, suMul(suM(-1), inner));
+        const wd = byX ? v : String(k), sub = byX ? '2' + v : String(2 * k);
+        return {
+          q: '', // the question is in the words and the figure
+          text: `A (${suH(O1)}) by (${suH(O2)}) rectangle has a shaded frame ${byX ? '<i>' + v + '</i>' : k} wide on every side. Write and simplify an expression for the area of the frame.`,
+          fig: suFrameFig(suSeq(O1), suSeq(O2), wd, wd),
+          a: ['\\text{opening: }\\ ' + suSeq(O1) + '-' + sub + '=' + suSeq(I1) + '\\ \\text{ by }\\ ' + suSeq(O2) + '-' + sub + '=' + suSeq(I2),
+            '\\text{outer } ' + suTex(outer) + ',\\quad \\text{opening } ' + suTex(inner),
+            '\\text{frame}=(' + suTex(outer) + ')-(' + suTex(inner) + ')=' + suTex(res)]
+        };
+      }
+    },
+    /* a frame with two different widths, in two variables, then evaluate and check with the dimensions */
+    MAS: (r) => {
+      const [p, q] = r.pick([['p', 'q'], ['p', 'q'], ['a', 'b'], ['x', 'y']]);
+      const a = r.int(3, 5), b = r.int(1, 4), c = r.int(1, 4), d = r.int(3, 5), P = r.int(1, 3), Q = r.int(1, 3);
+      const O1 = [suM(a, p), suM(b, q)], O2 = [suM(c, p), suM(d, q)], I1 = [suM(a - 2, p), suM(b, q)], I2 = [suM(c, p), suM(d - 2, q)];
+      const outer = suP(suParts(O1, O2)), inner = suP(suParts(I1, I2)), res = suAdd(outer, suMul(suM(-1), inner));
+      const val = (poly) => Object.entries(poly).reduce((s, [k, co]) => { const e = suExp(k); return s + co * (P ** (e[p] || 0)) * (Q ** (e[q] || 0)); }, 0);
+      const sub = suKeys(res).map((k, i) => { const co = res[k], e = suExp(k), f = [p, q].filter((v) => e[v]).map((v) => '(' + (v === p ? P : Q) + ')' + (e[v] > 1 ? '^' + e[v] : '')).join(''); return (co < 0 ? '-' : i ? '+' : '') + Math.abs(co) + f; }).join('');
+      const ow = a * P + b * Q, oh = c * P + d * Q, iw = (a - 2) * P + b * Q, ih = c * P + (d - 2) * Q;
+      return {
+        q: '', // the question is in the words and the figure
+        text: `A (${suH(O1)}) by (${suH(O2)}) rectangle has a frame whose sides are <i>${p}</i> wide and whose top and bottom are <i>${q}</i> wide. (a) Write and simplify an expression for the shaded area. (b) Evaluate it when <i>${p}</i> = ${P} and <i>${q}</i> = ${Q}, and check with the dimensions.`,
+        fig: suFrameFig(suSeq(O1), suSeq(O2), p, q),
+        a: ['\\text{opening: }\\ ' + suSeq(I1) + '\\ \\text{ by }\\ ' + suSeq(I2),
+          '(' + suTex(outer) + ')-(' + suTex(inner) + ')=' + suTex(res),
+          '\\text{(b) } ' + sub + '=' + val(res), '\\text{check: } ' + ow + '\\times' + oh + '-' + iw + '\\times' + ih + '=' + (ow * oh) + '-' + (iw * ih) + '=' + (ow * oh - iw * ih) + '\\ \\checkmark']
+      };
+    }
+  }
+});
