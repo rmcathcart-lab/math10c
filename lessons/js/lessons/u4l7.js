@@ -4,6 +4,7 @@
  * before factoring) and the check-by-expanding explainer. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
@@ -546,3 +547,112 @@ mountExplainers(); mountBoards(); mountTickets(); mountWarmup();
 
 /* exposed for automated checks (no effect on the lesson) */
 export const _test = { AP, FL, EXP, BOARDS };
+
+/* ============ Stand Up Break! — choose the strategy, then factor completely, at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  /* ---- one factoring "core" per tool: { terms (the polynomial), tool, work (LaTeX lines), F (factored, LaTeX) } ---- */
+  const coprime = (r, lo, hi, lo2, hi2) => { for (;;) { const a = r.int(lo, hi), b = r.int(lo2, hi2); if (gcd(a, b) === 1) return [a, b]; } };
+  const dbl = (v) => { const o = {}; for (const k in v) o[k] = 2 * v[k]; return o; };
+  const M = (t) => TM(t[0], t[1], true);
+  const sqd = (t) => (t[0] === 1 ? M(t) : '(' + M(t) + ')') + '^2';
+  const lin = (v, n, a = 1) => B([[a, V(v)], [n, {}]]);
+  function insp(r, v, hi = 10) { // x² + bx + c = (x + p)(x + q)
+    let p, q; do { p = r.int(1, hi) * r.sign(); q = r.int(1, hi) * r.sign(); } while (p + q === 0 || p === q);
+    [p, q] = [p, q].sort((x, y) => y - x);
+    return { terms: [[1, V(v, 2)], [p + q, V(v)], [p * q, {}]], tool: 'inspection', work: [sumProd(p + q, p * q, p, q)], F: lin(v, p) + lin(v, q) };
+  }
+  function dos(r, v, ahi = 6, bhi = 10) { // (av)² − b² = (av − b)(av + b)
+    const [a, b] = coprime(r, 1, ahi, 1, bhi), A = [a, V(v)];
+    return { terms: [[a * a, V(v, 2)], [-b * b, {}]], tool: 'difference of squares', work: [P([[a * a, V(v, 2)], [-b * b, {}]]) + '=' + (a === 1 ? v : '(' + M(A) + ')') + '^2-' + b + '^2'], F: lin(v, -b, a) + lin(v, b, a) };
+  }
+  function dec(r, v, o = {}) { // (pv + q)(Rv + S) by decomposition
+    for (;;) {
+      const p = r.int(o.p || 1, 4), R = r.int(2, 5), q = r.int(1, 7) * r.sign(), S = r.int(1, 7) * r.sign();
+      const a = p * R, b = p * S + q * R, c = q * S, ac = a * c;
+      if (b === 0 || gcd(p, q) !== 1 || gcd(R, S) !== 1 || Math.abs(ac) > (o.ac || 90) || (q > 0 && S > 0)) continue;
+      const m = p * S, n = q * R, x = V(v), sec = lin(v, S, R);
+      return { terms: [[a, V(v, 2)], [b, x], [c, {}]], tool: 'decomposition',
+        work: ['ac=' + a + '(' + c + ')=' + ac + ';\\ \\text{pair } ' + m + ',\\ ' + n, P([[a, V(v, 2)], [m, x], [n, x], [c, {}]]) + '=' + TM(p, x, true) + sec + (q < 0 ? '-' : '+') + Math.abs(q) + sec],
+        F: sec + lin(v, q, p) };
+    }
+  }
+  function pst(r) { // (ax ± by)²
+    const L = r.pick([['a', 'b'], ['x', 'y'], ['m', 'n'], ['p', 'q']]); let a, b; do { [a, b] = coprime(r, 1, 7, 1, 7); } while (a === b);
+    const s = r.sign(), A = [a, V(L[0])], Bm = [b, V(L[1])];
+    return { terms: [[a * a, V(L[0], 2)], [2 * s * a * b, X(A, Bm)[1]], [b * b, V(L[1], 2)]], tool: 'perfect square trinomial',
+      work: [sqd(A) + ',\\ ' + sqd(Bm) + ',\\ 2(' + M(A) + ')(' + M(Bm) + ')=' + M([2 * a * b, X(A, Bm)[1]]) + '\\ \\checkmark'], F: B([A, [s * b, Bm[1]]]) + '^2' };
+  }
+  function disg(r, v) { // x⁴ + bx² + c with a bracket (or two) that opens again
+    let m, n;
+    do { n = -(r.int(1, 4) ** 2); m = r.chance(0.4) ? -(r.int(1, 4) ** 2) : r.int(1, 9) * r.sign(); } while (m === n || m + n === 0 || Math.abs(m * n) > 72);
+    [m, n] = [m, n].sort((x, y) => y - x);
+    const sq = (k) => k < 0 && Number.isInteger(Math.sqrt(-k)), br = (k) => '(' + v + '^2' + (k < 0 ? '-' : '+') + Math.abs(k) + ')';
+    const op = (k) => (sq(k) ? lin(v, -Math.sqrt(-k)) + lin(v, Math.sqrt(-k)) : br(k));
+    return { terms: [[1, V(v, 4)], [m + n, V(v, 2)], [m * n, {}]], tool: 'a trinomial in ' + v + '^2' + ', then difference of squares',
+      work: [sumProd(m + n, m * n, m, n) + '\\ \\Rightarrow\\ ' + br(m) + br(n)], F: (sq(m) ? '' : br(m)) + op(n) + (sq(m) ? op(m) : '') };
+  }
+  function group(r, rearr) { // (x + αy)(δx + β), four terms
+    const [x, y] = r.pick([['x', 'y'], ['a', 'b'], ['m', 'n'], ['p', 'q']]);
+    for (;;) {
+      const al = r.int(1, 5) * r.sign(), be = r.int(1, 7) * r.sign(), de = r.int(1, 3);
+      if (gcd(de, be) !== 1 || (rearr && gcd(de, al * be) !== 1)) continue;
+      const t1 = [de, V(x, 2)], t2 = [al * de, { [x]: 1, [y]: 1 }], t3 = [be, V(x)], t4 = [al * be, V(y)], Bn = B([[1, V(x)], [al, V(y)]]);
+      const g = TM(de, V(x), true) + Bn + (be < 0 ? '-' : '+') + Math.abs(be) + Bn;
+      return { terms: rearr ? [t1, t4, t2, t3] : [t1, t2, t3, t4], tool: rearr ? 'four terms: rearrange, then grouping' : 'four terms: grouping',
+        work: [(rearr ? '(' + P([t1, t2]) + ')+(' + P([t3, t4]) + ')=' : '') + g], F: Bn + B([[de, V(x)], [be, {}]]) };
+    }
+  }
+  /* the question and its worked answer, with an optional common factor G taken out first */
+  function fac(c, G) {
+    const inner = P(c.terms);
+    if (!G) return { q: inner, a: ['\\text{' + c.tool.replace(/([a-z])\^2/, '$$$1^2$$') + '}', ...c.work, inner + '=' + c.F] };
+    const Q = P(c.terms.map((t) => X(G, t))), g = G[0] === -1 && !VS(G[1]) ? '-' : M(G);
+    return { q: Q, a: ['\\text{common factor' + (G[0] < 0 ? ' (take the negative out)' : '') + ', then ' + c.tool.replace(/([a-z])\^2/, '$$$1^2$$') + '}',
+      '\\text{GCF } ' + (g === '-' ? '-1' : g) + ':\\quad ' + Q + '=' + g + '(' + inner + ')', ...c.work, Q + '=' + g + c.F] };
+  }
+  const LET = ['x', 'x', 'x', 'y', 'm', 't', 'n'];
+  standup('u4l7', {
+    intro: 'Name the route first (common factor? two, three or four terms?), then factor completely. Can any factor be factored again?',
+    levels: {
+      BEG: (r) => { // one tool, or a common factor and then one tool: x² − 2x − 63, 4x² − 25, 5x² − 5x − 30, 8x² − 50
+        const v = r.pick(LET);
+        return r.pick([
+          () => fac(insp(r, v)),
+          () => fac(dos(r, v, 6, 10)),
+          () => fac(insp(r, v, 6), [r.int(2, 5), {}]),
+          () => fac(dos(r, v, 3, 6), [r.int(2, 5), {}])
+        ])();
+      },
+      PRG: (r) => { // −12x² + 27, −6x² + 5x + 21, x² − xy + 3x − 3y, 4a² − 20ab + 25b², −3x² + 12x + 36
+        const v = r.pick(LET);
+        return r.pick([
+          () => fac(dos(r, v, 3, 5), [-r.int(2, 4), {}]),
+          () => fac(dec(r, v, { ac: 60 }), r.chance(0.5) ? [-1, {}] : null),
+          () => fac(group(r, false)),
+          () => fac(pst(r)),
+          () => fac(insp(r, v, 6), [-r.int(2, 4), {}])
+        ])();
+      },
+      MAS: (r) => { // x⁴ − 13x² + 36, 2x³ − 10x² − 48x, a GCF and then decomposition, grouping after a rearrangement
+        const v = r.pick(LET);
+        return r.pick([
+          () => fac(disg(r, v), r.chance(0.3) ? [r.pick([2, 3]), {}] : null),
+          () => fac(insp(r, v, 8), [r.int(2, 5) * (r.chance(0.3) ? -1 : 1), V(v)]),
+          () => fac(dec(r, v, { ac: 40 }), [r.pick([2, 3, -2, -3]), r.chance(0.5) ? V(v) : {}]),
+          () => fac(group(r, true))
+        ])();
+      }
+    }
+  });
+}

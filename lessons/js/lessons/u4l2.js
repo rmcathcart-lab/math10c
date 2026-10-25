@@ -6,6 +6,7 @@
  * row above (their "from" keys), and fades the rest in or out. A bracket treated as ONE thing is a teal "block" token. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -642,3 +643,73 @@ function mountExplainers() {
 }
 
 mountWarm(); mountReveals(); mountExplainers();
+
+/* ============ Stand Up Break! — remove a common binomial factor at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  const LET = ['x', 'x', 'a', 'y', 'm', 'n', 'k'];
+  /* an outer factor in front of a bracket: 5x, −2, and a lone bracket's +( ) or −( ) */
+  const OF = (t, first) => (VS(t[1]) || Math.abs(t[0]) !== 1 ? TM(t[0], t[1], first) : (t[0] < 0 ? '-' : first ? '' : '+'));
+  function bin(r, v) { // αv + β (or β − αv) with nothing common
+    for (;;) {
+      const al = r.pick([1, 1, 1, 2, 3, 4, 5]), be = r.int(1, 9);
+      if (gcd(al, be) !== 1) continue;
+      return r.chance(0.25) ? [[be, {}], [-al, V(v)]] : [[al, V(v)], [be * r.sign(), {}]];
+    }
+  }
+  const two = (o1, Bn, o2, Bn2) => OF(o1, true) + B(Bn) + OF(o2) + B(Bn2 || Bn);
+  standup('u4l2', {
+    intro: 'Factor out the common bracket, then check the leftover bracket: can anything else come out?',
+    levels: {
+      BEG: (r) => { // 5x(x + 8) − 2(x + 8) = (x + 8)(5x − 2)
+        const v = r.pick(LET), Bn = bin(r, v);
+        let c1, c2; do { c1 = r.int(2, 9); c2 = r.int(2, 9) * r.sign(); } while (gcd(c1, c2) !== 1);
+        const [o1, o2] = r.chance(0.3) ? [[Math.abs(c2), {}], [c1 * r.sign(), V(v)]] : [[c1, V(v)], [c2, {}]];
+        const Q = two(o1, Bn, o2);
+        return { q: Q, a: ['\\text{common factor } ' + B(Bn), Q + '=' + B(Bn) + B([o1, o2])] };
+      },
+      PRG: (r) => {
+        const v = r.pick(LET), Bn = bin(r, v), kind = r.int(0, 2);
+        if (kind === 0) { // a lone bracket is 1·( )
+          const c1 = r.int(2, 9), s = r.sign(), o1 = [c1, V(v)], o2 = [s, {}], Q = two(o1, Bn, o2);
+          return { q: Q, a: ['\\text{the lone bracket is } ' + (s < 0 ? '-' : '+') + '1\\cdot' + B(Bn), Q + '=' + B(Bn) + B([o1, o2])] };
+        }
+        if (kind === 1) { // 5a(a − 4) − 15(a − 4) = (a − 4)(5a − 15) = 5(a − 4)(a − 3)
+          const k = r.int(2, 6); let c1, c2; do { c1 = r.int(1, 4); c2 = r.int(1, 7) * r.sign(); } while (gcd(c1, c2) !== 1);
+          const o1 = [k * c1, V(v)], o2 = [k * c2, {}], Q = two(o1, Bn, o2);
+          return { q: Q, a: [Q + '=' + B(Bn) + B([o1, o2]), '\\text{the leftover bracket has a common factor } ' + k, Q + '=' + k + B(Bn) + B([[c1, V(v)], [c2, {}]])] };
+        }
+        // (4y + 3)(6y + 1) + (4y + 3)(2y) = (4y + 3)(8y + 1)
+        for (;;) {
+          const m = r.int(1, 7), n = r.int(1, 9) * r.sign(), d = r.int(1, 6), s = r.sign(), e = m + s * d;
+          if (e <= 0 || gcd(e, n) !== 1 || gcd(m, n) !== 1) continue;
+          const C = [[m, V(v)], [n, {}]];
+          if (P(C) === P(Bn)) continue;
+          const Q = B(Bn) + B(C) + (s < 0 ? '-' : '+') + B(Bn) + '(' + TM(d, V(v), true) + ')';
+          return { q: Q, a: [Q + '=' + B(Bn) + '\\big[' + B(C) + (s < 0 ? '-' : '+') + TM(d, V(v), true) + '\\big]', Q + '=' + B(Bn) + B([[e, V(v)], [n, {}]])] };
+        }
+      },
+      MAS: (r) => { // opposite brackets: 3x(x − 7) + 7(7 − x) = (x − 7)(3x − 7), sometimes with a common factor left over
+        const v = r.pick(LET); let al, be; do { al = r.pick([1, 1, 2, 3, 4, 5]); be = r.int(1, 9); } while (gcd(al, be) !== 1);
+        const Bn = [[al, V(v)], [-be, {}]], Op = [[be, {}], [-al, V(v)]];
+        const k = r.chance(0.4) ? r.int(2, 5) : 1, s = r.sign();
+        let c1, c2; do { c1 = r.int(1, 7); c2 = r.int(1, 9); } while (gcd(c1, c2) !== 1);
+        const oV = [k * c1, V(v)], oC = [s * k * c2, {}], flip = [-s * k * c2, {}];
+        const Q = r.chance(0.35) ? OF(oC, true) + B(Op) + OF(oV) + B(Bn) : OF(oV, true) + B(Bn) + OF(oC) + B(Op);
+        const a = [OF(oC, true) + B(Op) + '=' + OF(flip, true) + B(Bn) + '\\quad\\text{(flip the bracket)}', Q + '=' + B(Bn) + B([oV, flip])];
+        if (k > 1) a.push('=' + k + B(Bn) + B([[c1, V(v)], [-s * c2, {}]]));
+        return { q: Q, a };
+      }
+    }
+  });
+}

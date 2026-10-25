@@ -7,6 +7,7 @@
  * plus the Memory Match warm-up game, the toolbox deck, and the figures in the question cards. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
@@ -476,3 +477,131 @@ function mountReveals() {
 }
 
 mountExplainers(); mountFigures(); mountNR(); mountMatch(); mountDeck(); mountReveals();
+
+/* ============ Stand Up Break! — a unit review question at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  /* ---- one factoring "core" per tool: { terms (the polynomial), tool, work (LaTeX lines), F (factored, LaTeX) } ---- */
+  const coprime = (r, lo, hi, lo2, hi2) => { for (;;) { const a = r.int(lo, hi), b = r.int(lo2, hi2); if (gcd(a, b) === 1) return [a, b]; } };
+  const dbl = (v) => { const o = {}; for (const k in v) o[k] = 2 * v[k]; return o; };
+  const M = (t) => TM(t[0], t[1], true);
+  const sqd = (t) => (t[0] === 1 ? M(t) : '(' + M(t) + ')') + '^2';
+  const lin = (v, n, a = 1) => B([[a, V(v)], [n, {}]]);
+  function insp(r, v, hi = 10) { // x² + bx + c = (x + p)(x + q)
+    let p, q; do { p = r.int(1, hi) * r.sign(); q = r.int(1, hi) * r.sign(); } while (p + q === 0 || p === q);
+    [p, q] = [p, q].sort((x, y) => y - x);
+    return { terms: [[1, V(v, 2)], [p + q, V(v)], [p * q, {}]], tool: 'inspection', work: [sumProd(p + q, p * q, p, q)], F: lin(v, p) + lin(v, q) };
+  }
+  function dos(r, v, ahi = 6, bhi = 10) { // (av)² − b² = (av − b)(av + b)
+    const [a, b] = coprime(r, 1, ahi, 1, bhi), A = [a, V(v)];
+    return { terms: [[a * a, V(v, 2)], [-b * b, {}]], tool: 'difference of squares', work: [P([[a * a, V(v, 2)], [-b * b, {}]]) + '=' + (a === 1 ? v : '(' + M(A) + ')') + '^2-' + b + '^2'], F: lin(v, -b, a) + lin(v, b, a) };
+  }
+  function dec(r, v, o = {}) { // (pv + q)(Rv + S) by decomposition
+    for (;;) {
+      const p = r.int(o.p || 1, 4), R = r.int(2, 5), q = r.int(1, 7) * r.sign(), S = r.int(1, 7) * r.sign();
+      const a = p * R, b = p * S + q * R, c = q * S, ac = a * c;
+      if (b === 0 || gcd(p, q) !== 1 || gcd(R, S) !== 1 || Math.abs(ac) > (o.ac || 90) || (q > 0 && S > 0)) continue;
+      const m = p * S, n = q * R, x = V(v), sec = lin(v, S, R);
+      return { terms: [[a, V(v, 2)], [b, x], [c, {}]], tool: 'decomposition',
+        work: ['ac=' + a + '(' + c + ')=' + ac + ';\\ \\text{pair } ' + m + ',\\ ' + n, P([[a, V(v, 2)], [m, x], [n, x], [c, {}]]) + '=' + TM(p, x, true) + sec + (q < 0 ? '-' : '+') + Math.abs(q) + sec],
+        F: sec + lin(v, q, p) };
+    }
+  }
+  function pst(r) { // (ax ± by)²
+    const L = r.pick([['a', 'b'], ['x', 'y'], ['m', 'n'], ['p', 'q']]); let a, b; do { [a, b] = coprime(r, 1, 7, 1, 7); } while (a === b);
+    const s = r.sign(), A = [a, V(L[0])], Bm = [b, V(L[1])];
+    return { terms: [[a * a, V(L[0], 2)], [2 * s * a * b, X(A, Bm)[1]], [b * b, V(L[1], 2)]], tool: 'perfect square trinomial',
+      work: [sqd(A) + ',\\ ' + sqd(Bm) + ',\\ 2(' + M(A) + ')(' + M(Bm) + ')=' + M([2 * a * b, X(A, Bm)[1]]) + '\\ \\checkmark'], F: B([A, [s * b, Bm[1]]]) + '^2' };
+  }
+  function disg(r, v) { // x⁴ + bx² + c with a bracket (or two) that opens again
+    let m, n;
+    do { n = -(r.int(1, 4) ** 2); m = r.chance(0.4) ? -(r.int(1, 4) ** 2) : r.int(1, 9) * r.sign(); } while (m === n || m + n === 0 || Math.abs(m * n) > 72);
+    [m, n] = [m, n].sort((x, y) => y - x);
+    const sq = (k) => k < 0 && Number.isInteger(Math.sqrt(-k)), br = (k) => '(' + v + '^2' + (k < 0 ? '-' : '+') + Math.abs(k) + ')';
+    const op = (k) => (sq(k) ? lin(v, -Math.sqrt(-k)) + lin(v, Math.sqrt(-k)) : br(k));
+    return { terms: [[1, V(v, 4)], [m + n, V(v, 2)], [m * n, {}]], tool: 'a trinomial in ' + v + '^2' + ', then difference of squares',
+      work: [sumProd(m + n, m * n, m, n) + '\\ \\Rightarrow\\ ' + br(m) + br(n)], F: (sq(m) ? '' : br(m)) + op(n) + (sq(m) ? op(m) : '') };
+  }
+  function group(r, rearr) { // (x + αy)(δx + β), four terms
+    const [x, y] = r.pick([['x', 'y'], ['a', 'b'], ['m', 'n'], ['p', 'q']]);
+    for (;;) {
+      const al = r.int(1, 5) * r.sign(), be = r.int(1, 7) * r.sign(), de = r.int(1, 3);
+      if (gcd(de, be) !== 1 || (rearr && gcd(de, al * be) !== 1)) continue;
+      const t1 = [de, V(x, 2)], t2 = [al * de, { [x]: 1, [y]: 1 }], t3 = [be, V(x)], t4 = [al * be, V(y)], Bn = B([[1, V(x)], [al, V(y)]]);
+      const g = TM(de, V(x), true) + Bn + (be < 0 ? '-' : '+') + Math.abs(be) + Bn;
+      return { terms: rearr ? [t1, t4, t2, t3] : [t1, t2, t3, t4], tool: rearr ? 'four terms: rearrange, then grouping' : 'four terms: grouping',
+        work: [(rearr ? '(' + P([t1, t2]) + ')+(' + P([t3, t4]) + ')=' : '') + g], F: Bn + B([[de, V(x)], [be, {}]]) };
+    }
+  }
+  /* the question and its worked answer, with an optional common factor G taken out first */
+  function fac(c, G) {
+    const inner = P(c.terms);
+    if (!G) return { q: inner, a: ['\\text{' + c.tool.replace(/([a-z])\^2/, '$$$1^2$$') + '}', ...c.work, inner + '=' + c.F] };
+    const Q = P(c.terms.map((t) => X(G, t))), g = G[0] === -1 && !VS(G[1]) ? '-' : M(G);
+    return { q: Q, a: ['\\text{common factor' + (G[0] < 0 ? ' (take the negative out)' : '') + ', then ' + c.tool.replace(/([a-z])\^2/, '$$$1^2$$') + '}',
+      '\\text{GCF } ' + (g === '-' ? '-1' : g) + ':\\quad ' + Q + '=' + g + '(' + inner + ')', ...c.work, Q + '=' + g + c.F] };
+  }
+  const LET = ['x', 'x', 'x', 'y', 'm', 'n', 'p', 't'];
+  const deg = (t) => Object.values(t[1]).reduce((s, e) => s + e, 0);
+  function gcfOnly(r) { // 4cd² − 8c³d + 4cd = 4cd(d − 2c² + 1)
+    const L = r.pick([['c', 'd'], ['u', 'v'], ['s', 't'], ['x', 'y']]);
+    for (;;) {
+      const ts = [0, 1, 2].map(() => [r.int(1, 5), { [L[0]]: r.int(0, 2), [L[1]]: r.int(0, 2) }]);
+      if (r.chance(0.35)) ts[2] = [1, {}];
+      if (new Set(ts.map((t) => VS(t[1]))).size < 3 || L.some((k) => Math.min(...ts.map((t) => t[1][k])) !== 0) || ts.reduce((g, t) => gcd(g, t[0]), 0) !== 1) continue;
+      ts.sort((a, b) => deg(b) - deg(a)); ts.forEach((t, i) => { if (i && r.chance(0.4)) t[0] = -t[0]; });
+      const G = [r.int(2, 8), { [L[0]]: r.int(1, 2), [L[1]]: r.int(1, 2) }], Q = P(ts.map((t) => X(G, t)));
+      return { q: Q, a: ['\\text{common factor only}', '\\text{GCF } ' + M(G) + ':\\quad ' + Q + '=' + M(G) + B(ts)] };
+    }
+  }
+  function findK(r) { // every k for which x² + kx + c factors
+    const v = r.pick(['x', 'x', 'n', 'y']), c = r.pick([12, 18, 20, 24, 30, 36, 40, -12, -18, -20, -24, -30]);
+    const ks = [], pairs = [];
+    for (let s = 1; s * s <= Math.abs(c); s++) if (Math.abs(c) % s === 0) { const l = Math.abs(c) / s, k = c > 0 ? s + l : l - s; pairs.push(s + '\\times' + l); if (!ks.includes(k)) ks.push(k); }
+    return { text: 'Find every integer <i>k</i> for which the trinomial can be factored over the integers.', q: P([[1, V(v, 2)], [1, { k: 1, [v]: 1 }], [c, {}]]),
+      a: [(c > 0 ? '\\text{same signs: } k=\\pm(\\text{sum})' : '\\text{opposite signs: } k=\\pm(\\text{difference})') + ';\\quad ' + pairs.join(',\\ '), 'k=' + ks.map((k) => (k ? '\\pm' + k : '0')).join(',\\ ')] };
+  }
+  function squareK(r) { // 25x² − kx + 16 is a perfect square, k > 0
+    const v = r.pick(['x', 'x', 'a', 'y']), [a, b] = coprime(r, 2, 9, 1, 9), s = r.sign();
+    return { text: 'The trinomial is a perfect square and <i>k</i> &gt; 0. Find <i>k</i>, then factor it.', q: (a * a) + v + '^2' + (s < 0 ? '-' : '+') + 'k' + v + '+' + b * b,
+      a: ['(' + a + v + ')^2,\\ ' + b + '^2:\\quad k=2(' + a + ')(' + b + ')=' + 2 * a * b, (a * a) + v + '^2' + (s < 0 ? '-' : '+') + 2 * a * b + v + '+' + b * b + '=' + lin(v, s * b, a) + '^2'] };
+  }
+  function otherFactor(r) { // x² + kx − 24 has a factor x − 4: find k and the other factor
+    const v = r.pick(['x', 'x', 'n', 'y']); let p, q; do { p = r.int(1, 9) * r.sign(); q = r.int(1, 9) * r.sign(); } while (p + q === 0 || p === q);
+    return { text: 'One factor is <b><i>' + v + '</i> ' + (p < 0 ? '−' : '+') + ' ' + Math.abs(p) + '</b>. Find <i>k</i> and the other factor.', q: P([[1, V(v, 2)], [1, { k: 1, [v]: 1 }], [p * q, {}]]),
+      a: [p * q + '\\div' + par(p) + '=' + q + ':\\quad \\text{the other factor is } ' + lin(v, q), 'k=' + par(p) + '+' + par(q) + '=' + (p + q) + ':\\quad ' + P([[1, V(v, 2)], [p + q, V(v)], [p * q, {}]]) + '=' + lin(v, p) + lin(v, q)] };
+  }
+  standup('u4l8', {
+    intro: 'Factor completely (or answer the question). Name your tool first: common factor, inspection, decomposition, a pattern or grouping.',
+    levels: {
+      BEG: (r) => { // the basic skills: common factors, x² + bx + c, the patterns
+        const v = r.pick(LET);
+        return r.pick([() => gcfOnly(r), () => fac(insp(r, v)), () => fac(dos(r, v, 7, 9))])();
+      },
+      PRG: (r) => { // ax² + bx + c, and “factor completely”
+        const v = r.pick(LET);
+        return r.pick([
+          () => fac(dec(r, v, { ac: 72 })),
+          () => fac(dec(r, v, { ac: 30 }), [r.int(2, 4), V(v, 2)]),
+          () => fac(insp(r, v, 7), [-r.int(2, 4), {}]),
+          () => fac(dos(r, v, 3, 4), [r.int(2, 5), V(v, 2)]),
+          () => fac(pst(r))
+        ])();
+      },
+      MAS: (r) => { // work backwards, several steps
+        const v = r.pick(LET);
+        return r.pick([findK, squareK, otherFactor, (rr) => fac(disg(rr, v)), (rr) => fac(dec(rr, v, { ac: 40 }), [rr.pick([2, 3, -1, -2]), rr.chance(0.4) ? V(v) : {}])])(r);
+      }
+    }
+  });
+}

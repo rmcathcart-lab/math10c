@@ -3,6 +3,7 @@
  * the systematic factor-pair hunt, and the full-range routine (GCF / −1 first). Plus the warm-up and the static figures. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -593,3 +594,64 @@ function mountExplainers() {
 }
 
 mountFigures(); mountWarm(); mountExplainers();
+
+/* ============ Stand Up Break! — factor ax² + bx + c by decomposition at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  const LET = ['x', 'x', 'x', 'n', 'y', 'm', 't'];
+  /* (pv + q)(Rv + S), nothing common in either bracket, a = pR > 1, b ≠ 0 */
+  function pick(r, o) {
+    for (;;) {
+      const p = r.int(o.p[0], o.p[1]), R = r.int(o.R[0], o.R[1]), q = r.int(1, o.n) * (o.neg ? r.sign() : 1), S = r.int(1, o.n) * (o.neg ? r.sign() : 1);
+      const a = p * R, b = p * S + q * R, c = q * S;
+      if (a < 2 || b === 0 || gcd(p, q) !== 1 || gcd(R, S) !== 1 || Math.abs(a * c) > o.ac) continue;
+      if (o.neg && q > 0 && S > 0) continue;
+      if (o.one && p !== 1 && R !== 1) continue;
+      return { p, q, R, S, a, b, c };
+    }
+  }
+  /* the worked answer: ac, the pair, the four terms grouped, the factors */
+  function decomp(t, v) {
+    const { p, q, R, S, a, b, c } = t, m = p * S, n = q * R, x = V(v), x2 = V(v, 2);
+    const tri = P([[a, x2], [b, x], [c, {}]]), sec = B([[R, x], [S, {}]]);
+    return [
+      'ac=' + a + '(' + c + ')=' + a * c + ';\\ \\text{pair } ' + m + ',\\ ' + n,
+      tri + '=' + P([[a, x2], [m, x], [n, x], [c, {}]]),
+      '=' + TM(p, x, true) + sec + (q < 0 ? '-' : '+') + Math.abs(q) + sec + '=' + sec + B([[p, x], [q, {}]])
+    ];
+  }
+  const tri = (t, v, k = 1) => P([[k * t.a, V(v, 2)], [k * t.b, V(v)], [k * t.c, {}]]);
+  standup('u4l5', {
+    intro: 'Factor by decomposition: find two integers with product ac and sum b, split the middle term, then group. Check by expanding.',
+    levels: {
+      BEG: (r) => { // 3x² + 8x + 4 = (3x + 2)(x + 2): all positive, one bracket starts with x
+        const v = r.pick(LET), t = pick(r, { p: [1, 5], R: [1, 5], n: 6, ac: 60, one: true });
+        return { q: tri(t, v), a: decomp(t, v) };
+      },
+      PRG: (r) => { // 3x² + 10x − 8 = (3x − 2)(x + 4): a negative b or c
+        const v = r.pick(LET), t = pick(r, { p: [1, 4], R: [2, 5], n: 6, ac: 72, neg: true });
+        return { q: tri(t, v), a: decomp(t, v) };
+      },
+      MAS: (r) => {
+        const v = r.pick(LET);
+        if (r.chance(0.35)) { // a common factor first: 6x² + 14x + 4 = 2(3x² + 7x + 2) = 2(3x + 1)(x + 2)
+          const k = r.int(2, 5), t = pick(r, { p: [1, 3], R: [2, 4], n: 5, ac: 40, neg: r.chance(0.6) }), Q = tri(t, v, k), [l1, l2, l3] = decomp(t, v);
+          return { q: Q, a: ['\\text{GCF } ' + k + ':\\quad ' + Q + '=' + k + '(' + tri(t, v) + ')', l1, l2, l3, Q + '=' + k + B([[t.R, V(v)], [t.S, {}]]) + B([[t.p, V(v)], [t.q, {}]])] };
+        }
+        // both leading coefficients bigger than 1, mixed signs: 6x² + 19x − 7 = (2x + 7)(3x − 1)
+        const t = pick(r, { p: [2, 5], R: [2, 5], n: 7, ac: 90, neg: true });
+        return { q: tri(t, v), a: decomp(t, v) };
+      }
+    }
+  });
+}

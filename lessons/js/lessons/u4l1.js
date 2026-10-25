@@ -2,6 +2,7 @@
  * The explainers, the "Tile the Floor" warm-up and the static figures on this page. */
 import { h, Explainer, primeFactors } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -672,3 +673,60 @@ function mountExplainers() {
 }
 
 mountFloor(); mountReveals(); mountExplainers();
+
+/* ============ Stand Up Break! — remove the GCF at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  const deg = (t) => Object.values(t[1]).reduce((s, e) => s + e, 0);
+  /* G times a bracket with nothing common left in it: the question is the expanded product */
+  function gcfQ(G, br) {
+    const terms = br.map((t) => X(G, t)), Q = P(terms), L = Object.keys(G[1]).filter((k) => G[1][k]).sort();
+    const low = L.length ? (L.length === 1 ? '\\text{lowest power } ' : '\\text{lowest powers } ') + L.map((k) => VS(V(k, G[1][k]))).join(',\\ ') : '\\text{no letter in every term}';
+    const g = Math.abs(G[0]), neg = G[0] < 0 ? ';\\ \\text{leading term negative, so take out } -' + g : '';
+    return { q: Q, a: ['\\text{GCF}(' + terms.map((t) => Math.abs(t[0])).join(',\\,') + ')=' + g + ';\\ ' + low + neg, Q + '=' + TM(G[0], G[1], true) + B(br)] };
+  }
+  /* a bracket of n terms in the letters L: different monomials, no common number, every letter missing from some term */
+  function bracket(r, L, n, cmax, emax, one) {
+    for (;;) {
+      const ts = Array.from({ length: n }, () => { const v = {}; L.forEach((k) => (v[k] = r.int(0, emax))); return [r.int(1, cmax), v]; });
+      if (one) ts[n - 1] = [1, {}]; // a term equal to the GCF leaves a 1
+      if (new Set(ts.map((t) => VS(t[1]))).size < n) continue;
+      if (L.some((k) => Math.min(...ts.map((t) => t[1][k] || 0)) !== 0)) continue;
+      if (ts.reduce((g, t) => gcd(g, t[0]), 0) !== 1) continue;
+      ts.sort((a, b) => deg(b) - deg(a) || (b[1][L[0]] || 0) - (a[1][L[0]] || 0));
+      ts.forEach((t, i) => { if (i && r.chance(0.4)) t[0] = -t[0]; });
+      return ts;
+    }
+  }
+  standup('u4l1', {
+    intro: 'Factor completely by removing the greatest common factor. Check by expanding your answer.',
+    levels: {
+      BEG: (r) => { // one letter, two terms: 20x⁴ + 5x² = 5x²(4x² + 1)
+        const v = r.pick(['x', 'x', 'a', 'm', 'p', 't', 'y']), g = r.int(2, 9), e = r.int(0, 3), k = r.int(1, 3);
+        let m, n; do { m = r.int(1, 9); n = r.int(1, 9); } while (gcd(m, n) !== 1 || m === n);
+        const br = r.chance(0.25) ? [[n, {}], [-m, V(v, k)]] : [[m, V(v, k)], [n * r.sign(), {}]];
+        return gcfQ([g, e ? V(v, e) : {}], br);
+      },
+      PRG: (r) => { // two letters, three terms; a negative leading term, or a term that leaves 1
+        const L = r.pick([['x', 'y'], ['a', 'b'], ['m', 'n'], ['p', 'q']]), g = r.int(2, 8);
+        const br = bracket(r, L, 3, 6, 2, r.chance(0.35));
+        return gcfQ([r.chance(0.4) ? -g : g, { [L[0]]: r.int(1, 2), [L[1]]: r.int(0, 2) }], br);
+      },
+      MAS: (r) => { // three letters, three or four terms, higher powers
+        const L = r.pick([['x', 'y', 'z'], ['a', 'b', 'c'], ['p', 'q', 'r']]), g = r.int(3, 9);
+        const br = bracket(r, L, r.chance(0.3) ? 4 : 3, 7, 3, r.chance(0.2));
+        return gcfQ([r.chance(0.3) ? -g : g, { [L[0]]: r.int(1, 2), [L[1]]: r.int(1, 2), [L[2]]: r.int(0, 2) }], br);
+      }
+    }
+  });
+}

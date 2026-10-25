@@ -2,6 +2,7 @@
  * Tile colours follow Unit 3 (x² teal, x amber, 1 slate); a negative tile is white with a coloured outline and a minus sign. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -788,3 +789,67 @@ mountExplainers(); mountWarmTiles(); mountWarmCards(); mountKey(); mountSquares(
     io.observe(svg);
   } else play();
 })();
+
+/* ============ Stand Up Break! — difference of squares at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  const LET = ['x', 'x', 'a', 'm', 'p', 't', 'w', 'y'];
+  const dbl = (v) => { const o = {}; for (const k in v) o[k] = 2 * v[k]; return o; };
+  /* a monomial written as a square: x², (5x)², 8² */
+  const SQ = (t) => { const s = TM(t[0], t[1], true); return (/^[a-z]$/.test(s) || /^\d+$/.test(s) ? s : '(' + s + ')') + '^2'; };
+  const sq = (t) => [t[0] * t[0], dbl(t[1])];
+  /* A² − B² = (A − B)(A + B) */
+  const AB = (A, Bm) => 'A=' + TM(A[0], A[1], true) + ',\\ B=' + TM(Bm[0], Bm[1], true) + ((SQ(A) + SQ(Bm)).includes('(') || /\d/.test(TM(Bm[0], Bm[1], true)) ? ':\\quad ' + SQ(A) + '-' + SQ(Bm) : '');
+  const dos = (A, Bm) => B([A, [-Bm[0], Bm[1]]]) + B([A, Bm]);
+  const coprime = (r, lo, hi, lo2, hi2) => { for (;;) { const a = r.int(lo, hi), b = r.int(lo2, hi2); if (gcd(a, b) === 1) return [a, b]; } };
+  standup('u4l4', {
+    intro: 'Factor completely. Common factor first, then look for a difference of squares, and check every new bracket.',
+    levels: {
+      BEG: (r) => { // w² − 9 = (w − 3)(w + 3)
+        const v = r.pick(LET);
+        const A = [1, V(v)], Bm = r.chance(0.15) ? [1, V(v === 'n' ? 'm' : 'n')] : [r.int(2, 12), {}];
+        const Q = P([sq(A), [-sq(Bm)[0], sq(Bm)[1]]]);
+        return { q: Q, a: [AB(A, Bm), Q + '=' + dos(A, Bm)] };
+      },
+      PRG: (r) => { // 25x² − 64, 121 − y², 16p² − 9q², 49p²q² − 1
+        const kind = r.int(0, 3), v = r.pick(LET);
+        let A, Bm;
+        if (kind === 0) { const [a, b] = coprime(r, 2, 9, 1, 11); A = [a, V(v)]; Bm = [b, {}]; }
+        else if (kind === 1) { const [b, a] = coprime(r, 2, 12, 1, 7); A = [b, {}]; Bm = [a, V(v)]; }
+        else if (kind === 2) { const L = r.pick([['x', 'y'], ['p', 'q'], ['a', 'b'], ['m', 'n']]); let a, b; do { [a, b] = coprime(r, 1, 9, 1, 9); } while (a === b); A = [a, V(L[0])]; Bm = [b, V(L[1])]; }
+        else { const L = r.pick([['p', 'q'], ['x', 'y'], ['a', 'b']]), [a, b] = coprime(r, 2, 9, 1, 5); A = [a, { [L[0]]: 1, [L[1]]: 1 }]; Bm = [b, {}]; }
+        const Q = P([sq(A), [-sq(Bm)[0], sq(Bm)[1]]]);
+        return { q: Q, a: [AB(A, Bm), Q + '=' + dos(A, Bm)] };
+      },
+      MAS: (r) => {
+        const v = r.pick(LET), kind = r.int(0, 2);
+        if (kind === 2) { // x⁴ − 16 = (x² − 4)(x² + 4) = (x − 2)(x + 2)(x² + 4), sometimes with a GCF
+          const [a, b] = r.pick([[1, 1], [1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2], [1, 2], [1, 3]]), k = Math.max(a, b) < 3 && r.chance(0.5) ? r.pick([2, 3, 5]) : 1;
+          const A = [a, V(v)], Bm = [b, {}], A2 = sq(A), B2 = sq(Bm), Q = P([[k * A2[0] * A2[0], dbl(A2[1])], [-k * B2[0] * B2[0], {}]]);
+          const K = k > 1 ? String(k) : '';
+          const out = [];
+          if (k > 1) out.push('\\text{GCF } ' + k + ':\\quad ' + Q + '=' + k + B([[A2[0] * A2[0], dbl(A2[1])], [-B2[0] * B2[0], {}]]));
+          out.push((k > 1 ? '=' + K : Q + '=') + dos(A2, B2), Q + '=' + K + dos(A, Bm) + B([A2, B2]) + '\\quad\\text{(a sum of squares stays)}');
+          return { q: Q, a: out };
+        }
+        // a common factor first: 3a² − 75 = 3(a − 5)(a + 5); 2x³ − 32x = 2x(x − 4)(x + 4); 5x² − 20y² = 5(x − 2y)(x + 2y)
+        const k = r.int(2, 7), withV = kind === 1;
+        let a, b; do { [a, b] = coprime(r, 1, 5, 1, 9); } while ((a === 1 && b === 1) || k * a * a > 100 || k * b * b > 200);
+        const A = [a, V(v)], Bm = r.chance(0.3) && !withV ? [b, V(v === 'y' ? 'x' : 'y')] : [b, {}];
+        const G = [k, withV ? V(v) : {}], inner = [sq(A), [-sq(Bm)[0], sq(Bm)[1]]], Q = P(inner.map((t) => X(G, t)));
+        const g = TM(G[0], G[1], true);
+        return { q: Q, a: ['\\text{GCF } ' + g + ':\\quad ' + Q + '=' + g + B(inner), Q + '=' + g + dos(A, Bm)] };
+      }
+    }
+  });
+}

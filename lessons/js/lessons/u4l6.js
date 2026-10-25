@@ -2,6 +2,7 @@
  * Big idea of the unit: factoring is expanding run backwards. Every explainer ends with a check by expanding. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+import { standup } from '../standup.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -756,3 +757,59 @@ function mountExplainers() {
 }
 
 mountShelf(); mountReveals(); mountExplainers();
+
+/* ============ Stand Up Break! — perfect squares and trinomials in disguise at the whiteboards ============ */
+{
+  /* a term is [coefficient, { letter: exponent }]; a polynomial is a list of terms */
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const VS = (v) => Object.keys(v || {}).sort().filter((k) => v[k]).map((k) => (v[k] === 1 ? k : k + '^{' + v[k] + '}')).join('');
+  const TM = (c, v, first) => { const s = VS(v), a = Math.abs(c); return c === 0 ? '' : (c < 0 ? '-' : first ? '' : '+') + (a === 1 && s ? '' : a) + s; };
+  const P = (ts) => { let o = ''; ts.forEach(([c, v]) => { if (c) o += TM(c, v, o === ''); }); return o || '0'; };
+  const B = (ts) => '(' + P(ts) + ')';
+  const V = (s, e = 1) => ({ [s]: e });
+  const X = (a, b) => { const v = { ...a[1] }; for (const k in b[1]) v[k] = (v[k] || 0) + b[1][k]; return [a[0] * b[0], v]; };
+  const MUL = (A, Bs) => { const m = new Map(); A.forEach((a) => Bs.forEach((b) => { const t = X(a, b), k = VS(t[1]); if (m.has(k)) m.get(k)[0] += t[0]; else m.set(k, t); })); return [...m.values()].filter((t) => t[0]); };
+  const par = (n) => (n < 0 ? '(' + n + ')' : String(n));
+  const sumProd = (b, c, p, q) => '\\text{product } {' + c + '},\\ \\text{sum } {' + b + '}:\\quad {' + p + '} \\text{ and } {' + q + '}';
+  const LET = ['x', 'x', 'm', 'b', 'y', 'n', 'k'];
+  const dbl = (v) => { const o = {}; for (const k in v) o[k] = 2 * v[k]; return o; };
+  const M = (t) => TM(t[0], t[1], true);
+  /* (A ± B)²: the three-part test, then the square */
+  function pst(A, Bm, s, rev) {
+    const A2 = [A[0] * A[0], dbl(A[1])], B2 = [Bm[0] * Bm[0], dbl(Bm[1])], mid = X([2 * s, {}], X(A, Bm));
+    const Q = P(rev ? [B2, mid, A2] : [A2, mid, B2]);
+    return { q: Q, a: ['\\sqrt{' + M(A2) + '}=' + M(A) + ',\\ \\ \\sqrt{' + M(B2) + '}=' + M(Bm) + ',\\ \\ 2(' + M(A) + ')(' + M(Bm) + ')=' + M([2 * A[0] * Bm[0], X(A, Bm)[1]]) + '\\ \\checkmark',
+      Q + '=' + B([A, [s * Bm[0], Bm[1]]]) + '^2'] };
+  }
+  const coprime = (r, lo, hi, lo2, hi2) => { for (;;) { const a = r.int(lo, hi), b = r.int(lo2, hi2); if (gcd(a, b) === 1) return [a, b]; } };
+  standup('u4l6', {
+    intro: 'Factor completely. Test for a perfect square trinomial, and treat x² as one block when the powers are 4, 2, 0.',
+    levels: {
+      BEG: (r) => pst([1, V(r.pick(LET))], [r.int(1, 12), {}], r.sign(), false), // m² + 14m + 49 = (m + 7)²
+      PRG: (r) => { // 9x² − 42x + 49 = (3x − 7)², 16x² + 24xy + 9y², 9 + 24x + 16x²
+        const v = r.pick(LET), [a, b] = coprime(r, 2, 9, 1, 9);
+        if (r.chance(0.35)) { const L = r.pick([['x', 'y'], ['a', 'b'], ['p', 'q'], ['m', 'n']]), [a2, b2] = coprime(r, 1, 7, 1, 7); if (a2 !== b2) return pst([a2, V(L[0])], [b2, V(L[1])], r.sign(), false); }
+        return pst([a, V(v)], [b, {}], r.sign(), r.chance(0.25));
+      },
+      MAS: (r) => { // a trinomial in disguise: let u = x² (or u = pq); a bracket may open again as a difference of squares
+        const pq = r.chance(0.2), v = r.pick(LET), blk = pq ? 'pq' : v + '^2';
+        let m, n;
+        for (;;) {
+          if (!pq && r.chance(0.5)) { n = -(r.int(1, 4) ** 2); m = r.chance(0.3) ? -(r.int(1, 4) ** 2) : r.int(1, 9) * r.sign(); }
+          else { m = r.int(1, 10) * r.sign(); n = r.int(1, 10) * r.sign(); }
+          if (m !== n && m + n !== 0 && Math.abs(m * n) <= 72) break;
+        }
+        [m, n] = [m, n].sort((x, y) => y - x);
+        const b = m + n, c = m * n, u = pq ? { p: 1, q: 1 } : V(v, 2);
+        const Q = P([[1, pq ? { p: 2, q: 2 } : V(v, 4)], [b, u], [c, {}]]);
+        const br = (k) => '(' + blk + (k < 0 ? '-' : '+') + Math.abs(k) + ')';
+        const sq = (k) => !pq && k < 0 && Number.isInteger(Math.sqrt(-k)); // v² − j² opens again
+        const open = (k) => (sq(k) ? B([[1, V(v)], [-Math.sqrt(-k), {}]]) + B([[1, V(v)], [Math.sqrt(-k), {}]]) : br(k));
+        const a = ['\\text{let } u=' + blk + ':\\quad u^2' + TM(b, V('u')) + TM(c, {}) + '=(u' + (m < 0 ? '' : '+') + m + ')(u' + (n < 0 ? '' : '+') + n + ')',
+          Q + '=' + br(m) + br(n)];
+        if (sq(m) || sq(n)) a.push('=' + (sq(m) ? '' : br(m)) + (sq(n) ? '' : br(n)) + (sq(m) ? open(m) : '') + (sq(n) ? open(n) : '') + '\\quad\\text{(difference of squares)}');
+        return { q: Q, a };
+      }
+    }
+  });
+}
