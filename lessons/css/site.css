@@ -689,6 +689,7 @@ a.lp-row:hover { background: #f4f2ec; }
 .su-old .su-fig svg { max-height: 150px; }
 .su-old .su-qtext { font-size: 14px; margin-top: 6px; }
 .su-atext { color: var(--ok); font-size: 17px; margin: 4px 0; }
+.su-atext svg { max-width: 100%; height: auto; }
 .su-old .su-atext { font-size: 13.5px; }
 .su-earlier { margin-top: 14px; }
 .su-earlier-h { font: 700 14px/1 var(--font); color: var(--muted); margin-bottom: 8px; }

@@ -10,6 +10,7 @@
  *   triangle; Example 5), catchIt (which check catches which slip).
  * Colours: opposite purple, adjacent amber, hypotenuse blue (relative to the reference angle); reference angle green;
  * unknowns red. */
+import { standup } from '../standup.js';
 import {
   h, tex, add, box, Box, Flowchart, NumberLine, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   svgEl, pulse, anim, angleArc, rightMark, arrowHead, place, drawIn
@@ -776,3 +777,174 @@ const catchIt = {
 mountWarm();
 mountFigs();
 export const explainers = mountExplainers({ tools, whichTool, twoRoutes, twoPieces, fromGiven, solveIt, ladder, catchIt });
+
+/* ======== Stand Up Break! (u9 helpers + this lesson's questions) ======== */
+/* ---------- Stand Up Break! helpers: figures drawn to scale from the generated numbers, rounding ---------- */
+const SU_C = { ink: '#1c2230', ang: '#c93a33', dim: '#6a7182', sky: '#1f5bd6' };
+const suEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const SU_RAD = Math.PI / 180;
+const suTrig = { sin: (d) => Math.sin(d * SU_RAD), cos: (d) => Math.cos(d * SU_RAD), tan: (d) => Math.tan(d * SU_RAD) };
+const suInv = { sin: (v) => Math.asin(v) / SU_RAD, cos: (v) => Math.acos(v) / SU_RAD, tan: (v) => Math.atan(v) / SU_RAD };
+const suR = (v, dp = 1) => (Math.round(v * Math.pow(10, dp) + 1e-9) / Math.pow(10, dp)).toFixed(dp); // the rounded answer
+const suSafe = (v, dp = 1) => { const k = v * Math.pow(10, dp), f = k - Math.floor(k); return Math.abs(f - 0.5) > 0.08; }; // not near a rounding tie
+const suD = (v, n = 4) => { const k = Math.pow(10, n); return Math.abs(v * k - Math.round(v * k)) < 1e-6 ? String(Math.round(v * k) / k) : (Math.floor(v * k) / k).toFixed(n) + '\\ldots'; }; // calculator digits
+const suN = (v) => String(Number(v.toFixed(2))); // a given number as typed
+const suDec = (r, lo, hi) => (r.chance(0.5) ? r.int(lo, hi) : r.int(lo * 10, hi * 10) / 10); // a whole number or one decimal
+const suA = (n) => (/^(8|11|18)(\.|$)/.test(String(n)) ? 'An ' : 'A '); // "An 8.5 m ladder"
+const suRetry = (make, ok) => { for (let i = 0; i < 200; i++) { const s = make(); if (ok(s)) return s; } return make(); };
+const suAng = (r, lo, hi) => suRetry(() => r.int(lo, hi), (a) => a !== 45); // a whole-degree angle, not 45° (tan 45° = 1 gives a dull key)
+/* suFig(points (world, y up), draw(g), { W, H, label }): scale the points to fit W×H, then draw with
+ *   g.poly(keys), g.seg(a, b, { dash, c, w }), g.right(v, a, b), g.angle(v, a, b, text, { r }), g.side(a, b, text, { away, bold }),
+ *   g.vert(k, text, { away }), g.text(x, y, text), g.near(x, y, u, text); the viewBox grows to hold every label. */
+function suFig(pts, draw, o = {}) {
+  const W = o.W || 330, H = o.H || 200, FS = o.fs || 19;
+  const ks = Object.keys(pts), xs = ks.map((k) => pts[k][0]), ys = ks.map((k) => pts[k][1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const s = Math.min(W / Math.max(x1 - x0, 1e-6), H / Math.max(y1 - y0, 1e-6));
+  const P = (k) => { const p = typeof k === 'string' ? pts[k] : k; return [(p[0] - x0) * s, (y1 - p[1]) * s]; };
+  const shapes = [], labels = [], bb = [1e9, 1e9, -1e9, -1e9], r1 = (v) => Math.round(v * 10) / 10;
+  const grow = (a, b, c, d) => { bb[0] = Math.min(bb[0], a); bb[1] = Math.min(bb[1], b); bb[2] = Math.max(bb[2], c); bb[3] = Math.max(bb[3], d); };
+  const C = (() => { const q = ks.map(P); return [q.reduce((a, p) => a + p[0], 0) / q.length, q.reduce((a, p) => a + p[1], 0) / q.length]; })();
+  const isVar = (t) => /^[a-zθαβ]$/.test(t);
+  const size = (t, opt) => { const fs = (opt.fs || FS) * (isVar(t) ? 1.2 : 1); return [fs, [...String(t)].reduce((w, ch) => w + (/[°.,:]/.test(ch) ? 0.32 : ch === ' ' ? 0.28 : /[mwMW]/.test(ch) ? 0.86 : /[A-Z]/.test(ch) ? 0.7 : 0.57), 0) * fs]; };
+  const unit = (v) => { const L = Math.hypot(v[0], v[1]) || 1; return [v[0] / L, v[1] / L]; };
+  const g = {
+    s, P,
+    text(x, y, t, opt = {}) {
+      const [fs, w] = size(t, opt), it = isVar(t);
+      labels.push(`<text x="${r1(x)}" y="${r1(y)}" text-anchor="middle" dominant-baseline="central" font-size="${r1(fs)}" fill="${opt.c || SU_C.ink}"${it ? ' font-style="italic" font-family="\'Times New Roman\', Times, serif"' : ''}${opt.bold || it ? ' font-weight="700"' : ' font-weight="500"'}${opt.halo ? ' style="paint-order:stroke;stroke:var(--su-soft,#fff);stroke-width:6px;stroke-linejoin:round"' : ''}>${suEsc(t)}</text>`);
+      grow(x - w / 2, y - fs * 0.62, x + w / 2, y + fs * 0.62);
+    },
+    near(x, y, u, t, opt = {}) { // the label's box touches the line through (x, y) across u, a gap away on u's side
+      const [fs, w] = size(t, opt), h = fs * 1.15, gap = opt.gap != null ? opt.gap : 6, d = gap + (Math.abs(u[0]) * w + Math.abs(u[1]) * h) / 2;
+      g.text(x + u[0] * d, y + u[1] * d, t, opt);
+    },
+    seg(a, b, opt = {}) {
+      const A = P(a), B = P(b);
+      shapes.push(`<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" stroke="${opt.c || SU_C.ink}" stroke-width="${opt.w || 2.4}" stroke-linecap="round"${opt.dash ? ' stroke-dasharray="7 6"' : ''}/>`);
+      grow(Math.min(A[0], B[0]), Math.min(A[1], B[1]), Math.max(A[0], B[0]), Math.max(A[1], B[1]));
+    },
+    poly(keys, opt = {}) {
+      const Q = keys.map(P); Q.forEach((p) => grow(p[0], p[1], p[0], p[1]));
+      shapes.push(`<polygon points="${Q.map((p) => r1(p[0]) + ',' + r1(p[1])).join(' ')}" fill="${opt.fill || 'none'}" stroke="${opt.c || SU_C.ink}" stroke-width="${opt.w || 2.4}" stroke-linejoin="round"/>`);
+    },
+    right(v, a, b, z = 13) {
+      const V = P(v), ua = unit([P(a)[0] - V[0], P(a)[1] - V[1]]), ub = unit([P(b)[0] - V[0], P(b)[1] - V[1]]);
+      shapes.push(`<path d="M${r1(V[0] + ua[0] * z)} ${r1(V[1] + ua[1] * z)}L${r1(V[0] + (ua[0] + ub[0]) * z)} ${r1(V[1] + (ua[1] + ub[1]) * z)}L${r1(V[0] + ub[0] * z)} ${r1(V[1] + ub[1] * z)}" fill="none" stroke="${SU_C.ink}" stroke-width="1.7"/>`);
+    },
+    angle(v, a, b, t, opt = {}) { // arc inside angle a-v-b; the label on its bisector (or opt.mid of the way round), past the arc, clear of both arms if it can be
+      const V = P(v), A = P(a), B = P(b), t1 = Math.atan2(A[1] - V[1], A[0] - V[0]);
+      let d = Math.atan2(B[1] - V[1], B[0] - V[0]) - t1; while (d > Math.PI) d -= 2 * Math.PI; while (d <= -Math.PI) d += 2 * Math.PI;
+      const e = t1 + d, m = t1 + d * (opt.mid || 0.5), c = opt.c || SU_C.ang, cm = Math.abs(Math.cos(m)), sm = Math.abs(Math.sin(m));
+      let r = opt.r || (Math.abs(d) < 0.75 ? 34 : 26), dist = 0, halo = false;
+      if (t) {
+        const [fs, w] = size(t, opt), h = fs * 1.15, along = (cm * w + sm * h) / 2, need = ((sm * w + cm * h) / 2 + 3) / Math.sin(Math.abs(d) * Math.min(opt.mid || 0.5, 1 - (opt.mid || 0.5)));
+        if (need <= r + 3 + along) dist = r + 3 + along;
+        else { r = Math.min(64, Math.max(r, need - along - 3)); dist = Math.min(need, r + 3 + along); halo = dist < need - 1; }
+      }
+      shapes.push(`<path d="M${r1(V[0] + r * Math.cos(t1))} ${r1(V[1] + r * Math.sin(t1))}A${r1(r)} ${r1(r)} 0 0 ${d > 0 ? 1 : 0} ${r1(V[0] + r * Math.cos(e))} ${r1(V[1] + r * Math.sin(e))}" fill="none" stroke="${c}" stroke-width="2.2"/>`);
+      grow(V[0] + r * Math.cos(m) - 2, V[1] + r * Math.sin(m) - 2, V[0] + r * Math.cos(m) + 2, V[1] + r * Math.sin(m) + 2);
+      if (t) g.text(V[0] + dist * Math.cos(m), V[1] + dist * Math.sin(m), t, { c, halo, ...opt });
+    },
+    side(a, b, t, opt = {}) { // label beside side ab, on the side away from opt.away (a point; default: the middle of the figure)
+      const A = P(a), B = P(b), M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], F = opt.away != null ? P(opt.away) : C;
+      let n = unit([-(B[1] - A[1]), B[0] - A[0]]); if ((M[0] - F[0]) * n[0] + (M[1] - F[1]) * n[1] < 0) n = [-n[0], -n[1]];
+      if (opt.inside) n = [-n[0], -n[1]];
+      g.near(M[0], M[1], n, t, opt);
+    },
+    vert(k, t, opt = {}) { const V = P(k), F = opt.away != null ? P(opt.away) : C; g.near(V[0], V[1], unit([V[0] - F[0], V[1] - F[1]]), t, { gap: 5, bold: true, ...opt }); },
+    raw(svg, box) { shapes.push(svg); if (box) grow(...box); }
+  };
+  draw(g);
+  const m = 4, vx = bb[0] - m, vy = bb[1] - m, vw = bb[2] - bb[0] + 2 * m, vh = bb[3] - bb[1] + 2 * m;
+  return `<svg viewBox="${r1(vx)} ${r1(vy)} ${r1(vw)} ${r1(vh)}" width="${Math.round(vw)}" height="${Math.round(vh)}" style="max-width:100%;height:auto" role="img" aria-label="${suEsc(o.label || 'Diagram')}">${shapes.join('')}${labels.join('')}</svg>`;
+}
+/* a right triangle to scale: angle th (degrees) at A, hypotenuse h, right angle at C; turned by rot degrees, mirrored by flip */
+function suRt(th, h, rot = 0, flip = false) {
+  const raw = { A: [0, 0], C: [h * suTrig.cos(th), 0], B: [h * suTrig.cos(th), h * suTrig.sin(th)] }, c = Math.cos(rot * SU_RAD), s = Math.sin(rot * SU_RAD), out = {};
+  for (const k in raw) { let [x, y] = raw[k]; if (flip) x = -x; out[k] = [x * c - y * s, x * s + y * c]; }
+  return out;
+}
+/* draw it: o = { names: { A, B, C } letters, lab: { opp, adj, hyp } texts, angA, angB texts (null = no arc), label } */
+function suTri(T, o = {}) {
+  return suFig(T, (g) => {
+    g.poly(['A', 'B', 'C']); g.right('C', 'A', 'B');
+    if (o.angA != null) g.angle('A', 'C', 'B', o.angA);
+    if (o.angB != null) g.angle('B', 'A', 'C', o.angB);
+    const L = o.lab || {};
+    if (L.opp != null) g.side('B', 'C', L.opp);
+    if (L.adj != null) g.side('A', 'C', L.adj);
+    if (L.hyp != null) g.side('A', 'B', L.hyp);
+    if (o.names) ['A', 'B', 'C'].forEach((k) => g.vert(k, o.names[k]));
+  }, { label: o.label || 'Right triangle', W: o.W, H: o.H });
+}
+const SU_LETS = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'K'], ['J', 'K', 'L'], ['L', 'M', 'N'], ['P', 'Q', 'R'], ['Q', 'R', 'S'], ['R', 'S', 'T'], ['S', 'T', 'U'], ['U', 'V', 'W'], ['X', 'Y', 'Z'], ['D', 'E', 'G'], ['F', 'G', 'H'], ['K', 'L', 'M']];
+const suOri = (r, tilt) => ({ rot: r.pick([0, 90, 180, 270]) + (tilt ? r.pick([-25, -15, 15, 25]) : 0), flip: r.chance(0.5) });
+
+/* ============ Stand Up Break! — solve the whole triangle ============ */
+const SU_RAT = { sin: ['opp', 'hyp'], cos: ['adj', 'hyp'], tan: ['opp', 'adj'] };
+const suFn = (a, b) => Object.keys(SU_RAT).find((f) => SU_RAT[f].includes(a) && SU_RAT[f].includes(b));
+const suNm = (p, q) => [p, q].sort().join('');
+/* lengths of all three sides from the angle th at A and the hypotenuse h */
+const suSides = (th, h) => ({ opp: h * suTrig.sin(th), adj: h * suTrig.cos(th), hyp: h });
+/* one unknown side (role ur) from the given angle and the given side (role kr, length k): multiply or divide */
+function suFromGiven(th, kr, ur, k, X) {
+  const f = suFn(kr, ur), top = SU_RAT[f][0], v = suTrig[f](th), x = ur === top ? k * v : k / v, F = '\\' + f + ' ' + th + '^\\circ';
+  return { x, line: X + '=' + (ur === top ? suN(k) + F : '\\dfrac{' + suN(k) + '}{' + F + '}') + '=' + suD(x) + '\\approx\\boldsymbol{' + suR(x) + '}' };
+}
+function suLetters(r) { const [A, B, C] = r.shuffle(r.pick(SU_LETS)); return { A, B, C, side: { opp: suNm(B, C), adj: suNm(A, C), hyp: suNm(A, B) } }; }
+const SU_SOLVE = 'Solve the triangle: every missing side to the nearest tenth, every missing angle to the nearest degree.';
+standup('u9l5', {
+  intro: 'Solve the triangle at your whiteboard: all three sides and all three angles, each one worked from the given numbers. Finish with a check.',
+  levels: {
+    BEG: (r) => { // Example 3: one angle and one side
+      const s = suRetry(() => ({ th: r.int(22, 68), kr: r.pick(['opp', 'adj', 'hyp']), k: suDec(r, 6, 40) }), (s) => {
+        const S = suSides(s.th, 1), h = s.k / S[s.kr]; return ['opp', 'adj', 'hyp'].every((x) => suSafe(S[x] * h)); });
+      const N = suLetters(r), h = s.k / suSides(s.th, 1)[s.kr], o = suOri(r, false), lab = {}; lab[s.kr] = suN(s.k);
+      const un = ['opp', 'adj', 'hyp'].filter((x) => x !== s.kr);
+      return { q: '\\text{Solve }\\triangle ' + N.A + N.B + N.C, text: SU_SOLVE,
+        fig: suTri(suRt(s.th, h, o.rot, o.flip), { angA: s.th + '°', lab, names: { A: N.A, B: N.B, C: N.C }, label: 'Right triangle ' + N.A + N.B + N.C + ' with one angle and one side given' }),
+        a: ['\\angle ' + N.B + '=90^\\circ-' + s.th + '^\\circ=\\boldsymbol{' + (90 - s.th) + '^\\circ}'].concat(un.map((ur) => suFromGiven(s.th, s.kr, ur, s.k, N.side[ur]).line)) };
+    },
+    PRG: (r) => { // Example 4: two sides
+      const pair = r.pick([['opp', 'adj'], ['opp', 'hyp'], ['adj', 'hyp']]), third = ['opp', 'adj', 'hyp'].find((x) => !pair.includes(x));
+      const s = suRetry(() => { const th = r.int(2200, 6800) / 100, h = r.int(60, 400) / 10, S = suSides(th, h), g = {}; pair.forEach((x) => { g[x] = Math.round(S[x] * 10) / 10; }); return g; }, (g) => {
+        const L = pair.includes('hyp') ? (g.hyp > (g.opp || g.adj) + 0.5) : true; if (!L) return false;
+        const T = third === 'hyp' ? Math.hypot(g.opp, g.adj) : Math.sqrt(g.hyp * g.hyp - (g.opp || g.adj) ** 2), f = suFn(pair[0], pair[1]), A = suInv[f](g[SU_RAT[f][0]] / g[SU_RAT[f][1]]);
+        g.T = T; g.f = f; g.A = A; return A > 20 && A < 70 && suSafe(T) && suSafe(A, 0) && suSafe(90 - A, 0);
+      });
+      const N = suLetters(r), o = suOri(r, r.chance(0.5)), lab = {}; pair.forEach((x) => { lab[x] = suN(s[x]); });
+      const [a, b] = pair.map((x) => suN(s[x])), Tn = N.side[third], f = s.f, [tp, bt] = SU_RAT[f];
+      const pyth = third === 'hyp' ? Tn + '=\\sqrt{' + a + '^2+' + b + '^2}' : Tn + '=\\sqrt{' + suN(s.hyp) + '^2-' + suN(s.opp || s.adj) + '^2}';
+      return { q: '\\text{Solve }\\triangle ' + N.A + N.B + N.C, text: SU_SOLVE,
+        fig: suTri(suRt(s.A, third === 'hyp' ? s.T : s.hyp, o.rot, o.flip), { lab, names: { A: N.A, B: N.B, C: N.C }, label: 'Right triangle ' + N.A + N.B + N.C + ' with two sides given' }),
+        a: [pyth + '=' + suD(s.T) + '\\approx\\boldsymbol{' + suR(s.T) + '}',
+          '\\' + f + ' ' + N.A + '=\\dfrac{' + suN(s[tp]) + '}{' + suN(s[bt]) + '}\\ \\Rightarrow\\ \\angle ' + N.A + '=' + suD(s.A, 2) + '^\\circ\\approx\\boldsymbol{' + suR(s.A, 0) + '^\\circ}',
+          '\\angle ' + N.B + '=90^\\circ-' + suD(s.A, 2) + '^\\circ\\approx\\boldsymbol{' + suR(90 - s.A, 0) + '^\\circ}'] };
+    },
+    MAS: (r) => { // Example 5: from words to a triangle, then solve it
+      const k = r.int(0, 2);
+      if (k === 0) { // ladder: length and foot distance
+        const s = suRetry(() => { const L = r.int(40, 95) / 10, d = Math.round(L * suTrig.cos(r.int(55, 72)) * 10) / 10; return { L, d, h: Math.sqrt(L * L - d * d), F: suInv.cos(d / L) }; },
+          (s) => suSafe(s.h) && suSafe(s.F, 0) && suSafe(90 - s.F, 0));
+        const sk = suFig({ W: [0, 0], F: [-s.d, 0], T: [0, s.h] }, (g) => { g.poly(['W', 'F', 'T']); g.right('W', 'F', 'T'); g.angle('F', 'W', 'T', 'θ'); g.side('F', 'T', suN(s.L) + ' m'); g.side('F', 'W', suN(s.d) + ' m'); g.side('W', 'T', 'h'); }, { W: 200, H: 170, label: 'Sketch' });
+        return { q: '', text: suA(suN(s.L)) + suN(s.L) + ' m ladder leans against a vertical wall with its foot ' + suN(s.d) + ' m from the wall. Find how high up the wall it reaches, the angle it makes with the ground and the angle it makes with the wall. (Sides to the nearest tenth, angles to the nearest degree.)',
+          atext: sk,
+          a: ['h=\\sqrt{' + suN(s.L) + '^2-' + suN(s.d) + '^2}=' + suD(s.h) + '\\approx\\boldsymbol{' + suR(s.h) + '\\text{ m}}', '\\cos\\theta=\\dfrac{' + suN(s.d) + '}{' + suN(s.L) + '}\\ \\Rightarrow\\ \\theta=' + suD(s.F, 2) + '^\\circ\\approx\\boldsymbol{' + suR(s.F, 0) + '^\\circ}\\text{ (ground)}', '90^\\circ-\\theta\\approx\\boldsymbol{' + suR(90 - s.F, 0) + '^\\circ}\\text{ (wall)}'] };
+      }
+      if (k === 1) { // guy wire: length and angle with the ground
+        const s = suRetry(() => { const w = r.int(8, 30), th = r.int(48, 66); return { w, th, h: w * suTrig.sin(th), d: w * suTrig.cos(th) }; }, (s) => suSafe(s.h) && suSafe(s.d));
+        const sk = suFig({ B: [0, 0], A: [s.d, 0], T: [0, s.h] }, (g) => { g.poly(['B', 'A', 'T']); g.right('B', 'A', 'T'); g.angle('A', 'B', 'T', s.th + '°'); g.side('A', 'T', s.w + ' m'); g.side('B', 'T', 'h'); g.side('B', 'A', 'd'); }, { W: 200, H: 160, label: 'Sketch' });
+        return { q: '', text: 'A guy wire ' + s.w + ' m long runs from the top of a vertical pole to the level ground, making an angle of ' + s.th + '° with the ground. Find the height of the pole, the distance from the base of the pole to the anchor, and the angle between the wire and the pole. (Sides to the nearest tenth, angles to the nearest degree.)',
+          atext: sk + '<br>Work every piece from the given ' + s.w + ' m and ' + s.th + '°.',
+          a: ['h=' + s.w + '\\sin ' + s.th + '^\\circ=' + suD(s.h) + '\\approx\\boldsymbol{' + suR(s.h) + '\\text{ m}},\\quad d=' + s.w + '\\cos ' + s.th + '^\\circ=' + suD(s.d) + '\\approx\\boldsymbol{' + suR(s.d) + '\\text{ m}}', '\\text{angle with the pole}=90^\\circ-' + s.th + '^\\circ=\\boldsymbol{' + (90 - s.th) + '^\\circ}'] };
+      }
+      // an escalator: its length and how high it rises
+      const s = suRetry(() => { const h = r.int(40, 95) / 10, L = Math.round(h / suTrig.sin(r.int(26, 40)) * 10) / 10; return { h, L, d: Math.sqrt(L * L - h * h), A: suInv.sin(h / L) }; }, (s) => suSafe(s.d) && suSafe(s.A, 0) && suSafe(90 - s.A, 0));
+      const sk = suFig({ G: [0, 0], R: [s.d, 0], T: [s.d, s.h] }, (g) => { g.poly(['G', 'R', 'T']); g.right('R', 'G', 'T'); g.angle('G', 'R', 'T', 'θ'); g.side('R', 'T', suN(s.h) + ' m'); g.side('G', 'R', 'd'); g.side('G', 'T', suN(s.L) + ' m'); }, { W: 240, H: 140, label: 'Sketch' });
+      return { q: '', text: 'An escalator ' + suN(s.L) + ' m long rises ' + suN(s.h) + ' m from one floor to the next. Find the horizontal distance it covers, the angle it makes with the floor, and the angle at the top between the escalator and the vertical. (Sides to the nearest tenth, angles to the nearest degree.)',
+        atext: sk,
+        a: ['d=\\sqrt{' + suN(s.L) + '^2-' + suN(s.h) + '^2}=' + suD(s.d) + '\\approx\\boldsymbol{' + suR(s.d) + '\\text{ m}}', '\\sin\\theta=\\dfrac{' + suN(s.h) + '}{' + suN(s.L) + '}\\ \\Rightarrow\\ \\theta=' + suD(s.A, 2) + '^\\circ\\approx\\boldsymbol{' + suR(s.A, 0) + '^\\circ},\\quad 90^\\circ-\\theta\\approx\\boldsymbol{' + suR(90 - s.A, 0) + '^\\circ}'] };
+    }
+  }
+});

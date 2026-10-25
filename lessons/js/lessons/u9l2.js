@@ -10,6 +10,7 @@
  *     images), tan90 (Extension, Example 4(d): opp ÷ a vanishing adj; the graph zooms out ×10 each time),
  *   cofn (Extension, Example 5: the side opposite x is adjacent to 90° − x).
  * Colours: opposite purple, adjacent amber, hypotenuse blue, reference-angle arc red, tangent green. */
+import { standup } from '../standup.js';
 import {
   h, tex, add, box, Graph, ValueTable, mountExplainers, pop, fadeIn, appear, sleep, tween, svgEl, liveCtx, pulse,
   drawIn, anim, arrowHead, rightMark, angleArc, stamp, stampIn, COLORS
@@ -963,3 +964,161 @@ export const _test = { CALC, CMP, COF, scr, sn, cs, tn };
   againBtn.addEventListener('click', () => playPart(part));
   if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); playPart(0); } }, { threshold: 0.4 }); io.observe(svg); } else playPart(0);
 })();
+
+/* ======== Stand Up Break! (u9 helpers + this lesson's questions) ======== */
+/* ---------- Stand Up Break! helpers: figures drawn to scale from the generated numbers, rounding ---------- */
+const SU_C = { ink: '#1c2230', ang: '#c93a33', dim: '#6a7182', sky: '#1f5bd6' };
+const suEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const SU_RAD = Math.PI / 180;
+const suTrig = { sin: (d) => Math.sin(d * SU_RAD), cos: (d) => Math.cos(d * SU_RAD), tan: (d) => Math.tan(d * SU_RAD) };
+const suInv = { sin: (v) => Math.asin(v) / SU_RAD, cos: (v) => Math.acos(v) / SU_RAD, tan: (v) => Math.atan(v) / SU_RAD };
+const suR = (v, dp = 1) => (Math.round(v * Math.pow(10, dp) + 1e-9) / Math.pow(10, dp)).toFixed(dp); // the rounded answer
+const suSafe = (v, dp = 1) => { const k = v * Math.pow(10, dp), f = k - Math.floor(k); return Math.abs(f - 0.5) > 0.08; }; // not near a rounding tie
+const suD = (v, n = 4) => { const k = Math.pow(10, n); return Math.abs(v * k - Math.round(v * k)) < 1e-6 ? String(Math.round(v * k) / k) : (Math.floor(v * k) / k).toFixed(n) + '\\ldots'; }; // calculator digits
+const suN = (v) => String(Number(v.toFixed(2))); // a given number as typed
+const suDec = (r, lo, hi) => (r.chance(0.5) ? r.int(lo, hi) : r.int(lo * 10, hi * 10) / 10); // a whole number or one decimal
+const suA = (n) => (/^(8|11|18)(\.|$)/.test(String(n)) ? 'An ' : 'A '); // "An 8.5 m ladder"
+const suRetry = (make, ok) => { for (let i = 0; i < 200; i++) { const s = make(); if (ok(s)) return s; } return make(); };
+const suAng = (r, lo, hi) => suRetry(() => r.int(lo, hi), (a) => a !== 45); // a whole-degree angle, not 45° (tan 45° = 1 gives a dull key)
+/* suFig(points (world, y up), draw(g), { W, H, label }): scale the points to fit W×H, then draw with
+ *   g.poly(keys), g.seg(a, b, { dash, c, w }), g.right(v, a, b), g.angle(v, a, b, text, { r }), g.side(a, b, text, { away, bold }),
+ *   g.vert(k, text, { away }), g.text(x, y, text), g.near(x, y, u, text); the viewBox grows to hold every label. */
+function suFig(pts, draw, o = {}) {
+  const W = o.W || 330, H = o.H || 200, FS = o.fs || 19;
+  const ks = Object.keys(pts), xs = ks.map((k) => pts[k][0]), ys = ks.map((k) => pts[k][1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const s = Math.min(W / Math.max(x1 - x0, 1e-6), H / Math.max(y1 - y0, 1e-6));
+  const P = (k) => { const p = typeof k === 'string' ? pts[k] : k; return [(p[0] - x0) * s, (y1 - p[1]) * s]; };
+  const shapes = [], labels = [], bb = [1e9, 1e9, -1e9, -1e9], r1 = (v) => Math.round(v * 10) / 10;
+  const grow = (a, b, c, d) => { bb[0] = Math.min(bb[0], a); bb[1] = Math.min(bb[1], b); bb[2] = Math.max(bb[2], c); bb[3] = Math.max(bb[3], d); };
+  const C = (() => { const q = ks.map(P); return [q.reduce((a, p) => a + p[0], 0) / q.length, q.reduce((a, p) => a + p[1], 0) / q.length]; })();
+  const isVar = (t) => /^[a-zθαβ]$/.test(t);
+  const size = (t, opt) => { const fs = (opt.fs || FS) * (isVar(t) ? 1.2 : 1); return [fs, [...String(t)].reduce((w, ch) => w + (/[°.,:]/.test(ch) ? 0.32 : ch === ' ' ? 0.28 : /[mwMW]/.test(ch) ? 0.86 : /[A-Z]/.test(ch) ? 0.7 : 0.57), 0) * fs]; };
+  const unit = (v) => { const L = Math.hypot(v[0], v[1]) || 1; return [v[0] / L, v[1] / L]; };
+  const g = {
+    s, P,
+    text(x, y, t, opt = {}) {
+      const [fs, w] = size(t, opt), it = isVar(t);
+      labels.push(`<text x="${r1(x)}" y="${r1(y)}" text-anchor="middle" dominant-baseline="central" font-size="${r1(fs)}" fill="${opt.c || SU_C.ink}"${it ? ' font-style="italic" font-family="\'Times New Roman\', Times, serif"' : ''}${opt.bold || it ? ' font-weight="700"' : ' font-weight="500"'}${opt.halo ? ' style="paint-order:stroke;stroke:var(--su-soft,#fff);stroke-width:6px;stroke-linejoin:round"' : ''}>${suEsc(t)}</text>`);
+      grow(x - w / 2, y - fs * 0.62, x + w / 2, y + fs * 0.62);
+    },
+    near(x, y, u, t, opt = {}) { // the label's box touches the line through (x, y) across u, a gap away on u's side
+      const [fs, w] = size(t, opt), h = fs * 1.15, gap = opt.gap != null ? opt.gap : 6, d = gap + (Math.abs(u[0]) * w + Math.abs(u[1]) * h) / 2;
+      g.text(x + u[0] * d, y + u[1] * d, t, opt);
+    },
+    seg(a, b, opt = {}) {
+      const A = P(a), B = P(b);
+      shapes.push(`<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" stroke="${opt.c || SU_C.ink}" stroke-width="${opt.w || 2.4}" stroke-linecap="round"${opt.dash ? ' stroke-dasharray="7 6"' : ''}/>`);
+      grow(Math.min(A[0], B[0]), Math.min(A[1], B[1]), Math.max(A[0], B[0]), Math.max(A[1], B[1]));
+    },
+    poly(keys, opt = {}) {
+      const Q = keys.map(P); Q.forEach((p) => grow(p[0], p[1], p[0], p[1]));
+      shapes.push(`<polygon points="${Q.map((p) => r1(p[0]) + ',' + r1(p[1])).join(' ')}" fill="${opt.fill || 'none'}" stroke="${opt.c || SU_C.ink}" stroke-width="${opt.w || 2.4}" stroke-linejoin="round"/>`);
+    },
+    right(v, a, b, z = 13) {
+      const V = P(v), ua = unit([P(a)[0] - V[0], P(a)[1] - V[1]]), ub = unit([P(b)[0] - V[0], P(b)[1] - V[1]]);
+      shapes.push(`<path d="M${r1(V[0] + ua[0] * z)} ${r1(V[1] + ua[1] * z)}L${r1(V[0] + (ua[0] + ub[0]) * z)} ${r1(V[1] + (ua[1] + ub[1]) * z)}L${r1(V[0] + ub[0] * z)} ${r1(V[1] + ub[1] * z)}" fill="none" stroke="${SU_C.ink}" stroke-width="1.7"/>`);
+    },
+    angle(v, a, b, t, opt = {}) { // arc inside angle a-v-b; the label on its bisector (or opt.mid of the way round), past the arc, clear of both arms if it can be
+      const V = P(v), A = P(a), B = P(b), t1 = Math.atan2(A[1] - V[1], A[0] - V[0]);
+      let d = Math.atan2(B[1] - V[1], B[0] - V[0]) - t1; while (d > Math.PI) d -= 2 * Math.PI; while (d <= -Math.PI) d += 2 * Math.PI;
+      const e = t1 + d, m = t1 + d * (opt.mid || 0.5), c = opt.c || SU_C.ang, cm = Math.abs(Math.cos(m)), sm = Math.abs(Math.sin(m));
+      let r = opt.r || (Math.abs(d) < 0.75 ? 34 : 26), dist = 0, halo = false;
+      if (t) {
+        const [fs, w] = size(t, opt), h = fs * 1.15, along = (cm * w + sm * h) / 2, need = ((sm * w + cm * h) / 2 + 3) / Math.sin(Math.abs(d) * Math.min(opt.mid || 0.5, 1 - (opt.mid || 0.5)));
+        if (need <= r + 3 + along) dist = r + 3 + along;
+        else { r = Math.min(64, Math.max(r, need - along - 3)); dist = Math.min(need, r + 3 + along); halo = dist < need - 1; }
+      }
+      shapes.push(`<path d="M${r1(V[0] + r * Math.cos(t1))} ${r1(V[1] + r * Math.sin(t1))}A${r1(r)} ${r1(r)} 0 0 ${d > 0 ? 1 : 0} ${r1(V[0] + r * Math.cos(e))} ${r1(V[1] + r * Math.sin(e))}" fill="none" stroke="${c}" stroke-width="2.2"/>`);
+      grow(V[0] + r * Math.cos(m) - 2, V[1] + r * Math.sin(m) - 2, V[0] + r * Math.cos(m) + 2, V[1] + r * Math.sin(m) + 2);
+      if (t) g.text(V[0] + dist * Math.cos(m), V[1] + dist * Math.sin(m), t, { c, halo, ...opt });
+    },
+    side(a, b, t, opt = {}) { // label beside side ab, on the side away from opt.away (a point; default: the middle of the figure)
+      const A = P(a), B = P(b), M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], F = opt.away != null ? P(opt.away) : C;
+      let n = unit([-(B[1] - A[1]), B[0] - A[0]]); if ((M[0] - F[0]) * n[0] + (M[1] - F[1]) * n[1] < 0) n = [-n[0], -n[1]];
+      if (opt.inside) n = [-n[0], -n[1]];
+      g.near(M[0], M[1], n, t, opt);
+    },
+    vert(k, t, opt = {}) { const V = P(k), F = opt.away != null ? P(opt.away) : C; g.near(V[0], V[1], unit([V[0] - F[0], V[1] - F[1]]), t, { gap: 5, bold: true, ...opt }); },
+    raw(svg, box) { shapes.push(svg); if (box) grow(...box); }
+  };
+  draw(g);
+  const m = 4, vx = bb[0] - m, vy = bb[1] - m, vw = bb[2] - bb[0] + 2 * m, vh = bb[3] - bb[1] + 2 * m;
+  return `<svg viewBox="${r1(vx)} ${r1(vy)} ${r1(vw)} ${r1(vh)}" width="${Math.round(vw)}" height="${Math.round(vh)}" style="max-width:100%;height:auto" role="img" aria-label="${suEsc(o.label || 'Diagram')}">${shapes.join('')}${labels.join('')}</svg>`;
+}
+/* a right triangle to scale: angle th (degrees) at A, hypotenuse h, right angle at C; turned by rot degrees, mirrored by flip */
+function suRt(th, h, rot = 0, flip = false) {
+  const raw = { A: [0, 0], C: [h * suTrig.cos(th), 0], B: [h * suTrig.cos(th), h * suTrig.sin(th)] }, c = Math.cos(rot * SU_RAD), s = Math.sin(rot * SU_RAD), out = {};
+  for (const k in raw) { let [x, y] = raw[k]; if (flip) x = -x; out[k] = [x * c - y * s, x * s + y * c]; }
+  return out;
+}
+/* draw it: o = { names: { A, B, C } letters, lab: { opp, adj, hyp } texts, angA, angB texts (null = no arc), label } */
+function suTri(T, o = {}) {
+  return suFig(T, (g) => {
+    g.poly(['A', 'B', 'C']); g.right('C', 'A', 'B');
+    if (o.angA != null) g.angle('A', 'C', 'B', o.angA);
+    if (o.angB != null) g.angle('B', 'A', 'C', o.angB);
+    const L = o.lab || {};
+    if (L.opp != null) g.side('B', 'C', L.opp);
+    if (L.adj != null) g.side('A', 'C', L.adj);
+    if (L.hyp != null) g.side('A', 'B', L.hyp);
+    if (o.names) ['A', 'B', 'C'].forEach((k) => g.vert(k, o.names[k]));
+  }, { label: o.label || 'Right triangle', W: o.W, H: o.H });
+}
+const SU_LETS = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'K'], ['J', 'K', 'L'], ['L', 'M', 'N'], ['P', 'Q', 'R'], ['Q', 'R', 'S'], ['R', 'S', 'T'], ['S', 'T', 'U'], ['U', 'V', 'W'], ['X', 'Y', 'Z'], ['D', 'E', 'G'], ['F', 'G', 'H'], ['K', 'L', 'M']];
+const suOri = (r, tilt) => ({ rot: r.pick([0, 90, 180, 270]) + (tilt ? r.pick([-25, -15, 15, 25]) : 0), flip: r.chance(0.5) });
+
+/* ============ Stand Up Break! — calculator values, and comparing ratios by reasoning ============ */
+const suDeg = (a) => a + '^\\circ';
+const suV4 = (f, a) => suR(suTrig[f](a), 4);
+const SU_OR = '\\quad\\text{or}\\quad';
+const SU_WHY = {
+  sin: 'With the hypotenuse fixed, a larger angle has a longer <b>opposite</b> side, so the sine grows as the angle grows.',
+  cos: 'With the hypotenuse fixed, a larger angle has a shorter <b>adjacent</b> side, so the cosine shrinks as the angle grows.',
+  tan: 'As the angle grows the opposite side grows and the adjacent side shrinks, so tan = opp/adj grows.'
+};
+standup('u9l2', {
+  intro: 'Calculator in DEG mode for the values; for the comparisons, reason with SOH CAH TOA first and only then check on the calculator.',
+  levels: {
+    BEG: (r) => { // Example 1: the three values, and the side ratio each one is
+      const a = suRetry(() => r.int(10, 80), (a) => a !== 45 && ['sin', 'cos', 'tan'].every((f) => suSafe(suTrig[f](a), 4)));
+      const L = r.shuffle(r.pick(SU_LETS)), [O, B, A] = L, nm = (p, q) => p + q;
+      const opp = nm(A, B), adj = nm(O, A), hyp = nm(O, B);
+      return { text: 'Evaluate each ratio to four decimal places. Then write each one as a ratio of two sides of △<i>' + O + A + B + '</i>.',
+        q: '\\sin ' + suDeg(a) + ',\\quad\\cos ' + suDeg(a) + ',\\quad\\tan ' + suDeg(a),
+        fig: suTri(suRt(a, 10, 0, r.chance(0.5)), { angA: a + '°', names: { A: O, B, C: A }, label: 'Right triangle ' + O + A + B + ' with the right angle at ' + A + ' and ' + a + '° at ' + O }),
+        a: ['\\sin ' + suDeg(a) + '=\\dfrac{' + opp + '}{' + hyp + '}\\approx\\boldsymbol{' + suV4('sin', a) + '}', '\\cos ' + suDeg(a) + '=\\dfrac{' + adj + '}{' + hyp + '}\\approx\\boldsymbol{' + suV4('cos', a) + '}', '\\tan ' + suDeg(a) + '=\\dfrac{' + opp + '}{' + adj + '}\\approx\\boldsymbol{' + suV4('tan', a) + '}'] };
+    },
+    PRG: (r) => { // Example 3 (a)–(c): the same ratio at two angles
+      const f = r.pick(['sin', 'cos', 'tan']), [a, b] = suRetry(() => [r.int(5, 85), r.int(5, 85)], ([a, b]) => Math.abs(a - b) >= 8), lo = Math.min(a, b), hi = Math.max(a, b);
+      const big = f === 'cos' ? lo : hi, small = f === 'cos' ? hi : lo, F = (x) => '\\' + f + ' ' + suDeg(x);
+      return { text: 'Without a calculator, which is greater? Justify with SOH CAH TOA, then check on your calculator.', q: F(a) + SU_OR + F(b),
+        atext: SU_WHY[f] + ' So <b>' + f + ' ' + big + '°</b> is greater.', a: F(big) + '\\approx ' + suV4(f, big) + '\\ >\\ ' + F(small) + '\\approx ' + suV4(f, small) };
+    },
+    MAS: (r) => { // Example 3 (d) and the 45° benchmark: different ratios
+      const k = r.int(0, 3);
+      if (k === 0) { // sine vs tangent of one angle
+        const a = r.int(10, 80), S = '\\sin ' + suDeg(a), T = '\\tan ' + suDeg(a), sw = r.chance(0.5);
+        return { text: 'Without a calculator, which is greater? Justify with SOH CAH TOA, then check.', q: sw ? T + SU_OR + S : S + SU_OR + T,
+          atext: 'Both have the <b>opposite</b> side on top. Sine divides by the hypotenuse, tangent by the adjacent side, which is shorter. A smaller denominator makes a bigger ratio, so <b>tan ' + a + '°</b> is greater.',
+          a: T + '\\approx ' + suV4('tan', a) + '\\ >\\ ' + S + '\\approx ' + suV4('sin', a) };
+      }
+      if (k === 1) { // sine vs cosine: the 45° benchmark
+        const a = suRetry(() => r.int(10, 80), (a) => Math.abs(a - 45) >= 5), S = '\\sin ' + suDeg(a), C = '\\cos ' + suDeg(a), up = a > 45;
+        return { text: 'Without a calculator, which is greater? Justify with the 45° benchmark, then check.', q: r.chance(0.5) ? S + SU_OR + C : C + SU_OR + S,
+          atext: 'At 45° the legs are equal. ' + (up ? 'Above 45° the <b>opposite</b> leg is the longer one' : 'Below 45° the <b>adjacent</b> leg is the longer one') + ', and both ratios divide by the same hypotenuse, so <b>' + (up ? 'sin' : 'cos') + ' ' + a + '°</b> is greater.',
+          a: up ? S + '\\approx ' + suV4('sin', a) + '\\ >\\ ' + C + '\\approx ' + suV4('cos', a) : C + '\\approx ' + suV4('cos', a) + '\\ >\\ ' + S + '\\approx ' + suV4('sin', a) };
+      }
+      const a = r.int(50, 80), S = '\\sin ' + suDeg(a), C = '\\cos ' + suDeg(a), T = '\\tan ' + suDeg(a);
+      if (k === 2) { // cosine vs tangent above 45°
+        return { text: 'Without a calculator, which is greater? Justify with SOH CAH TOA, then check.', q: r.chance(0.5) ? C + SU_OR + T : T + SU_OR + C,
+          atext: 'Above 45° the opposite leg is longer than the adjacent leg, so tan ' + a + '° = opp/adj is <b>more than 1</b>. A cosine is adj/hyp, always <b>less than 1</b>. So <b>tan ' + a + '°</b> is greater.',
+          a: T + '\\approx ' + suV4('tan', a) + '\\ >\\ 1\\ >\\ ' + C + '\\approx ' + suV4('cos', a) };
+      }
+      const order = r.shuffle([S, C, T]);
+      return { text: 'Without a calculator, put these in order from least to greatest. Justify with SOH CAH TOA, then check.', q: order.join(',\\quad '),
+        atext: 'Above 45° the opposite leg is longer than the adjacent leg: sin (opp/hyp) beats cos (adj/hyp), and tan (opp/adj) is more than 1 while both of the others are less than 1.',
+        a: C + '<' + S + '<' + T + '\\qquad(' + suV4('cos', a) + '<' + suV4('sin', a) + '<' + suV4('tan', a) + ')' };
+    }
+  }
+});

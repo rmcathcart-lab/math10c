@@ -14,6 +14,7 @@
  *   ferry (Extension, Example 5), twoLegs (Extension, Example 6: components at every turning point, add or subtract,
  *   Pythagoras and the bearing).
  * Colours (whole unit): opposite purple, adjacent amber, hypotenuse blue, reference angle pink-red, eye height green. */
+import { standup } from '../standup.js';
 import {
   h, tex, add, box, Box, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween, svgEl, arrowHead, rightMark,
   pulse, anim, drawIn
@@ -1007,3 +1008,169 @@ export const _test = { TC, EL, TE, CL, TG, FY, TL, refOf };
     io.observe(svg);
   } else play();
 })();
+
+/* ======== Stand Up Break! (u9 helpers + this lesson's questions) ======== */
+/* ---------- Stand Up Break! helpers: figures drawn to scale from the generated numbers, rounding ---------- */
+const SU_C = { ink: '#1c2230', ang: '#c93a33', dim: '#6a7182', sky: '#1f5bd6' };
+const suEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const SU_RAD = Math.PI / 180;
+const suTrig = { sin: (d) => Math.sin(d * SU_RAD), cos: (d) => Math.cos(d * SU_RAD), tan: (d) => Math.tan(d * SU_RAD) };
+const suInv = { sin: (v) => Math.asin(v) / SU_RAD, cos: (v) => Math.acos(v) / SU_RAD, tan: (v) => Math.atan(v) / SU_RAD };
+const suR = (v, dp = 1) => (Math.round(v * Math.pow(10, dp) + 1e-9) / Math.pow(10, dp)).toFixed(dp); // the rounded answer
+const suSafe = (v, dp = 1) => { const k = v * Math.pow(10, dp), f = k - Math.floor(k); return Math.abs(f - 0.5) > 0.08; }; // not near a rounding tie
+const suD = (v, n = 4) => { const k = Math.pow(10, n); return Math.abs(v * k - Math.round(v * k)) < 1e-6 ? String(Math.round(v * k) / k) : (Math.floor(v * k) / k).toFixed(n) + '\\ldots'; }; // calculator digits
+const suN = (v) => String(Number(v.toFixed(2))); // a given number as typed
+const suDec = (r, lo, hi) => (r.chance(0.5) ? r.int(lo, hi) : r.int(lo * 10, hi * 10) / 10); // a whole number or one decimal
+const suA = (n) => (/^(8|11|18)(\.|$)/.test(String(n)) ? 'An ' : 'A '); // "An 8.5 m ladder"
+const suRetry = (make, ok) => { for (let i = 0; i < 200; i++) { const s = make(); if (ok(s)) return s; } return make(); };
+const suAng = (r, lo, hi) => suRetry(() => r.int(lo, hi), (a) => a !== 45); // a whole-degree angle, not 45° (tan 45° = 1 gives a dull key)
+/* suFig(points (world, y up), draw(g), { W, H, label }): scale the points to fit W×H, then draw with
+ *   g.poly(keys), g.seg(a, b, { dash, c, w }), g.right(v, a, b), g.angle(v, a, b, text, { r }), g.side(a, b, text, { away, bold }),
+ *   g.vert(k, text, { away }), g.text(x, y, text), g.near(x, y, u, text); the viewBox grows to hold every label. */
+function suFig(pts, draw, o = {}) {
+  const W = o.W || 330, H = o.H || 200, FS = o.fs || 19;
+  const ks = Object.keys(pts), xs = ks.map((k) => pts[k][0]), ys = ks.map((k) => pts[k][1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const s = Math.min(W / Math.max(x1 - x0, 1e-6), H / Math.max(y1 - y0, 1e-6));
+  const P = (k) => { const p = typeof k === 'string' ? pts[k] : k; return [(p[0] - x0) * s, (y1 - p[1]) * s]; };
+  const shapes = [], labels = [], bb = [1e9, 1e9, -1e9, -1e9], r1 = (v) => Math.round(v * 10) / 10;
+  const grow = (a, b, c, d) => { bb[0] = Math.min(bb[0], a); bb[1] = Math.min(bb[1], b); bb[2] = Math.max(bb[2], c); bb[3] = Math.max(bb[3], d); };
+  const C = (() => { const q = ks.map(P); return [q.reduce((a, p) => a + p[0], 0) / q.length, q.reduce((a, p) => a + p[1], 0) / q.length]; })();
+  const isVar = (t) => /^[a-zθαβ]$/.test(t);
+  const size = (t, opt) => { const fs = (opt.fs || FS) * (isVar(t) ? 1.2 : 1); return [fs, [...String(t)].reduce((w, ch) => w + (/[°.,:]/.test(ch) ? 0.32 : ch === ' ' ? 0.28 : /[mwMW]/.test(ch) ? 0.86 : /[A-Z]/.test(ch) ? 0.7 : 0.57), 0) * fs]; };
+  const unit = (v) => { const L = Math.hypot(v[0], v[1]) || 1; return [v[0] / L, v[1] / L]; };
+  const g = {
+    s, P,
+    text(x, y, t, opt = {}) {
+      const [fs, w] = size(t, opt), it = isVar(t);
+      labels.push(`<text x="${r1(x)}" y="${r1(y)}" text-anchor="middle" dominant-baseline="central" font-size="${r1(fs)}" fill="${opt.c || SU_C.ink}"${it ? ' font-style="italic" font-family="\'Times New Roman\', Times, serif"' : ''}${opt.bold || it ? ' font-weight="700"' : ' font-weight="500"'}${opt.halo ? ' style="paint-order:stroke;stroke:var(--su-soft,#fff);stroke-width:6px;stroke-linejoin:round"' : ''}>${suEsc(t)}</text>`);
+      grow(x - w / 2, y - fs * 0.62, x + w / 2, y + fs * 0.62);
+    },
+    near(x, y, u, t, opt = {}) { // the label's box touches the line through (x, y) across u, a gap away on u's side
+      const [fs, w] = size(t, opt), h = fs * 1.15, gap = opt.gap != null ? opt.gap : 6, d = gap + (Math.abs(u[0]) * w + Math.abs(u[1]) * h) / 2;
+      g.text(x + u[0] * d, y + u[1] * d, t, opt);
+    },
+    seg(a, b, opt = {}) {
+      const A = P(a), B = P(b);
+      shapes.push(`<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" stroke="${opt.c || SU_C.ink}" stroke-width="${opt.w || 2.4}" stroke-linecap="round"${opt.dash ? ' stroke-dasharray="7 6"' : ''}/>`);
+      grow(Math.min(A[0], B[0]), Math.min(A[1], B[1]), Math.max(A[0], B[0]), Math.max(A[1], B[1]));
+    },
+    poly(keys, opt = {}) {
+      const Q = keys.map(P); Q.forEach((p) => grow(p[0], p[1], p[0], p[1]));
+      shapes.push(`<polygon points="${Q.map((p) => r1(p[0]) + ',' + r1(p[1])).join(' ')}" fill="${opt.fill || 'none'}" stroke="${opt.c || SU_C.ink}" stroke-width="${opt.w || 2.4}" stroke-linejoin="round"/>`);
+    },
+    right(v, a, b, z = 13) {
+      const V = P(v), ua = unit([P(a)[0] - V[0], P(a)[1] - V[1]]), ub = unit([P(b)[0] - V[0], P(b)[1] - V[1]]);
+      shapes.push(`<path d="M${r1(V[0] + ua[0] * z)} ${r1(V[1] + ua[1] * z)}L${r1(V[0] + (ua[0] + ub[0]) * z)} ${r1(V[1] + (ua[1] + ub[1]) * z)}L${r1(V[0] + ub[0] * z)} ${r1(V[1] + ub[1] * z)}" fill="none" stroke="${SU_C.ink}" stroke-width="1.7"/>`);
+    },
+    angle(v, a, b, t, opt = {}) { // arc inside angle a-v-b; the label on its bisector (or opt.mid of the way round), past the arc, clear of both arms if it can be
+      const V = P(v), A = P(a), B = P(b), t1 = Math.atan2(A[1] - V[1], A[0] - V[0]);
+      let d = Math.atan2(B[1] - V[1], B[0] - V[0]) - t1; while (d > Math.PI) d -= 2 * Math.PI; while (d <= -Math.PI) d += 2 * Math.PI;
+      const e = t1 + d, m = t1 + d * (opt.mid || 0.5), c = opt.c || SU_C.ang, cm = Math.abs(Math.cos(m)), sm = Math.abs(Math.sin(m));
+      let r = opt.r || (Math.abs(d) < 0.75 ? 34 : 26), dist = 0, halo = false;
+      if (t) {
+        const [fs, w] = size(t, opt), h = fs * 1.15, along = (cm * w + sm * h) / 2, need = ((sm * w + cm * h) / 2 + 3) / Math.sin(Math.abs(d) * Math.min(opt.mid || 0.5, 1 - (opt.mid || 0.5)));
+        if (need <= r + 3 + along) dist = r + 3 + along;
+        else { r = Math.min(64, Math.max(r, need - along - 3)); dist = Math.min(need, r + 3 + along); halo = dist < need - 1; }
+      }
+      shapes.push(`<path d="M${r1(V[0] + r * Math.cos(t1))} ${r1(V[1] + r * Math.sin(t1))}A${r1(r)} ${r1(r)} 0 0 ${d > 0 ? 1 : 0} ${r1(V[0] + r * Math.cos(e))} ${r1(V[1] + r * Math.sin(e))}" fill="none" stroke="${c}" stroke-width="2.2"/>`);
+      grow(V[0] + r * Math.cos(m) - 2, V[1] + r * Math.sin(m) - 2, V[0] + r * Math.cos(m) + 2, V[1] + r * Math.sin(m) + 2);
+      if (t) g.text(V[0] + dist * Math.cos(m), V[1] + dist * Math.sin(m), t, { c, halo, ...opt });
+    },
+    side(a, b, t, opt = {}) { // label beside side ab, on the side away from opt.away (a point; default: the middle of the figure)
+      const A = P(a), B = P(b), M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], F = opt.away != null ? P(opt.away) : C;
+      let n = unit([-(B[1] - A[1]), B[0] - A[0]]); if ((M[0] - F[0]) * n[0] + (M[1] - F[1]) * n[1] < 0) n = [-n[0], -n[1]];
+      if (opt.inside) n = [-n[0], -n[1]];
+      g.near(M[0], M[1], n, t, opt);
+    },
+    vert(k, t, opt = {}) { const V = P(k), F = opt.away != null ? P(opt.away) : C; g.near(V[0], V[1], unit([V[0] - F[0], V[1] - F[1]]), t, { gap: 5, bold: true, ...opt }); },
+    raw(svg, box) { shapes.push(svg); if (box) grow(...box); }
+  };
+  draw(g);
+  const m = 4, vx = bb[0] - m, vy = bb[1] - m, vw = bb[2] - bb[0] + 2 * m, vh = bb[3] - bb[1] + 2 * m;
+  return `<svg viewBox="${r1(vx)} ${r1(vy)} ${r1(vw)} ${r1(vh)}" width="${Math.round(vw)}" height="${Math.round(vh)}" style="max-width:100%;height:auto" role="img" aria-label="${suEsc(o.label || 'Diagram')}">${shapes.join('')}${labels.join('')}</svg>`;
+}
+/* a right triangle to scale: angle th (degrees) at A, hypotenuse h, right angle at C; turned by rot degrees, mirrored by flip */
+function suRt(th, h, rot = 0, flip = false) {
+  const raw = { A: [0, 0], C: [h * suTrig.cos(th), 0], B: [h * suTrig.cos(th), h * suTrig.sin(th)] }, c = Math.cos(rot * SU_RAD), s = Math.sin(rot * SU_RAD), out = {};
+  for (const k in raw) { let [x, y] = raw[k]; if (flip) x = -x; out[k] = [x * c - y * s, x * s + y * c]; }
+  return out;
+}
+/* draw it: o = { names: { A, B, C } letters, lab: { opp, adj, hyp } texts, angA, angB texts (null = no arc), label } */
+function suTri(T, o = {}) {
+  return suFig(T, (g) => {
+    g.poly(['A', 'B', 'C']); g.right('C', 'A', 'B');
+    if (o.angA != null) g.angle('A', 'C', 'B', o.angA);
+    if (o.angB != null) g.angle('B', 'A', 'C', o.angB);
+    const L = o.lab || {};
+    if (L.opp != null) g.side('B', 'C', L.opp);
+    if (L.adj != null) g.side('A', 'C', L.adj);
+    if (L.hyp != null) g.side('A', 'B', L.hyp);
+    if (o.names) ['A', 'B', 'C'].forEach((k) => g.vert(k, o.names[k]));
+  }, { label: o.label || 'Right triangle', W: o.W, H: o.H });
+}
+const SU_LETS = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'K'], ['J', 'K', 'L'], ['L', 'M', 'N'], ['P', 'Q', 'R'], ['Q', 'R', 'S'], ['R', 'S', 'T'], ['S', 'T', 'U'], ['U', 'V', 'W'], ['X', 'Y', 'Z'], ['D', 'E', 'G'], ['F', 'G', 'H'], ['K', 'L', 'M']];
+const suOri = (r, tilt) => ({ rot: r.pick([0, 90, 180, 270]) + (tilt ? r.pick([-25, -15, 15, 25]) : 0), flip: r.chance(0.5) });
+
+/* ============ Stand Up Break! — the triangle starts at eye level ============ */
+const SU_WALL = '#eceef2';
+/* the scene to scale: an observer (eyes e above the ground) d from a building of height H.
+ *   o.ang: the angle label at the eyes (null: no arc); o.hLab: label for the building's height; o.top: [y, text] a
+ *   dimension on the right of the building from height y up to the top; o.foot: also draw the line of sight from the
+ *   observer's feet to the top, with this angle label; o.at: the height of the point sighted (default: the top) */
+function suScene(d, e, H, o = {}) {
+  const w = Math.max(d, H) * (o.thin ? 0.03 : 0.14), pad = Math.max(d, H) * 0.06;
+  const pts = { G0: [-pad, 0], P: [0, 0], E: [0, e], B: [d, 0], M: [d, e], T: [d, H], S: [d, o.at != null ? o.at : H], R: [d + w, 0], RT: [d + w, H], G1: [d + w + pad, 0] };
+  if (o.top) { pts.D0 = [d + w + pad * 0.5, o.top[0]]; pts.D1 = [d + w + pad * 0.5, H]; pts.D2 = [d + w + pad * 0.2, o.top[0]]; pts.D3 = [d + w + pad * 0.8, o.top[0]]; pts.D4 = [d + w + pad * 0.2, H]; pts.D5 = [d + w + pad * 0.8, H]; }
+  return suFig(pts, (g) => {
+    g.seg('G0', 'G1', { w: 2 });
+    g.poly(['B', 'T', 'RT', 'R'], { fill: SU_WALL, w: 2 });
+    g.seg('P', 'E', { w: 4, c: '#3a4254' });
+    const Ee = g.P('E'); g.raw(`<circle cx="${Math.round(Ee[0] * 10) / 10}" cy="${Math.round(Ee[1] * 10) / 10}" r="4.5" fill="#3a4254"/>`, [Ee[0] - 5, Ee[1] - 5, Ee[0] + 5, Ee[1] + 5]);
+    g.seg('E', 'M', { dash: true, c: SU_C.dim, w: 1.8 });
+    g.seg('E', 'S', { w: 2.2, c: SU_C.sky });
+    if (o.at != null) { const Q = g.P('S'); g.raw(`<circle cx="${Math.round(Q[0] * 10) / 10}" cy="${Math.round(Q[1] * 10) / 10}" r="4.5" fill="#3a4254"/>`); }
+    g.right('M', 'E', 'S', 11);
+    if (o.ang != null) g.angle('E', 'M', 'S', o.ang);
+    if (o.foot != null) { g.seg('P', 'T', { w: 1.8, c: SU_C.sky, dash: true }); g.angle('P', 'B', 'T', o.foot, { r: 40 }); }
+    g.side('P', 'B', suN(d) + ' ' + (o.u || 'm'), { away: 'T' });
+    g.side('P', 'E', suN(e) + ' ' + (o.u || 'm'), { away: 'B', gap: 12 });
+    if (o.hLab) g.side('R', 'RT', o.hLab, { away: 'P' });
+    if (o.top) { g.seg('D0', 'D1', { w: 1.6, c: SU_C.dim }); g.seg('D2', 'D3', { w: 1.6, c: SU_C.dim }); g.seg('D4', 'D5', { w: 1.6, c: SU_C.dim }); g.side('D0', 'D1', o.top[1], { away: 'P' }); }
+  }, { W: 330, H: 210, label: o.label || 'An observer looking up at the top of a building' });
+}
+const suT = (x, u) => '\\boldsymbol{' + suR(x) + '\\text{ ' + u + '}}';
+standup('u9l6', {
+  intro: 'Draw the horizontal through the eyes first. The trig gives the rise above eye level; add the eye height back at the end.',
+  levels: {
+    BEG: (r) => { // the height of a building from eye level
+      const s = suRetry(() => { const e = r.int(14, 19) / 10, d = r.int(12, 60), th = r.int(20, 55); return { e, d, th, rise: d * suTrig.tan(th) }; }, (s) => suSafe(s.e + s.rise) && s.rise > 6);
+      const who = r.pick(['Priya', 'Malik', 'Ana', 'Jordan', 'Kiran', 'Sam']), obj = r.pick(['a building', 'an apartment building', 'an office tower', 'a hotel']);
+      return { q: '', text: who + '’s eyes are ' + suN(s.e) + ' m above the ground. From ' + s.d + ' m away, the angle of elevation from eye level to the top of ' + obj + ' is ' + s.th + '°. How tall is it, to the nearest tenth of a metre?',
+        fig: suScene(s.d, s.e, s.e + s.rise, { ang: s.th + '°', hLab: 'h' }),
+        a: ['\\text{rise}=' + s.d + '\\tan ' + s.th + '^\\circ=' + suD(s.rise), 'h=' + suN(s.e) + '+' + suD(s.rise) + '\\approx' + suT(s.e + s.rise, 'm')] };
+    },
+    PRG: (r) => {
+      if (r.chance(0.5)) { // Example 2: eye level at both ends of the line of sight
+        const s = suRetry(() => { const e = r.int(48, 62) / 10, d = r.int(14, 40), th = r.int(35, 62), f = r.int(30, 55) / 10; return { e, d, th, f, rise: d * suTrig.tan(th) }; }, (s) => suSafe(s.e + s.rise + s.f));
+        const H = s.e + s.rise + s.f;
+        return { q: '', text: 'Malik stands ' + s.d + ' ft from a building and looks up at his friend in a window. The angle of elevation from his eye level to his friend’s eye level is ' + s.th + '°. Malik’s eyes are ' + suN(s.e) + ' ft above the ground, and his friend’s eyes are ' + suN(s.f) + ' ft below the top of the building. How tall is the building, to the nearest tenth of a foot?',
+          fig: suScene(s.d, s.e, H, { ang: s.th + '°', u: 'ft', at: s.e + s.rise, top: [s.e + s.rise, suN(s.f) + ' ft'], label: 'Malik looking up at his friend near the top of a building' }),
+          a: ['\\text{rise}=' + s.d + '\\tan ' + s.th + '^\\circ=' + suD(s.rise), '\\text{height}=' + suN(s.e) + '+' + suD(s.rise) + '+' + suN(s.f) + '\\approx' + suT(H, 'ft')] };
+      }
+      // Example 3: a clinometer reads from the vertical
+      const s = suRetry(() => { const e = r.int(145, 175) / 100, d = r.int(100, 300) / 10, rd = r.int(40, 70); return { e, d, rd, th: 90 - rd, rise: (d) * suTrig.tan(90 - rd) }; }, (s) => suSafe(s.e + s.rise));
+      return { q: '', text: 'Ana’s eyes are ' + suN(s.e) + ' m above the ground. Standing ' + suN(s.d) + ' m from a flagpole, she sights the top through her clinometer, and the string crosses the protractor at ' + s.rd + '°. Find the angle of elevation, then the height of the flagpole to the nearest tenth of a metre.',
+        fig: suScene(s.d, s.e, s.e + s.rise, { ang: '?', hLab: 'h', thin: true, label: 'Ana sighting the top of a flagpole' }),
+        atext: 'The string hangs straight down, so the reading is measured from the vertical.',
+        a: ['\\theta=90^\\circ-' + s.rd + '^\\circ=' + s.th + '^\\circ', '\\text{rise}=' + suN(s.d) + '\\tan ' + s.th + '^\\circ=' + suD(s.rise) + ',\\quad h=' + suN(s.e) + '+' + suD(s.rise) + '\\approx' + suT(s.e + s.rise, 'm')] };
+    },
+    MAS: (r) => { // Example 1: two calculations; (b) uses the unrounded answer to (a)
+      const s = suRetry(() => { const e = r.int(14, 17) / 10, d = r.int(25, 60), th = r.int(15, 35); const H = e + d * suTrig.tan(th); return { e, d, th, H, phi: suInv.tan(H / d) }; },
+        (s) => suSafe(s.H) && suSafe(s.phi, 0) && Math.round(s.phi) !== s.th);
+      return { q: '', text: 'A surveyor’s transit is set up ' + s.d + ' m from a pole; its eyepiece is ' + suN(s.e) + ' m above the ground. The angle of elevation from the eyepiece to the top of the pole is ' + s.th + '°. (a) Find the height of the pole to the nearest tenth of a metre. (b) Find the angle of elevation of the top of the pole from the <b>base</b> of the transit, at ground level, to the nearest degree.',
+        fig: suScene(s.d, s.e, s.H, { ang: s.th + '°', hLab: 'h', thin: true, label: 'A transit sighting the top of a pole from its eyepiece' }),
+        a: ['(a)\\ \\ h=' + suN(s.e) + '+' + s.d + '\\tan ' + s.th + '^\\circ=' + suD(s.H) + '\\approx' + suT(s.H, 'm'), '(b)\\ \\ \\tan\\phi=\\dfrac{' + suD(s.H) + '}{' + s.d + '}\\ \\Rightarrow\\ \\phi=' + suD(s.phi, 2) + '^\\circ\\approx\\boldsymbol{' + suR(s.phi, 0) + '^\\circ}'] };
+    }
+  }
+});
