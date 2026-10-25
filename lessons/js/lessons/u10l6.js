@@ -16,6 +16,7 @@ import {
   h, tex, fmt, add, box, Box, NumberLine, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   svgEl, place, pulse, arrowHead, rightMark, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const AMB = COLORS.amber, PUR = COLORS.purple, BLUE = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, TEAL = COLORS.teal, INK = COLORS.ink, GRAY = '#8b909b';
@@ -1110,3 +1111,197 @@ function mountStatic() {
 mountStatic();
 export const explainers = mountExplainers({ fill, whichWay, ladder, sizeUp, micro, ratioMap, applied, wrench, morph, coneSphere, backwards, tank });
 export const _test = { geom, tN };
+
+/* ============ Stand Up Break! — Unit 10 review mix (conversions, referents, the micrometer, map scales, applied problems, SA formulas) ============ */
+(() => {
+  /* ---- numbers ---- */
+  const N = (v, d) => { // LaTeX number: d decimals (or trimmed), thin spaces in an integer part of 5+ digits
+    let [i, f] = (d != null ? v.toFixed(d) : (Math.round(v * 1e8) / 1e8).toFixed(8).replace(/\.?0+$/, '')).split('.');
+    if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+    return i + (f != null ? '.' + f : '');
+  };
+  const H = (v, d) => N(v, d).replace(/\\,/g, ' ');                                  // the same, for HTML text
+  const bord = (x, d) => { const f = x * 10 ** d; return Math.abs(f - Math.floor(f) - 0.5) < 0.06; }; // too near a rounding edge
+  const dots = (v, d) => N(Math.floor(v * 10 ** d + 1e-7) / 10 ** d, d) + '\\ldots';          // a calculator display, cut off
+  const isEx = (v, d) => Math.abs(v * 10 ** d - Math.round(v * 10 ** d)) < 1e-7;               // exact at d places?
+  const rd = (v, d) => (isEx(v, d) ? '=' + N(v) : '=' + dots(v, d + 2) + '\\approx ' + N(v, d)); // "= exact" or "= 12.345… ≈ 12.3"
+  const U = (u) => '\\text{ ' + u + '}';
+  const PL = { 0: 'the nearest whole number', 1: 'the nearest tenth', 2: 'the nearest hundredth' };
+  /* ---- figures: small SVG strings drawn from the generated numbers ---- */
+  const INK = '#2b3340', DIMC = '#1f5aa8', FACE = '#e6f2ef', TOP = '#cfe7e1', SIDE = '#b9ddd5';
+  const P2 = (p) => p[0].toFixed(1) + ',' + p[1].toFixed(1);
+  const svg = (W, Hh, body, aria) => `<svg viewBox="0 0 ${W.toFixed(0)} ${Hh.toFixed(0)}" width="${(1.4 * W).toFixed(0)}" height="${(1.4 * Hh).toFixed(0)}" role="img" aria-label="${aria}" style="font-family:inherit">${body}</svg>`;
+  const seg = (a, b, dash) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${INK}" stroke-width="2"${dash ? ' stroke-dasharray="6 5"' : ''} stroke-linecap="round"/>`;
+  const poly = (pts, fill) => `<polygon points="${pts.map(P2).join(' ')}" fill="${fill}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+  const lab = (p, s, anchor = 'middle', c = DIMC) => `<text x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}" font-size="18" font-weight="600" fill="${c}" stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke" text-anchor="${anchor}" dominant-baseline="central">${s}</text>`;
+  const add2 = (a, b) => [a[0] + b[0], a[1] + b[1]], mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const fit = (vals, maxes, minPx) => { // pixel lengths ∝ the values, each fitted to its max, none below minPx
+    const k = Math.min(...vals.map((v, i) => maxes[i] / v)); return vals.map((v) => Math.max(minPx, v * k));
+  };
+  const rightMark = (A, u, v, k = 11) => `<polyline points="${P2(add2(A, [u[0] * k, u[1] * k]))} ${P2(add2(A, [u[0] * k + v[0] * k, u[1] * k + v[1] * k]))} ${P2(add2(A, [v[0] * k, v[1] * k]))}" fill="none" stroke="${INK}" stroke-width="1.5"/>`;
+  const ell = (cx, cy, rx, ry, part) => { // part: 'full' | 'front' (lower half) | 'back' (upper half)
+    if (part === 'full') return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+    return `<path d="M${cx - rx} ${cy} A${rx} ${ry} 0 0 ${part === 'front' ? 0 : 1} ${cx + rx} ${cy}" fill="none" stroke="${INK}" stroke-width="2"${part === 'back' ? ' stroke-dasharray="6 5"' : ''}/>`;
+  };
+  /* micrometer (the booklet's \microScale{h}{f}, as in the practice site): sleeve marks every 0.5 mm (halves below the
+     index line), a 50-division thimble; reading 0.5h + 0.01f mm. f ≥ 10 keeps the last sleeve mark clear of the thimble edge. */
+  const micFig = (hh, f) => {
+    const Ln = (x1, y1, x2, y2, o = {}) => `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${o.c || INK}" stroke-width="${o.w || 1}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ''}/>`;
+    const Rc = (x, y, w, h, fill, stroke) => `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" stroke="${stroke}"/>`;
+    const Tx = (x, y, s, o = {}) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${o.size || 16}" text-anchor="${o.anchor || 'middle'}" dominant-baseline="central" fill="${o.c || INK}"${o.weight ? ` font-weight="${o.weight}"` : ''}>${s}</text>`;
+    const k = 50, R0 = 0.5 * hh + 0.01 * f, mlo = Math.max(0, Math.floor(R0 + 1e-9) - 6), mE = (R0 - mlo) * 0.55, RED = '#b3261e';
+    const X = (x) => (x + 0.55) * k, Y = (y) => (1.45 - y) * k, W = X(mE + 3.05) + 4, Hh = Y(-1.35) + 52;
+    let s = Rc(X(-0.45), Y(0.86), X(mE) - X(-0.45), 1.48 * k, '#f2f3f5', '#b9bec6');
+    for (let kk = 2 * mlo; kk <= hh; kk++) {
+      const x = X((kk * 0.5 - mlo) * 0.55);
+      if (kk % 2) s += Ln(x, Y(-0.03), x, Y(-0.26), { w: 1.2 });
+      else if ((kk / 2) % 5 === 0) s += Ln(x, Y(0.03), x, Y(0.48), { w: 1.8 }) + Tx(x, Y(0.48) - 10, String(kk / 2));
+      else s += Ln(x, Y(0.03), x, Y(0.30), { w: 1.2 });
+    }
+    s += Ln(X(-0.38), Y(0), X(mE), Y(0), { w: 1.8 }) + Rc(X(mE), Y(1.35), 2.95 * k, 2.7 * k, '#d3d7dd', '#a3a9b2') + Ln(X(mE), Y(1.35), X(mE), Y(-1.35), { w: 2 });
+    for (let d = -6; d <= 6; d++) {
+      const y = Y(-d * 0.22), v = (((f + d) % 50) + 50) % 50, maj = v % 5 === 0;
+      s += Ln(X(mE + 0.12), y, X(mE + (maj ? 0.72 : 0.5)), y, { w: maj ? 1.6 : 1.1 });
+      if (maj) s += Tx(X(mE + 0.78), y, String(v), { anchor: 'start' });
+    }
+    s += Ln(X(mE + 1.55), Y(0), X(mE + 3.0), Y(0), { c: RED, w: 1.6, dash: '5 4' }) + Tx(X(mE + 2.95), Y(0) - 11, 'index line', { anchor: 'end', size: 14, c: RED });
+    s += Tx(W / 2, Y(-1.35) + 17, 'Sleeve: a mark every 0.5 mm', { weight: 700, size: 15 }) + Tx(W / 2, Y(-1.35) + 38, 'Thimble: 0.01 mm per division', { weight: 700, size: 15 });
+    return `<svg viewBox="0 0 ${Math.ceil(W)} ${Math.ceil(Hh)}" width="${Math.ceil(W * 1.25)}" height="${Math.ceil(Hh * 1.25)}" role="img" aria-label="micrometer sleeve and thimble" style="font-family:inherit">${s}</svg>`;
+  };
+  const lead = (a, b) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${DIMC}" stroke-width="1.3"/><circle cx="${b[0].toFixed(1)}" cy="${b[1].toFixed(1)}" r="2.6" fill="${DIMC}"/>`;
+  const pyrFig = (b, h, L) => { // right square pyramid: side b, height h; labels L.b, L.h (the dashed altitude), L.s (on the front face), each led out to the side
+    const [pb, ph] = fit([b, h], [200, 180], 90), o = [pb * 0.5, -pb * 0.3], x0 = 128, W = x0 + pb + o[0] + 128, Hh = ph - o[1] / 2 + 20 + 40;
+    const A = [x0, Hh - 40], B = [x0 + pb, Hh - 40], C = add2(B, o), D = add2(A, o), O = mid(A, C), M = mid(A, B), Pp = [O[0], O[1] - ph];
+    let s = poly([Pp, A, B], FACE) + poly([Pp, B, C], SIDE) + seg(A, D, 1) + seg(D, C, 1) + seg(Pp, D, 1);
+    if (L.h) { const m = [O[0], O[1] - ph * 0.42]; s += seg(Pp, O, 1) + rightMark(O, [0, -1], [-0.86, 0.5], 9) + lead([C[0] + 14, m[1]], m) + lab([C[0] + 18, m[1]], L.h, 'start'); }
+    if (L.s) { const m = mid(Pp, M); s += `<line x1="${Pp[0]}" y1="${Pp[1]}" x2="${M[0]}" y2="${M[1]}" stroke="${DIMC}" stroke-width="2.4"/>` + lead([x0 - 14, m[1]], m) + lab([x0 - 18, m[1]], L.s, 'end'); }
+    return svg(W, Hh, s + lab([x0 + pb / 2, A[1] + 20], L.b), 'square pyramid');
+  };
+  const coneFig = (r, h, L) => { // right cone: radius r, height h; labels L.r or L.d, L.h (led out to the left), L.s; the base is drawn
+    const [pd, ph] = fit([2 * r, h], [210, 180], 80), rx = pd / 2, ry = Math.max(9, rx * 0.22), cx = 128 + rx, by = 22 + ph, W = cx + rx + 130, Hh = by + ry + 38;
+    const Pp = [cx, by - ph], R = [cx + rx, by], Lf = [cx - rx, by];
+    let s = `<path d="M${Lf[0]} ${by} L${cx} ${Pp[1]} L${R[0]} ${by} A${rx} ${ry} 0 0 1 ${Lf[0]} ${by} Z" fill="${FACE}" stroke="none"/>` +
+      seg(Pp, Lf) + seg(Pp, R) + ell(cx, by, rx, ry, 'front') + ell(cx, by, rx, ry, 'back');
+    if (L.h) { const m = [cx, by - ph * 0.4]; s += seg(Pp, [cx, by], 1) + rightMark([cx, by], [0, -1], [1, 0], 9) + lead([Lf[0] - 16, m[1]], m) + lab([Lf[0] - 20, m[1]], L.h, 'end'); }
+    if (L.r) s += `<line x1="${cx}" y1="${by}" x2="${R[0]}" y2="${by}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx + rx / 2, by + ry + 18], L.r);
+    if (L.d) s += `<line x1="${Lf[0]}" y1="${by}" x2="${R[0]}" y2="${by}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx, by + ry + 18], L.d);
+    if (L.s) s += lab([(cx + R[0]) / 2 + 16, (Pp[1] + by) / 2 - 4], L.s, 'start');
+    return svg(W, Hh, s + `<circle cx="${cx}" cy="${by}" r="3" fill="${INK}"/>`, 'cone');
+  };
+  const sphFig = (L) => { // sphere with its equator; L.r (radius), L.d (diameter) or L.C (the string around the equator)
+    const pr = 92, cx = 40 + pr, cy = 22 + pr, ry = pr * 0.26, W = cx + pr + 40, Hh = cy + pr + (L.C ? 44 : 18);
+    let s = `<circle cx="${cx}" cy="${cy}" r="${pr}" fill="${FACE}" stroke="${INK}" stroke-width="2"/>` + ell(cx, cy, pr, ry, 'back');
+    s += L.C ? `<path d="M${cx - pr} ${cy} A${pr} ${ry} 0 0 0 ${cx + pr} ${cy}" fill="none" stroke="${DIMC}" stroke-width="3.2"/>` + lab([cx, cy + pr + 22], L.C) : ell(cx, cy, pr, ry, 'front');
+    if (L.r) s += `<line x1="${cx}" y1="${cy}" x2="${cx + pr}" y2="${cy}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx + pr / 2, cy - ry - 14], L.r);
+    if (L.d) s += `<line x1="${cx - pr}" y1="${cy}" x2="${cx + pr}" y2="${cy}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx, cy - ry - 14], L.d);
+    return svg(W, Hh, s + `<circle cx="${cx}" cy="${cy}" r="3" fill="${INK}"/>`, 'sphere');
+  };
+  const PI = Math.PI;
+  const sq = (u) => '\\text{ ' + u + '}^{2}', cu = (u) => '\\text{ ' + u + '}^{3}';
+  const dec = (r, lo, hi, p) => r.int(lo * 10 ** p, hi * 10 ** p) / 10 ** p;
+  const FR = (n, d) => { const g = (a, b) => (b ? g(b, a % b) : a), k = g(n, d); return d / k === 1 ? String(n / k) : '\\tfrac{' + n / k + '}{' + d / k + '}'; };
+  const FRH = (n, d) => { const g = (a, b) => (b ? g(b, a % b) : a), k = g(n, d); return d / k === 1 ? String(n / k) : '<sup>' + n / k + '</sup>&frasl;<sub>' + d / k + '</sub>'; };
+
+  /* ---------- Beginning ---------- */
+  const SIU = [['m', 'cm', 'mm', 1000, 10, 1], ['km', 'm', 'm', 1000, 1, 1], ['m', 'mm', 'cm', 100, 0.1, 10], ['cm', 'mm', 'mm', 10, 1, 1]]; // [unit A, unit B, answer unit, A→ans, B→ans]
+  const siDiff = (r) => {
+    const [ua, ub, uc, fa, fb] = r.pick(SIU), A = ua === 'km' ? dec(r, 1.2, 9.8, 2) : ua === 'm' ? dec(r, 0.8, 4.9, 2) : dec(r, 12, 95, 1), Ac = A * fa;
+    const B = ub === 'cm' ? r.int(Math.round(Ac / fb * 0.2), Math.round(Ac / fb * 0.8)) : ub === 'm' ? r.int(Math.round(Ac * 0.2), Math.round(Ac * 0.8)) : r.int(Math.round(Ac / fb * 0.2), Math.round(Ac / fb * 0.8));
+    const Bc = B * fb, D = Ac - Bc;
+    if (B <= 0 || D <= 0 || Number.isInteger(A) && A % 1 === 0 && ua !== 'cm') return null;
+    const what = r.pick([['A banner', 'long', 'tall'], ['A desk', 'long', 'wide'], ['A hiking trail', 'long', 'climbs'], ['A shelf', 'long', 'deep'], ['A poster', 'wide', 'tall']]);
+    return { text: `Find the difference between ${H(A)} ${ua} and ${H(B)} ${ub}, in ${uc === 'mm' ? 'millimetres' : uc === 'cm' ? 'centimetres' : 'metres'}. (Same unit first.)`, q: N(A) + U(ua) + '-' + N(B) + U(ub) + '=\\ ?' + U(uc),
+      a: [N(A) + U(ua) + '=' + N(Ac) + U(uc) + (ub === uc ? '' : ',\\quad ' + N(B) + U(ub) + '=' + N(Bc) + U(uc)), N(Ac) + '-' + N(Bc) + '=' + N(D) + U(uc)] };
+  };
+  const hands = (r) => {
+    const n = r.int(12, 17), q = r.pick([0, 1, 2, 3]), Hd = n + q / 4, inch = 4 * Hd;
+    if (inch % 12 === 0) return null;
+    const ft = Math.floor(inch / 12), ri = inch % 12;
+    return { text: `A horse measures ${n}${q ? ' ' + FRH(q, 4) : ''} hands. A hand is a referent for 4 inches. Find the horse’s height in inches, then in feet and inches.`, q: (q ? n + FR(q, 4) : n) + U('hands') + '=\\ ?' + U('in') + '=\\ ?' + U('ft') + '\\ ?' + U('in'),
+      a: [N(Hd) + '\\times 4=' + inch + U('in'), inch + '\\div 12=' + ft + '\\text{ R }' + ri + '\\ \\Rightarrow\\ ' + ft + U('ft') + '\\ ' + ri + U('in')] };
+  };
+  const approx58 = (r) => {
+    if (r.chance(0.5)) { const km = 8 * r.int(15, 160); return { text: 'Use the approximate conversion 5 mi = 8 km.', q: N(km) + U('km') + '\\approx\\ ?' + U('mi'),
+      a: [N(km) + U('km') + '\\times\\dfrac{5\\text{ mi}}{8\\text{ km}}', '=\\dfrac{' + N(km) + '}{8}\\times 5=' + N(km / 8) + '\\times 5=' + N(km * 5 / 8) + U('mi')] }; }
+    const mi = 5 * r.int(12, 120); return { text: 'Use the approximate conversion 5 mi = 8 km.', q: N(mi) + U('mi') + '\\approx\\ ?' + U('km'),
+      a: [N(mi) + U('mi') + '\\times\\dfrac{8\\text{ km}}{5\\text{ mi}}', '=\\dfrac{' + N(mi) + '}{5}\\times 8=' + N(mi / 5) + '\\times 8=' + N(mi * 8 / 5) + U('km')] };
+  };
+  const sphB = (r) => {
+    const [what, u, lo, hi] = r.pick([['A spherical balloon', 'in', 10, 24], ['A beach ball', 'cm', 40, 60], ['A globe', 'cm', 20, 40], ['A spherical water tank', 'm', 4, 12], ['A gazing ball', 'in', 8, 16]]), d = r.int(lo, hi), R = d / 2, SA = 4 * PI * R * R;
+    if (bord(SA, 0)) return null;
+    return { text: `${what} has a diameter of ${d} ${u}. Find its surface area, to the nearest square ${u === 'in' ? 'inch' : u === 'm' ? 'metre' : 'centimetre'}.`, q: '', fig: sphFig({ d: 'd = ' + d + ' ' + u }),
+      a: ['r=' + d + '\\div 2=' + N(R) + U(u), 'SA=4\\pi r^{2}=4\\pi(' + N(R) + ')^{2}=' + N(4 * R * R) + '\\pi' + rd(SA, 0) + sq(u)] };
+  };
+
+  /* ---------- Progressing ---------- */
+  const micQ = (r) => {
+    const hh = r.int(4, 47), f = r.int(10, 47), R0 = 0.5 * hh + 0.01 * f;
+    return { text: 'Read the micrometer: sleeve (coarse) + thimble (fine), to the instrument’s precision.', q: '', fig: micFig(hh, f),
+      a: ['\\text{sleeve: }' + N(0.5 * hh, 1) + U('mm') + ',\\quad\\text{thimble: }' + f + '\\times 0.01=' + N(0.01 * f, 2) + U('mm'), N(0.5 * hh, 1) + '+' + N(0.01 * f, 2) + '=' + N(R0, 2) + U('mm')] };
+  };
+  const SC = [100000, 200000, 250000, 500000, 1000000, 1500000, 2000000];
+  const mapQ = (r) => {
+    const n = r.pick(SC);
+    if (r.chance(0.5)) { // ground → map
+      const d = r.int(8, 90) / 2, D = d * n / 100000;
+      if (!Number.isInteger(D * 10) || D > 2000) return null;
+      return { text: `The scale on a map is 1&#8202;:&#8202;${H(n)}. Two towns are ${H(D)} km apart. How far apart are they on the map, in centimetres?`, q: '1:' + N(n) + ',\\quad ' + N(D) + U('km') + '\\to\\ ?' + U('cm'),
+        a: [N(D) + U('km') + '=' + N(D * 1000) + U('m') + '=' + N(D * 100000) + U('cm'), '\\dfrac{' + N(D * 100000) + '}{' + N(n) + '}=' + N(d) + U('cm')] };
+    }
+    const d = r.int(15, 300) / 10, D = d * n / 100000;
+    return { text: `The scale on a map is 1&#8202;:&#8202;${H(n)}. Two lakes are ${H(d)} cm apart on the map. How far apart are they in reality, in kilometres?`, q: '1:' + N(n) + ',\\quad ' + N(d) + U('cm') + '\\to\\ ?' + U('km'),
+      a: [N(d) + '\\times ' + N(n) + '=' + N(d * n) + U('cm'), N(d * n) + U('cm') + '\\div 100\\div 1000=' + N(D) + U('km')] };
+  };
+  const TRI = [[8, 15, 17], [6, 8, 10], [5, 12, 13], [9, 12, 15], [12, 16, 20], [7, 24, 25], [3, 4, 5], [12, 5, 13], [15, 8, 17], [20, 15, 25]]; // [r, h, s]
+  const conePi = (r) => {
+    const k = r.pick([1, 1, 2]), [R, h, s] = r.pick(TRI).map((x) => x * k), u = r.pick(['cm', 'cm', 'in', 'm']);
+    if (s > 40) return null;
+    const what = r.pick(['A conical paperweight', 'A solid cone', 'A cone-shaped candle', 'A traffic cone (with its base)', 'A conical roof cap (with its base)']);
+    return { text: `${what} has a base radius of ${R} ${u} and a height of ${h} ${u}. Find its surface area, <b>in terms of π</b>.`, q: '', fig: coneFig(R, h, { r: 'r = ' + R + ' ' + u, h: 'h = ' + h + ' ' + u }),
+      a: ['s=\\sqrt{' + h + '^{2}+' + R + '^{2}}=\\sqrt{' + (h * h + R * R) + '}=' + s + U(u), 'SA=\\pi(' + R + ')^{2}+\\pi(' + R + ')(' + s + ')=' + R * R + '\\pi+' + R * s + '\\pi=' + (R * R + R * s) + '\\pi' + sq(u)] };
+  };
+
+  /* ---------- Mastery ---------- */
+  const tiles = (r) => {
+    const t = r.pick([6, 9, 12, 18, 10.5]), a = r.int(6, 20) / 2, b = r.int(4, 14) / 2, Li = a * 36, Wi = b * 36, nL = Li / t, nW = Wi / t;
+    if (a <= b || !Number.isInteger(nL) || !Number.isInteger(nW)) return null;
+    const yd = (v) => (Number.isInteger(v) ? String(v) : Math.floor(v) + '\\tfrac12'), ydh = (v) => (Number.isInteger(v) ? String(v) : Math.floor(v) + ' <sup>1</sup>&frasl;<sub>2</sub>');
+    const th = Number.isInteger(t) ? String(t) : Math.floor(t) + ' <sup>1</sup>&frasl;<sub>2</sub>';
+    const what = r.pick(['hallway floor', 'kitchen floor', 'patio', 'mudroom floor', 'bathroom floor']);
+    return { text: `A rectangular ${what} is ${ydh(a)} yards long and ${ydh(b)} yards wide. It is covered with square tiles ${th} inches on a side. How many tiles are needed?`, q: yd(a) + U('yd') + '\\times ' + yd(b) + U('yd') + ',\\quad\\text{tiles } ' + yd(t) + U('in') + '\\times ' + yd(t) + U('in'),
+      a: ['1\\text{ yd}=36\\text{ in}:\\quad ' + N(a) + '\\times 36=' + N(Li) + U('in') + ',\\quad ' + N(b) + '\\times 36=' + N(Wi) + U('in'), N(Li) + '\\div ' + N(t) + '=' + nL + ',\\quad ' + N(Wi) + '\\div ' + N(t) + '=' + nW, nL + '\\times ' + nW + '=' + (nL * nW) + U('tiles')] };
+  };
+  const drops = (r) => {
+    const l = r.int(6, 24) * 5, w = r.int(5, 12) * 5, h = r.int(5, 12) * 5, V = l * w * h, Lt = V / 1000, k = r.int(2, 6), per = r.pick([5, 10, 10, 20]), D = Lt / per * k;
+    if (l <= w || !Number.isInteger(D)) return null;
+    return { text: `An aquarium is ${l} cm by ${w} cm by ${h} cm. A fish medicine says to add ${k} drops per ${per} litres of water. How many drops are needed to treat a full aquarium?`, q: l + U('cm') + '\\times ' + w + U('cm') + '\\times ' + h + U('cm') + ',\\quad ' + k + '\\text{ drops per }' + per + U('L'),
+      a: ['V=' + l + '\\times ' + w + '\\times ' + h + '=' + N(V) + cu('cm') + '=' + N(V) + U('mL') + '=' + N(Lt) + U('L'), '\\dfrac{' + N(Lt) + '}{' + per + '}\\times ' + k + '=' + N(Lt / per) + '\\times ' + k + '=' + D + U('drops')] };
+  };
+  const IMPW = [[1, 4], [9, 32], [5, 16], [3, 8], [7, 16], [1, 2], [9, 16], [5, 8], [11, 16], [3, 4], [13, 16], [7, 8]], METW = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22];
+  const wrench = (r) => {
+    const toIn = r.chance(0.5);
+    if (toIn) { // metric bounds → which imperial wrench
+      const i = r.int(1, METW.length - 3), a = METW[i], b = METW[i + 1 + r.int(0, 1)], fits = IMPW.filter(([n, d]) => n / d * 25.4 > a && n / d * 25.4 < b);
+      if (fits.length !== 1) return null;
+      const [fn, fd] = fits[0], j = IMPW.findIndex((x) => x === fits[0]), set = IMPW.slice(Math.max(0, j - 2), j + 3);
+      return { text: `A bolt: the ${a} mm wrench is too small and the ${b} mm wrench is too large. Which imperial wrench should you try: ${set.map(([n, d]) => FRH(n, d) + ' in').join(', ')}? (1 mm = 0.03937 in)`, q: a + U('mm') + '<\\,?\\,<' + b + U('mm'),
+        a: [a + U('mm') + '\\approx ' + N(a * 0.03937, 3) + U('in') + ',\\quad ' + b + U('mm') + '\\approx ' + N(b * 0.03937, 3) + U('in'), set.map(([n, d]) => FR(n, d) + '=' + N(n / d, 3)).join(',\\ '), '\\text{Try the }' + FR(fn, fd) + '\\text{ in wrench.}'] };
+    }
+    const i = r.int(0, IMPW.length - 3), A = IMPW[i], B = IMPW[i + 1 + r.int(0, 1)], av = A[0] / A[1] * 25.4, bv = B[0] / B[1] * 25.4, fits = METW.filter((m) => m > av && m < bv);
+    if (fits.length !== 1) return null;
+    const m = fits[0], j = METW.indexOf(m), set = METW.slice(Math.max(0, j - 2), j + 3);
+    return { text: `A bolt: the ${FRH(A[0], A[1])} in wrench is too small and the ${FRH(B[0], B[1])} in wrench is too large. Which metric wrench should you try: ${set.join(', ')} mm? (1 in = 25.4 mm)`, q: FR(A[0], A[1]) + U('in') + '<\\,?\\,<' + FR(B[0], B[1]) + U('in'),
+      a: [FR(A[0], A[1]) + U('in') + '=' + N(av, 3) + U('mm') + ',\\quad ' + FR(B[0], B[1]) + U('in') + '=' + N(bv, 3) + U('mm'), '\\text{Only }' + m + U('mm') + '\\text{ is between: try the }' + m + '\\text{ mm wrench.}'] };
+  };
+  const coneM = (r) => { // slant height first, decimals; SA and V to the nearest tenth
+    const u = r.pick(['cm', 'm', 'in']), d = dec(r, 4, 30, r.chance(0.5) ? 1 : 0), h = dec(r, 4, 30, r.chance(0.5) ? 1 : 0), R = d / 2, s = Math.hypot(R, h), SA = PI * R * R + PI * R * s, V = PI * R * R * h / 3;
+    if (bord(SA, 1) || bord(V, 1) || Number.isInteger(s * 100) || d > 3 * h || h > 3 * d) return null;
+    return { text: `A solid cone has a diameter of ${H(d)} ${u} and a height of ${H(h)} ${u}. Find its surface area and its volume, each to the nearest tenth.`, q: '', fig: coneFig(R, h, { d: 'd = ' + H(d) + ' ' + u, h: 'h = ' + H(h) + ' ' + u }),
+      a: ['r=' + N(R) + U(u) + ',\\quad s=\\sqrt{' + N(h) + '^{2}+' + N(R) + '^{2}}=' + dots(s, 4) + U(u), 'SA=\\pi(' + N(R) + ')^{2}+\\pi(' + N(R) + ')(' + dots(s, 4) + ')' + rd(SA, 1) + sq(u), 'V=\\tfrac13\\pi(' + N(R) + ')^{2}(' + N(h) + ')' + rd(V, 1) + cu(u)] };
+  };
+  const lv = (list) => (r) => { for (;;) { const x = r.pick(list)(r); if (x) return x; } };
+  standup('u10l6', {
+    intro: 'Unit 10 review at your whiteboard station: same units first, write the conversion or formula, then the numbers.',
+    levels: { BEG: lv([siDiff, hands, approx58, sphB]), PRG: lv([micQ, mapQ, conePi]), MAS: lv([tiles, drops, wrench, coneM]) }
+  });
+})();

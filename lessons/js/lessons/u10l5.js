@@ -15,6 +15,7 @@ import {
   h, tex, add, box, place, svgEl, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   pulse, drawIn, liveCtx, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const INK = COLORS.ink, RAD = COLORS.red, DIA = COLORS.amber, CYL = COLORS.teal, FLR = COLORS.blue, GRN = COLORS.green;
@@ -865,4 +866,125 @@ export const explainers = mountExplainers({ overflow, derive, peel, halve, slice
     const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
     io.observe(svg);
   } else play();
+})();
+
+/* ============ Stand Up Break! — surface area and volume of spheres and hemispheres (radius first) ============ */
+(() => {
+  /* ---- numbers ---- */
+  const N = (v, d) => { // LaTeX number: d decimals (or trimmed), thin spaces in an integer part of 5+ digits
+    let [i, f] = (d != null ? v.toFixed(d) : (Math.round(v * 1e8) / 1e8).toFixed(8).replace(/\.?0+$/, '')).split('.');
+    if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+    return i + (f != null ? '.' + f : '');
+  };
+  const H = (v, d) => N(v, d).replace(/\\,/g, ' ');                                  // the same, for HTML text
+  const bord = (x, d) => { const f = x * 10 ** d; return Math.abs(f - Math.floor(f) - 0.5) < 0.06; }; // too near a rounding edge
+  const dots = (v, d) => N(Math.floor(v * 10 ** d + 1e-7) / 10 ** d, d) + '\\ldots';          // a calculator display, cut off
+  const isEx = (v, d) => Math.abs(v * 10 ** d - Math.round(v * 10 ** d)) < 1e-7;               // exact at d places?
+  const rd = (v, d) => (isEx(v, d) ? '=' + N(v) : '=' + dots(v, d + 2) + '\\approx ' + N(v, d)); // "= exact" or "= 12.345… ≈ 12.3"
+  const U = (u) => '\\text{ ' + u + '}';
+  const PL = { 0: 'the nearest whole number', 1: 'the nearest tenth', 2: 'the nearest hundredth' };
+  /* ---- figures: small SVG strings drawn from the generated numbers ---- */
+  const INK = '#2b3340', DIMC = '#1f5aa8', FACE = '#e6f2ef', TOP = '#cfe7e1', SIDE = '#b9ddd5';
+  const P2 = (p) => p[0].toFixed(1) + ',' + p[1].toFixed(1);
+  const svg = (W, Hh, body, aria) => `<svg viewBox="0 0 ${W.toFixed(0)} ${Hh.toFixed(0)}" width="${(1.4 * W).toFixed(0)}" height="${(1.4 * Hh).toFixed(0)}" role="img" aria-label="${aria}" style="font-family:inherit">${body}</svg>`;
+  const seg = (a, b, dash) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${INK}" stroke-width="2"${dash ? ' stroke-dasharray="6 5"' : ''} stroke-linecap="round"/>`;
+  const poly = (pts, fill) => `<polygon points="${pts.map(P2).join(' ')}" fill="${fill}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+  const lab = (p, s, anchor = 'middle', c = DIMC) => `<text x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}" font-size="18" font-weight="600" fill="${c}" stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke" text-anchor="${anchor}" dominant-baseline="central">${s}</text>`;
+  const add2 = (a, b) => [a[0] + b[0], a[1] + b[1]], mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const fit = (vals, maxes, minPx) => { // pixel lengths ∝ the values, each fitted to its max, none below minPx
+    const k = Math.min(...vals.map((v, i) => maxes[i] / v)); return vals.map((v) => Math.max(minPx, v * k));
+  };
+  const rightMark = (A, u, v, k = 11) => `<polyline points="${P2(add2(A, [u[0] * k, u[1] * k]))} ${P2(add2(A, [u[0] * k + v[0] * k, u[1] * k + v[1] * k]))} ${P2(add2(A, [v[0] * k, v[1] * k]))}" fill="none" stroke="${INK}" stroke-width="1.5"/>`;
+  const ell = (cx, cy, rx, ry, part) => { // part: 'full' | 'front' (lower half) | 'back' (upper half)
+    if (part === 'full') return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+    return `<path d="M${cx - rx} ${cy} A${rx} ${ry} 0 0 ${part === 'front' ? 0 : 1} ${cx + rx} ${cy}" fill="none" stroke="${INK}" stroke-width="2"${part === 'back' ? ' stroke-dasharray="6 5"' : ''}/>`;
+  };
+  const sphFig = (L) => { // sphere with its equator; L.r (radius), L.d (diameter) or L.C (the string around the equator)
+    const pr = 92, cx = 40 + pr, cy = 22 + pr, ry = pr * 0.26, W = cx + pr + 40, Hh = cy + pr + (L.C ? 44 : 18);
+    let s = `<circle cx="${cx}" cy="${cy}" r="${pr}" fill="${FACE}" stroke="${INK}" stroke-width="2"/>` + ell(cx, cy, pr, ry, 'back');
+    s += L.C ? `<path d="M${cx - pr} ${cy} A${pr} ${ry} 0 0 0 ${cx + pr} ${cy}" fill="none" stroke="${DIMC}" stroke-width="3.2"/>` + lab([cx, cy + pr + 22], L.C) : ell(cx, cy, pr, ry, 'front');
+    if (L.r) s += `<line x1="${cx}" y1="${cy}" x2="${cx + pr}" y2="${cy}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx + pr / 2, cy - ry - 14], L.r);
+    if (L.d) s += `<line x1="${cx - pr}" y1="${cy}" x2="${cx + pr}" y2="${cy}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx, cy - ry - 14], L.d);
+    return svg(W, Hh, s + `<circle cx="${cx}" cy="${cy}" r="3" fill="${INK}"/>`, 'sphere');
+  };
+  const hemiFig = (L) => { // L.bowl: a bowl (rim up); otherwise a dome on its flat base. L.r or L.d along the flat face
+    const pr = 100, cx = 40 + pr, ry = pr * 0.26, W = cx + pr + 40;
+    let s, cy, Hh;
+    if (L.bowl) {
+      cy = 44 + ry; Hh = cy + pr + 14;
+      s = `<path d="M${cx - pr} ${cy} A${pr} ${pr} 0 0 0 ${cx + pr} ${cy} A${pr} ${ry} 0 0 0 ${cx - pr} ${cy} Z" fill="${FACE}" stroke="${INK}" stroke-width="2"/>` +
+        `<ellipse cx="${cx}" cy="${cy}" rx="${pr}" ry="${ry}" fill="#fbfdfc" stroke="${INK}" stroke-width="2"/>`;
+    } else {
+      cy = 20 + pr; Hh = cy + ry + 40;
+      s = `<path d="M${cx - pr} ${cy} A${pr} ${pr} 0 0 1 ${cx + pr} ${cy} A${pr} ${ry} 0 0 1 ${cx - pr} ${cy} Z" fill="${FACE}" stroke="${INK}" stroke-width="2"/>` + ell(cx, cy, pr, ry, 'back');
+    }
+    if (L.r) s += `<line x1="${cx}" y1="${cy}" x2="${cx + pr}" y2="${cy}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx + pr / 2, cy - 16], L.r);
+    if (L.d) s += `<line x1="${cx - pr}" y1="${cy}" x2="${cx + pr}" y2="${cy}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx, L.bowl ? cy - ry - 16 : cy + ry + 20], L.d);
+    return svg(W, Hh, s + `<circle cx="${cx}" cy="${cy}" r="3" fill="${INK}"/>`, L.bowl ? 'hemispherical bowl' : 'hemisphere');
+  };
+  const canFig = (L) => { // a ball that fits snugly in a cylinder (radius r, height 2r); L.d across the top
+    const pr = 80, ry = pr * 0.24, cx = 30 + pr, ty = 40 + ry, by = ty + 2 * pr, W = cx + pr + 40, Hh = by + ry + 14;
+    const s = `<path d="M${cx - pr} ${ty} L${cx - pr} ${by} A${pr} ${ry} 0 0 0 ${cx + pr} ${by} L${cx + pr} ${ty} Z" fill="#f4f8fb" stroke="none"/>` +
+      `<circle cx="${cx}" cy="${ty + pr}" r="${pr}" fill="${FACE}" stroke="${INK}" stroke-width="2"/>` + ell(cx, ty + pr, pr, ry * 0.9, 'back') + ell(cx, ty + pr, pr, ry * 0.9, 'front') +
+      `<ellipse cx="${cx}" cy="${ty}" rx="${pr}" ry="${ry}" fill="none" stroke="${INK}" stroke-width="2"/>` + seg([cx - pr, ty], [cx - pr, by]) + seg([cx + pr, ty], [cx + pr, by]) + ell(cx, by, pr, ry, 'front') + ell(cx, by, pr, ry, 'back') +
+      `<line x1="${cx - pr}" y1="${ty}" x2="${cx + pr}" y2="${ty}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx, ty - ry - 14], L.d);
+    return svg(W, Hh, s, 'a ball in a cylinder');
+  };
+  const PI = Math.PI;
+  const sq = (u) => '\\text{ ' + u + '}^{2}', cu = (u) => '\\text{ ' + u + '}^{3}';
+  const dec = (r, lo, hi, p) => r.int(lo * 10 ** p, hi * 10 ** p) / 10 ** p;
+  const BALLS = [['A basketball', 'cm', 22, 26], ['A beach ball', 'cm', 40, 60], ['A marble', 'mm', 12, 25], ['A globe', 'cm', 25, 45], ['A bowling ball', 'in', 8, 9], ['A water tower tank', 'm', 8, 16], ['A gumball', 'mm', 15, 25], ['A weather balloon', 'm', 2, 6]];
+
+  /* ---- Beginning: a sphere from its radius or diameter ---- */
+  const sphB = (r) => {
+    const useD = r.chance(0.6), u = r.pick(['cm', 'cm', 'm', 'in', 'mm', 'ft']), x = r.chance(0.5) ? r.int(2, 30) : dec(r, 1.5, 20, 1), R = useD ? x / 2 : x, SA = 4 * PI * R * R, V = 4 / 3 * PI * R ** 3;
+    if (bord(SA, 1) || bord(V, 1)) return null;
+    return { text: `Find the surface area and the volume of a sphere with a ${useD ? 'diameter' : 'radius'} of ${H(x)} ${u}, each to the nearest tenth.`, q: '', fig: sphFig(useD ? { d: 'd = ' + H(x) + ' ' + u } : { r: 'r = ' + H(x) + ' ' + u }),
+      a: [(useD ? 'r=' + N(x) + '\\div 2=' + N(R) + U(u) + ',\\quad ' : '') + 'SA=4\\pi r^{2}=4\\pi(' + N(R) + ')^{2}' + rd(SA, 1) + sq(u), 'V=\\tfrac43\\pi r^{3}=\\tfrac43\\pi(' + N(R) + ')^{3}' + rd(V, 1) + cu(u)] };
+  };
+
+  /* ---- Progressing: hemispheres — with the flat base (3πr²), without it (2πr²), and V = ⅔πr³ ---- */
+  const HEMI = { open: [['An open hemispherical bowl', 'cm', 10, 30], ['A hemispherical dome with no floor', 'm', 6, 30], ['An open hemispherical planter', 'cm', 30, 80], ['A hemispherical salad bowl', 'cm', 20, 35], ['A hemispherical skylight dome (no base)', 'ft', 3, 10]],
+    closed: [['A solid hemisphere', 'cm', 4, 30], ['A closed hemispherical tank', 'm', 2, 8], ['A hemispherical paperweight', 'cm', 5, 10], ['A hemispherical igloo with a floor', 'm', 3, 6], ['A hemispherical dome tent with a floor', 'ft', 6, 12]] };
+  const hemiP = (r) => {
+    const open = r.chance(0.5), [what, u, lo, hi] = r.pick(HEMI[open ? 'open' : 'closed']), d = r.chance(0.5) ? r.int(lo, hi) : dec(r, lo, hi, 1), R = d / 2, SA = (open ? 2 : 3) * PI * R * R, V = 2 / 3 * PI * R ** 3;
+    if (bord(SA, 1) || bord(V, 1)) return null;
+    return { text: `${what} has a diameter of ${H(d)} ${u}. Find its surface area${open ? ' (no flat base)' : ' (flat base included)'} and its volume, each to the nearest tenth.`, q: '', fig: hemiFig({ d: 'd = ' + H(d) + ' ' + u, bowl: /bowl|planter/.test(what) }),
+      a: ['r=' + N(d) + '\\div 2=' + N(R) + U(u), 'SA=' + (open ? '2' : '3') + '\\pi r^{2}=' + (open ? '2' : '3') + '\\pi(' + N(R) + ')^{2}' + rd(SA, 1) + sq(u), 'V=\\tfrac23\\pi r^{3}=\\tfrac23\\pi(' + N(R) + ')^{3}' + rd(V, 1) + cu(u)] };
+  };
+  const exactP = (r) => { // in terms of π
+    const kind = r.pick(['sphere', 'closed', 'open']), d = 2 * r.int(2, 12), R = d / 2, u = r.pick(['cm', 'm', 'ft', 'in']), k = kind === 'sphere' ? 4 : kind === 'closed' ? 3 : 2;
+    const vk = kind === 'sphere' ? 4 * R ** 3 / 3 : 2 * R ** 3 / 3, vt = Number.isInteger(vk) ? N(vk) : '\\tfrac{' + (kind === 'sphere' ? 4 : 2) * R ** 3 + '}{3}';
+    const what = kind === 'sphere' ? 'sphere' : kind === 'closed' ? 'hemisphere (flat base included)' : 'open hemispherical bowl (no flat base)';
+    return { text: `Find the surface area and the volume of the ${what} with a diameter of ${d} ${u}, <b>in terms of π</b>.`, q: '', fig: kind === 'sphere' ? sphFig({ d: 'd = ' + d + ' ' + u }) : hemiFig({ d: 'd = ' + d + ' ' + u, bowl: kind === 'open' }),
+      a: ['r=' + R + U(u) + ',\\quad SA=' + k + '\\pi(' + R + ')^{2}=' + N(k * R * R) + '\\pi' + sq(u), 'V=\\tfrac' + (kind === 'sphere' ? '43' : '23') + '\\pi(' + R + ')^{3}=' + vt + '\\pi' + cu(u)] };
+  };
+
+  /* ---- Mastery: a circumference gives the radius, a ball in its snug can, a bowl's capacity ---- */
+  const circM = (r) => {
+    const [what, u, lo, hi] = r.pick([['A soccer ball', 'cm', 66, 72], ['A basketball', 'cm', 74, 78], ['A beach ball', 'cm', 120, 190], ['An exercise ball', 'cm', 170, 240], ['A volleyball', 'cm', 64, 68], ['A globe', 'cm', 80, 140], ['A softball', 'in', 11, 13], ['A spherical lamp', 'cm', 60, 110]]);
+    const C = r.int(lo, hi), R = C / (2 * PI), V = 4 / 3 * PI * R ** 3, SA = 4 * PI * R * R;
+    if (bord(V, 1) || bord(SA, 1)) return null;
+    return { text: `${what} is wrapped once around its widest point with a string. The string is ${C} ${u} long. Find the surface area and the volume of the ${what.split(' ').pop()}, each to the nearest tenth.`, q: '', fig: sphFig({ C: 'C = ' + C + ' ' + u }),
+      a: ['C=2\\pi r\\ \\Rightarrow\\ r=\\dfrac{' + C + '}{2\\pi}=' + dots(R, 4) + U(u), 'SA=4\\pi(' + dots(R, 4) + ')^{2}' + rd(SA, 1) + sq(u), 'V=\\tfrac43\\pi(' + dots(R, 4) + ')^{3}' + rd(V, 1) + cu(u)] };
+  };
+  const canM = (r) => { // a ball in its snug cylinder: empty space
+    const [what, u, lo, hi] = r.pick([['tennis ball', 'cm', 64, 68], ['softball', 'cm', 94, 98], ['baseball', 'cm', 72, 76], ['ornament', 'cm', 60, 120], ['bowling ball', 'cm', 210, 218], ['gumball', 'mm', 180, 260]]);
+    const d = r.int(lo, hi) / 10, R = d / 2, Vc = PI * R * R * d, Vs = 4 / 3 * PI * R ** 3, E = Vc - Vs;
+    if (bord(E, 1)) return null;
+    return { text: `${/^[aeiou]/.test(what) ? 'An' : 'A'} ${what} with a diameter of ${H(d)} ${u} fits snugly inside a cylindrical can (it touches the top, the bottom and the sides). Find the volume of empty space in the can, to the nearest tenth.`, q: '', fig: canFig({ d: 'd = ' + H(d) + ' ' + u }),
+      a: ['r=' + N(R) + U(u) + ',\\ h=' + N(d) + U(u) + ':\\quad V_{\\text{cyl}}=\\pi(' + N(R) + ')^{2}(' + N(d) + ')=' + dots(Vc, 3) + cu(u), 'V_{\\text{ball}}=\\tfrac43\\pi(' + N(R) + ')^{3}=' + dots(Vs, 3) + cu(u), '\\text{empty}=' + dots(Vc, 3) + '-' + dots(Vs, 3) + rd(E, 1) + cu(u)] };
+  };
+  const bowlM = (r) => { // capacity of a hemispherical bowl / tank, in L
+    const inM = r.chance(0.35), d = inM ? dec(r, 1.2, 6, 1) : r.int(14, 50), R = d / 2, u = inM ? 'm' : 'cm', V = 2 / 3 * PI * R ** 3, Lt = inM ? V * 1000 : V / 1000;
+    if (bord(Lt, 1)) return null;
+    const what = inM ? r.pick(['A hemispherical cistern', 'A hemispherical fountain basin', 'A hemispherical hot tub']) : r.pick(['A hemispherical mixing bowl', 'A hemispherical punch bowl', 'A hemispherical fish bowl', 'A hemispherical soup pot']);
+    return { text: `${what} has an inside diameter of ${H(d)} ${u}. How many litres does it hold, to the nearest tenth?`, q: '', fig: hemiFig({ d: 'd = ' + H(d) + ' ' + u, bowl: 1 }),
+      a: ['r=' + N(R) + U(u) + ',\\quad V=\\tfrac23\\pi(' + N(R) + ')^{3}=' + dots(V, inM ? 4 : 2) + cu(u), (inM ? '1\\text{ m}^{3}=1000\\text{ L}:\\ ' + dots(V, 4) + '\\times 1000' : '1\\text{ cm}^{3}=1\\text{ mL}:\\ ' + dots(V, 2) + '\\div 1000') + rd(Lt, 1) + U('L')] };
+  };
+  const lv = (list) => (r) => { for (;;) { const x = r.pick(list)(r); if (x) return x; } };
+  standup('u10l5', {
+    intro: 'At your whiteboard station: radius first, then the formula. Use the π key and round only the final answer.',
+    levels: { BEG: lv([sphB]), PRG: lv([hemiP, hemiP, exactP]), MAS: lv([circM, canM, bowlM]) }
+  });
 })();

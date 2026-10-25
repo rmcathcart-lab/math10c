@@ -14,6 +14,7 @@ import {
   h, tex, add, box, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, tween, svgEl, liveCtx, pulse,
   place, arrowHead, easeInOut, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const PI = Math.PI, RAD = PI / 180;
@@ -1043,3 +1044,124 @@ const shed = {
 figPentagon(); figPyrInPrism(); figCone('u10l4-f3', false); figCone('u10l4-f4', true); figUnroll(); figShed(); ansFigs(); mountPopcorn();
 export const explainers = mountExplainers({ hs, hsc, third, pour, net, unroll, which, hex, scale, shed });
 export const _test = { Scene3, HS, HSC, NET, UNR, WH };
+
+/* ============ Stand Up Break! — volume (h) and surface area (s) of right square pyramids and right cones ============ */
+(() => {
+  /* ---- numbers ---- */
+  const N = (v, d) => { // LaTeX number: d decimals (or trimmed), thin spaces in an integer part of 5+ digits
+    let [i, f] = (d != null ? v.toFixed(d) : (Math.round(v * 1e8) / 1e8).toFixed(8).replace(/\.?0+$/, '')).split('.');
+    if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+    return i + (f != null ? '.' + f : '');
+  };
+  const H = (v, d) => N(v, d).replace(/\\,/g, ' ');                                  // the same, for HTML text
+  const bord = (x, d) => { const f = x * 10 ** d; return Math.abs(f - Math.floor(f) - 0.5) < 0.06; }; // too near a rounding edge
+  const dots = (v, d) => N(Math.floor(v * 10 ** d + 1e-7) / 10 ** d, d) + '\\ldots';          // a calculator display, cut off
+  const isEx = (v, d) => Math.abs(v * 10 ** d - Math.round(v * 10 ** d)) < 1e-7;               // exact at d places?
+  const rd = (v, d) => (isEx(v, d) ? '=' + N(v) : '=' + dots(v, d + 2) + '\\approx ' + N(v, d)); // "= exact" or "= 12.345… ≈ 12.3"
+  const U = (u) => '\\text{ ' + u + '}';
+  const PL = { 0: 'the nearest whole number', 1: 'the nearest tenth', 2: 'the nearest hundredth' };
+  /* ---- figures: small SVG strings drawn from the generated numbers ---- */
+  const INK = '#2b3340', DIMC = '#1f5aa8', FACE = '#e6f2ef', TOP = '#cfe7e1', SIDE = '#b9ddd5';
+  const P2 = (p) => p[0].toFixed(1) + ',' + p[1].toFixed(1);
+  const svg = (W, Hh, body, aria) => `<svg viewBox="0 0 ${W.toFixed(0)} ${Hh.toFixed(0)}" width="${(1.4 * W).toFixed(0)}" height="${(1.4 * Hh).toFixed(0)}" role="img" aria-label="${aria}" style="font-family:inherit">${body}</svg>`;
+  const seg = (a, b, dash) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${INK}" stroke-width="2"${dash ? ' stroke-dasharray="6 5"' : ''} stroke-linecap="round"/>`;
+  const poly = (pts, fill) => `<polygon points="${pts.map(P2).join(' ')}" fill="${fill}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+  const lab = (p, s, anchor = 'middle', c = DIMC) => `<text x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}" font-size="18" font-weight="600" fill="${c}" stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke" text-anchor="${anchor}" dominant-baseline="central">${s}</text>`;
+  const add2 = (a, b) => [a[0] + b[0], a[1] + b[1]], mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const fit = (vals, maxes, minPx) => { // pixel lengths ∝ the values, each fitted to its max, none below minPx
+    const k = Math.min(...vals.map((v, i) => maxes[i] / v)); return vals.map((v) => Math.max(minPx, v * k));
+  };
+  const rightMark = (A, u, v, k = 11) => `<polyline points="${P2(add2(A, [u[0] * k, u[1] * k]))} ${P2(add2(A, [u[0] * k + v[0] * k, u[1] * k + v[1] * k]))} ${P2(add2(A, [v[0] * k, v[1] * k]))}" fill="none" stroke="${INK}" stroke-width="1.5"/>`;
+  const ell = (cx, cy, rx, ry, part) => { // part: 'full' | 'front' (lower half) | 'back' (upper half)
+    if (part === 'full') return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+    return `<path d="M${cx - rx} ${cy} A${rx} ${ry} 0 0 ${part === 'front' ? 0 : 1} ${cx + rx} ${cy}" fill="none" stroke="${INK}" stroke-width="2"${part === 'back' ? ' stroke-dasharray="6 5"' : ''}/>`;
+  };
+  const lead = (a, b) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${DIMC}" stroke-width="1.3"/><circle cx="${b[0].toFixed(1)}" cy="${b[1].toFixed(1)}" r="2.6" fill="${DIMC}"/>`;
+  const pyrFig = (b, h, L) => { // right square pyramid: side b, height h; labels L.b, L.h (the dashed altitude), L.s (on the front face), each led out to the side
+    const [pb, ph] = fit([b, h], [200, 180], 90), o = [pb * 0.5, -pb * 0.3], x0 = 128, W = x0 + pb + o[0] + 128, Hh = ph - o[1] / 2 + 20 + 40;
+    const A = [x0, Hh - 40], B = [x0 + pb, Hh - 40], C = add2(B, o), D = add2(A, o), O = mid(A, C), M = mid(A, B), Pp = [O[0], O[1] - ph];
+    let s = poly([Pp, A, B], FACE) + poly([Pp, B, C], SIDE) + seg(A, D, 1) + seg(D, C, 1) + seg(Pp, D, 1);
+    if (L.h) { const m = [O[0], O[1] - ph * 0.42]; s += seg(Pp, O, 1) + rightMark(O, [0, -1], [-0.86, 0.5], 9) + lead([C[0] + 14, m[1]], m) + lab([C[0] + 18, m[1]], L.h, 'start'); }
+    if (L.s) { const m = mid(Pp, M); s += `<line x1="${Pp[0]}" y1="${Pp[1]}" x2="${M[0]}" y2="${M[1]}" stroke="${DIMC}" stroke-width="2.4"/>` + lead([x0 - 14, m[1]], m) + lab([x0 - 18, m[1]], L.s, 'end'); }
+    return svg(W, Hh, s + lab([x0 + pb / 2, A[1] + 20], L.b), 'square pyramid');
+  };
+  const coneFig = (r, h, L) => { // right cone: radius r, height h; labels L.r or L.d, L.h (led out to the left), L.s; the base is drawn
+    const [pd, ph] = fit([2 * r, h], [210, 180], 80), rx = pd / 2, ry = Math.max(9, rx * 0.22), cx = 128 + rx, by = 22 + ph, W = cx + rx + 130, Hh = by + ry + 38;
+    const Pp = [cx, by - ph], R = [cx + rx, by], Lf = [cx - rx, by];
+    let s = `<path d="M${Lf[0]} ${by} L${cx} ${Pp[1]} L${R[0]} ${by} A${rx} ${ry} 0 0 1 ${Lf[0]} ${by} Z" fill="${FACE}" stroke="none"/>` +
+      seg(Pp, Lf) + seg(Pp, R) + ell(cx, by, rx, ry, 'front') + ell(cx, by, rx, ry, 'back');
+    if (L.h) { const m = [cx, by - ph * 0.4]; s += seg(Pp, [cx, by], 1) + rightMark([cx, by], [0, -1], [1, 0], 9) + lead([Lf[0] - 16, m[1]], m) + lab([Lf[0] - 20, m[1]], L.h, 'end'); }
+    if (L.r) s += `<line x1="${cx}" y1="${by}" x2="${R[0]}" y2="${by}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx + rx / 2, by + ry + 18], L.r);
+    if (L.d) s += `<line x1="${Lf[0]}" y1="${by}" x2="${R[0]}" y2="${by}" stroke="${DIMC}" stroke-width="2.4"/>` + lab([cx, by + ry + 18], L.d);
+    if (L.s) s += lab([(cx + R[0]) / 2 + 16, (Pp[1] + by) / 2 - 4], L.s, 'start');
+    return svg(W, Hh, s + `<circle cx="${cx}" cy="${by}" r="3" fill="${INK}"/>`, 'cone');
+  };
+  const PI = Math.PI;
+  const TR = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17], [12, 16, 20], [7, 24, 25], [12, 5, 13], [4, 3, 5], [8, 6, 10], [15, 8, 17]]; // [half side or radius, height, slant]
+  const UN = ['cm', 'cm', 'm', 'in', 'ft', 'mm'];
+  const sq = (u) => '\\text{ ' + u + '}^{2}', cu = (u) => '\\text{ ' + u + '}^{3}';
+  const dec = (r, lo, hi, p) => r.int(lo * 10 ** p, hi * 10 ** p) / 10 ** p;
+  const tw = (v) => (Number.isInteger(v) ? String(v) : N(v));
+
+  /* ---- Beginning: h and s both given (whole numbers) ---- */
+  const pyrB = (r) => {
+    const k = r.pick([1, 1, 2, 3]), [hf, h, s] = r.pick(TR).map((x) => x * k), b = 2 * hf, u = r.pick(UN), V = b * b * h / 3, SA = b * b + 4 * (b * s / 2);
+    if (s > 45 || bord(V, 1)) return null;
+    return { text: `Find the volume and the surface area of the right square pyramid (base included): base ${b} ${u} by ${b} ${u}, height ${h} ${u}, slant height ${s} ${u}. Round to the nearest tenth where needed.`, q: '', fig: pyrFig(b, h, { b: b + ' ' + u, h: 'h = ' + h + ' ' + u, s: 's = ' + s + ' ' + u }),
+      a: ['V=\\tfrac13 A_{\\text{Base}}h=\\tfrac13(' + b + '^{2})(' + h + ')' + (Number.isInteger(V) ? '=' + N(V) : rd(V, 1)) + cu(u), 'SA=' + b + '^{2}+4\\cdot\\tfrac12(' + b + ')(' + s + ')=' + N(b * b) + '+' + N(2 * b * s) + '=' + N(SA) + sq(u)] };
+  };
+  const coneB = (r) => {
+    const k = r.pick([1, 1, 2, 3, 0.5]), [R, h, s] = r.pick(TR).map((x) => x * k), u = r.pick(UN), V = PI * R * R * h / 3, SA = PI * R * R + PI * R * s;
+    if (bord(V, 1) || bord(SA, 1) || s > 40) return null;
+    return { text: `Find the volume and the surface area of the solid cone (radius ${H(R)} ${u}, height ${H(h)} ${u}, slant height ${H(s)} ${u}), each to the nearest tenth.`, q: '', fig: coneFig(R, h, { r: 'r = ' + H(R) + ' ' + u, h: 'h = ' + H(h) + ' ' + u, s: 's = ' + H(s) + ' ' + u }),
+      a: ['V=\\tfrac13\\pi r^{2}h=\\tfrac13\\pi(' + N(R) + ')^{2}(' + N(h) + ')=' + tw(R * R * h / 3) + '\\pi' + rd(V, 1) + cu(u), 'SA=\\pi r^{2}+\\pi rs=\\pi(' + N(R) + ')^{2}+\\pi(' + N(R) + ')(' + N(s) + ')=' + N(R * R + R * s) + '\\pi' + rd(SA, 1) + sq(u)] };
+  };
+
+  /* ---- Progressing: the slant height by the Pythagorean theorem first (Example 1, Example 2) ---- */
+  const coneP = (r) => {
+    const u = r.pick(['cm', 'cm', 'm', 'in']), d = r.chance(0.5) ? r.int(4, 30) : dec(r, 3, 20, 1), h = r.chance(0.5) ? r.int(4, 30) : dec(r, 3, 24, 1), R = d / 2, s = Math.hypot(R, h), V = PI * R * R * h / 3, SA = PI * R * R + PI * R * s;
+    if (bord(V, 1) || bord(SA, 1) || Number.isInteger(s * 100)) return null;
+    return { text: `Find the volume and the surface area of the solid cone (diameter ${H(d)} ${u}, height ${H(h)} ${u}), each to the nearest tenth.`, q: '', fig: coneFig(R, h, { d: 'd = ' + H(d) + ' ' + u, h: 'h = ' + H(h) + ' ' + u }),
+      a: ['r=' + N(R) + U(u) + ',\\quad s=\\sqrt{' + N(R) + '^{2}+' + N(h) + '^{2}}=' + dots(s, 4) + U(u), 'V=\\tfrac13\\pi(' + N(R) + ')^{2}(' + N(h) + ')' + rd(V, 1) + cu(u), 'SA=\\pi(' + N(R) + ')^{2}+\\pi(' + N(R) + ')(' + dots(s, 4) + ')' + rd(SA, 1) + sq(u)] };
+  };
+  const pyrP = (r) => {
+    const u = r.pick(['cm', 'm', 'm', 'in', 'ft']), b = r.chance(0.6) ? r.int(4, 30) : dec(r, 3, 20, 1), h = r.chance(0.6) ? r.int(3, 25) : dec(r, 3, 20, 1), s = Math.hypot(b / 2, h), V = b * b * h / 3, SA = b * b + 2 * b * s;
+    if (bord(V, 1) || bord(SA, 1) || Number.isInteger(s * 100)) return null;
+    return { text: `Find the volume and the surface area of the right square pyramid (base included): base side ${H(b)} ${u}, height ${H(h)} ${u}. Round each to the nearest tenth.`, q: '', fig: pyrFig(b, h, { b: H(b) + ' ' + u, h: 'h = ' + H(h) + ' ' + u }),
+      a: ['V=\\tfrac13(' + N(b) + '^{2})(' + N(h) + ')' + rd(V, 1) + cu(u), 's=\\sqrt{' + N(h) + '^{2}+' + N(b / 2) + '^{2}}=' + dots(s, 4) + U(u), 'SA=' + N(b) + '^{2}+4\\cdot\\tfrac12(' + N(b) + ')(' + dots(s, 4) + ')' + rd(SA, 1) + sq(u)] };
+  };
+
+  /* ---- Mastery: only the slant height given (find h for the volume), an open cone, a capacity ---- */
+  const coneM = (r) => {
+    const u = r.pick(['cm', 'cm', 'm', 'in']), d = r.int(4, 30), R = d / 2, s = r.int(Math.ceil(R) + 2, Math.ceil(R) + 25), h = Math.sqrt(s * s - R * R), V = PI * R * R * h / 3, SA = PI * R * R + PI * R * s;
+    if (bord(V, 1) || bord(SA, 1) || Number.isInteger(h * 100)) return null;
+    return { text: `A solid cone has a diameter of ${d} ${u} and a <b>slant height</b> of ${s} ${u}. Find its volume and its surface area, each to the nearest tenth.`, q: '', fig: coneFig(R, h, { d: 'd = ' + d + ' ' + u, s: 's = ' + s + ' ' + u }),
+      a: ['r=' + N(R) + U(u) + ',\\quad h=\\sqrt{' + s + '^{2}-' + N(R) + '^{2}}=' + dots(h, 4) + U(u), 'V=\\tfrac13\\pi(' + N(R) + ')^{2}(' + dots(h, 4) + ')' + rd(V, 1) + cu(u), 'SA=\\pi(' + N(R) + ')^{2}+\\pi(' + N(R) + ')(' + s + ')' + rd(SA, 1) + sq(u)] };
+  };
+  const pyrM = (r) => {
+    const [what, u] = r.pick([['A glass skylight', 'm'], ['A stone monument', 'm'], ['A tent', 'ft'], ['A roof', 'm'], ['A paperweight', 'cm'], ['A candle', 'cm'], ['A gift box lid', 'in']]);
+    const b = r.int(6, 30), s = r.int(Math.ceil(b / 2) + 2, Math.ceil(b / 2) + 16), h = Math.sqrt(s * s - b * b / 4), V = b * b * h / 3, SA = b * b + 2 * b * s;
+    if (bord(V, 1) || Number.isInteger(h * 100)) return null;
+    return { text: `${what} is a right square pyramid with a base side of ${b} ${u} and a <b>slant height</b> of ${s} ${u}. Find its volume to the nearest tenth, and its surface area (base included).`, q: '', fig: pyrFig(b, h, { b: b + ' ' + u, s: 's = ' + s + ' ' + u }),
+      a: ['h=\\sqrt{' + s + '^{2}-' + N(b / 2) + '^{2}}=' + dots(h, 4) + U(u), 'V=\\tfrac13(' + b + '^{2})(' + dots(h, 4) + ')' + rd(V, 1) + cu(u), 'SA=' + b + '^{2}+4\\cdot\\tfrac12(' + b + ')(' + s + ')=' + N(SA) + sq(u)] };
+  };
+  const cupQ = (r) => { // open paper cone: curved surface and capacity in mL
+    const d = r.int(5, 14), h = r.int(6, 16), R = d / 2, s = Math.hypot(R, h), A = PI * R * s, V = PI * R * R * h / 3;
+    if (bord(A, 1) || bord(V, 0) || Number.isInteger(s * 100)) return null;
+    const what = r.pick(['paper water cup', 'party hat', 'snow-cone cup', 'paper funnel', 'ice-cream cone']);
+    return { text: `A ${what} is a cone with <b>no base</b>, ${d} cm across and ${h} cm high. Find the area of paper it needs (to the nearest tenth of a cm<sup>2</sup>) and how much it holds, to the nearest millilitre.`, q: '', fig: coneFig(R, h, { d: 'd = ' + d + ' cm', h: 'h = ' + h + ' cm' }),
+      a: ['r=' + N(R) + U('cm') + ',\\quad s=\\sqrt{' + N(R) + '^{2}+' + h + '^{2}}=' + dots(s, 4) + U('cm'), '\\text{curved only: }\\pi rs=\\pi(' + N(R) + ')(' + dots(s, 4) + ')' + rd(A, 1) + sq('cm'), 'V=\\tfrac13\\pi(' + N(R) + ')^{2}(' + h + ')' + rd(V, 0) + cu('cm') + '=' + Math.round(V) + U('mL')] };
+  };
+  const hopper = (r) => { // a conical hopper / pile in m → m³ and litres
+    const d = dec(r, 1.2, 6, 1), h = dec(r, 0.8, 4, 1), R = d / 2, V = PI * R * R * h / 3, Lt = V * 1000;
+    if (bord(V, 2) || bord(Lt, -2)) return null;
+    const what = r.pick(['A conical grain hopper', 'A conical water tank', 'A conical feed bin', 'A conical settling tank', 'A conical fertilizer tank']);
+    return { text: `${what} has an inside diameter of ${H(d)} m and a height of ${H(h)} m. Find its volume to the nearest hundredth of a cubic metre, and its capacity to the nearest hundred litres.`, q: '', fig: coneFig(R, h, { d: 'd = ' + H(d) + ' m', h: 'h = ' + H(h) + ' m' }),
+      a: ['V=\\tfrac13\\pi(' + N(R) + ')^{2}(' + N(h) + ')' + rd(V, 2) + cu('m'), '1\\text{ m}^{3}=1000\\text{ L}:\\quad ' + dots(V, 4) + '\\times 1000=' + dots(Lt, 1) + '\\approx ' + N(Math.round(Lt / 100) * 100) + U('L')] };
+  };
+  const lv = (list) => (r) => { for (;;) { const x = r.pick(list)(r); if (x) return x; } };
+  standup('u10l4', {
+    intro: 'At your whiteboard station: label h and s on a sketch first. Volume uses the height h; surface area uses the slant height s.',
+    levels: { BEG: lv([pyrB, coneB]), PRG: lv([coneP, pyrP]), MAS: lv([coneM, pyrM, cupQ, hopper]) }
+  });
+})();

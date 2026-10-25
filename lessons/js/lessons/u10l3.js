@@ -11,6 +11,7 @@
  * Static figures on the cards are ports of the booklet's TikZ (same coordinates, dimensions and labels).
  * Colours: bases teal, side faces amber, curved surfaces blue, highlights red, water blue. */
 import { h, tex, add, box, svgEl, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween, pulse, place, COLORS, NumberLine } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 const RAD = Math.PI / 180, PI = Math.PI;
@@ -922,3 +923,140 @@ const solveh = {
 mountStatics();
 export const explainers = mountExplainers({ rollit, prisms, layers, net, capacity, cylnet, radius, backwards, label, solveh });
 export const _test = { Scene3, prismFaces, tubeFaces, foldNet };
+
+/* ============ Stand Up Break! — volume and surface area of right prisms and cylinders (figures from the numbers) ============ */
+(() => {
+  /* ---- numbers ---- */
+  const N = (v, d) => { // LaTeX number: d decimals (or trimmed), thin spaces in an integer part of 5+ digits
+    let [i, f] = (d != null ? v.toFixed(d) : (Math.round(v * 1e8) / 1e8).toFixed(8).replace(/\.?0+$/, '')).split('.');
+    if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+    return i + (f != null ? '.' + f : '');
+  };
+  const H = (v, d) => N(v, d).replace(/\\,/g, ' ');                                  // the same, for HTML text
+  const bord = (x, d) => { const f = x * 10 ** d; return Math.abs(f - Math.floor(f) - 0.5) < 0.06; }; // too near a rounding edge
+  const dots = (v, d) => N(Math.floor(v * 10 ** d + 1e-7) / 10 ** d, d) + '\\ldots';          // a calculator display, cut off
+  const isEx = (v, d) => Math.abs(v * 10 ** d - Math.round(v * 10 ** d)) < 1e-7;               // exact at d places?
+  const rd = (v, d) => (isEx(v, d) ? '=' + N(v) : '=' + dots(v, d + 2) + '\\approx ' + N(v, d)); // "= exact" or "= 12.345… ≈ 12.3"
+  const U = (u) => '\\text{ ' + u + '}';
+  const PL = { 0: 'the nearest whole number', 1: 'the nearest tenth', 2: 'the nearest hundredth' };
+  /* ---- figures: small SVG strings drawn from the generated numbers ---- */
+  const INK = '#2b3340', DIMC = '#1f5aa8', FACE = '#e6f2ef', TOP = '#cfe7e1', SIDE = '#b9ddd5';
+  const P2 = (p) => p[0].toFixed(1) + ',' + p[1].toFixed(1);
+  const svg = (W, Hh, body, aria) => `<svg viewBox="0 0 ${W.toFixed(0)} ${Hh.toFixed(0)}" width="${(1.4 * W).toFixed(0)}" height="${(1.4 * Hh).toFixed(0)}" role="img" aria-label="${aria}" style="font-family:inherit">${body}</svg>`;
+  const seg = (a, b, dash) => `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${INK}" stroke-width="2"${dash ? ' stroke-dasharray="6 5"' : ''} stroke-linecap="round"/>`;
+  const poly = (pts, fill) => `<polygon points="${pts.map(P2).join(' ')}" fill="${fill}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+  const lab = (p, s, anchor = 'middle', c = DIMC) => `<text x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}" font-size="18" font-weight="600" fill="${c}" stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke" text-anchor="${anchor}" dominant-baseline="central">${s}</text>`;
+  const add2 = (a, b) => [a[0] + b[0], a[1] + b[1]], mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const fit = (vals, maxes, minPx) => { // pixel lengths ∝ the values, each fitted to its max, none below minPx
+    const k = Math.min(...vals.map((v, i) => maxes[i] / v)); return vals.map((v) => Math.max(minPx, v * k));
+  };
+  const rightMark = (A, u, v, k = 11) => `<polyline points="${P2(add2(A, [u[0] * k, u[1] * k]))} ${P2(add2(A, [u[0] * k + v[0] * k, u[1] * k + v[1] * k]))} ${P2(add2(A, [v[0] * k, v[1] * k]))}" fill="none" stroke="${INK}" stroke-width="1.5"/>`;
+  const ell = (cx, cy, rx, ry, part) => { // part: 'full' | 'front' (lower half) | 'back' (upper half)
+    if (part === 'full') return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+    return `<path d="M${cx - rx} ${cy} A${rx} ${ry} 0 0 ${part === 'front' ? 0 : 1} ${cx + rx} ${cy}" fill="none" stroke="${INK}" stroke-width="2"${part === 'back' ? ' stroke-dasharray="6 5"' : ''}/>`;
+  };
+  const boxFig = (l, w, h, L) => { // right rectangular prism: length l across the front, height h, depth w receding
+    const [pl, ph, pw] = fit([l, h, w], [200, 140, 130], 36), o = [pw * 0.6, -pw * 0.42];
+    const x0 = 64, W = x0 + pl + o[0] + 96, Hh = 18 - o[1] + ph + 40;
+    const A = [x0, Hh - 40], B = [x0 + pl, Hh - 40], C = [x0 + pl, Hh - 40 - ph], D = [x0, Hh - 40 - ph], [A2, B2, C2, D2] = [A, B, C, D].map((p) => add2(p, o));
+    return svg(W, Hh, poly([D, C, C2, D2], TOP) + poly([B, B2, C2, C], SIDE) + poly([A, B, C, D], FACE) + seg(A, A2, 1) + seg(A2, B2, 1) + seg(A2, D2, 1) +
+      lab([x0 + pl / 2, A[1] + 20], L.l) + lab([x0 - 10, A[1] - ph / 2], L.h, 'end') + lab(add2(mid(B, B2), [12, 10]), L.w, 'start'), 'rectangular prism');
+  };
+  const triFig = (a, b, len, L) => { // right triangular prism: right angle at the front-bottom-left; legs a (across) and b (up); length receding
+    const [pa, pb, pl] = fit([a, b, len], [170, 150, 120], 48), o = [pl * 0.62, -pl * 0.42];
+    const x0 = 64, W = x0 + pa + o[0] + 100, Hh = 40 - o[1] + pb + 40;
+    const A = [x0, Hh - 40], B = [x0 + pa, Hh - 40], C = [x0, Hh - 40 - pb], [A2, B2, C2] = [A, B, C].map((p) => add2(p, o));
+    const nh = Math.hypot(pa, pb), out = [pb / nh, -pa / nh], m = mid(B2, C2);
+    return svg(W, Hh, poly([B, B2, C2, C], SIDE) + poly([A, B, C], FACE) + seg(A, A2, 1) + seg(A2, B2, 1) + seg(A2, C2, 1) + rightMark(A, [1, 0], [0, -1]) +
+      lab([x0 + pa / 2, A[1] + 20], L.a) + lab([x0 - 10, A[1] - pb / 2], L.b, 'end') + lab(add2(mid(B, B2), [12, 10]), L.len, 'start') +
+      (L.c ? lab(add2(m, [out[0] * 18, out[1] * 18]), L.c, 'start') : ''), 'right triangular prism');
+  };
+  const cylFig = (r, h, L) => { // right cylinder; L.d (a diameter across the top) or L.r (a radius), L.h; L.open: no lid
+    const [pd, ph] = fit([2 * r, h], [180, 170], 56), rx = pd / 2, ry = Math.max(9, rx * 0.28), cx = 30 + rx, ty = 34 + ry, by = ty + ph;
+    const W = cx + rx + 120, Hh = by + ry + 14;
+    let s = `<path d="M${cx - rx} ${ty} L${cx - rx} ${by} A${rx} ${ry} 0 0 0 ${cx + rx} ${by} L${cx + rx} ${ty} Z" fill="${FACE}" stroke="none"/>` +
+      `<ellipse cx="${cx}" cy="${ty}" rx="${rx}" ry="${ry}" fill="${L.open ? '#fbfdfc' : TOP}" stroke="${INK}" stroke-width="2"/>` +
+      seg([cx - rx, ty], [cx - rx, by]) + seg([cx + rx, ty], [cx + rx, by]) + ell(cx, by, rx, ry, 'front') + ell(cx, by, rx, ry, 'back');
+    if (L.d) s += seg([cx - rx, ty], [cx + rx, ty]) + lab([cx, ty - ry - 14], L.d);
+    else s += seg([cx, ty], [cx + rx, ty]) + `<circle cx="${cx}" cy="${ty}" r="3" fill="${INK}"/>` + lab([cx + rx / 2, ty - ry - 14], L.r);
+    return svg(W, Hh, s + lab([cx + rx + 12, (ty + by) / 2], L.h, 'start'), 'cylinder');
+  };
+  const PI = Math.PI;
+  const TRIPLES = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17], [12, 16, 20], [7, 24, 25], [15, 20, 25]];
+  const UN = ['cm', 'cm', 'm', 'mm', 'in', 'ft'];
+  const sq = (u) => '\\text{ ' + u + '}^{2}', cu = (u) => '\\text{ ' + u + '}^{3}';
+  const hs = (u) => u + '<sup>2</sup>', hc = (u) => u + '<sup>3</sup>';
+  const dec = (r, lo, hi, p) => r.int(lo * 10 ** p, hi * 10 ** p) / 10 ** p; // a value with p decimals
+
+  /* ---- Beginning: a rectangular prism, a right triangular prism (all three sides given), a cylinder from its radius ---- */
+  const boxQ = (r) => {
+    const u = r.pick(UN), p = r.chance(0.35) ? 1 : 0, l = dec(r, 4, 24, p), w = dec(r, 3, 15, p), h = dec(r, 3, 18, p);
+    if (l === w || w === h || l === h) return null;
+    const V = l * w * h, lw = l * w, lh = l * h, wh = w * h, SA = 2 * (lw + lh + wh);
+    return { text: `Find the volume and the surface area of the right rectangular prism, ${H(l)} ${u} by ${H(w)} ${u} by ${H(h)} ${u}.`, q: '', fig: boxFig(l, w, h, { l: H(l) + ' ' + u, w: H(w) + ' ' + u, h: H(h) + ' ' + u }),
+      a: ['V=lwh=(' + N(l) + ')(' + N(w) + ')(' + N(h) + ')=' + N(V) + cu(u), 'SA=2(lw+lh+wh)=2(' + N(lw) + '+' + N(lh) + '+' + N(wh) + ')=' + N(SA) + sq(u)] };
+  };
+  const triQ = (r, given) => {
+    const t = r.pick(TRIPLES), u = r.pick(UN), [a, b] = r.chance(0.5) ? [t[0], t[1]] : [t[1], t[0]], c = t[2], len = r.int(5, 30), B = a * b / 2, V = B * len, SA = 2 * B + (a + b + c) * len;
+    return { text: `Find the volume and the surface area of the right triangular prism: legs ${a} ${u} and ${b} ${u} (hypotenuse ${c} ${u}), length ${len} ${u}.`, q: '', fig: triFig(a, b, len, { a: a + ' ' + u, b: b + ' ' + u, len: len + ' ' + u, c: c + ' ' + u }),
+      a: ['A_{\\text{Base}}=\\tfrac12(' + a + ')(' + b + ')=' + N(B) + sq(u) + ',\\quad V=' + N(B) + '\\times ' + len + '=' + N(V) + cu(u),
+        'SA=2(' + N(B) + ')+(' + a + '+' + b + '+' + c + ')(' + len + ')=' + N(2 * B) + '+' + N((a + b + c) * len) + '=' + N(SA) + sq(u)] };
+  };
+  const cylR = (r) => {
+    const u = r.pick(UN), R = r.chance(0.5) ? r.int(2, 15) : r.int(4, 30) / 2, h = r.int(4, 30), V = PI * R * R * h, SA = 2 * PI * R * R + 2 * PI * R * h;
+    if (bord(V, 1) || bord(SA, 1)) return null;
+    return { text: `Find the volume and the surface area of the cylinder (radius ${H(R)} ${u}, height ${h} ${u}), each to the nearest tenth.`, q: '', fig: cylFig(R, h, { r: 'r = ' + H(R) + ' ' + u, h: 'h = ' + h + ' ' + u }),
+      a: ['V=\\pi r^{2}h=\\pi(' + N(R) + ')^{2}(' + h + ')' + rd(V, 1) + cu(u), 'SA=2\\pi r^{2}+2\\pi rh=2\\pi(' + N(R) + ')^{2}+2\\pi(' + N(R) + ')(' + h + ')' + rd(SA, 1) + sq(u)] };
+  };
+
+  /* ---- Progressing: a cylinder from a decimal diameter, a triangular prism that needs the Pythagorean theorem ---- */
+  const cylD = (r) => {
+    const u = r.pick(['cm', 'cm', 'm', 'in', 'mm']), d = dec(r, 2.4, 18, 1), h = dec(r, 3, 25, 1), R = d / 2, V = PI * R * R * h, SA = 2 * PI * R * R + 2 * PI * R * h;
+    if (bord(V, 1) || bord(SA, 1) || Number.isInteger(d)) return null;
+    return { text: `Find the volume and the surface area of the cylinder (diameter ${H(d)} ${u}, height ${H(h)} ${u}), each to the nearest tenth.`, q: '', fig: cylFig(R, h, { d: 'd = ' + H(d) + ' ' + u, h: 'h = ' + H(h) + ' ' + u }),
+      a: ['r=' + N(d) + '\\div 2=' + N(R) + U(u), 'V=\\pi(' + N(R) + ')^{2}(' + N(h) + ')' + rd(V, 1) + cu(u), 'SA=2\\pi(' + N(R) + ')^{2}+2\\pi(' + N(R) + ')(' + N(h) + ')' + rd(SA, 1) + sq(u)] };
+  };
+  const triP = (r) => {
+    const u = r.pick(['cm', 'cm', 'm', 'in']), a = dec(r, 3, 14, 1), b = dec(r, 3, 12, 1), len = dec(r, 6, 30, r.chance(0.5) ? 1 : 0), c = Math.hypot(a, b), B = a * b / 2, V = B * len, SA = 2 * B + (a + b + c) * len;
+    if (Math.abs(a - b) < 1 || bord(V, 1) || bord(SA, 1) || Number.isInteger(c * 10)) return null;
+    return { text: `Find the volume and the surface area of the right triangular prism (legs ${H(a)} ${u} and ${H(b)} ${u}, length ${H(len)} ${u}), each to the nearest tenth.`, q: '', fig: triFig(a, b, len, { a: H(a) + ' ' + u, b: H(b) + ' ' + u, len: H(len) + ' ' + u }),
+      a: ['c=\\sqrt{' + N(a) + '^{2}+' + N(b) + '^{2}}=' + dots(c, 4) + U(u), 'V=\\tfrac12(' + N(a) + ')(' + N(b) + ')(' + N(len) + ')' + rd(V, 1) + cu(u),
+        'SA=2(' + N(B) + ')+(' + N(a) + '+' + N(b) + '+' + dots(c, 4) + ')(' + N(len) + ')' + rd(SA, 1) + sq(u)] };
+  };
+
+  /* ---- Mastery: capacity in litres and gallons, an open-top cylinder, mixed units ---- */
+  const tankQ = (r) => { // cylinder (cm or m) → litres and US gallons
+    const inM = r.chance(0.4), d = inM ? dec(r, 0.6, 2.4, 1) : r.int(20, 90), h = inM ? dec(r, 0.8, 3, 1) : r.int(30, 120), R = d / 2, u = inM ? 'm' : 'cm';
+    const V = PI * R * R * h, Lt = inM ? V * 1000 : V / 1000, G = Lt / 3.7854;
+    if (bord(Lt, 1) || bord(G, 1) || (inM && d === h)) return null;
+    const what = r.pick(['A cylindrical rain barrel', 'A cylindrical water tank', 'A cylindrical hot-water tank', 'A cylindrical fish tank', 'A cylindrical oil drum']);
+    return { text: `${what} has an inside diameter of ${H(d)} ${u} and a height of ${H(h)} ${u}. Find its capacity in litres and in US gallons, each to the nearest tenth. (1 US gal = 3.7854 L)`, q: '', fig: cylFig(R, h, { d: 'd = ' + H(d) + ' ' + u, h: 'h = ' + H(h) + ' ' + u }),
+      a: ['V=\\pi(' + N(R) + ')^{2}(' + N(h) + ')=' + dots(V, inM ? 4 : 2) + cu(u), (inM ? '1\\text{ m}^{3}=1000\\text{ L}:\\ ' + dots(V, 4) + '\\times 1000' : '1\\text{ cm}^{3}=1\\text{ mL}:\\ ' + dots(V, 2) + '\\div 1000') + rd(Lt, 1) + U('L'),
+        dots(Lt, 3) + '\\div 3.7854' + rd(G, 1) + U('US gal')] };
+  };
+  const aquaQ = (r) => { // rectangular prism (cm) → L and US / imperial gallons
+    const l = r.int(4, 18) * 5, w = r.int(5, 12) * 5, h = r.int(5, 12) * 5, V = l * w * h, Lt = V / 1000, imp = r.chance(0.35), g = imp ? 4.5461 : 3.7854, G = Lt / g;
+    if (l <= w || bord(G, 2)) return null;
+    return { text: `An aquarium measures ${l} cm by ${w} cm by ${h} cm inside. Find its capacity in litres, and in ${imp ? 'imperial' : 'US'} gallons to the nearest hundredth. (1 ${imp ? 'imperial' : 'US'} gal = ${imp ? '4.5461' : '3.7854'} L)`, q: '', fig: boxFig(l, w, h, { l: l + ' cm', w: w + ' cm', h: h + ' cm' }),
+      a: ['V=(' + l + ')(' + w + ')(' + h + ')=' + N(V) + cu('cm') + '=' + N(V) + U('mL'), N(V) + '\\div 1000=' + N(Lt) + U('L'), N(Lt) + '\\div ' + N(g) + rd(G, 2) + U((imp ? 'imp' : 'US') + ' gal')] };
+  };
+  const openQ = (r) => { // open-top cylinder: curved surface + one base; capacity in L or mL
+    const d = r.int(8, 40), h = r.int(10, 45), R = d / 2, SA = PI * R * R + 2 * PI * R * h, V = PI * R * R * h, Lt = V / 1000;
+    if (bord(SA, 1) || bord(Lt, 2)) return null;
+    const what = r.pick(['planter', 'pencil cup', 'wastebasket', 'paint pail', 'vase', 'measuring can']);
+    return { text: `A cylindrical ${what} (diameter ${d} cm, height ${h} cm) is <b>open at the top</b>. Find the area of material needed to make it (to the nearest tenth) and its capacity in litres (to the nearest hundredth).`, q: '', fig: cylFig(R, h, { d: 'd = ' + d + ' cm', h: 'h = ' + h + ' cm', open: 1 }),
+      a: ['r=' + N(R) + U('cm') + ',\\quad SA=\\pi r^{2}+2\\pi rh\\ \\text{(no lid)}', '=\\pi(' + N(R) + ')^{2}+2\\pi(' + N(R) + ')(' + h + ')' + rd(SA, 1) + sq('cm'), 'V=\\pi(' + N(R) + ')^{2}(' + h + ')=' + dots(V, 2) + cu('cm') + '=' + dots(V, 2) + U('mL'), dots(V, 2) + '\\div 1000' + rd(Lt, 2) + U('L')] };
+  };
+  const mixedQ = (r) => { // a rectangular prism with its edges in three different metric units
+    const l = r.int(8, 30) / 10, wc = r.int(12, 90), hmm = r.int(10, 60) * 10, w = wc / 100, h = hmm / 1000, V = l * w * h, Lt = V * 1000;
+    if (Math.abs(l - w) < 0.2 || Math.abs(w - h) < 0.05) return null;
+    const what = r.pick(['A storage bin', 'A planter box', 'A shipping crate', 'A toy box', 'A compost bin']);
+    return { text: `${what} measures ${H(l)} m long, ${wc} cm wide and ${hmm} mm high (inside). Find its volume in cubic metres and in litres.`, q: N(l) + U('m') + '\\times ' + wc + U('cm') + '\\times ' + hmm + U('mm'), fig: boxFig(l, w, h, { l: H(l) + ' m', w: wc + ' cm', h: hmm + ' mm' }),
+      a: ['\\text{All in metres: }' + N(l) + U('m') + ',\\ ' + N(w) + U('m') + ',\\ ' + N(h) + U('m'), 'V=(' + N(l) + ')(' + N(w) + ')(' + N(h) + ')=' + N(V) + cu('m'), N(V) + '\\times 1000=' + N(Lt) + U('L')] };
+  };
+  const lv = (list) => (r) => { for (;;) { const x = r.pick(list)(r); if (x) return x; } };
+  standup('u10l3', {
+    intro: 'At your whiteboard station: sketch the solid, label it, then volume (units³) and surface area (units²). Halve a diameter first; round only at the end.',
+    levels: { BEG: lv([boxQ, triQ, cylR]), PRG: lv([cylD, triP, cylD]), MAS: lv([tankQ, aquaQ, openQ, mixedQ]) }
+  });
+})();

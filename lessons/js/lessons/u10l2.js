@@ -11,6 +11,7 @@ import {
   h, tex, add, box, NumberLine, Flowchart, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
   svgEl, liveCtx, pulse, shake, anim, COLORS
 } from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 /** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
@@ -1325,3 +1326,134 @@ const B = (() => {
 
 export const explainers = mountExplainers({ hop, map, cancel, rate, ...B.explainers });
 export const _test = { HOP, CAN, Tape, ...B.test };
+
+/* ============ Stand Up Break! — convert within and between SI and imperial (the lesson's facts, Section 4) ============ */
+(() => {
+  const N = (v, d) => { // LaTeX number: d decimals (or trimmed), thin spaces in an integer part of 5+ digits
+    let [i, f] = (d != null ? v.toFixed(d) : (Math.round(v * 1e8) / 1e8).toFixed(8).replace(/\.?0+$/, '')).split('.');
+    if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+    return i + (f != null ? '.' + f : '');
+  };
+  const H = (v, d) => N(v, d).replace(/\\,/g, '\u202f');
+  const bord = (x, d) => { const f = x * 10 ** d; return Math.abs(f - Math.floor(f) - 0.5) < 0.06; };
+  const dots = (v, d) => N(Math.floor(v * 10 ** d + 1e-7) / 10 ** d, d) + '\\ldots';  // truncated, for a calculator display
+  const U = (u) => '\\text{ ' + u + '}';
+  const PL = { 1: 'one decimal place', 2: 'two decimal places', 3: 'three decimal places', 0: 'the nearest whole number' };
+  const fi = (F, I) => F + U('ft') + '\\ ' + I + U('in');
+
+  /* ---------- Beginning: one conversion ---------- */
+  const PF = [['k', -3], ['h', -2], ['da', -1], ['', 0], ['d', 1], ['c', 2], ['m', 3]];
+  const siQ = (r) => { // count steps on the metric number line
+    const b = r.pick(['m', 'm', 'g', 'L']), A = r.pick(PF), B = r.pick(PF), k = B[1] - A[1];
+    if (Math.abs(k) < 2 || (b === 'L' && (A[0] === 'h' || A[0] === 'da' || B[0] === 'h' || B[0] === 'da'))) return null;
+    const v = r.int(12, 990) / r.pick([1, 10, 100]), w = v * 10 ** k;
+    if (w < 0.0001 || w > 1e7 || Math.round(v) === v && v % 10 === 0) return null;
+    const u1 = A[0] + b, u2 = B[0] + b;
+    return { text: 'Convert using the metric number line.', q: N(v) + U(u1) + '=\\ ?' + U(u2),
+      a: ['\\text{' + u1 + '}\\to\\text{' + u2 + '}:\\ ' + Math.abs(k) + '\\text{ steps ' + (k > 0 ? 'right' : 'left') + '}:\\ ' + (k > 0 ? '\\times' : '\\div') + '10^{' + Math.abs(k) + '}',
+        N(v) + (k > 0 ? '\\times ' : '\\div ') + N(10 ** Math.abs(k)) + '=' + N(w) + U(u2)] };
+  };
+  const mixQ = (r) => { // imperial: mixed → single, or single → mixed
+    const t = r.pick([['ft', 'in', 12, 3, 9], ['yd', 'ft', 3, 4, 40], ['mi', 'yd', 1760, 1, 4], ['yd', 'in', 36, 2, 9]]), [Bg, Sm, m, lo, hi] = t;
+    const big = r.int(lo, hi), sm = r.int(1, m - 1), tot = big * m + sm;
+    if (Sm === 'yd' && sm < 50) return null;
+    if (r.chance(0.5)) return { text: 'Convert to a single unit.', q: big + U(Bg) + '\\ ' + sm + U(Sm) + '=\\ ?' + U(Sm),
+      a: [big + '\\times ' + m + '=' + N(big * m) + U(Sm), N(big * m) + '+' + sm + '=' + N(tot) + U(Sm)] };
+    return { text: 'Convert to ' + (Bg === 'mi' ? 'miles and yards' : Bg === 'yd' ? 'yards and ' + (Sm === 'ft' ? 'feet' : 'inches') : 'feet and inches') + '.', q: N(tot) + U(Sm) + '=\\ ?' + U(Bg) + '\\ ?' + U(Sm),
+      a: [N(tot) + '\\div ' + m + '=' + big + '\\text{ R }' + sm, '=' + big + U(Bg) + '\\ ' + sm + U(Sm)] };
+  };
+  const ONE = [ // [from, to, factor (multiply), fact, places, range lo, hi, divisor] — exact facts used where they exist
+    ['in', 'cm', 2.54, '1\\text{ in}=2.54\\text{ cm}', 1, 3, 40],
+    ['cm', 'in', 1 / 2.54, '1\\text{ in}=2.54\\text{ cm}', 1, 12, 150, 2.54],
+    ['ft', 'm', 0.3048, '1\\text{ ft}=0.3048\\text{ m}', 2, 6, 90],
+    ['yd', 'm', 0.9144, '1\\text{ yd}=0.9144\\text{ m}', 1, 15, 220],
+    ['m', 'yd', 1 / 0.9144, '1\\text{ yd}=0.9144\\text{ m}', 1, 10, 200, 0.9144],
+    ['mi', 'km', 1.6093, '1\\text{ mi}\\approx 1.6093\\text{ km}', 1, 3, 90],
+    ['lb', 'kg', 1 / 2.2, '1\\text{ kg}\\approx 2.2\\text{ lb}', 1, 5, 250, 2.2],
+    ['kg', 'lb', 2.2, '1\\text{ kg}\\approx 2.2\\text{ lb}', 0, 4, 120]
+  ];
+  const oneQ = (r) => {
+    const [f, t, k, fact, dp, lo, hi, dv] = r.pick(ONE), v = r.int(lo, hi), w = v * k;
+    if (bord(w, dp)) return null;
+    const exact = Math.abs(w * 10 ** dp - Math.round(w * 10 ** dp)) < 1e-9;
+    return { text: 'Convert, to ' + PL[dp] + '.', q: v + U(f) + '\\approx\\ ?' + U(t),
+      a: [fact, v + (dv ? '\\div ' + N(dv) : '\\times ' + N(k)) + '=' + (exact ? '' : dots(w, dp + 2) + '\\approx ') + N(w, dp) + U(t)] };
+  };
+
+  /* ---------- Progressing: across the systems with a mixed measure, a chain, a map scale, an SI rate ---------- */
+  const fi2m = (r) => {
+    const F = r.int(4, 9), I = r.int(1, 11), inch = 12 * F + I, cm = inch * 2.54, dp = r.pick([2, 3]);
+    if (bord(cm / 100, dp)) return null;
+    return { text: 'Convert to metres, to ' + PL[dp] + '.', q: fi(F, I) + '\\approx\\ ?' + U('m'),
+      a: [F + '\\times 12+' + I + '=' + inch + U('in'), inch + '\\times 2.54=' + N(cm) + U('cm') + '=' + N(cm / 100) + U('m') + (Math.abs(cm * 10 ** (dp - 2) - Math.round(cm * 10 ** (dp - 2))) < 1e-9 ? '' : '\\approx ' + N(cm / 100, dp) + U('m'))] };
+  };
+  const m2fi = (r) => {
+    const X = r.int(150, 360) / 100, ex = X * 100 / 2.54, inch = Math.round(ex);
+    if (bord(ex, 0) || inch % 12 === 0) return null;
+    return { text: 'Convert to feet and inches, to the nearest inch.', q: N(X, 2) + U('m') + '\\approx\\ ?' + U('ft') + '\\ ?' + U('in'),
+      a: [N(X, 2) + U('m') + '=' + N(X * 100) + U('cm'), N(X * 100) + '\\div 2.54=' + dots(ex, 3) + '\\approx ' + inch + U('in'), inch + '\\div 12=' + Math.floor(inch / 12) + '\\text{ R }' + (inch % 12) + '\\ \\Rightarrow\\ ' + fi(Math.floor(inch / 12), inch % 12)] };
+  };
+  const chainQ = (r) => { // imperial chain with unit analysis
+    const t = r.pick([['mi', 'in', [5280, 'ft', 'mi'], [12, 'in', 'ft']], ['mi', 'ft', [1760, 'yd', 'mi'], [3, 'ft', 'yd']], ['yd', 'in', [3, 'ft', 'yd'], [12, 'in', 'ft']]]);
+    const v = t[0] === 'mi' ? r.pick([0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 1.5, 2.5, 0.25, 0.75, 1.25]) : r.int(14, 95), [f1, u1, d1] = t[2], [f2, u2, d2] = t[3], w = v * f1 * f2;
+    if (t[0] === 'mi' && t[1] === 'ft' && v === 0.25) return null;
+    return { text: 'Convert with unit analysis. Show the units cancelling.', q: N(v) + U(t[0]) + '=\\ ?' + U(t[1]),
+      a: ['\\dfrac{' + N(v) + U(t[0]) + '}{1}\\times\\dfrac{' + f1 + U(u1) + '}{1' + U(d1) + '}\\times\\dfrac{' + f2 + U(u2) + '}{1' + U(d2) + '}', '=' + N(v) + '\\times ' + f1 + '\\times ' + f2 + '=' + N(w) + U(t[1])] };
+  };
+  const SCALES = [25000, 50000, 100000, 200000, 250000, 500000, 1000000];
+  const mapQ = (r) => {
+    const n = r.pick(SCALES), d = r.int(15, 240) / 10, cm = d * n, km = cm / 100000;
+    if (km > 2500) return null;
+    return { text: `A map has a scale of 1&#8202;:&#8202;${H(n)}. Two towns are ${H(d, 1)} cm apart on the map. How far apart are they on the ground, in kilometres?`, q: '1:' + N(n) + ',\\quad ' + N(d, 1) + U('cm') + '\\to\\ ?' + U('km'),
+      a: [N(d, 1) + '\\times ' + N(n) + '=' + N(cm) + U('cm'), N(cm) + U('cm') + '\\times\\dfrac{1\\text{ m}}{100\\text{ cm}}\\times\\dfrac{1\\text{ km}}{1000\\text{ m}}=' + N(km) + U('km')] };
+  };
+  const rateSI = (r) => {
+    if (r.chance(0.5)) { const v = r.int(4, 45), w = v * 3.6; return { text: 'Convert the speed with unit analysis.', q: v + '\\ \\text{m/s}=\\ ?\\ \\text{km/h}',
+      a: ['\\dfrac{' + v + '\\text{ m}}{\\text{s}}\\times\\dfrac{1\\text{ km}}{1000\\text{ m}}\\times\\dfrac{3600\\text{ s}}{1\\text{ h}}', '=\\dfrac{' + v + '\\times 3600}{1000}=' + N(w) + '\\ \\text{km/h}'] }; }
+    const v = r.int(3, 24) * 5, w = v / 3.6; if (bord(w, 1)) return null;
+    return { text: 'Convert the speed with unit analysis, to the nearest tenth.', q: v + '\\ \\text{km/h}\\approx\\ ?\\ \\text{m/s}',
+      a: ['\\dfrac{' + v + '\\text{ km}}{\\text{h}}\\times\\dfrac{1000\\text{ m}}{1\\text{ km}}\\times\\dfrac{1\\text{ h}}{3600\\text{ s}}', '=\\dfrac{' + N(v * 1000) + '}{3600}=' + dots(w, 3) + '\\approx ' + N(w, 1) + '\\ \\text{m/s}'] };
+  };
+
+  /* ---------- Mastery: a rate across the systems, a map scale backwards, which race is longer ---------- */
+  const rateX = (r) => {
+    const k = r.pick(['mph', 'mph', 'kmh']);
+    if (k === 'mph') { const S = r.int(4, 16) * 5, w = S * 1609.3 / 3600; if (bord(w, 1)) return null;
+      return { text: 'Convert the speed to metres per second, to the nearest tenth. (1 mi ≈ 1.6093 km)', q: S + '\\ \\text{mi/h}\\approx\\ ?\\ \\text{m/s}',
+        a: ['\\dfrac{' + S + '\\text{ mi}}{\\text{h}}\\times\\dfrac{1.6093\\text{ km}}{1\\text{ mi}}\\times\\dfrac{1000\\text{ m}}{1\\text{ km}}\\times\\dfrac{1\\text{ h}}{3600\\text{ s}}', '=\\dfrac{' + S + '\\times 1609.3}{3600}=' + dots(w, 3) + '\\approx ' + N(w, 1) + '\\ \\text{m/s}'] }; }
+    const S = r.int(6, 24) * 5, w = S * 1000 / 0.3048 / 3600; if (bord(w, 1)) return null;
+    return { text: 'Convert the speed to feet per second, to the nearest tenth. (1 ft = 0.3048 m)', q: S + '\\ \\text{km/h}\\approx\\ ?\\ \\text{ft/s}',
+      a: ['\\dfrac{' + S + '\\text{ km}}{\\text{h}}\\times\\dfrac{1000\\text{ m}}{1\\text{ km}}\\times\\dfrac{1\\text{ ft}}{0.3048\\text{ m}}\\times\\dfrac{1\\text{ h}}{3600\\text{ s}}', '=\\dfrac{' + N(S * 1000) + '}{0.3048\\times 3600}=' + dots(w, 3) + '\\approx ' + N(w, 1) + '\\ \\text{ft/s}'] };
+  };
+  const mapBack = (r) => {
+    const n = r.pick(SCALES), D = r.int(4, 60) * (n >= 500000 ? 10 : n >= 100000 ? 2 : 0.5), cm = D * 100000, d = cm / n;
+    if (d < 1 || d > 60 || bord(d, 1)) return null;
+    const ex = Math.abs(d * 10 - Math.round(d * 10)) < 1e-9;
+    return { text: `On a map with a scale of 1&#8202;:&#8202;${H(n)}, how far apart are two lakes that are ${H(D)} km apart on the ground? Answer in centimetres${ex ? '' : ', to the nearest tenth'}.`, q: '1:' + N(n) + ',\\quad ' + N(D) + U('km') + '\\to\\ ?' + U('cm'),
+      a: [N(D) + U('km') + '=' + N(D) + '\\times 1000\\times 100=' + N(cm) + U('cm'), '\\dfrac{' + N(cm) + '}{' + N(n) + '}=' + (ex ? N(d) : dots(d, 3) + '\\approx ' + N(d, 1)) + U('cm')] };
+  };
+  const RACES = [ // [imperial value, unit, metres per unit, metric value (m), how to show it]
+    [440, 'yd', 0.9144, 400, '400\\text{ m}'], [880, 'yd', 0.9144, 800, '800\\text{ m}'], [100, 'yd', 0.9144, 100, '100\\text{ m}'], [220, 'yd', 0.9144, 200, '200\\text{ m}'],
+    [1, 'mi', 1609.3, 1500, '1500\\text{ m}'], [3, 'mi', 1609.3, 5000, '5\\text{ km}'], [6, 'mi', 1609.3, 10000, '10\\text{ km}'], [2, 'mi', 1609.3, 3000, '3\\text{ km}'],
+    [13.1, 'mi', 1609.3, 21100, '21.1\\text{ km}'], [26.2, 'mi', 1609.3, 42200, '42.2\\text{ km}'], [5, 'mi', 1609.3, 8000, '8\\text{ km}'], [12, 'mi', 1609.3, 20000, '20\\text{ km}'],
+    [100, 'ft', 0.3048, 30, '30\\text{ m}'], [50, 'yd', 0.9144, 45, '45\\text{ m}']];
+  const raceQ = (r) => {
+    const [v, u, k, M, mt] = r.pick(RACES), I = v * k, diff = Math.abs(I - M), dp = diff < 20 ? 1 : 0;
+    if (bord(diff, dp)) return null;
+    const fact = u === 'mi' ? '1\\text{ mi}\\approx 1.6093\\text{ km}' : u === 'yd' ? '1\\text{ yd}=0.9144\\text{ m}' : '1\\text{ ft}=0.3048\\text{ m}';
+    return { text: `Which is longer, and by how many metres (to ${PL[dp]})?`, q: N(v) + U(u) + '\\quad\\text{or}\\quad ' + mt,
+      a: [fact + ':\\quad ' + N(v) + U(u) + '=' + N(v) + '\\times ' + N(k) + '=' + N(I) + U('m'), (I > M ? N(v) + U(u) : mt) + '\\text{ is longer by }' + (Math.abs(diff * 10 ** dp - Math.round(diff * 10 ** dp)) < 1e-9 ? '' : dots(diff, dp + 2) + '\\approx ') + N(diff, dp) + U('m')] };
+  };
+  const ftinDiff = (r) => { // two heights in different systems: who is taller, by how many cm?
+    const F = r.int(5, 6), I = r.int(0, 11), inch = 12 * F + I, cm = inch * 2.54, M = Math.round(cm + r.pick([-9, -7, -6, -5, -4, -3, 3, 4, 5, 6, 7, 9])) / 100, d = Math.abs(cm - M * 100);
+    if (d < 1 || bord(d, 1)) return null;
+    const [A, B] = r.shuffle(['Ava', 'Ben', 'Cam', 'Dana', 'Eli', 'Fay']).slice(0, 2);
+    return { text: `${A} is ${F}&prime;${I}&Prime; tall. ${B} is ${H(M, 2)} m tall. Who is taller, and by how many centimetres (to the nearest tenth)?`, q: F + "'" + I + "''\\quad\\text{or}\\quad " + N(M, 2) + U('m'),
+      a: [F + '\\times 12+' + I + '=' + inch + U('in'), inch + '\\times 2.54=' + N(cm) + U('cm') + '\\quad\\text{vs}\\quad ' + N(M * 100) + U('cm'), '\\text{' + (cm > M * 100 ? A : B) + ' is taller by }' + N(d, 1) + U('cm')] };
+  };
+  const lv = (list) => (r) => { for (;;) { const x = r.pick(list)(r); if (x) return x; } };
+  standup('u10l2', {
+    intro: 'Convert at your whiteboard station: write each conversion fraction so the unwanted unit cancels, and check the direction.',
+    levels: { BEG: lv([siQ, mixQ, oneQ, oneQ]), PRG: lv([fi2m, m2fi, chainQ, mapQ, rateSI]), MAS: lv([rateX, mapBack, raceQ, ftinDiff]) }
+  });
+})();

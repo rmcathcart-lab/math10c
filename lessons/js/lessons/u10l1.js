@@ -15,6 +15,7 @@ import {
   arrowHead, COLORS
 } from '../blocks.js';
 import * as BLK from '../blocks.js';
+import { standup } from '../standup.js';
 
 const T = (s) => tex(s);
 /** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
@@ -1445,4 +1446,134 @@ export const explainers = mountExplainers({ imperial, metric, lay, fit, ladder, 
     const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
     io.observe(svg);
   } else play();
+})();
+
+/* ============ Stand Up Break! — estimate with a referent (pick · count · multiply), scale diagrams, big referents ============ */
+(() => {
+  const N = (v, d) => { // LaTeX number: d decimals (or trimmed), thin spaces in an integer part of 5+ digits
+    let [i, f] = (d != null ? v.toFixed(d) : String(parseFloat(v.toFixed(6)))).split('.');
+    if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+    return i + (f != null ? '.' + f : '');
+  };
+  const H = (v, d) => N(v, d).replace(/\\,/g, ' ');            // the same number for HTML text
+  const bord = (x, d) => { const f = x * 10 ** d; return Math.abs(f - Math.floor(f) - 0.5) < 0.06; }; // too close to a rounding edge
+  const U = (u) => '\\text{ ' + u + '}';
+  const ftin = (inch) => Math.floor(inch / 12) + U('ft') + '\\ ' + (inch % 12) + U('in');
+  const WHO = ['Jaden', 'Priya', 'Mateo', 'Aiyana', 'Noah', 'Leila', 'Owen', 'Hana', 'Marcus', 'Sofia'];
+
+  /* ---- Beginning: one referent, count, multiply, then a second unit ---- */
+  const BEG = [
+    (r) => { // paces ≈ 1 yd → yd, ft
+      const c = r.int(18, 60), w = r.pick(WHO), o = r.pick(['the school hallway', 'the gym', 'a basketball court', 'the parking lot', 'the library', 'the cafeteria']);
+      return { text: `${w} walks the length of ${o} in <b>${c} normal paces</b>. A pace is about 1 yd. Estimate the length in yards and in feet.`,
+        q: c + U('paces') + '\\approx\\ ?' + U('yd') + '\\approx\\ ?' + U('ft'),
+        a: [c + '\\times 1' + U('yd') + '=' + c + U('yd'), c + U('yd') + '\\times 3=' + (3 * c) + U('ft')] };
+    },
+    (r) => { // heel-to-toe foot lengths ≈ 1 ft → ft, yd
+      const k = r.int(3, 11), c = 3 * k, w = r.pick(WHO), o = r.pick(['a rug', 'a canoe', 'a garden bed', 'the whiteboard', 'a pickup truck', 'the teacher’s desk row']);
+      return { text: `${w} walks heel-to-toe along ${o}: <b>${c} foot lengths</b>. An adult foot is about 1 ft. Estimate the length in feet and in yards.`,
+        q: c + U('foot lengths') + '\\approx\\ ?' + U('ft') + '\\approx\\ ?' + U('yd'),
+        a: [c + '\\times 1' + U('ft') + '=' + c + U('ft'), c + '\\div 3=' + k + U('yd')] };
+    },
+    (r) => { // hands = 4 in → in, ft in
+      let c; do { c = r.int(11, 17); } while ((4 * c) % 12 === 0);
+      const o = r.pick(['A pony', 'A horse', 'A miniature horse', 'A draft horse foal']);
+      return { text: `${o} measures <b>${c} hands</b> at the shoulder. A hand (the width of a fist) is 4 in. Find the height in inches, then in feet and inches.`,
+        q: c + U('hands') + '=\\ ?' + U('in') + '=\\ ?' + U('ft') + '\\ ?' + U('in'),
+        a: [c + '\\times 4=' + (4 * c) + U('in'), (4 * c) + '\\div 12=' + Math.floor(4 * c / 12) + '\\text{ R }' + ((4 * c) % 12) + '\\ \\Rightarrow\\ ' + ftin(4 * c)] };
+    },
+    (r) => { // workbook widths ≈ 20 cm → cm, m
+      const c = r.int(3, 16), o = r.pick(['a desk', 'a window', 'a bulletin board', 'a bookshelf', 'a lab table', 'a bed']);
+      return { text: `The length of ${o} is about <b>${c} workbook widths</b>. A workbook is about 20 cm wide. Estimate the length in centimetres and in metres.`,
+        q: c + U('widths') + '\\approx\\ ?' + U('cm') + '\\approx\\ ?' + U('m'),
+        a: [c + '\\times 20' + U('cm') + '=' + (20 * c) + U('cm'), (20 * c) + '\\div 100=' + N(c / 5) + U('m')] };
+    },
+    (r) => { // paces ≈ 90 cm → cm, m
+      const c = r.int(12, 45), w = r.pick(WHO), o = r.pick(['the classroom', 'a hockey rink', 'the school stage', 'a tennis court', 'the track straightaway', 'a swimming pool deck']);
+      return { text: `${w} paces out the length of ${o}: <b>${c} paces</b>. A pace is about 90 cm. Estimate the length in centimetres and in metres.`,
+        q: c + U('paces') + '\\approx\\ ?' + U('cm') + '\\approx\\ ?' + U('m'),
+        a: [c + '\\times 90' + U('cm') + '=' + N(90 * c) + U('cm'), N(90 * c) + '\\div 100=' + N(0.9 * c) + U('m')] };
+    },
+    (r) => { // thumb widths ≈ 1 in → in, ft in
+      let c; do { c = r.int(14, 34); } while (c % 12 === 0);
+      const o = r.pick(['a skateboard', 'a computer keyboard', 'a cutting board', 'a guitar case', 'a hockey stick blade', 'a picture frame']);
+      return { text: `The length of ${o} is about <b>${c} thumb widths</b>. A thumb width is about 1 in. Estimate the length in inches, then in feet and inches.`,
+        q: c + U('thumbs') + '\\approx\\ ?' + U('in') + '=\\ ?' + U('ft') + '\\ ?' + U('in'),
+        a: [c + '\\times 1' + U('in') + '=' + c + U('in'), c + '\\div 12=' + Math.floor(c / 12) + '\\text{ R }' + (c % 12) + '\\ \\Rightarrow\\ ' + ftin(c)] };
+    }
+  ];
+
+  /* ---- Progressing: a perimeter from two counts, a scale diagram, a circumference ---- */
+  const SCALE = [['a smartphone', 2, 68, 79], ['an access card', 3, 28, 31], ['a textbook', 4, 60, 72], ['a computer keyboard', 5, 84, 96],
+    ['a skateboard', 10, 74, 84], ['a door', 25, 78, 86], ['a canoe', 50, 94, 108], ['a school bus', 200, 55, 62], ['a hockey stick', 20, 72, 82]];
+  const PRG = [
+    (r) => { // rectangle: two adjacent sides in paces → P in yd and m
+      const a = r.int(12, 34), b = r.int(6, 24), w = r.pick(WHO), o = r.pick(['a rectangular garden', 'the school parking lot', 'a rectangular rink', 'a soccer pitch', 'the playground']);
+      if (b > a - 3) return null;
+      const P = 2 * (a + b);
+      return { text: `${w} walks two sides of ${o} that meet at a corner: <b>${a} paces</b> and <b>${b} paces</b> (a pace is about 1 yd or 90 cm). Estimate the perimeter in yards and in metres.`,
+        q: '\\ell\\approx ' + a + ',\\ \\ w\\approx ' + b + U('paces'),
+        a: ['P\\approx 2(' + a + '+' + b + ')=' + P + U('paces') + '\\approx ' + P + U('yd'), P + '\\times 90' + U('cm') + '=' + N(90 * P) + U('cm') + '=' + N(0.9 * P) + U('m')] };
+    },
+    (r) => { // rectangle: heel-to-toe → P in ft, then yd ft
+      const a = r.int(8, 24), b = r.int(5, 18), w = r.pick(WHO), o = r.pick(['a tool shed', 'a garage', 'a deck', 'a sandbox', 'a hot tub cover', 'a trailer']);
+      const P = 2 * (a + b); if (b > a - 2 || P % 3 === 0) return null;
+      return { text: `${w} walks heel-to-toe along two sides of the base of ${o} that meet at a corner: <b>${a}</b> and <b>${b} foot lengths</b> (a foot length is about 1 ft). Estimate the perimeter in feet, then in yards and feet.`,
+        q: '\\ell\\approx ' + a + U('ft') + ',\\ \\ w\\approx ' + b + U('ft'),
+        a: ['P\\approx 2(' + a + '+' + b + ')=' + P + U('ft'), P + '\\div 3=' + Math.floor(P / 3) + '\\text{ R }' + (P % 3) + '\\ \\Rightarrow\\ ' + Math.floor(P / 3) + U('yd') + '\\ ' + (P % 3) + U('ft')] };
+    },
+    (r) => { // scale diagram 1:k, measured x cm → actual in cm and in
+      const [o, k, lo, hi] = r.pick(SCALE), x = r.int(lo, hi) / 10, X = x * k, I = X / 2.54;
+      if (bord(I, 2)) return null;
+      return { text: `A scale diagram of ${o} is drawn at a scale of <b>1&#8202;:&#8202;${k}</b>. On the diagram it measures <b>${H(x, 1)} cm</b>. Find the actual length in centimetres, and in inches to the nearest hundredth (1 in = 2.54 cm).`,
+        q: '1:' + k + ',\\quad\\text{diagram } ' + N(x, 1) + U('cm'),
+        a: [N(x, 1) + '\\times ' + k + '=' + N(X) + U('cm'), N(X) + '\\div 2.54=' + (Math.floor(I * 1e4 + 1e-7) / 1e4).toFixed(4) + '\\ldots\\approx ' + N(I, 2) + U('in')] };
+    },
+    (r) => { // circumference from a diameter: how many 1 cm fingernail widths around?
+      const [o, lo, hi] = r.pick([['a bicycle wheel', 55, 72], ['a car tire', 60, 75], ['a hula hoop', 70, 95], ['a round table', 80, 120], ['a pizza', 30, 45], ['a basketball hoop rim', 45, 46]]), d = r.int(lo, hi), C = Math.PI * d;
+      if (bord(C, 0)) return null;
+      return { text: `${o[0].toUpperCase() + o.slice(1)} has a diameter of <b>${d} cm</b>. A string wrapped once around it is measured in pinky-fingernail widths (about 1 cm each). About how many widths is the string? Use C = πd, to the nearest whole width.`,
+        q: 'd=' + d + U('cm') + ',\\quad C=\\pi d\\approx\\ ?',
+        a: ['C=\\pi(' + d + ')=' + (Math.floor(C * 1000 + 1e-7) / 1000).toFixed(3) + '\\ldots' + U('cm'), '\\approx ' + Math.round(C) + U('fingernail widths')] };
+    }
+  ];
+
+  /* ---- Mastery: a big referent from a small one, a scale diagram backwards, a diameter from a string ---- */
+  const BIG = [['Olympic pool lengths', 50, 'pool lengths'], ['hockey rinks', 61, 'rinks'], ['soccer fields', 100, 'fields'], ['school buses', 12, 'buses']];
+  const MAS = [
+    (r) => { // D km in big referents and in paces
+      const D = r.pick([1.5, 2, 2.5, 3, 4, 5, 6, 8, 10, 21.1, 42.2]), [nm, len, sh] = r.pick(BIG), m = D * 1000, n1 = m / len, n2 = m / 0.9;
+      if (bord(n1, 0) || bord(n2, 0)) return null;
+      const r1 = Number.isInteger(n1) ? '=' + N(n1) : '=' + N(Math.floor(n1 * 100 + 1e-7) / 100, 2) + '\\ldots\\approx ' + N(Math.round(n1));
+      return { text: `Build a referent for <b>${H(D)} km</b>. About how many ${nm} (${len} m each) is that? About how many paces (90 cm each)? Round each to a whole number.`,
+        q: N(D) + U('km') + '\\approx\\ ?' + U(sh) + '\\approx\\ ?' + U('paces'),
+        a: [N(D) + U('km') + '=' + N(m) + U('m'), N(m) + '\\div ' + len + r1 + U(sh), N(m) + '\\div 0.9=' + N(Math.floor(n2 * 10 + 1e-7) / 10, 1) + '\\ldots\\approx ' + N(Math.round(n2)) + U('paces')] };
+    },
+    (r) => { // scale diagram backwards: actual L → diagram in cm and in
+      const [o, k, lo, hi] = r.pick(SCALE), x = r.int(lo, hi) / 10, L = x * k, I = x / 2.54;
+      if (bord(I, 2)) return null;
+      return { text: `${o[0].toUpperCase() + o.slice(1)} is <b>${H(L)} cm</b> long. It is to be drawn at a scale of <b>1&#8202;:&#8202;${k}</b>. How long should the drawing be, in centimetres and in inches (nearest hundredth)?`,
+        q: '1:' + k + ',\\quad\\text{actual } ' + N(L) + U('cm'),
+        a: [N(L) + '\\div ' + k + '=' + N(x, 1) + U('cm'), N(x, 1) + '\\div 2.54=' + (Math.floor(x / 2.54 * 1e4 + 1e-7) / 1e4).toFixed(4) + '\\ldots\\approx ' + N(I, 2) + U('in')] };
+    },
+    (r) => { // diameter from a string count
+      const [o, lo, hi] = r.pick([['a tree trunk', 90, 260], ['a round table', 250, 380], ['a hula hoop', 220, 300], ['a telephone pole', 75, 110], ['a rain barrel', 160, 210], ['a bicycle wheel', 170, 225]]), c = r.int(lo, hi), d = c / Math.PI;
+      if (bord(d, 0)) return null;
+      return { text: `A string wrapped once around ${o} is laid out straight. It is <b>${c} pinky-fingernail widths</b> long (about 1 cm each). Estimate the diameter of ${o} to the nearest centimetre.`,
+        q: 'C\\approx ' + c + U('cm') + ',\\quad d\\approx\\ ?',
+        a: ['C=\\pi d\\ \\Rightarrow\\ d=\\dfrac{C}{\\pi}', 'd=\\dfrac{' + c + '}{\\pi}=' + (Math.floor(d * 100 + 1e-7) / 100).toFixed(2) + '\\ldots\\approx ' + Math.round(d) + U('cm')] };
+    },
+    (r) => { // a walk in paces → km and pool lengths
+      const n = r.int(9, 40) * 50 + r.int(1, 49), w = r.pick(WHO), o = r.pick(['to school', 'around the block', 'to the arena', 'to the corner store', 'along the river path']), m = 0.9 * n, km = m / 1000, pl = m / 50;
+      if (bord(km, 1) || bord(pl, 0)) return null;
+      return { text: `${w} counts <b>${H(n)} paces</b> on a walk ${o} (a pace is about 90 cm). Estimate the distance in kilometres (nearest tenth) and in Olympic pool lengths (50 m, nearest whole).`,
+        q: N(n) + U('paces') + '\\approx\\ ?' + U('km') + '\\approx\\ ?' + U('pool lengths'),
+        a: [N(n) + '\\times 0.9' + U('m') + '=' + N(m) + U('m') + '\\approx ' + N(km, 1) + U('km'), N(m) + '\\div 50=' + N(pl) + '\\approx ' + Math.round(pl) + U('pool lengths')] };
+    }
+  ];
+  const lv = (list) => (r) => { for (;;) { const x = r.pick(list)(r); if (x) return x; } };
+  standup('u10l1', {
+    intro: 'Pick · count · multiply: work the estimate at your whiteboard station, units on every line.',
+    levels: { BEG: lv(BEG), PRG: lv(PRG), MAS: lv(MAS) }
+  });
 })();
