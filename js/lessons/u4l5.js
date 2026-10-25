@@ -976,9 +976,40 @@
             return null;
           }, pairLine(T) + '<br>' + t(T.tex + '=' + splitTex(T) + '=' + groupTex(T) + '=' + br(T.F1) + br(T.F2)) + '<br>So ' + t('a=' + o.A) + ', ' + t('c=' + o.C) + ' and ' + t('a^{c}=' + o.A + '^{' + o.C + '}=' + ans) + '.',
           ['Factor by decomposition, then match the brackets to ' + t('(ax-' + o.Bq + ')(cx+' + o.D + ')') + '.'], 'a^c from factors');
-        } }] }
+        } }] },
+      { num: '21', section: 'Mastery challenge', stem: 'Use factoring to recover the dimensions, then build on them. <b>No calculator.</b>', parts: [
+        { id: 'e21', level: 'MAS', outcome: 'AN5', make: function (r) { return samePerimPart(r); } }] }
     ]
   });
+
+  /* ---------------- Mastery: rectangle area ax² + bx + c → dimensions → a square with the same perimeter ---------------- */
+  HW.addCodes({ 'dims-perim': 'Gave half the perimeter (one length + one width)', 'perim-area': 'Gave the area instead of the perimeter', 'sq-side-wrong': 'Square side is not perimeter ÷ 4', 'sq-no-middle': 'Squared a binomial without its middle term' });
+  function samePerimPart(r) {
+    var o = null;
+    for (var i = 0; i < 3000 && !o; i++) {
+      var p = r.int(1, 5), rr = r.int(1, 5), q = r.int(-7, 9), s = r.int(-7, 9);
+      if (p * rr < 2 || (p + rr) % 2 || (q + s) % 2 || !q || !s || gcd(p, q) !== 1 || gcd(rr, s) !== 1 || (p === rr && q === s) || q + s === 0) continue;
+      if (p * s + q * rr === 0 || (q < 0 && s < 0)) continue;
+      o = { p: p, q: q, r: rr, s: s };
+    }
+    o = o || { p: 2, q: 3, r: 4, s: -1 };
+    var T = Tri(o), h = (o.p + o.r) / 2, k = (o.q + o.s) / 2, sum = PL.add(T.F1, T.F2), Per = PL.scale(sum, 2), side = lin(h, k), SqA = PL.mul(side, side);
+    var noMid = PL.add(M(h * h, vo('x', 2)), N(k * k)), half = sum, sideHalf = PL.mul(sum, sum);
+    var fl = [pbox('Dimensions:'), pbox('Perimeter:'), pbox('Square’s area:')];
+    fl[0].placeholder = 'e.g. (2x - 3)(x + 4)'; fl[1].after = 'cm'; fl[2].after = t('\\text{cm}^{2}'); fl[0].wide = fl[2].wide = true;
+    var c1 = K.factored(T.list, { wrong: stdWrongs(T) });
+    var c2 = K.poly(Per, { wrong: [{ is: half, code: 'dims-perim', hint: 'That is one length plus one width. The perimeter goes all the way around: ' + t('P=2(l+w)') + '.' }, { is: T.full, code: 'perim-area', hint: 'That is the area. The perimeter is ' + t('2(l+w)') + '.' }] });
+    var c3 = K.poly(SqA, { wrong: [{ is: noMid, code: 'sq-no-middle', hint: 'Squaring a binomial gives a middle term: ' + t('(A+B)^{2}=A^{2}+2AB+B^{2}') + '.' }, { is: sideHalf, code: 'sq-side-wrong', hint: 'A square has four equal sides, so its side is the perimeter ÷ <b>4</b>, not ÷ 2.' }, { is: PL.mul(Per, Per), code: 'sq-side-wrong', hint: 'The square’s side is the perimeter ÷ 4. Square the side, not the perimeter.' }, { is: T.full, code: 'value', hint: 'The square has the same <b>perimeter</b> as the rectangle, not the same area.' }] });
+    var sTex = tx(side), sol = solDecomp(T) + '<br>So the rectangle measures ' + t(br(T.F2)) + ' by ' + t(br(T.F1)) + ' (in cm).<br>' +
+      'Perimeter ' + t('=2\\big[' + br(T.F2) + '+' + br(T.F1) + '\\big]=2(' + tx(sum) + ')=' + tx(Per)) + ' cm.<br>' +
+      'The square has the same perimeter, so each side is ' + t('\\dfrac{' + tx(Per) + '}{4}=' + sTex) + ' cm.<br>' +
+      'Area of the square ' + t('=(' + sTex + ')^{2}=' + tx(SqA)) + ' ' + t('\\text{cm}^{2}') + '.';
+    var p0 = B.fields('A rectangle has an area of ' + t('(' + T.tex + ')\\text{ cm}^{2}') + '. Its length and width are binomials with integer coefficients. A square has the <b>same perimeter</b> as the rectangle.<br>Find the rectangle’s dimensions (factor the area), its perimeter, and the area of the square (expanded and simplified).',
+      fl, [c1, c2, c3], [T.key, tx(Per), tx(SqA)], 'dimensions ' + t(T.key) + '; perimeter ' + t(tx(Per)) + '; square ' + t(tx(SqA)),
+      sol, [hintsFor(T)[0], 'Perimeter ' + t('=2(l+w)') + '. A square with that perimeter has side = perimeter ÷ 4 — then square it (don’t forget the middle term).'], 'same perimeter square from ' + T.tex);
+    p0.bad = [[T.key, tx(half), tx(SqA)], [T.key, tx(Per), tx(noMid)], [T.innerTex, tx(Per), tx(SqA)]];
+    return p0;
+  }
 
   /* ---------------- part makers that use the helpers above ---------------- */
   function groupPart(T) {

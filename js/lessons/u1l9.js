@@ -1176,7 +1176,61 @@
             return null;
           }, '<b>Irrational:</b> ' + items.filter(function (x) { return x.irr; }).map(function (x) { return t(x.tex + x.why); }).join(', ') + '<br><b>Rational:</b> ' + items.filter(function (x) { return !x.irr; }).map(function (x) { return t(x.tex + x.why); }).join(', ') + '<br>So ' + t(cnt) + ' are irrational.',
           ['Simplify each number. Roots of perfect powers, fractions and repeating decimals are rational.'], 'count irrationals among 12');
-        } }] }
+        } }] },
+      { num: '21', section: 'Mastery challenge', outcome: 'AN2',
+        shared: function (r) {
+          var o = null;
+          for (var i = 0; i < 800 && !o; i++) {
+            var a = r.int(2, 12), m = r.pick([3, 5, 6, 7, 10, 11, 13, 14, 15]), A2 = a * a * m;
+            if (A2 % 2) continue;
+            var A = A2 / 2, s = ex.nthFactor(A, 2), mm = A / (s * s);
+            if (s < 2 || mm < 2 || A > 400) continue;
+            o = { a: a, m: m, A: A, s: s, mm: mm };
+          }
+          o = o || { a: 4, m: 3, A: 24, s: 2, mm: 6 };
+          o.what = r.pick(['tile', 'window', 'photo', 'mirror', 'garden plot', 'quilt block']);
+          return o;
+        },
+        stem: function (sh) { return '<b>No calculator.</b> The diagonal of a square ' + sh.what + ' measures ' + t(sh.a + '\\sqrt{' + sh.m + '}') + ' cm.' + diagSquareSvg(sh.a + '√' + sh.m + ' cm'); },
+        parts: [
+          { id: 'e21', level: 'MAS', outcome: 'AN2', make: function (r, sh) { return diagSquarePart(sh); } }] }
     ]
   });
+
+  /* ---------- Mastery: a square from its diagonal a√m (area, exact side, exact perimeter) ---------- */
+  HW.addCodes({ 'sq-no-half': 'Used the diagonal squared as the area (forgot to halve)', 'half-diag': 'Took the side as half the diagonal', 'diag-as-side': 'Gave the diagonal as the side', 'perim-4': 'Perimeter not 4 × side', 'coef-not-sq': 'Didn’t square the coefficient' });
+  function diagSquareSvg(label) {
+    return '<svg class="fig-svg" viewBox="0 0 190 160" style="max-width:200px" role="img" aria-label="a square with side s and a dashed diagonal" font-size="15" font-family="KaTeX_Main,\'Times New Roman\',serif">' +
+      '<rect x="35" y="12" width="120" height="120" fill="#9aa3ad" fill-opacity="0.3" stroke="currentColor" stroke-width="2"/>' +
+      '<line x1="35" y1="132" x2="155" y2="12" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 4"/>' +
+      '<path d="M35 120 L47 120 L47 132" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+      '<text x="95" y="72" text-anchor="middle" dominant-baseline="central" fill="currentColor" transform="rotate(-45 95 72)" style="paint-order:stroke;stroke:var(--card,#fff);stroke-width:5px">' + label + '</text>' +
+      '<text x="95" y="150" text-anchor="middle" fill="currentColor" font-style="italic">s</text><text x="166" y="77" text-anchor="middle" fill="currentColor" font-style="italic">s</text></svg>';
+  }
+  function diagSquarePart(sh) {
+    var a = sh.a, m = sh.m, A = sh.A, s = sh.s, mm = sh.mm, D2 = a * a * m, d = a * Math.sqrt(m), S = s * Math.sqrt(mm), dTex = a + '\\sqrt{' + m + '}', sTex = rad(s, 2, mm), pTex = rad(4 * s, 2, mm);
+    var near = function (x, y) { return Math.abs(x - y) < 1e-7; };
+    var sqHint = 'Square the coefficient too: ' + t('\\left(' + dTex + '\\right)^{2}=' + a + '^{2}\\times ' + m + '=' + D2) + '.';
+    var area = numChk(A, [{ v: D2, code: 'sq-no-half', hint: t('\\left(' + dTex + '\\right)^{2}=' + D2) + ' is the square of the <b>diagonal</b>. Since ' + t('s^{2}+s^{2}=d^{2}') + ', the area ' + t('s^{2}') + ' is half of that.' },
+      { v: D2 / 4, code: 'half-diag', hint: 'The side is not half of the diagonal. Use ' + t('s^{2}+s^{2}=d^{2}') + ': the area is ' + t('s^{2}=\\dfrac{d^{2}}{2}') + '.' }, { v: a * m / 2, code: 'coef-not-sq', hint: sqHint }, { v: a * m, code: 'coef-not-sq', hint: sqHint }]);
+    var side = K.radical({ k: s, n: 2, m: mm }, 'mixed', { diag: function (val) {
+      if (near(val, d / 2)) return { code: 'half-diag', hint: 'The side is not half of the diagonal. The diagonal is the hypotenuse of a right triangle whose legs are two sides: ' + t('s^{2}+s^{2}=\\left(' + dTex + '\\right)^{2}') + '.' };
+      if (near(val, d)) return { code: 'diag-as-side', hint: 'That is the diagonal itself. The side is shorter: solve ' + t('2s^{2}=\\left(' + dTex + '\\right)^{2}') + '.' };
+      if (near(val, Math.sqrt(a * m / 2)) || near(val, Math.sqrt(a * m))) return { code: 'coef-not-sq', hint: sqHint };
+      return null;
+    } });
+    var per = K.radical({ k: 4 * s, n: 2, m: mm }, 'mixed', { diag: function (val) {
+      if (near(val, S)) return { code: 'perim-4', hint: 'That is one side. A square has <b>four</b> equal sides: ' + t('P=4s') + '.' };
+      if (near(val, 2 * S)) return { code: 'perim-4', hint: 'A square has <b>four</b> sides, not two: ' + t('P=4s') + '.' };
+      if (near(val, 2 * d)) return { code: 'half-diag', hint: 'Find the exact side first — it is not half of the diagonal.' };
+      return null;
+    } });
+    return P.fields('Find the <b>area</b> of the ' + sh.what + ', its <b>exact</b> side length ' + t('s') + ' in simplest mixed radical form, and its exact perimeter.',
+      [{ name: 'Area', label: 'Area:', after: t('\\text{cm}^{2}') }, { name: 'Side', before: t('s='), mode: 'math', keys: 'radical', after: 'cm' }, { name: 'Perimeter', label: 'Perimeter:', mode: 'math', keys: 'radical', after: 'cm' }],
+      [area, side, per], [String(A), sTex, pTex], 'area ' + t(A + '\\text{ cm}^{2}') + ', ' + t('s=' + sTex) + ' cm, perimeter ' + t(pTex) + ' cm',
+      'The diagonal is the hypotenuse of a right triangle whose legs are two sides: ' + t('s^{2}+s^{2}=\\left(' + dTex + '\\right)^{2}') + '.<br>' + t('\\left(' + dTex + '\\right)^{2}=' + a + '^{2}\\times ' + m + '=' + a * a + '\\times ' + m + '=' + D2) + ' (the coefficient is squared too), so ' + t('2s^{2}=' + D2) + ' and ' + t('s^{2}=' + A) + '.<br>The area is ' + t('s^{2}=' + A) + ' cm².<br>' +
+        t('s=\\sqrt{' + A + '}=\\sqrt{' + s * s + '\\times ' + mm + '}=' + sTex) + ' cm.<br>Perimeter ' + t('=4s=4\\times ' + sTex + '=' + pTex) + ' cm.',
+      ['The diagonal is the hypotenuse of a right triangle with two sides as legs: ' + t('s^{2}+s^{2}=d^{2}') + '. Square the diagonal first: ' + t('\\left(a\\sqrt{b}\\right)^{2}=a^{2}\\times b') + '.', t('s^{2}') + ' is the area. Then simplify ' + t('s=\\sqrt{s^{2}}') + ' using its largest perfect-square factor, and use ' + t('P=4s') + '.'],
+      'square with diagonal ' + a + '√' + m + ': area, side, perimeter');
+  }
 })(window);

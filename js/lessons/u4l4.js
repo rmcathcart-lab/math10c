@@ -894,9 +894,48 @@
             return null;
           }, t(e + '=(' + c + 'x^{2}-' + d + 'y^{2})(' + c + 'x^{2}+' + d + 'y^{2})=(' + a + 'x-' + b + 'y)(' + a + 'x+' + b + 'y)(' + c + 'x^{2}+' + d + 'y^{2})') + '<br>So ' + t('a=' + a + ',\\ b=' + b + ',\\ c=' + c + ',\\ d=' + d) + ' and ' + t('a+b+c+d=' + ans) + '.',
             ['Factor completely (two rounds), then read off ' + t('a, b, c, d') + '.'], 'NR: a+b+c+d for ' + plain(e));
-        } }] }
+        } }] },
+      { num: '19', section: 'Mastery challenge', stem: 'Model the situation with a difference of squares, then factor completely.', parts: [
+        { id: 'e19', level: 'MAS', outcome: 'AN5', make: function (r) { return cornersPart(r); } }] }
     ]
   });
+
+  /* ---------------- Mastery: a square sheet with a c × c square cut from each of its four corners ---------------- */
+  HW.addCodes({ 'one-corner': 'Subtracted only one corner square', 'root-4c': 'Used 4c instead of 2c as the square root of 4c²', 'no-corners': 'Did not subtract the corners' });
+  function cornersSvg(sideLab, cLab) {
+    var o = 'transform="translate(34 10)"', S = 140, k = 28;
+    return '<svg class="fig-svg" viewBox="0 0 200 200" style="max-width:220px" role="img" aria-label="a square sheet with a small square cut from each corner" font-size="15" font-family="KaTeX_Main,\'Times New Roman\',serif"><g ' + o + '>' +
+      '<path d="M' + k + ' 0 H' + (S - k) + ' V' + k + ' H' + S + ' V' + (S - k) + ' H' + (S - k) + ' V' + S + ' H' + k + ' V' + (S - k) + ' H0 V' + k + ' H' + k + ' Z" fill="#9aa3ad" fill-opacity="0.45" stroke="currentColor" stroke-width="2"/>' +
+      [[0, 0], [S - k, 0], [S - k, S - k], [0, S - k]].map(function (q) { return '<rect x="' + q[0] + '" y="' + q[1] + '" width="' + k + '" height="' + k + '" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>'; }).join('') +
+      '<text x="' + k / 2 + '" y="' + (k / 2 + 1) + '" text-anchor="middle" dominant-baseline="central" fill="currentColor" font-style="italic">' + cLab + '</text>' +
+      '<text x="' + (k + 6) + '" y="' + (k / 2 + 1) + '" dominant-baseline="central" fill="currentColor" font-style="italic">' + cLab + '</text>' +
+      '<line x1="0" y1="' + (S + 14) + '" x2="' + S + '" y2="' + (S + 14) + '" stroke="currentColor" stroke-width="1.2"/><line x1="0" y1="' + (S + 9) + '" x2="0" y2="' + (S + 19) + '" stroke="currentColor" stroke-width="1.2"/><line x1="' + S + '" y1="' + (S + 9) + '" x2="' + S + '" y2="' + (S + 19) + '" stroke="currentColor" stroke-width="1.2"/>' +
+      '<text x="' + S / 2 + '" y="' + (S + 32) + '" text-anchor="middle" fill="currentColor">' + sideLab + '</text></g></svg>';
+  }
+  function cornersPart(r) {
+    var o = null;
+    for (var i = 0; i < 800 && !o; i++) {
+      var p = r.pick([1, 2, 2, 3]), c = r.int(1, 5), q = r.int(2 * c + 1, 20), g1 = gcd(p, q - 2 * c), g2 = gcd(p, q + 2 * c);
+      if (p > 1 && g1 * g2 === 1 && r.chance(0.85)) continue;
+      if (p === 1 && r.chance(0.3)) continue;
+      o = { p: p, c: c, q: q, g1: g1, g2: g2 };
+    }
+    o = o || { p: 2, c: 3, q: 10, g1: 2, g2: 2 };
+    var p = o.p, c = o.c, q = o.q, g1 = o.g1, g2 = o.g2, X = function (a, b) { return P.add(L(a, 'x'), N(b)); };
+    var side = X(p, q), sTex = tx(side), A1 = X(p, q - 2 * c), A2 = X(p, q + 2 * c), F1 = X(p / g1, (q - 2 * c) / g1), F2 = X(p / g2, (q + 2 * c) / g2);
+    var target = g1 * g2 > 1 ? [N(g1 * g2), F1, F2] : [F1, F2], key = FX.tex(target);
+    var ws = [
+      { is: [X(p, q - c), X(p, q + c)], code: 'one-corner', hint: 'There are <b>four</b> corners: the area removed is ' + t('4\\times ' + c + '^{2}=' + 4 * c * c) + ', not ' + t(c + '^{2}') + '.' },
+      { is: [X(p, q - 4 * c), X(p, q + 4 * c)], code: 'root-4c', hint: t(4 * c * c + '=' + 2 * c + '^{2}') + ': its square root is ' + t(2 * c) + ', not ' + t(4 * c) + '.' },
+      { is: [{ p: side, k: 2 }], code: 'no-corners', hint: 'That is the area of the whole sheet. Subtract the four corner squares.' }];
+    var sol = 'Remaining area ' + t('=' + sqTex(side) + '-4\\times ' + c + '^{2}=' + sqTex(side) + '-' + 4 * c * c) + '.<br>' + t(4 * c * c + '=' + 2 * c + '^{2}') + ', so it is a difference of squares with ' + t('A=' + sTex) + ' and ' + t('B=' + 2 * c) + ':<br>' +
+      t('=\\big[(' + sTex + ')-' + 2 * c + '\\big]\\big[(' + sTex + ')+' + 2 * c + '\\big]=(' + tx(A1) + ')(' + tx(A2) + ')') +
+      (g1 * g2 > 1 ? '<br>Take out the common factors: ' + [[A1, g1, F1], [A2, g2, F2]].filter(function (z) { return z[1] > 1; }).map(function (z) { return t(tx(z[0]) + '=' + z[1] + '(' + tx(z[2]) + ')'); }).join(' and ') + ', so the area is ' + t(key) + ' ' + t('\\text{cm}^{2}') + '.' : '<br>Neither bracket has a common factor, so the area is ' + t(key) + ' ' + t('\\text{cm}^{2}') + '.');
+    var p0 = factPart('A square sheet of cardboard has side length ' + t('(' + sTex + ')') + ' cm. A square of side ' + t(c) + ' cm is cut from <b>each</b> of its four corners.' + cornersSvg(plain(sTex).replace(/-/g, '−'), String(c)) + 'Write the area of the remaining cardboard (in ' + t('\\text{cm}^{2}') + ') as a polynomial, factored <b>completely</b>.',
+      target, ws, sol, ['Area left = (area of the sheet) − (area of the four corners). Write the four corners together as one perfect square: ' + t('4\\times ' + c + '^{2}=(\\ ?\\ )^{2}') + '.', 'Use ' + t('A^{2}-B^{2}=(A-B)(A+B)') + ' with ' + t('A=' + sTex) + ', simplify each bracket, then look for a common factor.'],
+      'sheet ' + plain(sTex) + ' minus four ' + c + 'x' + c + ' corners', { wrap: function (check) { return simpBr(check); } });
+    return p0;
+  }
 
   /* ---------------- makers used above (hoisted) ---------------- */
   function productPart(n, d) {

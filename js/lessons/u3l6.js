@@ -1333,8 +1333,44 @@
             numDiag([[ans - b, 'no-middle', 'The square has a middle term: ' + t('(' + p + 'x+' + q + ')^{2}=' + tx(Y.pow(lin(p, q), 2))) + '.'], [ans - 2 * rr * rr, 'dos-sign', 'Subtracting ' + t('(x^{2}-' + rr * rr + ')') + ' gives ' + t('-x^{2}+' + rr * rr) + '.'], [ans + 2, 'const-sign', t('(x-1)(x^{2}+x+1)=x^{3}-1') + '.'], [ans + 1, 'only-a', 'Don’t include the coefficient of ' + t('x^{3}') + ': only ' + t('a') + ', ' + t('b') + ' and ' + t('c') + '.']]),
             t('(' + p + 'x+' + q + ')^{2}=' + tx(Y.pow(lin(p, q), 2))) + '<br>' + t('-(x-' + rr + ')(x+' + rr + ')=-x^{2}+' + rr * rr) + '<br>' + t('(x-1)(x^{2}+x+1)=x^{3}-1') + '<br>Collect: ' + t(tx(Y.add(mono(1, 'x', 3), quad(a, b, c)))) + ', so ' + t('a+b+c=' + a + '+' + b + '+' + c + '=' + ans) + '.',
             ['Expand each of the three pieces separately, then collect.'], 'NR a+b+c');
-        } }] }
+        } }] },
+      { num: '21', section: 'Mastery challenge', stem: '<b>Pair, then group.</b> Choose which brackets to multiply together first — the right pairing makes this short.', parts: [
+        { id: 'e21', level: 'MAS', outcome: 'AN4', make: function (r) { return fourSquarePart(r); } }] }
     ]
 
   });
+
+  /* ---------- Mastery: (x+p)(x+q)(x+r)(x+s) + K is a perfect square (p + s = q + r) ---------- */
+  HW.addCodes({ 'pair-b-all': 'Added all four constants to get b', 'c-half': 'Did not halve the sum of the pair constants', 'c-one-pair': 'Used only one pair’s constant for c', 'c-squared': 'Gave c² instead of c' });
+  function fourSquarePart(r) {
+    var o = null;
+    for (var i = 0; i < 3000 && !o; i++) {
+      var al = r.int(1, 3), be = r.int(1, 4), p = r.int(-8, 4), q = p + al, rr = q + be, s = rr + al;
+      if (s > 9 || !p || !q || !rr || !s) continue;
+      var D = q * rr - p * s; if (D % 2 || D > 24) continue;
+      var b = p + s, c = (p * s + q * rr) / 2, K2 = (D / 2) * (D / 2);
+      if (!c || !b && r.chance(0.7)) continue;
+      var cs = [p, q, rr, s], full = Y.add(cs.reduce(function (acc, k) { return Y.mul(acc, lin(1, k)); }, Y.num(1)), Y.num(K2)), T = quad(1, b, c);
+      if (!Y.eq(full, Y.pow(T, 2))) continue;
+      o = { p: p, q: q, r: rr, s: s, b: b, c: c, K: K2, T: T, order: r.shuffle(cs) };
+    }
+    if (!o) o = { p: 1, q: 2, r: 3, s: 4, b: 5, c: 5, K: 1, T: quad(1, 5, 5), order: [3, 1, 4, 2] };
+    var p = o.p, q = o.q, rr = o.r, s = o.s, b = o.b, c = o.c, K2 = o.K, ps = p * s, qr = q * rr;
+    var bk = function (k) { return '(' + tx(lin(1, k)) + ')'; }, sg = function (n) { return n < 0 ? String(n) : '+' + n; };
+    var expr = o.order.map(bk).join('') + '+' + K2, U = b ? tx(Y.add(mono(1, 'x', 2), mono(b, 'x'))) : 'x^{2}';
+    var aT = function (n) { return n === 1 ? '+A' : n === -1 ? '-A' : n === 0 ? '' : sg(n) + 'A'; };
+    var fl = [{ name: 'b', label: t('b='), mode: 'number' }, { name: 'c', label: t('c='), mode: 'number' }];
+    var pairHint = 'Pair the brackets whose constants have the <b>same sum</b>: ' + t(bk(p) + bk(s)) + ' and ' + t(bk(q) + bk(rr)) + '. Each pair gives ' + t(U + '+\\ldots') + '.';
+    return KP.fields(t(expr) + ' can be written as ' + t('\\left(x^{2}+bx+c\\right)^{2}') + ' for every value of ' + t('x') + ', where ' + t('b') + ' and ' + t('c') + ' are integers. Find ' + t('b') + ' and ' + t('c') + '.', fl, [
+      K.number(b, numDiag([[p + q + rr + s, 'pair-b-all', t('b') + ' is the ' + t('x') + '-coefficient of <b>one</b> pair, not the sum of all four constants. ' + pairHint], [-b, 'sign', 'Check the sign: ' + t(bk(p) + bk(s) + '=' + tx(Y.mul(lin(1, p), lin(1, s)))) + '.']])),
+      K.number(c, numDiag([[ps + qr, 'c-half', 'With ' + t('A=' + U) + ' the product is ' + t('A^{2}' + aT(ps + qr) + '\\ldots') + ', and ' + t('(A+c)^{2}=A^{2}+2cA+c^{2}') + ': the middle coefficient is <b>twice</b> ' + t('c') + '.'],
+        [ps, 'c-one-pair', 'That is the constant of only one pair. ' + t('c') + ' sits halfway between the two pair constants, ' + t(ps) + ' and ' + t(qr) + '.'], [qr, 'c-one-pair', 'That is the constant of only one pair. ' + t('c') + ' sits halfway between the two pair constants, ' + t(ps) + ' and ' + t(qr) + '.'],
+        [c * c, 'c-squared', 'That is ' + t('c^{2}') + ', the constant term of the whole expansion. Take its square root (watch the sign).'], [-c, 'sign', 'Check the sign of ' + t('c') + ': it is half of ' + t(ps + '+' + par(qr) + '=' + (ps + qr)) + '.']]))],
+      [String(b), String(c)], t('b=' + b) + ', ' + t('c=' + c),
+      'Pair the brackets whose constants add to the same number (' + t(p + '+' + par(s) + '=' + par(q) + '+' + par(rr) + '=' + b) + '):<br>' + t(bk(p) + bk(s) + '=' + tx(Y.mul(lin(1, p), lin(1, s)))) + ' and ' + t(bk(q) + bk(rr) + '=' + tx(Y.mul(lin(1, q), lin(1, rr)))) + '.<br>Both begin with ' + t(U) + '. Let ' + t('A=' + U) + ':<br>' +
+        t('(A' + sg(ps) + ')(A' + sg(qr) + ')+' + K2 + '=A^{2}' + aT(ps + qr) + sg(ps * qr) + '+' + K2 + '=A^{2}' + aT(ps + qr) + sg(ps * qr + K2)) + '.<br>' +
+        'That is a perfect square: ' + t('(A' + sg(c) + ')^{2}=A^{2}' + aT(2 * c) + '+' + c * c) + ', because ' + t('2(' + c + ')=' + 2 * c) + ' and ' + t(par(c) + '^{2}=' + c * c) + '.<br>So ' + t(expr + '=\\left(' + tx(o.T) + '\\right)^{2}') + ': ' + t('b=' + b) + ' and ' + t('c=' + c) + '.' +
+        '<br>Check with ' + t('x=1') + ': ' + t(o.order.map(function (k) { return par(1 + k); }).join('\\times ') + '+' + K2 + '=' + ((1 + p) * (1 + q) * (1 + rr) * (1 + s) + K2)) + ' and ' + t('(1' + (b ? sg(b) : '') + sg(c) + ')^{2}=' + (1 + b + c) * (1 + b + c)) + ' ✓',
+      [pairHint, 'Let ' + t('A=' + U) + '. Multiply the two pair results as ' + t('(A+\\square)(A+\\square)') + ', add ' + t(K2) + ', and compare with ' + t('(A+c)^{2}=A^{2}+2cA+c^{2}') + '.'], 'four brackets + ' + K2 + ' perfect square ' + [p, q, rr, s].join(','));
+  }
 })(window);

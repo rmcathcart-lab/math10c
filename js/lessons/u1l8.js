@@ -506,7 +506,9 @@
             return null;
           }, 'The coefficient ' + t(c) + ' comes from the perfect cube ' + t(c + '^{3}=' + pw(c, 3)) + ', so ' + t('n=' + pw(c, 3) + 'k') + ' and ' + t('\\sqrt[3]{n}=' + c + '\\sqrt[3]{k}') + ', where ' + t('k') + ' has no perfect cube factor.<br>' + t('k=1') + ': ' + t('\\sqrt[3]{' + pw(c, 3) + '}=' + c) + ', a whole number — not a mixed radical.<br>' + t('k=2') + ': ' + t('\\sqrt[3]{' + ans + '}=' + c + '\\sqrt[3]{2}') + ' ✓, so ' + t('n=' + ans) + '.',
           ['Where does a coefficient of ' + t(c) + ' come from in a cube root?', 'Try ' + t(c + '^{3}\\times 1') + ', ' + t(c + '^{3}\\times 2') + ', … Which is the first one that leaves something under the root?'], 'smallest n, cbrt coefficient ' + c);
-        } }] }
+        } }] },
+      { num: '21', section: 'Mastery challenge', stem: '<b>No calculator.</b> Compare by writing every number as an entire cube root.', parts: [
+        { id: 'e21', level: 'MAS', outcome: 'AN2', make: function (r) { return betweenPart(r); } }] }
     ]
   });
 
@@ -526,5 +528,45 @@
       : outerNeg ? 'The negative sign is outside the root. ' + t(rt(n, F(R)) + '=' + s) + ' since ' + t(s + '^{' + n + '}=' + F(R)) + ', so ' + t(q + '=' + val) + '.'
       : 'The index is odd, so a negative radicand is fine: ' + t('(-' + s + ')^{' + n + '}=-' + F(R)) + ', so ' + t(q + '=' + val) + '.';
     return P.mc(r, t(q), opts, sol, ['Is the index odd or even? Is the negative sign inside or outside the root?'], 'evaluate ' + q);
+  }
+
+  /* ---------- Mastery: every whole number a with L < a·∛m < U (compare a³m with L³ and U³) ---------- */
+  HW.addCodes({ 'between-extra': 'Listed a value outside the range', 'between-missing': 'Missed some of the values' });
+  function betweenPart(r) {
+    var o = null;
+    for (var i = 0; i < 800 && !o; i++) {
+      var m = r.pick([2, 3, 4, 5, 6, 7, 9, 10]), L = r.int(2, 7), U = r.int(L + 2, Math.min(L + 6, 10));
+      var want = [], sqw = [];
+      for (var a = 1; a * a * a * m < U * U * U; a++) if (a * a * a * m > L * L * L) want.push(a);
+      for (var b = 1; b * b * m < U * U; b++) if (b * b * m > L * L) sqw.push(b);
+      if (want.length < 3 || want.length > 5) continue;
+      o = { m: m, L: L, U: U, want: want, sqw: sqw };
+    }
+    if (!o) o = { m: 2, L: 5, U: 9, want: [4, 5, 6, 7], sqw: [4, 5, 6] };
+    var m = o.m, L = o.L, U = o.U, want = o.want, L3 = L * L * L, U3 = U * U * U, cr = function (x) { return '\\sqrt[3]{' + F(x) + '}'; };
+    var expr = 'a\\sqrt[3]{' + m + '}';
+    var lo = Math.max(1, want[0] - 1), hi = want[want.length - 1] + 1, rows = [];
+    for (var k = lo; k <= hi; k++) {
+      var v = k * k * k * m, inside = v > L3 && v < U3;
+      rows.push(t(k + '\\sqrt[3]{' + m + '}=\\sqrt[3]{' + k + '^{3}\\times ' + m + '}=' + cr(v)) + (inside ? ' ✓' : v <= L3 ? ' — too small (' + t(F(v) + '<' + F(L3)) + ')' : ' — too big (' + t(F(v) + '>' + F(U3)) + ')'));
+    }
+    var sameSet = function (A, B) { return A.length === B.length && A.every(function (x) { return B.indexOf(x) >= 0; }); };
+    return { prompt: 'List <b>every</b> whole number ' + t('a') + ' for which ' + t(L + '<' + expr + '<' + U) + '.', input: { type: 'list' }, key: want, answer: t(K.listTex(want)),
+      check: function (resp) {
+        if (!resp || !resp.length) return form('empty', 'Add the values one at a time (press Enter or comma after each).');
+        var seen = {}; for (var i = 0; i < resp.length; i++) { if (seen[resp[i]]) return form('duplicate', 'You listed ' + t(resp[i]) + ' more than once.'); seen[resp[i]] = 1; }
+        if (resp.some(function (x) { return x < 0 || x % 1; })) return form('whole', t('a') + ' is a whole number: ' + t('0, 1, 2, 3, \\ldots') + '.');
+        if (sameSet(resp, want)) return ok();
+        if (!sameSet(want, o.sqw) && sameSet(resp, o.sqw)) return wrong('square-thinking', 'Those would be right for a <b>square</b> root. This is a cube root: write ' + t('a\\sqrt[3]{' + m + '}=\\sqrt[3]{a^{3}\\times ' + m + '}') + ' and compare with ' + t(L + '=' + cr(L3)) + ' and ' + t(U + '=' + cr(U3)) + '.');
+        var extra = resp.filter(function (x) { return want.indexOf(x) < 0; });
+        if (extra.length) {
+          var e = extra[0], v = e * e * e * m;
+          return wrong('between-extra', t(e + '\\sqrt[3]{' + m + '}=' + cr(v)) + ', and ' + (v <= L3 ? t(F(v) + '<' + F(L3)) + ', so it is <b>less</b> than ' + t(L + '=' + cr(L3)) : t(F(v) + '>' + F(U3)) + ', so it is <b>greater</b> than ' + t(U + '=' + cr(U3))) + '.');
+        }
+        return wrong('between-missing', 'Every number you listed works, but you have ' + resp.length + ' of the ' + want.length + ' values. Test the whole numbers one at a time: ' + t('1, 2, 3, \\ldots') + '.');
+      },
+      solution: 'Write every number as an entire cube root: ' + t(L + '=\\sqrt[3]{' + L + '^{3}}=' + cr(L3)) + ', ' + t(U + '=\\sqrt[3]{' + U + '^{3}}=' + cr(U3)) + ' and ' + t(expr + '=\\sqrt[3]{a^{3}\\times ' + m + '}') + '.<br>So the radicand ' + t('a^{3}\\times ' + m) + ' must be between ' + t(F(L3)) + ' and ' + t(F(U3)) + '.<br>' + rows.join('<br>') + '<br>So ' + t('a=' + K.listTex(want)) + '.',
+      hints: ['Write all three numbers as entire cube roots: ' + t(L + '=\\sqrt[3]{' + L + '^{3}}') + ' and ' + t(expr + '=\\sqrt[3]{a^{3}\\times ' + m + '}') + '.', 'Then compare radicands: test ' + t('a=1, 2, 3, \\ldots') + ' until ' + t('a^{3}\\times ' + m) + ' passes ' + t(F(U3)) + '.'],
+      text: 'whole a with ' + L + ' < a cbrt' + m + ' < ' + U, bad: [want.slice(1), want.concat([want[want.length - 1] + 1]), want[0] > 1 ? [want[0] - 1].concat(want) : want.slice(0, -1)] };
   }
 })(window);

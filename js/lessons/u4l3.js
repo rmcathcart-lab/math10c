@@ -1146,9 +1146,48 @@
             { html: t('x^{2}+' + o.u), why: 'Check the signs: the number further from 0 must have the sign of the middle coefficient, ' + t(s.b) + '.' }, { html: t('x^{2}-' + o.w), why: 'Treat it as a trinomial in ' + t('x^{2}') + ': two numbers with product ' + t(s.c) + ' and sum ' + t(s.b) + '.' }],
             'In terms of ' + t('x^{2}') + ': ' + t(sg(-o.u)) + ' and ' + t(sg(o.v)) + ' (product ' + t(s.c) + ', sum ' + t(s.b) + '). ' + t(tx(s.full) + '=' + s.key) + '. Neither bracket factors further, so the listed factor is ' + t('x^{2}+' + o.v) + '.',
             ['Let ' + t('u=x^{2}') + ': factor ' + t(triTex('u', s.b, s.c)) + '.'], 'MC factor of x^4 trinomial');
-        } }] }
+        } }] },
+      { num: '20', section: 'Mastery challenge', stem: '<b>Working backwards from the sum.</b> This time the middle coefficient is fixed and the constant term is unknown.', parts: [
+        { id: 'e20', level: 'MAS', outcome: 'AN5', make: function (r) { return cValuesPart(r); } }] }
     ]
   });
+
+  /* ---------------- Mastery: every constant c (in a range) for which x² + bx + c factors ---------------- */
+  HW.addCodes({ 'c-no-neg': 'Left out the negative values of c', 'c-extra': 'Listed a c that doesn’t factor (or is out of range)', 'c-missing': 'Missed some values of c' });
+  function cValuesPart(r) {
+    var o = null, pv = function (n) { return n < 0 ? '(' + n + ')' : String(n); };
+    for (var i = 0; i < 400 && !o; i++) {
+      var b = r.int(4, 10) * (r.chance(0.5) ? 1 : -1), Nn = r.pick([20, 25, 30, 40]), pairs = [];
+      for (var m = -60; m <= 60; m++) { var n = b - m, c = m * n; if (m > n || !c || Math.abs(c) > Nn) continue; pairs.push([m, n, c]); }
+      pairs.sort(function (u, v) { return Math.abs(u[0] - u[1]) - Math.abs(v[0] - v[1]); });
+      var vals = pairs.map(function (q) { return q[2]; });
+      if (vals.length < 5 || vals.length > 8 || !vals.some(function (c) { return c < 0; })) continue;
+      o = { b: b, N: Nn, pairs: pairs, vals: vals };
+    }
+    o = o || { b: 6, N: 30, pairs: [[3, 3, 9], [2, 4, 8], [1, 5, 5], [-1, 7, -7], [-2, 8, -16], [-3, 9, -27]], vals: [9, 8, 5, -7, -16, -27] };
+    var b = o.b, Nn = o.N, vals = o.vals, pos = vals.filter(function (c) { return c > 0; }), neg = vals.filter(function (c) { return c < 0; });
+    var trin = 'x^{2}' + (b < 0 ? '-' : '+') + Math.abs(b) + 'x+c', ex1 = b > 0 ? [b + 1, -1] : [b - 1, 1];
+    var sorted = vals.slice().sort(function (u, v) { return v - u; });
+    var rows = o.pairs.map(function (q) { return t(q[0] + '+' + pv(q[1]) + '=' + b) + ', ' + t('c=' + pv(q[0]) + '\\times ' + pv(q[1]) + '=' + q[2]) + ' ' + t('\\Rightarrow ' + (q[0] === q[1] ? '(x' + sg(q[0]) + ')^{2}' : '(x' + sg(q[0]) + ')(x' + sg(q[1]) + ')')); });
+    var bx = (b < 0 ? '-' : '+') + Math.abs(b) + 'x', last = o.pairs[o.pairs.length - 1], m2 = last[0] - 1, n2 = b - m2; // the next pair, further apart
+    var p = B.valueSet('Find <b>every</b> integer ' + t('c') + ' with ' + t('-' + Nn + '\\le c\\le ' + Nn) + ' and ' + t('c\\ne 0') + ' for which ' + t(trin) + ' can be factored over the integers.', sorted, { v: 'c', keyTex: sorted.map(function (c) { return 'c=' + c; }).join(',\\ '),
+      diag: function (A, T) {
+        var extra = A.filter(function (x) { return T.indexOf(x) < 0; }), miss = T.filter(function (x) { return A.indexOf(x) < 0; });
+        if (extra.length) {
+          var e = extra[0];
+          return { code: 'c-extra', hint: Math.abs(e) > Nn || e === 0 ? t('c=' + e) + ' is outside the range (' + t('-' + Nn + '\\le c\\le ' + Nn) + ', ' + t('c\\ne 0') + ').' : 'No two integers with sum ' + t(b) + ' have product ' + t(e) + ', so ' + t('x^{2}' + bx + sg(e)) + ' does not factor.' };
+        }
+        if (miss.length && miss.every(function (x) { return x < 0; })) return { code: 'c-no-neg', hint: 'You have every positive value. ' + t('c') + ' can be <b>negative</b> too — then the two integers have opposite signs, e.g. ' + t(ex1[0] + '+' + pv(ex1[1]) + '=' + b) + ' gives ' + t('c=' + ex1[0] * ex1[1]) + '.' };
+        return { code: 'c-missing', hint: 'You have ' + (T.length - miss.length) + ' of the ' + T.length + ' values. List the pairs of integers with sum ' + t(b) + ' in order — closest together first, then further apart — and stop when the product passes ' + t('-' + Nn) + '.' };
+      } },
+      'The trinomial factors as ' + t('(x+m)(x+n)') + ' exactly when ' + t('m+n=' + b) + ' and ' + t('mn=c') + '. So list the pairs of integers with sum ' + t(b) + ' and find each product:<br>' + rows.join('<br>') +
+        '<br>The next pair, ' + t(m2 + '\\text{ and }' + n2) + ', has product ' + t(m2 * n2) + ', which is below ' + t('-' + Nn) + ', and the products only get more negative after that.<br>So ' + t('c=' + sorted.join(',\\ ')) + '.',
+      ['The trinomial factors as ' + t('(x+m)(x+n)') + ' when ' + t('m+n=' + b) + ' and ' + t('mn=c') + '. Start from the pairs of integers with sum ' + t(b) + '.', 'Pairs with opposite signs count too, like ' + t(ex1[0] + '\\text{ and }' + ex1[1]) + ' — their product is negative.'],
+      'all c for x^2' + (b < 0 ? '' : '+') + b + 'x+c, |c|<=' + Nn);
+    p.good = [sorted.join(', '), vals.join(', ')];
+    p.bad = [pos.join(', '), sorted.slice(1).join(', '), sorted.concat([neg.length ? neg[0] * 2 + 1 : -1]).join(', ')];
+    return p;
+  }
 
   /* ---------------- helpers used above (hoisted) ---------------- */
   function dsqPart(h, k) { // (x² + h·|h|)(x² + k·|k|): a negative argument means x² − n², which splits again

@@ -641,7 +641,9 @@
             'Factor each number: ' + t(list.join(',\\ ')) + '.<br>Count each prime: ' + t(n + '!=' + HW.texFactors(f)) + '.<br>Halve each exponent (an odd exponent leaves one factor under the root): ' + t('\\sqrt{' + n + '!}=' + HW.texFactors(f.map(function (pe) { return [pe[0], Math.floor(pe[1] / 2)]; }).filter(function (pe) { return pe[1] > 0; })) + '\\sqrt{' + inn + '}=' + ansTex(out, inn)) + '.',
             ['Write ' + t(n + '!') + ' as a product of primes with exponents.', 'Each pair of equal primes comes out as one prime.'], '√' + n + '!', { good: [plain(out, inn)], bad: [sq(v)] });
           return p;
-        } }] }
+        } }] },
+      { num: '16', section: 'Mastery challenge', stem: '<b>No calculator.</b> Two sides of this right triangle are given as mixed radicals (in centimetres). Square each one carefully, use the Pythagorean theorem, and simplify.', parts: [
+        { id: 'e16', level: 'MAS', outcome: 'AN2', make: function (r) { return mixedTriPart(r); } }] }
     ]
   });
 
@@ -734,4 +736,47 @@
     };
   }
   function boxSol(sh) { var d = sh.d; return t('d^{2}=' + d[0] + '^{2}+' + d[1] + '^{2}+' + d[2] + '^{2}=' + d[0] * d[0] + '+' + d[1] * d[1] + '+' + d[2] * d[2] + '=' + sh.S) + ', so ' + t('d=' + sq(sh.S)) + ' cm.'; }
+
+  /* ---------- Mastery: a right triangle whose two known sides are mixed radicals a√m ---------- */
+  HW.addCodes({ 'add-sides': 'Added (or subtracted) the side lengths instead of their squares', 'sub-hyp': 'Subtracted the squares when finding the hypotenuse' });
+  var MAS_SIDES = (function () { var o = []; [2, 3, 4, 5, 6].forEach(function (a) { [2, 3, 5, 6, 7].forEach(function (m) { o.push({ a: a, m: m, v: a * a * m }); }); }); return o; })();
+  function sideTex(s) { return s.a + '\\sqrt{' + s.m + '}'; }
+  function sideSq(s) { return t('\\left(' + sideTex(s) + '\\right)^{2}=' + s.a + '^{2}\\times ' + s.m + '=' + s.a * s.a + '\\times ' + s.m + '=' + s.v); }
+  function mixedTriPart(r) {
+    var o = null;
+    for (var i = 0; i < 800 && !o; i++) {
+      var hyp = r.chance(0.5), A = r.pick(MAS_SIDES), Bs = r.pick(MAS_SIDES);
+      if (A.m === Bs.m || A.v === Bs.v) continue; // different radicands: the sides can't just be combined
+      var N = hyp ? A.v + Bs.v : Math.abs(A.v - Bs.v);
+      if (N < 8 || N > 400 || isSq(N)) continue;
+      var s = big(N), m = N / (s * s); if (s < 2 || m < 2) continue;
+      var H = A.v > Bs.v ? A : Bs, L = A.v > Bs.v ? Bs : A;
+      o = hyp ? { hyp: true, P1: A, P2: Bs, N: N, s: s, m: m } : { hyp: false, P1: H, P2: L, N: N, s: s, m: m };
+    }
+    if (!o) o = { hyp: true, P1: { a: 2, m: 6, v: 24 }, P2: { a: 4, m: 3, v: 48 }, N: 72, s: 6, m: 2 };
+    var P1 = o.P1, P2 = o.P2, N = o.N, s = o.s, m = o.m;
+    var opN = o.hyp ? Math.abs(P1.v - P2.v) : P1.v + P2.v;                                  // added ↔ subtracted
+    var ns = o.hyp ? P1.a * P1.m + P2.a * P2.m : P1.a * P1.m - P2.a * P2.m;                   // coefficient not squared
+    var sides = o.hyp ? P1.a * Math.sqrt(P1.m) + P2.a * Math.sqrt(P2.m) : P1.a * Math.sqrt(P1.m) - P2.a * Math.sqrt(P2.m);
+    var figure = o.hyp
+      ? rightTri(Math.sqrt(P1.v), Math.sqrt(P2.v), { labels: [['V', 'O', P1.a + '√' + P1.m], ['O', 'H', P2.a + '√' + P2.m], ['H', 'V', 'x', true]] })
+      : rightTri(Math.sqrt(P2.v), Math.sqrt(N), { labels: [['V', 'O', P2.a + '√' + P2.m], ['O', 'H', 'x', true], ['H', 'V', P1.a + '√' + P1.m]] });
+    var check = K.radical({ k: s, n: 2, m: m }, 'mixed', { diag: function (val) {
+      if (!isFinite(val)) return null;
+      if (opN > 0 && near(Math.abs(val), Math.sqrt(opN))) return o.hyp
+        ? { code: 'sub-hyp', hint: t('x') + ' is opposite the right angle, so it is the <b>hypotenuse</b>: ' + t('x^{2}') + ' is the <b>sum</b> of the squares of the two legs.' }
+        : { code: 'hyp-added', hint: 'The side ' + t(sideTex(P1)) + ' is opposite the right angle, so it is the hypotenuse. ' + t('x') + ' is a leg: ' + t('x^{2}=\\left(' + sideTex(P1) + '\\right)^{2}-\\left(' + sideTex(P2) + '\\right)^{2}') + '.' };
+      if (ns > 0 && near(Math.abs(val), Math.sqrt(ns))) return { code: 'no-square', hint: 'Square the coefficient too: ' + t('\\left(' + sideTex(P1) + '\\right)^{2}=' + P1.a + '^{2}\\times ' + P1.m) + ', not ' + t(P1.a + '\\times ' + P1.m) + '.' };
+      if (sides > 0 && near(Math.abs(val), sides)) return { code: 'add-sides', hint: 'The Pythagorean theorem works with the <b>squares</b> of the sides, not the sides themselves. Square each mixed radical first.' };
+      return null;
+    } });
+    var lead = o.hyp
+      ? t('x') + ' is opposite the right angle, so it is the hypotenuse: ' + t('x^{2}=\\left(' + sideTex(P1) + '\\right)^{2}+\\left(' + sideTex(P2) + '\\right)^{2}') + '.'
+      : 'The side ' + t(sideTex(P1)) + ' is opposite the right angle, so it is the hypotenuse and ' + t('x') + ' is a leg: ' + t('x^{2}=\\left(' + sideTex(P1) + '\\right)^{2}-\\left(' + sideTex(P2) + '\\right)^{2}') + '.';
+    var sol = lead + '<br>Square each mixed radical (the coefficient is squared too): ' + sideSq(P1) + ' and ' + sideSq(P2) + '.<br>' + t('x^{2}=' + P1.v + (o.hyp ? '+' : '-') + P2.v + '=' + N) + ', so ' + t('x=' + sq(N)) + '.<br>' + mixedSol([1, 1], N, '');
+    var bad = [sq(N)]; if (opN > 0 && !isSq(opN)) bad.push(sq(opN));
+    return mathPart('Find the exact length of ' + t('x') + ', in simplest mixed radical form.' + figure, check, ex.texRadical(s, 2, m), t(ansTex(s, m)), sol,
+      ['Square each mixed radical first: ' + t('\\left(a\\sqrt{b}\\right)^{2}=a^{2}\\times b') + ' — square the coefficient as well as the root.', 'Decide which side is the hypotenuse (opposite the right angle). Then add or subtract the squares and simplify the square root.'],
+      'right triangle with sides ' + P1.a + '√' + P1.m + ', ' + P2.a + '√' + P2.m + (o.hyp ? ' (legs)' : ' (hyp, leg)'), { good: [plain(s, m)], bad: bad });
+  }
 })(window);

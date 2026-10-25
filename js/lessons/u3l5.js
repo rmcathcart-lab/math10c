@@ -1443,7 +1443,37 @@
             function (v) { return v === -s.x ? { code: 'sign', hint: 'Check your signs when you collect the ' + t('x') + ' terms.' } : null; },
             steps([tx(Lq) + '=' + tx(Rq), (2 * s.a) + 'x+' + s.a * s.a + '=' + (s.b + s.c) + 'x+' + s.b * s.c, 'x=' + s.x]) + '<br>Check: ' + t((s.x + s.a) + '^{2}=' + Math.pow(s.x + s.a, 2)) + ' and ' + t((s.x + s.b) + '\\times' + (s.x + s.c) + '=' + (s.x + s.b) * (s.x + s.c)) + ' ✓',
             ['Set the areas equal and expand; the ' + t('x^{2}') + ' terms cancel.'], 'NR square = rectangle');
-        } }] }
+        } }] },
+      { num: '20', section: 'Mastery challenge', stem: 'Write your own expressions and equation from the description. <b>No calculator.</b>', parts: [
+        { id: 'e20', level: 'MAS', outcome: 'AN4', make: function (r) { return reshapePart(r); } }] }
     ]
   });
+
+  /* ---------- Mastery: a square reshaped into a rectangle (one side longer, one shorter) — find the side ---------- */
+  HW.addCodes({ 'rect-sign': 'Used the area change with the wrong sign', 'no-ab': 'Dropped the constant term of the product', 'both-plus': 'Lengthened both sides' });
+  function reshapePart(r) {
+    var o = null;
+    for (var i = 0; i < 800 && !o; i++) {
+      var x = r.int(6, 24), a = r.int(1, 9), b = r.int(1, 9);
+      if (a === b || x <= b + 2) continue;
+      var D = (a - b) * x - a * b;
+      if (!D || Math.abs(D) > 150) continue;
+      o = { x: x, a: a, b: b, D: D };
+    }
+    o = o || { x: 12, a: 5, b: 3, D: 9 };
+    var x = o.x, a = o.a, b = o.b, D = o.D, ad = Math.abs(D), more = D > 0, k = a - b, what = r.pick([['square garden', 'garden', 'm'], ['square patio', 'patio', 'm'], ['square poster', 'poster', 'cm'], ['square lawn', 'lawn', 'm'], ['square rug', 'rug', 'dm']]);
+    var U = what[2], U2 = '\\text{ ' + U + '}^{2}';
+    var diags = [];
+    function cand(num, den, code, hint) { if (den && num % den === 0 && num / den > 0 && num / den !== x) diags.push([num / den, code, hint]); }
+    cand(a * b - D, k, 'rect-sign', 'The rectangle’s area is ' + t(ad) + ' ' + (more ? 'more' : 'less') + ' than the square’s, so ' + t('(x+' + a + ')(x-' + b + ')=x^{2}' + (more ? '+' : '-') + ad) + '. Check the sign of the ' + t(ad) + '.');
+    cand(D, k, 'no-ab', 'Check your expansion: ' + t('(x+' + a + ')(x-' + b + ')') + ' has a constant term, ' + t('(' + a + ')(-' + b + ')=-' + a * b) + '.');
+    cand(D - a * b, a + b, 'both-plus', 'One side is ' + t(b) + ' ' + U + ' <b>shorter</b>, so the rectangle is ' + t('(x+' + a + ')') + ' by ' + t('(x-' + b + ')') + '.');
+    cand(D - a * b, k, 'no-ab', 'Check the sign of the constant term: ' + t('(' + a + ')(-' + b + ')=-' + a * b) + '.');
+    var sol = steps(['(x+' + a + ')(x-' + b + ')=x^{2}' + (more ? '+' : '-') + ad, 'x^{2}' + (k > 0 ? '+' + (k === 1 ? '' : k) : '-' + (k === -1 ? '' : -k)) + 'x-' + a * b + '=x^{2}' + (more ? '+' : '-') + ad, (k === 1 ? '' : k === -1 ? '-' : k) + 'x=' + D + '+' + a * b + '=' + (D + a * b), 'x=' + x]);
+    return numPart('A ' + what[0] + ' has sides of ' + t('x') + ' ' + U + '. It is reshaped into a rectangle by making its length ' + t(a) + ' ' + U + ' <b>longer</b> and its width ' + t(b) + ' ' + U + ' <b>shorter</b>. The area of the rectangle is ' + t(ad + U2) + ' <b>' + (more ? 'more' : 'less') + '</b> than the area of the original ' + what[1] + '. How long was each side of the original ' + what[1] + '?',
+      x, diags,
+      'Let the side be ' + t('x') + '. The rectangle measures ' + t('(x+' + a + ')') + ' by ' + t('(x-' + b + ')') + ', and its area is ' + t(ad) + ' ' + (more ? 'more' : 'less') + ' than ' + t('x^{2}') + ':<br>' + sol + '<br>The ' + t('x^{2}') + ' terms cancel. Each side was ' + t(x + '\\text{ ' + U + '}') + '.<br>Check: rectangle ' + t((x + a) + '\\times ' + (x - b) + '=' + (x + a) * (x - b)) + ', square ' + t(x + '^{2}=' + x * x) + ', and ' + t(more ? (x + a) * (x - b) + '-' + x * x + '=' + ad : x * x + '-' + (x + a) * (x - b) + '=' + ad) + ' ✓',
+      ['Let the side be ' + t('x') + '. Write the rectangle’s length and width in terms of ' + t('x') + ', then its area as a product.', 'Rectangle area ' + t('=x^{2}' + (more ? '+' : '-') + ad) + '. Expand: the ' + t('x^{2}') + ' terms cancel, leaving a linear equation.'],
+      'reshaped square: +' + a + ', -' + b + ', ' + (more ? 'more' : 'less') + ' by ' + ad, '\\text{ ' + U + '}');
+  }
 })(window);
