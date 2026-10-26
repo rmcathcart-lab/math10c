@@ -13,7 +13,20 @@
   var LV = HW.LEVELS, LVN = HW.LEVEL_NAMES;
   function realApi(action, params) { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
   /* the demo class (teacher/demo.js) answers its own requests in the browser; everything else goes to the ledger */
-  function api(action, params) { var Dm = HW.DashDemo; if (Dm && (Dm.isDemo(params) || (action === 'tests' && st.klass === Dm.CODE))) return Dm.api(action, params, realApi); return realApi(action, params); }
+  function rawApi(action, params) { var Dm = HW.DashDemo; if (Dm && (Dm.isDemo(params) || (action === 'tests' && st.klass === Dm.CODE))) return Dm.api(action, params, realApi); return realApi(action, params); }
+  /* Reads are shared: the same request while one is on its way gets that one's answer, and a few slow ones (the tests,
+     sessions, retests, calendar) are kept for 15 s so tabs that ask for the same thing don't each wait on Apps Script.
+     Anything else is a change: it drops what's kept, so the next read is fresh. */
+  var READS = { classes: 1, dash: 1, live: 1, student: 1, cal: 1, tests: 1, tlive: 1, retests: 1, sessions: 1, tresults: 1 }, KEEP = { tests: 1, sessions: 1, retests: 1, cal: 1 };
+  var flying = {}, kept = {}, writeHooks = [];
+  function api(action, params) {
+    if (!READS[action]) { flying = {}; kept = {}; var p = rawApi(action, params); p.then(function () { writeHooks.forEach(function (f) { try { f(action, params); } catch (e) {} }); }, function () {}); return p; }
+    var k = action + '|' + JSON.stringify(params || {}), hit = kept[k];
+    if (hit && Date.now() - hit.at < 15000) return Promise.resolve(hit.d);
+    if (flying[k]) return flying[k];
+    var mine = flying, pr = flying[k] = rawApi(action, params).then(function (d) { if (mine[k] === pr) delete mine[k]; if (KEEP[action] && d && d.ok && mine === flying) kept[k] = { d: d, at: Date.now() }; return d; }, function (e) { if (mine[k] === pr) delete mine[k]; throw e; });
+    return pr;
+  }
   function isDemo() { return !!(HW.DashDemo && st.klass === HW.DashDemo.CODE); }
   function demoEntry() { var Dm = HW.DashDemo; return Dm && ls('hw:nodemo') !== '1' ? [{ code: Dm.CODE, label: Dm.LABEL, students: Dm.count, block: 'B', demo: true }] : []; }
   function ago(ms) { if (!ms) return '—'; var s = Math.round((Date.now() - ms) / 1000); if (s < 60) return s + ' s ago'; var m = Math.round(s / 60); if (m < 60) return m + ' min ago'; var h = Math.round(m / 60); if (h < 36) return h + ' h ago'; return Math.round(h / 24) + ' d ago'; }
@@ -37,17 +50,29 @@
     var stu = el('a', 'btn btn-ghost', 'Student site ↗'); stu.href = '../'; stu.target = '_blank'; right.appendChild(stu);
     if (st.D && HW.DashCal) { HW.DashCal.topButtons(right); } // then Lessons (pop-up) and, farthest right, Launch Today's Lesson
     top.appendChild(right);
+    topHeight();
   }
+  /* the tab bar sticks just under the header (whose height changes when it wraps on a narrow screen) */
+  function topHeight() { document.documentElement.style.setProperty('--toph', top.offsetHeight + 'px'); }
+  root.addEventListener('resize', topHeight);
+  /* the tabs, in groups: right now · practice · exit slips and tests · the plan · reporting and setup */
+  var TAB_GROUPS = [[['live', 'Live']], [['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student']], [['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests']], [['calendar', 'Calendar']], [['powerschool', 'PowerSchool'], ['settings', 'Settings']]];
+  function tabLabel(id, name) { var n = id === 'retests' && HW.Dash && HW.Dash.retestCount; return name + (n ? ' <span class="tab-badge" title="Retest requests waiting">' + n + '</span>' : ''); }
   function tabs() {
-    var t = el('nav', 'tabs');
-    var nrt = HW.Dash && HW.Dash.retestCount;
-    [['live', 'Live'], ['progress', 'Progress'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests' + (nrt ? ' <span class="tab-badge" title="Retest requests waiting">' + nrt + '</span>' : '')], ['calendar', 'Calendar'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['powerschool', 'PowerSchool'], ['settings', 'Settings']].forEach(function (x) {
-      var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
-      b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
-      t.appendChild(b);
+    var t = el('nav', 'tabs'); t.setAttribute('aria-label', 'Ledger');
+    TAB_GROUPS.forEach(function (g, gi) {
+      if (gi) t.appendChild(el('span', 'tab-sep', ''));
+      g.forEach(function (x) {
+        var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), tabLabel(x[0], x[1])); b.type = 'button'; b.dataset.tab = x[0];
+        if (st.tab === x[0]) b.setAttribute('aria-current', 'page');
+        b.addEventListener('click', function () { goTab(x[0]); });
+        t.appendChild(b);
+      });
     });
     return t;
   }
+  function goTab(id) { st.tab = id; ls('hw:ttab', id); render(); root.scrollTo(0, 0); }
+  function updateBadge() { var b = document.querySelector('.tab[data-tab="retests"]'); if (b) b.innerHTML = tabLabel('retests', 'Retests'); }
   function boot() {
     drawTop();
     if (!L.enabled) { view.innerHTML = '<div class="panel"><h2>No ledger connected</h2><p>Set <code>backend</code> in <code>js/config.js</code> to the Apps Script web-app URL.</p></div>'; return; }
@@ -81,6 +106,7 @@
       st.loading = false;
       if (!d.ok) throw new Error(d.error || 'error');
       st.D = d; st.derived = null; drawTop(); if (!(quiet && (st.tab === 'powerschool' || st.tab === 'settings'))) render(); loadCal(); // the 2-minute refresh leaves forms being filled in alone
+      if (st.warmFor !== st.klass) { st.warmFor = st.klass; warm(st.klass); }
       clearInterval(st.dashTimer); st.dashTimer = setInterval(function () { if (document.visibilityState === 'visible') loadDash(true); }, 120000);
       clearInterval(st.liveTimer); st.liveTimer = setInterval(pollLive, 10000);
     }).catch(function (e) { st.loading = false; if (!quiet) view.innerHTML = '<div class="panel"><h2>Couldn’t load the class</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
@@ -88,7 +114,26 @@
   /* the class calendar, for the header's Launch Today's Lesson and the Lessons pop-up */
   function loadCal() {
     var k = st.klass;
-    api('cal', { 'class': k }).then(function (d) { if (k !== st.klass || !d || !d.ok) return; st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; st.lopts = d.lopts || null; drawTop(); }).catch(function () {});
+    api('cal', { 'class': k }).then(function (d) {
+      if (k !== st.klass || !d || !d.ok) return;
+      var first = st.calFor !== k;
+      st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; st.lopts = d.lopts || null; drawTop();
+      if (HW.DashCal && HW.DashCal.seed) HW.DashCal.seed(k, d);
+      if (first && (st.tab === 'exits' || st.tab === 'tests') && HW.DashTests && HW.DashTests.atHome()) render(); // the lists mark today's lesson from the calendar
+    }).catch(function () {});
+  }
+  /* once a class is open, the other tabs' data loads in the background (one thing at a time), so opening a tab is quick:
+     the exit slips and tests, the retest requests, then every closed exit slip and test marked for PowerSchool */
+  function warm(k) {
+    var idle = root.requestIdleCallback || function (f) { return setTimeout(f, 300); };
+    function still() { return k === st.klass && document.visibilityState !== 'hidden'; }
+    setTimeout(function () {
+      idle(function () {
+        if (!still()) return;
+        var steps = [function () { return HW.DashTests && HW.DashTests.prefetch(); }, function () { return HW.DashRetests && HW.DashRetests.load(); }, function () { return HW.DashReports && HW.DashReports.load && HW.DashReports.load(); }];
+        (function next() { var f = steps.shift(); if (!f || !still()) return; Promise.resolve().then(f).then(next, next); })();
+      });
+    }, 600);
   }
   function pollLive() { // every 10 s on any tab: the header's "signed in" count; the Live tab redraws
     if (!st.D || document.visibilityState !== 'visible') return;
@@ -100,11 +145,11 @@
     names.forEach(function (n) { var r = live[n]; if (r && now - r.at < 90000) on.push(n); });
     return { on: on, total: names.length, off: names.filter(function (n) { return on.indexOf(n) < 0; }) };
   }
-  function onlineChip() { var c = el('span', 'online-chip'); c.id = 'online-chip'; fillOnline(c); return c; }
+  function onlineChip() { var c = el('button', 'online-chip'); c.type = 'button'; c.id = 'online-chip'; fillOnline(c); c.addEventListener('click', function () { goTab('live'); }); return c; }
   function fillOnline(c) {
     var o = onlineCount();
     c.innerHTML = '<i class="oc-dot' + (o.on.length ? ' on' : '') + '"></i><b>' + o.on.length + '</b> / ' + o.total + ' on the site';
-    c.title = o.total ? 'Signed in with the site open (checked in within the last 90 seconds).' + (o.off.length && o.off.length <= 40 ? '\nNot on yet: ' + o.off.join(', ') : '') : 'No class list yet';
+    c.title = (o.total ? 'Signed in with the site open (checked in within the last 90 seconds).' + (o.off.length && o.off.length <= 40 ? '\nNot on yet: ' + o.off.join(', ') : '') : 'No class list yet') + '\nClick to open the Live tab';
     c.classList.toggle('all', o.total > 0 && o.on.length === o.total);
   }
   function updateOnline() { var c = document.getElementById('online-chip'); if (c) fillOnline(c); }
@@ -155,7 +200,7 @@
     view.innerHTML = '';
     if (!st.D && st.tab !== 'settings') { if (!st.classes.length) st.tab = 'settings'; else return; }
     // how many retest requests are waiting (the tab's badge): asked once per class, then kept fresh by the tab itself
-    if (HW.DashRetests && st.klass && st.rtAsked !== st.klass) { st.rtAsked = st.klass; HW.Dash.retestCount = 0; HW.DashRetests.load().then(function () { if (st.tab !== 'retests') render(); }, function () {}); }
+    if (HW.DashRetests && st.klass && st.rtAsked !== st.klass) { st.rtAsked = st.klass; HW.Dash.retestCount = 0; HW.DashRetests.load().then(function () { if (st.tab !== 'retests') updateBadge(); }, function () {}); }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
     ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, retests: function (b) { HW.DashRetests.render(b); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, powerschool: function (b) { HW.DashReports.render(b); }, settings: renderSettings }[st.tab] || renderLive)(body);
@@ -315,46 +360,82 @@
     body.appendChild(csv);
   }
 
-  /* ---- Outcomes ---- */
+  /* ---- Outcomes: every student × outcome at a glance; pick an outcome (its column) for its bands, reteach groups and
+     the level-by-level detail ---- */
   function renderOutcomes(body) {
     var outs = outcomesBuilt(), ss = students();
     var bar = el('div', 'opt-row'); bar.appendChild(scopeSeg());
     bar.appendChild(el('span', 'small muted', 'A level counts when the student answered a question at that level correctly'));
     var seg = el('div', 'seg'); [['first', 'on the first try'], ['hint', 'first try or after a hint'], ['any', 'even after the answer was shown']].forEach(function (r) { var b = el('button', st.rule === r[0] ? 'on' : '', r[1]); b.type = 'button'; b.addEventListener('click', function () { st.rule = r[0]; ls('hw:trule2', r[0]); st.derived = null; render(); }); seg.appendChild(b); });
     bar.appendChild(seg); body.appendChild(bar);
+    if (!outs.length) { body.appendChild(el('p', 'muted', 'No lessons yet.')); return; }
+    if (outs.indexOf(st.oSel) < 0) st.oSel = null;
+    // the matrix
+    var t = el('table', 'tbl omx'), h = '<thead><tr><th class="omx-name">Student</th>';
     outs.forEach(function (o) {
-      var sec = el('section', 'panel');
-      sec.appendChild(el('h3', '', '<button type="button" class="oc-link" data-outcome="' + esc(o) + '">' + esc(o) + '</button> <span class="muted small">' + esc(HW.OUTCOMES[o] || '') + '</span>'));
-      // distribution
-      var dist = {}; LV.forEach(function (l) { dist[l] = []; }); dist.NONE = [];
-      ss.forEach(function (s) { var lv = s.outcomes[o]; (dist[lv] || dist.NONE).push(s.name); });
-      var total = ss.length || 1, stack = el('div', 'stack');
-      ['NONE'].concat(LV).forEach(function (l) {
-        if (!dist[l].length) return;
-        var seg2 = el('button', 'stk lvlbg-' + l, '<b>' + dist[l].length + '</b> ' + (l === 'NONE' ? 'none yet' : LVN[l])); seg2.type = 'button'; seg2.style.flexGrow = dist[l].length;
-        seg2.title = dist[l].join(', ');
-        seg2.addEventListener('click', function () { var g = sec.querySelector('.group'); g.innerHTML = '<b>' + (l === 'NONE' ? 'No level yet' : LVN[l]) + ':</b> ' + dist[l].map(esc).join(', '); });
-        stack.appendChild(seg2);
-      });
-      sec.appendChild(stack);
-      sec.appendChild(el('div', 'group small', '<span class="muted">Click a band to list those students (a ready-made reteach group).</span>'));
-      // grid: student x level accuracy
-      var t = el('table', 'tbl ogrid');
-      var sub = st.rule === 'first' ? 'right first try' : st.rule === 'any' ? 'right (any way)' : 'right (incl. hints)';
-      var h = '<thead><tr><th>Student</th><th>Level reached</th>'; LV.forEach(function (l) { h += '<th class="c">' + l + '<div class="th-sub">' + sub + '</div></th>'; }); t.innerHTML = h + '</tr></thead>';
-      var tb = el('tbody');
-      ss.forEach(function (s) {
-        var lv = s.outcomes[o], row = '<td><a href="#" class="slink">' + esc(s.name) + '</a></td><td>' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted">—</span>') + '</td>';
-        LV.forEach(function (l) { var a = s.levelAcc[o + '|' + l]; row += '<td class="c">' + (a && a.tried ? '<span class="acc" style="--a:' + (a.right / a.tried) + '" title="' + a.tried + ' tried: ' + a.first + ' first try, ' + a.hint + ' after a hint, ' + a.shown + ' after the answer was shown">' + a.right + '/' + a.tried + '</span>' : '<span class="muted">·</span>') + '</td>'; });
-        var tr = el('tr'); tr.innerHTML = row; tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(s.name); }); tb.appendChild(tr);
-      });
-      t.appendChild(tb); sec.appendChild(wrapTbl(t));
-      var csv = el('button', 'btn btn-small', 'Download ' + o + ' levels (CSV)'); csv.type = 'button';
-      csv.addEventListener('click', function () { var rows = [['Student', o + ' level', 'Indicator']]; ss.forEach(function (s) { var lv = s.outcomes[o]; rows.push([s.name, lv ? LVN[lv] : '', lv || '']); }); download(st.klass + '-' + o + '-levels.csv', rows); });
-      sec.appendChild(csv);
-      body.appendChild(sec);
+      var dist = {}, n = ss.length || 1; ss.forEach(function (s2) { var lv = s2.outcomes[o] || 'NONE'; dist[lv] = (dist[lv] || 0) + 1; });
+      var bars = ['NONE'].concat(LV).filter(function (l) { return dist[l]; }).map(function (l) { return '<i class="lvlbg-' + l + '" style="flex-grow:' + dist[l] + '"></i>'; }).join('');
+      h += '<th class="omx-h' + (st.oSel === o ? ' sel' : '') + '" data-o="' + esc(o) + '"><button type="button" class="omx-o" title="' + esc(o + ': ' + (HW.OUTCOMES[o] || '')) + ' — click for the detail">' + esc(o) + '</button><div class="omx-dist" title="' + esc(['NONE'].concat(LV).filter(function (l) { return dist[l]; }).map(function (l) { return dist[l] + ' ' + (l === 'NONE' ? 'none yet' : LVN[l]); }).join(', ')) + '">' + bars + '</div></th>';
     });
-    if (!outs.length) body.appendChild(el('p', 'muted', 'No lessons yet.'));
+    t.innerHTML = h + '</tr></thead>';
+    var tb = el('tbody');
+    ss.forEach(function (s2) {
+      var row = '<td class="omx-name"><a href="#" class="slink">' + esc(s2.name) + '</a></td>';
+      outs.forEach(function (o) { var lv = s2.outcomes[o]; row += '<td class="omx-c' + (st.oSel === o ? ' sel' : '') + '" data-o="' + esc(o) + '">' + (lv ? '<span class="omx-l lvlbg-' + lv + '" title="' + esc(s2.name + ' · ' + o + ': ' + LVN[lv]) + '">' + lv + '</span>' : '<span class="omx-none" title="' + esc(s2.name + ' · ' + o + ': none yet') + '">·</span>') + '</td>'; });
+      var tr = el('tr'); tr.innerHTML = row; tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(s2.name); }); tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    var detail = el('div', 'omx-detail');
+    t.addEventListener('click', function (e) { var c = e.target.closest('[data-o]'); if (!c || e.target.closest('.slink')) return; pick(c.dataset.o === st.oSel ? null : c.dataset.o, true); });
+    function pick(o, scroll) {
+      st.oSel = o;
+      t.querySelectorAll('[data-o]').forEach(function (n) { n.classList.toggle('sel', n.dataset.o === o); });
+      detail.innerHTML = '';
+      if (!o) { detail.appendChild(el('p', 'small muted omx-hint', 'Click an outcome (or any level in its column) for its bands of students, reteach groups and how each student did at each level.')); return; }
+      detail.appendChild(outcomePanel(o, ss)); HW.texIn && HW.texIn(detail);
+      if (scroll) detail.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    body.appendChild(wrapTbl(t));
+    var foot = el('div', 'omx-foot');
+    foot.appendChild(el('div', 'ig-legend', ['NONE'].concat(LV).map(function (l) { return '<span><i class="omx-sw lvlbg-' + l + '"></i>' + (l === 'NONE' ? 'None yet' : LVN[l]) + '</span>'; }).join('')));
+    var csvAll = el('button', 'btn btn-small', 'Download all levels (CSV)'); csvAll.type = 'button';
+    csvAll.addEventListener('click', function () { var rows = [['Student'].concat(outs)]; ss.forEach(function (s2) { rows.push([s2.name].concat(outs.map(function (o) { return s2.outcomes[o] || ''; }))); }); download(st.klass + '-outcome-levels.csv', rows); });
+    foot.appendChild(csvAll); body.appendChild(foot);
+    body.appendChild(detail); pick(st.oSel, false);
+  }
+  /* one outcome: how the class splits by level (click a band for that group of students) and each student's results
+     at each level */
+  function outcomePanel(o, ss) {
+    var sec = el('section', 'panel omx-panel');
+    var hd = el('div', 'omx-ph', '<h3><span class="omx-code">' + esc(o) + '</span> ' + esc(HW.OUTCOMES[o] || '') + '</h3>');
+    var x = el('button', 'pd-x', '×'); x.type = 'button'; x.title = 'Close'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', function () { st.oSel = null; render(); }); hd.appendChild(x);
+    sec.appendChild(hd);
+    var dist = {}; LV.forEach(function (l) { dist[l] = []; }); dist.NONE = [];
+    ss.forEach(function (s) { var lv = s.outcomes[o]; (dist[lv] || dist.NONE).push(s.name); });
+    var stack = el('div', 'stack');
+    ['NONE'].concat(LV).forEach(function (l) {
+      if (!dist[l].length) return;
+      var seg2 = el('button', 'stk lvlbg-' + l, '<b>' + dist[l].length + '</b> ' + (l === 'NONE' ? 'none yet' : LVN[l])); seg2.type = 'button'; seg2.style.flexGrow = dist[l].length;
+      seg2.title = dist[l].join(', ');
+      seg2.addEventListener('click', function () { var g = sec.querySelector('.group'); g.innerHTML = '<b>' + (l === 'NONE' ? 'No level yet' : LVN[l]) + ':</b> ' + dist[l].map(esc).join(', '); });
+      stack.appendChild(seg2);
+    });
+    sec.appendChild(stack);
+    sec.appendChild(el('div', 'group small', '<span class="muted">Click a band to list those students (a ready-made reteach group).</span>'));
+    var t = el('table', 'tbl ogrid');
+    var sub = st.rule === 'first' ? 'right first try' : st.rule === 'any' ? 'right (any way)' : 'right (incl. hints)';
+    var h = '<thead><tr><th>Student</th><th>Level reached</th>'; LV.forEach(function (l) { h += '<th class="c">' + l + '<div class="th-sub">' + sub + '</div></th>'; }); t.innerHTML = h + '</tr></thead>';
+    var tb = el('tbody');
+    ss.forEach(function (s) {
+      var lv = s.outcomes[o], row = '<td><a href="#" class="slink">' + esc(s.name) + '</a></td><td>' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted">—</span>') + '</td>';
+      LV.forEach(function (l) { var a = s.levelAcc[o + '|' + l]; row += '<td class="c">' + (a && a.tried ? '<span class="acc" style="--a:' + (a.right / a.tried) + '" title="' + a.tried + ' tried: ' + a.first + ' first try, ' + a.hint + ' after a hint, ' + a.shown + ' after the answer was shown">' + a.right + '/' + a.tried + '</span>' : '<span class="muted">·</span>') + '</td>'; });
+      var tr = el('tr'); tr.innerHTML = row; tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(s.name); }); tb.appendChild(tr);
+    });
+    t.appendChild(tb); sec.appendChild(wrapTbl(t));
+    var csv = el('button', 'btn btn-small', 'Download ' + o + ' levels (CSV)'); csv.type = 'button';
+    csv.addEventListener('click', function () { var rows = [['Student', o + ' level', 'Indicator']]; ss.forEach(function (s) { var lv = s.outcomes[o]; rows.push([s.name, lv ? LVN[lv] : '', lv || '']); }); download(st.klass + '-' + o + '-levels.csv', rows); });
+    sec.appendChild(csv);
+    return sec;
   }
 
   /* ---- Questions (item analysis) ---- */
@@ -422,7 +503,15 @@
     sel.appendChild(el('option', '', 'Choose a student…'));
     ss.forEach(function (s) { var o = el('option', '', esc(s.name)); o.value = s.name; if (s.name === st.student) o.selected = true; sel.appendChild(o); });
     sel.addEventListener('change', function () { openStudent(sel.value); }); bar.appendChild(sel); bar.appendChild(scopeSeg()); body.appendChild(bar);
-    if (!st.student) { body.appendChild(el('p', 'muted', 'Pick a student (or click a name on any tab).')); return; }
+    if (!st.student) { // pick from the class list (a name on any other tab opens it too)
+      var live = st.D.live || {}, now = st.D.liveNow || st.D.now || Date.now(), grid = el('div', 'pick-grid');
+      ss.forEach(function (s2) {
+        var lv = liveState(live[s2.name], now), b = el('button', 'pick-s', '<span class="dot ' + lv.k + '"></span><span class="pick-n">' + esc(s2.name) + '</span><span class="pick-m">' + (s2.answers ? pct(s2.right, s2.answers) + ' right · ' + dur(st.scope === 'class' ? s2.secsIn : s2.secs) : 'no work yet') + '</span>');
+        b.type = 'button'; b.title = lv.t; b.addEventListener('click', function () { openStudent(s2.name); }); grid.appendChild(b);
+      });
+      body.appendChild(el('p', 'small muted', 'Pick a student for their full record: outcome levels, every lesson question by question, time worked and every answer. A name on any other tab opens it too.'));
+      body.appendChild(grid); return;
+    }
     var s = derive().stu[st.student]; if (!s) return;
     var tiles = el('div', 'tiles');
     function tile(k, v, sub) { tiles.appendChild(el('div', 'tile', '<div class="tk">' + k + '</div><div class="tv">' + v + '</div>' + (sub ? '<div class="ts">' + sub + '</div>' : ''))); }
@@ -767,6 +856,6 @@
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 100);
   }
-  HW.Dash = { state: st, render: render, api: api, download: download, flash: flash, drawTop: function () { drawTop(); }, students: students, derive: derive, scopeSeg: scopeSeg, pronounSelect: pronounSelect, ippBox: ippBox, wrapTbl: wrapTbl, openStudent: function (n) { openStudent(n); } };
+  HW.Dash = { state: st, render: render, api: api, onWrite: function (f) { writeHooks.push(f); }, goTab: goTab, download: download, flash: flash, drawTop: function () { drawTop(); }, students: students, derive: derive, scopeSeg: scopeSeg, pronounSelect: pronounSelect, ippBox: ippBox, wrapTbl: wrapTbl, openStudent: function (n) { openStudent(n); } };
   boot();
 })(window);

@@ -14,7 +14,11 @@
 (function (root) {
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc, TC = HW.TestCore, C = HW.Comments, PS = HW.PS;
-  var D = HW.Dash, st = D.state, RP = HW.DashReports = { cache: {} };
+  var D = HW.Dash, st = D.state, RP = HW.DashReports = { cache: {}, marked: {} };
+  D.onWrite(function (a) { // changed marks or a release: mark again; a launch, a test ending or a class list change: list the sessions again
+    if (a === 'setmarks' || a === 'release') RP.marked = {};
+    if (/^(setmarks|release|launch|launchretest|tctl|setroster|removestudent|delclass)$/.test(a)) RP.cache = {};
+  });
   var LADDER = TC.LADDER, LVN = HW.LEVEL_NAMES;
 
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
@@ -33,7 +37,10 @@
   function load(force) {
     var k = st.klass, c = RP.cache[k];
     if (c && !force) return c.p;
-    c = RP.cache[k] = { sessions: null, graded: [], done: 0, total: 0, err: '', at: Date.now() };
+    var keep = c && c.ready && !c.err; // looking again: the marks already shown stay up until the new ones are ready
+    c = { sessions: null, graded: [], done: 0, total: 0, err: '', at: Date.now() };
+    if (!keep) RP.cache[k] = c;
+    function done() { c.ready = true; if (RP.cache[k] !== c && (!c.err || !RP.cache[k])) RP.cache[k] = c; }
     c.p = D.api('sessions', { 'class': k }).then(function (d) {
       if (!d || !d.ok) throw new Error((d && d.error) || 'Couldn’t load the test sessions.');
       var list = (d.sessions || []).filter(function (s) { return s.closed && (s.results || s.results === undefined); });
@@ -41,16 +48,19 @@
       var queue = list.slice(), out = [];
       function next() {
         var s = queue.shift(); if (!s) return Promise.resolve();
+        var had = RP.marked[s.id];
+        if (had) { out.push(had); c.done++; return next(); } // a closed session marked earlier: its results only change through the ledger (marks, release), which empties RP.marked
         return D.api('tresults', { session: s.id }).then(function (r) {
-          if (r && r.ok) { try { out.push(HW.DashTests.grade(r)); } catch (e) { console.warn('marking', s.id, e); } }
+          if (r && r.ok) { try { var g = HW.DashTests.grade(r); RP.marked[s.id] = g; out.push(g); } catch (e) { console.warn('marking', s.id, e); } }
           c.done++; if (st.tab === 'powerschool') updateProgress();
           return next();
         });
       }
-      return Promise.all([next(), next(), next()]).then(function () { c.graded = out.sort(function (a, b) { return a.session.launched - b.session.launched; }); c.ready = true; });
-    }).catch(function (e) { c.err = e.message; c.ready = true; });
+      return Promise.all([next(), next(), next()]).then(function () { c.graded = out.sort(function (a, b) { return a.session.launched - b.session.launched; }); done(); });
+    }).catch(function (e) { c.err = e.message; done(); });
     return c.p;
   }
+  RP.load = function () { return load(); };
   function updateProgress() { var n = document.getElementById('ps-progress'), c = RP.cache[st.klass]; if (n && c) n.textContent = 'Marking exit slips and tests… ' + c.done + ' of ' + c.total; }
 
   /* ---------------- the evidence, per student and outcome ---------------- */
@@ -196,7 +206,9 @@
   RP.render = function (body) {
     if (!st.D) return;
     var c = RP.cache[st.klass];
-    if (c && c.ready && Date.now() - c.at > 5 * 60000) { RP.cache[st.klass] = c = null; } // results change: re-mark after 5 minutes
+    if (c && c.ready && Date.now() - c.at > 5 * 60000 && !c.refreshing) { // new results since: look again in the background (sessions marked before are kept)
+      c.refreshing = true; var k = st.klass, was = c; load(true).then(function () { if (st.klass === k && RP.cache[k] !== was) rerender(); });
+    }
     if (!c || !c.ready) {
       body.appendChild(el('div', 'loading', '<span id="ps-progress">Marking exit slips and tests…</span>'));
       load().then(rerender); updateProgress(); return;

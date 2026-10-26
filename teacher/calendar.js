@@ -20,15 +20,21 @@
   function rerender() { if (st.tab === 'calendar') D.render(); }
   function klassLabel() { var c = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0]; return c ? c.label : st.klass; }
 
+  function reset() { K.loaded = false; K.error = ''; K.klass = st.klass; K.undo = []; K.cal = null; K.scroll = null; }
+  function apply(d) {
+    if (!d.ok) { K.error = d.error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for the calendar: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : d.error; }
+    else { K.cal = d.cal ? C.clean(d.cal) : null; K.sync = !!d.sync; if (d.noSchool && !(HW.DashDemo && st.klass === HW.DashDemo.CODE)) st.noSchool = d.noSchool; }
+    K.loaded = true;
+  }
   function load() {
-    K.loaded = false; K.error = ''; K.klass = st.klass; K.undo = []; K.cal = null; K.scroll = null;
+    reset();
     return api('cal', { 'class': st.klass }).then(function (d) {
       if (K.klass !== st.klass) return;
-      if (!d.ok) { K.error = d.error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for the calendar: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : d.error; }
-      else { K.cal = d.cal ? C.clean(d.cal) : null; K.sync = !!d.sync; if (d.noSchool && !(HW.DashDemo && st.klass === HW.DashDemo.CODE)) st.noSchool = d.noSchool; }
-      K.loaded = true; rerender();
+      apply(d); rerender();
     }, function (e) { K.error = e.message; K.loaded = true; rerender(); });
   }
+  /* the header already asked for this class's calendar: start the tab from that answer instead of asking again */
+  function seed(k, d) { if (K.klass === k || k !== st.klass || !d || !d.ok) return; reset(); apply(d); }
   function save(next, note) {
     if (K.cal) K.undo.push(K.cal); if (K.undo.length > 40) K.undo.shift();
     K.cal = next; K.msg = note || ''; K.saving++; st.cal = next; st.calFor = st.klass; D.drawTop(); rerender();
@@ -378,5 +384,13 @@
   function closeLessons() { var o = document.getElementById('lp-modal'); if (o) o.remove(); document.removeEventListener('keydown', lpKeys); }
   function lpKeys(e) { if (e.key === 'Escape') closeLessons(); }
 
-  HW.DashCal = { render: function (body) { closePop(); render(body); }, reload: function () { K.klass = null; }, topButtons: topButtons, openLessons: openLessons };
+  /* where a lesson sits on this class's calendar: 'today', 'past', 'next' or 'skip', with its date (for the exit slip list) */
+  function lessonWhen(id) {
+    var cal = hereCal(); if (!cal) return null;
+    if ((cal.skipped || []).indexOf(id) >= 0) return { k: 'skip' };
+    var ok = off().join(','); if (K.layoutFor !== cal || K.layoutOff !== ok) { K.layoutFor = cal; K.layoutOff = ok; K.layout = C.layout(cal, off()); }
+    var d = K.layout.dateOf[id], today = C.today();
+    return d ? { k: d === today ? 'today' : d < today ? 'past' : 'next', date: d, nice: C.nice(d, { month: 'short', day: 'numeric' }) } : null;
+  }
+  HW.DashCal = { render: function (body) { closePop(); render(body); }, reload: function () { K.klass = null; }, seed: seed, topButtons: topButtons, openLessons: openLessons, lessonWhen: lessonWhen, todayKeys: function () { return todayInfo().keys; } };
 })(window);

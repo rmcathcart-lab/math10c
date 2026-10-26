@@ -205,11 +205,11 @@
     if (T.sessions) return T.sessions;
     var m = model(), days = m.dayList, out = [];
     var ti = PACE.indexOf('#u1test'), ud = unitTestDef();
-    if (ud && ti >= 0) { var s1 = at(days[ti], 10, 40); out.push({ id: 'DEMO-T1', test: '', title: ud.title, kind: 'test', launched: s1, closed: s1 + 78 * 60000, released: 0, def: ud, rows: finishedRows(ud, 'DEMO-T1', s1 + 60000) }); }
+    if (ud && ti >= 0) { var s1 = at(days[ti], 10, 40); out.push({ id: 'DEMO-T1', test: 'B-u1test', title: ud.title, kind: 'test', launched: s1, closed: s1 + 78 * 60000, released: 0, def: ud, rows: finishedRows(ud, 'DEMO-T1', s1 + 60000) }); }
     var ed = exitDef(), s2 = at(days[PACE.indexOf('u2l2')], 11, 45);
     var e0 = exitDef('u2l1', '2.1'), s0 = at(days[PACE.indexOf('u2l1')], 11, 45);
-    if (e0.items.length) out.push({ id: 'DEMO-X0', test: '', title: e0.title, kind: 'exit', launched: s0, closed: s0 + 11 * 60000, released: s0 + 3 * 3600000, def: e0, rows: finishedRows(e0, 'DEMO-X0', s0 + 30000) });
-    if (ed.items.length) out.push({ id: 'DEMO-X1', test: '', title: ed.title, kind: 'exit', launched: s2, closed: s2 + 11 * 60000, released: s2 + 3 * 3600000, def: ed, rows: finishedRows(ed, 'DEMO-X1', s2 + 30000) });
+    if (e0.items.length) out.push({ id: 'DEMO-X0', test: 'B-u2l1x', title: e0.title, kind: 'exit', launched: s0, closed: s0 + 11 * 60000, released: s0 + 3 * 3600000, def: e0, rows: finishedRows(e0, 'DEMO-X0', s0 + 30000) });
+    if (ed.items.length) out.push({ id: 'DEMO-X1', test: 'B-u2l2x', title: ed.title, kind: 'exit', launched: s2, closed: s2 + 11 * 60000, released: s2 + 3 * 3600000, def: ed, rows: finishedRows(ed, 'DEMO-X1', s2 + 30000) });
     return (T.sessions = out);
   }
   function sessionList() { return sessions().slice().sort(function (a, b) { return b.launched - a.launched; }).map(function (s) { return { id: s.id, test: s.test, title: s.title, kind: s.kind, launched: s.launched, closed: s.closed, released: s.released, results: s.rows.length }; }); }
