@@ -541,3 +541,8 @@ button.online-chip:focus-visible { outline: 3px solid rgba(19, 128, 122, .35); o
   body.dash .class-pick { max-width: calc(100vw - 32px); }
 }
 @media (max-width: 800px) { body.dash .topbar { position: static; } body.dash .tabs { top: 0; } }
+.top-upd, body.dash .top-right .btn { white-space: nowrap; }
+@media (max-width: 1320px) { .top-upd { display: none; } }
+/* the tab bar runs the full width of the window, like the header, with its tabs lined up with the page */
+body.dash { overflow-x: clip; }
+body.dash .tabs { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); padding-left: calc(50vw - 50%); padding-right: calc(50vw - 50%); }
