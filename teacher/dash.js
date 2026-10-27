@@ -38,7 +38,10 @@
   /* ---------------- shell ---------------- */
   function drawTop() {
     top.innerHTML = '';
-    var brand = el('a', 'brand', '<span class="brand-mark dark" aria-hidden="true">10C</span><span class="brand-name">Teacher Ledger</span>'); brand.href = './'; top.appendChild(brand);
+    var brand = el('button', 'brand brand-btn', '<span class="brand-mark dark" aria-hidden="true">' + MARK + '</span><span class="brand-name">Teacher Ledger</span><span class="brand-caret" aria-hidden="true"></span>');
+    brand.type = 'button'; brand.title = 'Switch course'; brand.setAttribute('aria-haspopup', 'menu'); brand.setAttribute('aria-expanded', courseMenu ? 'true' : 'false');
+    brand.addEventListener('click', function (e) { e.stopPropagation(); if (courseMenu) closeCourses(); else openCourses(brand); });
+    top.appendChild(brand);
     if (st.key && st.classes.length) {
       var sel = el('select', 'class-pick'); sel.setAttribute('aria-label', 'Class');
       st.classes.forEach(function (c) { var o = el('option', '', esc(c.label) + ' (' + c.students + ')'); o.value = c.code; if (c.code === st.klass) o.selected = true; sel.appendChild(o); });
@@ -52,6 +55,37 @@
     top.appendChild(right);
     topHeight();
   }
+  /* ---------------- course switcher: the badge in the corner opens a list of Ryan's courses (js/courses.js) ---------------- */
+  var MARK = '10C', courseMenu = null;
+  function openCourses(btn) {
+    var list = root.HW_COURSES && root.HW_COURSES.length ? root.HW_COURSES : [{ mark: MARK, name: document.title, ledger: './' }];
+    var m = el('div', 'course-menu'); m.setAttribute('role', 'menu'); m.setAttribute('aria-label', 'Your courses');
+    m.appendChild(el('div', 'cm-h', 'Your courses'));
+    list.forEach(function (c) {
+      var here = c.mark === MARK, row = el(here ? 'div' : 'a', 'cm-row' + (here ? ' is-here' : ''),
+        '<span class="brand-mark cm-mark" style="background:' + esc(c.colour || '#1c2230') + '">' + esc(c.mark) + '</span>' +
+        '<span class="cm-t"><b>' + esc(c.name) + '</b><span>' + (here ? 'You’re here' : 'Teacher Ledger') + '</span></span>' + (here ? '<span class="cm-tick" aria-hidden="true">✓</span>' : ''));
+      if (here) row.setAttribute('aria-current', 'page'); else { row.href = c.ledger; row.setAttribute('role', 'menuitem'); }
+      m.appendChild(row);
+    });
+    var r = btn.getBoundingClientRect(); m.style.left = Math.max(8, r.left) + 'px'; m.style.top = (r.bottom + 6) + 'px';
+    document.body.appendChild(m); courseMenu = m; btn.setAttribute('aria-expanded', 'true');
+    var first = m.querySelector('a.cm-row'); if (first) first.focus();
+  }
+  function closeCourses(refocus) {
+    if (!courseMenu) return; courseMenu.remove(); courseMenu = null;
+    var b = top.querySelector('.brand-btn'); if (b) { b.setAttribute('aria-expanded', 'false'); if (refocus) b.focus(); }
+  }
+  document.addEventListener('click', function (e) { if (courseMenu && !courseMenu.contains(e.target)) closeCourses(); });
+  document.addEventListener('keydown', function (e) {
+    if (!courseMenu) return;
+    if (e.key === 'Escape') { closeCourses(true); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      var items = [].slice.call(courseMenu.querySelectorAll('a.cm-row')), i = items.indexOf(document.activeElement);
+      if (items.length) { e.preventDefault(); items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus(); }
+    }
+  });
+  root.addEventListener('resize', function () { closeCourses(); });
   /* the tab bar sticks just under the header (whose height changes when it wraps on a narrow screen) */
   function topHeight() { document.documentElement.style.setProperty('--toph', top.offsetHeight + 'px'); }
   root.addEventListener('resize', topHeight);
@@ -818,7 +852,7 @@
         go.disabled = false;
         if (!d || !d.ok) throw new Error(d && d.error || 'error');
         // this device's own copies and unsent changes, so nothing old is sent back up
-        var gone = 0; Object.keys(localStorage).forEach(function (n) { if (/^ink:u\d+l\w+(:|$)/.test(n) || /^inkq:/.test(n)) { localStorage.removeItem(n); gone++; } });
+        var gone = 0, NS = root.HW_STORAGE_NS || ''; Object.keys(localStorage).forEach(function (raw) { if (raw.indexOf(NS) !== 0) return; var n = raw.slice(NS.length); if (/^ink:u\d+l\w+(:|$)/.test(n) || /^inkq:/.test(n)) { localStorage.removeItem(n); gone++; } }); // NS: js/ns.js keeps each course's keys apart
         msg.textContent = 'Cleared the notes on ' + d.cleared + ' lesson page' + (d.cleared === 1 ? '' : 's') + ' (all classes)' + (gone ? ', and this device’s copies' : '') + '. Lesson pages that are open now go blank within a few seconds; reload one to be sure.';
       }).catch(function (e) {
         go.disabled = false;

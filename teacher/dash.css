@@ -546,3 +546,21 @@ button.online-chip:focus-visible { outline: 3px solid rgba(19, 128, 122, .35); o
 /* the tab bar runs the full width of the window, like the header, with its tabs lined up with the page */
 body.dash { overflow-x: clip; }
 body.dash .tabs { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); padding-left: calc(50vw - 50%); padding-right: calc(50vw - 50%); }
+
+/* ---------- course switcher (click the badge in the corner; the list is js/courses.js) ---------- */
+.brand-btn { font: inherit; font-weight: 700; background: none; border: 0; margin: -4px 0 -4px -6px; padding: 4px 10px 4px 6px; border-radius: 12px; cursor: pointer; }
+.brand-btn:hover, .brand-btn[aria-expanded="true"] { background: rgba(28, 34, 48, .07); }
+.brand-btn:focus-visible { outline: 3px solid var(--brand2); outline-offset: 1px; }
+.brand-caret { width: 0; height: 0; border-left: 4.5px solid transparent; border-right: 4.5px solid transparent; border-top: 5.5px solid var(--muted, #6b7280); margin-left: -2px; transition: transform .15s; }
+.brand-btn[aria-expanded="true"] .brand-caret { transform: rotate(180deg); }
+.course-menu { position: fixed; z-index: 1000; min-width: 250px; padding: 6px; background: #fff; border: 1px solid var(--line, #e5e0d5); border-radius: 14px; box-shadow: 0 14px 34px rgba(28, 34, 48, .16), 0 2px 6px rgba(28, 34, 48, .08); }
+.cm-h { padding: 6px 10px 6px; font-size: 12.5px; font-weight: 700; color: var(--muted, #6b7280); }
+.cm-row { display: flex; align-items: center; gap: 11px; padding: 7px 10px 7px 7px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+a.cm-row:hover, a.cm-row:focus-visible { background: #f4f1ea; outline: none; }
+.cm-row.is-here { cursor: default; }
+.cm-mark { flex: none; font-weight: 800; }
+.cm-t { display: grid; line-height: 1.2; flex: 1; }
+.cm-t b { font-size: 15px; }
+.cm-t span { font-size: 12.5px; color: var(--muted, #6b7280); }
+.cm-tick { color: var(--brand2); font-weight: 800; }
+@media (prefers-reduced-motion: reduce) { .brand-caret { transition: none; } }
