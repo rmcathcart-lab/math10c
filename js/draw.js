@@ -368,12 +368,12 @@
       var S = {}; resp.forEach(function (p) { S[pairKey(p)] = 1; });
       var miss = Object.keys(T).filter(function (k) { return !S[k]; }), extra = Object.keys(S).filter(function (k) { return !T[k]; });
       if (!miss.length && !extra.length) return ok();
-      if (opt.diag) { var h = opt.diag(resp); if (h) return wrong(h.code || 'arrows', h.hint); }
+      if (opt.diag) { var h = opt.diag(resp); if (h) return wrong(h.code || 'arrows-wrong', h.hint); }
       var rev = extra.filter(function (k) { var a = k.split('→'); return T[a[1] + '→' + a[0]]; });
       if (rev.length) return wrong('arrows-flip', 'An arrow goes from the first coordinate (input, left) to the second (output, right).');
       if (miss.length && !extra.length) return wrong('arrows-missing', 'Correct so far — you’re missing ' + (miss.length === 1 ? 'an arrow' : miss.length + ' arrows') + '. Check every pair.');
       if (extra.length && !miss.length) return wrong('arrows-extra', (extra.length === 1 ? 'One arrow doesn’t' : extra.length + ' arrows don’t') + ' match a pair: ' + extra.slice(0, 2).map(function (k) { return k.replace('→', ' → '); }).join(', ') + '.');
-      return wrong('arrows', null);
+      return wrong('arrows-wrong', null); // not 'arrows': that is the sketch code with 2/3 credit in partial.js
     };
   };
   function tilePolyOf(v) { return P.add(P.add(P.mono([v.x2 || 0, 1], { x: 2 }), P.mono([v.x || 0, 1], { x: 1 })), P.num(v.one || 0)); }
@@ -404,7 +404,7 @@
   if (HW.addCodes) HW.addCodes({ 'graph-swap': 'Plotted (y, x) instead of (x, y)', 'graph-ends': 'Wrong end dots (open vs solid)', 'graph-missing': 'Point missing', 'graph-extra': 'Extra point', 'graph-points': 'Point misplaced', 'graph-lines': 'Drew lines instead of points', 'graph-arrows': 'Arrows missing', 'graph-noarrow': 'Arrows where the graph stops', 'graph-length': 'Line too long / too short', 'graph-joined': 'Joined discrete points', 'graph-not-joined': 'Did not join continuous points', graph: 'Graph not right',
     'rule-fn': 'Drew a non-function', 'rule-notfn': 'Drew a function (non-function asked)', 'rule-domain': 'Wrong domain in sketch', 'rule-range': 'Wrong range in sketch', 'rule-through': 'Misses a required point', 'rule-avoid': 'Includes an excluded point',
     'story-vertical': 'Vertical line in a story graph', 'story-fn': 'Story graph goes back in time', 'story-gap': 'Gap in story graph', 'story-start': 'Wrong starting value', 'story-end': 'Wrong ending value', 'story-dir': 'A stage goes the wrong way', 'story-count': 'Wrong number of stages', 'story-speed': 'Speed change not shown', 'story-time': 'Stage at the wrong times', 'story-height': 'Stage at the wrong values', 'story-steep': 'Steepness wrong',
-    'nl-dot': 'Open vs solid dot', 'nl-side': 'Shaded the wrong side', 'nl-values': 'Wrong boundary number', 'nl-noshade': 'Open dot without shading', 'arrows-flip': 'Arrows reversed', 'arrows-missing': 'Arrow missing', 'arrows-extra': 'Extra arrow', 'tile-count': 'Wrong tile count', 'tile-x2': 'Rectangle: wrong x²-tiles', 'tile-one': 'Rectangle: wrong unit tiles', 'tile-x': 'Rectangle: wrong x-tiles', 'tile-signs': 'Rectangle: signs switched on both sides' });
+    'nl-dot': 'Open vs solid dot', 'nl-side': 'Shaded the wrong side', 'nl-values': 'Wrong boundary number', 'nl-noshade': 'Open dot without shading', 'arrows-flip': 'Arrows reversed', 'arrows-wrong': 'Mapping diagram: wrong arrows', 'arrows-missing': 'Arrow missing', 'arrows-extra': 'Extra arrow', 'tile-count': 'Wrong tile count', 'tile-x2': 'Rectangle: wrong x²-tiles', 'tile-one': 'Rectangle: wrong unit tiles', 'tile-x': 'Rectangle: wrong x-tiles', 'tile-signs': 'Rectangle: signs switched on both sides' });
 
   /* ---------------- part builders ---------------- */
   function inputOf(type, inp) { var o = { type: type }; Object.keys(inp || {}).forEach(function (k) { o[k] = inp[k]; }); return o; }

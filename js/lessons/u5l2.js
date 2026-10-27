@@ -443,7 +443,7 @@
             var miss = [i0, i1].filter(function (i) { return !has(xs[i], y0); });
             if (miss.length === 1 && ps.every(function (q, i) { return i === miss[0] || has(q[0], q[1]); })) return { code: 'arrows-missing', hint: 'The pair ' + t(pt(ps[miss[0]])) + ' needs its arrow too. ' + t(y0) + ' is written once, but <b>two</b> arrows can point to it.' };
             var bad = resp.filter(function (q) { return !ps.some(function (p) { return String(p[0]) === String(q[0]) && String(p[1]) === String(q[1]); }); })[0];
-            if (bad) { var j = xs.map(String).indexOf(String(bad[0])); if (j >= 0) return { code: 'arrows', hint: 'Check the pair ' + t(pt(ps[j])) + ': ' + t(xs[j]) + ' must point to ' + t(sh.ys[j]) + ', not ' + t(bad[1]) + '.' }; }
+            if (bad) { var j = xs.map(String).indexOf(String(bad[0])); if (j >= 0) return { code: 'arrows-wrong', hint: 'Check the pair ' + t(pt(ps[j])) + ': ' + t(xs[j]) + ' must point to ' + t(sh.ys[j]) + ', not ' + t(bad[1]) + '.' }; }
             return null;
           };
           return arrowPart('Draw the arrows of the mapping diagram for this relation. (The outputs are written once only, in increasing order.)', xs, outs, ps,
