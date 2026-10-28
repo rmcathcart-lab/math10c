@@ -637,7 +637,8 @@
       body.appendChild(pd); c = null;
     }
     if (c) {
-      var link = siteUrl() + '?class=' + encodeURIComponent(c.code);
+      body.appendChild(namePanel(c));
+      var link = siteUrl() + '?class=' + encodeURIComponent(c.show || c.code);
       var p1 = el('div', 'panel'); p1.appendChild(el('h3', '', 'Class link for ' + esc(c.label)));
       p1.innerHTML += '<p class="small muted">Students open this link (or scan the code), pick their name, and make a 4-digit PIN the first time.</p>';
       var row = el('div', 'linkrow'); var inp = el('input', 'field'); inp.readOnly = true; inp.value = link; row.appendChild(inp);
@@ -689,13 +690,39 @@
     if (c) {
       var p5 = el('div', 'panel danger'); p5.appendChild(el('h3', '', 'Delete this class'));
       p5.appendChild(el('p', 'small muted', 'Removes the class code and its class list. Answers already in the spreadsheet stay there.'));
-      var del = el('button', 'btn btn-small', 'Delete ' + esc(c.label)); del.type = 'button'; del.addEventListener('click', function () { if (prompt('Type the class code (' + c.code + ') to delete it.') !== c.code) return; api('delclass', { 'class': c.code }).then(function () { st.klass = ''; st.D = null; loadClasses(); }); });
+      var del = el('button', 'btn btn-small', 'Delete ' + esc(c.label)); del.type = 'button'; del.addEventListener('click', function () { var typed = norm(prompt('Type the class code (' + (c.show || c.code) + ') to delete it.') || ''); if (typed !== c.code && typed !== (c.show || c.code)) return; api('delclass', { 'class': c.code }).then(function () { st.klass = ''; st.D = null; loadClasses(); }); });
       p5.appendChild(del); body.appendChild(p5);
     }
     body.appendChild(notesPanel());
     var p6 = el('div', 'panel'); p6.appendChild(el('h3', '', 'This device'));
     if (HW.DashDemo && ls('hw:nodemo') === '1') { var sd = el('button', 'btn btn-small btn-ghost', 'Show the demo class'); sd.type = 'button'; sd.style.marginRight = '8px'; sd.addEventListener('click', function () { ls('hw:nodemo', null); loadClasses(); }); p6.appendChild(sd); }
     var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
+  }
+  /* ---- the class's name and code. The first code stays inside the spreadsheet (every answer and PIN uses it); a new
+   * code is stored beside it, so links, QR codes and typing use the new one and the old one keeps working. ---- */
+  function norm(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g, ' '); }
+  function namePanel(c) {
+    var p = el('div', 'panel'); p.appendChild(el('h3', '', 'Class name and code'));
+    p.appendChild(el('p', 'small muted', 'The <b>name</b> is what you see in the ledger and what students see when they sign in. The <b>code</b> is what students type, and it is in the class link and QR code. If you change the code, the old code still works, so links and QR codes you’ve already handed out keep working.'));
+    var g = el('div', 'grid2 cn-grid');
+    var nl = el('label', 'cn-f', '<span class="small muted">Class name</span>'), nIn = el('input', 'field'); nIn.value = c.label || ''; nIn.maxLength = 40; nl.appendChild(nIn);
+    var cl = el('label', 'cn-f', '<span class="small muted">Class code</span>'), cIn = el('input', 'field'); cIn.value = c.show || c.code; cIn.maxLength = 24; cl.appendChild(cIn);
+    g.appendChild(nl); g.appendChild(cl); p.appendChild(g);
+    if (c.show && c.show !== c.code) p.appendChild(el('p', 'small muted', 'This class was made with the code <code>' + esc(c.code) + '</code>, which still works too.'));
+    var sv = el('button', 'btn btn-primary btn-small', 'Save'); sv.type = 'button';
+    sv.addEventListener('click', function () {
+      var nm = nIn.value.trim(), cd = cIn.value.trim();
+      if (!nm) { nIn.focus(); return; } if (!cd) { cIn.focus(); return; }
+      if (nm === (c.label || '') && norm(cd) === norm(c.show || c.code)) { flash(p, 'Nothing changed.'); return; }
+      sv.disabled = true;
+      api('renameclass', { 'class': c.code, label: nm, code: cd }).then(function (d) {
+        sv.disabled = false;
+        if (!d || !d.ok) { flash(p, (d && d.error) || 'Couldn’t save.'); return; }
+        flash(p, 'Saved.'); loadClasses();
+      }).catch(function () { sv.disabled = false; flash(p, 'Couldn’t reach the spreadsheet. Try again.'); });
+    });
+    p.appendChild(sv);
+    return p;
   }
   /* ---- the class list: names, PowerSchool student numbers, pronouns (for report card comments), IPP ---- */
   var PRONOUNS = [['', '—'], ['he', 'he/him'], ['she', 'she/her'], ['they', 'they/them']];

@@ -564,3 +564,7 @@ a.cm-row:hover, a.cm-row:focus-visible { background: #f4f1ea; outline: none; }
 .cm-t span { font-size: 12.5px; color: var(--muted, #6b7280); }
 .cm-tick { color: var(--brand2); font-weight: 800; }
 @media (prefers-reduced-motion: reduce) { .brand-caret { transition: none; } }
+
+/* class name and code (Settings) */
+.cn-grid { align-items: end; margin-bottom: 10px; }
+.cn-f { display: grid; gap: 4px; }

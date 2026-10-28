@@ -80,6 +80,32 @@ function setup() {
 
 /* ---------------- classes and rosters ---------------- */
 function classes_() { var c = list_('CLASSES'); return Array.isArray(c) ? c : []; } // [{code, label}]
+/* A class keeps its first code inside the spreadsheet forever (it is in every row and in the students' PINs).
+ * Changing the code in Settings stores the new one as c.show: links and typing use it, and canon_ turns it back
+ * into the first code. The old code keeps working too, so links and QR codes already handed out still work. */
+function canon_(code) {
+  var k = norm_(code); if (!k) return k; var cs = classes_(), i;
+  for (i = 0; i < cs.length; i++) if (cs[i].code === k) return k;
+  for (i = 0; i < cs.length; i++) if (cs[i].show && cs[i].show === k) return cs[i].code;
+  return k;
+}
+function showOf_(c) { return c.show || c.code; }
+function renameClass_(klass, label, show) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var cs = classes_(), k = norm_(klass), c = null; cs.forEach(function (x) { if (x.code === k) c = x; });
+    if (!c) return { ok: false, error: 'unknown class' };
+    if (label != null && String(label).trim()) c.label = clean_(label, 40);
+    if (show != null && String(show).trim()) {
+      var s = norm_(show).replace(/[^a-z0-9\-_ ]/g, '').slice(0, 24); if (!s) return { ok: false, error: 'That class code has no letters or numbers in it.' };
+      var taken = cs.some(function (x) { return x !== c && (x.code === s || x.show === s); });
+      if (taken) return { ok: false, error: 'Another class already uses the code ' + s + '.' };
+      if (s === c.code) delete c.show; else c.show = s;
+    }
+    save_('CLASSES', cs);
+    return { ok: true, 'class': { code: c.code, label: c.label || c.code, show: showOf_(c) } };
+  } finally { lock.releaseLock(); }
+}
 function classOf_(code) { var k = norm_(code), c = classes_(); for (var i = 0; i < c.length; i++) if (c[i].code === k) return c[i]; return null; }
 function rosterRows_(klass) { var k = norm_(klass); return rows_('Roster').map(function (r, i) { return { row: i + 2, v: r }; }).filter(function (x) { return norm_(x.v[0]) === k; }); }
 function findStudent_(klass, name) { var n = norm_(name), rs = rosterRows_(klass); for (var i = 0; i < rs.length; i++) if (norm_(rs[i].v[1]) === n) return rs[i]; return null; }
@@ -89,6 +115,7 @@ function doGet(e) {
   var p = (e && e.parameter) || {}, cb = p.callback || '';
   try {
     var a = p.action || 'ping';
+    if (p['class']) p['class'] = canon_(p['class']); // a class code that was changed: the new code finds the class
     if (a === 'ping') return json_({ ok: true, t: Date.now() }, cb);
     if (a === 'roster') return json_(roster_(p['class']), cb);
     if (a === 'setpin') return json_(setPin_(p['class'], p.name, p.pin, p.device), cb);
@@ -106,6 +133,7 @@ function doGet(e) {
     if (a === 'student') return json_(student_(p['class'], p.name), cb);
     if (a === 'setroster') return json_(setRoster_(p['class'], p.label, p.names, p.mode, p.students, p.ps), cb);
     if (a === 'delclass') return json_(delClass_(p['class']), cb);
+    if (a === 'renameclass') return json_(renameClass_(p['class'], p.label, p.code), cb);
     if (a === 'resetpin') return json_(resetPin_(p['class'], p.name), cb);
     if (a === 'rename') return json_(rename_(p['class'], p.name, p.to), cb);
     if (a === 'removestudent') return json_(removeStudent_(p['class'], p.name), cb);
@@ -137,7 +165,7 @@ function roster_(klass) {
   var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
   var names = rosterRows_(klass).map(function (x) { return { name: String(x.v[1]), pin: !!x.v[2] }; });
   names.sort(function (a, b) { return a.name.localeCompare(b.name); });
-  return { ok: true, code: c.code, label: c.label || c.code, names: names, times: { block: blockFor_(klass), noSchool: noSchool_() } };
+  return { ok: true, code: c.code, show: showOf_(c), label: c.label || c.code, names: names, times: { block: blockFor_(klass), noSchool: noSchool_() } };
 }
 function locked_(st) { var u = Number(st.v[8] || 0); return u && u > Date.now(); }
 function addDevice_(st, device) {
@@ -185,6 +213,7 @@ function doPost(e) {
   var body;
   try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (err) { return json_({ ok: false, error: 'bad json' }); }
   if (!body || !body.name || !body['class']) return json_({ ok: false, error: 'missing' });
+  body['class'] = canon_(body['class']);
   if (body.kind === 'test') { try { return json_(testPost_(body)); } catch (err) { return json_({ ok: false, error: String(err) }); } }
   var lock = LockService.getScriptLock();
   try { lock.waitLock(20000); } catch (err) { return json_({ ok: false, error: 'busy' }); }
@@ -254,7 +283,7 @@ function live_(klass) { try { return JSON.parse(CacheService.getScriptCache().ge
 /* ---------------- teacher ---------------- */
 function classList_() {
   var counts = {}; rows_('Roster').forEach(function (r) { var k = norm_(r[0]); counts[k] = (counts[k] || 0) + 1; });
-  return { ok: true, classes: classes_().map(function (c) { return { code: c.code, label: c.label || c.code, students: counts[c.code] || 0, block: blockFor_(c.code), ps: c.ps || null }; }), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
+  return { ok: true, classes: classes_().map(function (c) { return { code: c.code, show: showOf_(c), label: c.label || c.code, students: counts[c.code] || 0, block: blockFor_(c.code), ps: c.ps || null }; }), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
 }
 function dash_(klass) {
   var k = norm_(klass), c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
@@ -263,7 +292,7 @@ function dash_(klass) {
   var days = rows_('Days').filter(function (r) { return norm_(r[2]) === k; }).map(function (r) { return [r[1] instanceof Date ? Utilities.formatDate(r[1], TZ, 'yyyy-MM-dd') : String(r[1]), r[3], r[4], r[5], r[6], r[7], r[8], r[9]]; });
   var att = rows_('Attempts').filter(function (r) { return norm_(r[1]) === k; }).map(function (r) { return [ms_(r[0]), r[2], r[3], r[4], r[6], r[7], r[8] === 'Y' ? 1 : 0, r[9] === 'Y' ? 1 : 0, r[10], r[11], r[12], r[13], r[14], r[15], r[16] === 'Y' ? 1 : 0]; });
   var evs = rows_('Events').filter(function (r) { return norm_(r[1]) === k && r[5] !== 'open'; }).map(function (r) { return [ms_(r[0]), r[2], r[3], r[4], r[5], r[6], r[7] === 'Y' ? 1 : 0]; });
-  return { ok: true, 'class': { code: c.code, label: c.label || c.code, block: blockFor_(klass), ps: c.ps || null }, roster: roster, progress: prog, days: days,
+  return { ok: true, 'class': { code: c.code, show: showOf_(c), label: c.label || c.code, block: blockFor_(klass), ps: c.ps || null }, roster: roster, progress: prog, days: days,
     attempts: att, attemptCols: ['time', 'name', 'lesson', 'item', 'outcome', 'level', 'extra', 'practice', 'ver', 'verdict', 'code', 'tryNo', 'answer', 'prompt', 'inClass'],
     events: evs, eventCols: ['time', 'name', 'lesson', 'item', 'type', 'secs', 'inClass'], dayCols: ['date', 'name', 'lesson', 'secs', 'secsIn', 'answers', 'right', 'firstTry'],
     live: live_(klass), now: Date.now(), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };

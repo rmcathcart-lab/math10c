@@ -17,7 +17,7 @@
   var D = HW.Dash, st = D.state, RP = HW.DashReports = { cache: {}, marked: {} };
   D.onWrite(function (a) { // changed marks or a release: mark again; a launch, a test ending or a class list change: list the sessions again
     if (a === 'setmarks' || a === 'release') RP.marked = {};
-    if (/^(setmarks|release|launch|launchretest|tctl|setroster|removestudent|delclass)$/.test(a)) RP.cache = {};
+    if (/^(setmarks|release|launch|launchretest|tctl|setroster|removestudent|delclass|renameclass)$/.test(a)) RP.cache = {};
   });
   var LADDER = TC.LADDER, LVN = HW.LEVEL_NAMES;
 
