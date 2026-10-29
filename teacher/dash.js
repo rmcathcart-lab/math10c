@@ -176,7 +176,7 @@
   /* header chip: how many of the class are on the site right now (their page checked in within the last 90 s) */
   function onlineCount() {
     var D = st.D, now = D.liveNow || D.now || Date.now(), live = D.live || {}, names = D.roster.map(function (r) { return r.name; }), on = [];
-    names.forEach(function (n) { var r = live[n]; if (r && now - r.at < 90000) on.push(n); });
+    names.forEach(function (n) { var r = live[n]; if (r && now - r.at < 150000) on.push(n); });
     return { on: on, total: names.length, off: names.filter(function (n) { return on.indexOf(n) < 0; }) };
   }
   function onlineChip() { var c = el('button', 'online-chip'); c.type = 'button'; c.id = 'online-chip'; fillOnline(c); c.addEventListener('click', function () { goTab('live'); }); return c; }
@@ -245,7 +245,7 @@
   function liveState(rec, now) {
     if (!rec) return { k: 'none', t: 'Not on the site' };
     var age = now - rec.at;
-    if (age > 90000) return { k: 'off', t: 'Offline' };
+    if (age > 150000) return { k: 'off', t: 'Offline' }; // students check in every 45–60 s
     if (rec.away) return { k: 'away', t: 'Left the page' };
     if (rec.view === 'lesson') return { k: 'work', t: 'Working' };
     if (rec.view === 'teach') return { k: 'teach', t: 'On the lesson page' };

@@ -3,6 +3,7 @@
  * GET ?action=… (JSON, or JSONP with callback=) and POST (text/plain JSON) behave like the deployed /exec URL.
  * Test-only extras: /__stats (sheets and properties), /__set?KEY=value (script properties; __offset=ms moves the clock). */
 var fs = require('fs'), http = require('http'), url = require('url'), vm = require('vm'), path = require('path'), crypto = require('crypto');
+var BUSY = 0; // /__set?__busy=N: the next N tryLock calls fail (a busy server)
 var PORT = Number(process.argv[2] || 8765), DELAY = Number(process.argv[3] || 60);
 
 function Sheet(name) { this.name = name; this.rows = []; }
@@ -42,7 +43,7 @@ var CacheService = { getScriptCache: function () { return {
   remove: function (k) { delete cache[k]; },
   getAll: function (ks) { var o = {}; ks.forEach(function (k) { var e = cache[k]; if (e && e.exp >= Date.now()) o[k] = e.v; }); return o; },
   putAll: function (m, ttl) { Object.keys(m).forEach(function (k) { cache[k] = { v: String(m[k]), exp: Date.now() + (ttl || 600) * 1000 }; }); } }; } };
-var LockService = { getScriptLock: function () { return { waitLock: function () {}, releaseLock: function () {} }; } };
+var LockService = { getScriptLock: function () { return { waitLock: function () {}, tryLock: function () { if (BUSY > 0) { BUSY--; return false; } return true; }, releaseLock: function () {} }; } };
 var ContentService = { MimeType: { JAVASCRIPT: 'js', JSON: 'json' }, createTextOutput: function (t) { var o = { text: t, mime: 'json', setMimeType: function (m) { o.mime = m; return o; } }; return o; } };
 function toSigned(buf) { return Array.prototype.map.call(buf, function (b) { return b > 127 ? b - 256 : b; }); }
 var Utilities = {
@@ -69,7 +70,7 @@ vm.runInContext('setup()', ctx);
 http.createServer(function (req, res) {
   var u = url.parse(req.url, true), body = '';
   if (u.pathname === '/__stats') { res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*' }); res.end(JSON.stringify({ sheets: Object.keys(book.sheets).reduce(function (o, k) { o[k] = book.sheets[k].rows; return o; }, {}), props: props, cache: cache })); return; }
-  if (u.pathname === '/__set') { Object.keys(u.query).forEach(function (k) { if (k === '__offset') OFFSET = Number(u.query[k]) || 0; else props[k] = u.query[k]; }); res.end('ok'); return; }
+  if (u.pathname === '/__set') { Object.keys(u.query).forEach(function (k) { if (k === '__offset') OFFSET = Number(u.query[k]) || 0; else if (k === '__busy') BUSY = Number(u.query[k]) || 0; else props[k] = u.query[k]; }); res.end('ok'); return; }
   if (req.method === 'OPTIONS') { res.writeHead(204, { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' }); res.end(); return; }
   req.on('data', function (c) { body += c; });
   req.on('end', function () {

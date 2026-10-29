@@ -20,14 +20,35 @@
       document.head.appendChild(s);
     });
   }
+  /* A read that ran out of time is NOT sent again as JSONP: when the server is slow because it's busy, a second copy of the
+   * request only makes the line longer. JSONP is the fallback for a fetch that fails outright (blocked, offline). */
   L.get = function (action, params, timeout) {
     if (!URL) return Promise.reject(new Error('no backend'));
-    var p = Object.assign({ action: action }, params || {});
-    var ctl = root.AbortController ? new AbortController() : null, tm = setTimeout(function () { if (ctl) ctl.abort(); }, timeout || 15000);
+    var p = Object.assign({ action: action }, params || {}), timedOut = false;
+    var ctl = root.AbortController ? new AbortController() : null, tm = setTimeout(function () { timedOut = true; if (ctl) ctl.abort(); }, timeout || 15000);
     return fetch(URL + '?' + qs(p), { credentials: 'omit', redirect: 'follow', signal: ctl ? ctl.signal : undefined })
       .then(function (r) { clearTimeout(tm); if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-      .catch(function () { clearTimeout(tm); return jsonp(p, timeout); })
+      .catch(function (e) { clearTimeout(tm); if (timedOut) throw new Error('timeout'); return jsonp(p, timeout); })
       .then(function (d) { setOk(true); return d; }, function (e) { setOk(false); throw e; });
+  };
+  /* L.call: a read that tries again by itself when the server is busy (a whole class signing in at once) or slow:
+   * up to `tries` attempts, waiting a few seconds (a bit random, so 30 devices don't come back at the same moment)
+   * between them. opts.onRetry(n) is told before each new try, so the page can say "Busy, trying again…". */
+  L.call = function (action, params, opts) {
+    opts = opts || {};
+    var tries = opts.tries || 3, n = 0;
+    function once() {
+      n++;
+      return L.get(action, params, opts.timeout || 30000).then(function (d) {
+        if (d && d.error === 'busy' && n < tries) return again();
+        return d;
+      }, function (e) { if (n < tries && String(e && e.message) !== 'no backend') return again(); throw e; });
+    }
+    function again() {
+      if (opts.onRetry) { try { opts.onRetry(n); } catch (e) {} }
+      return new Promise(function (res) { setTimeout(res, 1500 + Math.random() * 2500 * n); }).then(once);
+    }
+    return once();
   };
   function setOk(v) { if (L.ok !== v) { L.ok = v; L.listeners.forEach(function (fn) { try { fn(v); } catch (e) {} }); } }
   L.onStatus = function (fn) { L.listeners.push(fn); };
@@ -48,9 +69,10 @@
     var body = payload(); if (!body) return;
     var txt = JSON.stringify(body); L.lastPost = Date.now();
     if (beacon && navigator.sendBeacon) { try { if (navigator.sendBeacon(URL, new Blob([txt], { type: 'text/plain;charset=utf-8' }))) return; } catch (e) {} }
-    try {
-      fetch(URL, { method: 'POST', mode: 'no-cors', credentials: 'omit', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt })
-        .then(function () { setOk(true); }, function () { setOk(false); requeue(body); });
+    try { // the answer is read (Apps Script allows it): a batch the server was too busy to write is kept and sent again
+      fetch(URL, { method: 'POST', credentials: 'omit', redirect: 'follow', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt })
+        .then(function (r) { setOk(true); return r.json().catch(function () { return null; }); }, function () { setOk(false); requeue(body); L.waitUntil = Date.now() + 10000 + Math.random() * 10000; return null; })
+        .then(function (d) { if (d && d.error === 'busy') { requeue(body); L.waitUntil = Date.now() + 10000 + Math.random() * 15000; } });
     } catch (e) { requeue(body); }
   };
   function requeue(body) { L.queue = (body.events || []).concat(L.queue).slice(-500); if (body.progress) Object.keys(body.progress).forEach(function (k) { if (!L.progress[k]) L.progress[k] = body.progress[k]; }); }
@@ -58,8 +80,13 @@
     if (L.timer) return;
     L.timer = setInterval(function () {
       if (!L.session) return;
+      if (L.waitUntil && Date.now() < L.waitUntil) return; // the server said it was busy: give it a moment
+      /* Every signed-in student checks in with the server. Time-on-task ticks wait for the next check-in (at most every
+       * 45 s while working, 60 s otherwise); answers, events and saved progress go right away. A whole class checking in
+       * every 15 s kept the server too busy to sign students in (2026-10-29). */
       var age = Date.now() - L.lastPost, live = L.status && L.status.view === 'lesson' && !L.status.away;
-      if (L.queue.length || Object.keys(L.progress).length || age > (live ? 15000 : 45000)) L.flush();
+      var real = L.queue.some(function (ev) { return ev.t !== 'tick'; });
+      if (real || Object.keys(L.progress).length || age > (live ? 45000 : 60000)) L.flush();
     }, 5000);
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') L.flush(true); });
     root.addEventListener('pagehide', function () { L.flush(true); });

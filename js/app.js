@@ -75,7 +75,7 @@
     session = sess; ls(SESSION, JSON.stringify(sess)); L.session = { klass: sess.klass, name: sess.name, token: sess.token, device: deviceId() };
     loadState(); L.start();
     if (L.enabled) {
-      L.get('progress', { 'class': sess.klass, name: sess.name, token: sess.token }).then(function (d) {
+      L.call('progress', { 'class': sess.klass, name: sess.name, token: sess.token }).then(function (d) {
         if (d && d.ok === false && d.error === 'badtoken') { signOut('Your PIN was reset by your teacher. Sign in again.'); return; }
         if (d && d.ok && d.lessons) { var changed = merge(d.lessons); if (changed) { saveState(); route(); } }
         if (d && d.ok) {
@@ -130,11 +130,11 @@
     function next() {
       var code = inp.value.trim(); if (!code) { inp.focus(); return; }
       go.disabled = true; go.textContent = 'Finding your class…'; err.textContent = '';
-      L.get('roster', { 'class': code }).then(function (d) {
+      L.call('roster', { 'class': code }, { onRetry: function () { go.textContent = 'Busy, trying again…'; } }).then(function (d) {
         go.disabled = false; go.textContent = 'Continue';
         if (!d || !d.ok) { err.textContent = d && d.error === 'unknown class' ? 'That class code wasn’t found. Check it with your teacher.' : 'Something went wrong. Try again.'; return; }
         ls('hw:lastclass', code); rosterInfo = { label: d.label || '', block: (d.times && d.times.block) || '' }; stepName(body, d.code || code, d.names || [], d.label);
-      }).catch(function () { go.disabled = false; go.textContent = 'Continue'; err.textContent = 'Can’t reach the class list right now. Check your internet connection and try again.'; });
+      }).catch(function () { go.disabled = false; go.textContent = 'Continue'; err.textContent = 'The class list didn’t load. Wait a few seconds and tap Continue again. (If it keeps happening, check your internet connection.)'; });
     }
     go.addEventListener('click', next); inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') next(); });
     if (auto && preset) next(); else inp.focus();
@@ -169,13 +169,19 @@
       var p = a.value.trim();
       if (!/^\d{4}$/.test(p)) { err.textContent = 'Your PIN is 4 digits.'; a.focus(); return; }
       if (create && b.value.trim() !== p) { err.textContent = 'The two PINs don’t match.'; b.focus(); return; }
-      go.disabled = true; err.textContent = '';
-      L.get(create ? 'setpin' : 'signin', { 'class': klass, name: name, pin: p, device: deviceId() }).then(function (d) {
-        go.disabled = false;
+      var label = go.textContent, retried = false; go.disabled = true; go.textContent = create ? 'Saving your PIN…' : 'Signing in…'; err.textContent = '';
+      function done() { go.disabled = false; go.textContent = label; }
+      var args = { 'class': klass, name: name, pin: p, device: deviceId() }, opts = { onRetry: function () { retried = true; go.textContent = 'Busy, trying again…'; } };
+      L.call(create ? 'setpin' : 'signin', args, opts).then(function (d) {
+        // a PIN that was saved by a try whose answer got lost comes back as "haspin": sign in with it
+        if (create && retried && d && d.error === 'haspin') return L.call('signin', args, opts);
+        return d;
+      }).then(function (d) {
+        done();
         if (d && d.ok && d.token) { startSession({ klass: klass, name: name, token: d.token, label: rosterInfo.label, block: rosterInfo.block }); return; }
-        err.textContent = d && d.error === 'badpin' ? 'That PIN isn’t right. Ask your teacher to reset it if you forgot it.' : d && d.error === 'haspin' ? 'This name already has a PIN.' : d && d.error === 'locked' ? 'Too many tries. Wait a few minutes or ask your teacher.' : 'Something went wrong. Try again.';
+        err.textContent = d && d.error === 'badpin' ? 'That PIN isn’t right. Ask your teacher to reset it if you forgot it.' : d && d.error === 'haspin' ? 'This name already has a PIN.' : d && d.error === 'locked' ? 'Too many tries. Wait a few minutes or ask your teacher.' : d && d.error === 'busy' ? 'The server is busy right now. Wait a few seconds and try again.' : 'Something went wrong. Try again.';
         if (d && d.error === 'haspin') stepPin(body, klass, name, false);
-      }).catch(function () { go.disabled = false; err.textContent = 'Can’t reach the server. Check your internet connection.'; });
+      }).catch(function () { done(); err.textContent = 'The server didn’t answer in time. Wait a few seconds and try again. (If it keeps happening, check your internet connection.)'; });
     }
     go.addEventListener('click', submit);
     [a, b].forEach(function (x) { if (x) x.addEventListener('keydown', function (e) { if (e.key === 'Enter') { if (x === a && b && !b.value) b.focus(); else submit(); } }); });

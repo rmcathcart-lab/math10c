@@ -173,32 +173,46 @@ function addDevice_(st, device) {
   if (device && d.indexOf(String(device).slice(0, 40)) < 0) { d.push(String(device).slice(0, 40)); if (d.length > 12) d = d.slice(-12); }
   return JSON.stringify(d);
 }
+/* Sign-in and PIN setup read the Roster without the script lock (reading is safe) and hold the lock only for the one-row
+ * write, so a whole class signing in at once doesn't queue up behind each other and behind the students' check-ins
+ * (2026-10-29: on the first day with students, the queue grew past the page's 15 s wait and some saw "Can't reach the
+ * server"). When the lock stays busy, the answer is { error: 'busy' } and the page tries again by itself. */
 function setPin_(klass, name, pin, device) {
   if (!/^\d{4}$/.test(String(pin || ''))) return { ok: false, error: 'badpin' };
-  var lock = LockService.getScriptLock(); lock.waitLock(15000);
+  var pre = findStudent_(klass, name); if (!pre) return { ok: false, error: 'unknown student' };
+  if (pre.v[2]) return { ok: false, error: 'haspin' };
+  var lock = LockService.getScriptLock(); if (!lock.tryLock(25000)) return { ok: false, error: 'busy' };
   try {
     var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' };
     if (st.v[2]) return { ok: false, error: 'haspin' };
     var h = hashPin_(klass, st.v[1], pin), now = new Date(), sh = sheet_('Roster');
     sh.getRange(st.row, 3, 1, 7).setValues([[h, now, st.v[4] || now, now, addDevice_(st, device), 0, '']]);
+    seen_(klass, st.v[1]);
     return { ok: true, token: token_(klass, st.v[1], h), name: st.v[1] };
   } finally { lock.releaseLock(); }
 }
 function signIn_(klass, name, pin, device) {
-  var lock = LockService.getScriptLock(); lock.waitLock(15000);
-  try {
-    var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' };
-    if (!st.v[2]) return { ok: false, error: 'nopin' };
-    if (locked_(st)) return { ok: false, error: 'locked' };
-    var sh = sheet_('Roster');
-    if (hashPin_(klass, st.v[1], String(pin || '')) !== st.v[2]) {
-      var fails = Number(st.v[7] || 0) + 1;
-      sh.getRange(st.row, 8, 1, 2).setValues([[fails, fails >= 8 ? Date.now() + 10 * 60000 : '']]);
-      return { ok: false, error: fails >= 8 ? 'locked' : 'badpin' };
+  var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' };
+  if (!st.v[2]) return { ok: false, error: 'nopin' };
+  if (locked_(st)) return { ok: false, error: 'locked' };
+  var good = hashPin_(klass, st.v[1], String(pin || '')) === st.v[2], lock = LockService.getScriptLock();
+  if (!good) {
+    var fails = Number(st.v[7] || 0) + 1;
+    if (lock.tryLock(10000)) {
+      try { // count the wrong try on the row as it is now (rows move when the teacher removes a student)
+        var s2 = findStudent_(klass, name);
+        if (s2 && s2.v[2] === st.v[2]) { fails = Number(s2.v[7] || 0) + 1; sheet_('Roster').getRange(s2.row, 8, 1, 2).setValues([[fails, fails >= 8 ? Date.now() + 10 * 60000 : '']]); }
+      } finally { lock.releaseLock(); }
     }
-    sh.getRange(st.row, 6, 1, 4).setValues([[new Date(), addDevice_(st, device), 0, '']]);
-    return { ok: true, token: token_(klass, st.v[1], st.v[2]), name: st.v[1] };
-  } finally { lock.releaseLock(); }
+    return { ok: false, error: fails >= 8 ? 'locked' : 'badpin' };
+  }
+  if (lock.tryLock(8000)) { // last seen, devices, wrong-try count back to 0: bookkeeping, skipped when the lock stays busy
+    try {
+      var s3 = findStudent_(klass, name);
+      if (s3 && s3.v[2] === st.v[2]) { sheet_('Roster').getRange(s3.row, 6, 1, 4).setValues([[new Date(), addDevice_(s3, device), 0, '']]); seen_(klass, s3.v[1]); }
+    } finally { lock.releaseLock(); }
+  }
+  return { ok: true, token: token_(klass, st.v[1], st.v[2]), name: st.v[1] };
 }
 function authed_(klass, name, token) { var st = findStudent_(klass, name); if (!st || !st.v[2]) return null; return token_(klass, st.v[1], st.v[2]) === token ? st : null; }
 function progress_(klass, name, token) {
@@ -215,12 +229,13 @@ function doPost(e) {
   if (!body || !body.name || !body['class']) return json_({ ok: false, error: 'missing' });
   body['class'] = canon_(body['class']);
   if (body.kind === 'test') { try { return json_(testPost_(body)); } catch (err) { return json_({ ok: false, error: String(err) }); } }
-  var lock = LockService.getScriptLock();
-  try { lock.waitLock(20000); } catch (err) { return json_({ ok: false, error: 'busy' }); }
+  /* Check-ins come from every signed-in student about every 45 s. The token check (cached) and the live status (one cache
+   * entry per student) need no lock; the lock is taken only when there are rows to write, and only for the writes.
+   * If it stays busy the answer is 'busy' and the page sends the same work again a little later. */
   try {
-    var st = authed_(body['class'], body.name, body.token);
-    if (!st) return json_({ ok: false, error: 'badtoken' });
-    var klass = String(st.v[0]), name = String(st.v[1]), now = Date.now(), block = blockFor_(klass), off = noSchool_();
+    var who = authFast_(body['class'], body.name, body.token);
+    if (!who) return json_({ ok: false, error: 'badtoken' });
+    var klass = who.klass, name = who.name, now = Date.now(), block = blockFor_(klass), off = noSchool_();
     var att = [], evs = [], days = {}, dev = clean_(body.device, 40);
     function dayRec(lesson, at) { var d = day_(at), key = norm_(klass) + '|' + norm_(name) + '|' + lesson + '|' + d; return days[key] || (days[key] = { key: key, date: d, lesson: lesson, secs: 0, secsIn: 0, answers: 0, right: 0, first: 0 }); }
     (body.events || []).slice(0, 300).forEach(function (ev) {
@@ -237,21 +252,47 @@ function doPost(e) {
         var s = Math.max(0, Math.min(120, Number(ev.secs) || 0)), d2 = dayRec(lesson, at); d2.secs += s; if (inC) d2.secsIn += s;
       }
     });
-    if (att.length) { var a = sheet_('Attempts'); a.getRange(a.getLastRow() + 1, 1, att.length, att[0].length).setValues(att); }
-    if (evs.length) { var b = sheet_('Events'); b.getRange(b.getLastRow() + 1, 1, evs.length, evs[0].length).setValues(evs); }
-    var dk = Object.keys(days); if (dk.length) upsertDays_(klass, name, dk.map(function (k) { return days[k]; }));
-    if (body.progress) upsertProgress_(klass, name, body.progress, now);
-    // live status (cache) + last seen
+    // live status (cache) first, so the teacher sees the student even while the writes wait
     var stt = body.status || {};
     setLive_(klass, name, { view: clean_(stt.view, 10), lesson: clean_(stt.lesson, 20), item: clean_(stt.item, 12), label: clean_(stt.label, 30), away: !!stt.away, at: now, since: Number(stt.at) || now, inClass: inClass_(block, off, now, now), dev: dev });
-    if (!st.v[5] || now - new Date(st.v[5]).getTime() > 60000) sheet_('Roster').getRange(st.row, 6).setValue(new Date(now));
+    var dk = Object.keys(days).filter(function (k) { return days[k].secs || days[k].answers; }), seenDue = !seenRecently_(klass, name);
+    if (!att.length && !evs.length && !dk.length && !body.progress && !seenDue) return json_({ ok: true, wrote: 0 });
+    /* time-on-task alone (a page that only says "still here") is added up in the cache and written about once a minute */
+    var bk = 'tk:' + norm_(klass) + '|' + norm_(name), buf = null;
+    try { buf = JSON.parse(cache_().get(bk) || 'null'); } catch (e) {}
+    var recs = {}; if (buf && buf.days) addDays_(recs, buf.days);
+    addDays_(recs, dk.map(function (k) { return days[k]; }));
+    if (!att.length && !evs.length && !body.progress && !seenDue && dk.every(function (k) { return !days[k].answers; })) {
+      var since = (buf && buf.since) || now;
+      if (now - since < 60000) { try { cache_().put(bk, JSON.stringify({ since: since, days: recs }), 21600); } catch (e) {} return json_({ ok: true, wrote: 0 }); }
+    }
+    var lock = LockService.getScriptLock();
+    if (!lock.tryLock(12000)) return json_({ ok: false, error: 'busy' }); // the cached time stays for the next try
+    try {
+      if (att.length) { var a = sheet_('Attempts'); a.getRange(a.getLastRow() + 1, 1, att.length, att[0].length).setValues(att); }
+      if (evs.length) { var b = sheet_('Events'); b.getRange(b.getLastRow() + 1, 1, evs.length, evs[0].length).setValues(evs); }
+      var rk = Object.keys(recs); if (rk.length) upsertDays_(klass, name, rk.map(function (k) { return recs[k]; }));
+      if (buf) { try { cache_().remove(bk); } catch (e) {} }
+      if (body.progress) upsertProgress_(klass, name, body.progress, now);
+      if (seenDue) { var st = findStudent_(klass, name); if (st) sheet_('Roster').getRange(st.row, 6).setValue(new Date(now)); seen_(klass, name); }
+    } finally { lock.releaseLock(); }
     return json_({ ok: true, wrote: att.length });
   } catch (err) { return json_({ ok: false, error: String(err) }); }
-  finally { lock.releaseLock(); }
 }
+function addDays_(into, recs) { // add day records ({ key, date, lesson, secs, … }) together by key
+  (Array.isArray(recs) ? recs : Object.keys(recs).map(function (k) { return recs[k]; })).forEach(function (r) {
+    var t = into[r.key] || (into[r.key] = { key: r.key, date: r.date, lesson: r.lesson, secs: 0, secsIn: 0, answers: 0, right: 0, first: 0 });
+    ['secs', 'secsIn', 'answers', 'right', 'first'].forEach(function (f) { t[f] += Number(r[f]) || 0; });
+  });
+  return into;
+}
+/* "last seen" on the Roster is written at most every 5 minutes per student (the live view has the exact time) */
+function seenRecently_(klass, name) { try { return !!cache_().get('seen:' + norm_(klass) + '|' + norm_(name)); } catch (e) { return false; } }
+function seen_(klass, name) { try { cache_().put('seen:' + norm_(klass) + '|' + norm_(name), '1', 300); } catch (e) {} }
 function upsertDays_(klass, name, recs) {
-  var sh = sheet_('Days'), last = sh.getLastRow(), keys = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [], idx = {};
-  for (var i = keys.length - 1; i >= 0 && i >= keys.length - 4000; i--) idx[keys[i][0]] = i + 2; // recent rows are enough (today)
+  var sh = sheet_('Days'), last = sh.getLastRow(), first = Math.max(2, last - 3999), idx = {}; // recent rows are enough (today)
+  var keys = last >= first ? sh.getRange(first, 1, last - first + 1, 1).getValues() : [];
+  for (var i = 0; i < keys.length; i++) idx[keys[i][0]] = first + i;
   var add = [];
   recs.forEach(function (r) {
     var row = idx[r.key];
@@ -271,14 +312,19 @@ function upsertProgress_(klass, name, prog, now) {
     else { sh.appendRow(row); idx[key] = sh.getLastRow(); }
   });
 }
-function setLive_(klass, name, rec) {
-  var c = CacheService.getScriptCache(), k = 'live:' + norm_(klass), m = {};
-  try { m = JSON.parse(c.get(k) || '{}'); } catch (e) {}
-  m[name] = rec;
-  var cut = Date.now() - 6 * 3600000; Object.keys(m).forEach(function (n) { if (m[n].at < cut) delete m[n]; });
-  c.put(k, JSON.stringify(m), 21600);
+function liveKey_(klass, name) { return 'lv:' + norm_(klass) + '|' + norm_(name); }
+function setLive_(klass, name, rec) { rec.name = String(name); try { cache_().put(liveKey_(klass, name), JSON.stringify(rec), 21600); } catch (e) {} }
+function live_(klass, names) {
+  try {
+    names = names || rosterRows_(klass).map(function (x) { return String(x.v[1]); });
+    var keys = names.map(function (n) { return liveKey_(klass, n); }), out = {};
+    for (var i = 0; i < keys.length; i += 100) { // getAll takes at most 1000 keys; small batches are plenty
+      var got = cache_().getAll(keys.slice(i, i + 100));
+      Object.keys(got).forEach(function (k) { try { var r = JSON.parse(got[k]); if (r && r.name) { out[r.name] = r; delete r.name; } } catch (e) {} });
+    }
+    return out;
+  } catch (e) { return {}; }
 }
-function live_(klass) { try { return JSON.parse(CacheService.getScriptCache().get('live:' + norm_(klass)) || '{}'); } catch (e) { return {}; } }
 
 /* ---------------- teacher ---------------- */
 function classList_() {
@@ -295,7 +341,7 @@ function dash_(klass) {
   return { ok: true, 'class': { code: c.code, show: showOf_(c), label: c.label || c.code, block: blockFor_(klass), ps: c.ps || null }, roster: roster, progress: prog, days: days,
     attempts: att, attemptCols: ['time', 'name', 'lesson', 'item', 'outcome', 'level', 'extra', 'practice', 'ver', 'verdict', 'code', 'tryNo', 'answer', 'prompt', 'inClass'],
     events: evs, eventCols: ['time', 'name', 'lesson', 'item', 'type', 'secs', 'inClass'], dayCols: ['date', 'name', 'lesson', 'secs', 'secsIn', 'answers', 'right', 'firstTry'],
-    live: live_(klass), now: Date.now(), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
+    live: live_(klass, roster.map(function (x) { return String(x.name); })), now: Date.now(), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
 }
 function itemsOf_(state) { // compact per-item status for the dashboard: { id: [status, credit, wrong, secs, reveals] }
   var out = {}; try { var s = JSON.parse(state || '{}'), it = s.items || {}; Object.keys(it).forEach(function (id) { var r = it[id]; out[id] = [r.s, r.credit || '', r.wrong || 0, r.secs || 0, r.reveals || 0, r.steps || 0, r.redo ? 1 : 0]; }); } catch (e) {}
@@ -365,7 +411,7 @@ function delClass_(klass) {
 }
 function dropTok_(klass, name) { try { cache_().remove('tok:' + norm_(klass) + '|' + norm_(name)); } catch (e) {} }
 function resetPin_(klass, name) { dropTok_(klass, name); var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' }; sheet_('Roster').getRange(st.row, 3, 1, 2).setValues([['', '']]); sheet_('Roster').getRange(st.row, 8, 1, 2).setValues([[0, '']]); return { ok: true }; }
-function removeStudent_(klass, name) { var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' }; sheet_('Roster').deleteRow(st.row); return { ok: true }; }
+function removeStudent_(klass, name) { dropTok_(klass, name); var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' }; sheet_('Roster').deleteRow(st.row); return { ok: true }; }
 function rename_(klass, name, to) { dropTok_(klass, name); var st = findStudent_(klass, name); to = clean_(to, 60); if (!st || !to) return { ok: false, error: 'unknown student' }; sheet_('Roster').getRange(st.row, 2, 1, 2).setValues([[to, '']]); return { ok: true, note: 'PIN cleared: the student makes a new one.' }; }
 
 /* ---------------- class times: the bell schedule (2026-27) ----------------
