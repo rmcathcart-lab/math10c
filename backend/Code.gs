@@ -229,9 +229,8 @@ function doPost(e) {
   if (!body || !body.name || !body['class']) return json_({ ok: false, error: 'missing' });
   body['class'] = canon_(body['class']);
   if (body.kind === 'test') { try { return json_(testPost_(body)); } catch (err) { return json_({ ok: false, error: String(err) }); } }
-  /* Check-ins come from every signed-in student about every 45 s. The token check (cached) and the live status (one cache
-   * entry per student) need no lock; the lock is taken only when there are rows to write, and only for the writes.
-   * If it stays busy the answer is 'busy' and the page sends the same work again a little later. */
+  /* Check-ins come from every signed-in student about every 45 s. The token check (cached), the live status (one cache
+   * entry per student) and the writes below need no script lock. */
   try {
     var who = authFast_(body['class'], body.name, body.token);
     if (!who) return json_({ ok: false, error: 'badtoken' });
@@ -266,16 +265,19 @@ function doPost(e) {
       var since = (buf && buf.since) || now;
       if (now - since < 60000) { try { cache_().put(bk, JSON.stringify({ since: since, days: recs }), 21600); } catch (e) {} return json_({ ok: true, wrote: 0 }); }
     }
-    var lock = LockService.getScriptLock();
-    if (!lock.tryLock(12000)) return json_({ ok: false, error: 'busy' }); // the cached time stays for the next try
-    try {
-      if (att.length) { var a = sheet_('Attempts'); a.getRange(a.getLastRow() + 1, 1, att.length, att[0].length).setValues(att); }
-      if (evs.length) { var b = sheet_('Events'); b.getRange(b.getLastRow() + 1, 1, evs.length, evs[0].length).setValues(evs); }
-      var rk = Object.keys(recs); if (rk.length) upsertDays_(klass, name, rk.map(function (k) { return recs[k]; }));
-      if (buf) { try { cache_().remove(bk); } catch (e) {} }
-      if (body.progress) upsertProgress_(klass, name, body.progress, now);
-      if (seenDue) { var st = findStudent_(klass, name); if (st) sheet_('Roster').getRange(st.row, 6).setValue(new Date(now)); seen_(klass, name); }
-    } finally { lock.releaseLock(); }
+    /* No script lock here (2026-10-29): with a class online, check-ins arrive several a second and waiting for one lock
+     * each queued them up until sign-ins timed out. New rows go in with appendRow (one atomic step, safe side by side);
+     * a student's own Days/Progress rows are updated in place (those sheets never delete rows, so row numbers hold).
+     * Only "last seen" on the Roster (rows move when the teacher removes a student) takes the lock, briefly. */
+    if (att.length) appendRows_('Attempts', att);
+    if (evs.length) appendRows_('Events', evs);
+    var rk = Object.keys(recs); if (rk.length) upsertDays_(klass, name, rk.map(function (k) { return recs[k]; }));
+    if (buf) { try { cache_().remove(bk); } catch (e) {} }
+    if (body.progress) upsertProgress_(klass, name, body.progress, now);
+    if (seenDue) {
+      var lock = LockService.getScriptLock();
+      if (lock.tryLock(3000)) { try { var st = findStudent_(klass, name); if (st) sheet_('Roster').getRange(st.row, 6).setValue(new Date(now)); seen_(klass, name); } finally { lock.releaseLock(); } }
+    }
     return json_({ ok: true, wrote: att.length });
   } catch (err) { return json_({ ok: false, error: String(err) }); }
 }
@@ -299,8 +301,9 @@ function upsertDays_(klass, name, recs) {
     if (row) { var v = sh.getRange(row, 6, 1, 5).getValues()[0]; sh.getRange(row, 6, 1, 5).setValues([[Number(v[0]) + r.secs, Number(v[1]) + r.secsIn, Number(v[2]) + r.answers, Number(v[3]) + r.right, Number(v[4]) + r.first]]); }
     else add.push([r.key, r.date, klass, name, r.lesson, r.secs, r.secsIn, r.answers, r.right, r.first]);
   });
-  if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, add[0].length).setValues(add);
+  add.forEach(function (r) { sh.appendRow(r); });
 }
+function appendRows_(name, rows) { var sh = sheet_(name); rows.forEach(function (r) { sh.appendRow(r); }); }
 function upsertProgress_(klass, name, prog, now) {
   var sh = sheet_('Progress'), last = sh.getLastRow(), keys = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [], idx = {};
   keys.forEach(function (k, i) { idx[k[0]] = i + 2; });
