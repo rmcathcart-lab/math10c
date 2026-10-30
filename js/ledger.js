@@ -69,10 +69,9 @@
     var body = payload(); if (!body) return;
     var txt = JSON.stringify(body); L.lastPost = Date.now();
     if (beacon && navigator.sendBeacon) { try { if (navigator.sendBeacon(URL, new Blob([txt], { type: 'text/plain;charset=utf-8' }))) return; } catch (e) {} }
-    try { // the answer is read (Apps Script allows it): a batch the server was too busy to write is kept and sent again
-      fetch(URL, { method: 'POST', credentials: 'omit', redirect: 'follow', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt })
-        .then(function (r) { setOk(true); return r.json().catch(function () { return null; }); }, function () { setOk(false); requeue(body); L.waitUntil = Date.now() + 10000 + Math.random() * 10000; return null; })
-        .then(function (d) { if (d && d.error === 'busy') { requeue(body); L.waitUntil = Date.now() + 10000 + Math.random() * 15000; } });
+    try { // no-cors, as before 2026-10-29 (the server no longer waits for a lock, so there is no 'busy' answer to read)
+      fetch(URL, { method: 'POST', mode: 'no-cors', credentials: 'omit', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt })
+        .then(function () { setOk(true); }, function () { setOk(false); requeue(body); L.waitUntil = Date.now() + 10000 + Math.random() * 10000; });
     } catch (e) { requeue(body); }
   };
   function requeue(body) { L.queue = (body.events || []).concat(L.queue).slice(-500); if (body.progress) Object.keys(body.progress).forEach(function (k) { if (!L.progress[k]) L.progress[k] = body.progress[k]; }); }
