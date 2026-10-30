@@ -747,3 +747,8 @@ a.lp-row:hover { background: #f4f2ec; }
 .su-gn { font: 800 15px/1 var(--font); color: var(--su); margin-bottom: 6px; }
 @media (prefers-reduced-motion: reduce) { .su-cur.su-in, .su-g { animation: none; } .su-timer.done .su-trun { animation: none; } }
 @media print { .su-tools, .su-bar, .su-timer, .su-ans-b { display: none !important; } }
+
+/* the question an explainer is working on, kept above the picture (2026-10-30) */
+.ex-ask { flex: 1 0 100%; font-size: 20px; line-height: 1.4; padding: 7px 14px; background: color-mix(in srgb, var(--brand) 7%, #fff); border-left: 4px solid var(--brand); border-radius: 8px; color: var(--ink); }
+.ex-ask[hidden] { display: none; }
+.ex-fl .ex-ask { font-size: 19.5px; }

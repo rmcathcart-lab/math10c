@@ -61,6 +61,11 @@ export class Explainer {
       }
       top.appendChild(chips);
     }
+    /* the question being worked, kept in view above the picture for every step (Ryan, 2026-10-30: some explainers jumped
+     * straight into the working and students lost sight of what was being solved). It shows def.ask (text or
+     * function of the chosen example), or else a function intro (those name the example: "Factor 6x + 18 …").
+     * def.ask: false turns it off. */
+    this.askEl = h('div', 'ex-ask'); this.askEl.hidden = true; top.appendChild(this.askEl);
     this.stage = h('div', 'ex-stage'); this.stage.style.height = def.height + 'px';
     // the stage sits in a holder; a picture drawn for a wider stage (def.minW) is drawn at that width and scaled down
     this.hold = h('div', 'ex-hold'); this.hold.appendChild(this.stage);
@@ -173,6 +178,7 @@ export class Explainer {
     this.gen++; const g = this.gen; this.running = false;
     this.stage.innerHTML = ''; this.W = this.stage.clientWidth || 900;
     if (this.chipEls) this.chipEls.forEach((b) => b.classList.toggle('on', String(b.dataset.v) === String(this.value)));
+    const ask = this.askOf(); if (this.askEl.innerHTML !== ask) this.askEl.innerHTML = ask; this.askEl.hidden = !ask;
     this.steps = this.def.make(this.stage, this.value, this) || [];
     k = Math.min(k, this.steps.length);
     const c = this.ctx(g, true);
@@ -180,7 +186,8 @@ export class Explainer {
     if (g !== this.gen) return;
     this.k = k; this.showCap(k ? this.capOf(k - 1) : this.intro()); this.sync();
   }
-  intro() { const i = this.def.intro; return typeof i === 'function' ? i(this.value) : i || 'Press <b>Next</b> to start.'; }
+  intro() { if (this.askOf()) return 'Press <b>Next</b> to start.'; const i = this.def.intro; return typeof i === 'function' ? i(this.value) : i || 'Press <b>Next</b> to start.'; }
+  askOf() { const a = this.def.ask, i = this.def.intro; if (a === false) return ''; if (typeof a === 'function') return a(this.value) || ''; if (a) return a; return typeof i === 'function' ? i(this.value) || '' : ''; }
   capOf(i) { const s = this.steps[i]; return s ? (s.capText || (typeof s.cap === 'function' ? s.cap() : s.cap) || '') : ''; }
   async runStep(i, c) { const s = this.steps[i]; if (typeof s.cap === 'function') s.capText = s.cap(); if (s.run) await s.run(c); }
   showCap(html) { this.cap.innerHTML = html; }
