@@ -33,11 +33,22 @@ var TZ = 'America/Edmonton';
 
 /* ---------------- plumbing ---------------- */
 function props_() { return PropertiesService.getScriptProperties(); }
-function ss_() {
+/* The ledger spreadsheet. It is only ever CREATED by setup() (create = true). Everywhere else a failed open is retried
+ * and then reported as an error: on 2026-10-30 a few busy moments made openById fail and the old fallback created a
+ * new, empty spreadsheet each time and switched to it, so the class lists seemed to vanish. */
+var SS_ = null;
+function ss_(create) {
+  if (SS_) return SS_;
   var id = props_().getProperty('SHEET_ID');
-  if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} }
+  if (id) {
+    for (var i = 0; ; i++) {
+      try { return (SS_ = SpreadsheetApp.openById(id)); }
+      catch (e) { if (i >= 3) throw new Error('The ledger spreadsheet could not be opened just now: ' + e); Utilities.sleep(300 + 600 * i); }
+    }
+  }
+  if (!create) throw new Error('No ledger spreadsheet yet: run setup() from the editor.');
   var ss = SpreadsheetApp.create('Math 10C Practice Ledger'); props_().setProperty('SHEET_ID', ss.getId());
-  return ss;
+  return (SS_ = ss);
 }
 var SHEETS_ = {};
 function sheet_(name) {
@@ -70,7 +81,7 @@ function token_(klass, name, pinHash) { return Utilities.base64EncodeWebSafe(Uti
 function day_(ms) { return Utilities.formatDate(new Date(ms), TZ, 'yyyy-MM-dd'); }
 
 function setup() {
-  var ss = ss_(); Object.keys(COLS).forEach(function (n) { sheet_(n); });
+  var ss = ss_(true); Object.keys(COLS).forEach(function (n) { sheet_(n); });
   var s1 = ss.getSheetByName('Sheet1'); if (s1 && ss.getSheets().length > 1) ss.deleteSheet(s1);
   if (!teacherKey_()) props_().setProperty('TEACHER_KEY', Utilities.getUuid().replace(/-/g, '').slice(0, 12));
   secret_();
