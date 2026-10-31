@@ -312,6 +312,7 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
   .qprompt { font-size: 19px; }
   .ans-input.ans-wide { width: 100%; }
   math-field.mf { min-width: 0; width: 100%; }
+  .w-fields math-field.mf { flex: 1 1 auto; min-width: 160px; }
   .kp { display: flex; width: 100%; }
   .kpk { flex: 1; min-width: 0; padding: 0 4px; }
   .kpk.kpwide { flex: 2; }
