@@ -12,8 +12,13 @@
   var TM = HW.TestMode = {};
   /* touch screens (Windows touch laptops especially): a long press opens the browser's own menu, and the touch keyboard
    * or a handwriting panel can take focus for a moment. On a touch device a lost focus gets a short grace period, and
-   * keeps getting it while the student is still tapping or typing in the page, before it counts as leaving. */
+   * keeps getting it while the student is still tapping or typing in the page, before it counts as leaving.
+   * Full screen on a touch device: the on-screen keyboard can throw the page out of full screen (an iPad always does, as
+   * soon as a text box is tapped), so on a touch device leaving full screen doesn't lock the test — switching apps or tabs
+   * still does (the page is hidden), and so does focus staying away. iPads and iPhones aren't put in full screen at all. */
   var TOUCH = (root.navigator && navigator.maxTouchPoints > 0) || ('ontouchstart' in root), TOUCH_BLUR_MS = 2000, TOUCH_BLUR_TRIES = 5, lastIn = 0;
+  var IOS = !!root.navigator && (/iPad|iPhone|iPod/.test(navigator.userAgent || '') || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+  function fsCounts() { return !!(T && T.rec && T.rec.fs) && !TOUCH; }
   var POLL_MS = 10000, BLUR_MS = 250, FINAL = { submitted: 1, left: 1, time: 1, ended: 1, forced: 1 };
   var T = null;            // the test on screen: { sid, def, live, items, byKey, order, rec, cur, widgets, ui }
   var lastCheck = 0, checking = false, relSeen = null, results = null, resultsAt = 0, guardUntil = 0;
@@ -28,7 +33,7 @@
   function fsEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
   function goFull() {
     var d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
-    if (!f) return Promise.resolve(false);
+    if (!f || IOS) return Promise.resolve(false);
     try { var p = f.call(d, { navigationUI: 'hide' }); return (p && p.then ? p : Promise.resolve()).then(function () { return true; }, function () { return false; }); } catch (e) { return Promise.resolve(false); }
   }
   function exitFull() { try { if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
@@ -415,7 +420,7 @@
     if (!writing() || Date.now() < guardUntil) return;
     if (document.visibilityState === 'hidden') left('left the page (switched tabs or windows)', true);
     else if (!document.hasFocus()) { if (TOUCH) { var t = Date.now(); setTimeout(function () { blurCheck(t, 0); }, TOUCH_BLUR_MS); } else left('clicked out of the test window'); }
-    else if (T.rec.fs && !fsEl()) left('left full screen');
+    else if (fsCounts() && !fsEl()) left('left full screen');
   }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') left('left the page (switched tabs or windows)', true); });
   function blurCheck(since, tries) {
@@ -427,7 +432,7 @@
   ['pointerdown', 'keydown', 'input', 'touchstart'].forEach(function (ev) { root.addEventListener(ev, function () { lastIn = Date.now(); }, { passive: true, capture: true }); });
   // no browser menu (long press / right click) while writing: on a touch screen it steals focus and locks the test
   root.addEventListener('contextmenu', function (e) { if (writing()) e.preventDefault(); }, true);
-  function onFs() { if (!fsEl() && writing()) { if (T.rec.fs) left('left full screen'); } }
+  function onFs() { if (!fsEl() && writing() && fsCounts()) left('left full screen'); }
   document.addEventListener('fullscreenchange', onFs); document.addEventListener('webkitfullscreenchange', onFs);
   root.addEventListener('pagehide', function () { left('closed or reloaded the page', true); });
 
