@@ -127,15 +127,16 @@
     return { m: i >= 0 ? str.slice(0, i) : str, fin: fin };
   };
   TC.packMarks = function (m, fin) { var k = Object.keys(fin || {}).filter(function (o) { return fin[o]; }); return m + (k.length ? '|' + k.map(function (o) { return o + '=' + fin[o]; }).join(',') : ''); };
-  /* exit slips: the highest level answered correctly on each outcome, and the number right */
+  /* exit slips: the number right, and an indicator per outcome found the same way as on tests (TC.outcomeGrades: the
+   * Beginning / Progressing / Mastery boxes, 3/4 secure, 1/2 partial, partial credit counted, one step down per partial
+   * easier box and two per box below half). Before 2026-11-02 it was the highest level answered right, which gave
+   * Mastery to a student who got only the Mastery question. levels[o] is left out when the indicator is Not meeting. */
   TC.summary = function (def, marks) {
-    marks = TC.parseMarks(marks).m;
-    var items = TC.items(def), LV = HW.LEVELS, best = {}, outs = [], score = 0;
-    items.forEach(function (x) {
-      var o = x.it.outcome; if (outs.indexOf(o) < 0) outs.push(o);
-      if (TC.right(marks.charAt(x.pos))) { score++; if (best[o] == null || LV.indexOf(x.it.level) > LV.indexOf(best[o])) best[o] = x.it.level; }
-    });
-    return { score: score, total: items.length, levels: best, outcomes: outs };
+    var m = TC.parseMarks(marks).m, items = TC.items(def), outs = [], score = 0;
+    items.forEach(function (x) { var o = x.it.outcome; if (outs.indexOf(o) < 0) outs.push(o); if (TC.right(m.charAt(x.pos))) score++; });
+    var g = TC.outcomeGrades(def, marks, { exit: true }), levels = {}, notes = {}, grades = {};
+    g.outcomes.forEach(function (x) { grades[x.outcome] = x; if (x.ind !== 'NM') levels[x.outcome] = x.ind; if (x.note && !x.set) notes[x.outcome] = x.note; });
+    return { score: score, total: items.length, levels: levels, notes: notes, grades: grades, points: g.points, outcomes: outs };
   };
 
   /* ---------------- tests: an indicator per outcome from its three boxes (Ryan's rule, 2026-10-19) ----------------
@@ -171,7 +172,7 @@
     return { ind: name, pct: Math.round(band[0] + (band[1] - band[0]) * Math.max(0, Math.min(1, best.prog))), note: best.note };
   };
   TC.midPct = function (ind) { var b = TC.BANDS[ind]; return b ? Math.round((b[0] + b[1]) / 2) : 0; };
-  TC.outcomeGrades = function (def, marksStr) {
+  TC.outcomeGrades = function (def, marksStr, opts) {
     var pm = TC.parseMarks(marksStr), marks = pm.m, items = TC.items(def), by = {}, order = [];
     items.forEach(function (x) {
       var o = x.it.outcome; if (!by[o]) { by[o] = { B: [], P: [], M: [] }; order.push(o); }
@@ -190,8 +191,20 @@
         } else list.forEach(function (x) { earned += TC.credit(marks.charAt(x.pos)); });
         box[k] = { earned: earned, total: total };
       });
-      // a missing box: counts as done when a harder box is on the test (it can't penalize), else as empty (it caps)
-      function frac(k, harder) { var t = box[k].total; if (t) return box[k].earned / t; return harder.some(function (h) { return box[h].total; }) ? 1 : 0; }
+      // a missing box: counts as done when a harder box is on the test (it can't penalize), else as empty (it caps).
+      // Exit slips (opts.exit: few questions, boxes often missing): a missing box under a harder one takes the score of the
+      // easier box below it when there is one (B wrong + M right with no P question is not a Progressing hole skipped), and otherwise counts as
+      // done only when the student has at least half of a harder box.
+      var EASIER = { B: [], P: ['B'], M: ['P', 'B'] };
+      function frac(k, harder) {
+        var t = box[k].total; if (t) return box[k].earned / t;
+        if (opts && opts.exit) {
+          if (!harder.some(function (h) { return box[h].total; })) return 0;
+          var e = EASIER[k].filter(function (h) { return box[h].total; })[0]; if (e) return box[e].earned / box[e].total;
+          return harder.some(function (h) { return box[h].total && box[h].earned >= TC.PARTIAL * box[h].total; }) ? 1 : 0;
+        }
+        return harder.some(function (h) { return box[h].total; }) ? 1 : 0;
+      }
       var g = TC.indicator(frac('B', ['P', 'M']), frac('P', ['M']), frac('M', []));
       var fin = pm.fin[o];
       return { outcome: o, boxes: box, auto: g.ind, autoPct: g.pct, note: g.note, mcHalved: box.mcHalved, ind: fin || g.ind, pct: fin ? (fin === g.ind ? g.pct : TC.midPct(fin)) : g.pct, set: !!fin };

@@ -10,6 +10,10 @@
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc, L = HW.Ledger, TC = HW.TestCore, cfg = root.HW_CONFIG || {}, URL = cfg.backend || '';
   var TM = HW.TestMode = {};
+  /* touch screens (Windows touch laptops especially): a long press opens the browser's own menu, and the touch keyboard
+   * or a handwriting panel can take focus for a moment. On a touch device a lost focus gets a short grace period, and
+   * keeps getting it while the student is still tapping or typing in the page, before it counts as leaving. */
+  var TOUCH = (root.navigator && navigator.maxTouchPoints > 0) || ('ontouchstart' in root), TOUCH_BLUR_MS = 2000, TOUCH_BLUR_TRIES = 5, lastIn = 0;
   var POLL_MS = 10000, BLUR_MS = 250, FINAL = { submitted: 1, left: 1, time: 1, ended: 1, forced: 1 };
   var T = null;            // the test on screen: { sid, def, live, items, byKey, order, rec, cur, widgets, ui }
   var lastCheck = 0, checking = false, relSeen = null, results = null, resultsAt = 0, guardUntil = 0;
@@ -410,11 +414,19 @@
   function recheckLeft() {
     if (!writing() || Date.now() < guardUntil) return;
     if (document.visibilityState === 'hidden') left('left the page (switched tabs or windows)', true);
-    else if (!document.hasFocus()) left('clicked out of the test window');
+    else if (!document.hasFocus()) { if (TOUCH) { var t = Date.now(); setTimeout(function () { blurCheck(t, 0); }, TOUCH_BLUR_MS); } else left('clicked out of the test window'); }
     else if (T.rec.fs && !fsEl()) left('left full screen');
   }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') left('left the page (switched tabs or windows)', true); });
-  root.addEventListener('blur', function () { setTimeout(function () { if (!document.hasFocus()) left('clicked out of the test window'); }, BLUR_MS); });
+  function blurCheck(since, tries) {
+    if (document.hasFocus()) return;
+    if (TOUCH && tries < TOUCH_BLUR_TRIES && lastIn > since) { var now = Date.now(); setTimeout(function () { blurCheck(now, tries + 1); }, TOUCH_BLUR_MS); return; }
+    left('clicked out of the test window');
+  }
+  root.addEventListener('blur', function () { var t = Date.now(); setTimeout(function () { blurCheck(t, 0); }, TOUCH ? TOUCH_BLUR_MS : BLUR_MS); });
+  ['pointerdown', 'keydown', 'input', 'touchstart'].forEach(function (ev) { root.addEventListener(ev, function () { lastIn = Date.now(); }, { passive: true, capture: true }); });
+  // no browser menu (long press / right click) while writing: on a touch screen it steals focus and locks the test
+  root.addEventListener('contextmenu', function (e) { if (writing()) e.preventDefault(); }, true);
   function onFs() { if (!fsEl() && writing()) { if (T.rec.fs) left('left full screen'); } }
   document.addEventListener('fullscreenchange', onFs); document.addEventListener('webkitfullscreenchange', onFs);
   root.addEventListener('pagehide', function () { left('closed or reloaded the page', true); });

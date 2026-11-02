@@ -496,7 +496,7 @@
       tr.innerHTML = html;
       outs.forEach(function (o) {
         var td = el('td', 'tt-ocell');
-        if (!R.isTest) { var lv = r.sum.levels[o]; td.innerHTML = lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted small">—</span>'; tr.appendChild(td); return; }
+        if (!R.isTest) { var lv = r.sum.levels[o], nt = r.sum.notes && r.sum.notes[o]; td.innerHTML = (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted small">—</span>') + (nt ? ' <span class="tt-flag" title="' + esc(nt) + '">⚑ Check</span>' : ''); tr.appendChild(td); return; }
         var g = r.g.outcomes.filter(function (x) { return x.outcome === o; })[0], bx = g.boxes;
         td.innerHTML = '<div class="tt-oline"><span class="lvl lvl-' + g.ind + '">' + indName(g.ind) + '</span> <b>' + g.pct + '</b>' + (g.note && !g.set ? ' <span class="tt-flag" title="' + esc(g.note) + '">⚑ Check</span>' : '') + (g.set ? ' <span class="tag" title="You set this. The rule says ' + g.auto + ' ' + g.autoPct + '">set</span>' : '') + '</div>' +
           '<div class="small muted">B ' + boxText(bx.B) + ' · P ' + boxText(bx.P) + ' · M ' + boxText(bx.M) + (g.mcHalved ? ' <span title="Mastery multiple choice counted half: less than half of the box’s other points">(MC ½)</span>' : '') + '</div>';
