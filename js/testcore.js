@@ -14,12 +14,20 @@
   /* when a test ends: 'period' (the default: when the class period ends, live.endsAt from the ledger; none outside class
      time), 'minutes' (def.minutes from when each student starts) or 'none' */
   TC.timing = function (def) { var t = def && def.timing; return t === 'minutes' || t === 'none' ? t : 'period'; };
+  /* when a 'period' test or exit slip ends. Exit slips end 2 minutes before the bell, so students see how they did before
+     class is over (their results are released the moment the slip closes); not when that would leave under 4 minutes. */
+  TC.EXIT_EARLY_MS = 2 * 60000;
+  TC.endsAt = function (def, live) {
+    var e = live && live.endsAt || 0; if (!e) return 0;
+    if (def && def.kind === 'exit' && e - TC.EXIT_EARLY_MS - (live.launched || 0) >= 4 * 60000) return e - TC.EXIT_EARLY_MS;
+    return e;
+  };
   TC.clock = function (ms) { return new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
   TC.timingText = function (def, live) {
     var t = TC.timing(def);
     if (t === 'minutes') return (def.minutes || 0) + ' min';
     if (t === 'none') return 'no time limit';
-    return live ? (live.endsAt ? 'until the end of class (' + TC.clock(live.endsAt) + ')' : 'no time limit (launched outside class time)') : 'until the end of class';
+    return live ? (live.endsAt ? (def && def.kind === 'exit' && TC.endsAt(def, live) < live.endsAt ? 'until ' + TC.clock(TC.endsAt(def, live)) + ' (2 min before the bell)' : 'until the end of class (' + TC.clock(live.endsAt) + ')') : 'no time limit (launched outside class time)') : def && def.kind === 'exit' ? 'until 2 min before the end of class' : 'until the end of class';
   };
   TC.items = function (def) {
     var out = [];

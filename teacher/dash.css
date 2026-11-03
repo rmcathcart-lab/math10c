@@ -605,3 +605,8 @@ a.cm-row:hover, a.cm-row:focus-visible { background: #f4f1ea; outline: none; }
 .av-out { margin-top: 8px; min-height: 1px; }
 .av-foot { margin-top: 14px; }
 @media (max-width: 600px) { .av-row { grid-template-columns: 22px minmax(0, 1fr); } .av-res, .av-when { grid-column: 2; } .av-live { margin-left: 0; } }
+
+/* the last 12 minutes of class with no exit slip launched yet: the Exit Slip button pulses */
+.top-exit.remind { animation: exit-pulse 1.4s ease-in-out infinite; background: #ffc400; border-color: #c99400; }
+@keyframes exit-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 196, 0, .75); transform: scale(1); } 50% { box-shadow: 0 0 0 9px rgba(255, 196, 0, 0); transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .top-exit.remind { animation: none; box-shadow: 0 0 0 4px rgba(255, 196, 0, .6); } }

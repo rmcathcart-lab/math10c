@@ -307,6 +307,67 @@
     if (!xs.length) { xb.disabled = true; xb.title = t.keys.length ? 'Today’s lesson has no exit slip.' : t.why; }
     else xb.title = xs.map(function (k) { var i = C.info(k); return 'Exit Slip ' + i.unit + '.' + i.num + ': ' + String(i.title).replace(/<[^>]*>/g, ''); }).join('\n') + '\nLaunch it for this class';
     right.appendChild(xb);
+    exitReminder();
+  }
+  /* ---- the exit slip reminder: in the last 12 minutes of this class's block, while today's lesson has an exit slip and
+     none has been launched for the class today, the Exit Slip button pulses and (once a day, if notifications are on)
+     the browser shows a notification. Works while the ledger is open in a tab, even in the background. ---- */
+  var REMIND_MS = 12 * 60000;
+  /* when this class's block ends today, from the bell schedule (the same rules as the ledger's), or 0 */
+  function classEnd(now) {
+    var b = block(), B = st.bell; if (!b || !B) return 0;
+    var d = new Date(now), dow = d.getDay(); if (dow === 0 || dow === 6 || off().indexOf(C.key ? C.key(d) : C.today()) >= 0) return 0;
+    var day = dow === 5 ? B.fri : (dow === 1 || dow === 3) ? B.day1 : B.day2, row = (day || []).filter(function (x) { return String(x[0]).toUpperCase() === b; })[0];
+    if (!row || !row[2]) return 0;
+    var hm = String(row[2]).split(':'), e = new Date(d); e.setHours(Number(hm[0]), Number(hm[1]), 0, 0); return e.getTime();
+  }
+  function remindState(now) {
+    var xb = document.querySelector('.top-exit'); if (!xb || xb.disabled || isDemo()) return null;
+    var end = classEnd(now); if (!end || now < end - REMIND_MS || now >= end) return null;
+    var TS = HW.DashTests; if (!TS || !TS.loaded()) return null;
+    if (TS.exitToday()) return null;
+    return { end: end, btn: xb };
+  }
+  function notifyOn() { try { return root.Notification && Notification.permission === 'granted' && localStorage.getItem('hw:xremind') !== 'off'; } catch (e) { return false; } }
+  function exitReminder() {
+    var now = Date.now(), r = remindState(now), xb = document.querySelector('.top-exit');
+    if (xb) { xb.classList.toggle('remind', !!r); if (r) xb.title = 'Class ends at ' + new Date(r.end).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ' — time to launch the exit slip.\n' + xb.title.replace(/^Class ends at[^\n]*\n/, ''); }
+    if (!r || !notifyOn()) return;
+    var k = 'hw:xremind:' + st.klass + ':' + C.today(); try { if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch (e) { return; }
+    var cl = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0];
+    try {
+      var n = new Notification('Time for the exit slip', { body: (cl ? cl.label + ': ' : '') + 'class ends at ' + new Date(r.end).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '. Launch today’s exit slip from the Teacher Ledger.', tag: 'exit-' + st.klass, requireInteraction: true });
+      n.onclick = function () { try { root.focus(); } catch (e) {} n.close(); };
+    } catch (e) {}
+  }
+  // check every 20 s; near the end of class, keep the ledger's list of today's exit slips fresh (one launched from another device counts)
+  setInterval(function () {
+    if (!st.klass || isDemo()) return;
+    var now = Date.now(), end = classEnd(now), TS = HW.DashTests;
+    if (end && now >= end - REMIND_MS - 60000 && now < end + 5 * 60000 && TS && TS.loaded() && (!K.lastTs || now - K.lastTs > 60000)) { K.lastTs = now; TS.refresh().then(exitReminder, function () {}); }
+    exitReminder();
+  }, 20000);
+  /* the Settings switch for the reminder's notification */
+  function reminderPanel() {
+    var p = el('div', 'panel'); p.appendChild(el('h3', '', 'Exit slip reminder'));
+    p.appendChild(el('p', 'small muted', 'In the last 12 minutes of class the Exit Slip button pulses until today’s exit slip is launched. The ledger can also pop up a notification on this computer, as long as the ledger is open in a tab (it can be in the background). Exit slips end 2 minutes before the bell and are marked and released to students as soon as they close.'));
+    var row = el('div', 'opt-row'), msg = el('span', 'small muted');
+    function draw() {
+      row.innerHTML = '';
+      if (!root.Notification) { row.appendChild(el('span', 'small muted', 'This browser can’t show notifications.')); return; }
+      var perm = Notification.permission, on = notifyOn();
+      if (perm === 'denied') { row.appendChild(el('span', 'small', 'Notifications are blocked for this site. Allow them in the browser’s site settings (the icon left of the address), then reload.')); return; }
+      if (on) {
+        row.appendChild(el('span', 'tag good', 'Notifications on'));
+        row.appendChild(button('btn-small btn-ghost', 'Send a test notification', function () { try { new Notification('Time for the exit slip', { body: 'This is how the reminder looks, 12 minutes before the end of class.' }); } catch (e) { msg.textContent = 'Couldn’t show one: ' + e.message; } }));
+        row.appendChild(button('btn-small btn-ghost', 'Turn off', function () { try { localStorage.setItem('hw:xremind', 'off'); } catch (e) {} draw(); }));
+      } else row.appendChild(button('btn-small btn-primary', 'Turn on notifications', function () {
+        try { localStorage.removeItem('hw:xremind'); } catch (e) {}
+        var q = Notification.requestPermission(function () { draw(); }); if (q && q.then) q.then(draw, draw);
+      }));
+      row.appendChild(msg);
+    }
+    draw(); p.appendChild(row); return p;
   }
   function launchExit(keys) {
     var TS = HW.DashTests; if (!TS || !keys.length) return;
@@ -392,5 +453,5 @@
     var d = K.layout.dateOf[id], today = C.today();
     return d ? { k: d === today ? 'today' : d < today ? 'past' : 'next', date: d, nice: C.nice(d, { month: 'short', day: 'numeric' }) } : null;
   }
-  HW.DashCal = { render: function (body) { closePop(); render(body); }, reload: function () { K.klass = null; }, seed: seed, topButtons: topButtons, openLessons: openLessons, lessonWhen: lessonWhen, todayKeys: function () { return todayInfo().keys; } };
+  HW.DashCal = { render: function (body) { closePop(); render(body); }, reload: function () { K.klass = null; }, seed: seed, topButtons: topButtons, reminderPanel: reminderPanel, classEnd: function () { return classEnd(Date.now()); }, openLessons: openLessons, lessonWhen: lessonWhen, todayKeys: function () { return todayInfo().keys; } };
 })(window);

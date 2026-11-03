@@ -381,7 +381,7 @@
     acts.appendChild(button('btn-primary btn-small', 'Close and mark', function () {
       if (counts.writing + counts.quiet && !confirm((counts.writing + counts.quiet) + ' student(s) are still writing. Close anyway? What they have so far is kept.')) return;
       var who = TS.who || '';
-      api('tctl', { 'class': cls(), op: 'close', who: who }).then(function (r) { delete TS.liveAll[liveKey(who)]; TS.live = null; return load(true).then(function () { return r.closed ? openResults(r.closed) : rerender(); }); });
+      closeLive(who, def.kind === 'exit' && !who, true);
     }));
     head.appendChild(acts); body.appendChild(head);
     var bk = head.querySelector('.tt-back-rt'); if (bk) bk.addEventListener('click', function () { TS.who = ''; TS.live = null; st.tab = 'retests'; try { localStorage.setItem('hw:ttab', 'retests'); } catch (e) {} D.render(); });
@@ -398,7 +398,7 @@
       var left = '—';
       var ex = ((Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[x.name.toLowerCase().replace(/\s+/g, ' ').trim()]) || 0)) * 60000;
       if (rec && timed && TC.timing(def) === 'minutes') left = mmss(def.minutes * 60000 + ex - (rec.used || 0) - (rec.st === 'writing' ? Math.max(0, now - rec.at) : 0));
-      else if (timed && TC.timing(def) === 'period' && (!rec || rec.st === 'writing' || rec.st === 'left')) left = mmss(live.endsAt + ex - now);
+      else if (timed && TC.timing(def) === 'period' && (!rec || rec.st === 'writing' || rec.st === 'left')) left = mmss(TC.endsAt(def, live) + ex - now);
       tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="dot ' + x.s.k + '"></span>' + esc(x.s.t) + (rec && rec.st === 'writing' && !rec.fs ? ' <span class="tag">not full screen</span>' : '') + (rec && rec.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + rec.leaves + '</span>' : '') + '</td>' +
         '<td>' + (rec ? (rec.n || 0) + ' / ' + items.length : '—') + '</td><td class="tt-dots">' + (rec ? dots : '') + '</td><td>' + (rec && rec.st === 'writing' ? 'Q' + esc(pageNum(def, order, rec.cur)) : '—') + '</td><td>' + left + '</td><td>' + (rec ? ago(rec.at) : '—') + '</td><td class="acts"></td>';
       var a = tr.lastChild;
@@ -423,6 +423,57 @@
   }
 
   /* ================= results ================= */
+  /* close the live test. Exit slips (not retests) are then marked and released to the students right away, so a student
+     still on the "Submitted" screen can go straight to how they did; tests wait for the teacher to release them. */
+  function closeLive(who, release, show) {
+    TS.closing = true;
+    return api('tctl', { 'class': cls(), op: 'close', who: who }).then(function (r) {
+      delete TS.liveAll[liveKey(who)]; TS.live = null;
+      var sid = r && r.closed;
+      return (release && sid ? markAndRelease(sid) : Promise.resolve(null)).then(function (R) { return R; }, function (e) { alert('The exit slip closed, but it couldn’t be released automatically (' + (e && e.message || e) + '). Open it and press Release.'); return null; })
+        .then(function (R) { return load(true).then(function () { TS.closing = false; if (R) D.flash(document.querySelector('.tab-body') || document.body, 'Exit slip closed, marked and released to students.'); if (show && sid) return openResults(sid); rerender(); }); });
+    }, function () { TS.closing = false; });
+  }
+  function markAndRelease(sid) {
+    return api('tresults', { session: sid }).then(function (d) {
+      if (!d.ok) throw new Error(d.error);
+      var R = computeMarks(d);
+      return saveMarks(R).then(function () { return api('release', { session: sid, on: 1 }); }).then(function (x) { if (!x || !x.ok) throw new Error((x && x.error) || 'release failed'); return R; });
+    });
+  }
+  /* exit slips close themselves: once the end time (2 min before the bell) has passed and everyone's time is up, or
+     after "End for everyone" once nobody is still writing. Checked every 10 s while the ledger is open, on any tab. */
+  function watchExit() {
+    if (TS.closing || !TS.tests || TS.klass !== cls() || !st.klass) return;
+    var live = TS.liveAll[cls()], now = Date.now();
+    if (!live || !live.id || live.kind !== 'exit') return;
+    var end = TC.endsAt({ kind: 'exit' }, live), star = (Number((live.extra || {})['*']) || 0) * 60000;
+    if (!live.ending && !(end && now > end + star + 15000)) return;
+    if (TS.watchAt && now - TS.watchAt < 9000) return; TS.watchAt = now;
+    api('tlive', { 'class': cls(), who: '' }).then(function (d) {
+      if (!d.ok || !d.live || d.live.id !== live.id || TS.closing) return;
+      var def = d.def || {}; if (def.kind !== 'exit') return;
+      var t = d.now || Date.now(), ex = d.live.extra || {}, e2 = TC.timing(def) === 'period' ? TC.endsAt(def, d.live) : 0, st2 = (Number(ex['*']) || 0) * 60000;
+      var stillWriting = (d.names || []).some(function (n) {
+        var r = d.recs[n]; if (!r || r.st !== 'writing') return false;
+        if (d.live.ending) return t - (r.at || 0) < 45000; // "End for everyone": wait for it to reach them (a device that's gone quiet doesn't hold it up)
+        var own = (Number(ex[norm(n)]) || 0) * 60000; return !e2 || t < e2 + st2 + own + 15000;
+      });
+      if (stillWriting) return;
+      if (!d.live.ending && !(e2 && t > e2 + st2 + 15000)) return;
+      closeLive('', true, st.tab === 'exits' || st.tab === 'tests');
+    }).catch(function () {});
+  }
+  setInterval(watchExit, 10000);
+  TS.markAndRelease = markAndRelease;
+  /* was an exit slip given to this class today (or is one live)? for the header's reminder */
+  TS.exitToday = function () {
+    var live = TS.liveAll && TS.liveAll[cls()]; if (live && live.id && live.kind === 'exit') return true;
+    var d0 = new Date(); d0.setHours(0, 0, 0, 0);
+    return (TS.sessions || []).some(function (x) { return x.kind === 'exit' && !x.student && x.launched >= d0.getTime(); });
+  };
+  TS.loaded = function () { return !!TS.tests && TS.klass === cls(); };
+  TS.refresh = function () { if (TS.view === 'edit' || TS.closing) return Promise.resolve(); return load(true); };
   function openResults(sid) {
     TS.view = 'results'; TS.res = null; rerender();
     return api('tresults', { session: sid }).then(function (d) {
@@ -582,8 +633,8 @@
     else return;
     e.preventDefault();
   }
-  function saveMarks() {
-    var R = TS.res, data = {};
+  function saveMarks(R) {
+    R = R || TS.res; var data = {};
     R.rows.forEach(function (r) { data[r.name] = R.isTest ? { m: TC.packMarks(r.final, r.fin), s: r.g.points, t: r.g.total } : { m: TC.packMarks(r.final, r.fin), s: r.sum.score, t: r.sum.total }; });
     return api('setmarks', { session: R.session.id, data: JSON.stringify(data) }).then(function (d) {
       if (!d.ok) { alert('Couldn’t save the marks: ' + d.error + '. Nothing was released.'); throw new Error(d.error); }

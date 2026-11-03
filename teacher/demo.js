@@ -242,7 +242,7 @@
     var L = T.live, P = L.plan[name]; if (!P) return null;
     var el = now - L.launched - P.start; if (el < 0) return null;
     var ex = ((L.extra['*'] || 0) + (L.extra[key(name)] || 0)) * 60000, tm = HW.TestCore.timing(L.def);
-    var total = P.A.order.length, lim = tm === 'minutes' && L.def.minutes ? L.def.minutes * 60000 + ex : tm === 'period' && L.endsAt ? L.endsAt + ex - L.launched - P.start : 0;
+    var total = P.A.order.length, lim = tm === 'minutes' && L.def.minutes ? L.def.minutes * 60000 + ex : tm === 'period' && L.endsAt ? HW.TestCore.endsAt(L.def, L) + ex - L.launched - P.start : 0;
     var locked = P.leaveAt && el > P.leaveAt && !(L.unlock[key(name)] > L.launched + P.start + P.leaveAt) ? 1 : 0;
     var lost = P.leaveAt && L.unlock[key(name)] ? Math.max(0, L.unlock[key(name)] - (L.launched + P.start + P.leaveAt)) : 0;
     var work = locked ? P.leaveAt : el - lost, n = Math.min(P.A.list.length, Math.floor(work / P.gap));

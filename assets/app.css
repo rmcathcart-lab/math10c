@@ -159,6 +159,10 @@ body.lesson .view { max-width: 1240px; }
 math-field.mf { font-size: 22px; min-width: 300px; max-width: 100%; padding: 8px 12px; border: 1.5px solid #cdc6b6; border-radius: 10px; background: #fff; --caret-color: var(--brand2); --selection-background-color: #cfe9e5; --primary: var(--brand2); }
 math-field.mf:focus-within { outline: 3px solid rgba(19, 128, 122, .22); border-color: var(--brand2); }
 math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) { display: none; }
+/* MathLive switches to dark colours when the device is in dark mode (a dark grey box around the part being typed, white
+   brackets), which is hard to read on this light page: keep its light colours on every device */
+math-field { --contains-highlight-background-color: hsl(212, 40%, 95%); --contains-highlight-color: var(--brand2); --selection-color: #000;
+  --text-highlight-background-color: hsla(212, 40%, 50%, .1); --smart-fence-color: currentColor; --smart-fence-opacity: .5; --latex-color: hsl(212, 80%, 40%); color-scheme: light; }
 .kp { display: inline-flex; flex-direction: column; gap: 5px; margin-top: 12px; padding: 8px; background: #f3f0e9; border-radius: 12px; user-select: none; -webkit-user-select: none; }
 .kprow { display: flex; gap: 5px; }
 .kpk { min-width: 46px; height: 40px; padding: 0 10px; border: 1px solid #ddd6c7; background: #fff; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; color: var(--ink); }

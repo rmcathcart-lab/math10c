@@ -779,6 +779,7 @@
       body.appendChild(p2);
       body.appendChild(lessonsPanel(c));
       if (st.bell) body.appendChild(bellPanel());
+      if (HW.DashCal && HW.DashCal.reminderPanel) body.appendChild(HW.DashCal.reminderPanel());
 
       body.appendChild(studentsPanel(c));
     }

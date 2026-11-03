@@ -43,7 +43,7 @@
   function remaining() {
     if (!limitMs()) return Infinity;
     var ex = (T.live ? T.live.extra || 0 : 0) * 60000;
-    if (TC.timing(T.def) === 'period') return T.live.endsAt + ex - (Date.now() + (T.skew || 0));
+    if (TC.timing(T.def) === 'period') return TC.endsAt(T.def, T.live) + ex - (Date.now() + (T.skew || 0));
     return T.def.minutes * 60000 + ex - ((T.rec && T.rec.used) || 0);
   }
   function kindName(def) { return def.kind === 'exit' ? 'Exit slip' : 'Test'; }
@@ -171,7 +171,7 @@
   function rulesHtml() {
     var d = T.def, n = T.order.length;
     return '<ul class="tm-rules">' +
-      '<li><b>' + n + ' question' + (n === 1 ? '' : 's') + '</b>' + (!limitMs() ? ' · no time limit' : TC.timing(d) === 'minutes' ? ' · <b>' + (d.minutes + (T.live.extra || 0)) + ' minutes</b>' : ' · <b>until the end of class (' + TC.clock(T.live.endsAt + (T.live.extra || 0) * 60000) + ')</b>') + ' · ' + (d.calc ? 'on-screen calculator allowed' : '<b>no calculator</b>') + '</li>' +
+      '<li><b>' + n + ' question' + (n === 1 ? '' : 's') + '</b>' + (!limitMs() ? ' · no time limit' : TC.timing(d) === 'minutes' ? ' · <b>' + (d.minutes + (T.live.extra || 0)) + ' minutes</b>' : ' · <b>' + (TC.endsAt(d, T.live) < T.live.endsAt && !T.live.extra ? 'until ' + TC.clock(TC.endsAt(d, T.live)) : 'until the end of class (' + TC.clock(TC.endsAt(d, T.live) + (T.live.extra || 0) * 60000) + ')') + '</b>') + ' · ' + (d.calc ? 'on-screen calculator allowed' : '<b>no calculator</b>') + '</li>' +
       '<li>The test opens in <b>full screen</b>. <b>Leaving this window, switching tabs or leaving full screen submits your test as it is</b> and locks it.</li>' +
       '<li>You can move back and forth between questions and change answers until you submit. Your numbers stay the same.</li>' +
       '<li>Make sure the name above is yours.</li></ul>';
@@ -210,15 +210,30 @@
     var left = r.st === 'left';
     var body = left
       ? '<p class="tm-locked">Your ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' was submitted as it was because you ' + esc(r.why || 'left the test') + '.</p><p>If this was an accident, put your hand up — your teacher can unlock it and you’ll carry on where you were.</p>'
-      : '<p>' + n + ' of ' + T.order.length + ' questions answered. Your teacher will release the results later.</p>';
+      : '<p>' + n + ' of ' + T.order.length + ' questions answered.</p>' + (T.relReady ? '<p class="tm-ready"><b>Your results are ready.</b></p>' : T.def.kind === 'exit' ? '<p class="muted">Your results will show here as soon as the exit slip closes' + (T.closed ? ' — just a moment.' : ', a couple of minutes before the end of class.') + '</p>' : '<p>Your teacher will release the results later.</p>');
     var acts = [];
-    var sig = r.st + '|' + !!T.closed;
+    var sig = r.st + '|' + !!T.closed + '|' + !!T.relReady;
+    lookForResults();
     if (T.ui && T.ui.dataset.view === 'end' && T.ui.dataset.sig === sig) return;
+    var sid0 = T.sid;
+    if (T.relReady) acts.push(button('btn-primary', 'See how you did →', function () { dismiss(sid0); closeOverlay(); location.hash = '#/results/' + sid0; }));
     if (T.closed || !left) acts.push(button('btn-ghost', 'Back to practice', function () { dismiss(T.sid); closeOverlay(); }));
     splash(END_WHY[r.st] || 'Submitted', body, acts);
     T.ui.dataset.view = 'end'; T.ui.dataset.sig = sig;
     T.ui.classList.toggle('tm-is-locked', left);
     exitFull();
+  }
+
+  /* once the slip is closed, ask for this student's released results (again each time the ledger says something new was
+     released); when this one is there, the Submitted screen gets a "See how you did" button */
+  function lookForResults() {
+    if (!T || !T.closed || T.relReady || T.preview || T.relAsked === relSeen || T.relLooking) return;
+    T.relAsked = relSeen; T.relLooking = true; results = null;
+    var sid = T.sid;
+    loadResults().then(function (list) {
+      if (!T || T.sid !== sid) return; T.relLooking = false;
+      if ((list || []).some(function (x) { return x.id === sid && x.marks; })) { T.relReady = true; if (T.ui && T.ui.dataset.view === 'end') drawEnd(); }
+    }, function () { if (T) T.relLooking = false; });
   }
 
   /* ---------------- writing ---------------- */
