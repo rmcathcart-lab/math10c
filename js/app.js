@@ -810,22 +810,7 @@
     d.innerHTML = '<summary>Worked solution</summary><div class="sol-body">' + HW.tex(inst.solution) + '</div>';
     return d;
   }
-  function makeWidget(inst, fb) {
-    var I = inst.input, W = HW.widgets;
-    switch (I.type) {
-      case 'number': return W.number({ nr: I.nr, before: I.before, after: I.after });
-      case 'list': return W.list({});
-      case 'math': return W.math({ before: I.before, after: I.after, keys: I.keys, vars: I.vars, pi: I.pi, placeholder: I.placeholder });
-      case 'mc': return W.mc({ options: I.options, columns: I.columns });
-      case 'select': return W.select({ options: I.options });
-      case 'classify': return W.classify({ n: I.n });
-      case 'pairs': return W.pairs({ start: I.start });
-      case 'ladder': return W.ladder({ n: I.n, exponent: I.exponent, onStep: function (s) { onStep(s, fb); } });
-      case 'tree': return W.tree({ n: I.n, exponent: I.exponent, onStep: function (s) { onStep(s, fb); } });
-    }
-    if (W[I.type]) return W[I.type](I);
-    throw new Error('unknown input ' + I.type);
-  }
+  function makeWidget(inst, fb) { return HW.inputWidget(inst, function (s) { onStep(s, fb); }); }
   function onStep(s, fb) {
     var lesson = cur.lesson, it = lesson.byId[cur.item], r = IR(lesson.id, it.id);
     if (s.ok) { fb.className = 'feedback'; fb.innerHTML = ''; return; }

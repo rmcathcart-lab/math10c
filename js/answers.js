@@ -32,5 +32,41 @@
     if (t === 'fields') return (resp || []).map(function (v, i) { var f = inst.input.fields[i] || {}; return (f.label ? HW.tex(f.label) + ' ' : '') + (f.before ? HW.tex(f.before) + ' ' : '') + (f.mode === 'math' && v !== 'none' ? HW.k(String(v)) : esc(v)); }).join(' &nbsp;·&nbsp; ');
     return esc(txt);
   }
-  HW.answerText = answerText; HW.answerHtml = answerHtml;
+  /* the answer box for a question (shared by the practice site, test mode and the Teacher Ledger's answer viewer) */
+  function inputWidget(inst, onStep) {
+    var I = inst.input, Wd = HW.widgets;
+    switch (I.type) {
+      case 'number': return Wd.number({ nr: I.nr, before: I.before, after: I.after });
+      case 'list': return Wd.list({});
+      case 'math': return Wd.math({ before: I.before, after: I.after, keys: I.keys, vars: I.vars, pi: I.pi, placeholder: I.placeholder });
+      case 'mc': return Wd.mc({ options: I.options, columns: I.columns });
+      case 'select': return Wd.select({ options: I.options });
+      case 'classify': return Wd.classify({ n: I.n });
+      case 'pairs': return Wd.pairs({ start: I.start });
+      case 'ladder': return Wd.ladder({ n: I.n, exponent: I.exponent, onStep: onStep || function () {} });
+      case 'tree': return Wd.tree({ n: I.n, exponent: I.exponent, onStep: onStep || function () {} });
+    }
+    if (Wd[I.type]) return Wd[I.type](I);
+    throw new Error('unknown input ' + I.type);
+  }
+  /* the other way round, for the logged answers (answerText): the response the answer box would hold, or null when the
+     text can't be turned back into one (graphs, factor trees…) */
+  function answerFromText(inst, txt) {
+    var t = inst.input.type, s = String(txt == null ? '' : txt);
+    try {
+      if (t === 'math' || t === 'number') return s;
+      if (t === 'list' || t === 'select') return s.trim() ? s.split(/\s*,\s*/) : [];
+      if (t === 'fields') return s.split(' | ');
+      if (t === 'mc') {
+        var k = s.split('. ')[0], ok = inst.input.options.some(function (o) { return o.key === k; });
+        if (ok) return k;
+        var m = inst.input.options.filter(function (o) { return stripTags(o.html).replace(/\s+/g, ' ') === s.replace(/\s+/g, ' ').trim(); })[0];
+        return m ? m.key : null;
+      }
+      if (t === 'pairs') { var out = [], re = /\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)/g, mm; while ((mm = re.exec(s))) out.push([mm[1], mm[2]]); return out; }
+      if (t === 'classify') { var c = /^(prime|composite)\b\s*(?:(\S+?)\s*×\s*(\S+))?/.exec(s.trim()); return c ? { choice: c[1], a: c[2] || '', b: c[3] || '' } : null; }
+    } catch (e) {}
+    return null;
+  }
+  HW.answerText = answerText; HW.answerHtml = answerHtml; HW.inputWidget = inputWidget; HW.answerFromText = answerFromText;
 })(window);

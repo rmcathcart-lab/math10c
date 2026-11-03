@@ -256,30 +256,51 @@
     var counts = { work: 0, teach: 0, away: 0, idle: 0, off: 0, none: 0 };
     var rows = roster.map(function (s) { var rec = live[s.name], ls2 = liveState(rec, now); counts[ls2.k]++; return { s: s, rec: rec, ls: ls2 }; });
     var order = { work: 0, teach: 1, away: 2, idle: 3, off: 4, none: 5 };
-    rows.sort(function (a, b) { return order[a.ls.k] - order[b.ls.k] || a.s.name.localeCompare(b.s.name); });
     var head = el('div', 'live-head');
     head.innerHTML = '<div class="live-chips"><span class="lchip work"><b>' + counts.work + '</b> working</span>' + (counts.teach ? '<span class="lchip teach"><b>' + counts.teach + '</b> on a lesson page</span>' : '') + '<span class="lchip away"><b>' + counts.away + '</b> left the page</span><span class="lchip idle"><b>' + counts.idle + '</b> on the assignment list</span><span class="lchip off"><b>' + (counts.off + counts.none) + '</b> not on the site</span></div>' +
-      '<div class="small muted">' + classTimeLine() + ' · refreshes every 10 s</div>';
+      '<div class="small muted">' + classTimeLine() + ' · refreshes every 10 s · click a column heading to sort</div>';
     body.appendChild(head);
-    var t = el('table', 'tbl live');
-    t.innerHTML = '<thead><tr><th>Student</th><th>Status</th><th>Where</th><th>On this for</th><th>Today</th><th>Left the page today</th><th>Last seen</th></tr></thead>';
-    var tb = el('tbody'), today = HW.dayKey ? HW.dayKey(Date.now()) : new Date().toISOString().slice(0, 10);
     var todayStats = {}; st.D.days.forEach(function (d) { if (d[0] === localDay(Date.now())) { var x = todayStats[d[1]] || (todayStats[d[1]] = { secs: 0, secsIn: 0, answers: 0, right: 0 }); x.secs += Number(d[3]) || 0; x.secsIn += Number(d[4]) || 0; x.answers += Number(d[5]) || 0; x.right += Number(d[6]) || 0; } });
     var leavesToday = {}; st.D.events.forEach(function (e) { if (e[4] === 'leave' && localDay(e[0]) === localDay(Date.now())) leavesToday[e[1]] = (leavesToday[e[1]] || 0) + 1; });
     rows.forEach(function (x) {
-      var rec = x.rec, where = '—';
-      if (rec && rec.view === 'lesson') { var l = HW.lessons[rec.lesson]; where = (l ? 'L' + l.num + ' ' : '') + '<b>' + esc(rec.label || rec.item || '') + '</b>'; }
-      else if (rec && rec.view === 'home') where = '<span class="muted">Assignment list</span>';
-      else if (rec && rec.view === 'teach') { var tl = HW.Cal && HW.Cal.info(rec.lesson); where = '<b>' + esc(tl ? 'Lesson ' + tl.unit + '.' + tl.num : rec.label || 'Lesson') + '</b> <span class="tag">lesson page</span>'; }
-      var ts = todayStats[x.s.name];
+      var rec = x.rec, where = '—', whereT = '';
+      if (rec && rec.view === 'lesson') { var l = HW.lessons[rec.lesson]; where = (l ? 'L' + l.num + ' ' : '') + '<b>' + esc(rec.label || rec.item || '') + '</b>'; whereT = (l ? 'L' + l.num + ' ' : '') + (rec.label || rec.item || ''); }
+      else if (rec && rec.view === 'home') { where = '<span class="muted">Assignment list</span>'; whereT = 'Assignment list'; }
+      else if (rec && rec.view === 'teach') { var tl = HW.Cal && HW.Cal.info(rec.lesson); where = '<b>' + esc(tl ? 'Lesson ' + tl.unit + '.' + tl.num : rec.label || 'Lesson') + '</b> <span class="tag">lesson page</span>'; whereT = tl ? 'Lesson ' + tl.unit + '.' + tl.num : rec.label || 'Lesson'; }
+      var ts = todayStats[x.s.name] || null, onFor = rec && (x.ls.k === 'work' || x.ls.k === 'away' || x.ls.k === 'teach');
+      x.where = where; x.ts = ts; x.onFor = onFor;
+      x.key = { name: x.s.name, status: order[x.ls.k], where: whereT, 'for': onFor ? Date.now() - rec.since : -1, time: ts ? ts.secs : -1, right: ts ? ts.right : -1, att: ts ? ts.answers : -1,
+        leaves: leavesToday[x.s.name] || 0, seen: rec ? rec.at : x.s.roster && x.s.roster.lastSeen ? x.s.roster.lastSeen : 0 };
+    });
+    // sorting: Status (working first) until a heading is clicked; a second click on the same heading flips it.
+    // Text columns start A→Z; number columns start with the most (most time, most right…).
+    if (!st.sortL) { try { st.sortL = JSON.parse(ls('hw:tlsort') || 'null'); } catch (e) { st.sortL = null; } }
+    var SK = st.sortL && st.sortL.k ? st.sortL : { k: 'status', d: 1 }, TEXTK = { name: 1, status: 1, where: 1 };
+    rows.sort(function (a, b) {
+      var A = a.key[SK.k], B = b.key[SK.k], c;
+      if (typeof A === 'string') { if (!A !== !B) return A ? -1 : 1; c = A.localeCompare(B); } else c = A - B; // an empty Where stays at the bottom
+      return c * SK.d || order[a.ls.k] - order[b.ls.k] || a.s.name.localeCompare(b.s.name);
+    });
+    var t = el('table', 'tbl live');
+    var cols = [['name', 'Student'], ['status', 'Status'], ['where', 'Where'], ['for', 'On this for'], ['time', 'Time today', 'Time worked on the site today'], ['right', 'Right today', 'Questions answered correctly today'], ['att', 'Attempts today', 'Answers checked today, right or wrong'], ['leaves', 'Left the page today'], ['seen', 'Last seen']];
+    t.innerHTML = '<thead><tr>' + cols.map(function (c) { var on = SK.k === c[0]; return '<th class="sortable' + (on ? ' sorted' : '') + (c[0] === 'time' || c[0] === 'right' || c[0] === 'att' || c[0] === 'leaves' ? ' num' : '') + '" data-s="' + c[0] + '"' + (c[2] ? ' title="' + c[2] + '"' : '') + ' aria-sort="' + (on ? (SK.d > 0 ? 'ascending' : 'descending') : 'none') + '">' + c[1] + (on ? '<span class="sarrow" aria-hidden="true">' + (SK.d > 0 ? '▲' : '▼') + '</span>' : '') + '</th>'; }).join('') + '</tr></thead>';
+    var tb = el('tbody');
+    rows.forEach(function (x) {
+      var rec = x.rec, ts = x.ts;
       var tr = el('tr', 'lv-' + x.ls.k);
       tr.innerHTML = '<td><a href="#" class="slink">' + esc(x.s.name) + '</a></td><td><span class="dot ' + x.ls.k + '"></span>' + x.ls.t + (rec && x.ls.k !== 'off' && x.ls.k !== 'none' && rec.inClass === false ? ' <span class="tag">outside class time</span>' : '') + '</td>' +
-        '<td>' + where + '</td><td>' + (rec && (x.ls.k === 'work' || x.ls.k === 'away' || x.ls.k === 'teach') ? '<span data-since="' + rec.since + '">' + since(rec.since) + '</span>' : '—') + '</td>' +
-        '<td>' + (ts ? dur(ts.secs) + ' · ' + ts.right + '/' + ts.answers + ' right' : '—') + '</td><td>' + (leavesToday[x.s.name] ? '<span class="warnnum">' + leavesToday[x.s.name] + '</span>' : '0') + '</td><td>' + (rec ? ago(rec.at) : x.s.roster && x.s.roster.lastSeen ? ago(x.s.roster.lastSeen) : 'never') + '</td>';
+        '<td>' + x.where + '</td><td>' + (x.onFor ? '<span data-since="' + rec.since + '">' + since(rec.since) + '</span>' : '—') + '</td>' +
+        '<td class="num">' + (ts ? dur(ts.secs) : '—') + '</td><td class="num">' + (ts ? '<b>' + ts.right + '</b>' : '—') + '</td><td class="num">' + (ts ? ts.answers : '—') + '</td>' +
+        '<td class="num">' + (leavesToday[x.s.name] ? '<span class="warnnum">' + leavesToday[x.s.name] + '</span>' : '0') + '</td><td>' + (rec ? ago(rec.at) : x.s.roster && x.s.roster.lastSeen ? ago(x.s.roster.lastSeen) : 'never') + '</td>';
       tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(x.s.name); });
       tb.appendChild(tr);
     });
     t.appendChild(tb); body.appendChild(wrapTbl(t));
+    t.querySelectorAll('th.sortable').forEach(function (th) {
+      th.tabIndex = 0;
+      function go() { var k = th.dataset.s; st.sortL = SK.k === k ? { k: k, d: -SK.d } : { k: k, d: TEXTK[k] ? 1 : -1 }; ls('hw:tlsort', JSON.stringify(st.sortL)); render(); }
+      th.addEventListener('click', go); th.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
     body.appendChild(el('p', 'small muted', '“Left the page” means the student switched tabs or windows while a question was open — the question got new numbers. Times count only while the page is open, focused and in use.'));
   }
   function localDay(ms) { var d = new Date(ms); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
@@ -297,13 +318,14 @@
   function unitSum(ls2, s) { var t = { req: 0, ex: 0, done: 0, first: 0, extra: 0 }; ls2.forEach(function (l) { var r = s && s.lessons[l.id]; t.req += l.required.length; t.ex += l.extras.length; if (r) { t.done += r.done; t.first += r.first; t.extra += r.extra; } }); return t; }
   function counts(t) { return '<b>' + t.done + '</b>/' + t.req + (t.extra ? ' · +' + t.extra : ''); }
   /* one student's questions in one lesson, coloured by how each went (shared by Progress and Student) */
-  function itemGrid(l, r) {
+  function itemGrid(l, r, name) {
     var grid = el('div', 'item-grid');
     l.items.forEach(function (it) {
       var rec = r && r.items[it.id], cls = !rec ? 'new' : rec.correctAt ? 'c-' + rec.credit : rec.errors >= 3 ? 'stuck' : 'open';
       var home = rec && rec.correctAt && !rec.correctIn && st.scope === 'class'; // done outside class: shown, but not counted in the bars
       var b = el('div', 'ig ' + cls + (it.extra ? ' ex' : '') + (home ? ' home' : ''), esc(it.label.replace('Extra ', 'E')));
-      b.title = it.label + ' · ' + it.level + ' · ' + (!rec ? 'not started' : rec.correctAt ? ({ first: 'right first try', hint: 'right after ' + rec.errors + ' mistake(s)', shown: 'right after the answer was shown' }[rec.credit]) : rec.errors + ' wrong so far') + (home ? ' · done outside class (not counted while “In class only” is on)' : '');
+      b.title = it.label + ' · ' + it.level + ' · ' + (!rec ? 'not started' : rec.correctAt ? ({ first: 'right first try', hint: 'right after ' + rec.errors + ' mistake(s)', shown: 'right after the answer was shown' }[rec.credit]) : rec.errors + ' wrong so far') + (home ? ' · done outside class (not counted while “In class only” is on)' : '') + (rec && name ? ' · click to see their answers' : '');
+      if (rec && name) { b.classList.add('ig-click'); b.setAttribute('role', 'button'); b.tabIndex = 0; var open = function (e) { e.stopPropagation(); openAnswers(name, l.id, it.id); }; b.addEventListener('click', open); b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); } }); }
       grid.appendChild(b);
     });
     return grid;
@@ -376,7 +398,7 @@
       if (o.lesson && HW.lessons[o.lesson]) {
         var l = HW.lessons[o.lesson], q = el('div', 'pd-items');
         q.appendChild(el('div', 'pd-qh', '<b>Lesson ' + esc(l.num) + ': ' + esc(l.title) + '</b> <span class="muted small">question by question</span>'));
-        q.appendChild(itemGrid(l, s.lessons[l.id])); q.appendChild(igLegend());
+        q.appendChild(itemGrid(l, s.lessons[l.id], s.name)); q.appendChild(igLegend());
         box.appendChild(q);
       }
       td.appendChild(box); dr.appendChild(td); tr.parentNode.insertBefore(dr, tr.nextSibling);
@@ -580,7 +602,7 @@
         var r = s.lessons[l.id], p = el('div', 'sl');
         p.appendChild(el('div', 'sl-h', '<b>Lesson ' + esc(l.num) + ': ' + esc(l.title) + '</b><span class="pnum">' + (r ? r.done : 0) + '/' + l.required.length + ' required' + (r && r.extra ? ' · +' + r.extra + ' extra' : '') + '</span>'));
         p.appendChild(el('div', '', miniBar(l, r)));
-        p.appendChild(itemGrid(l, r)); bd.appendChild(p);
+        p.appendChild(itemGrid(l, r, s.name)); bd.appendChild(p);
       });
       bd.appendChild(igLegend());
       sec.appendChild(hd); sec.appendChild(bd); uw.appendChild(sec);
@@ -610,7 +632,7 @@
         merged.slice(0, showN).forEach(function (m) {
           var tr = el('tr');
           if (m.e) { var e = m.e; tr.className = 'ev'; tr.innerHTML = '<td>' + when(e[0]) + '</td><td>' + esc(lbl(e[1], e[2])) + '</td><td colspan="3" class="muted">' + ({ leave: 'Left the page' + (e[4] ? ' for ' + e[4] + ' s' : '') + ' — new numbers', reveal: 'Answer shown after 3 tries', newversion: 'Started a new version', away: 'Switched away briefly (' + (e[4] || 0) + ' s)' }[e[3]] || esc(e[3])) + '</td><td>' + (e[5] ? '' : '<span class="tag">outside class</span>') + '</td>'; }
-          else { var a = m.a, v = a[8]; tr.className = 'v-' + v; tr.innerHTML = '<td>' + when(a[0]) + '</td><td>' + esc(a[3] || a[2]) + (a[6] ? ' <span class="tag">practice</span>' : '') + '</td><td class="pr">' + esc(a[12]) + '</td><td><code>' + esc(a[11]) + '</code></td><td>' + verdictLabel(v, a[9]) + '</td><td>' + (a[13] ? '' : '<span class="tag">outside class</span>') + '</td>'; }
+          else { var a = m.a, v = a[8]; tr.className = 'v-' + v + ' att-click'; tr.title = 'Click to see every answer to this question'; tr.innerHTML = '<td>' + when(a[0]) + '</td><td>' + esc(a[3] || a[2]) + (a[6] ? ' <span class="tag">practice</span>' : '') + '</td><td class="pr">' + esc(a[12]) + '</td><td class="att-ans">' + answerCell(a[1], a[2], a[11]) + '</td><td>' + verdictLabel(v, a[9]) + '</td><td>' + (a[13] ? '' : '<span class="tag">outside class</span>') + '</td>'; tr.addEventListener('click', function () { openAnswers(s.name, a[1], a[2], a[0]); }); }
           tb.appendChild(tr);
         });
         t.appendChild(tb); list.appendChild(wrapTbl(t));
@@ -622,6 +644,105 @@
     if (st.sdata && st.sdata.name === s.name) go(st.sdata.d);
     else api('student', { 'class': st.klass, name: s.name }).then(function (d) { st.sdata = { name: s.name, d: d }; if (st.student === s.name && st.tab === 'student') go(d); }).catch(function () { list.innerHTML = '<p class="muted">Couldn’t load.</p>'; });
   }
+  /* ---- one student's answers to one question (click a question square, or a row of Every answer) ----
+     Each set of numbers the student saw is rebuilt from the same seeds the practice site used (the logged prompt
+     confirms it is the same question), so the pop-up shows the question, the right answer, and every answer they
+     typed, as math. Pick an answer to load it into the same answer box the student used: click into it to show them
+     where something went in, change it, and Check runs the site's checker on it. Nothing here is saved. */
+  var instCache = {};
+  function promptOf(inst) { return inst ? String(inst.text || String(inst.prompt).replace(/<[^>]+>/g, '').replace(/\\\(|\\\)/g, '').trim().slice(0, 160)) : ''; }
+  function pnorm(t) { return String(t || '').replace(/\s+/g, ' ').trim().slice(0, 150); }
+  function anyInst(lesson, it) { var k = lesson.id + '|' + it.id + '|any'; if (!(k in instCache)) { try { instCache[k] = HW.makeInstance(lesson, it, 1, 1); } catch (e) { instCache[k] = null; } } return instCache[k]; }
+  /* the instance a logged attempt was answered on, or null if it can't be rebuilt (the question changed since) */
+  function rebuildInst(name, a) {
+    var lesson = HW.lessons[a[2]], it = lesson && lesson.byId[a[3]]; if (!it) return null;
+    var want = pnorm(a[13]), ck = name + '|' + a[2] + '|' + a[3] + '|' + a[8] + '|' + a[7] + '|' + want;
+    if (ck in instCache) return instCache[ck];
+    var found = null;
+    if (isDemo() && HW.DashDemo.instanceFor) found = HW.DashDemo.instanceFor(name, a[2], a[3]);
+    else {
+      var sk = HW.TestCore.skey(st.klass, name), H = HW.hashStr, num = it.q.num;
+      var tryOne = function (seed, qseed) { try { var x = HW.makeInstance(lesson, it, seed, qseed); return !want || pnorm(promptOf(x)) === want ? x : null; } catch (e) { return null; } };
+      if (a[7]) { for (var p = 1; p <= 80 && !found; p++) found = tryOne(H(sk + '|' + a[2] + '|' + a[3] + '|' + a[8] + '|p' + p), H(sk + '|' + a[2] + '|q' + num + '|' + p + '|p1')); }
+      else { var seed = H(sk + '|' + a[2] + '|' + a[3] + '|' + a[8]); for (var qv = 0; qv <= (it.q.shared ? 60 : 0) && !found; qv++) found = tryOne(seed, H(sk + '|' + a[2] + '|q' + num + '|' + qv)); }
+    }
+    return (instCache[ck] = found);
+  }
+  function answerShown(inst, txt) {
+    if (!txt) return '<span class="muted">blank</span>';
+    if (inst) { var r = HW.answerFromText(inst, txt); if (r != null) { try { var h = HW.answerHtml(inst, r); if (h) return h; } catch (e) {} } }
+    return esc(txt);
+  }
+  /* the logged answer typeset as math, for the Every answer list (needs only the question's answer type) */
+  function answerCell(lid, iid, txt) { var l = HW.lessons[lid], it = l && l.byId[iid]; return answerShown(it ? anyInst(l, it) : null, txt); }
+  var LIVE_TYPES = { math: 1, number: 1, list: 1, select: 1, fields: 1, mc: 1, pairs: 1, classify: 1 };
+  function openAnswers(name, lid, iid, pickT) {
+    var lesson = HW.lessons[lid], it = lesson && lesson.byId[iid]; if (!it) return;
+    var rows = st.D.attempts.filter(function (a) { return a[1] === name && a[2] === lid && a[3] === iid && a[9] !== 'reveal'; }).sort(function (x, y) { return x[0] - y[0]; });
+    var groups = [], gi = {};
+    rows.forEach(function (a) { var k = (a[7] ? 'p' : 'v' + a[8]) + '|' + pnorm(a[13]); if (!(k in gi)) { gi[k] = groups.length; groups.push({ a: a, rows: [] }); } groups[gi[k]].rows.push(a); });
+    closeAnswers();
+    var ov = el('div', 'tt-dmodal av-modal'); ov.id = 'av-modal'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeAnswers(); });
+    document.body.appendChild(ov); document.addEventListener('keydown', avKeys);
+    var box = el('div', 'tt-dbox panel av-box'); ov.appendChild(box);
+    var top = el('div', 'tt-dtop');
+    top.appendChild(el('h3', '', esc(name) + ' · Lesson ' + esc(lesson.num) + ' ' + esc(it.label) + ' <span class="muted small">(' + esc(it.outcome) + ' ' + esc(LVN[it.level] || it.level) + (it.extra ? ' · extra' : '') + ')</span>'));
+    var cl = el('button', 'btn btn-small btn-ghost tt-dclose', '×'); cl.type = 'button'; cl.title = 'Close (Esc)'; cl.setAttribute('aria-label', 'Close'); cl.addEventListener('click', closeAnswers);
+    var nav = el('div', 'tt-dnav'); nav.appendChild(cl); top.appendChild(nav); box.appendChild(top);
+    if (!rows.length) { box.appendChild(el('p', 'muted', 'No answers checked on this question yet.')); return; }
+    var sel = null;
+    groups.forEach(function (g, n) {
+      var inst = rebuildInst(name, g.a), sec = el('section', 'av-ver');
+      sec.appendChild(el('div', 'av-vh', '<b>' + (groups.length > 1 ? (g.a[7] ? 'Practice numbers' : 'Numbers set ' + (n + 1)) : g.a[7] ? 'Practice numbers' : 'The question') + '</b>' + (g.rows.length > 1 ? ' <span class="muted small">' + g.rows.length + ' answers</span>' : '')));
+      if (inst) {
+        var q = el('div', 'av-q'); if (inst.stem) q.appendChild(el('div', 'qstem', HW.tex(inst.stem))); q.appendChild(el('div', 'qprompt', HW.tex(inst.prompt))); sec.appendChild(q);
+        sec.appendChild(el('div', 'av-key', '<span class="dlabel">Correct answer</span> <span class="tt-aval">' + HW.tex(inst.answer) + '</span>'));
+      } else sec.appendChild(el('div', 'notice warn small', 'I couldn’t rebuild this question’s numbers (it may have changed since the student answered it), so the right answer and the Check button aren’t shown. What they saw: “' + esc(g.a[13] || '') + '”'));
+      var list = el('div', 'av-list');
+      g.rows.forEach(function (a, k) {
+        var b = el('button', 'av-row v-' + a[9]); b.type = 'button';
+        b.innerHTML = '<span class="av-n">' + (k + 1) + '</span><span class="av-ans">' + answerShown(inst || anyInst(lesson, it), a[12]) + '</span><span class="av-res">' + verdictLabel(a[9], a[10]) + '</span><span class="av-when small muted">' + when(a[0]) + (a[14] ? '' : ' · outside class') + '</span>';
+        b.addEventListener('click', function () { pick(b, a, inst, sec); });
+        list.appendChild(b);
+        if (pickT ? a[0] === pickT : true) sel = { b: b, a: a, inst: inst, sec: sec }; // the clicked answer, or else the latest one
+      });
+      sec.appendChild(list); box.appendChild(sec);
+    });
+    box.appendChild(el('p', 'small muted av-foot', 'Pick an answer to open it in the answer box the student used. Click into it to show them where things went in; you can change it and press Check to see what the site would say. Nothing here is saved.'));
+    function pick(b, a, inst, sec) {
+      box.querySelectorAll('.av-row.on').forEach(function (n) { n.classList.remove('on'); }); b.classList.add('on');
+      var old = box.querySelector('.av-live'); if (old) old.remove();
+      var live = el('div', 'av-live'); b.parentNode.insertBefore(live, b.nextSibling);
+      var base = inst || anyInst(lesson, it), resp = base && LIVE_TYPES[base.input.type] ? HW.answerFromText(base, a[12]) : null;
+      if (resp == null) { live.appendChild(el('p', 'small muted', 'This kind of answer can’t be reopened in its answer box here; what they entered is shown above.')); return; }
+      var w; try { w = HW.inputWidget(base, null); } catch (e) { w = null; }
+      if (!w) { live.appendChild(el('p', 'small muted', 'Couldn’t open the answer box.')); return; }
+      live.appendChild(el('div', 'dlabel', 'Their answer, in the answer box' + (a[9] === 'correct' ? '' : ' — click into it')));
+      var wn = el('div', 'av-w'); wn.appendChild(w.node); live.appendChild(wn);
+      var out = el('div', 'av-out');
+      var acts = el('div', 'tt-acts');
+      var chk = el('button', 'btn btn-small btn-primary', 'Check'); chk.type = 'button'; chk.disabled = !inst;
+      if (!inst) chk.title = 'The question’s numbers couldn’t be rebuilt';
+      var rs = el('button', 'btn btn-small btn-ghost', 'Put back what they typed'); rs.type = 'button';
+      acts.appendChild(chk); acts.appendChild(rs); live.appendChild(acts); live.appendChild(out);
+      function load() { try { w.set(resp); } catch (e) {} out.innerHTML = ''; }
+      function check() {
+        var r; try { r = inst.check(w.value()); } catch (e) { r = { v: 'form', hint: 'The checker couldn’t read that.' }; }
+        out.className = 'av-out v-' + r.v;
+        out.innerHTML = r.v === 'correct' ? '<span class="vd ok">Right</span> The site marks this right.' : r.v === 'form' ? '<span class="vd form">Format nudge</span> ' + HW.tex(r.hint || 'The site asks for a different format (no try used).') : verdictLabel(r.v, r.code) + (r.hint ? ' <span class="small">' + HW.tex(r.hint) + '</span>' : '');
+        HW.texIn && HW.texIn(out);
+      }
+      chk.addEventListener('click', check); rs.addEventListener('click', load);
+      if (w.onEnter) w.onEnter(function () { if (inst) check(); });
+      // MathLive upgrades the box a moment after it's attached; set the value once it can take it
+      load(); setTimeout(load, 60); setTimeout(load, 400);
+    }
+    HW.texIn && HW.texIn(box);
+    if (sel) { pick(sel.b, sel.a, sel.inst, sel.sec); setTimeout(function () { try { sel.b.scrollIntoView({ block: 'nearest' }); } catch (e) {} }, 0); }
+  }
+  function closeAnswers() { var ov = document.getElementById('av-modal'); if (ov) ov.remove(); document.removeEventListener('keydown', avKeys); }
+  function avKeys(e) { if (e.key === 'Escape') closeAnswers(); }
   function lbl(lesson, item) { var l = HW.lessons[lesson]; var it = l && l.byId[item]; return (l ? 'L' + l.num + ' ' : '') + (it ? it.label : item); }
   function when(ms) { var d = new Date(ms); return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
   function verdictLabel(v, code) { if (v === 'correct') return '<span class="vd ok">Right</span>'; if (v === 'wrong') return '<span class="vd bad">Wrong</span>' + (code ? ' <span class="muted small">' + esc(codeLabel(code)) + '</span>' : ''); if (v === 'step') return '<span class="vd step">Step mistake</span> <span class="muted small">' + esc(codeLabel(code)) + '</span>'; if (v === 'form') return '<span class="vd form">Format nudge</span>'; return esc(v); }

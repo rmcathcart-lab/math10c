@@ -351,5 +351,7 @@
     if (!T.calSet && HW.Cal) { var d0 = schoolDays(PACE.length + 1)[0]; T.cal = HW.Cal.make(d0 ? HW.Cal.key(d0) : HW.Cal.today()); T.calSet = true; } return T.cal; }
   function isDemo(p) { p = p || {}; return p['class'] === CODE || /^DEMO-/.test(String(p.session || '')); }
 
-  HW.DashDemo = { CODE: CODE, LABEL: LABEL, count: PEOPLE.length, api: api, isDemo: isDemo, _model: model };
+  /* the instance a demo student answered (for the ledger's answer viewer): the same one build() used */
+  function instanceFor(name, lid, id) { var l = HW.lessons[lid], it = l && l.byId[id]; return it ? inst(l, it, HW.hashStr(name) % 3) : null; }
+  HW.DashDemo = { CODE: CODE, LABEL: LABEL, count: PEOPLE.length, api: api, isDemo: isDemo, instanceFor: instanceFor, _model: model };
 })(window);
