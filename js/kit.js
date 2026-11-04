@@ -203,6 +203,41 @@
     var P = HW.PARTIAL = HW.PARTIAL || {}; P.small = P.small || {}; P.big = P.big || {}; P.none = P.none || {};
     Object.keys(o || {}).forEach(function (k) { if (o[k] === 's') P.small[k] = 1; else if (o[k] === 'b') P.big[k] = 1; else P.none[k] = 1; });
   };
+  /* "Ghost" input a student can't see: an exponent or subscript box opened and left empty, an empty box, a stray space,
+     invisible characters. They made right answers come back as wrong or "check the format" (Ryan, 2026-11-04), so an
+     answer that isn't right as typed is checked again with them taken out (makeInstance). What the student typed is
+     still what gets saved and logged.
+     Spaces: kept between two letters ("no solution", \pi x) and in a mixed number (3 1/4); dropped next to an operator,
+     bracket, comma or symbol, between digits ("2 4x"), and at the ends. */
+  var GHOST_SPACE = /\\(?:[ ,:;!>]|quad(?![a-zA-Z])|qquad(?![a-zA-Z])|space(?![a-zA-Z])|thinspace(?![a-zA-Z])|medspace(?![a-zA-Z])|thickspace(?![a-zA-Z])|enspace(?![a-zA-Z]))|~/g;
+  var EMPTY_SCRIPT = /[\^_]\{\s*(?:\\placeholder\{\s*\}\s*)?\}|[\^_]\\placeholder\{\s*\}/g;
+  var SYM = /[+\-−–×*·⋅\/÷^=<>≤≥≠≈(){}\[\]|,;\\]/;
+  function cleanStr(t) {
+    var s = String(t).replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '').replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000\t\r\n]/g, ' ');
+    for (var k = 0; k < 4; k++) { var s2 = s.replace(EMPTY_SCRIPT, ''); if (s2 === s) break; s = s2; } // ^{} inside ^{} too
+    s = s.replace(GHOST_SPACE, ' ').replace(/ {2,}/g, ' ').trim();
+    if (s.indexOf(' ') < 0) return s;
+    var out = '';
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charAt(i);
+      if (c !== ' ') { out += c; continue; }
+      var a = out.charAt(out.length - 1), b = s.charAt(i + 1), rest = s.slice(i + 1), lt = /[\d.\/]+$/.exec(out);
+      var mixed = !!lt && /^\d+$/.test(lt[0]) && /^\d+\s*\/\s*\d/.test(rest); // 3 1/4
+      var keep = true;
+      if (SYM.test(a) || SYM.test(b)) keep = false;                       // next to an operator, bracket, comma, \command…
+      else if (/[\d.]/.test(a) && /[\d.]/.test(b)) keep = mixed;         // 2 4 → 24, 0 .5 → 0.5 (not 3 1/4)
+      if (keep) out += ' ';
+    }
+    return out;
+  }
+  function cleanAnswer(r, depth) {
+    if (typeof r === 'string') return cleanStr(r);
+    if ((depth || 0) > 4 || r == null || typeof r !== 'object') return r;
+    if (Array.isArray(r)) return r.map(function (x) { return cleanAnswer(x, (depth || 0) + 1); });
+    if (Object.getPrototypeOf(r) !== Object.prototype) return r;
+    var o = {}; Object.keys(r).forEach(function (k) { o[k] = cleanAnswer(r[k], (depth || 0) + 1); }); return o;
+  }
+  HW.cleanAnswer = function (r) { return cleanAnswer(r, 0); };
   /* Build one question instance from its seeds. shared params come from the question seed so parts stay consistent. */
   HW.makeInstance = function (lesson, item, seed, qseed) {
     var q = item.q, shared = null;
@@ -210,6 +245,17 @@
     var inst = item.p.make(HW.rng((seed >>> 0) ^ HW.hashStr(lesson.id + ':' + item.id)), shared);
     inst.stem = typeof q.stem === 'function' ? q.stem(shared) : q.stem;
     inst.tries = inst.tries || 3;
+    // check the answer as typed; if that isn't right, check it again without the ghosts, and use that verdict when it is
+    // right (the ghost was the only problem) or when the first one was only "check the format"
+    if (typeof inst.check === 'function' && !inst._rawCheck) {
+      var raw = inst._rawCheck = inst.check;
+      inst.check = function (resp) {
+        var r1 = raw.call(this, resp); if (r1 && r1.v === 'correct') return r1;
+        var c = HW.cleanAnswer(resp); if (JSON.stringify(c) === JSON.stringify(resp)) return r1;
+        var r2; try { r2 = raw.call(this, c); } catch (e) { return r1; }
+        return r2 && (r2.v === 'correct' || (r1 && r1.v === 'form' && r2.v !== 'form')) ? r2 : r1;
+      };
+    }
     inst.hints = inst.hints || [];
     return inst;
   };
