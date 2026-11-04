@@ -10,6 +10,14 @@
   var view = document.getElementById('view'), top = document.getElementById('topbar');
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
   var st = { key: ls('hw:tkey') || '', classes: [], klass: ls('hw:tclass') || '', D: null, tab: ls('hw:ttab') || 'live', scope: ls('hw:tscope') || 'class', rule: ls('hw:trule2') || 'first', /* the practice level counts first-try answers (Ryan, 2026-10-25); hw:trule2 so an older saved choice doesn't override it */ lesson: Object.keys(HW.lessons)[0], student: null, loading: false, liveTimer: null, dashTimer: null, sortP: 'name' };
+  /* links from the Teaching Hub and the universal bookmark: ?class=<code> picks the class, ?tab=<tab> the tab */
+  var COURSE_ID = 'math10c';
+  (function () {
+    var q = new URLSearchParams(location.search), k = q.get('class'), t = q.get('tab');
+    if (k) { st.klass = k.trim().toLowerCase(); ls('hw:tclass', st.klass); }
+    if (t && /^[a-z]+$/.test(t)) { st.tab = t; ls('hw:ttab', t); }
+    if (k || t) try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+  })();
   var LV = HW.LEVELS, LVN = HW.LEVEL_NAMES;
   function realApi(action, params) { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
   /* the demo class (teacher/demo.js) answers its own requests in the browser; everything else goes to the ledger */
@@ -40,7 +48,7 @@
     top.innerHTML = '';
     var brand = el('button', 'brand brand-btn', '<span class="brand-mark dark" aria-hidden="true">' + MARK + '</span><span class="brand-name">Teacher Ledger</span><span class="brand-caret" aria-hidden="true"></span>');
     brand.type = 'button'; brand.title = 'Switch course'; brand.setAttribute('aria-haspopup', 'menu'); brand.setAttribute('aria-expanded', courseMenu ? 'true' : 'false');
-    brand.addEventListener('click', function (e) { e.stopPropagation(); if (courseMenu) closeCourses(); else openCourses(brand); });
+    brand.addEventListener('click', function (e) { e.stopPropagation(); if (root.TEACH && root.TEACH.menu) { root.TEACH.menu(brand, { current: COURSE_ID }); return; } if (courseMenu) closeCourses(); else openCourses(brand); });
     top.appendChild(brand);
     if (st.key && st.classes.length) {
       var sel = el('select', 'class-pick'); sel.setAttribute('aria-label', 'Class');
@@ -55,7 +63,8 @@
     top.appendChild(right);
     topHeight();
   }
-  /* ---------------- course switcher: the badge in the corner opens a list of Ryan's courses (js/courses.js) ---------------- */
+  /* ---------------- course switcher: the badge in the corner opens TEACH.menu (teaching/js/courses.js: This semester /
+   * Other courses / Universal settings). The list below is only a fallback if that file can't load. ---------------- */
   var MARK = '10C', courseMenu = null;
   function openCourses(btn) {
     var list = root.HW_COURSES && root.HW_COURSES.length ? root.HW_COURSES : [{ mark: MARK, name: document.title, ledger: './' }];
@@ -123,11 +132,36 @@
     go.addEventListener('click', sub); inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') sub(); });
     view.appendChild(c); inp.focus();
   }
+  /* Class time (each class's block) comes from the semester schedule in the Teaching Hub. When this ledger opens, any class
+   * whose block doesn't match the semester that's on now is updated; a class from another semester that still holds the
+   * same block gives it up. Classes the schedule doesn't mention are left alone. */
+  function scheduleBlocks() {
+    var T = root.TEACH; if (!T || !T.expectedBlocks) return;
+    if (T.BACKEND && T.dataAge() > 10 * 60000 && !scheduleBlocks.fetched) { scheduleBlocks.fetched = 1; T.refresh().then(scheduleBlocks); return; }   // this device's copy is old: get the schedule first
+    var exp = T.expectedBlocks(COURSE_ID); if (!exp) return;
+    var known = {}, taken = {}, jobs = [];
+    (T.data().semesters || []).forEach(function (s) { T.classesIn(s).forEach(function (x) { if (x.c === COURSE_ID && x.cls) known[x.cls] = 1; }); });
+    Object.keys(exp).forEach(function (code) { taken[exp[code]] = 1; });
+    st.classes.forEach(function (c) {
+      if (c.demo) return;
+      var want = exp[c.code] != null ? exp[c.code] : (known[c.code] && c.block && taken[c.block] ? '' : null);
+      if (want == null || (c.block || '') === want) return;
+      c.block = want; jobs.push(api('setblock', { 'class': c.code, block: want }));
+    });
+    if (!jobs.length) return null;
+    return Promise.all(jobs).then(function () {   // the page may already show the old block
+      var c = st.D && st.D['class']; if (c && exp[c.code] != null) c.block = exp[c.code];
+      if (st.tab === 'settings' && st.D) render();
+    });
+  }
+  /* where the Teaching Hub's settings are */
+  function hubLink(hash, text) { var T = root.TEACH, a = el('a', '', text || 'Universal settings ↗'); a.href = (T ? T.HUB : '../../teaching/') + '#/' + (hash || 'settings'); return a; }
   function loadClasses() {
     view.innerHTML = '<div class="loading">Opening the ledger…</div>';
     api('classes').then(function (d) {
       if (!d.ok) { if (d.error === 'bad key') { ls('hw:tkey', null); st.key = ''; return keyScreen('That key didn’t work.'); } throw new Error(d.error); }
       st.classes = d.classes.concat(demoEntry()); st.noSchool = d.noSchool; st.bell = d.bell; st.bellCustom = !!d.bellCustom;
+      scheduleBlocks();
       if (!st.classes.length) { st.tab = 'settings'; st.D = null; drawTop(); return render(); }
       if (!st.classes.some(function (c) { return c.code === st.klass; })) st.klass = st.classes[0].code;
       loadDash();
@@ -770,20 +804,19 @@
       body.appendChild(p1);
 
       var p2 = el('div', 'panel'); p2.appendChild(el('h3', '', 'Class time'));
-      p2.appendChild(el('p', 'small muted', 'Work counts as “in class” only during this block on the bell schedule (Mon/Wed Day 1, Tue/Thu Day 2, Friday short periods). With no block, everything counts as in class.'));
-      var bsel = el('select', 'class-pick'); ['', 'A', 'B', 'C', 'D'].forEach(function (b) { var o = el('option', '', b ? 'Block ' + b : 'No block (everything counts)'); o.value = b; if ((c.block || '') === b) o.selected = true; bsel.appendChild(o); });
-      bsel.addEventListener('change', function () { api('setblock', { 'class': c.code, block: bsel.value }).then(function () { flash(p2, 'Saved. New work is tagged with this block from now on.'); loadClasses(); }); });
-      p2.appendChild(bsel);
-      var nsn = (st.noSchool || []).length, nsr = el('p', 'small', 'No-school days: <b>' + nsn + '</b> set. They’re picked on a month view in the <b>Calendar</b> tab (Days off…), and they apply to every class: lessons move along and in-class time doesn’t count on those days. ');
-      var nsb = el('button', 'btn btn-small', 'Open the calendar'); nsb.type = 'button'; nsb.addEventListener('click', function () { st.tab = 'calendar'; ls('hw:ttab', 'calendar'); render(); }); nsr.appendChild(nsb); p2.appendChild(nsr);
+      p2.appendChild(el('p', 'small muted', 'Work counts as “in class” only during this class’s block on the bell schedule. The block, the bell times and the days off are set once for every course in the Teaching Hub (Universal settings), from your semester schedule.'));
+      var bl = el('p', '', c.block ? '<b>Block ' + esc(c.block) + '</b> on the bell schedule. ' : '<b>No block</b> — everything counts as in class. Add this class to your schedule to give it one. ');
+      bl.appendChild(hubLink('schedule', 'Schedule ↗')); p2.appendChild(bl);
+      var nsr = el('p', 'small', 'Bell times and <b>' + (st.noSchool || []).length + '</b> days off come from the hub: ');
+      nsr.appendChild(hubLink('settings', 'Universal settings ↗')); p2.appendChild(nsr);
       body.appendChild(p2);
       body.appendChild(lessonsPanel(c));
-      if (st.bell) body.appendChild(bellPanel());
       if (HW.DashCal && HW.DashCal.reminderPanel) body.appendChild(HW.DashCal.reminderPanel());
 
       body.appendChild(studentsPanel(c));
     }
     var p4 = el('div', 'panel'); p4.appendChild(el('h3', '', 'New class'));
+    var hubNote = el('p', 'small', 'Classes for your semester schedule are made for you when you save the schedule in the Teaching Hub: '); hubNote.appendChild(hubLink('schedule', 'Schedule ↗')); p4.appendChild(hubNote);
     p4.appendChild(el('p', 'small muted', 'A class code is what students type (or what the class link carries). Use something short like <code>10c-b</code>. Paste the class list from PowerSchool — one name per line.'));
     var g = el('div', 'grid2');
     var code = el('input', 'field'); code.placeholder = 'Class code, e.g. 10c-b'; var label = el('input', 'field'); label.placeholder = 'Name shown, e.g. Math 10C · Block B';
@@ -934,7 +967,8 @@
     row.appendChild(go); row.appendChild(no); box.appendChild(row);
   }
   /* Class times: the bell schedule (start and end of each block on each kind of day), for every class. It decides what
-     counts as in class and when a test "until the end of class" ends. Saved in the ledger (setbell). */
+     counts as in class and when a test "until the end of class" ends. No longer shown: bell times are set in the Teaching
+     Hub (Universal settings), which sends them to this ledger (setbell). Kept for reference. */
   function bellPanel() {
     var DAYS = [['day1', 'Mon / Wed', 'Day 1'], ['day2', 'Tue / Thu', 'Day 2'], ['fri', 'Friday', 'short periods']];
     var p = el('div', 'panel bell-panel'); p.appendChild(el('h3', '', 'Class times'));
@@ -1039,6 +1073,11 @@
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 100);
   }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || !st.key || !st.D) return;
+    flying = {}; kept = {};
+    if (st.tab === 'calendar' && HW.DashCal) { HW.DashCal.reload(); render(); }
+  });
   HW.Dash = { state: st, render: render, api: api, onWrite: function (f) { writeHooks.push(f); }, goTab: goTab, download: download, flash: flash, drawTop: function () { drawTop(); }, students: students, derive: derive, scopeSeg: scopeSeg, pronounSelect: pronounSelect, ippBox: ippBox, wrapTbl: wrapTbl, openStudent: function (n) { openStudent(n); } };
   boot();
 })(window);

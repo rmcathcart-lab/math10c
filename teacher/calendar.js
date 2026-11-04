@@ -2,8 +2,9 @@
  *  - Drag a lesson onto another day: everything after it moves by the same number of days (two lessons in one day, or a
  *    gap for a review day). Drag it onto "Skipped" (or tap it → Skip) to take it off; what follows moves up a day.
  *    Drag a skipped lesson onto a day to put it back.
- *  - "Days off": tap school days to mark them off (or back on). Days off are the school's NOSCHOOL list, shared by every
- *    class and by the in-class time, so a day off moves every class's lessons along.
+ *  - Days off are the school's NOSCHOOL list, shared by every class and by the in-class time, so a day off moves every
+ *    class's lessons along. They're set in the Teaching Hub (teaching/, Universal settings or its calendar), which sends
+ *    them to this ledger; the "Days off ↗" button goes there.
  *  - "Add to calendar": the teacher's own entries (a cumulative exam, an assembly, a reminder). An exam or anything that
  *    takes the class moves the lessons to the next class day; tap an entry to change or remove it.
  *  - Every change saves straight away (setcal); Undo steps back. */
@@ -70,7 +71,9 @@
     var acts = el('div', 'tt-acts');
     var ub = button('btn-small', 'Undo', undo); ub.disabled = !K.undo.length; acts.appendChild(ub);
     acts.appendChild(button('btn-small kc-add', 'Add to calendar…', function () { editEvent(null); }));
-    acts.appendChild(button('btn-small' + (K.offMode ? ' btn-primary' : ''), K.offMode ? 'Done with days off' : 'Days off…', function () { K.offMode = !K.offMode; rerender(); }));
+    /* days off are set for every course in the Teaching Hub (they used to be marked here) */
+    var hubOff = el('a', 'btn btn-small', 'Days off ↗'); hubOff.href = (root.TEACH ? root.TEACH.HUB : '../../teaching/') + '#/calendar/daysoff'; hubOff.title = 'Days off are set for every course in the Teaching Hub'; acts.appendChild(hubOff);
+    var allCal = el('a', 'btn btn-small btn-ghost', 'All classes ↗'); allCal.href = (root.TEACH ? root.TEACH.HUB : '../../teaching/') + '#/calendar'; allCal.title = 'Every class’s calendar on one page'; acts.appendChild(allCal);
     acts.appendChild(button('btn-small btn-ghost', 'Start over…', function () { startOver(); }));
     top.appendChild(acts); body.appendChild(top);
     if (!isDemo() && realClasses().length > 1) body.appendChild(syncRow());
