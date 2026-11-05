@@ -60,6 +60,11 @@
     if (session) {
       var calcB = el('button', 'btn btn-ghost top-calc', (HW.CALC_ICON || '') + '<span>Calculator</span>');
       calcB.type = 'button'; calcB.title = 'On-screen calculator (TI-30XIIS layout)'; calcB.addEventListener('click', function () { HW.Calc.toggle(); });
+      if (HW.Times) {
+        var ttB = el('button', 'btn btn-ghost top-times', HW.TIMES_ICON); ttB.type = 'button'; ttB.title = 'Multiplication table'; ttB.setAttribute('aria-label', 'Multiplication table');
+        ttB.addEventListener('click', function () { HW.Times.toggle(); });
+        right.appendChild(ttB);
+      }
       right.appendChild(calcB);
       if (L.enabled) { var dot = el('span', 'sync-dot' + (L.ok === false ? ' bad' : L.ok ? ' good' : ''), ''); dot.title = L.ok === false ? 'Can’t reach your teacher’s ledger right now — your work is saved on this device and will be sent later.' : 'Your work is being saved for your teacher.'; right.appendChild(dot); }
       var who = el('button', 'btn btn-ghost who', esc(session.name) + (session.klass ? ' <span class="muted">· ' + esc(session.klass) + '</span>' : '')); who.type = 'button'; who.title = 'Sign out';

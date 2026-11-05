@@ -259,6 +259,7 @@
     var timer = el('button', 'tm-timer', ''); timer.type = 'button'; timer.title = 'Show or hide the time left';
     timer.addEventListener('click', function () { var hide = ls('hw:tm:hidetimer') === '1'; ls('hw:tm:hidetimer', hide ? '0' : '1'); drawTimer(); });
     if (limitMs()) right.appendChild(timer);
+    if (T.def.calc && HW.Times) { var ttB = button('btn-ghost tm-times', HW.TIMES_ICON, function () { HW.Times.toggle(); }); ttB.title = 'Multiplication table'; ttB.setAttribute('aria-label', 'Multiplication table'); right.appendChild(ttB); }
     if (T.def.calc && HW.Calc) right.appendChild(button('btn-ghost tm-calc', (HW.CALC_ICON || '') + '<span>Calculator</span>', function () { HW.Calc.toggle(); }));
     right.appendChild(button('btn-primary tm-submit', 'Submit', confirmSubmit));
     head.appendChild(right); o.appendChild(head);
@@ -269,6 +270,7 @@
     body.appendChild(nav); body.appendChild(main); o.appendChild(body);
     T.els = { timer: timer, nav: nav, main: main };
     if (!T.def.calc && HW.Calc && HW.Calc.get) { try { HW.Calc.get().hide(); } catch (e) {} }
+    if (!T.def.calc && HW.Times) { try { HW.Times.get().hide(); } catch (e) {} }
     T.pages = TC.pages(T.def, T.order); T.labels = {}; T.pages.forEach(function (pg, pi) { pg.parts.forEach(function (q) { T.labels[q.key] = q.label; q.page = pi; }); });
     T.cur = Math.max(0, Math.min(T.cur || 0, T.pages.length - 1));
     showPage(T.cur);
@@ -421,6 +423,7 @@
     post(true, beacon);
     T.widgets = null;
     try { if (HW.Calc && HW.Calc.get) HW.Calc.get().hide(); } catch (e) {}
+    try { if (HW.Times) HW.Times.get().hide(); } catch (e) {}
     drawEnd();
   }
 

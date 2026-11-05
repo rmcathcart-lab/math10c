@@ -485,7 +485,7 @@ math-field { --contains-highlight-background-color: hsl(212, 40%, 95%); --contai
 .tm { position: fixed; inset: 0; z-index: 100; overflow: auto; --tm-bg: #fff3c4; --tm-line: #e9cf6b; --tm-ink: #6b5200; background: var(--tm-bg); }
 .tm.tm-test { --tm-bg: #ffe2c6; --tm-line: #f0ad6e; --tm-ink: #8a3d00; }
 body.tm-on { overflow: hidden; }
-body.tm-on .calc { z-index: 200; }
+body.tm-on .calc, body.tm-on .tt { z-index: 200; }
 .tm-kind { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--tm-ink); background: rgba(255, 255, 255, .6); border: 1px solid var(--tm-line); border-radius: 999px; padding: 2px 10px; }
 .tm-name { font-size: 24px; font-weight: 800; color: var(--ink); background: #fff; border: 2px solid var(--tm-line); border-radius: 12px; padding: 4px 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40vw; }
 .tm-splash { max-width: 640px; margin: 8vh auto 40px; background: #fff; border: 2px solid var(--tm-line); border-radius: 18px; padding: 30px 34px; box-shadow: 0 18px 50px rgba(60, 40, 0, .12); text-align: center; }
@@ -813,3 +813,32 @@ button.ulv:hover { border-color: var(--brand); }
 /* test-mode question list: where the Beginning / Progressing / Mastery boxes start */
 .tm-nav-sec { font-size: 12px; font-weight: 700; color: var(--muted); margin: 8px 3px 2px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,.08); }
 .tm-nav-list > .tm-nav-sec:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+/* ---------- multiplication table (js/times.js), opened from the icon button left of Calculator ---------- */
+.top-times { padding-left: 9px; padding-right: 9px; }
+.tt { --tt-hl: #d3ebe7; position: fixed; left: 24px; bottom: 24px; z-index: 61; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 40px rgba(20, 24, 33, .22); padding: 8px 10px 10px; outline: none; user-select: none; -webkit-user-select: none; max-width: calc(100vw - 48px); }
+.tt-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: move; touch-action: none; padding: 0 2px 8px; min-height: 32px; }
+.tt-fact { font-size: 18px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.tt-fact b { font-weight: 700; }
+.tt-fact .tt-ans { color: var(--brand2); }
+.tt-hint { font-size: 14px; color: var(--muted); }
+.tt-close { border: none; background: var(--line2); color: var(--ink2); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: none; }
+.tt-close:hover { background: var(--line); }
+.tt-scroll { overflow: auto; max-height: calc(100vh - 110px); max-height: calc(100dvh - 110px); overscroll-behavior: contain; }
+.tt-grid { border-collapse: separate; border-spacing: 2px; font-variant-numeric: tabular-nums; }
+.tt-grid td, .tt-grid th { min-width: 29px; height: 25px; text-align: center; font-size: 13px; border-radius: 5px; padding: 0 1px; transition: background-color .08s; }
+.tt-grid td { color: var(--ink); background: #f7f5f0; cursor: pointer; }
+.tt-grid th { font-weight: 700; color: var(--brand); background: var(--brand-soft); }
+.tt-grid tr:first-child th { position: sticky; top: 0; z-index: 2; box-shadow: 0 0 0 2px var(--card); }
+.tt-grid th.tt-rh { position: sticky; left: 0; z-index: 1; box-shadow: 0 0 0 2px var(--card); }
+.tt-grid tr:first-child th.tt-corner { position: sticky; left: 0; top: 0; z-index: 3; background: var(--card); color: var(--muted); font-weight: 600; }
+.tt-grid td.tt-row, .tt-grid td.tt-col { background: var(--tt-hl); }
+.tt-grid th.tt-on { background: var(--brand2); color: #fff; }
+.tt-grid td.tt-hit { background: var(--brand); color: #fff; font-weight: 700; }
+.tt.tt-pinned .tt-grid td.tt-hit { box-shadow: 0 0 0 2px #f0c46a; }
+@media (max-width: 760px) {
+  .tt { left: 6px; right: 6px; bottom: 6px; padding: 6px 6px 8px; max-width: none; }
+  .tt-scroll { max-height: min(62vh, calc(100vh - 90px)); }
+  .tt-grid { border-spacing: 1.5px; }
+  .tt-grid td, .tt-grid th { min-width: 27px; height: 26px; font-size: 12px; }
+}
