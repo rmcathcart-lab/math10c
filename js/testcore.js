@@ -154,7 +154,7 @@
    * harder box, then one step down per partial easier box and two per box below half, flagged "Check this". The percent
    * sits in the indicator's band by progress toward the next rung (a stepped-down result: the band's middle). Mastery-box
    * multiple choice counts fully only when the student has at least half of the box's other points; otherwise half.
-   * The unit grade is the average of the outcome percents (EXT outcomes left out). */
+   * The unit grade is the average of the outcome percents (EXT and REV outcomes left out: HW.NO_LEVEL). */
   TC.SECURE = 3 / 4; TC.PARTIAL = 1 / 2;
   TC.BANDS = { NM: [0, 25], LIM: [25, 45], BEG: [45, 55], EMG: [55, 65], PRG: [65, 75], ADV: [75, 85], MAS: [85, 100] };
   TC.LADDER = ['NM', 'LIM', 'BEG', 'EMG', 'PRG', 'ADV', 'MAS'];
@@ -217,7 +217,7 @@
       var fin = pm.fin[o];
       return { outcome: o, boxes: box, auto: g.ind, autoPct: g.pct, note: g.note, mcHalved: box.mcHalved, ind: fin || g.ind, pct: fin ? (fin === g.ind ? g.pct : TC.midPct(fin)) : g.pct, set: !!fin };
     });
-    var counted = outs.filter(function (x) { return x.outcome !== 'EXT'; }), points = 0;
+    var NOL = HW.NO_LEVEL || { EXT: 1 }, counted = outs.filter(function (x) { return !NOL[x.outcome]; }), points = 0;
     items.forEach(function (x) { points += TC.credit(marks.charAt(x.pos)); });
     return { outcomes: outs, unit: counted.length ? Math.round(counted.reduce(function (a, x) { return a + x.pct; }, 0) / counted.length) : 0, points: Math.round(points * 100) / 100, total: items.length };
   };
