@@ -40,9 +40,9 @@
       case 'list': return Wd.list({});
       case 'math': return Wd.math({ before: I.before, after: I.after, keys: I.keys, vars: I.vars, pi: I.pi, placeholder: I.placeholder });
       case 'mc': return Wd.mc({ options: I.options, columns: I.columns });
-      case 'select': return Wd.select({ options: I.options });
+      case 'select': return Wd.select({ options: I.options, help: I.help });
       case 'classify': return Wd.classify({ n: I.n });
-      case 'pairs': return Wd.pairs({ start: I.start });
+      case 'pairs': return Wd.pairs({ start: I.start, help: I.help });
       case 'ladder': return Wd.ladder({ n: I.n, exponent: I.exponent, onStep: onStep || function () {} });
       case 'tree': return Wd.tree({ n: I.n, exponent: I.exponent, onStep: onStep || function () {} });
     }

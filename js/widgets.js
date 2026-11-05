@@ -281,7 +281,7 @@
     more.addEventListener('click', function () { addRow().a.focus(); });
     wrap.appendChild(more);
     for (var i = 0; i < (opt.start || 1); i++) addRow();
-    wrap.appendChild(el('div', 'w-help', 'Write each pair smaller number first. Press Enter to move along.'));
+    wrap.appendChild(el('div', 'w-help', opt.help || 'Write each pair smaller number first. Press Enter to move along.'));
     return { node: wrap, value: function () { return rows.map(function (o) { return [o.a.value.trim(), o.b.value.trim()]; }).filter(function (p) { return p[0] !== '' || p[1] !== ''; }); },
       focus: function () { if (!coarse()) rows[0].a.focus({ preventScroll: true }); }, clear: function () { rows.forEach(function (o) { o.r.remove(); }); rows = []; addRow(); },
       disable: function (on) { wrap.classList.toggle('off', !!on); rows.forEach(function (o) { o.a.disabled = o.b.disabled = !!on; }); more.disabled = !!on; }, onEnter: function (fn) { enter = fn; },
