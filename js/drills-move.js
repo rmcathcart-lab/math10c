@@ -233,11 +233,15 @@
         if (it.t === 'n') box.appendChild(chip('mv-t mv-drag', sgn + Math.abs(it.c), { s: s, i: i, kind: 'n' }));
         else if (it.t === 'x') {
           var t = chip('mv-t mv-drag mv-x', '', { s: s, i: i, kind: 'x' }), a = Math.abs(it.c), sole = P.eq[s].length === 1;
-          if (sole && (it.c !== 1 || it.den) && !it.den) {     // the coefficient becomes its own handle
-            t.innerHTML = ''; t.appendChild(chip('mv-coef mv-drag', it.c === -1 ? '−' : m(it.c), { s: s, i: i, kind: 'coef', title: it.c === -1 ? 'this is −1' : '' })); t.appendChild(el('i', 'mv-var', 'x'));
-          } else if (it.den) {
+          // the number in front of x (and the bottom of x/a) is always its own handle, so students can try moving it
+          // at any time; moving it before the + and − are undone is refused with the order message
+          if (it.den) {
             t.innerHTML = sgn + '<span class="mv-frac"><span class="mv-num">' + (a === 1 ? '' : a) + '<i class="mv-var">x</i></span></span>';
-            var fr = t.querySelector('.mv-frac'); fr.appendChild(chip('mv-den' + (sole ? ' mv-drag' : ''), String(it.den), sole ? { s: s, i: i, kind: 'den' } : {}));
+            t.querySelector('.mv-frac').appendChild(chip('mv-den mv-drag', String(it.den), { s: s, i: i, kind: 'den' }));
+          } else if (first && it.c !== 1) {
+            t.innerHTML = ''; t.appendChild(chip('mv-coef mv-drag', it.c === -1 ? '−' : m(it.c), { s: s, i: i, kind: 'coef' })); t.appendChild(el('i', 'mv-var', 'x'));
+          } else if (!first && a !== 1) {
+            t.innerHTML = sgn; t.appendChild(chip('mv-coef mv-drag', String(a), { s: s, i: i, kind: 'coef' })); t.appendChild(el('i', 'mv-var', 'x'));
           } else t.innerHTML = sgn + (a === 1 ? '' : a) + '<i class="mv-var">x</i>';
           box.appendChild(t);
         } else if (it.t === 'br') {
