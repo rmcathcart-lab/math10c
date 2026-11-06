@@ -200,6 +200,14 @@
     if (h[0] === 'lesson' && HW.lessons[h[1]] && !HW.lessons[h[1]].test) return openLesson(HW.lessons[h[1]], h[2]); // unit tests are only written in test mode
     if (h[0] === 'results' && HW.TestMode) { leaveLesson(); return HW.TestMode.renderResults(view, h[1]); }
     if (h[0] === 'calendar') { renderHome(); return openCalendar(); }
+    if (h[0] === 'drills' && HW.Drills) {
+      leaveLesson(); document.body.className = 'drills';
+      var dd = h[1] && HW.Drills.list.filter(function (x) { return x.id === h[1]; })[0];
+      var cr = dd ? '<a href="#/">Home</a><span class="sep">/</span><a href="#/drills">Skill Drills</a><span class="sep">/</span>' + esc(dd.title) : '<a href="#/">Home</a><span class="sep">/</span>Skill Drills';
+      drawTop(cr); top.dataset.crumb = cr; window.scrollTo(0, 0);
+      L.push({ t: 'event', type: 'drills-open', drill: h[1] || '' });
+      return HW.Drills.render(view, h[1]);
+    }
     renderHome();
   }
   root.addEventListener('hashchange', route);
@@ -367,6 +375,8 @@
     var nb = el('button', 'btn home-about-btn', 'Printable Notes'); nb.type = 'button';
     nb.title = 'Print a unit’s notes package to follow along with during the lessons';
     nb.addEventListener('click', openNotes); foot.appendChild(nb);
+    // unlimited practice on the prerequisite skills (integers, times tables, equations, …)
+    if (HW.Drills) { var db = el('a', 'btn home-about-btn', 'Skill Drills'); db.href = '#/drills'; db.title = 'Practise the basics every unit is built on: integers, multiplication facts, fractions, equations and more'; foot.appendChild(db); }
     foot.appendChild(el('div', 'home-break'));   // Lorebound sits centred on its own line below
     // Lorebound, the class's math adventure game, in its own style; opens in a new tab
     var lb = el('a', 'home-lore', '<span class="hl-k">Play</span><span class="hl-t">Lorebound</span>');
