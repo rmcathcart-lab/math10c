@@ -111,6 +111,27 @@
   }
   function evaluate(eq, s, i) { var e = clone(eq); e[s][i] = N(e[s][i].v); return { eq: e, note: 'work it out', move: 'calc' }; }
 
+  /* the operation that undoes a piece when it is taken to the other side, and why any other choice is wrong */
+  var OPS = { add: 'add', sub: 'subtract', mul: 'multiply', div: 'divide' };
+  function undoOp(eq, s, i, kind) {
+    var it = eq[s][i];
+    if (kind === 'n' || kind === 'x') return it.c > 0 ? 'sub' : 'add';
+    if (kind === 'coef' || kind === 'bra') return 'div';
+    if (kind === 'den') return 'mul';
+    return null;
+  }
+  function wrongOp(eq, s, i, kind, op) {
+    var it = eq[s][i], want = undoOp(eq, s, i, kind), v;
+    if (kind === 'n' || kind === 'x') {
+      v = (kind === 'x' ? (Math.abs(it.c) === 1 ? '' : Math.abs(it.c)) + 'x' : String(Math.abs(it.c)));
+      if (op === 'add' || op === 'sub') return v + ' is ' + (it.c > 0 ? 'added' : 'subtracted') + ' on this side, so ' + (op === 'add' ? 'adding' : 'subtracting') + ' it won’t cancel it. Do the opposite: ' + OPS[want] + '.';
+      return v + ' is ' + (it.c > 0 ? 'added' : 'subtracted') + ', not multiplied or divided — undo it with ' + (want === 'sub' ? 'subtraction' : 'addition') + ' (drop it after the other side).';
+    }
+    if (kind === 'coef' || kind === 'bra') { v = m(kind === 'bra' ? it.a : it.c); return op === 'mul' ? (kind === 'bra' ? 'The brackets are' : 'x is') + ' already multiplied by ' + v + ' — multiplying again won’t undo it. Divide (drop it underneath).' : v + ' multiplies ' + (kind === 'bra' ? 'the brackets' : 'x') + ' — it isn’t added. Undo × with ÷ (drop it underneath).'; }
+    if (kind === 'den') return op === 'div' ? 'x is already divided by ' + it.den + ' — dividing again won’t undo it. Multiply (drop it in front).' : 'x is divided by ' + it.den + ' — undo ÷ with × (drop it in front).';
+    return 'That move doesn’t undo anything.';
+  }
+
   /* the next good move, for the Hint button: { s, i, part, target } */
   function hint(eq) {
     var S = ['L', 'R'], k, s, i;
@@ -125,14 +146,14 @@
     for (k = 0; k < 2; k++) { s = S[k]; if (eq[s].length === 1 && eq[s][0].t === 'br' && (hasX(eq[other(s)]) || eq[other(s)].length !== 1 || eq[other(s)][0].c % eq[s][0].a)) return { s: s, i: 0, part: 'a', target: { s: s, i: 0, br: true }, text: 'Distribute: drag the ' + m(eq[s][0].a) + ' onto the brackets.' }; }
     for (k = 0; k < 2; k++) { s = S[k]; if (eq[s].some(function (it) { return it.t === 'br'; }) && eq[s].length > 1) { i = eq[s].map(function (it) { return it.t; }).indexOf('br'); return { s: s, i: i, part: 'a', target: { s: s, i: i, br: true }, text: 'Distribute: drag the number in front onto the brackets.' }; } }
     var xL = hasX(eq.L), xR = hasX(eq.R);
-    if (xL && xR) { s = 'R'; i = eq.R.map(function (it) { return it.t; }).indexOf('x'); return { s: s, i: i, target: { side: 'L' }, text: 'Get the x terms together: drag this x term to the other side.' }; }
+    if (xL && xR) { s = 'R'; i = eq.R.map(function (it) { return it.t; }).indexOf('x'); var xi = eq.R[i]; return { s: s, i: i, target: { side: 'L', op: xi.c > 0 ? 'sub' : 'add' }, text: 'Get the x terms together: move this x term to the other side — ' + (xi.c > 0 ? 'it’s added, so subtract it.' : 'it’s subtracted, so add it.') }; }
     var xs2 = xL ? 'L' : 'R';
-    for (i = 0; i < eq[xs2].length; i++) if (eq[xs2][i].t === 'n') return { s: xs2, i: i, target: { side: other(xs2) }, text: 'Undo the + or − first: drag this number to the other side.' };
+    for (i = 0; i < eq[xs2].length; i++) if (eq[xs2][i].t === 'n') return { s: xs2, i: i, target: { side: other(xs2), op: eq[xs2][i].c > 0 ? 'sub' : 'add' }, text: 'Undo the + or − first: this ' + m(Math.abs(eq[xs2][i].c)) + ' is ' + (eq[xs2][i].c > 0 ? 'added, so subtract it from both sides.' : 'subtracted, so add it to both sides.') };
     var o2 = other(xs2); if (eq[o2].length > 1) return { s: o2, i: 1, target: { s: o2, i: 0 }, text: 'Combine the numbers on this side: drag one onto the other.' };
     var it2 = eq[xs2][0];
-    if (it2 && it2.t === 'br') return { s: xs2, i: 0, part: 'a', target: { side: o2 }, text: 'Divide: drag the ' + m(it2.a) + ' to the other side.' };
-    if (it2 && it2.den) return { s: xs2, i: 0, part: 'den', target: { side: o2 }, text: 'Undo the ÷ ' + it2.den + ': drag the ' + it2.den + ' to the other side.' };
-    if (it2 && it2.c !== 1) return { s: xs2, i: 0, part: 'coef', target: { side: o2 }, text: 'Undo the × ' + m(it2.c) + ': drag the ' + m(it2.c) + ' to the other side.' };
+    if (it2 && it2.t === 'br') return { s: xs2, i: 0, part: 'a', target: { side: o2, op: 'div' }, text: 'The brackets are multiplied by ' + m(it2.a) + ' — undo it by dividing both sides by ' + m(it2.a) + '.' };
+    if (it2 && it2.den) return { s: xs2, i: 0, part: 'den', target: { side: o2, op: 'mul' }, text: 'x is divided by ' + it2.den + ' — undo it by multiplying both sides by ' + it2.den + '.' };
+    if (it2 && it2.c !== 1) return { s: xs2, i: 0, part: 'coef', target: { side: o2, op: 'div' }, text: 'x is multiplied by ' + m(it2.c) + ' — undo it by dividing both sides by ' + m(it2.c) + '.' };
     return null;
   }
 
@@ -173,15 +194,15 @@
     var page = el('div', 'dr-page dr-one mv-page');
     var back = el('a', 'dr-back', '← All skill drills'); back.href = '#/drills'; page.appendChild(back);
     page.appendChild(el('h1', '', 'Solve by moving terms'));
-    page.appendChild(el('p', 'dr-lede', 'Get x by itself by <b>dragging</b> pieces of the equation (or tap a piece, then tap where it goes). Drag a term across the = sign and it changes sign. Undo + and − first, then × and ÷.'));
+    page.appendChild(el('p', 'dr-lede', 'Get x by itself by <b>dragging</b> pieces of the equation (or tap a piece, then tap where it goes). Take a piece to the other side and <b>choose</b> what to do to both sides: drop it in front to multiply, after it to add or subtract, or underneath to divide. Undo + and − first, then × and ÷.'));
     var lvls = el('div', 'dr-levels'); page.appendChild(lvls);
     var card = el('div', 'dr-card-q mv-card'); page.appendChild(card);
     var stats = el('div', 'dr-stats'); page.appendChild(stats);
     var help = el('details', 'mv-help', '<summary>How the moves work</summary><ul>' +
-      '<li><b>Across the =</b>: drag a term to the other side. It changes sign — that’s adding or subtracting it on both sides.</li>' +
+      '<li><b>Across the =</b>: drag a piece to the other side and drop it in one of the boxes — <b>in front</b> (×), <b>after</b> (+ or −) or <b>underneath</b> (÷). You choose the operation that undoes it; it then disappears from its own side.</li>' +
       '<li><b>Onto a like term</b>: drag a number onto a number (or an x term onto an x term) on the same side to combine them.</li>' +
-      '<li><b>The number in front of x</b>: once x’s side has nothing else, drag that number across to divide both sides by it. For x over a number, drag the bottom number across to multiply.</li>' +
-      '<li><b>Brackets</b>: drag the number in front onto the brackets to distribute, or across the = to divide.</li>' +
+      '<li><b>The number in front of x</b>: once x’s side has nothing else, drag it across. x is multiplied by it, so pick the box that undoes multiplying. For x over a number, drag the bottom number.</li>' +
+      '<li><b>Brackets</b>: drag the number in front onto the brackets to distribute, or across the = to undo it.</li>' +
       '<li><b>Grey boxes</b>: tap to work them out.</li></ul>');
     page.appendChild(help);
     view.appendChild(page);
@@ -200,7 +221,12 @@
 
     function chip(cls, html, data) { var c = el('span', cls, html); Object.keys(data || {}).forEach(function (k) { c.dataset[k] = data[k]; }); return c; }
     function drawSide(s) {
-      var box = el('div', 'mv-side'); box.dataset.side = s;
+      var side = el('div', 'mv-side'); side.dataset.side = s;
+      var zm = el('div', 'mv-z mv-z-mul', '<b>×</b><span>multiply</span>'); zm.dataset.zone = 'mul';
+      var box = el('div', 'mv-expr');
+      var za = el('div', 'mv-zcol'), zp = el('div', 'mv-z', '<b>+</b><span>add</span>'), zs = el('div', 'mv-z', '<b>−</b><span>subtract</span>'); zp.dataset.zone = 'add'; zs.dataset.zone = 'sub'; za.appendChild(zp); za.appendChild(zs);
+      var zd = el('div', 'mv-z mv-z-div', '<b>÷</b><span>divide</span>'); zd.dataset.zone = 'div';
+      side.appendChild(zm); side.appendChild(box); side.appendChild(za); side.appendChild(zd);
       P.eq[s].forEach(function (it, i) {
         var first = i === 0, sg = it.t === 'calc' ? '' : (it.t === 'br' ? it.a : it.c) < 0 ? '−' : first ? '' : '+';
         var sgn = sg ? '<span class="mv-sg">' + sg + '</span>' : '';
@@ -221,7 +247,7 @@
           b.appendChild(inner); box.appendChild(b);
         } else box.appendChild(chip('mv-t mv-calc', (first ? '' : '<span class="mv-sg">+</span>') + K(it.tex) + '<span class="mv-tap">tap</span>', { s: s, i: i, kind: 'calc' }));
       });
-      return box;
+      return side;
     }
     function draw(msg) {
       card.innerHTML = '';
@@ -273,7 +299,8 @@
       var src = card.querySelector('[data-s="' + h.s + '"][data-i="' + h.i + '"][data-kind="' + (h.part === 'coef' ? 'coef' : h.part === 'den' ? 'den' : h.part === 'a' ? 'bra' : h.tap ? 'calc' : (P.eq[h.s][h.i].t === 'x' ? 'x' : 'n')) + '"]');
       if (src) src.classList.add('mv-glow');
       if (h.target) {
-        var tg = h.target.side ? card.querySelector('.mv-side[data-side="' + h.target.side + '"]') : h.target.br ? card.querySelector('.mv-br[data-s="' + h.target.s + '"]') : card.querySelector('.mv-t[data-s="' + h.target.s + '"][data-i="' + h.target.i + '"]');
+        if (h.target.side) { card.classList.add('mv-choosing'); card.dataset.from = h.s; }
+        var tg = h.target.op ? card.querySelector('.mv-side[data-side="' + h.target.side + '"] .mv-z[data-zone="' + h.target.op + '"]') : h.target.side ? card.querySelector('.mv-side[data-side="' + h.target.side + '"]') : h.target.br ? card.querySelector('.mv-br[data-s="' + h.target.s + '"]') : card.querySelector('.mv-t[data-s="' + h.target.s + '"][data-i="' + h.target.i + '"]');
         if (tg) tg.classList.add('mv-target');
       }
     }
@@ -287,22 +314,28 @@
       if (k === 'calc') return apply(evaluate(P.eq, s, i));
       if (!tgt) return;
       var toSide = tgt.side || null, sameSide = tgt.s === s;
+      var across = (toSide && toSide !== s) || (tgt.s && !sameSide);
+      if (across && k !== 'calc') {
+        if (!tgt.zone) return draw({ text: 'Choose what to do to both sides: drop it <b>in front</b> to multiply, <b>after</b> it to add or subtract, or <b>underneath</b> to divide.' });
+        if ((k === 'coef' || k === 'den' || k === 'bra') && P.eq[s].length !== 1) return apply({ no: ORDER_MSG });
+        if (tgt.zone !== undoOp(P.eq, s, i, k)) return apply({ no: wrongOp(P.eq, s, i, k, tgt.zone) });
+      }
       if (k === 'n' || k === 'x') {
-        if (toSide && toSide !== s) return apply(moveAcross(P.eq, s, i));
+        if (across) return apply(moveAcross(P.eq, s, i));
         if (tgt.s && sameSide && +tgt.i !== i && (tgt.kind === 'n' || tgt.kind === 'x' || tgt.kind === 'coef')) return apply(combine(P.eq, s, i, +tgt.i));
-        if (tgt.s && !sameSide) return apply(moveAcross(P.eq, s, i));
         return;
       }
-      if (k === 'coef') { if ((toSide && toSide !== s) || (tgt.s && !sameSide)) { if (P.eq[s].length !== 1) return apply({ no: ORDER_MSG }); return apply(divideByCoef(P.eq, s)); } return; }
-      if (k === 'den') { if ((toSide && toSide !== s) || (tgt.s && !sameSide)) return apply(multiplyByDen(P.eq, s)); return; }
+      if (k === 'coef') { if (across) return apply(divideByCoef(P.eq, s)); return; }
+      if (k === 'den') { if (across) return apply(multiplyByDen(P.eq, s)); return; }
       if (k === 'bra') {
-        if ((toSide && toSide !== s) || (tgt.s && !sameSide)) return apply(bracketAcross(P.eq, s));
+        if (across) return apply(bracketAcross(P.eq, s));
         if (sameSide && (tgt.kind === 'br' || tgt.kind === 'bra' || toSide === s)) return apply(distribute(P.eq, s, i));
       }
     }
     function info(node) {
       if (!node) return null;
-      var c = node.closest('[data-kind]'), sd = node.closest('.mv-side');
+      var z = node.closest('.mv-z'), c = node.closest('[data-kind]'), sd = node.closest('.mv-side');
+      if (z && card.contains(z)) return { side: z.closest('.mv-side').dataset.side, zone: z.dataset.zone };
       if (c && card.contains(c)) return { s: c.dataset.s, i: c.dataset.i, kind: c.dataset.kind };
       if (sd && card.contains(sd)) return { side: sd.dataset.side };
       return null;
@@ -324,21 +357,22 @@
           drag.moved = true; var r = drag.node.getBoundingClientRect();
           drag.ghost = drag.node.cloneNode(true); drag.ghost.className += ' mv-ghost'; drag.ghost.style.width = r.width + 'px';
           drag.ox = drag.x0 - r.left; drag.oy = drag.y0 - r.top; document.body.appendChild(drag.ghost); drag.node.classList.add('mv-lifted');
-          card.classList.add('mv-dragging');
+          card.classList.add('mv-dragging'); card.dataset.from = drag.src.s;
         }
         if (drag.moved) {
           drag.ghost.style.left = (e.clientX - drag.ox) + 'px'; drag.ghost.style.top = (e.clientY - drag.oy) + 'px';
           var over = document.elementFromPoint(e.clientX, e.clientY), t = info(over);
           card.querySelectorAll('.mv-over').forEach(function (n) { n.classList.remove('mv-over'); });
-          if (t) { var n2 = t.side ? card.querySelector('.mv-side[data-side="' + t.side + '"]') : over.closest('[data-kind]'); if (n2 && n2 !== drag.node) n2.classList.add('mv-over'); }
+          if (t) { var n2 = t.zone ? over.closest('.mv-z') : t.side ? card.querySelector('.mv-side[data-side="' + t.side + '"]') : over.closest('[data-kind]'); if (n2 && n2 !== drag.node) n2.classList.add('mv-over'); }
         }
       });
       function end(e) {
         if (!drag) return;
         var d = drag; drag = null;
         if (d.ghost) d.ghost.remove();
+        var dropT = d.moved ? info(document.elementFromPoint(e.clientX, e.clientY)) : null;   // read before the zones hide
         card.classList.remove('mv-dragging');
-        if (d.moved) { act(d.src, info(document.elementFromPoint(e.clientX, e.clientY))); return; }
+        if (d.moved) { var before = P.hist.length; act(d.src, dropT); if (P.hist.length === before && card.contains(d.node)) d.node.classList.remove('mv-lifted'); return; }
         // a tap: select, or use the selected piece on this target
         if (d.src.kind === 'calc') { act(d.src); return; }
         if (sel) {
@@ -346,14 +380,14 @@
           if (sel.s === tgt.s && sel.i === tgt.i && sel.kind === tgt.kind) { sel = null; draw(); return; }
           var src = sel; sel = null; act(src, tgt); return;
         }
-        sel = d.src; d.node.classList.add('mv-sel');
-        var fb = card.querySelector('.mv-fb'); fb.className = 'mv-fb'; fb.textContent = 'Now tap where it should go — the other side, or a like term to combine with.';
+        sel = d.src; d.node.classList.add('mv-sel'); card.classList.add('mv-choosing'); card.dataset.from = d.src.s;
+        var fb = card.querySelector('.mv-fb'); fb.className = 'mv-fb'; fb.textContent = 'Now tap what to do on the other side (in front ×, after + or −, underneath ÷), or a like term to combine with.';
       }
       row.addEventListener('pointerup', end);
       row.addEventListener('pointercancel', function () { if (drag && drag.ghost) drag.ghost.remove(); drag = null; card.classList.remove('mv-dragging'); });
       // tapping an empty part of a side with a piece selected
       row.querySelectorAll('.mv-side').forEach(function (sd) {
-        sd.addEventListener('click', function (e) { if (!sel || e.target.closest('[data-kind]')) return; var src = sel; sel = null; act(src, { side: sd.dataset.side }); });
+        sd.addEventListener('click', function (e) { if (!sel || e.target.closest('[data-kind]')) return; var z = e.target.closest('.mv-z'); var src = sel; sel = null; card.classList.remove('mv-choosing'); act(src, { side: sd.dataset.side, zone: z ? z.dataset.zone : null }); });
       });
     }
     A.cleanup = function () { var g = document.querySelector('.mv-ghost'); if (g) g.remove(); };
@@ -375,10 +409,10 @@
           var h = hint(eq); if (!h) { errs.push('L' + (li + 1) + ' stuck at ' + eqTex(eq)); break; }
           var r;
           if (h.tap) r = evaluate(eq, h.s, h.i);
-          else if (h.part === 'coef') r = divideByCoef(eq, h.s);
+          else if (h.part === 'coef') { if (h.target.op !== 'div') errs.push('hint op coef'); r = divideByCoef(eq, h.s); }
           else if (h.part === 'den') r = multiplyByDen(eq, h.s);
           else if (h.part === 'a') r = h.target.br ? distribute(eq, h.s, h.i) : bracketAcross(eq, h.s);
-          else if (h.target && h.target.side) r = moveAcross(eq, h.s, h.i);
+          else if (h.target && h.target.side) { if (h.target.op !== undoOp(eq, h.s, h.i, eq[h.s][h.i].t === 'x' ? 'x' : 'n')) errs.push('L' + (li + 1) + ' hint op ' + h.target.op); r = moveAcross(eq, h.s, h.i); }
           else r = combine(eq, h.s, h.i, h.target.i);
           if (r.no) { errs.push('L' + (li + 1) + ' hint refused (' + r.no + ') at ' + eqTex(eq)); break; }
           eq = r.eq; steps++;
