@@ -856,16 +856,25 @@
   function coarse() { try { return root.matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } }
 
 
+  // what a plug-in drill page gets: its saved state, saving, ledger logging and the shared page header
+  function ctx(d) {
+    var st = stOf(d.id);
+    return { st: st, save: save, log: function (mode, n, right) { logToLedger(d, st, mode, n, right); }, setActive: function (a) { active = a; a.d = d; a.st = st; a.n = a.n || 0; a.r = a.r || 0; a.sprintOnly = true; } };
+  }
   HW.Drills = {
     list: DRILLS,
     render: function (view, id) {
       var d = DRILLS.filter(function (x) { return x.id === id; })[0];
-      if (d) renderDrill(view, d); else { stopActive(); renderList(view); }
+      if (d && d.render) { stopActive(); d.render(view, ctx(d)); }
+      else if (d) renderDrill(view, d); else { stopActive(); renderList(view); }
     },
+    // a drill with its own page (e.g. js/drills-move.js): { id, group, title, blurb, helps, levels:[{name}], render(view, ctx) }
+    add: function (d, afterId) { var i = DRILLS.map(function (x) { return x.id; }).indexOf(afterId); if (i >= 0) DRILLS.splice(i + 1, 0, d); else DRILLS.push(d); },
     // for tests: make n questions of every level of every drill, check the key answers itself
     selfTest: function (n) {
       var errs = [];
       DRILLS.forEach(function (d) {
+        if (d.render) return;
         d.levels.forEach(function (lv, i) {
           var st = { tables: TABLES.slice(), count: 0 };
           for (var k = 0; k < (n || 50); k++) {
