@@ -189,8 +189,36 @@
   HW.defineTest = function (def) {
     def.test = true; def.num = def.num || 'Test'; def.title = def.title || 'Unit ' + def.unit + ' Test';
     if (def.calc == null) def.calc = true;
-    return HW.defineLesson(boxOrder(def));
+    var full = HW.defineLesson(boxOrder(def));
+    if (def.short) shortTest(full);
+    return full;
   };
+  /* A short version of a unit test (Ryan, 2026-11-09: about half as long, for when a period runs short).
+   * def.short lists the question numbers to keep, as numbered on the full test (after the Beginning → Progressing →
+   * Mastery ordering). It becomes its own test '<id>s' titled '<title> (short)', with the same questions (same
+   * generators, levels and outcomes), renumbered 1, 2, 3…; the teacher's Tests tab lists it beside the full test. */
+  function shortTest(full) {
+    var keep = full.short.map(String), seen = {};
+    var qs = full.questions.filter(function (q) { return keep.indexOf(String(q.num)) >= 0; });
+    if (qs.length !== keep.length) throw new Error(full.id + ': short lists a question that is not on the test (' + keep.join(', ') + ')');
+    var copy = qs.map(function (q, n) {
+      var old = String(q.num), num = String(n + 1), q2 = {};
+      Object.keys(q).forEach(function (k) { q2[k] = q[k]; });
+      q2.num = num; q2.fullNum = old;
+      q2.parts = q.parts.map(function (p) {
+        var p2 = {}; Object.keys(p).forEach(function (k) { p2[k] = p[k]; });
+        var tail = String(p.id).indexOf(old) === 0 ? String(p.id).slice(old.length) : null;
+        p2.id = tail != null && !/^\d/.test(tail) ? num + tail : 's' + p.id;
+        if (seen[p2.id]) throw new Error(full.id + ' short: two parts have the id ' + p2.id); seen[p2.id] = 1;
+        return p2;
+      });
+      return q2;
+    });
+    var d = {};
+    Object.keys(full).forEach(function (k) { if (['items', 'byId', 'required', 'extras', 'questions', 'extra', 'short'].indexOf(k) < 0) d[k] = full[k]; });
+    d.id = full.id + 's'; d.title = full.title + ' (short)'; d.shortOf = full.id; d.questions = copy;
+    return HW.defineLesson(d);
+  }
   HW.defineExit = function (def) {
     var m = /^u(\d+)l(\d+)$/.exec(def.lesson || ''); if (!m) throw new Error('defineExit: lesson must look like u2l3');
     def.id = def.lesson + 'x'; def.unit = Number(m[1]); def.num = 'Exit'; def.forLesson = def.lesson; def.lessonNum = Number(m[2]);

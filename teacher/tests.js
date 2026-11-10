@@ -92,7 +92,7 @@
      each with id 'B-<lesson id>'. Until one is edited it isn't in the ledger's Tests sheet: Launch saves it there first
      (under the same id), and Edit saves the edited copy under that id. Deleting the edited copy brings back the original. */
   function builtinDef(l) {
-    return { title: l.title, kind: l.exit ? 'exit' : 'test', unit: l.unit, minutes: l.exit ? 10 : 75, timing: 'period', calc: l.calc !== false, shuffle: false, levels: true,
+    return { title: l.title, kind: l.exit ? 'exit' : 'test', unit: l.unit, minutes: l.exit ? 10 : l.shortOf ? 40 : 75, timing: 'period', calc: l.calc !== false, shuffle: false, levels: true,
       items: l.items.filter(function (it) { return !TC.NO_TEST[inputType(l, it)]; }).map(function (it) { return { l: l.id, i: it.id }; }) };
   }
   function builtins() { return Object.keys(HW.lessons).map(function (k) { return HW.lessons[k]; }).filter(function (l) { return l.test && l.items.length; }).map(function (l) { return { id: 'B-' + l.id, def: builtinDef(l), updated: 0, virtual: true, builtin: l.id }; }); }
@@ -175,7 +175,7 @@
       allBtn.remove();
       var one = el('section', 'tt-unit tt-flat'), rows1 = el('div', 'tt-list');
       units.forEach(function (u) {
-        byUnit[u].sort(function (a, b) { return (b.builtin ? 1 : 0) - (a.builtin ? 1 : 0) || b.updated - a.updated; }).forEach(function (t) { var r = testCard(t); if (u && HW.unitStyle) r.setAttribute('style', HW.unitStyle(u)); rows1.appendChild(r); });
+        byUnit[u].sort(function (a, b) { return (b.builtin ? 1 : 0) - (a.builtin ? 1 : 0) || String(a.builtin || '').length - String(b.builtin || '').length || b.updated - a.updated; }).forEach(function (t) { var r = testCard(t); if (u && HW.unitStyle) r.setAttribute('style', HW.unitStyle(u)); rows1.appendChild(r); });
       });
       one.appendChild(rows1); list.appendChild(one); units = [];
     }
