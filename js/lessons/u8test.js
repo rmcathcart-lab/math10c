@@ -708,6 +708,8 @@
 
   HW.defineTest({
     id: 'u8test', unit: 8, title: 'Unit 8 Test', outcome: 'RF9', calc: true,
+    // Short version (~half): one question per skill at each level — graph and solve, substitution, elimination with verify, ticket model (B); number of solutions, clearing fractions, mixture (P); writing a second equation for 0/∞/1 solutions, Ava’s elimination error, the plane (motion) problem (M). Drops near-duplicates (Q1, Q5, Q8, Q9, Q11, Q13, Q14, Q17) and the four-part halls Q19.
+    short: [2, 3, 4, 6, 7, 10, 12, 15, 16, 18],
     blurb: 'The Unit 8 outcomes-based test (RF9: systems of linear equations): solving and classifying graphically, substitution and elimination, and modelling problems with a system, each at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= RF9 · Part 1: solving and classifying graphically ======================= */

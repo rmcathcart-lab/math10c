@@ -368,6 +368,8 @@
 
   HW.defineTest({
     id: 'u3test', unit: 3, title: 'Unit 3 Test', outcome: 'AN4', calc: false,
+    // Short version (~half): expand, area diagram, special products and prism volume at B; binomial, bin x trinomial, three binomials, combined and area products at P; working backwards, zero coefficient, mental special products and the tile problem at M; drops tile/grid/area near-duplicates and the extra Mastery reasoning items.
+    short: [1, 3, 4, 8, 9, 12, 13, 14, 15, 18, 21, 24, 25],
     blurb: 'The Unit 3 outcomes-based test on AN4 (multiplying polynomials): monomial and binomial products with algebra tiles and area models, binomial × trinomial, squares of binomials and three binomials, and area, volume and number applications — at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= AN4 · Part 1: monomial and binomial products ======================= */

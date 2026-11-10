@@ -442,6 +442,8 @@
 
   HW.defineTest({
     id: 'u9test', unit: 9, title: 'Unit 9 Test', outcome: 'M4', calc: true,
+    // Short version (~half): every part of the unit at each level — sides and ratios, find a side, find an angle, elevation vs depression, bearings (B); solve for sides, solve from two sides, eye-level elevation (P); slide range, isosceles truss, Ava’s two-leg bearing hike (M). Drops near-duplicates (Q3, Q6, Q9, Q10, Q13) and the second Mastery item of each part (Q14 MC error, Q17, Q18).
+    short: [1, 2, 4, 5, 7, 8, 11, 12, 15, 16, 19],
     blurb: 'The Unit 9 outcomes-based test (M4, right-triangle trigonometry): naming sides and writing ratios, finding sides and angles, solving right triangles, angles of elevation and depression, bearings and two-triangle problems, at the BEG, PRG and MAS levels. Calculator in degree mode.',
     questions: [
       /* ======================= M4 · Part 1: ratios and finding a side ======================= */

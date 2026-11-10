@@ -737,6 +737,8 @@
 
   HW.defineTest({
     id: 'u2test', unit: 2, title: 'Unit 2 Test', outcome: 'AN3', calc: false,
+    // Short version (~half): one B, P and M item per paper part (integer laws, zero/negative, rational exponents); drops near-duplicate evaluate/simplify sets (Q2, Q3, Q5-Q7, Q11, Q13, Q14, Q16) and the second error analysis, T/F, create-an-expression, bacteria and long-simplify Mastery items.
+    short: [1, 4, 8, 9, 10, 12, 15, 17, 22, 23, 25],
     blurb: 'The Unit 2 outcomes-based test on AN3: exponent laws with integer exponents, zero and negative exponents, and rational exponents and radicals, each at the BEG, PRG and MAS levels. No calculator.',
     questions: [
       /* ======================= AN3 · Part 1: exponent laws with integer exponents ======================= */

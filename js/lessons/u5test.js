@@ -1311,6 +1311,8 @@
 
   HW.defineTest({
     id: 'u5test', unit: 5, title: 'Unit 5 Test', outcome: 'RF2', calc: true,
+    // Short version (~half): every outcome's B/P/M boxes; RF1 keeps the graph reading, story sketch, discrete/continuous and road trip; RF2 keeps VLT, interval D/R, variables, D/R from graphs, build examples and the sketch; RF8 keeps g(x) from a graph, notation, solving and the kayak; drops near-duplicates and extra MC items.
+    short: [1, 2, 5, 8, 9, 11, 13, 14, 16, 17, 20, 22, 23, 25],
     blurb: 'The Unit 5 outcomes-based test: RF1 (graphs of situations), RF2 (relations and functions, domain and range) and RF8 (function notation), each at the BEG, PRG and MAS levels. Scientific calculator allowed.',
     questions: QUESTIONS
   });

@@ -290,6 +290,8 @@
 
   HW.defineTest({
     id: 'u7test', unit: 7, title: 'Unit 7 Test', outcome: 'RF4', calc: true,
+    // Short version (~half): every outcome keeps its B/P/M boxes with one or two questions each — RF4 classify + table/graph, rate table, Kai’s claim; RF5 intercepts from graphs (incl. a none case), intercepts algebraically, plane context; RF6 forms + graph, converting forms, fastest graphing strategy; RF7 equation from a graph and vertical/horizontal lines, parallel/perpendicular through a point, gym model. Drops near-duplicates (Q2, Q5, Q8, Q10, Q14, Q16, Q18–Q20) and the longer/second Mastery items (Q22, Q25, Q26, Q29).
+    short: [1, 3, 4, 6, 7, 9, 11, 12, 13, 15, 17, 21, 23, 24, 27, 28],
     blurb: 'The Unit 7 outcomes-based test: RF4 (representing linear relations), RF5 (intercepts, slope, domain and range), RF6 (slope–intercept, general and slope–point form and their graphs) and RF7 (writing the equation of a line), each at the BEG, PRG and MAS levels. A scientific calculator is allowed.',
     questions: [
       /* ======================= RF4 · representing linear relations ======================= */

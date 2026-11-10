@@ -462,6 +462,8 @@
   /* ======================= the test ======================= */
   HW.defineTest({
     id: 'u6test', unit: 6, title: 'Unit 6 Test', outcome: 'RF3', calc: true,
+    // Short version (~half): all four Part 1–3 skills at every level — slope from a grid and by formula, rate from a graph, parallel/perpendicular slopes (B); missing coordinate, rate from a table, collinear, k for parallel/perpendicular (P); error analysis, ramp slope rule, rectangle by slopes (M). Drops near-duplicates (Q4, Q5, Q7, Q8, Q10, Q11, Q13, Q14), the MC-only true/false Q19 and the long e-bike Q20, Q18, Q23.
+    short: [1, 2, 3, 6, 9, 12, 15, 16, 17, 21, 22],
     blurb: 'The Unit 6 outcomes-based test on RF3: slope from a graph and from two points, working backwards to a missing coordinate, slope as a rate of change, and parallel, perpendicular and collinear — each page at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= RF3 · Part 1 — calculating slope ======================= */

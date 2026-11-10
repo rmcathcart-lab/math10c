@@ -479,6 +479,8 @@
 
   HW.defineTest({
     id: 'u1test', unit: 1, title: 'Unit 1 Test', outcome: 'AN1', calc: false,
+    // Short version (~half): every outcome's B/P/M boxes, each lesson's main skill; drops the 2nd prime factorization (Q2), select primes (Q3), entire radicals at B (Q9, kept at P), GCF/LCM of factored forms (Q12), compare by squaring (Q14, kept at M), cube volume (Q18), the 4-part GCF/LCM word problems (Q19), T/F MC (Q21) and the error analysis (Q24).
+    short: [1, 4, 5, 6, 7, 8, 10, 11, 13, 15, 16, 17, 20, 22, 23],
     blurb: 'The Unit 1 outcomes-based test: AN1 (prime factors, GCF and LCM, square and cube roots) and AN2 (irrational numbers, ordering, entire and mixed radicals), each at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= AN1 · Part 1 ======================= */

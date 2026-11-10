@@ -532,6 +532,8 @@
   /* ======================= the test ======================= */
   HW.defineTest({
     id: 'u10test', unit: 10, title: 'Unit 10 Test', outcome: 'M1', calc: true,
+    // Short version (~half): every outcome keeps its B/P/M boxes — M1 referent estimate, ruler, vernier, estimate check, paper-stack strategy; M2 the conversion set, imperial↔SI conversions, gas price per litre; M3 pyramid SA, sphere SA/V, cone slant/SA, can height from volume, scaling a volume, composite tank. Drops recognition and near-duplicate items (Q1, Q5, Q6, Q8, Q10, Q11, Q15, Q18–Q21) and the second Mastery items (Q23, Q25, Q27, Q29).
+    short: [2, 3, 4, 7, 9, 12, 13, 14, 16, 17, 22, 24, 26, 28],
     blurb: 'The Unit 10 outcomes-based test: M1 (referents, rulers, micrometers and vernier calipers, measuring strategies), M2 (SI and imperial conversions, rates and costs) and M3 (surface area and volume of prisms, cylinders, pyramids, cones, spheres and composite solids), each at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= M1 · Beginning ======================= */

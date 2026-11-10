@@ -276,6 +276,8 @@
 
   HW.defineTest({
     id: 'u4test', unit: 4, title: 'Unit 4 Test', outcome: 'AN5', calc: false,
+    // Short version (~half): GCF, x^2+bx+c, difference of squares and choose-a-method at B; grouping, decomposition and factor completely at P; all k values, perfect-square k/c and the patio at M; drops tiles (Q2), step-filling (Q5, Q6), the repeat factor-completely sets (Q8, Q10, Q13), check-by-multiplying (Q9), the error analyses (Q16, Q18, Q21) and mental arithmetic (Q20).
+    short: [1, 3, 4, 7, 11, 12, 14, 15, 17, 19],
     blurb: 'The Unit 4 outcomes-based test: AN5 (common factors, x²+bx+c, ax²+bx+c by decomposition, differences of squares and perfect squares, factoring completely, and how factoring and multiplying connect), each at the BEG, PRG and MAS levels.',
     questions: [
       /* ======================= Part 1 · BEG ======================= */
