@@ -195,17 +195,21 @@
   };
   /* A short version of a unit test (Ryan, 2026-11-09: about half as long, for when a period runs short).
    * def.short lists the question numbers to keep, as numbered on the full test (after the Beginning → Progressing →
-   * Mastery ordering). It becomes its own test '<id>s' titled '<title> (short)', with the same questions (same
+   * Mastery ordering); '5ac' keeps only parts (a) and (c) of question 5 (relettered (a), (b) on the short test). It becomes its own test '<id>s' titled '<title> (short)', with the same questions (same
    * generators, levels and outcomes), renumbered 1, 2, 3…; the teacher's Tests tab lists it beside the full test. */
   function shortTest(full) {
-    var keep = full.short.map(String), seen = {};
-    var qs = full.questions.filter(function (q) { return keep.indexOf(String(q.num)) >= 0; });
-    if (qs.length !== keep.length) throw new Error(full.id + ': short lists a question that is not on the test (' + keep.join(', ') + ')');
+    // an entry is a question number (keep the whole question) or a number with part letters, e.g. '5ac' keeps 5(a) and 5(c)
+    var keep = {}, seen = {};
+    full.short.forEach(function (e) { var m = /^(\d+)([a-z]*)$/.exec(String(e)); if (!m) throw new Error(full.id + ': bad short entry ' + e); keep[m[1]] = m[2] || ''; });
+    var qs = full.questions.filter(function (q) { return String(q.num) in keep; });
+    if (qs.length !== Object.keys(keep).length) throw new Error(full.id + ': short lists a question that is not on the test (' + full.short.join(', ') + ')');
     var copy = qs.map(function (q, n) {
-      var old = String(q.num), num = String(n + 1), q2 = {};
+      var old = String(q.num), num = String(n + 1), q2 = {}, letters = keep[old];
       Object.keys(q).forEach(function (k) { q2[k] = q[k]; });
       q2.num = num; q2.fullNum = old;
-      q2.parts = q.parts.map(function (p) {
+      var parts = !letters ? q.parts : q.parts.filter(function (p, i) { var sub = p.sub || String.fromCharCode(97 + i); return letters.indexOf(sub) >= 0; });
+      if (letters && parts.length !== letters.length) throw new Error(full.id + ': short entry ' + old + letters + ' names a part Q' + old + ' does not have');
+      q2.parts = parts.map(function (p) {
         var p2 = {}; Object.keys(p).forEach(function (k) { p2[k] = p[k]; });
         var tail = String(p.id).indexOf(old) === 0 ? String(p.id).slice(old.length) : null;
         p2.id = tail != null && !/^\d/.test(tail) ? num + tail : 's' + p.id;
