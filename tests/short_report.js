@@ -1,7 +1,7 @@
 // Compares each unit test with its short version (def.short in js/lessons/uNtest.js → test 'uNtests').
 // For every outcome: parts in the Beginning / Progressing / Mastery boxes, full → short, and a rough working time
-// (Beginning part 1.5 min, Progressing 3, Mastery 5). Flags a box the full test has but the short one dropped, a box
-// left with one part where the full test had 3+, and a short test far from half the time.
+// (Beginning part 1.5 min, Progressing 3, Mastery 5). Flags a box the full test has but the short one dropped, a
+// Beginning or Progressing box left with one part where the full test had 3+ (a Mastery box may keep one part), and a short test far from half the time.
 // node tests/short_report.js [testId] [--list]   (--list prints each question's text, level and lesson tag)
 var fs = require('fs'), path = require('path'), vm = require('vm');
 var root = path.join(__dirname, '..');
@@ -28,7 +28,7 @@ Object.keys(HW.lessons).filter(function (k) { return HW.lessons[k].test && !HW.l
   console.log('  short: ' + s.qs + ' questions, ' + s.parts + ' parts, ~' + s.min + ' min (' + Math.round(100 * s.min / f.min) + '% of the time)  keeps ' + F.short.join(', '));
   Object.keys(f.by).forEach(function (o) {
     var a = f.by[o], b = s.by[o] || [0, 0, 0], flag = [];
-    [0, 1, 2].forEach(function (k) { if (a[k] && !b[k]) flag.push(HW.BOX_NAMES[k] + ' box dropped'); else if (a[k] >= 3 && b[k] < 2) flag.push(HW.BOX_NAMES[k] + ' box down to ' + b[k] + ' part'); });
+    [0, 1, 2].forEach(function (k) { if (a[k] && !b[k]) flag.push(HW.BOX_NAMES[k] + ' box dropped'); else if (k < 2 && a[k] >= 3 && b[k] < 2) flag.push(HW.BOX_NAMES[k] + ' box down to ' + b[k] + ' part'); });
     if (flag.length) problems++;
     console.log('   ' + o + '  B ' + a[0] + '→' + b[0] + '  P ' + a[1] + '→' + b[1] + '  M ' + a[2] + '→' + b[2] + (flag.length ? '   ⚠ ' + flag.join('; ') : ''));
   });
