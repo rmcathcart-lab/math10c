@@ -28,9 +28,12 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   wireBlocks(document); // polls, multiple choice, numerical response, reveals, flip cards, declarative figures (blocks.js)
   fitLesson();
   /* ---------- toolbar ---------- */
+  // the home button: the lessons home (lessons/index.html) for the teacher and inside the home-screen app; students'
+  // assignments otherwise
+  const toLessons = sh.role === 'teacher' || !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
   tb.innerHTML = `
-    <a class="tbtn home" href="${sh.role === 'teacher' ? homeHref + '../teacher/' : homeHref + '../'}" title="${sh.role === 'teacher' ? 'Teacher Ledger' : 'Your assignments'}" aria-label="${sh.role === 'teacher' ? 'Teacher Ledger' : 'Back to your assignments'}"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
+    <a class="tbtn home" href="${toLessons ? homeHref : homeHref + '../'}" title="${toLessons ? 'All lessons' : 'Your assignments'}" aria-label="${toLessons ? 'All lessons' : 'Back to your assignments'}"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
     <button type="button" class="tb-title" title="All the lessons" aria-haspopup="dialog" aria-expanded="false"><span class="tbt-txt">${title}</span><svg class="tbt-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
     <div class="share-badge"></div>
     <div class="tb-group tools">
@@ -239,8 +242,10 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   /* ---------- calculator demos ---------- */
   document.querySelectorAll('[data-keys]').forEach((b) => b.addEventListener('click', () => calcDemo(b.dataset.keys)));
 
-  Ink.init(sh.inkKey, { readonly: sh.readonly });
-  Share.start(sh, $('.share-badge'));
+  // the teacher's iPad first works out which block is on (share.js ready(): the Teaching Hub's schedule), then the ink starts
+  const go = () => { rememberLesson(key, title, sh); Ink.init(sh.inkKey, { readonly: sh.readonly }); Share.start(sh, $('.share-badge')); };
+  const wait = Share.ready(sh);
+  if (wait) wait.then(go, go); else go();
 }
 
 /* "+ More space" under an example adds 260 px of room to write in (the .space div it names grows). "− Less space"
@@ -410,6 +415,16 @@ function currentSection(secs) {
   let ci = 0;
   secs.forEach((el, i) => { if (el.getBoundingClientRect().top <= line) ci = i; });
   return ci;
+}
+
+/* The lessons home (lessons/index.html) shows "Continue: <the last lesson opened on this device>", and opens the teacher's
+ * lessons for the class last used (?class=B). Kept on the device only. */
+function rememberLesson(key, title, sh) {
+  const m = /^u(\d+)l(\w+)$/.exec(key); if (!m) return;
+  try {
+    localStorage.setItem('lessons:last', JSON.stringify({ key, title, href: 'u' + m[1] + '/l' + m[2] + '/', t: Date.now() }));
+    if (sh.role === 'teacher' && sh.cls) localStorage.setItem('lessons:class', sh.cls);
+  } catch (e) { /* private mode: no Continue */ }
 }
 
 /* A signed-in student on a lesson page shows up in the Teacher Ledger's Live tab ("On the lesson page"): load the practice

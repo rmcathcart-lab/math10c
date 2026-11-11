@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 10C Lessons: the lesson-page web app. A board on an easel in the course colour, the course mark on it,
+       an amber pen stroke and a pencil. (Practice site: plain 10C on the course colour; Teacher Ledger: 10C on dark navy.) -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c8a82"/><stop offset="1" stop-color="#0a4743"/></linearGradient>
+    <clipPath id="clip"><rect width="512" height="512" rx="112"/></clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="512" height="512" fill="url(#bg)"/>
+    <!-- easel legs -->
+    <g stroke="#ffffff" stroke-opacity=".5" stroke-width="20" stroke-linecap="round">
+      <path d="M176 360 L124 470"/><path d="M336 360 L388 470"/><path d="M256 360 L256 448"/>
+    </g>
+    <!-- the board -->
+    <rect x="50" y="78" width="412" height="290" rx="30" fill="#000" opacity=".18" transform="translate(0 8)"/>
+    <rect x="50" y="78" width="412" height="290" rx="30" fill="#fbf8f1"/>
+    <rect x="50" y="78" width="412" height="290" rx="30" fill="none" stroke="#ffffff" stroke-width="6"/>
+    <!-- the course mark -->
+    <path transform="translate(101.21 267.80) scale(0.07758)" fill="#0f5f5a" d="M725 -1490H403L36 -1260V-955L377 -1168H379V0H725ZM1461.04 24C1854.04 24 2090.04 -269 2090.04 -744C2090.04 -1220 1854.04 -1514 1461.04 -1514C1068.04 -1514 832.04 -1220 832.04 -744C832.04 -270 1068.04 24 1461.04 24ZM1461.04 -258C1281.04 -258 1171.04 -442 1171.04 -744C1171.04 -1047 1281.04 -1232 1461.04 -1232C1641.04 -1232 1752.04 -1047 1752.04 -744C1752.04 -442 1641.04 -258 1461.04 -258ZM2869.08 24C3233.08 24 3497.08 -199 3542.08 -541H3180.08C3148.08 -383 3035.08 -290 2875.08 -290C2645.08 -290 2515.08 -461 2515.08 -744C2515.08 -1028 2646.08 -1200 2875.08 -1200C3035.08 -1200 3149.08 -1106 3179.08 -947H3542.08C3498.08 -1289 3233.08 -1514 2869.08 -1514C2460.08 -1514 2153.08 -1231 2153.08 -744C2153.08 -261 2460.08 24 2869.08 24Z"/>
+    <!-- a pen stroke under it -->
+    <path d="M112 318 C168 296 214 330 262 312 S 352 292 384 306" fill="none" stroke="#f2a516" stroke-width="20" stroke-linecap="round"/>
+    <!-- the pencil, its tip at the end of the stroke -->
+    <g transform="translate(392 306) rotate(-60)">
+      <path d="M0 0 L28 -12 L28 12 Z" fill="#e2d6c2"/>
+      <path d="M0 0 L9 -3.9 L9 3.9 Z" fill="#1c2230"/>
+      <rect x="26" y="-13" width="118" height="26" rx="6" fill="#2b3242"/>
+      <rect x="118" y="-13" width="26" height="26" rx="6" fill="#9aa1ae"/>
+      <rect x="30" y="-13" width="112" height="7" rx="3" fill="#ffffff" opacity=".18"/>
+    </g>
+  </g>
+</svg>

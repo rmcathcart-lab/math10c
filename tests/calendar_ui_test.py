@@ -107,9 +107,10 @@ async def main():
         assert sum(1 for u in units if not u[1]) == 1 and [u for u in units if not u[1]][0][2], 'only the current unit is open'
         await sp.click('section.unit >> nth=0 >> .unit-title'); assert not await sp.evaluate("document.querySelector('section.unit').classList.contains('closed')")
         await sp.screenshot(path=SH + 'units.png')
-        # the old lesson home page sends people on: students to their assignments, the teacher to the ledger
+        # the lessons home (lessons/, the iPad home-screen app): a student sees the lessons and the practice site link, no ledger link
         get('action=setblock&key=testkey&class=10c-b&block=C')
-        await sp.goto(BASE + 'lessons/'); await sp.wait_for_selector('.lesson-row', state='attached'); assert sp.url.split('#')[0] == BASE, sp.url
+        await sp.goto(BASE + 'lessons/'); await sp.wait_for_selector('#units a.row'); assert sp.url.split('#')[0] == BASE + 'lessons/', sp.url
+        assert await sp.locator('a[href="../teacher/"]').count() == 0 and await sp.locator('.cls button').count() == 0
         # the ledger header: Lessons pop-up (cards / calendar) and Launch Today's Lesson for this class's block
         await tp.reload(); await tp.wait_for_selector('.top-lessons', timeout=15000); await tp.wait_for_timeout(1200)
         launch = await tp.evaluate("(() => { const b = document.querySelector('.top-launch'); return [b.tagName, b.getAttribute('href'), b.title, b.disabled]; })()"); print('launch:', launch)

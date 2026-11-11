@@ -176,7 +176,8 @@ export function standup(id, def) {
 
   /* ---------------- random groups ---------------- */
   function groupsModal() {
-    const block0 = BLOCK || lsGet('su:block', '');
+    const now = (new URLSearchParams(location.search).get('class') || '').toUpperCase(); // read now: share.js may have picked the block from the schedule
+    const block0 = (/^[A-D]$/.test(now) ? now : '') || lsGet('su:block', '');
     const ov = $h('div', 'su-modal no-ink'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Whiteboard groups');
     ov.innerHTML = `<div class="su-mbox"><div class="su-mhead"><h3>Whiteboard groups</h3><button type="button" class="su-mx" aria-label="Close">×</button></div><div class="su-mbody"><div class="su-load">Loading the class list…</div></div></div>`;
     document.body.appendChild(ov);

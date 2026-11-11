@@ -2,21 +2,270 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Math 10C</title>
-<link rel="icon" href="assets/icon-192.png">
-<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Math 10C Lessons</title>
 <meta name="robots" content="noindex">
-<!-- The lessons no longer have their own home page: students reach them from their assignments (practice site), the
-     teacher from the Teacher Ledger (Lessons, Launch Today's Lesson). This page sends old links and home-screen icons there. -->
-<script>
-  (function () {
-    var teacher = false; try { teacher = !!localStorage.getItem('ink:teacher') || !!localStorage.getItem('hw:tkey'); } catch (e) {}
-    location.replace(teacher ? '../teacher/' : '../');
-  })();
-</script>
+<meta name="description" content="Every Math 10C lesson, one tap away. Add it to the iPad home screen.">
+<!-- Home-screen web app: Share → Add to Home Screen on this page. The manifest's scope is this lessons/ folder, so a
+     lesson opened from here stays inside the app. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<!-- The lessons home. Built to open instantly: no stylesheet or script besides the course catalog (the list of units and
+     lessons, ../js/catalog.js) — no ledger, no backend, no calculator. The service worker (sw.js) keeps this page, the
+     catalog and the icons on the device, so the home-screen app opens without waiting for the network. -->
+<style>
+  :root {
+    --bg: #f4f1ea; --card: #ffffff; --ink: #1c2230; --ink2: #3a4254; --muted: #6a7182; --line: #e2ddd1; --line2: #eeeae1;
+    --brand: #0f5f5a; --brand2: #13807a; --brand-soft: #e3f1ef;
+    --shadow: 0 1px 2px rgba(20, 24, 33, .05), 0 8px 26px rgba(20, 24, 33, .06);
+    --font: -apple-system, system-ui, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --round: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 84px; }
+  body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--ink); font: 19px/1.45 var(--font); -webkit-tap-highlight-color: transparent; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: calc(22px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(60px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); }
+
+  /* header */
+  .top { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .top img { width: 58px; height: 58px; border-radius: 14px; box-shadow: 0 2px 8px rgba(20, 24, 33, .18); flex: none; }
+  .top h1 { margin: 0; font: 800 34px/1.1 var(--round); letter-spacing: -.01em; }
+  .top h1 span { color: var(--brand); }
+  .links { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 12px; font-size: 16px; font-weight: 600; color: var(--muted); text-decoration: none; }
+  .links a:active, .links a:hover { background: #ebe7de; color: var(--ink2); }
+
+  /* continue */
+  .cont { display: flex; align-items: center; gap: 18px; min-height: 96px; padding: 16px 18px 16px 26px; margin: 0 0 16px; border-radius: 20px; background: var(--brand); color: #fff; text-decoration: none; box-shadow: 0 10px 28px rgba(20, 24, 33, .16); }
+  .cont:active { filter: brightness(1.12); }
+  .cont .k { font-size: 14px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .78; }
+  .cont .t { display: block; font: 800 26px/1.2 var(--round); margin: 2px 0; }
+  .cont .t i { font-style: normal; opacity: .72; margin-right: 10px; }
+  .cont .s { font-size: 15px; opacity: .8; }
+  .cont .go { margin-left: auto; flex: none; display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; background: rgba(255, 255, 255, .16); }
+  .cont .go svg { width: 30px; height: 30px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* class link (teacher only): lessons open with ?class=B so the notes go to that class */
+  .cls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; font-size: 16px; color: var(--muted); }
+  .cls b { color: var(--ink2); margin-right: 4px; }
+  .cls button { min-width: 64px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; font: 700 16px var(--font); color: var(--ink2); cursor: pointer; }
+  .cls button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .cls button.now:not(.on) { border-color: #2f8a57; box-shadow: inset 0 0 0 1px #2f8a57; }
+  .cls button.lnk { min-width: 0; min-height: 44px; padding: 0 6px; border: none; background: none; font-weight: 600; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+  .cls .st { flex-basis: 100%; font-size: 15px; }
+  .cls .st b { margin: 0; }
+
+  /* unit jump bar */
+  .jump { position: sticky; top: 0; z-index: 5; margin: 0 -24px 6px; padding: 10px 24px; padding-top: max(10px, env(safe-area-inset-top, 0px)); background: rgba(244, 241, 234, .92); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid transparent; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .jump::-webkit-scrollbar { display: none; }
+  .jump[hidden] { display: none; }
+  .jump.stuck { border-bottom-color: var(--line); }
+  .jump { align-items: center; }
+  .jump > span { flex: none; margin-right: 4px; font-size: 15px; font-weight: 700; color: var(--muted); }
+  .jump a { flex: none; display: grid; place-items: center; min-width: 52px; height: 48px; padding: 0 10px; border-radius: 13px; background: var(--uct); color: #fff; text-decoration: none; font: 800 20px var(--round); }
+  .jump a.here { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--uc); }
+
+  /* units and lessons */
+  .unit { margin: 18px 0 26px; }
+  .uh { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; }
+  .uh .un { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; background: var(--uct); color: #fff; font: 800 20px var(--round); flex: none; }
+  .uh h2 { margin: 0; font: 800 26px/1.2 var(--round); }
+  .uh .oc { font-size: 15px; color: var(--muted); }
+  .rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 10px; }
+  .row { display: flex; align-items: center; gap: 10px; min-height: 72px; padding: 12px 18px 12px 14px; background: var(--card); border: 1px solid var(--line2); border-left: 6px solid var(--uc, var(--brand2)); border-radius: 14px; box-shadow: var(--shadow); text-decoration: none; color: var(--ink); }
+  .row:active { background: var(--ucl, var(--brand-soft)); }
+  .row .n { flex: none; min-width: 46px; font: 800 19px var(--round); color: var(--ucd, var(--brand2)); }
+  .row .t { font-size: 19px; font-weight: 600; line-height: 1.3; }
+  .row .tag { margin-left: auto; flex: none; padding: 3px 10px; border-radius: 999px; background: var(--ucl, var(--brand-soft)); color: var(--ucd, var(--brand)); font-size: 12.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+  .row.last { box-shadow: 0 0 0 2px var(--uc), var(--shadow); }
+  .row.intro { border-left-color: var(--brand); min-height: 80px; margin: 0 0 6px; }
+  .row.intro .n { color: var(--brand); font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }
+  .soon { margin: 26px 0 0; font-size: 16px; color: var(--muted); }
+  .soon b { color: var(--ink2); }
+  .empty { padding: 30px 0; color: var(--muted); }
+  .upd { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 9; min-height: 48px; padding: 0 22px; border: none; border-radius: 999px; background: var(--ink); color: #fff; font: 700 16px var(--font); box-shadow: 0 10px 28px rgba(20, 24, 33, .25); cursor: pointer; }
+
+  @media (max-width: 640px) {
+    .wrap { padding-left: 16px; padding-right: 16px; }
+    .jump { margin: 0 -16px 6px; padding-left: 16px; padding-right: 16px; }
+    .top { flex-wrap: wrap; } .top h1 { font-size: 27px; } .top img { width: 48px; height: 48px; }
+    .links { margin-left: 0; width: 100%; justify-content: flex-start; }
+    .rows { grid-template-columns: 1fr; }
+    .cont .t { font-size: 21px; }
+  }
+</style>
+<script src="../js/catalog.js"></script>
 </head>
-<body style="font: 18px/1.5 system-ui, sans-serif; padding: 40px;">
-<p>Opening… <a href="../">Your assignments</a> · <a href="../teacher/">Teacher Ledger</a></p>
+<body>
+<main class="wrap">
+  <header class="top">
+    <img src="assets/icon-180.png" alt="" width="58" height="58">
+    <h1>Math 10C <span>Lessons</span></h1>
+    <nav class="links" id="links"><a href="../">Practice site</a></nav>
+  </header>
+  <div id="cont"></div>
+  <div id="cls"></div>
+  <nav class="jump" id="jump" aria-label="Units"></nav>
+  <div id="units"><p class="empty">Loading the lessons…</p></div>
+</main>
+<script>
+/* The same page is the lessons home in the Math 10C, Math 15 and Math 20-1 repos; only the course name, colours and
+   storage namespace (../js/ns.js in Math 15 and 20-1) in the <head> differ. */
+(function () {
+  'use strict';
+  var HW = window.HW || {}, $ = function (id) { return document.getElementById(id); };
+  function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
+  function json(k) { try { return JSON.parse(ls(k) || 'null'); } catch (e) { return null; } }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var standalone = !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+  // the teacher: this device signed in with the teacher key on a lesson page (ink:teacher) or in the Teacher Ledger (hw:tkey)
+  var teacher = !!(json('ink:teacher') || ls('hw:tkey'));
+  var on = {}; ((HW.TEACHING && HW.TEACHING.lessons) || []).forEach(function (id) { on[id] = 1; });
+  var CLASSES = ['A', 'B', 'C', 'D'];
+  function urlClass() { return String((/[?&]class=([A-Za-z0-9-]+)/.exec(location.search) || [])[1] || '').toUpperCase(); }
+  /* The teacher's schedule (lessons/js/blockpick.js + the Teaching Hub's teaching/js/courses.js), loaded after the first
+     paint and only on the teacher's device. SCHED: undefined = not loaded (yet), null = couldn't load, else { B, T }.
+     With it, the buttons are this course's blocks this semester, the block that's on now is picked, and a button pressed
+     here lasts until the period ends (the same rules as the ••• menu on a lesson page). */
+  var SCHED, showAll = false;
+  function decision() {
+    if (!SCHED) return null;
+    var P = SCHED.B.plan(SCHED.T, Date.now());
+    return { P: P, d: SCHED.B.decide(P, urlClass() || ls('lessons:class') || '') };
+  }
+  // the class a teacher's lesson links carry (?class=B): from the schedule; without one, this page's ?class=, else the
+  // last one picked here or opened on a lesson
+  function curClass() {
+    if (!teacher) return '';
+    var x = decision(); if (x) return x.d.cls;
+    var u = urlClass(); if (u) return u;
+    return ls('lessons:class') || '';
+  }
+  function hrefFor(id, cls) { var m = /^u(\d+)l(\w+)$/.exec(id); return m ? 'u' + m[1] + '/l' + m[2] + '/' + (cls ? '?class=' + encodeURIComponent(cls) : '') : ''; }
+  function info(id) {
+    var r = null;
+    (HW.CATALOG || []).forEach(function (u) { u.lessons.forEach(function (l) { if (l.id === id) r = { unit: u.unit, num: l.num, title: l.title, intro: !!l.intro }; }); });
+    return r;
+  }
+  function ago(t) {
+    var s = (Date.now() - t) / 1000;
+    if (!(s >= 0)) return ''; if (s < 90) return 'just now'; if (s < 3600) return Math.round(s / 60) + ' minutes ago';
+    if (s < 86400) { var h = Math.round(s / 3600); return h + (h === 1 ? ' hour' : ' hours') + ' ago'; }
+    var d = Math.round(s / 86400); return d === 1 ? 'yesterday' : d < 14 ? d + ' days ago' : new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+  var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  function render() {
+    var cls = curClass(), last = json('lessons:last'), lastKey = last && on[last.key] ? last.key : '';
+    // Continue: the last lesson opened on this device (lesson pages record it, lessons/js/ui.js)
+    var c = '';
+    if (lastKey) {
+      var i = info(lastKey) || {}, title = i.title || last.title || 'Last lesson';
+      c = '<a class="cont" href="' + esc(hrefFor(lastKey, cls)) + '"><div><div class="k">Continue</div>' +
+        '<b class="t">' + (i.intro || !i.unit ? '' : '<i>' + i.unit + '.' + esc(i.num) + '</i>') + esc(title) + '</b>' +
+        '<div class="s">Opened ' + esc(ago(last.t)) + (cls ? ' · opens for ' + esc(label(cls)) : '') + '</div></div><span class="go">' + ARROW + '</span></a>';
+    }
+    $('cont').innerHTML = c;
+    // teacher: which class the lessons open for
+    if (teacher) {
+      var x = decision(), P = x && x.P, sched = P && !showAll, now = P && P.auto ? P.auto.block : '';
+      var list = sched ? P.mine.map(function (m) { return m.block; }) : CLASSES.slice(); if (cls && list.indexOf(cls) < 0) list.push(cls);
+      $('cls').className = 'cls';
+      $('cls').innerHTML = '<b>Open lessons for</b>' + list.map(function (k) { var c = (k === cls ? ' on' : '') + (k === now ? ' now' : ''); return '<button type="button" data-c="' + esc(k) + '"' + (c ? ' class="' + c.trim() + '"' : '') + '>' + esc(label(k)) + '</button>'; }).join('') +
+        '<button type="button" data-c=""' + (cls ? '' : ' class="on"') + '>No class</button>' +
+        (sched && list.length < CLASSES.length ? '<button type="button" class="lnk" data-all>Show all blocks</button>' : '') + (x ? status(x) : '');
+    }
+    // the units: only lessons that are switched on (HW.TEACHING.lessons); units with none are listed at the end as coming soon
+    var h = '', jump = '', later = [], lastUnit = lastKey ? (info(lastKey) || {}).unit : 0;
+    (HW.CATALOG || []).forEach(function (u) {
+      u.lessons.filter(function (l) { return l.intro && on[l.id]; }).forEach(function (l) {
+        h = '<a class="row intro' + (l.id === lastKey ? ' last' : '') + '" href="' + esc(hrefFor(l.id, cls)) + '"><span class="n">Day one</span><span class="t">' + esc(l.title) + '</span>' + (l.id === lastKey ? '<span class="tag">Last opened</span>' : '') + '</a>' + h;
+      });
+    });
+    (HW.CATALOG || []).forEach(function (u) {
+      var ls_ = u.lessons.filter(function (l) { return !l.intro && on[l.id]; }), nAll = u.lessons.filter(function (l) { return !l.intro; }).length;
+      if (!ls_.length) { later.push(u); return; }
+      var st = HW.unitStyle ? HW.unitStyle(u.unit) : '';
+      jump += '<a href="#unit-' + u.unit + '" style="' + st + '" title="Unit ' + u.unit + ': ' + esc(u.title) + '" aria-label="Unit ' + u.unit + ': ' + esc(u.title) + '"' + (u.unit === lastUnit ? ' class="here"' : '') + '>' + u.unit + '</a>';
+      h += '<section class="unit" id="unit-' + u.unit + '" style="' + st + '"><div class="uh"><span class="un">' + u.unit + '</span><h2>' + esc(u.title) + '</h2>' +
+        '<span class="oc">' + esc(u.outcomes || '') + (ls_.length < nAll ? ' · ' + ls_.length + ' of ' + nAll + ' lessons ready' : '') + '</span></div><div class="rows">' +
+        ls_.map(function (l) {
+          var me = l.id === lastKey;
+          return '<a class="row' + (me ? ' last' : '') + '" href="' + esc(hrefFor(l.id, cls)) + '"><span class="n">' + u.unit + '.' + esc(l.num) + '</span><span class="t">' + esc(l.title) + '</span>' + (me ? '<span class="tag">Last opened</span>' : '') + '</a>';
+        }).join('') + '</div></section>';
+    });
+    if (later.length) h += '<p class="soon"><b>Coming soon:</b> ' + later.map(function (u) { return 'Unit ' + u.unit + ' ' + esc(u.title); }).join(' · ') + '</p>';
+    $('units').innerHTML = h || '<p class="empty">No lessons yet.</p>';
+    $('jump').innerHTML = jump && '<span>Units</span>' + jump; $('jump').hidden = !jump;
+  }
+  function label(k) { return /^[A-D]$/.test(k) ? 'Block ' + k : k; }
+  function status(x) {
+    var P = x.P, d = x.d, B = SCHED.B, back = ' <button type="button" class="lnk" data-auto>Back to automatic</button>';
+    var s = d.mode === 'auto' ? '<b>' + esc(label(d.cls)) + '</b> is on now (until ' + esc(B.fmt(P.T, d.until)) + ') — picked from your schedule'
+      : d.mode === 'manual' ? 'Your pick until ' + esc(B.till(P, d.until)) + back
+      : d.mode === 'off' ? 'No class until ' + esc(B.till(P, d.until)) + back
+      : d.mode === 'notlive' ? 'No ' + esc(P.name) + ' class on now' + (P.next ? ' — next: <b>' + esc(label(P.next.block)) + '</b> at ' + esc(B.fmt(P.T, P.next.start)) : '')
+      : !P.sem ? 'No schedule from the Teaching Hub on this device yet' : esc(P.name) + ' isn’t on this semester’s schedule in the Teaching Hub';
+    return '<span class="st">' + s + '</span>';
+  }
+  // the schedule: after the first paint, teacher only; the hub's copy is refreshed in the background (a new device or the
+  // home-screen app starts with none), and the buttons follow the clock while the page is open
+  var shown = '';
+  function tick() { var x = decision(), k = x ? x.d.cls + '|' + x.d.mode + '|' + (x.P.auto ? x.P.auto.block : '') + '|' + x.P.mine.length : ''; if (k !== shown) { shown = k; render(); } }
+  function schedule() {
+    import('./js/blockpick.js').then(function (B) {
+      return B.loadTeach().then(function (T) {
+        SCHED = { B: B, T: T }; tick();
+        var f = B.refresh(T); if (f) f.then(tick);
+        setInterval(tick, 20000); document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
+      });
+    }).catch(function () { SCHED = null; });
+  }
+
+  // quiet links: the practice site for everyone; the Teacher Ledger only on the teacher's device. In the home-screen app
+  // they open in Safari (they're outside the app).
+  if (teacher) $('links').insertAdjacentHTML('beforeend', '<a href="../teacher/">Teacher Ledger</a>');
+  if (standalone) [].forEach.call($('links').querySelectorAll('a'), function (a) { a.target = '_blank'; a.rel = 'noopener'; });
+
+  render();
+  if (teacher) requestAnimationFrame(function () { setTimeout(schedule, 0); });
+  $('cls').addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('button[data-all]')) { showAll = true; render(); return; }
+    if (e.target.closest && e.target.closest('button[data-auto]')) { SCHED.B.unchoose(); render(); return; }
+    var b = e.target.closest && e.target.closest('button[data-c]'); if (!b) return;
+    lsSet('lessons:class', b.getAttribute('data-c'));
+    var x = decision(); if (x) SCHED.B.choose(x.P, b.getAttribute('data-c')); // a pick here lasts until the period ends
+    if (urlClass()) history.replaceState(null, '', location.pathname); // the buttons win over a ?class= in this page's address
+    render();
+  });
+  // back from a lesson (Safari keeps this page in memory): show the lesson just left
+  addEventListener('pageshow', function (e) { if (e.persisted) render(); });
+  var jumpBar = $('jump');
+  if (window.IntersectionObserver) { var s = document.createElement('div'); jumpBar.parentNode.insertBefore(s, jumpBar); new IntersectionObserver(function (en) { jumpBar.classList.toggle('stuck', !en[0].isIntersecting); }).observe(s); }
+
+  // The service worker serves this page and the catalog from the device first; when it finds a newer copy on the server
+  // it says so, and the page refreshes itself (or offers to, once you've started tapping).
+  var touched = false; addEventListener('pointerdown', function () { touched = true; }, true);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (!e.data || e.data.type !== 'lessons-home-updated') return;
+      if (!touched) { location.reload(); return; }
+      if (document.querySelector('.upd')) return;
+      var b = document.createElement('button'); b.className = 'upd'; b.type = 'button'; b.textContent = 'Lessons updated · tap to refresh';
+      b.onclick = function () { location.reload(); }; document.body.appendChild(b);
+    });
+    addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+})();
+</script>
 </body>
 </html>
