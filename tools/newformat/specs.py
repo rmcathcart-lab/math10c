@@ -219,7 +219,7 @@ SPECS['u1l3'] = dict(
 SPECS['u1l4'] = dict(
     warm=W['u1l4'],
     extra_cards=['s2b', 's3b'], extra_expl=['denoms'],
-    practice=PR('ex3', '1–8', '9–12', 'Decimal patterns, ordering and calculator conversions.', [('1–3', 'Rational or irrational?'), ('4–8', 'Ordering and calculator conversions')], 5))
+    practice=PR('ex3', '1–4', '5–12', 'Decimal patterns, rational or irrational, and ordering.', [('1–3', 'Decimal patterns: rational or irrational?'), ('4', 'Ordering on a number line')], 3))
 SPECS['u1l5'] = dict(
     warm=dict(title='Which One Doesn’t Belong?', rule='Which one is the odd one out? Pick one and be ready to say <b>why</b>.', strip=strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4))),
               body=TILES(4, [('A', T(r'\sqrt{16}')), ('B', T('-3')), ('C', T('0.5')), ('D', T(r'\sqrt{7}'))]),
@@ -238,7 +238,7 @@ SPECS['u1l7'] = dict(
               body=TILES(3, [('A', T(r'2\sqrt{5}')), ('B', T(r'3\sqrt{2}')), ('C', T(r'\sqrt{19}'))]),
               reveal=f'<b>A.</b> Put each one under a single root: {T(r"2\sqrt5=\sqrt{20}")}, {T(r"3\sqrt2=\sqrt{18}")} and {T(r"\sqrt{19}")}.'),
     extra_cards=['s2b', 's3b'], extra_expl=['split', 'coef', 'numline', 'pyth'],
-    practice=PR('ex4', '1–8', '9–16', 'Entire to mixed, and mixed to entire.', [('1–8', 'Entire and mixed radicals')], 6))
+    practice=PR('ex4', '1–7', '8–16', 'Entire to mixed, and mixed to entire.', [('1–7', 'Entire and mixed radicals')], 5))
 SPECS['u1l8'] = dict(
     warm=W['u1l8'],
     extra_cards=['s1c', 's1d', 's3c'], extra_expl=['cubeMeaning', 'signs', 'varToEntire'],
@@ -273,7 +273,7 @@ SPECS['u2l4'] = dict(
 SPECS['u2l5'] = dict(
     warm=W['u2l5'],
     extra_expl=['laws', 'machinesVar', 'rootFirst', 'lanes'],
-    practice=PR('ex3', '1–4', '5–14', 'Simplify and convert.', [('1–4', 'Simplifying and converting')], 3))
+    practice=PR('ex3', '1–4', '5–11', 'Simplify and convert.', [('1–4', 'Simplifying and converting')], 3))
 SPECS['u2l6'] = dict(
     warm=dict(title='The Biggest One', rule='No calculator. Which is the biggest?', strip=strip(f'<g><animateTransform attributeName="transform" type="translate" values="-30 50;360 -40" dur="3.5s" repeatCount="indefinite"/><text x="0" y="30" font-size="40" text-anchor="middle">🚀</text></g>', sblink('✨', 60, 0, 22), sblink('✨', 250, .7, 22)),
               body=TILES(3, [('A', T('10^{100}')), ('B', T('100^{10}')), ('C', T('1000^{5}'))]),
@@ -305,14 +305,15 @@ SPECS['u3l4'] = dict(
     practice=PR('ex2', '1–4', '5–10', 'Binomial times trinomial.', [('1–4', 'Binomial × trinomial')], 3))
 SPECS['u3l5'] = dict(
     warm=W['u3l5'],
-    extra_cards=['s1b'], extra_expl=['garden', 'box'])
+    extra_cards=['s1b'], extra_expl=['garden', 'box'],
+    practice=PR('ex3', '1–5', '6–14', 'Composite areas, frames and squares.', [('1–2', 'Composite figures'), ('3–5', 'Squares, gardens and rings')], 4))
 SPECS['u3l6'] = dict(
     warm=dict(title='The Mind Reader', rule='Do each step in your head. Don’t tell anyone your number.', strip=strip(sb('🔮', 170, 0, 44, 5, 2.2), sblink('✨', 120, 0, 24), sblink('✨', 222, .6, 24)),
               body=BIG('Think of a number. <b>Add 3.</b> <b>Double it.</b> <b>Subtract 4.</b> <b>Halve it.</b><small>Now subtract the number you started with.</small>'),
               nudge='Compare answers with the person beside you.',
               reveal=f'<b>Everyone gets 1.</b> Start with {T("n")}: {T(r"n+3\to2n+6\to2n+2\to n+1")}, and taking away {T("n")} leaves 1.'),
     extra_expl=['classify', 'zeroPairs', 'tileMul', 'foil', 'audit', 'square', 'frame', 'groups', 'grid', 'three', 'complete', 'box'], replace_all=[('four pieces, not two:</p>', 'four pieces, not two.</p>')],
-    practice=PR('ex7', '1–8', '9–13', 'Multiple choice from across the unit.', [('1–8', 'Multiple choice')], 6))
+    practice=PR('ex7', '1–6', '7–13', 'Multiple choice from across the unit.', [('1–6', 'Multiple choice')], 5))
 
 # ======================= Unit 4 =======================
 SPECS['u4l1'] = dict(
@@ -322,11 +323,11 @@ SPECS['u4l1'] = dict(
 SPECS['u4l2'] = dict(
     warm=W['u4l2'],
     extra_cards=['s1b'], extra_expl=['tileGroup', 'rearrange'],
-    practice=PR('ex2', '1–3', '4–9', 'Take out the common binomial factor.', [('1–3', 'Binomial common factors')], 2))
+    practice=PR('ex2', '1', '2–9', 'Take out the common binomial factor.', [('1', 'Binomial common factors')]))
 SPECS['u4l3'] = dict(
     warm=W['u4l3'],
     extra_cards=['s2b'], extra_expl=['inspectB', 'tileNeg', 'twoVar', 'inspectC'],
-    practice=PR('ex5', '1–8', '9–23', 'Sum and product pairs, then factoring.', [('1–4', 'Algebra tiles and sum–product pairs'), ('5–8', 'Factoring ' + T('x^2+bx+c'))], 5))
+    practice=PR('ex5', '1–7', '8–23', 'Sum and product pairs, then factoring.', [('1–4', 'Algebra tiles and sum–product pairs'), ('5–7', 'Factoring ' + T('x^2+bx+c') + ' with positive ' + T('c'))], 5))
 SPECS['u4l4'] = dict(
     warm=dict(title='The Prime Suspect', rule='It isn’t even, it doesn’t end in 5, and 3 doesn’t divide it. <b>Is it prime?</b> No calculator.', strip=strip(sdrive('🔍', 6, size=36, flip=False), sb('🕵️', 300, 0, 40)),
               body=BIG('899'), nudge='What friendly number is it very close to?',
@@ -340,14 +341,14 @@ SPECS['u4l5'] = dict(
               reveal=f'<b>4 and 9.</b> {T(r"4\times9=36")} and {T("4+9=13")}. Listing the pairs that multiply to 36 finds them fast: 1 and 36, 2 and 18, 3 and 12, 4 and 9.'),
     replace=[(' It’s the warm-up’s rectangle, without drawing it to scale.', '<span data-extra> It’s the rectangle from “The Area Box Mystery”, without drawing it to scale.</span>')],
     extra_expl=['whyAC', 'fullRange'],
-    practice=PR('ex3', '1–4', '5–16', 'Tiles, area boxes and grouping.', [('1–4', 'Tiles, area boxes and grouping')], 3))
+    practice=PR('ex3', '1–3', '4–16', 'Tiles, area boxes and grouping.', [('1–3', 'Tiles, area boxes and grouping')], 2))
 SPECS['u4l6'] = dict(
     warm=dict(title='In Your Head', rule='No calculator, no paper.', strip=strip(sb('🧠', 150, 0, 42), sblink('💭', 205, 0, 34, 1.8, lo=.3)),
               body=BIG(T('31^2')), nudge='You know 30 squared.',
               reveal=f'<b>961.</b> {T(r"31^2=(30+1)^2=900+60+1")}. The 60 is {T(r"2\times30\times1")}, the part people forget.'),
     replace=[(' Like the warm-up dolls: keep opening until every doll is solid.', ' Like nesting dolls: keep opening until every doll is solid.')],
     extra_expl=['squareTiles', 'gapFill', 'decomp', 'disguiseExt'],
-    practice=PR('ex4', '1–5', '6–16', 'Perfect squares and trinomials in disguise.', [('1–5', 'Perfect squares and disguised trinomials')], 4))
+    practice=PR('ex4', '1–4', '5–16', 'Perfect squares and trinomials in disguise.', [('1–4', 'Perfect squares and disguised trinomials')], 3))
 SPECS['u4l7'] = dict(
     warm=dict(title='Which One Doesn’t Belong?', rule='Which one is the odd one out? Pick one and be ready to say <b>why</b>.', strip=DOTS4,
               body=TILES(4, [('A', T('x^2-16')), ('B', T('x^2+16')), ('C', T('2x^2-32')), ('D', T('x^2-8x+16'))]),
@@ -384,7 +385,7 @@ SPECS['u5l1'] = dict(
 SPECS['u5l2'] = dict(
     warm=W['u5l2'],
     extra_cards=['s3b'], extra_expl=['linOrNot'],
-    practice=PR('ex2', '1–7', '8–17', 'One relation described several ways, then mapping diagrams.', [('1–4', 'One relation, several descriptions'), ('5–7', 'Mapping diagrams')], 5))
+    practice=PR('ex2', '1–4', '5–13', 'Independent and dependent variables, inputs and outputs.', [('1–4', 'Independent and dependent variables')], 3))
 SPECS['u5l3'] = dict(
     warm=W['u5l3'],
     extra_cards=['s2b'],
@@ -394,18 +395,18 @@ SPECS['u5l4'] = dict(
               body='<div class="vw-q">THE CYCLONE: riders must be <b>at least 120 cm</b> and <b>no taller than 195 cm</b>.</div>' + TILES(4, [('Ava', '118 cm'), ('Ben', '120 cm'), ('Cleo', '160 cm'), ('Dev', '196 cm')], 30),
               reveal='<b>Ben and Cleo.</b> “At least 120” includes exactly 120, so Ben is in. Ava is 2 cm too short and Dev is 1 cm too tall.'),
     extra_cards=['s3b'], extra_expl=['dots'],
-    practice=PR('ex3', '1–4', '5–9', 'Domain and range from ordered pairs and graphs.', [('1–4', 'Domain and range')], 3))
+    practice=PR('ex4', '1–4', '5–9', 'Domain and range from pairs, tables, diagrams and graphs.', [('1–4', 'Domain and range')], 3))
 SPECS['u5l5'] = dict(
     warm=W['u5l5'],
     extra_cards=['wub', 's1d', 's3b'], extra_expl=['nested'],
-    practice=PR('s2b', '1–2', '3–6', 'Is it a function? Give a reason.', [('1', 'Is it a function? Give a reason'), ('2', 'Function or not, in many forms')], 1))
+    practice=PR('s2b', '1', '2–6', 'Is it a function? Give a reason.', [('1', 'Is it a function? Give a reason')]))
 SPECS['u5l6'] = dict(
     warm=dict(title='The Phone Keypad', rule='Which four digits do you press after 555?', strip=strip(srock('📞', 140, 14, .7, 40), sb('🌮', 210, 0, 40)),
               body=BIG('A sign says <b>CALL 555-TACO</b>.<small>2 ABC · 3 DEF · 4 GHI · 5 JKL · 6 MNO · 7 PQRS · 8 TUV · 9 WXYZ</small>'),
               nudge='Could another word give the same four digits?',
               reveal='<b>8226.</b> Each letter sits on exactly one key, so the letters decide the digits. Going backwards is not so tidy: 8226 could also spell VACO, TBAN and many more.'),
     extra_cards=['s2b', 's3c', 's4b'], extra_expl=['mapNote'],
-    practice=PR('ex3', '1–10', '11–21', 'Function notation, then evaluating.', [('1–5', 'Function notation, tables and graphs'), ('6–10', 'Evaluating functions')], 7))
+    practice=PR('ex4', '1–10', '11–21', 'Function notation, then evaluating.', [('1–5', 'Function notation, tables and graphs'), ('6–10', 'Evaluating functions')], 7))
 SPECS['u5l7'] = dict(
     warm=W['u5l7'],
     extra_expl=['exThree', 'cost'],
@@ -414,7 +415,7 @@ SPECS['u5l8'] = dict(
     warm=W['u5l8'],
     replace=[('Watch the bath from the warm-up play out with its graph.', 'Watch the bath play out with its graph.'), ('<b>The drain rate in the warm-up.</b>', '<b>The drain rate for the bath.</b>')],
     extra_cards=['s1d'],
-    practice=PR('ex1b', '1–5', '6–16', 'Read the story in each graph.', [('1–5', 'Reading the story in a graph')], 3))
+    practice=PR('ex1b', '1–4', '5–16', 'Read the story in each graph.', [('1–4', 'Reading the story in a graph')], 3))
 SPECS['u5l9'] = dict(
     warm=dict(title='Which One Doesn’t Belong?', rule='Which one is the odd one out? Pick one and be ready to say <b>why</b>.', strip=strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4))),
               body=TILES(4, [('A', T(r'\{(1,2),\ (2,3),\ (3,4)\}')), ('B', T('y=2x+1')), ('C', T('x=3')), ('D', T('f(x)=x^2'))], 26),
@@ -425,7 +426,7 @@ SPECS['u5l9'] = dict(
 SPECS['u6l1'] = dict(
     warm=W['u6l1'],
     extra_cards=['s2b', 's3b', 's4b'],
-    practice=PR('ex4', '1–5', '6–11', 'Lengths of horizontal, vertical and slanted segments.', [('1–5', 'Lengths of segments')], 3))
+    practice=PR('ex4', '1–5', '6–12', 'Lengths of horizontal, vertical and slanted segments.', [('1–5', 'Lengths of segments')], 3))
 SPECS['u6l2'] = dict(
     warm=W['u6l2'],
     extra_cards=['s7b'], extra_expl=['order'],
@@ -458,7 +459,7 @@ SPECS['u7l2'] = dict(
 SPECS['u7l3'] = dict(
     warm=W['u7l3'],
     extra_cards=['s1b', 's2b'], extra_expl=['judge'],
-    practice=PR('ex2', '1–5', '6–18', 'Into general form, then out of it.', [('1–2', 'Into general form'), ('3–5', 'Out of general form')], 3))
+    practice=PR('ex2', '1–3', '4–16', 'Into general form, then out of it.', [('1', 'Into general form'), ('2–3', 'Out of general form')], 2))
 SPECS['u7l4'] = dict(
     warm=W['u7l4'],
     extra_expl=['toMxB', 'race', 'read', 'solve6', 'solve7', 'solve8'],
@@ -470,7 +471,7 @@ SPECS['u7l5'] = dict(
 SPECS['u7l6'] = dict(
     warm=W['u7l6'],
     extra_cards=['s2b', 's3b', 's4b'],
-    practice=PR('ex2', '1–3', '4–9', 'Read each rate of change and write the equation.', [('1–3', 'Rate of change and the equation')], 2))
+    practice=PR('ex3', '1–6', '7–9', 'Rates of change, average rates, and their equations.', [('1–2', 'Average rate of change'), ('3–6', 'Rate of change and the equation')], 4))
 SPECS['u7l7'] = dict(
     warm=W['u7l7'],
     replace=[(' (traps B and C in the warm-up).', '.')],
@@ -479,8 +480,8 @@ SPECS['u7l7'] = dict(
 # ======================= Unit 8 =======================
 SPECS['u8l1'] = dict(
     warm=W['u8l1'],
-    extra_cards=['s2b', 's3b', 's3c', 's4b', 's5b', 'ex5c', 'ex7c'],
-    practice=PR('ex2', '1–3', '4–10', 'Solve each system by graphing, then check.', [('1–3', 'Solving systems by graphing')], 2))
+    extra_cards=['s2b', 's3c', 's4b', 's5b', 'ex5c', 'ex7c'],
+    practice=PR('ex2', '1–2', '3–10', 'Solve each system by graphing, then check.', [('1–2', 'Solving systems by graphing')]))
 SPECS['u8l2'] = dict(
     warm=W['u8l2'],
     extra_cards=['s1e', 's3b'],
@@ -520,7 +521,7 @@ SPECS['u9l3'] = dict(
 SPECS['u9l4'] = dict(
     warm=W['u9l4'],
     extra_cards=['s1b'],
-    practice=PR('ex2', '1–7', '8–16', 'Inverse ratios, then an angle from two sides.', [('1–2', 'Inverse trigonometric ratios'), ('3–7', 'An angle from two known sides')], 4))
+    practice=PR('ex2', '1–5', '6–16', 'Inverse ratios, then an angle from two sides.', [('1–2', 'Inverse trigonometric ratios'), ('3–5', 'An angle from two known sides')], 4))
 SPECS['u9l5'] = dict(
     warm=W['u9l5'],
     extra_cards=['s3e'],
@@ -557,7 +558,7 @@ SPECS['u10l4'] = dict(
 SPECS['u10l5'] = dict(
     warm=W['u10l5'],
     extra_cards=['s1b', 's1d', 's2b', 's2c', 's2e'],
-    practice=PR('ex3', '1–4', '5–16', 'Spheres and hemispheres.', [('1–4', 'Spheres and hemispheres')], 3))
+    practice=PR('ex3', '1–2', '3–16', 'Spheres and hemispheres.', [('1–2', 'Spheres and hemispheres')]))
 SPECS['u10l6'] = dict(
     warm=W['u10l6'],
     extra_expl=['sizeUp', 'wrench'])

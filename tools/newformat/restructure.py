@@ -7,6 +7,9 @@ sys.path.insert(0, HERE)
 from specs import SPECS
 T = lambda x: '<span class="tex">%s</span>' % x
 
+def _qw(r):
+    return ('Questions ' if re.search('[–-]', r) else 'Question ') + r
+
 def run(key):
     sp = SPECS[key]; u, l = re.match(r'u(\d+)l(\d+)', key).groups()
     path = f'{REPO}/lessons/u{u}/l{l}/index.html'; orig = f'{HERE}/orig/{key}.html'
@@ -97,16 +100,16 @@ def run(key):
         card = f'''
 
 <!-- ================= practice break (one per lesson at most) ================= -->
-<section class="card practice" data-ink="p1" data-section="Practice: Questions {pr['qs']}">
+<section class="card practice" data-ink="p1" data-section="Practice: {_qw(pr['qs'])}">
   <div class="pr-k">Your turn</div>
-  <h2>Assignment {l} · Questions {pr['qs']}</h2>
+  <h2>Assignment {l} · {_qw(pr['qs'])}</h2>
   <p class="pr-t">{pr['line']}</p>
   <div class="pr-chips n{len(pr['chips'])}">{chips}</div>
   <div class="pr-foot"><span>{pr.get('note', 'We carry on when most of the class has finished.')}</span><a class="pill" href="../../../#/lesson/{key}">Open the Practice site</a></div>
 </section>'''
         _, j = sec_span(pr['after']); s = s[:j] + card + s[j:]
         m = re.search(r'(<a class="assign" href="[^"]*">\s*<div><div class="kicker">Your turn</div><b>)Assignment %s — [^<]*((?:<span class="tex">[^<]*</span>[^<]*)*)(</b>)' % l, s); assert m, (key, 'assign')
-        s = s[:m.start()] + m.group(1) + f"Assignment {l} · Questions {pr['rest']}" + m.group(3) + s[m.end():]
+        s = s[:m.start()] + m.group(1) + f"Assignment {l} · {_qw(pr['rest'])}" + m.group(3) + s[m.end():]
     open(path, 'w').write(s)
     secs = re.findall(r'<section ([^>]*)>', s)
     cls = [re.search(r'data-section="([^"]*)"', a).group(1) for a in secs if 'data-extra' not in a]
