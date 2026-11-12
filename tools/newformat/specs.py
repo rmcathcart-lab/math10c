@@ -9,34 +9,215 @@ def PR(after, qs, rest, line, chips, upto=None):
 SPECS = {}
 NUM = lambda ch, x, begin=0, col=BLUE: f'<g>{bob(7, 1.5, begin)}<text x="{x}" y="44" font-size="38" font-weight="800" fill="{col}" text-anchor="middle">{ch}</text></g>'
 
+# ======================= Warm-ups, second pass (2026-11-11) =======================
+# Ryan: the old "big one" with less context doesn't work. Every warm-up must stand on its own: something every student
+# can start on with nothing taught yet, with one clear question. These replace the warm-ups that reused the old big one.
+DOTS4 = strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4)))
+LIE = strip(sb('😇', 90, 0), sb('😇', 170, .3), srock('🤥', 250))
+W = {}
+W['u1l1'] = dict(title='Rows of Desks', rule='Which number of desks makes that impossible?', strip=strip(sb('🪑', 110, 0), sb('🪑', 160, .2), sb('🪑', 210, .4), sb('🧑‍🏫', 275, 0, 40)),
+    body=BIG('A teacher wants to set up the desks in <b>equal rows</b>, with none left over.<small>More than one row, and more than one desk in each row.</small>') + TILES(4, [('A', '21 desks'), ('B', '23 desks'), ('C', '25 desks'), ('D', '27 desks')], 28),
+    nudge='Try to make rows for each one.',
+    reveal='<b>B, 23 desks.</b> 21 is 3 rows of 7, 25 is 5 rows of 5 and 27 is 3 rows of 9. 23 only splits as 1 × 23: one long row. A number like that is <b>prime</b>.')
+W['u1l2'] = dict(title='Blinking Lights', rule='How many seconds until they blink together again?', strip=strip(sblink('💡', 140, 0, 40, 1.3), sblink('💡', 210, .3, 40, 1.7)),
+    body=BIG('A red light blinks every <b>6 seconds</b>. A green light blinks every <b>8 seconds</b>.<small>They just blinked at the same moment.</small>'),
+    nudge='List the times each one blinks.',
+    reveal='<b>24 seconds.</b> Red blinks at 6, 12, 18, 24… Green blinks at 8, 16, 24… 24 is the first number in both lists: the <b>least common multiple</b> of 6 and 8.')
+W['u1l3'] = dict(title='Square or Cube?', rule='Which pile can do both?', strip=strip(sb('🧊', 130, 0, 34), sb('🧊', 170, .3, 34), sb('🧊', 210, .6, 34)),
+    body=BIG('You want to build a pile of sugar cubes into one <b>flat, solid square</b>. Then you want to rebuild the same pile into one <b>solid cube</b>.') + TILES(4, [('A', '16 cubes'), ('B', '27 cubes'), ('C', '36 cubes'), ('D', '64 cubes')], 28),
+    nudge='Which piles make a square? Which make a cube?',
+    reveal=f'<b>D, 64.</b> It makes an 8 by 8 square and a 4 by 4 by 4 cube. 16 and 36 only make squares, and 27 only makes a cube.')
+W['u1l4'] = dict(title='Split the Bill', rule='Which share shows a decimal that never ends?', strip=strip(sb('🍕', 140), srock('💵', 210, 10, 2, 38)),
+    body=BIG('A <b>$10</b> bill is split evenly between friends. Each share is worked out on a calculator.') + TILES(4, [('A', '4 friends'), ('B', '5 friends'), ('C', '6 friends'), ('D', '8 friends')], 28),
+    reveal=f'<b>C, 6 friends:</b> {T(r"10\div6=1.666\ldots")} forever. 4, 5 and 8 friends give $2.50, $2 and $1.25. Dividing by 6 brings in a factor of 3, and that makes the decimal repeat.')
+W['u1l8'] = dict(title='Bigger Puzzle Cubes', rule='Which of these can NOT be the number of small cubes in a bigger puzzle cube?', strip=strip(sspin('🎲', 170, 6, 40)),
+    body=BIG('A normal Rubik’s cube is built from <b>27</b> small cubes: 3 by 3 by 3. Bigger puzzle cubes are built the same way.') + TILES(4, [('A', '64'), ('B', '125'), ('C', '200'), ('D', '343')], 32),
+    nudge='Try 4 by 4 by 4, then 5 by 5 by 5…',
+    reveal=f'<b>C, 200.</b> {T("4^3=64")}, {T("5^3=125")} and {T("7^3=343")}. But {T("6^3=216")}, so 200 falls between two cubes: it is not a perfect cube.')
+W['u2l1'] = dict(title='Rice on a Chessboard', rule='Which is the first square with more than 1000 grains on it?', strip=strip(sb('🍚', 130, 0, 36), sb('♟️', 200, .4, 36)),
+    body=BIG('Put <b>1</b> grain of rice on the first square of a chessboard, <b>2</b> on the second, <b>4</b> on the third, and keep <b>doubling</b>.<small>A chessboard has 64 squares.</small>'),
+    nudge='Keep doubling, and count the squares as you go.',
+    reveal=f'<b>Square 11:</b> {T("2^{10}=1024")} grains. Square 10 has only 512. The last square would hold {T("2^{63}")} grains, more rice than the whole world grows in hundreds of years.')
+W['u2l2'] = dict(title='Odd One Out', rule='Three of these are the same number. Which one is different?', strip=DOTS4,
+    body=TILES(4, [('A', T(r'2^3\times2^2')), ('B', T('2^5')), ('C', T(r'4^2\times2')), ('D', T(r'(2^2)^3'))]),
+    nudge='Work each one out.',
+    reveal=f'<b>D.</b> {T(r"(2^2)^3=4^3=64")}. The other three are all 32. Today: the shortcuts that tell you this without working anything out.')
+W['u2l3'] = dict(title='Keep Going Down', rule='Each line is the one above divided by 10. What are the last two lines?', strip=strip(sb('⬇️', 150, 0, 36, 8, 1.2), sb('🔟', 210, .4, 36)),
+    body=BIG(T(r'\begin{aligned}10^3&=1000\\10^2&=100\\10^1&=10\\10^0&=1\\10^{-1}&=\ ?\\10^{-2}&=\ ?\end{aligned}')),
+    reveal=f'{T(r"10^{-1}=0.1=\tfrac1{10}")} and {T(r"10^{-2}=0.01=\tfrac1{100}")}. A negative exponent doesn’t make a negative number. It makes a small one.')
+W['u2l5'] = dict(title='The Half-Hour Mystery', rule='What is that half-hour number?', strip=strip(sb('🦠', 120, 0, 28), sb('🦠', 165, .3, 36), sb('🦠', 220, .6, 44)),
+    body=BIG('Every hour, a colony of bacteria <b>doubles</b>. It grows smoothly, so every half hour it is multiplied by the <b>same number</b>.') + TILES(4, [('A', '1'), ('B', 'about 1.41'), ('C', '1.5'), ('D', '2')], 32),
+    nudge='Two half hours make an hour. Try 1.5, twice.',
+    reveal=f'<b>B, about 1.41.</b> Two half hours must multiply to 2, so the number times itself is 2: that is {T(r"\sqrt2\approx1.414")}. ({T(r"1.5\times1.5=2.25")} is too big.) Today: {T(r"\sqrt2")} written as {T(r"2^{1/2}")}.')
+W['u3l2'] = dict(title='The Bigger Screen', rule='How many more square centimetres of screen does the new phone have?', strip=strip(srock('📱', 170, 10, 2.2, 44)),
+    body=BIG('A phone screen is <b>6 cm</b> by <b>12 cm</b>. The new model is <b>1 cm wider</b> and <b>1 cm longer</b>.'),
+    nudge='Is it 2 cm²? Sketch it.',
+    reveal='<b>19 cm².</b> 7 × 13 = 91 and 6 × 12 = 72. The new part is a 1 by 12 strip, a 1 by 6 strip and a 1 by 1 corner: 12 + 6 + 1.')
+W['u3l3'] = dict(title='The Bigger Garden', rule=f'Kai says the area grows by {T("3^2=9")} m². By how much does it really grow?', strip=strip(sb('🌱', 120, 0, 34), sb('🌻', 180, .4, 40), sb('🌱', 240, .8, 34)),
+    body=BIG('A square garden has sides of <b>5 m</b>. Each side gets <b>3 m</b> longer.'),
+    nudge='Sketch the old square inside the new one.',
+    reveal=f'<b>39 m².</b> {T("8^2=64")} and {T("5^2=25")}. Around the old square there is a 3 by 3 corner and two 5 by 3 strips: 9 + 15 + 15 = 39.')
+W['u3l4'] = dict(title='Grow the Box', rule='How much volume is added?', strip=strip(sb('🎁', 140, 0, 34), sb('🎁', 205, .4, 46)),
+    body=BIG('A gift box is <b>2 cm</b> by <b>3 cm</b> by <b>4 cm</b>. Every edge gets <b>1 cm</b> longer.'),
+    nudge='Is it 3 cm³? Work out both boxes.',
+    reveal='<b>36 cm³.</b> The new box is 3 × 4 × 5 = 60 cm³ and the old one is 2 × 3 × 4 = 24 cm³. Three growing edges multiply into a lot of new pieces.')
+W['u3l5'] = dict(title='How Much Wood?', rule='How many square centimetres of wood is the frame?', strip=strip(srock('🖼️', 170, 8, 2.6, 44)),
+    body=BIG('A photo is <b>20 cm</b> by <b>30 cm</b>. A wooden frame <b>5 cm</b> wide goes all the way around it.'),
+    nudge='Careful at the corners.',
+    reveal='<b>600 cm².</b> The photo and frame together are 30 by 40 = 1200 cm². Take away the 600 cm² photo. (Adding four strips gives 500: that misses the four 5 by 5 corners.)')
+W['u4l1'] = dict(title='Ribbon Cutting', rule='What is the longest the pieces can be?', strip=strip(srock('✂️', 140, 14, 1.2, 38), sb('🎀', 210, .3, 38)),
+    body=BIG('One ribbon is <b>48 cm</b> long and another is <b>36 cm</b> long. Cut both into pieces that are all the <b>same length</b>, with nothing left over.'),
+    reveal='<b>12 cm.</b> 12 is the biggest number that divides both 48 and 36: 4 pieces from one ribbon and 3 from the other. It is their <b>greatest common factor</b>.')
+W['u4l2'] = dict(title='The Four-Part Sum', rule='No calculator, no paper. What is the total?', strip=strip(sblink('⚡', 150, 0, 40, 1.2), sblink('⚡', 200, .4, 34, 1.2)),
+    body=BIG(T(r'23\times7+23\times3+77\times7+77\times3')),
+    nudge='Which parts share a number?',
+    reveal=f'<b>1000.</b> The first two parts are {T(r"23\times10")} and the last two are {T(r"77\times10")}. Together that is {T(r"(23+77)\times10=100\times10")}.')
+W['u4l3'] = dict(title='The Impossible Sum', rule='Which of these sums is impossible?', strip=strip(sb('🔢', 150, 0, 40), sblink('❓', 210, 0, 32)),
+    body=BIG('Two whole numbers multiply to <b>24</b>.') + TILES(4, [('A', 'add to 10'), ('B', 'add to 11'), ('C', 'add to 12'), ('D', 'add to 14')], 30),
+    nudge='List every pair that multiplies to 24.',
+    reveal='<b>C, 12.</b> The pairs are 1 and 24, 2 and 12, 3 and 8, 4 and 6. Their sums are 25, 14, 11 and 10. Today: that list is the key to factoring.')
+W['u5l2'] = dict(title='Which One Depends?', rule='In each pair, which quantity depends on the other?', strip=strip(sb('🔌', 110, 0, 34), sb('🌱', 175, .3, 34), sb('⛽', 240, .6, 34)),
+    body=BIG('In each pair, one quantity <b>controls</b> the other.') + TILES(3, [('Phone', 'minutes plugged in<small>and</small>battery level'), ('Plant', 'height<small>and</small>days since planting'), ('Gas', 'cost<small>and</small>litres pumped')], 25),
+    reveal='Battery level depends on minutes plugged in. Height depends on days. Cost depends on litres. The one you control is the <b>independent variable</b>; the one that responds is the <b>dependent variable</b>.')
+W['u5l3'] = dict(title='Read the Battery Graph', rule='After how many hours does the phone die?', pic=BATTGRAPH, wide=True,
+    body=BIG('The graph shows a phone’s battery from the moment you unplug it.'),
+    nudge='How full was it at the start?',
+    reveal='<b>4 hours</b>, where the line meets the time axis. It started at 80%, where the line meets the battery axis. Those two crossing points are today’s <b>intercepts</b>.')
+W['u5l5'] = dict(title='Hey Phone, Call Mom', rule='In which contact list can the phone not tell which number to call?', strip=strip(srock('📱', 150, 14, .8, 40), sb('🗣️', 215, 0, 36)),
+    body=BIG('You say: “Hey phone, call <b>Mom</b>.”') + TILES(3, [('List A', 'Mom: 555-0101<br>Dad: 555-0101'), ('List B', 'Mom: 555-0101<br>Mom: 555-0199'), ('List C', 'Mom: 555-0101<br>Dad: 555-0202')], 24),
+    reveal='<b>List B.</b> One name with two numbers: the phone can’t decide. Two names sharing one number (a home phone) is fine. A <b>function</b> is a rule where every input has exactly one output.')
+W['u5l7'] = dict(title='Pizza Math', rule='Your bill is $22. How many toppings did you get?', strip=strip(sspin('🍕', 170, 6, 40)),
+    body=BIG(f'A pizza with {T("t")} toppings costs {T("C(t)=12+2t")} dollars.'),
+    nudge=f'What is {T("C(1)")}? {T("C(2)")}?',
+    reveal=f'<b>5 toppings.</b> {T("C(t)=22")}, so {T("12+2t=22")} and {T("t=5")}. Going from an output back to its input is <b>solving</b>.')
+W['u5l8'] = dict(title='Walk to School', rule='Which graph shows your distance from home?', pic=WALK3, wide=True,
+    body=BIG('You walk to school, wait at a red light, then <b>run</b> the rest of the way.'),
+    reveal='<b>A.</b> It rises slowly (walking), goes flat (waiting: the distance doesn’t change), then rises steeply (running is faster). B ends slower than it started, and C stops at the end.')
+W['u6l1'] = dict(title='Cut Across the Park', rule='How many metres do you save?', strip=strip(sb('🌳', 80, 0, 34), sdrive('🚶', 8, 0, 32, 46), sb('🌳', 270, .5, 34)),
+    body=BIG('A rectangular park is <b>60 m</b> by <b>80 m</b>. The sidewalk goes along two sides to the far corner.<small>You cut straight across the grass instead.</small>'),
+    nudge='Sketch the park. What shape does your shortcut make?',
+    reveal=f'<b>40 m.</b> The sidewalk is 60 + 80 = 140 m. The shortcut is the long side of a right triangle: {T(r"\sqrt{60^2+80^2}=\sqrt{10\,000}=100")} m.')
+W['u6l2'] = dict(title='Steepest Ramp', rule='Which ramp is the steepest?', strip=strip(sroad(), sdrive('🛹', 4, 0, 36, 44)),
+    body=TILES(4, [('A', '1 m up<br>4 m across'), ('B', '2 m up<br>10 m across'), ('C', '3 m up<br>9 m across'), ('D', '4 m up<br>20 m across')], 26),
+    nudge='How much does each one rise for every metre across?',
+    reveal='<b>C.</b> For every metre across, A rises 0.25 m, B 0.2 m, C about 0.33 m and D 0.2 m. The tallest ramp is one of the gentlest. That “rise for every 1 across” is the <b>slope</b>.')
+W['u6l3'] = dict(title='Quarter Turn', rule='After the turn, how far does it go left or right, and up or down?', strip=strip(sspin('➡️', 170, 4, 36)),
+    body=BIG('On a grid, a stick goes <b>3 right</b> and <b>1 up</b>.<small>Turn it a quarter turn (90°) to the left, around its bottom end.</small>'),
+    nudge='Try it with a pencil on grid paper.',
+    reveal=f'<b>1 left and 3 up.</b> The two numbers swap places and one changes sign. Today: that is why the slopes of perpendicular lines, like {T(r"\tfrac13")} and {T("-3")}, are negative reciprocals.')
+W['u6l4'] = dict(title='The Odd Table', rule='Which table is NOT a straight line?', strip=strip(sb('📋', 170, 0, 40)),
+    body=TILES(3, [('A', 'x: 0, 1, 2, 3<br>y: 5, 8, 11, 14'), ('B', 'x: 0, 1, 2, 3<br>y: 1, 2, 4, 8'), ('C', 'x: 0, 1, 3, 4<br>y: 10, 8, 4, 2')], 25),
+    nudge='Look closely at the x-values in C.',
+    reveal='<b>B.</b> Its y-values double instead of changing by the same amount. A goes up 3 every step. C looks uneven, but it drops 2 for every 1 across, even across the gap from 1 to 3.')
+W['u7l1'] = dict(title='The Gym Membership', rule='After how many months have you paid $150 in total?', strip=strip(sb('🏋️', 150, 0, 40), srock('💳', 215, 10, 2, 36)),
+    body=BIG('A gym charges <b>$30</b> to sign up, then <b>$10</b> every month.'),
+    reveal='<b>12 months.</b> 30 + 10 × 12 = 150. The $30 is where the cost starts; the $10 is how fast it climbs. Those two numbers are today’s <b>b</b> and <b>m</b>.')
+W['u7l2'] = dict(title='Saving Up', rule=f'Which rule gives your savings {T("s")} after {T("w")} weeks?', strip=strip(sb('🐷', 150, 0, 42), sfloat('🪙', 215, 2.4, 0, 30)),
+    body=BIG('You have <b>$40</b> saved. You add <b>$15</b> every week.') + TILES(4, [('A', T('s=40w+15')), ('B', T('s=15w+40')), ('C', T('s=55w')), ('D', T('s=15w'))], 28),
+    nudge='How much do you have after 0 weeks?',
+    reveal=f'<b>B.</b> At {T("w=0")} you have $40, and only B gives 40. Each week adds 15, so 15 multiplies {T("w")}.')
+W['u7l3'] = dict(title='Exactly $24', rule='How many different orders are possible?', strip=strip(sb('🍔', 140, 0, 38), sb('🍟', 200, .4, 38)),
+    body=BIG('Burgers cost <b>$4</b> and fries cost <b>$3</b>. You must spend <b>exactly $24</b>.<small>Buying none of one kind is allowed.</small>'),
+    reveal=f'<b>3.</b> 6 burgers; 3 burgers and 4 fries; or 8 fries. They are the whole-number points on the line {T("4x+3y=24")}.')
+W['u7l4'] = dict(title='Almost Home', rule='What time do you get home?', strip=strip(sroad(), sdrive('🚗', 5, 0, 38, 44), sb('🏠', 305, 0, 34, 2, 3, 40)),
+    body=BIG('At <b>3:00 pm</b> you are <b>260 km</b> from home, driving toward home at <b>80 km/h</b>.'),
+    reveal='<b>6:15 pm.</b> 260 ÷ 80 = 3.25 hours, which is 3 hours 15 minutes. One point (3:00, 260 km) and one rate (80 km/h) tell you the whole trip.')
+W['u7l5'] = dict(title='Stepping Stones', rule='Which point is NOT on the line?', strip=strip(sdrive('🐸', 6, 0, 34, 46, hop=12)),
+    body=BIG(f'A straight line goes through {T(r"(0,\ 6)")} and {T(r"(4,\ 0)")}.') + TILES(4, [('A', T(r'(2,\ 3)')), ('B', T(r'(1,\ 5)')), ('C', T(r'(6,\ -3)')), ('D', T(r'(8,\ -6)'))], 28),
+    nudge='How do you step from one point to the other?',
+    reveal=f'<b>B.</b> The line steps 2 right and 3 down: {T(r"(0,6),\ (2,3),\ (4,0),\ (6,-3),\ (8,-6)")}. At {T("x=1")} the line is at 4.5, not 5.')
+W['u7l6'] = dict(title='Who Is Faster?', rule='Who is faster?', strip=strip(sroad(), sdrive('🏃‍♀️', 3.5, 0, 34, 44), sdrive('🏃', 4.5, .6, 34, 44)),
+    body=BIG('Ava runs <b>100 m</b> in <b>20 seconds</b>. Ben runs <b>1 km</b> in <b>4 minutes</b>.'),
+    nudge='How many metres does each one run in one second?',
+    reveal='<b>Ava.</b> Ava: 100 ÷ 20 = 5 m every second. Ben: 1000 m ÷ 240 s ≈ 4.2 m every second. Rates only compare when the units match.')
+W['u7l7'] = dict(title='Two Truths and a Lie', rule='Two of these are true. One is a lie. Which one?', strip=LIE,
+    body=BIG(f'The line {T("2x+y-6=0")}') + TILES(3, [('A', 'its slope is 2'), ('B', 'its y-intercept is 6'), ('C', 'its x-intercept is 3')], 28),
+    nudge='How could you prove it?',
+    reveal=f'<b>A is the lie.</b> Solve for {T("y")}: {T("y=-2x+6")}, so the slope is {T("-2")}. Put {T("x=0")} to get 6, and {T("y=0")} to get 3.')
+W['u8l1'] = dict(title='Same Price', rule='For how many GB do the two plans cost the same?', strip=strip(srock('📱', 150, 10, 1.6, 40), sb('💸', 215, .3, 36)),
+    body=BIG('Plan A: <b>$30</b> a month plus <b>$5</b> per GB of data.<small>Plan B: $50 a month plus $1 per GB of data.</small>'),
+    nudge='Make a table: 0 GB, 1 GB, 2 GB…',
+    reveal='<b>5 GB:</b> both cost $55. Below 5 GB Plan A is cheaper, and above it Plan B is. On a graph, 5 GB is where the two lines cross.')
+W['u8l2'] = dict(title='Sibling Ages', rule='How old is Leo?', strip=strip(sb('👧', 150, 0, 40), sb('👦', 205, .3, 34)),
+    body=BIG('Mia is <b>3 years older</b> than her brother Leo. Their ages add to <b>25</b>.'),
+    reveal=f'<b>11</b> (and Mia is 14). If Leo is {T("L")}, then Mia is {T("L+3")}, so {T("L+(L+3)=25")}. Swapping Mia’s age for {T("L+3")} is today’s trick: <b>substitution</b>.')
+W['u8l3'] = dict(title='Two Orders', rule='How much is one shake?', strip=strip(sb('🍔', 140, 0, 38), sb('🥤', 200, .4, 38)),
+    body=BIG('<b>2 burgers and 1 shake</b> cost $17.<small>2 burgers and 3 shakes cost $27.</small>'),
+    nudge='What is different about the two orders?',
+    reveal='<b>$5.</b> The second order is the first one plus 2 shakes, and it costs $10 more. Comparing the two orders makes the burgers disappear. (A burger is $6.)')
+W['u8l4'] = dict(title='Wheels in the Lot', rule='How many motorbikes are there?', strip=strip(sroad(), sdrive('🚗', 5, 0, 36, 44), sdrive('🏍️', 3.6, 1, 32, 44)),
+    body=BIG('A parking lot holds only <b>cars</b> and <b>motorbikes</b>. There are <b>20 vehicles</b> and <b>64 wheels</b>.'),
+    nudge='What if all 20 were cars?',
+    reveal='<b>8 motorbikes</b> (and 12 cars). 20 cars would have 80 wheels, 16 too many. Each motorbike in place of a car takes away 2 wheels, so 8 swaps.')
+W['u8l5'] = dict(title='Trail Mix', rule='What should the trail mix cost per kilogram?', strip=strip(sb('🥜', 140, 0, 36), sb('🍇', 200, .4, 36)),
+    body=BIG('Nuts cost <b>$12 per kg</b>. Raisins cost <b>$6 per kg</b>.<small>You mix 2 kg of nuts with 1 kg of raisins.</small>'),
+    nudge='Is it $9, halfway between?',
+    reveal='<b>$10 per kg.</b> The whole mix costs 2 × 12 + 1 × 6 = $30 for 3 kg. It isn’t $9 because there is more of the expensive part.')
+W['u9l1'] = dict(title='How Tall Is the Tree?', rule='How tall is the tree?', pic=TREESHADOW, wide=True,
+    body=BIG('A <b>2 m</b> post casts a <b>3 m</b> shadow.<small>At the same moment, a tree casts a 15 m shadow.</small>'),
+    reveal='<b>10 m.</b> The tree’s shadow is 5 times as long, so the tree is 5 times as tall. The sun hits both at the same angle, so the two triangles are the same shape.')
+W['u9l2'] = dict(title='Open the Laptop', rule='Which 10° raises the top edge more?', strip=strip(srock('💻', 170, 14, 2.8, 42)),
+    body=BIG('Open a laptop from closed (0°) to straight up (90°). The top edge of the screen rises.') + TILES(3, [('A', 'from 0° to 10°'), ('B', 'from 80° to 90°'), ('C', 'the same')], 28),
+    nudge='Try it with a book on your desk.',
+    reveal='<b>A, by far.</b> The first 10° lifts the edge about 17% of the screen’s height. The last 10° lifts it only about 1.5%. Today: the sine of an angle climbs fast at first, then slows down.')
+W['u9l3'] = dict(title='How Big Is the TV?', rule='How long is the diagonal?', strip=strip(sblink('📺', 170, 0, 44, 2.2, 46, .5)),
+    body=BIG('A wide TV screen is <b>120 cm</b> wide and <b>50 cm</b> tall.<small>TVs are sold by the length of the diagonal.</small>'),
+    reveal=f'<b>130 cm.</b> {T(r"\sqrt{120^2+50^2}=\sqrt{16\,900}=130")}. Two sides of a right triangle give the third. Today: what if you know one side and an <b>angle</b> instead?')
+W['u9l4'] = dict(title='Guess the Angle', rule='What is the angle at the bottom of the ramp?', pic=RAMPANGLE, wide=True,
+    body=BIG('No protractor allowed.<small>Everyone guesses. Closest guess wins.</small>'),
+    reveal=f'<b>About 23°.</b> The ramp rises 5 for every 12 across. Today we turn two sides into the angle exactly: {T(r"\tan^{-1}\left(\tfrac5{12}\right)\approx22.6^\circ")}.')
+W['u9l5'] = dict(title='Draw This Triangle', rule='Which clues are enough to draw exactly one right triangle?', strip=strip(srock('📐', 170, 10, 2.2, 40), sb('✏️', 230, .3, 32)),
+    body=BIG('You must draw a <b>right triangle</b> from clues.<small>More than one answer can be right.</small>') + TILES(2, [('A', 'two angles: 30° and 60°'), ('B', 'one side: 5 cm'), ('C', 'the two shorter sides: 3 cm and 4 cm'), ('D', 'the longest side, 5 cm, and one angle, 40°')], 24),
+    nudge='Could two people follow the clue and draw different triangles?',
+    reveal='<b>C and D.</b> Two sides fix a right triangle, and so does one side with one acute angle. A gives the shape but no size. B gives a size but no shape.')
+W['u9l6'] = dict(title='Looking Up, Looking Down', rule='From the boat, how many degrees up from level does someone look to see you?', pic=CLIFFZ, wide=True,
+    body=BIG('From the top of a cliff, you look <b>30° down</b> from level to see a boat.'),
+    reveal='<b>30°.</b> The two dashed level lines are parallel, so the angle down from the cliff equals the angle up from the boat. Angle of depression = angle of elevation.')
+W['u9l7'] = dict(title='The Longest Pencil', rule='What is the longest straight pencil that fits inside, corner to corner?', strip=strip(srock('✏️', 150, 30, 2.4, 36), sb('📦', 215, 0, 40)),
+    body=BIG('A box is <b>3 cm</b> by <b>4 cm</b> by <b>12 cm</b>.'),
+    nudge='Start with the diagonal across the floor of the box.',
+    reveal=f'<b>13 cm.</b> The floor diagonal is {T(r"\sqrt{3^2+4^2}=5")}. That 5 and the 12 cm height make a second right triangle: {T(r"\sqrt{5^2+12^2}=13")}. One triangle hands its side to the next.')
+W['u9l8'] = dict(title='Two Truths and a Lie', rule='Two of these are true. One is a lie. Which one?', strip=LIE,
+    body=BIG('A right triangle has sides <b>3</b>, <b>4</b> and <b>5</b>. Angle A is opposite the side of length 3.') + TILES(3, [('A', T(r'\sin A=\tfrac35')), ('B', T(r'\cos A=\tfrac45')), ('C', T(r'\tan A=\tfrac43'))]),
+    nudge='Sketch it and label opp, adj and hyp.',
+    reveal=f'<b>C is the lie.</b> {T(r"\tan A=\tfrac{\text{opp}}{\text{adj}}=\tfrac34")}. Sine and cosine are right.')
+W['u10l1'] = dict(title='No Ruler Allowed', rule='About how tall is our classroom door, in centimetres?', strip=strip(sb('🚪', 140, 0, 44, 2, 3), sb('🙋', 210, .3, 38)),
+    body=BIG('No ruler, no tape measure. You can use your own body.<small>Everyone guesses. Closest guess wins.</small>'),
+    nudge='What part of you is about 1 m? About 10 cm?',
+    reveal='Most doors are about <b>200 cm</b> tall (a standard door is 203 cm, or 6 ft 8 in). Something you know the size of, like your hand span or your height, is a <b>referent</b>.')
+W['u10l2'] = dict(title='Longest Wins', rule='Which length is the longest?', strip=strip(srock('📏', 170, 10, 2.2, 40)),
+    body=TILES(4, [('A', '2.5 m'), ('B', '240 cm'), ('C', '2&nbsp;600 mm'), ('D', '0.0023 km')], 30),
+    reveal='<b>C, 2&nbsp;600 mm</b>, which is 2.6 m. The others are 2.5 m, 2.4 m and 2.3 m. A smaller unit gives a bigger number for the same length.')
+W['u10l3'] = dict(title='Cereal Box Showdown', rule='Which box holds more cereal?', strip=strip(sb('🥣', 140, 0, 38), sb('📦', 205, .4, 40)),
+    body=TILES(2, [('Tall box', '20 cm by 5 cm by 30 cm'), ('Cube box', '15 cm on every edge')], 28),
+    reveal='<b>The cube box.</b> Tall: 20 × 5 × 30 = 3000 cm³. Cube: 15 × 15 × 15 = 3375 cm³. Tall, thin boxes look bigger on the shelf.')
+W['u10l4'] = dict(title='Tipi Poles', rule='How long is a pole from the top down to the edge of the floor?', strip=strip(sb('⛺', 170, 0, 44, 4, 2.4)),
+    body=BIG('A tipi is shaped like a cone. Its floor is a circle with radius <b>3 m</b>.<small>Its top is 4 m above the centre of the floor.</small>'),
+    nudge='Sketch a slice straight down through the middle.',
+    reveal=f'<b>5 m.</b> The height, the radius and the pole make a right triangle: {T(r"\sqrt{3^2+4^2}=5")}. That slanted length is a cone’s <b>slant height</b>.')
+W['u10l5'] = dict(title='Ball in a Can', rule='How much of the can does the ball fill?', pic=BALLCAN,
+    body=BIG('A ball fits snugly in a can. It touches the sides, the bottom and the lid.') + TILES(2, [('A', 'less than half'), ('B', 'about half'), ('C', 'about two thirds'), ('D', 'almost all of it')], 24),
+    reveal='<b>C, exactly two thirds.</b> Archimedes proved it over 2200 years ago. Today: how that leads to the volume of a sphere.')
+W['u10l6'] = dict(title='Which Holds the Least?', rule='Which one holds the least water?', strip=strip(sb('💧', 120, 0, 32), sb('🧴', 180, .3, 38), sb('🥫', 240, .6, 36)),
+    body=TILES(3, [('A', 'a 1 litre bottle'), ('B', 'a cube, 10 cm on every edge'), ('C', 'a can 10 cm across and 10 cm tall')], 24),
+    reveal=f'<b>C, the can.</b> The bottle and the cube both hold 1000 cm³ (1 L = 1000 cm³). The can holds {T(r"\pi\times5^2\times10\approx785")} cm³: it fits inside the cube with room to spare.')
+
 # ======================= Unit 1 =======================
 SPECS['u1l1'] = dict(
-    warm=dict(title='Unwrap the Number', rule='Will everyone end up with the same pile of numbers?', strip=strip(sb('🎁', 110, 0), sb('🎁', 170, .3, 30), sb('🎁', 220, .6, 22)),
-              body=BIG('Split <b>360</b> into two smaller numbers that multiply to it. Then split those, and keep going until nothing splits any more.<small>Everyone starts a different way: 36 × 10, 6 × 60, 2 × 180…</small>'),
-              nudge='Try two different starts.',
-              reveal=f'<b>Yes, always.</b> Every route ends at {T(r"2\times2\times2\times3\times3\times5")}. A number has only one set of prime building blocks.'),
+    warm=W['u1l1'],
     extra_expl=['rectangles', 'primeFilter'],
     practice=PR('ex3', '1–5', '6–16', 'Factors, primes and composites.', [('1–5', 'Factors, primes and composites')], 4))
 SPECS['u1l2'] = dict(
-    warm=dict(title='Hot Dogs and Buns', rule='What is the smallest number of hot dogs and buns you can buy with none left over?', strip=strip(sb('🌭', 110, 0), sb('🌭', 160, .3), sb('🍞', 220, .6), sb('🍞', 270, .9)),
-              body=BIG('Hot dogs come in packs of <b>10</b>. Buns come in packs of <b>8</b>.'),
-              nudge='How many packs of each?',
-              reveal='<b>40 of each.</b> That is 4 packs of hot dogs and 5 packs of buns. 40 is the first number in both the 10 times table and the 8 times table.'),
+    warm=W['u1l2'],
     extra_cards=['s1b', 's1d', 's2b'], extra_expl=['bags'],
     replace=[('Back to the warm-up: the number of take-home bags had to divide into', 'Share 24 hot dogs and 32 buns into identical take-home bags with nothing left over. The number of bags has to divide into'), ('warm-up: 24 hot dogs, 32 buns', '24 hot dogs, 32 buns')],
     practice=PR('ex2', '1–4', '5–13', 'Find each greatest common factor.', [('1–4', 'Greatest common factor')], 3))
 SPECS['u1l3'] = dict(
-    warm=dict(title='The Locker Problem', rule='After all 100 students have had a turn, how many lockers are open?', strip=strip(ssquares(12)),
-              body=BIG('A hallway has <b>100 closed lockers</b>. Student 1 opens every locker. Student 2 changes every 2nd locker. Student 3 changes every 3rd locker.<small>It carries on like that, all the way to student 100.</small>'),
-              nudge='Which lockers get touched an odd number of times?',
-              reveal='<b>10 lockers:</b> numbers 1, 4, 9, 16, 25, 36, 49, 64, 81 and 100. Only perfect squares have an odd number of factors.'),
+    warm=W['u1l3'],
     extra_cards=['s1w'], extra_expl=['cubes', 'sides'],
     practice=PR('ex3', '1–3', '4–14', 'Test for perfect squares, then perfect cubes.', [('1', 'Perfect squares'), ('2–3', 'Perfect cubes')], 2))
 SPECS['u1l4'] = dict(
-    warm=dict(title='The 100th Digit', rule=f'What is the <b>100th digit</b> after the decimal point in {T(r"\dfrac17")}?', strip=strip(sb('🧮', 150, 0, 42), sblink('❓', 210, 0, 32)),
-              body=BIG(f'{T(r"\dfrac17=0.142857142857\ldots")}'),
-              nudge='You don’t need to write out 100 digits.',
-              reveal='<b>8.</b> The six digits 142857 repeat. 96 digits is 16 full blocks, so the 100th digit is the 4th digit of the block.'),
+    warm=W['u1l4'],
     extra_cards=['s2b', 's3b'], extra_expl=['denoms'],
     practice=PR('ex3', '1–8', '9–12', 'Decimal patterns, ordering and calculator conversions.', [('1–3', 'Rational or irrational?'), ('4–8', 'Ordering and calculator conversions')], 5))
 SPECS['u1l5'] = dict(
@@ -59,10 +240,7 @@ SPECS['u1l7'] = dict(
     extra_cards=['s2b', 's3b'], extra_expl=['split', 'coef', 'numline', 'pyth'],
     practice=PR('ex4', '1–8', '9–16', 'Entire to mixed, and mixed to entire.', [('1–8', 'Entire and mixed radicals')], 6))
 SPECS['u1l8'] = dict(
-    warm=dict(title='Double the Cube', rule='About how many times as long are the edges of the 2-litre box?', strip=strip(sb('📦', 130, 0, 30), sb('📦', 210, .4, 46)),
-              body=BIG('A cube-shaped box with <b>10 cm</b> edges holds <b>1 litre</b>.<small>Another cube-shaped box holds 2 litres.</small>'),
-              nudge='Twice as long? Try it: how much would that box hold?',
-              reveal=f'<b>About 1.26 times.</b> Doubling the edges would hold 8 litres, not 2. The edges only need to be {T(r"\sqrt[3]{2}\approx1.26")} times as long, about 12.6 cm.'),
+    warm=W['u1l8'],
     extra_cards=['s1c', 's1d', 's3c'], extra_expl=['cubeMeaning', 'signs', 'varToEntire'],
     practice=PR('ex2', '1–7', '8–11', 'Radicals with index 3 and higher.', [('1–7', 'Index 3 and higher')], 5))
 SPECS['u1l9'] = dict(
@@ -74,24 +252,15 @@ SPECS['u1l9'] = dict(
 
 # ======================= Unit 2 =======================
 SPECS['u2l1'] = dict(
-    warm=dict(title='How Long to Crack It?', rule='Which lock has the <b>most</b> possible codes to try?', strip=strip(srock('🔒', 150, 9, .9, 42), sb('🔑', 215, 0, 34, 6, 1.8)),
-              body=TILES(3, [('Lock A', '3 dials<small>each dial: 0 to 9</small>'), ('Lock B', '10 switches<small>each switch: on or off</small>'), ('Lock C', '2 dials<small>each dial: A to Z</small>')], 30),
-              nudge='How many codes does each one have?',
-              reveal=f'<b>Lock B.</b> {T("2^{10}=1024")} codes. Lock A has {T("10^3=1000")} and Lock C has {T("26^2=676")}.'),
+    warm=W['u2l1'],
     extra_cards=['s4b', 's5c'], extra_expl=['anatomy', 'fenceNeg'],
     practice=PR('ex4', '1–7', '8–19', 'Vocabulary, negative bases and zero exponents.', [('1–3', 'Vocabulary and repeated multiplication'), ('4–7', 'Evaluating, negative bases and zero exponents')], 5))
 SPECS['u2l2'] = dict(
-    warm=dict(title='The Photocopier', rule='The area of the third copy is how many times the area of the original?', strip=strip(sb('🖨️', 120, 0, 40), sblink('📄', 185, 0, 26, 2.4, lo=0), sblink('📄', 225, .8, 34, 2.4, lo=0), sblink('📄', 275, 1.6, 44, 2.4, lo=0)),
-              body=BIG('A photocopier set to <b>200%</b> makes a picture twice as long and twice as wide.<small>You copy a picture at 200%, then copy the copy at 200%, then copy that copy at 200%.</small>'),
-              nudge='What happens to the area on one copy?',
-              reveal=f'<b>64 times.</b> Each copy has 4 times the area, and {T(r"4\times4\times4=4^3=64")}.'),
+    warm=W['u2l2'],
     extra_cards=['s1b'], extra_expl=['chain', 'check', 'signs', 'varExp'],
     practice=PR('ex3', '1–4', '5–13', 'Product and quotient laws with coefficients.', [('1–4', 'Product and quotient laws with coefficients')], 3))
 SPECS['u2l3'] = dict(
-    warm=dict(title='The Bouncing Ball', rule='Which bounce is the first one that rises <b>less than 1 cm</b>?', strip=strip(f'<g>{bob(34, .9)}<text x="170" y="56" font-size="26" text-anchor="middle">🏀</text></g>', '<line x1="110" y1="58" x2="230" y2="58" stroke="#4a4436" stroke-width="3" stroke-linecap="round"/>'),
-              body=BIG('A ball is dropped from <b>100 cm</b>.<small>Every bounce rises to half the height of the one before: 50 cm, 25 cm, …</small>'),
-              nudge='Does it ever stop bouncing?',
-              reveal=f'<b>The 7th bounce.</b> 50, 25, 12.5, 6.25, 3.125, 1.5625, then about 0.78 cm. That is {T(r"100\times2^{-7}")}.'),
+    warm=W['u2l3'],
     extra_cards=['s2'], extra_expl=['hops', 'sorter', 'snmuldiv'], replace_all=[('is the tricky part, so picture the exponents on a number line:</p>', 'is the tricky part, so picture the exponents on a number line.</p>')],
     practice=PR('ex3', '1–7', '8–21', 'Use the negative exponent law.', [('1–7', 'The negative exponent law')], 5))
 SPECS['u2l4'] = dict(
@@ -102,10 +271,7 @@ SPECS['u2l4'] = dict(
     extra_expl=['whyRoot', 'minus', 'cube', 'conv2', 'toPow'],
     practice=PR('ex3', '1–7', '8–19', 'Evaluate powers with rational exponents.', [('1–7', 'Evaluating rational-exponent powers')], 5))
 SPECS['u2l5'] = dict(
-    warm=dict(title='The Earthquake Scale', rule='A magnitude 7 earthquake releases about how many times as much energy as a magnitude 5?', strip=strip(srock('🏚️', 130, 6, .35, 40), srock('🌳', 200, 5, .4, 38), sblink('💥', 255, 0, 28, .8)),
-              body=BIG('Each step up the magnitude scale releases about <b>32 times</b> as much energy.'),
-              nudge='Is it 64 times?',
-              reveal=f'<b>About 1000 times.</b> Two steps up is {T(r"32\times32=1024")}, not {T(r"32\times2")}.'),
+    warm=W['u2l5'],
     extra_expl=['laws', 'machinesVar', 'rootFirst', 'lanes'],
     practice=PR('ex3', '1–4', '5–14', 'Simplify and convert.', [('1–4', 'Simplifying and converting')], 3))
 SPECS['u2l6'] = dict(
@@ -126,30 +292,19 @@ SPECS['u3l1'] = dict(
     extra_cards=['s4b'], extra_expl=['polyCheck', 'degree', 'order'],
     practice=PR('ex4', '1–5', '6–19', 'Vocabulary, terms and degree.', [('1–5', 'Vocabulary, terms and degree')], 4))
 SPECS['u3l2'] = dict(
-    warm=dict(pic=GARDEN, title='Grow the Garden', rule='How much garden area is added?',
-              body=BIG('A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>.'),
-              nudge='Is it just 2 × 2?',
-              reveal=f'<b>36 m².</b> The new garden is {T(r"12\times8=96")} m², and {T("96-60=36")}. That is two strips (12 and 20) plus a 2 by 2 corner.'),
+    warm=W['u3l2'],
     extra_cards=['s6c'], extra_expl=['distB', 'composite', 'digits', 'subCheck'],
     practice=PR('ex4', '1–10', '11–21', 'Area models and the distributive property.', [('1–10', 'Area models and the distributive property')], 7))
 SPECS['u3l3'] = dict(
-    warm=dict(title='The Squaring Trick', rule='No calculator, no paper.', strip=strip(sb('🧠', 150, 0, 42), sblink('💡', 205, 0, 34, 1.4)),
-              body=BIG(T('105^2')), nudge='You know 100 squared.',
-              reveal=f'<b>11 025.</b> {T(r"105^2=(100+5)^2=10\,000+1\,000+25")}. The 1 000 is {T(r"2\times100\times5")}, the part people forget.'),
+    warm=W['u3l3'],
     extra_cards=['s1c', 's1d'], extra_expl=['outside', 'combine', 'complete'],
     practice=PR('ex2', '1–2', '3–9', 'The two patterns, then a number out front.', [('1', 'Squares of binomials and sum × difference'), ('2', 'A number out front')], 1))
 SPECS['u3l4'] = dict(
-    warm=dict(pic=CUBE.replace('1 cm', ''), title='The Painted Cube', rule='How many of the small cubes have <b>no paint</b> on them?',
-              body=BIG('A <b>10 by 10 by 10</b> cube is painted on the outside, then cut into 1000 small cubes.'),
-              nudge='Where are the unpainted ones hiding?',
-              reveal=f'<b>512.</b> Peel off the painted outer layer and an 8 by 8 by 8 cube is left: {T("8^3=512")}.'),
+    warm=W['u3l4'],
     extra_cards=['s1c', 's2c'], extra_expl=['box', 'check'],
     practice=PR('ex2', '1–4', '5–10', 'Binomial times trinomial.', [('1–4', 'Binomial × trinomial')], 3))
 SPECS['u3l5'] = dict(
-    warm=dict(title='Frame It', rule='How wide must the frame be so that the <b>frame’s area equals the photo’s area</b>?', strip=strip(sb('🖼️', 170, 0, 44, 5, 2.2), sblink('✨', 120, 0, 22), sblink('✨', 222, .6, 22)),
-              body=BIG('A photo is <b>20 cm by 30 cm</b>.<small>A frame of the same width goes all the way around it.</small>'),
-              nudge='Try a width and check.',
-              reveal=f'<b>5 cm.</b> The outside is then {T(r"30\times40=1200")} cm², exactly double the photo’s 600 cm².'),
+    warm=W['u3l5'],
     extra_cards=['s1b'], extra_expl=['garden', 'box'])
 SPECS['u3l6'] = dict(
     warm=dict(title='The Mind Reader', rule='Do each step in your head. Don’t tell anyone your number.', strip=strip(sb('🔮', 170, 0, 44, 5, 2.2), sblink('✨', 120, 0, 24), sblink('✨', 222, .6, 24)),
@@ -161,23 +316,15 @@ SPECS['u3l6'] = dict(
 
 # ======================= Unit 4 =======================
 SPECS['u4l1'] = dict(
-    warm=dict(title='Tile the Floor', rule='What is the <b>biggest square tile</b> that covers the floor with no cutting? How many do you need?', strip=strip(ssquares(12)),
-              body=BIG('A floor is <b>240 cm by 180 cm</b>.'),
-              nudge='The tile has to fit exactly along both walls.',
-              reveal='<b>60 cm tiles, and 12 of them.</b> 60 is the biggest number that divides both 240 and 180: 4 tiles along one wall, 3 along the other.'),
+    warm=W['u4l1'],
     extra_expl=['twoWay', 'columns', 'tileRect', 'pullB'],
     practice=PR('ex3', '1–8', '9–23', 'Find the GCF and take it out.', [('1–8', 'Monomial common factors')], 6))
 SPECS['u4l2'] = dict(
-    warm=dict(title='The Combo Receipt', rule='In your head. No calculator, no paper.', strip=strip(sb('🍔', 120, 0), sb('🍟', 180, .3), srock('🧾', 245, 7, 2.4, 38)),
-              body=BIG(T(r'7\times98+3\times98')), nudge='What do the two parts share?',
-              reveal=f'<b>980.</b> Both parts are “so many 98s”: 7 of them plus 3 of them is {T(r"10\times98")}.'),
+    warm=W['u4l2'],
     extra_cards=['s1b'], extra_expl=['tileGroup', 'rearrange'],
     practice=PR('ex2', '1–3', '4–9', 'Take out the common binomial factor.', [('1–3', 'Binomial common factors')], 2))
 SPECS['u4l3'] = dict(
-    warm=dict(title='The Census Taker’s Riddle', rule='How old are the three kids?', strip=strip(sb('🧒', 110, 0, 36), sb('👧', 160, .3, 36), sb('🧑', 210, .6, 40), srock('🎹', 275, 5, 2.4, 34)),
-              body=BIG('“My three kids’ ages <b>multiply to 36</b>, and they <b>add up to the house number</b> next door.”<small>The census taker checks the house number and says, “I still can’t tell.” The parent adds, “My oldest plays piano.” Now the census taker knows.</small>'),
-              nudge='Why wasn’t the house number enough?',
-              reveal='<b>2, 2 and 9.</b> Only two sets of ages share the same sum: 1, 6, 6 and 2, 2, 9 both add to 13. “My oldest” rules out the twins being oldest.'),
+    warm=W['u4l3'],
     extra_cards=['s2b'], extra_expl=['inspectB', 'tileNeg', 'twoVar', 'inspectC'],
     practice=PR('ex5', '1–8', '9–23', 'Sum and product pairs, then factoring.', [('1–4', 'Algebra tiles and sum–product pairs'), ('5–8', 'Factoring ' + T('x^2+bx+c'))], 5))
 SPECS['u4l4'] = dict(
@@ -186,8 +333,6 @@ SPECS['u4l4'] = dict(
               reveal=f'<b>No.</b> {T(r"899=900-1=30^2-1^2=29\times31")}.'),
     extra_cards=['s1b', 's4c'], extra_expl=['zeroMiddle', 'cutMove', 'rink'],
     practice=PR('ex2', '1–4', '5–13', 'Factor each difference of squares.', [('1–4', 'The pattern ' + T('A^2-B^2'))], 3))
-DOTS4 = strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4)))
-LIE = strip(sb('😇', 90, 0), sb('😇', 170, .3), srock('🤥', 250))
 SPECS['u4l5'] = dict(
     warm=dict(title='Who Are We?', rule='A riddle from two whole numbers.', strip=strip(sb('❓', 130, 0, 36), sb('❓', 190, .5, 36), sblink('🤝', 250, 0, 34, 2.2, lo=.4)),
               body=BIG('“We <b>multiply to 36</b> and <b>add to 13</b>.”<small>Who are we?</small>'),
@@ -237,16 +382,11 @@ SPECS['u5l1'] = dict(
     extra_cards=['s3b', 's3c'], extra_expl=['matchRule'],
     practice=PR('ex3', '1–6', '7–12', 'Plot and read points, then growing patterns.', [('1–3', 'The Cartesian plane'), ('4–6', 'Growing patterns: table, graph and equation')], 4))
 SPECS['u5l2'] = dict(
-    warm=dict(title='Ice Cream and Sharks', rule='Does eating ice cream cause shark attacks? What is really going on?', strip=strip(sb('🍦', 110, 0), sdrive('🦈', 6, 0, 40, 46), sb('🍦', 250, .5)),
-              body=BIG('In a beach town, <b>ice cream sales</b> and <b>shark attacks</b> rise and fall together.<small>When one is high, so is the other. Every year.</small>'),
-              reveal='<b>Neither one causes the other.</b> Both depend on a third thing: hot weather. Hot days sell more cones and put more swimmers in the water.'),
+    warm=W['u5l2'],
     extra_cards=['s3b'], extra_expl=['linOrNot'],
     practice=PR('ex2', '1–7', '8–17', 'One relation described several ways, then mapping diagrams.', [('1–4', 'One relation, several descriptions'), ('5–7', 'Mapping diagrams')], 5))
 SPECS['u5l3'] = dict(
-    warm=dict(title='The High Dive', rule='A graph shows her height against time. Which <b>two points</b> on the graph do you already know?', strip=strip(sfloat('🤸', 120, 2.6, 0, 34), sb('💦', 200, .4, 34), sb('🌊', 250, 0, 34, 3, 2.2)),
-              body=BIG('A diver jumps from a <b>10 m</b> tower and hits the water <b>2 seconds</b> later.'),
-              nudge='Write each one as (time, height).',
-              reveal=f'{T("(0,\\ 10)")} and {T("(2,\\ 0)")}. At the jump, the <b>time</b> is zero. At the splash, the <b>height</b> is zero. Each point sits on an axis.'),
+    warm=W['u5l3'],
     extra_cards=['s2b'],
     practice=PR('ex3', '1–3', '4–11', 'Find the intercepts from each equation.', [('1–3', 'Intercepts from an equation')], 2))
 SPECS['u5l4'] = dict(
@@ -256,10 +396,7 @@ SPECS['u5l4'] = dict(
     extra_cards=['s3b'], extra_expl=['dots'],
     practice=PR('ex3', '1–4', '5–9', 'Domain and range from ordered pairs and graphs.', [('1–4', 'Domain and range')], 3))
 SPECS['u5l5'] = dict(
-    warm=dict(title='The Birthday Match', rule='What is the chance that at least two people in the room share a birthday?', strip=strip(sb('🎂', 130, 0), sfloat('🎈', 190, 3, 0), sfloat('🎈', 230, 3.6, .8), sb('🎂', 290, .5)),
-              body='<div class="vw-q">A class has <b>30 students</b>.</div>' + TILES(4, [('A', 'about 8%'), ('B', 'about 30%'), ('C', 'about 50%'), ('D', 'about 70%')], 30),
-              nudge='Guess first. Then check: does anyone in this room match?',
-              reveal='<b>D, about 70%.</b> Every person has exactly one birthday, but one birthday can belong to many people. There are 435 different pairs of people in a class of 30.'),
+    warm=W['u5l5'],
     extra_cards=['wub', 's1d', 's3b'], extra_expl=['nested'],
     practice=PR('s2b', '1–2', '3–6', 'Is it a function? Give a reason.', [('1', 'Is it a function? Give a reason'), ('2', 'Function or not, in many forms')], 1))
 SPECS['u5l6'] = dict(
@@ -270,16 +407,11 @@ SPECS['u5l6'] = dict(
     extra_cards=['s2b', 's3c', 's4b'], extra_expl=['mapNote'],
     practice=PR('ex3', '1–10', '11–21', 'Function notation, then evaluating.', [('1–5', 'Function notation, tables and graphs'), ('6–10', 'Evaluating functions')], 7))
 SPECS['u5l7'] = dict(
-    warm=dict(title='Celsius and Fahrenheit', rule='Is there a temperature where both scales show the <b>same number</b>?', strip=strip(sb('❄️', 120, 0, 34), srock('🌡️', 185, 10, 2.4, 44), sb('🔥', 250, .5, 34)),
-              body=BIG(f'{T("F=1.8C+32")}<small>Water freezes at 0 °C, which is 32 °F. It boils at 100 °C, which is 212 °F.</small>'),
-              nudge='Try a few. Do the two numbers get closer going up, or going down?',
-              reveal=f'<b>Yes: −40.</b> {T("1.8(-40)+32=-72+32=-40")}. At −40 it does not matter which scale you read.'),
+    warm=W['u5l7'],
     extra_expl=['exThree', 'cost'],
     practice=PR('ex3', '1–8', '9–16', 'Convert between notations, then read graphs both ways.', [('1–3', 'Converting between the two notations'), ('4–8', 'Reading a graph in both directions')], 5))
 SPECS['u5l8'] = dict(
-    warm=dict(title='The Bathtub Graph', rule='Which part of the graph shows Sam <b>getting into</b> the tub?', pic=BATH,
-              body=BIG('Sam runs a bath, gets in, soaks, gets out and pulls the plug.<small>The graph shows the depth of the water the whole time.</small>'),
-              reveal='<b>Part 3.</b> The tap is already off, but the water jumps up quickly because Sam’s body pushes it up. Part 5 is Sam getting out.'),
+    warm=W['u5l8'],
     replace=[('Watch the bath from the warm-up play out with its graph.', 'Watch the bath play out with its graph.'), ('<b>The drain rate in the warm-up.</b>', '<b>The drain rate for the bath.</b>')],
     extra_cards=['s1d'],
     practice=PR('ex1b', '1–5', '6–16', 'Read the story in each graph.', [('1–5', 'Reading the story in a graph')], 3))
@@ -291,30 +423,19 @@ SPECS['u5l9'] = dict(
 
 # ======================= Unit 6 =======================
 SPECS['u6l1'] = dict(
-    warm=dict(title='Can You Get Wi-Fi?', rule='Does house C get Wi-Fi?', strip=strip(sblink('📶', 150, 0, 40, 1.4), sb('🏠', 215, .3, 38)),
-              body=BIG('A Wi-Fi router reaches <b>5 units</b> in a straight line, in every direction.<small>House C is 4 units left and 4 units up from the router.</small>'),
-              nudge='Both numbers are less than 5. Is that enough?',
-              reveal=f'<b>No.</b> The straight-line distance is {T(r"\sqrt{4^2+4^2}=\sqrt{32}\approx5.66")} units, which is more than 5.'),
+    warm=W['u6l1'],
     extra_cards=['s2b', 's3b', 's4b'],
     practice=PR('ex4', '1–5', '6–11', 'Lengths of horizontal, vertical and slanted segments.', [('1–5', 'Lengths of segments')], 3))
 SPECS['u6l2'] = dict(
-    warm=dict(title='Ramp Rules', rule='How far out from the step must the ramp start?', strip=strip(sroad(), sdrive('🧑‍🦽', 6, 0, 38, 44, flip=False)),
-              body=BIG('A ramp may rise at most <b>1 cm for every 12 cm</b> it goes across.<small>A café door sits on top of one 60 cm step.</small>'),
-              reveal=f'<b>At least 720 cm, or 7.2 m.</b> Every 1 cm of rise needs 12 cm across, and {T(r"60\times12=720")}.'),
+    warm=W['u6l2'],
     extra_cards=['s7b'], extra_expl=['order'],
     practice=PR('ex4', '1–2', '3–18', 'Find the rise, the run and the slope.', [('1–2', 'Rise, run and slope')]))
 SPECS['u6l3'] = dict(
-    warm=dict(title='Trees in a Row', rule='Which tree is out of line?', strip=strip(*[sb('🌳', 80 + i * 50, i * .2, 34) for i in range(5)]),
-              body='<div class="vw-q">A farmer planted five fruit trees. She says all five are in <b>one perfect straight row</b>.</div>' + TILES(5, [('Apple', T('(0,\\ 1)')), ('Cherry', T('(3,\\ 3)')), ('Plum', T('(6,\\ 5)')), ('Peach', T('(9,\\ 8)')), ('Pear', T('(12,\\ 9)'))], 24),
-              nudge='How do you get from each tree to the next?',
-              reveal='<b>Peach.</b> Each step should be 3 across and 2 up. Peach is 3 up from Plum, so it sits one unit too high. It should be at (9, 7).'),
+    warm=W['u6l3'],
     extra_cards=['s2b', 's5b', 's5c', 's5d'],
     practice=PR('ex4', '1–7', '8–25', 'The slope formula, then collinear points.', [('1–4', 'The slope formula'), ('5–7', 'Collinear points')], 5))
 SPECS['u6l4'] = dict(
-    warm=dict(title='Low Battery', rule='Neither of them has a charger. Whose phone dies first?', strip=strip(sbatt(120, GREEN, 4), sbatt(200, AMBER, 6)),
-              body=BIG('At noon, Mia’s phone is at <b>90%</b> and loses <b>15%</b> every hour.<small>Leo’s phone is at 40% and loses 5% every hour.</small>'),
-              nudge='When does each phone reach 0%?',
-              reveal='<b>Mia’s.</b> Hers lasts 6 hours, until 6:00. Leo’s lasts 8 hours, until 8:00. Starting higher doesn’t help if you drain three times as fast.'),
+    warm=W['u6l4'],
     extra_cards=['s1b', 's2b', 's4b', 's4c', 's5b'],
     practice=PR('ex3', '1–5', '6–14', 'Linear tables, intercepts, domain and range.', [('1–2', 'Is it linear?'), ('3–4', 'Intercepts'), ('5', 'Domain and range')], 3))
 SPECS['u6l5'] = dict(
@@ -327,88 +448,53 @@ SPECS['u6l5'] = dict(
 
 # ======================= Unit 7 =======================
 SPECS['u7l1'] = dict(
-    warm=dict(title='Stacking Cups', rule='How many nested cups make a stack as tall as the door?', strip=strip(sb('🥤', 120, 0, 36), sb('🥤', 170, .3, 36), sb('🥤', 220, .6, 36), sb('🚪', 285, 0, 40, 2, 3)),
-              body=BIG('One plastic cup is <b>12 cm</b> tall. Each extra cup nested on top adds <b>2 cm</b>.<small>The classroom door is about 200 cm tall.</small>'),
-              nudge='How tall is a stack of 4 cups? Of 10?',
-              reveal=f'<b>95 cups.</b> The first cup gives 12 cm, and the other 188 cm takes 94 more cups. As a rule: {T("h=2n+10")}.'),
+    warm=W['u7l1'],
     extra_cards=['s4c'], extra_expl=['intercepts'],
     practice=PR('ex5', '1–3', '4–14', 'Linear or not? Then read the slope and the y-intercept.', [('1–3', 'Linear or not? Reading ' + T('m') + ' and ' + T('b'))], 2))
 SPECS['u7l2'] = dict(
-    warm=dict(title='The Cricket Thermometer', rule='You count <b>100 chirps</b> in one minute. How warm is it?', strip=strip(sb('🦗', 140, 0, 38, 12, .6), srock('🌡️', 215, 10, 2.4, 42)),
-              body=BIG('A cricket chirps faster when it is warmer, at a steady rate.<small>At 10 °C it chirps 20 times a minute. At 20 °C it chirps 60 times a minute.</small>'),
-              nudge='How many extra chirps for each extra degree?',
-              reveal='<b>30 °C.</b> 40 more chirps for 10 more degrees is 4 chirps per degree. From 60 chirps up to 100 is 40 more chirps, so 10 more degrees.'),
+    warm=W['u7l2'],
     extra_cards=['s2b', 's3b', 's3c'],
     practice=PR('ex2', '1–3', '4–14', 'Write the equation of each line.', [('1–3', 'Equations from ' + T('m') + ' and ' + T('b') + ', and from graphs')], 2))
 SPECS['u7l3'] = dict(
-    warm=dict(title='Concert Ticket Combos', rule='How many different combos spend <b>exactly $80</b>?', strip=strip(srock('🎟️', 130, 10, 1.8, 40), sb('🎸', 195, 0, 40), srock('🎟️', 260, 10, 1.8, 40)),
-              body=BIG('Lawn tickets cost <b>$5</b>. Floor tickets cost <b>$8</b>.<small>You have an $80 gift card. Buying zero of one kind is allowed.</small>'),
-              reveal=f'<b>Three.</b> 16 lawn and 0 floor, 8 lawn and 5 floor, or 0 lawn and 10 floor. They are the whole-number points on the line {T("5x+8y=80")}.'),
+    warm=W['u7l3'],
     extra_cards=['s1b', 's2b'], extra_expl=['judge'],
     practice=PR('ex2', '1–5', '6–18', 'Into general form, then out of it.', [('1–2', 'Into general form'), ('3–5', 'Out of general form')], 3))
 SPECS['u7l4'] = dict(
-    warm=dict(title='Hot Air Balloon', rule='If it keeps dropping at the same rate, at what time does it touch down?', strip=strip(sb('🎈', 170, 0, 44, 16, 3.5, 40), sb('☁️', 90, .5, 30, 3, 4, 30), sb('☁️', 260, 1.2, 30, 3, 4, 34)),
-              body=BIG('At <b>10:05</b> a hot-air balloon is <b>800 m</b> up.<small>It is dropping a steady 40 m every minute.</small>'),
-              nudge='How high was it at 10:00?',
-              reveal='<b>10:25.</b> 800 m at 40 m a minute takes 20 minutes. One point and one rate were enough to know the whole flight.'),
+    warm=W['u7l4'],
     extra_expl=['toMxB', 'race', 'read', 'solve6', 'solve7', 'solve8'],
     practice=PR('ex4', '1–6', '7–24', 'Write and use slope–point form.', [('1–6', 'Slope–point form')], 4))
 SPECS['u7l5'] = dict(
-    warm=dict(title='Same Line in Disguise', rule='Two of these are secretly the <b>same line</b>. Which two?', strip=strip(sroad(), sdrive('🏎️', 3.2, 0, 36, 44), sdrive('🚗', 5, 1, 36, 44)),
-              body=TILES(4, [('A', T(r'y=-\tfrac12x+3')), ('B', T('2x+3y-12=0')), ('C', T('y-1=2(x-3)')), ('D', T('4x-2y-10=0'))], 26),
-              nudge='No need to rearrange everything. What can you read off each one?',
-              reveal=f'<b>C and D.</b> Both are {T("y=2x-5")}: the same slope and the same y-intercept, written in different forms.'),
+    warm=W['u7l5'],
     extra_cards=['s3b', 's5c'],
     practice=PR('ex2', '1–4', '5–11', 'Graph each line without changing its form.', [('1–4', 'Graphing without changing the form')], 3))
 SPECS['u7l6'] = dict(
-    warm=dict(title='How Fast Does It Grow?', rule='Which of these is closest to that speed?', strip=strip(sspin('🌍', 150, 8, 38), sb('💅', 215, 0, 36)),
-              body='<div class="vw-q">The Atlantic Ocean gets about <b>2.5 cm wider every year</b>.</div>' + TILES(3, [('Hair', 'about 1 cm<br>every month'), ('Fingernails', 'about 3 mm<br>every month'), ('A lawn', 'about 5 cm<br>every week')], 26),
-              nudge='Careful: the units are all different.',
-              reveal='<b>Fingernails.</b> In centimetres per year: nails about 3.6, hair about 12 and a lawn about 260. Rates only compare when the units match.'),
+    warm=W['u7l6'],
     extra_cards=['s2b', 's3b', 's4b'],
     practice=PR('ex2', '1–3', '4–9', 'Read each rate of change and write the equation.', [('1–3', 'Rate of change and the equation')], 2))
 SPECS['u7l7'] = dict(
-    warm=dict(title='City Planner', rule='Which equation is the new road?', strip=strip(sroad(), sb('🏫', 60, 0, 34, 2, 3, 40), sdrive('🚧', 9, 0, 34, 44, flip=False)),
-              body='<div class="vw-q">Main Street is the line ' + T('x-2y+4=0') + '. A new road must pass through the school at <b>(8, 1)</b> and meet Main Street at a <b>right angle</b>.</div>' + TILES(4, [('A', T(r'y=\tfrac12x-3')), ('B', T('y=-2x+17')), ('C', T('y=-2x+1')), ('D', T('y=2x-15'))], 26),
-              nudge='What is the slope of Main Street?',
-              reveal=f'<b>B.</b> Main Street has slope {T(r"\tfrac12")}, so the new road has slope {T("-2")}. Through (8, 1): {T("1=-2(8)+b")}, so {T("b=17")}.'),
+    warm=W['u7l7'],
     replace=[(' (traps B and C in the warm-up).', '.')],
     extra_expl=['dials', 'rate'])
 
 # ======================= Unit 8 =======================
 SPECS['u8l1'] = dict(
-    warm=dict(title='Head Start', rule='Does Max catch Rosa before the finish line? If so, where?', strip=strip(sroad(), sdrive('🏃‍♀️', 6.5, 0, 34, 44), sdrive('🏃', 4.2, 1.2, 34, 44)),
-              body=BIG('A 200 m race. Rosa gets a <b>30 m head start</b> and runs <b>4 m</b> every second.<small>Max starts on the line and runs 6 m every second.</small>'),
-              nudge='Where is each runner after 5 seconds? After 10?',
-              reveal=f'<b>Yes, at the 90 m mark.</b> Max closes the gap by 2 m every second, so 30 m takes 15 seconds. Check: {T("30+4(15)=90")} and {T("6(15)=90")}.'),
+    warm=W['u8l1'],
     extra_cards=['s2b', 's3b', 's3c', 's4b', 's5b', 'ex5c', 'ex7c'],
     practice=PR('ex2', '1–3', '4–10', 'Solve each system by graphing, then check.', [('1–3', 'Solving systems by graphing')], 2))
 SPECS['u8l2'] = dict(
-    warm=dict(title='The Coin Jar', rule='How many of the coins are dimes?', pic=JAR,
-              body=BIG('A jar holds only <b>nickels</b> and <b>dimes</b>.<small>There are 20 coins, worth $1.40 altogether.</small>'),
-              nudge='What if all 20 were nickels?',
-              reveal='<b>8 dimes</b> and 12 nickels. Twenty nickels make $1.00. Each nickel you swap for a dime adds 5¢, and you need 40¢ more: 8 swaps.'),
+    warm=W['u8l2'],
     extra_cards=['s1e', 's3b'],
     practice=PR('ex3', '1–3', '4–11', 'Solve each system by substitution, then check.', [('1–3', 'Solving by substitution')], 2))
 SPECS['u8l3'] = dict(
-    warm=dict(title='Weigh the Pets', rule='All three pets on one big scale: what would it read?', strip=strip(sb('🐈', 110, 0, 38), sb('🐕', 170, .3, 38), sb('🐇', 230, .6, 38), srock('⚖️', 295, 8, 2.2, 38)),
-              body='<div class="vw-q">The vet’s scale only works with <b>two pets</b> on it at a time.</div>' + TILES(3, [('Scale A', 'cat + dog<br><b>14 kg</b>'), ('Scale B', 'dog + rabbit<br><b>12 kg</b>'), ('Scale C', 'cat + rabbit<br><b>6 kg</b>')], 26),
-              nudge='What happens if you add all three readings?',
-              reveal='<b>16 kg.</b> The three readings add to 32 kg, and that total weighs every pet exactly twice. Half of 32 is 16.'),
+    warm=W['u8l3'],
     extra_cards=['warm2', 's2c', 's4b', 's5b'],
     practice=PR('ex5', '1–4', '5–14', 'Add or subtract directly, then scale first.', [('1–2', 'Adding or subtracting directly'), ('3–4', 'Scaling one or both equations')], 3))
 SPECS['u8l4'] = dict(
-    warm=dict(title='How Old Am I?', rule='How old is Sam right now?', strip=strip(sb('👨', 130, 0, 42), sb('👦', 190, .4, 34), sblink('🎂', 250, 0, 34, 2.4)),
-              body=BIG('Sam’s dad says: “Right now I’m <b>4 times</b> your age.<small>In 20 years, I’ll be only twice your age.”</small>'),
-              nudge='Try an age for Sam and test it.',
-              reveal=f'<b>Sam is 10</b> and his dad is 40. In 20 years they are 30 and 60. As equations: {T("d=4s")} and {T("d+20=2(s+20)")}.'),
+    warm=W['u8l4'],
     extra_cards=['s1b', 'ex2c', 'ex3c', 'ex4c', 'ex5c'],
     practice=PR('ex3', '1–5', '6–15', 'Introduce variables, form a system, solve and check.', [('1–5', 'Word problems with systems')], 3))
 SPECS['u8l5'] = dict(
-    warm=dict(title='Upstream, Downstream', rule='How fast is the current?', strip=strip(sdrive('🛶', 4, 0, 38, 44), sb('🌊', 80, 0, 26, 3, 2, 52), sb('🌊', 260, .8, 26, 3, 2, 52)),
-              body=BIG('Paddling just as hard both ways, a kayak goes <b>8 km/h downstream</b> and <b>4 km/h upstream</b>.'),
-              nudge='And how fast would the kayak go on a still lake?',
-              reveal=f'<b>2 km/h.</b> The kayak alone does 6 km/h. Downstream is {T("6+2")} and upstream is {T("6-2")}. The two speeds differ by two currents.'),
+    warm=W['u8l5'],
     extra_cards=['s1b', 's2c', 's2e'],
     practice=PR('ex3', '1–5', '6–9', 'Mixture and motion problems.', [('1–5', 'Mixture and motion problems')], 3))
 SPECS['u8l6'] = dict(
@@ -420,100 +506,58 @@ SPECS['u8l6'] = dict(
 
 # ======================= Unit 9 =======================
 SPECS['u9l1'] = dict(
-    warm=dict(title='Shadow Height', rule='How tall is the flagpole?', strip=strip(sspin('☀️', 80, 10, 36), sb('🧍', 180, 0, 36, 2, 3), srock('🚩', 250, 6, 2.6, 42)),
-              body=BIG('A student <b>1.6 m</b> tall casts a shadow <b>2 m</b> long.<small>At the same moment, the school flagpole’s shadow is 15 m long.</small>'),
-              nudge='Right now, how does anything’s height compare with its shadow?',
-              reveal=f'<b>12 m.</b> Everything is 0.8 times as tall as its shadow, because {T(r"1.6\div2=0.8")}. So the flagpole is {T(r"0.8\times15=12")} m.'),
+    warm=W['u9l1'],
     extra_cards=['s4b'],
     practice=PR('ex3', '1–5', '6–12', 'Name the sides, then write the ratios.', [('1–5', 'Naming sides and writing ratios')], 3))
 SPECS['u9l2'] = dict(
-    warm=dict(title='The 4-to-1 Ladder Rule', rule='A ladder that follows the rule makes what angle with the ground?', strip=strip(srock('🪜', 170, 8, 2.6, 46)),
-              body='<div class="vw-q">Safety sticker: “For every <b>4 m up</b> the wall, put the foot <b>1 m out</b>.”</div>' + TILES(4, [('A', 'about 45°'), ('B', 'about 60°'), ('C', 'about 76°'), ('D', 'about 86°')], 30),
-              nudge='Guess first. Does a longer ladder lean at a different angle?',
-              reveal='<b>C, about 76°.</b> Every ladder that follows the rule leans at the same angle, long or short: the same ratio of sides always gives the same angle.'),
+    warm=W['u9l2'],
     extra_expl=['tan90'],
     practice=PR('ex3', '1–5', '6–12', 'Calculator values, then how the ratios change.', [('1', 'Calculator values'), ('2–4', 'Why the ratios grow or shrink'), ('5', 'Comparing ratios without a calculator')], 3))
 SPECS['u9l3'] = dict(
-    warm=dict(title='Kite Height', rule='About how high is the kite above your hand?', strip=strip(sfloat('🪁', 150, 3.4, 0, 36), sfloat('☁️', 240, 5, 1, 28)),
-              body='<div class="vw-q">You let out all <b>50 m</b> of string. It makes a <b>40°</b> angle with the level ground.</div>' + TILES(4, [('A', 'about 22 m'), ('B', 'about 29 m'), ('C', 'about 32 m'), ('D', 'about 38 m')], 30),
-              nudge='Guess first. It has to be less than 50 m. Why?',
-              reveal=f'<b>C, about 32 m.</b> The string is the hypotenuse and the height is opposite the 40° angle: {T(r"h=50\sin40^\circ\approx32.1")} m.'),
+    warm=W['u9l3'],
     extra_cards=['warm2', 's2c', 's3b', 's3c', 's4b'],
     practice=PR('ex5', '1–6', '7–14', 'Find each missing side.', [('1–6', 'Finding a missing side')], 4))
 SPECS['u9l4'] = dict(
-    warm=dict(title='Roof Pitch', rule='A 24/12 roof is twice as steep. What angle does it make with the horizontal?', strip=strip(sb('🏠', 150, 0, 42, 3, 2.6), srock('📐', 215, 10, 2.2, 36)),
-              body='<div class="vw-q">A <b>12/12</b> roof rises 12 for every 12 across. It makes a <b>45°</b> angle with the horizontal.</div>' + TILES(3, [('A', 'about 63°'), ('B', 'about 75°'), ('C', '90°')], 30),
-              nudge='Sketch it: up 24, across 12.',
-              reveal=f'<b>A, about 63°.</b> Doubling the steepness does not double the angle. Today’s tool finds it exactly: {T(r"\tan^{-1}(2)\approx63.4^\circ")}.'),
+    warm=W['u9l4'],
     extra_cards=['s1b'],
     practice=PR('ex2', '1–7', '8–16', 'Inverse ratios, then an angle from two sides.', [('1–2', 'Inverse trigonometric ratios'), ('3–7', 'An angle from two known sides')], 4))
 SPECS['u9l5'] = dict(
-    warm=dict(title='The Leaning Tower', rule='About how far sideways is the top shifted?', strip=strip(srock('🗼', 170, 5, 3.5, 48)),
-              body='<div class="vw-q">The tower of Pisa is about <b>56 m</b> long and leans about <b>4°</b> from upright.</div>' + TILES(4, [('A', 'about 0.4 m'), ('B', 'about 2 m'), ('C', 'about 4 m'), ('D', 'about 10 m')], 30),
-              nudge='Guess first. Then sketch the right triangle.',
-              reveal=f'<b>C, about 4 m.</b> The tower is the hypotenuse and the shift is opposite the 4° angle: {T(r"56\sin4^\circ\approx3.9")} m.'),
+    warm=W['u9l5'],
     extra_cards=['s3e'],
     practice=PR('ex2', '1–6', '7–14', 'Choose the tool, then find each measure.', [('1–6', 'Choosing the right tool')], 3))
 SPECS['u9l6'] = dict(
-    warm=dict(title='Lighthouse Lookout', rule='Boat C is seen at <b>15°</b> down, one third of boat A’s angle. How far is C from the lighthouse?', strip=strip(sdrive('⛵', 9, 0, 34, 46), sblink('💡', 30, 0, 26, 1.8, 26)),
-              body='<div class="vw-q">The keeper’s eyes are <b>40 m</b> above the water. Boat A is seen <b>45°</b> below the horizontal, so it is 40 m from the lighthouse.</div>' + TILES(3, [('A', '80 m'), ('B', '120 m'), ('C', 'about 149 m')], 30),
-              nudge='One third of the angle. Three times the distance?',
-              reveal=f'<b>C, about 149 m.</b> {T(r"\dfrac{40}{\tan15^\circ}\approx149")}. A third of the angle is not three times the distance.'),
+    warm=W['u9l6'],
     extra_cards=['s2b', 's3c', 's5b'],
     practice=PR('ex3', '1–5', '6–11', 'Eye level, elevation and depression.', [('1–5', 'Multi-step problems')], 3))
 SPECS['u9l7'] = dict(
-    warm=dict(title='The Unreachable Cliff', rule='Without ever crossing the river: how tall is the cliff?', strip=strip(sb('🏔️', 250, 0, 44, 2, 3), sdrive('🚶', 8, 0, 32, 46, x0=20, x1=190)),
-              body=BIG('A river blocks the base of a cliff. From point A, the angle up to the top is <b>30°</b>.<small>You walk 40 m straight toward the cliff to point B. Now the angle up to the top is 60°.</small>'),
-              nudge='Sketch it. What are the angles of the triangle A, B, top?',
-              reveal=f'<b>About 34.6 m.</b> Triangle A, B, top has two 30° angles, so the sight line from B is also 40 m. Then {T(r"h=40\sin60^\circ\approx34.6")} m.'),
+    warm=W['u9l7'],
     extra_cards=['s2c', 's4b'],
     practice=PR('ex3', '1–3', '4–11', 'Two right triangles sharing a side.', [('1–3', 'Two right triangles sharing a side')], 2))
 SPECS['u9l8'] = dict(
-    warm=dict(title='The Great Pyramid', rule='What angle does a face make with the ground?', strip=strip(sroad(56), sdrive('🐫', 9, 0, 34, 44), sdrive('🐫', 9, 1.5, 28, 46)),
-              body='<div class="vw-q">The Great Pyramid is about <b>146 m</b> tall. Its square base is about <b>230 m</b> wide.</div>' + TILES(4, [('A', 'about 32°'), ('B', 'about 38°'), ('C', '45°'), ('D', 'about 52°')], 30),
-              nudge='Steeper or shallower than 45°? How can you tell without a calculator?',
-              reveal=f'<b>D, about 52°.</b> The height is more than half the base (115 m), so it is steeper than 45°. {T(r"\tan^{-1}\left(\tfrac{146}{115}\right)\approx51.8^\circ")}.'),
+    warm=W['u9l8'],
     extra_cards=['s7'], extra_expl=['cofunction'])
 
 # ======================= Unit 10 =======================
 SPECS['u10l1'] = dict(
-    warm=dict(title='Your Body Is a Ruler', rule='Your arm span, fingertip to fingertip, is closest to which of these?', strip=strip(sb('🙆', 150, 0, 42), srock('📏', 215, 12, 2.2, 38)),
-              body='<div class="vw-q">Stretch your arms out wide.</div>' + TILES(3, [('A', 'half your height'), ('B', 'your height'), ('C', 'twice your height')], 28),
-              nudge='Guess first. Then test it with a partner.',
-              reveal='<b>B, your height.</b> For most people the two are within a few centimetres. You carry a whole set of rulers around with you.'),
+    warm=W['u10l1'],
     extra_expl=['towel', 'shed', 'wheel', 'card', 'km'],
     practice=PR('ex3', '1–4', '5–18', 'Referents and estimating.', [('1–4', 'Referents and estimating')], 3))
 SPECS['u10l2'] = dict(
-    warm=dict(title='Crossing the Border', rule='Which speed limit is faster?', strip=strip(sroad(), sdrive('🚗', 4.5, 0, 38, 44), sb('🛂', 300, 0, 30, 2, 3, 40)),
-              body='<div class="vw-q">You drive north from Montana into Alberta, and the speed limit sign changes.</div>' + TILES(2, [('Montana', '65 miles per hour'), ('Alberta', '110 km per hour')], 30),
-              nudge='Which is longer, a mile or a kilometre?',
-              reveal=f'<b>Alberta’s.</b> One mile is about 1.6 km, so 65 miles per hour is about {T(r"65\times1.6=104")} km/h.'),
+    warm=W['u10l2'],
     extra_cards=['s4b'], extra_expl=['twoways', 'heights', 'roundup'],
     practice=PR('ex3', '1–7', '8–23', 'The metric number line, proportions and unit analysis.', [('1–7', 'SI review')], 4))
 SPECS['u10l3'] = dict(
-    warm=dict(title='Roll It Two Ways', rule='Fill both tubes with rice. Which one holds more?', strip=strip(srock('📄', 140, 14, 2, 40), sb('🍚', 210, 0, 38)),
-              body='<div class="vw-q">Roll one sheet of paper into a tube the <b>tall</b> way. Roll another sheet the <b>short</b> way. No overlap.</div>' + TILES(3, [('A', 'the tall, thin tube'), ('B', 'the short, wide tube'), ('C', 'they hold the same')], 26),
-              nudge='Both use exactly the same amount of paper.',
-              reveal='<b>B, the short, wide tube.</b> It holds about 30% more. The radius gets squared in the volume, so a wider base matters more than extra height.'),
+    warm=W['u10l3'],
     extra_cards=['s4c', 's7b'],
     practice=PR('ex4', '1–5', '6–16', 'Volume and capacity units, then surface area and volume.', [('1', 'Volume and capacity units'), ('2–5', 'Surface area and volume')], 3))
 SPECS['u10l4'] = dict(
-    warm=dict(title='The Popcorn Deal', rule='Which is the better deal?', strip=strip(sb('🍿', 130, 0, 34), sb('🍿', 205, .4, 48)),
-              body=BIG('Movie night. A <b>cone</b> of popcorn costs <b>$4</b>. A <b>tub</b> costs <b>$9</b>.<small>The cone and the tub have the same radius and the same height.</small>'),
-              nudge='Guess: how many full cones would it take to fill the tub?',
-              reveal='<b>The tub.</b> It holds exactly three cones. Three cones would cost $12, and the tub is $9.'),
+    warm=W['u10l4'],
     extra_cards=['ex1n'], extra_expl=['hex', 'scale', 'shed'],
     practice=PR('ex2', '1–6', '7–18', 'Pyramids and cones.', [('1–6', 'Pyramids and cones')], 4))
 SPECS['u10l5'] = dict(
-    warm=dict(title='The Tennis Ball Can', rule='Which is longer?', strip=strip(sb('🎾', 130, 0, 34, 14, .9), sb('🎾', 180, .2, 34, 14, .9), sb('🎾', 230, .4, 34, 14, .9)),
-              body='<div class="vw-q">Three tennis balls fit snugly in a can. They touch the sides, the bottom and the lid.</div>' + TILES(3, [('A', 'the can’s height'), ('B', 'the distance around the can'), ('C', 'they are the same')], 26),
-              nudge='Measure both in tennis balls.',
-              reveal=f'<b>B, the distance around.</b> The height is 3 ball-widths. The distance around is {T(r"\pi")} ball-widths, about 3.14.'),
+    warm=W['u10l5'],
     extra_cards=['s1b', 's1d', 's2b', 's2c', 's2e'],
     practice=PR('ex3', '1–4', '5–16', 'Spheres and hemispheres.', [('1–4', 'Spheres and hemispheres')], 3))
 SPECS['u10l6'] = dict(
-    warm=dict(title='Fill the Classroom', rule='About how many basketballs would fill the whole room?', strip=strip(sb('🏀', 110, 0, 34, 16, .8), sb('🏀', 170, .25, 34, 16, .8), sb('🏀', 230, .5, 34, 16, .8)),
-              body='<div class="vw-q">A classroom is about <b>9 m</b> by <b>8 m</b> by <b>3 m</b>. A basketball is about <b>24 cm</b> across.</div>' + TILES(4, [('A', 'about 150'), ('B', 'about 1&nbsp;500'), ('C', 'about 15&nbsp;000'), ('D', 'about 150&nbsp;000')], 24),
-              nudge='How many fit in one row along the 9 m wall?',
-              reveal=f'<b>C, about 15&nbsp;000.</b> Stacked in rows: 37 along one wall, 33 along the other and 12 layers high. {T(r"37\times33\times12\approx14\,650")}.'),
+    warm=W['u10l6'],
     extra_expl=['sizeUp', 'wrench'])

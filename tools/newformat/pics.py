@@ -136,3 +136,79 @@ def ssquares(n=12):
     return ''.join(f'<rect x="{30 + i*24}" y="20" width="20" height="20" rx="3" fill="{[BLUE, AMBER, GREEN, RED][i % 4]}">{blink(2.4, i * .2, .2)}</rect>' for i in range(n))
 
 STRIPS = {}
+
+# ---------------- 10C second pass (2026-11-11): pictures for the rewritten warm-ups ----------------
+def _batt_graph():
+    X = lambda h: 50 + h * 50; Y = lambda p: 210 - p * 1.8
+    g = ''.join(f'<line x1="{X(h)}" y1="{Y(0)}" x2="{X(h)}" y2="{Y(100)}" stroke="{LINE}" stroke-width="1.5"/>' for h in range(6))
+    g += ''.join(f'<line x1="{X(0)}" y1="{Y(p)}" x2="{X(5)}" y2="{Y(p)}" stroke="{LINE}" stroke-width="1.5"/>' for p in range(0, 101, 20))
+    g += f'<line x1="{X(0)}" y1="{Y(0)}" x2="{X(5)}" y2="{Y(0)}" stroke="{INK}" stroke-width="3"/><line x1="{X(0)}" y1="{Y(0)}" x2="{X(0)}" y2="{Y(100)}" stroke="{INK}" stroke-width="3"/>'
+    g += ''.join(f'<text x="{X(h)}" y="230" font-size="15" fill="{INK}" text-anchor="middle">{h}</text>' for h in range(6))
+    g += ''.join(f'<text x="{X(0) - 8}" y="{Y(p) + 5}" font-size="15" fill="{INK}" text-anchor="end">{p}</text>' for p in range(0, 101, 20))
+    g += f'<text x="{X(2.5)}" y="248" font-size="15" fill="{INK}" text-anchor="middle">hours since unplugging</text><text x="12" y="{Y(50)}" font-size="15" fill="{INK}" text-anchor="middle" transform="rotate(-90 12 {Y(50)})">battery (%)</text>'
+    d = f'M{X(0)} {Y(80)} L{X(4)} {Y(0)}'
+    g += f'<path d="{d}" fill="none" stroke="{BLUE}" stroke-width="4.5" stroke-linecap="round"/>'
+    g += f'<g><animateMotion dur="5s" repeatCount="indefinite" path="{d}"/><text x="0" y="-10" font-size="22" text-anchor="middle">📱</text><circle r="6" fill="{RED}"/></g>'
+    return g
+BATTGRAPH = svg(_batt_graph(), 'A graph of phone battery percent against hours since unplugging', '0 0 330 255')
+
+def _walk3():
+    out = ''
+    paths = {'A': [(0, 0), (40, 35), (65, 35), (82, 100)], 'B': [(0, 0), (25, 45), (50, 45), (100, 100)], 'C': [(0, 0), (40, 30), (70, 100), (100, 100)]}
+    for i, (lab, pts) in enumerate(paths.items()):
+        ox, oy, W, H = 22 + i * 108, 20, 90, 110
+        P = lambda p: (ox + p[0] * W / 100, oy + H - p[1] * H / 100)
+        d = 'M' + ' L'.join(f'{P(p)[0]:.1f} {P(p)[1]:.1f}' for p in pts)
+        out += (f'<rect x="{ox - 6}" y="{oy - 8}" width="{W + 14}" height="{H + 16}" rx="10" fill="#fffdf6" stroke="{LINE}" stroke-width="2"/>'
+                f'<line x1="{ox}" y1="{oy + H}" x2="{ox + W}" y2="{oy + H}" stroke="{INK}" stroke-width="2.5"/><line x1="{ox}" y1="{oy}" x2="{ox}" y2="{oy + H}" stroke="{INK}" stroke-width="2.5"/>'
+                f'<path d="{d}" fill="none" stroke="{BLUE}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>'
+                f'<circle r="5.5" fill="{RED}"><animateMotion dur="4s" begin="{i * .3}s" repeatCount="indefinite" path="{d}"/></circle>'
+                f'<text x="{ox + W / 2}" y="{oy + H + 34}" font-size="22" font-weight="800" fill="{INK}" text-anchor="middle">{lab}</text>')
+    out += f'<text x="165" y="186" font-size="13" fill="{INK}" text-anchor="middle">across: time · up: distance from home</text>'
+    return out
+WALK3 = svg(_walk3(), 'Three distance-time graphs labelled A, B and C', '0 0 340 195')
+
+def _tree():
+    g = f'<line x1="10" y1="210" x2="325" y2="210" stroke="{INK}" stroke-width="3"/>'
+    g += f'<g><animateTransform attributeName="transform" type="rotate" values="0 300 34;360 300 34" dur="14s" repeatCount="indefinite"/><text x="300" y="34" font-size="34" text-anchor="middle" dominant-baseline="central">☀️</text></g>'
+    # post: 2 m tall, 3 m shadow (scale 13 px per m); tree: 15 m shadow
+    s = 14.5
+    g += f'<rect x="37" y="{210 - 2*s}" width="7" height="{2*s}" fill="{INK}"/><polygon points="41,{210 - 2*s} 41,210 {41 + 3*s},210" fill="{AMBER}" opacity=".35"/>'
+    g += f'<text x="32" y="{210 - s + 5}" font-size="15" fill="{INK}" text-anchor="end">2 m</text><text x="{41 + 1.5*s}" y="228" font-size="14" fill="{INK}" text-anchor="middle">3 m</text>'
+    tx = 100; th = 10 * s
+    g += f'<polygon points="{tx},{210 - th} {tx},210 {tx + 15*s},210" fill="{GREEN}" opacity=".18"/>'
+    g += f'<rect x="{tx - 5}" y="{210 - th + 30}" width="10" height="{th - 30}" fill="#7a5a3a"/><circle cx="{tx}" cy="{210 - th + 26}" r="30" fill="#4f8f4f"/>'
+    g += f'<text x="{tx - 40}" y="{210 - th/2}" font-size="26" font-weight="800" fill="{BLUE}" text-anchor="middle">?</text><text x="{tx + 7.5*s}" y="228" font-size="14" fill="{INK}" text-anchor="middle">15 m</text>'
+    return g
+TREESHADOW = svg(_tree(), 'A post and a tree with their shadows on the ground', '0 0 330 240')
+
+def _ramp():
+    g = f'<polygon points="30,210 300,210 300,98" fill="#e9dcc3" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>'
+    g += f'<rect x="286" y="196" width="14" height="14" fill="none" stroke="{INK}" stroke-width="2"/>'
+    g += f'<path d="M100 210 A70 70 0 0 0 94.6 183.1" fill="none" stroke="{RED}" stroke-width="4" stroke-dasharray="80" stroke-dashoffset="80"><animate attributeName="stroke-dashoffset" values="80;0;0;80" keyTimes="0;.35;.85;1" dur="3.5s" repeatCount="indefinite"/></path>'
+    g += f'<text x="122" y="200" font-size="24" font-weight="800" fill="{RED}">?</text>'
+    g += f'<text x="165" y="234" font-size="17" fill="{INK}" text-anchor="middle">12 m across</text><text x="312" y="160" font-size="17" fill="{INK}">5 m</text><text x="312" y="180" font-size="17" fill="{INK}">up</text>'
+    g += f'<g><animateMotion dur="3.5s" repeatCount="indefinite" path="M40 200 L285 98"/><text x="0" y="0" font-size="26" text-anchor="middle" transform="scale(-1 1)">🛹</text></g>'
+    return g
+RAMPANGLE = svg(_ramp(), 'A ramp 12 m across and 5 m up with its bottom angle marked', '0 0 350 245')
+
+def _cliff():
+    ex, ey, bx, by = 70, 62, 312, 202
+    g = f'<rect x="0" y="{by}" width="340" height="40" fill="#cfe2f3"/><polygon points="0,{ey + 26} 66,{ey + 26} 86,{by} 0,{by}" fill="#b9a27f" stroke="{INK}" stroke-width="3"/>'
+    g += f'<text x="{ex - 18}" y="{ey + 22}" font-size="30" text-anchor="middle">🧍</text>'
+    g += f'<line x1="{ex}" y1="{ey}" x2="335" y2="{ey}" stroke="{INK}" stroke-width="2" stroke-dasharray="7 6"/><line x1="96" y1="{by}" x2="{bx}" y2="{by}" stroke="{INK}" stroke-width="2" stroke-dasharray="7 6"/>'
+    g += f'<line x1="{ex}" y1="{ey}" x2="{bx}" y2="{by}" stroke="{RED}" stroke-width="3"><animate attributeName="stroke-opacity" values="1;.35;1" dur="2s" repeatCount="indefinite"/></line>'
+    g += f'<path d="M{ex + 60} {ey} A60 60 0 0 1 {ex + 60*0.866:.1f} {ey + 30}" fill="none" stroke="{BLUE}" stroke-width="3.5"/><text x="{ex + 70}" y="{ey + 26}" font-size="18" font-weight="800" fill="{BLUE}">30°</text>'
+    g += f'<path d="M{bx - 60} {by} A60 60 0 0 1 {bx - 60*0.866:.1f} {by - 30}" fill="none" stroke="{BLUE}" stroke-width="3.5"/><text x="{bx - 92}" y="{by - 8}" font-size="22" font-weight="800" fill="{BLUE}">?</text>'
+    g += f'<g>{bob(4, 2.2)}<text x="{bx + 4}" y="{by - 2}" font-size="30" text-anchor="middle">⛵</text></g>'
+    return g
+CLIFFZ = svg(_cliff(), 'A person on a cliff looking down 30 degrees at a boat', '0 0 340 240')
+
+def _ballcan():
+    g = f'<rect x="95" y="60" width="140" height="160" fill="#eef3fb" stroke="{INK}" stroke-width="4"/>'
+    g += f'<ellipse cx="165" cy="220" rx="70" ry="13" fill="#dfe7f4" stroke="{INK}" stroke-width="4"/>'
+    g += (f'<g><animateTransform attributeName="transform" type="translate" values="0 -170;0 0;0 0;0 -170" keyTimes="0;.3;.85;1" dur="4s" repeatCount="indefinite"/>'
+          f'<circle cx="165" cy="150" r="69" fill="{AMBER}" stroke="{INK}" stroke-width="3"/><path d="M107 120 Q165 160 223 120" fill="none" stroke="#fff" stroke-width="4"/><path d="M107 180 Q165 140 223 180" fill="none" stroke="#fff" stroke-width="4"/></g>')
+    g += f'<ellipse cx="165" cy="60" rx="70" ry="13" fill="none" stroke="{INK}" stroke-width="4"/>'
+    return g
+BALLCAN = svg(_ballcan(), 'A ball dropping into a can that fits it snugly', '0 0 330 245')

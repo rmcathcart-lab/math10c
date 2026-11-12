@@ -64,15 +64,16 @@ def run(key):
     <div class="bk-ans">{w['reveal']}</div></div>'''
     pic = f'<div class="vw-art">{w["pic"]}</div>' if w.get('pic') else ''
     mq = re.match(r'<div class="vw-q">(.*)</div>$', w['body'], flags=re.S)
-    mt = re.match(r'<div class="vw-q">(.*?)</div>(<div class="vw-tiles".*</div>)$', w['body'], flags=re.S)
+    mt = re.match(r'(?:<div class="vw-q">(.*?)</div>)?(<div class="vw-tiles".*</div>)$', w['body'], flags=re.S)
     if mt and w['rule'].rstrip().endswith('?'):
         # situation, then the choices, then the question, all in one box
-        inner = f'<div class="vw-seq{" has-art" if pic else ""}"><div class="vw-txt"><p class="vw-ctx">{mt.group(1)}</p>{mt.group(2)}<p class="vw-ask">{w["rule"]}</p></div>{pic}</div>'
+        ctx = re.sub(r'<small[^>]*>(.*?)</small>', r'</p><p class="vw-ctx">\1', mt.group(1), flags=re.S) if mt.group(1) else ''
+        inner = f'<div class="vw-seq{" has-art" if pic else ""}{" art-wide" if w.get("wide") else ""}"><div class="vw-txt">{f"<p class=vw-ctx>{ctx}</p>" if ctx else ""}{mt.group(2)}<p class="vw-ask">{w["rule"]}</p></div>{pic}</div>'
         head = ''
     elif mq and w['rule'].rstrip().endswith('?'):
         # read in order: the situation first, then the question (Ryan: the question was small and above a big box)
         ctx = re.sub(r'<small[^>]*>(.*?)</small>', r'</p><p class="vw-ctx">\1', mq.group(1), flags=re.S)
-        inner = f'<div class="vw-seq{" has-art" if pic else ""}"><div class="vw-txt"><p class="vw-ctx">{ctx}</p><p class="vw-ask">{w["rule"]}</p></div>{pic}</div>'
+        inner = f'<div class="vw-seq{" has-art" if pic else ""}{" art-wide" if w.get("wide") else ""}"><div class="vw-txt"><p class="vw-ctx">{ctx}</p><p class="vw-ask">{w["rule"]}</p></div>{pic}</div>'
         head = ''
     else:
         inner = (f'<div class="vw-seq has-art"><div class="vw-txt">{w["body"]}</div>{pic}</div>' if pic else w['body'])

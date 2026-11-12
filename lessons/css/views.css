@@ -66,3 +66,7 @@ body.viewer #tb .vw-hswitch, .vw-hswitch.in-menu { display: inline-flex; }
 [data-ink="warmq"] { position: relative; }
 .vw-strip { position: absolute; top: 10px; right: 24px; width: 320px; height: 56px; pointer-events: none; }
 .vw-strip svg { width: 100%; height: 100%; display: block; overflow: hidden; }
+/* warm-ups whose picture carries the information (a graph, a labelled diagram): give the picture more room */
+.vw-seq.has-art.art-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
+.vw-seq.art-wide .vw-art svg { max-width: 560px; }
+@media (max-width: 760px) { .vw-seq.has-art.art-wide { grid-template-columns: 1fr; } }
