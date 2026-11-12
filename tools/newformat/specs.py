@@ -317,7 +317,7 @@ SPECS['u3l6'] = dict(
               body=BIG('Think of a number. <b>Add 3.</b> <b>Double it.</b> <b>Subtract 4.</b> <b>Halve it.</b><small>Now subtract the number you started with.</small>'),
               nudge='Compare answers with the person beside you.',
               reveal=f'<b>Everyone gets 1.</b> Start with {T("n")}: {T(r"n+3\to2n+6\to2n+2\to n+1")}, and taking away {T("n")} leaves 1.'),
-    extra_expl=['classify', 'zeroPairs', 'tileMul', 'foil', 'audit', 'square', 'frame', 'groups', 'grid', 'three', 'complete', 'box'], replace_all=[('four pieces, not two:</p>', 'four pieces, not two.</p>')],
+    extra_expl=['classify', 'zeroPairs', 'tileMul', 'foil', 'audit', 'square', 'frame', 'groups', 'grid', 'three', 'complete', 'box'], replace_all=[(' <span class="muted">(The groups explainer in Section 5 has an Example 9(b) check.)</span>', ''), ('four pieces, not two:</p>', 'four pieces, not two.</p>')],
     practice=PR('ex7', '1–6', '7–13', 'Multiple choice from across the unit.', [('1–6', 'Multiple choice')], 5))
 
 # ======================= Unit 4 =======================
@@ -551,7 +551,7 @@ SPECS['u9l8'] = dict(
 # ======================= Unit 10 =======================
 SPECS['u10l1'] = dict(
     warm=W['u10l1'],
-    extra_expl=['towel', 'shed', 'wheel', 'card', 'km'],
+    extra_expl=['towel', 'shed', 'wheel', 'km'],
     practice=PR('ex3', '1–4', '5–18', 'Referents and estimating.', [('1–4', 'Referents and estimating')], 3))
 SPECS['u10l2'] = dict(
     warm=W['u10l2'],
