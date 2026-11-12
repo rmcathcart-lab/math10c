@@ -4,6 +4,7 @@ kept in orig/<key>.html, so it can be re-run)."""
 import re, sys, os, subprocess
 REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')); HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import emodraw
 from specs import SPECS
 T = lambda x: '<span class="tex">%s</span>' % x
 
@@ -110,6 +111,7 @@ def run(key):
         _, j = sec_span(pr['after']); s = s[:j] + card + s[j:]
         m = re.search(r'(<a class="assign" href="[^"]*">\s*<div><div class="kicker">Your turn</div><b>)Assignment %s — [^<]*((?:<span class="tex">[^<]*</span>[^<]*)*)(</b>)' % l, s); assert m, (key, 'assign')
         s = s[:m.start()] + m.group(1) + f"Assignment {l} · {_qw(pr['rest'])}" + m.group(3) + s[m.end():]
+    s = emodraw.convert_page(s)  # drawn pictures instead of emoji (2026-11-12)
     open(path, 'w').write(s)
     secs = re.findall(r'<section ([^>]*)>', s)
     cls = [re.search(r'data-section="([^"]*)"', a).group(1) for a in secs if 'data-extra' not in a]

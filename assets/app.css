@@ -797,17 +797,29 @@ button.ulv:hover { border-color: var(--brand); }
 .notes-head h2 { margin: 0 0 4px; font-size: 22px; }
 .notes-head p { margin: 0; font-size: 14.5px; }
 .notes-list { display: flex; flex-direction: column; gap: 8px; overflow: auto; padding: 2px; }
-.notes-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 10px 12px; background: var(--card, #fff); border: 1px solid var(--line); border-radius: 14px; }
+.notes-row { display: flex; flex-direction: column; gap: 9px; padding: 10px 12px 12px; background: var(--card, #fff); border: 1px solid var(--line); border-radius: 14px; }
 .notes-row.is-cur { border-color: var(--uc); box-shadow: 0 0 0 1px var(--uc) inset; }
-.notes-n { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--ucl); color: var(--ucd); font-weight: 800; font-size: 18px; }
+.notes-top { display: flex; align-items: center; gap: 12px; }
+.notes-n { flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--ucl); color: var(--ucd); font-weight: 800; font-size: 18px; }
 .notes-row.is-cur .notes-n { background: var(--uct); color: #fff; }
 .notes-t { display: flex; flex-direction: column; min-width: 0; }
 .notes-t b { font-size: 16px; }
 .notes-t .muted { font-size: 13px; }
 .notes-cur { color: var(--ucd); font-weight: 700; }
+.notes-docs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.notes-doc { display: flex; flex-direction: column; gap: 7px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 11px; background: var(--soft, #faf8f3); }
+.notes-doc.notes-notes { background: var(--ucl); border-color: transparent; }
+.notes-dt { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.notes-dt b { font-size: 14.5px; }
+.notes-dt .muted { font-size: 12.5px; white-space: nowrap; }
+.notes-btns { display: flex; gap: 6px; }
+.notes-btns .btn { flex: 1; justify-content: center; }
 .notes-print { display: inline-flex; align-items: center; gap: 6px; }
-.notes-print svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-@media (max-width: 520px) { .notes-row { grid-template-columns: 36px minmax(0, 1fr) auto; } .notes-open { display: none; } }
+.notes-print svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.notes-warn { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: #fff4d6; border: 1px solid #f0cf73; color: #5c4300; font-size: 14px; line-height: 1.4; }
+.notes-warn svg { flex: none; width: 20px; height: 20px; margin-top: 1px; fill: none; stroke: #b07d0c; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.notes-box { width: min(760px, 100%); }
+@media (max-width: 600px) { .notes-docs { grid-template-columns: 1fr; } .notes-doc { flex-direction: row; align-items: center; justify-content: space-between; } .notes-dt { flex-direction: column; gap: 0; } .notes-btns { flex: none; } }
 /* the next-test notice: a rounded rectangle, not a pill (the Class calendar button stays a pill) */
 .hh-cal > .hh-test { border-radius: 10px; }
 /* test-mode question list: where the Beginning / Progressing / Mastery boxes start */

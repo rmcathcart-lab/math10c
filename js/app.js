@@ -799,10 +799,13 @@
     if (location.hash.indexOf('#/calendar') === 0) history.replaceState(null, '', '#/');
     loadCal();
   }
-  /* Printable Notes: one row per unit with its lessons-only booklet (assets/notes/math10c-unit-N-notes.pdf).
+  /* Printable Notes: one row per unit with its lessons-only booklet, assignments and extra practice (assets/notes/math10c-unit-N-notes.pdf).
      Print opens the browser's print dialog for the PDF (a new tab on iPad/iPhone, where printing a frame doesn't work). */
   var NOTES_PAGES = { 1: 17, 2: 15, 3: 17, 4: 17, 5: 27, 6: 17, 7: 19, 8: 17, 9: 25, 10: 21 };
-  function notesUrl(u) { return 'assets/notes/math10c-unit-' + u + '-notes.pdf'; }
+  // Assignments and extra practice to print (2026-11-12): unit → [assignment pages, extra practice pages]. Made by
+  // "Claude's Playground/make_assignments_only.py" (assignments) and the unit's Extra Practice booklet; copies in assets/notes.
+  var PRINT_PAGES = { 1: [24, 38], 2: [23, 30], 3: [20, 41], 4: [27, 35], 5: [36, 63], 6: [23, 32], 7: [32, 63], 8: [18, 45], 9: [32, 84], 10: [23, 60] };
+  function notesUrl(u, kind) { return 'assets/notes/math10c-unit-' + u + '-' + (kind || 'notes') + '.pdf'; }
   function printPdf(url) {
     var ios = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     if (ios) { window.open(url, '_blank', 'noopener'); return; }
@@ -815,20 +818,36 @@
     closeNotes();
     var ov = el('div', 'cal-pop notes-pop'); ov.id = 'notes-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Printable notes');
     var box = el('div', 'cal-pop-box notes-box'); ov.appendChild(box);
-    var head = el('div', 'notes-head', '<div><h2>Printable Notes</h2><p class="muted">The notes and examples for each unit, with space to work — no assignments. Print a unit to follow along during the lessons.</p></div>');
+    var head = el('div', 'notes-head', '<div><h2>Printable Notes</h2><p class="muted">Print a unit’s notes to follow along in class. The assignments and extra practice are here too, for working on paper.</p></div>');
     var x = el('button', 'btn btn-ghost cal-pop-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', closeNotes); head.appendChild(x);
     box.appendChild(head);
+    box.appendChild(el('div', 'notes-warn', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3zM12 10v4M12 17.5v.01"/></svg><div><b>Printed assignments and extra practice are not tracked for marks.</b> Only work you do here on the website counts toward your progress and your grade.</div>'));
     var CD = calData(), LAY = CD && HW.Cal ? HW.Cal.layout(CD.cal, CD.noSchool) : null;
     var list = el('div', 'notes-list'), cu = currentUnit(CD, LAY, HW.Cal ? HW.Cal.today() : '');
+    var PRN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6M7 18H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></svg>';
     HW.CATALOG.forEach(function (u) {
-      var n = u.lessons.filter(function (c) { return !c.intro; }).length;
+      if (!NOTES_PAGES[u.unit]) return; // no notes booklet for this unit yet
+      var n = u.lessons.filter(function (c) { return !c.intro; }).length, pp = PRINT_PAGES[u.unit] || [];
       var row = el('div', 'notes-row' + (u.unit === cu ? ' is-cur' : '')); row.setAttribute('style', HW.unitStyle(u.unit));
-      row.appendChild(el('div', 'notes-n', String(u.unit)));
-      row.appendChild(el('div', 'notes-t', '<b>' + esc(u.title) + '</b><span class="muted">' + n + ' lessons · ' + (NOTES_PAGES[u.unit] || '') + ' pages' + (u.unit === cu ? ' · <span class="notes-cur">Current unit</span>' : '') + '</span>'));
-      var open = el('a', 'btn btn-ghost btn-small notes-open', 'Open'); open.href = notesUrl(u.unit); open.target = '_blank'; open.rel = 'noopener'; open.title = 'Open the PDF (to save or print it yourself)';
-      var pr = el('button', 'btn btn-primary btn-small notes-print', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6M7 18H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></svg> Print'); pr.type = 'button';
-      pr.title = 'Print the Unit ' + u.unit + ' notes'; pr.addEventListener('click', function () { L.push({ t: 'event', type: 'notes-print', unit: u.unit }); printPdf(notesUrl(u.unit)); });
-      row.appendChild(open); row.appendChild(pr); list.appendChild(row);
+      var top = el('div', 'notes-top');
+      top.appendChild(el('div', 'notes-n', String(u.unit)));
+      top.appendChild(el('div', 'notes-t', '<b>' + esc(u.title) + '</b><span class="muted">' + n + ' lessons' + (u.unit === cu ? ' · <span class="notes-cur">Current unit</span>' : '') + '</span>'));
+      row.appendChild(top);
+      var docs = el('div', 'notes-docs');
+      [['notes', 'Notes', NOTES_PAGES[u.unit], 'Notes and examples, with space to work'],
+       ['assignments', 'Assignments', pp[0], 'Every lesson’s assignment (not tracked for marks)'],
+       ['extra-practice', 'Extra practice', pp[1], 'More practice for the unit (not tracked for marks)']].forEach(function (d) {
+        if (!d[2]) return;
+        var url = notesUrl(u.unit, d[0]), doc = el('div', 'notes-doc notes-' + d[0]);
+        doc.appendChild(el('div', 'notes-dt', '<b>' + d[1] + '</b><span class="muted">' + d[2] + ' pages</span>'));
+        var btns = el('div', 'notes-btns');
+        var open = el('a', 'btn btn-ghost btn-small notes-open', 'Open'); open.href = url; open.target = '_blank'; open.rel = 'noopener'; open.title = 'Open the PDF (to save or print it yourself)';
+        var pr = el('button', 'btn btn-primary btn-small notes-print', PRN + ' Print'); pr.type = 'button';
+        pr.title = 'Print: Unit ' + u.unit + ' ' + d[1].toLowerCase() + ' — ' + d[3];
+        pr.addEventListener('click', function () { L.push({ t: 'event', type: 'notes-print', unit: u.unit, kind: d[0] }); printPdf(url); });
+        btns.appendChild(open); btns.appendChild(pr); doc.appendChild(btns); docs.appendChild(doc);
+      });
+      row.appendChild(docs); list.appendChild(row);
     });
     box.appendChild(list);
     ov.addEventListener('click', function (e) { if (e.target === ov) closeNotes(); });
