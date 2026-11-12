@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u5l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Birthday Match">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="130" y="46" font-size="40" text-anchor="middle">🎂</text></g><text x="190" font-size="30" text-anchor="middle">🎈<animate attributeName="y" values="64;-6" dur="3s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="3s" begin="0s" repeatCount="indefinite"/></text><text x="230" font-size="30" text-anchor="middle">🎈<animate attributeName="y" values="64;-6" dur="3.6s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="3.6s" begin="0.8s" repeatCount="indefinite"/></text><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><text x="290" y="46" font-size="40" text-anchor="middle">🎂</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Birthday Match</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A class has <b>30 students</b>.</div><div class="vw-tiles" style="--n:4;--fs:30px"><div><b>A</b>about 8%</div><div><b>B</b>about 30%</div><div><b>C</b>about 50%</div><div><b>D</b>about 70%</div></p><p class="vw-ask">What is the chance that at least two people in the room share a birthday?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Guess first. Then check: does anyone in this room match?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>D, about 70%.</b> Every person has exactly one birthday, but one birthday can belong to many people. There are 435 different pairs of people in a class of 30.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,57 +53,9 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Birthday Match" id="wu" style="--wf-side: 320px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Birthday Match</h2>
-  <p class="wf-rule">Everyone has a birthday. But can two people <b>share</b> one?</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u5l5-wtop">
-    <div class="u5l5-wmap" id="wu-map"></div>
-    <div class="u5l5-class">
-      <div class="u5l5-ch">A class of 30</div>
-      <svg id="wu-faces" viewBox="0 0 520 250" aria-label="Thirty party faces in three rows of ten"></svg>
-      <div class="u5l5-cctl">
-        <button type="button" class="pill small" data-wu="one">Deal 30 birthdays</button>
-        <button type="button" class="pill small" data-wu="many">Try 100 classes</button>
-        <button type="button" class="pill small" data-wu="reset">Reset</button>
-      </div>
-      <div class="u5l5-cout" id="wu-out">Deal random birthdays to the class. Does anyone match?</div>
-    </div>
-  </div>
-  <div class="u5l5-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Can one person have <b>two</b> different birthdays? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l5-wa"><div class="bk-ans">No. Each person has exactly <b>one</b> birthday, so person → birthday <b>is a function</b>.</div></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In the diagram, does any birthday have <b>two</b> people? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l5-wa"><div class="bk-ans">Yes: Ben and Cleo both map to Jul 14. That’s allowed. <b>Two inputs may share an output.</b></div></div></div>
-  </div>
-  </div><div class="wf-side">
-  <div class="u5l5-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Flip the arrows: birthday → person. Could you tell <em>who</em> was born on July 14? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l5-wa"><div class="bk-ans">No. July 14 would point to <b>two</b> people, Ben and Cleo. One input with two outputs: birthday → person is <b>not a function</b>.</div></div></div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In a class of <b>30</b>, what is the chance that at least two people <b>share</b> a birthday? <b>Guess first.</b></div></div>
-    <div class="poll-opts u5l5-c4">
-      <div class="opt"><b>A</b> about 8%</div>
-      <div class="opt"><b>B</b> about 30%</div>
-      <div class="opt"><b>C</b> about 50%</div>
-      <div class="opt right"><b>D</b> about 70%</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>D: about 70%.</b> Find the chance of <em>no</em> match. Person 2 must avoid 1 day, person 3 must avoid 2 days, and so on:
-      <div class="u5l5-prob"><span class="tex">P(\text{no match})=\frac{365}{365}\cdot\frac{364}{365}\cdots\frac{336}{365}\approx0.294,</span> so <span class="tex">P(\text{match})\approx1-0.294=0.706</span>, about <b>71%</b>.</div>
-      <span class="muted"><b>A</b> comes from <span class="tex">30\div365\approx8\%</span>, but that only asks whether someone matches <em>you</em>. There are <b>435</b> different <em>pairs</em> in a class of 30, and any pair can match. <b>B</b> and <b>C</b> feel “reasonable”, but the 50% mark is reached with only <b>23</b> people. (This assumes 365 equally likely birthdays and ignores Feb 29.)</span></div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq u5l5-extra">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Is student → student ID number a function? What about ID number → student?</div></div>
-    <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Both are functions: each student has one ID number, and each ID number belongs to exactly one student.</div>
-  </div>
-  <p class="u5l5-social">Test it right now: call out birthday months, then days. Does anyone in this room match?</p>
-</section>
 
-<section class="card" data-ink="wub" data-section="Warm-up: flip the arrows">
+<section data-extra class="card" data-ink="wub" data-section="Warm-up: flip the arrows">
   <h3 class="sub">From the warm-up: one arrow out, or two?</h3>
   <p>In the warm-up, every person sent out exactly one arrow, even though two arrows landed on the same date. Flip the arrows and July 14 sends out two. That difference is the whole idea of today’s lesson.</p>
   <div class="explainer" data-explainer="birthday"></div>
@@ -144,7 +106,7 @@
       <text x="92" y="100" text-anchor="middle" class="u5l5-ns">(i) “is a</text><text x="92" y="120" text-anchor="middle" class="u5l5-ns">multiple of”</text>
     </svg>
   </div>
-  <div class="explainer" data-explainer="nested"></div>
+  <div data-extra><div class="explainer" data-explainer="nested"></div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
@@ -154,13 +116,13 @@
     <div class="part"><div class="pl">(a) the arrow diagram</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Look at each element of the domain (left oval). If <b>every</b> domain element has exactly one arrow leaving it, the relation is a function.<br>In (i) the element <span class="tex">8</span> has three arrows leaving it (to <span class="tex">1</span>, <span class="tex">2</span> and <span class="tex">4</span>), so (i) is <b>not</b> a function.<br>In (ii) every domain element has exactly one arrow leaving it, so (ii) <b>is</b> a function.</div></div></div>
     <div class="part"><div class="pl">(b) the list of ordered pairs</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Look at the first coordinates. If any <span class="tex">x</span>-value is repeated with two <b>different</b> second coordinates, the relation is not a function.<br>In (i) the pairs <span class="tex">(8,1)</span>, <span class="tex">(8,2)</span>, <span class="tex">(8,4)</span> share the first coordinate <span class="tex">8</span>, so (i) is <b>not</b> a function.<br>In (ii) no first coordinate repeats, so (ii) <b>is</b> a function.</div></div></div>
     <div class="part"><div class="pl">(c) the graph</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Apply the vertical line test.<br>In (i) the vertical line through <span class="tex">x=8</span> passes through the three plotted points <span class="tex">(8,1)</span>, <span class="tex">(8,2)</span>, <span class="tex">(8,4)</span>, so (i) is <b>not</b> a function.<br>In (ii) every vertical line through a domain value meets exactly one plotted point, so (ii) <b>is</b> a function.</div></div></div>
-    <div class="part think u5l5-span3"><div class="pl"><span class="think-tag">Think</span> Reverse relation (i): send each element of <span class="tex">R</span> to the elements of <span class="tex">D</span> it divides (“is a factor of”). Is the reversed relation a function?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. <span class="tex">1</span> divides all four elements, so it would have <b>four</b> arrows leaving it (to <span class="tex">1</span>, <span class="tex">8</span>, <span class="tex">27</span> and <span class="tex">64</span>). One input, several outputs.</div></div></div>
+    <div data-extra class="part think u5l5-span3"><div class="pl"><span class="think-tag">Think</span> Reverse relation (i): send each element of <span class="tex">R</span> to the elements of <span class="tex">D</span> it divides (“is a factor of”). Is the reversed relation a function?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. <span class="tex">1</span> divides all four elements, so it would have <b>four</b> arrows leaving it (to <span class="tex">1</span>, <span class="tex">8</span>, <span class="tex">27</span> and <span class="tex">64</span>). One input, several outputs.</div></div></div>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. One test, three pictures">
+<section data-extra class="card" data-ink="s1d" data-section="1. One test, three pictures">
   <h3 class="sub">One test, three pictures</h3>
   <p>The arrow diagram, the ordered pairs and the graph are three pictures of the <b>same</b> relation, so they must give the same verdict. Each picture shows a repeated input in its own way: two arrows <b>leaving</b> one element, two pairs with the <b>same first coordinate</b>, two dots <b>stacked</b> on one vertical line.</p>
   <div class="explainer" data-explainer="threeViews"></div>
@@ -214,6 +176,15 @@
   <div class="explainer" data-explainer="vlt"></div>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–2">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 5 · Questions 1–2</h2>
+  <p class="pr-t">Is it a function? Give a reason.</p>
+  <div class="pr-chips n2"><span><b>1</b>Is it a function? Give a reason</span><span><b>2</b>Function or not, in many forms</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 1.</span><a class="pill" href="../../../#/lesson/u5l5">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u5l5"></section>
 
@@ -241,16 +212,66 @@
     <div class="part"><div class="pl">(d)</div><div class="u5l5-qfig" data-fig="gr3d"></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The plotted points <span class="tex">(1,3),(2,1),(4,4),(5,2)</span> all have different <span class="tex">x</span>-coordinates, so every vertical line meets the graph at most once: <b>is a function</b>.</div></div></div>
     <div class="part"><div class="pl">(e) The relation pairing each vehicle registered in Alberta with its licence plate number.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every vehicle registered in Alberta is issued exactly one licence plate number, so each element of the domain corresponds to exactly one element of the range: <b>is a function</b>.</div></div></div>
     <div class="part"><div class="pl">(f)</div><div class="u5l5-qfig" data-fig="gr3f"></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u5l5-figans"><div>The vertical line <span class="tex">x=0</span> crosses the closed curve twice (near <span class="tex">y\approx1.4</span> and <span class="tex">y\approx-1.7</span>), so it fails the vertical line test: <b>not a function</b>.</div><div data-fig="gr3fans"></div></div></div></div>
-    <div class="part think u5l5-span2"><div class="pl"><span class="think-tag">Think</span> Swap every pair in (a) to (d), so <span class="tex">(x,y)</span> becomes <span class="tex">(y,x)</span> and every arrow turns around. Which answers change?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>(b) and (c)</b> stop being functions: their repeated <b>output</b> becomes a repeated <b>input</b> (<span class="tex">(4,4)</span> and <span class="tex">(4,-5)</span>; <span class="tex">Y</span> sends arrows to <span class="tex">E</span> and <span class="tex">F</span>). (a) stays not a function (now <span class="tex">3</span> repeats) and (d) stays a function (its outputs <span class="tex">3,1,4,2</span> are all different).</div></div></div>
+    <div data-extra class="part think u5l5-span2"><div class="pl"><span class="think-tag">Think</span> Swap every pair in (a) to (d), so <span class="tex">(x,y)</span> becomes <span class="tex">(y,x)</span> and every arrow turns around. Which answers change?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>(b) and (c)</b> stop being functions: their repeated <b>output</b> becomes a repeated <b>input</b> (<span class="tex">(4,4)</span> and <span class="tex">(4,-5)</span>; <span class="tex">Y</span> sends arrows to <span class="tex">E</span> and <span class="tex">F</span>). (a) stays not a function (now <span class="tex">3</span> repeats) and (d) stays a function (its outputs <span class="tex">3,1,4,2</span> are all different).</div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Checking Example 3">
+<section data-extra class="card" data-ink="s3b" data-section="3. Checking Example 3">
   <h3 class="sub">Checking Example 3, one form at a time</h3>
   <p>Six forms, one question each time: <b>can an input have two outputs?</b> Use the check after the class has justified each part.</p>
   <div class="explainer" data-explainer="sixForms"></div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Birthday Match" id="wu" style="--wf-side: 320px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Birthday Match</h2>
+  <p class="wf-rule">Everyone has a birthday. But can two people <b>share</b> one?</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u5l5-wtop">
+    <div class="u5l5-wmap" id="wu-map"></div>
+    <div class="u5l5-class">
+      <div class="u5l5-ch">A class of 30</div>
+      <svg id="wu-faces" viewBox="0 0 520 250" aria-label="Thirty party faces in three rows of ten"></svg>
+      <div class="u5l5-cctl">
+        <button type="button" class="pill small" data-wu="one">Deal 30 birthdays</button>
+        <button type="button" class="pill small" data-wu="many">Try 100 classes</button>
+        <button type="button" class="pill small" data-wu="reset">Reset</button>
+      </div>
+      <div class="u5l5-cout" id="wu-out">Deal random birthdays to the class. Does anyone match?</div>
+    </div>
+  </div>
+  <div class="u5l5-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Can one person have <b>two</b> different birthdays? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l5-wa"><div class="bk-ans">No. Each person has exactly <b>one</b> birthday, so person → birthday <b>is a function</b>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In the diagram, does any birthday have <b>two</b> people? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l5-wa"><div class="bk-ans">Yes: Ben and Cleo both map to Jul 14. That’s allowed. <b>Two inputs may share an output.</b></div></div></div>
+  </div>
+  </div><div class="wf-side">
+  <div class="u5l5-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Flip the arrows: birthday → person. Could you tell <em>who</em> was born on July 14? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l5-wa"><div class="bk-ans">No. July 14 would point to <b>two</b> people, Ben and Cleo. One input with two outputs: birthday → person is <b>not a function</b>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In a class of <b>30</b>, what is the chance that at least two people <b>share</b> a birthday? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l5-c4">
+      <div class="opt"><b>A</b> about 8%</div>
+      <div class="opt"><b>B</b> about 30%</div>
+      <div class="opt"><b>C</b> about 50%</div>
+      <div class="opt right"><b>D</b> about 70%</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>D: about 70%.</b> Find the chance of <em>no</em> match. Person 2 must avoid 1 day, person 3 must avoid 2 days, and so on:
+      <div class="u5l5-prob"><span class="tex">P(\text{no match})=\frac{365}{365}\cdot\frac{364}{365}\cdots\frac{336}{365}\approx0.294,</span> so <span class="tex">P(\text{match})\approx1-0.294=0.706</span>, about <b>71%</b>.</div>
+      <span class="muted"><b>A</b> comes from <span class="tex">30\div365\approx8\%</span>, but that only asks whether someone matches <em>you</em>. There are <b>435</b> different <em>pairs</em> in a class of 30, and any pair can match. <b>B</b> and <b>C</b> feel “reasonable”, but the 50% mark is reached with only <b>23</b> people. (This assumes 365 equally likely birthdays and ignores Feb 29.)</span></div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u5l5-extra">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Is student → student ID number a function? What about ID number → student?</div></div>
+    <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Both are functions: each student has one ID number, and each ID number belongs to exactly one student.</div>
+  </div>
+  <p class="u5l5-social">Test it right now: call out birthday months, then days. Does anyone in this room match?</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -263,7 +284,7 @@
     <div><b>Every function is a relation, but not every relation is a function.</b> Equations and words: try an input. <span class="tex">x=y^2</span> sends <span class="tex">4</span> to <span class="tex">2</span> and <span class="tex">-2</span>: not a function.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u5l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — What Is a Function?</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 5 · Questions 3–6</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l6/">
     <div><div class="kicker">Next lesson</div><b>Lesson 6 — Function Notation</b><div class="muted">Giving a function a name: <span class="tex">f(x)</span>, finding <span class="tex">f(a)</span>, and solving <span class="tex">f(x)=b</span></div></div><span class="arrow">→</span>
@@ -276,7 +297,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u5l5', homeHref: '../../', title: '5.5 What Is a Function?' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

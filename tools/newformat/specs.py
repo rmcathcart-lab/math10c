@@ -216,3 +216,161 @@ SPECS['u4l8'] = dict(
               nudge='How could you prove it?',
               reveal=f'<b>B is the lie.</b> Expand it: {T("(x+3)^2=x^2+6x+9")}, not {T("x^2+9")}. A sum of squares doesn’t factor.'),
     extra_cards=['tiles', 'box', 'bvals'])
+
+# ======================= Unit 5 =======================
+def _bath():
+    pts = [(40, 215), (115, 125), (150, 125), (160, 95), (225, 95), (235, 125), (295, 215)]
+    d = 'M' + ' L'.join(f'{x} {y}' for x, y in pts)
+    labs = ''.join(f'<text x="{(a[0]+b[0])/2 + dx}" y="{(a[1]+b[1])/2 + dy}" font-size="19" font-weight="800" fill="{BLUE}" text-anchor="middle">{i+1}</text>'
+                   for i, ((a, b), (dx, dy)) in enumerate(zip(zip(pts, pts[1:]), [(-14, -4), (0, -9), (-13, 2), (0, -9), (13, 2), (14, -4)])))
+    return (f'<line x1="40" y1="30" x2="40" y2="215" stroke="{INK}" stroke-width="3"/><line x1="40" y1="215" x2="310" y2="215" stroke="{INK}" stroke-width="3"/>'
+            f'<text x="175" y="240" font-size="15" fill="{INK}" text-anchor="middle">time</text><text x="18" y="125" font-size="15" fill="{INK}" text-anchor="middle" transform="rotate(-90 18 125)">water depth</text>'
+            f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>{labs}'
+            f'<circle r="7" fill="{RED}"><animateMotion dur="7s" repeatCount="indefinite" path="{d}"/></circle>')
+BATH = svg(_bath(), 'A graph of water depth against time in six straight parts')
+
+SPECS['u5l1'] = dict(
+    warm=dict(title='The Fly on the Ceiling', rule='Using <b>only numbers</b>, how could you tell a friend exactly where the fly is?', strip=strip(sdrive('🪰', 7, 0, 30, 34, hop=10)),
+              body=BIG('A fly lands on a ceiling covered in square tiles.<small>Your friend is on the phone and cannot see the ceiling.</small>'),
+              nudge='How many numbers do you need?',
+              reveal='<b>Two numbers.</b> Pick a corner to start from, then say how many tiles <b>across</b> and how many tiles <b>along</b>. That pair of numbers is the idea behind today’s grid.'),
+    extra_cards=['s3b', 's3c'], extra_expl=['matchRule'],
+    practice=PR('ex3', '1–6', '7–12', 'Plot and read points, then growing patterns.', [('1–3', 'The Cartesian plane'), ('4–6', 'Growing patterns: table, graph and equation')], 4))
+SPECS['u5l2'] = dict(
+    warm=dict(title='Ice Cream and Sharks', rule='Does eating ice cream cause shark attacks? What is really going on?', strip=strip(sb('🍦', 110, 0), sdrive('🦈', 6, 0, 40, 46), sb('🍦', 250, .5)),
+              body=BIG('In a beach town, <b>ice cream sales</b> and <b>shark attacks</b> rise and fall together.<small>When one is high, so is the other. Every year.</small>'),
+              reveal='<b>Neither one causes the other.</b> Both depend on a third thing: hot weather. Hot days sell more cones and put more swimmers in the water.'),
+    extra_cards=['s3b'], extra_expl=['linOrNot'],
+    practice=PR('ex2', '1–7', '8–17', 'One relation described several ways, then mapping diagrams.', [('1–4', 'One relation, several descriptions'), ('5–7', 'Mapping diagrams')], 5))
+SPECS['u5l3'] = dict(
+    warm=dict(title='The High Dive', rule='A graph shows her height against time. Which <b>two points</b> on the graph do you already know?', strip=strip(sfloat('🤸', 120, 2.6, 0, 34), sb('💦', 200, .4, 34), sb('🌊', 250, 0, 34, 3, 2.2)),
+              body=BIG('A diver jumps from a <b>10 m</b> tower and hits the water <b>2 seconds</b> later.'),
+              nudge='Write each one as (time, height).',
+              reveal=f'{T("(0,\\ 10)")} and {T("(2,\\ 0)")}. At the jump, the <b>time</b> is zero. At the splash, the <b>height</b> is zero. Each point sits on an axis.'),
+    extra_cards=['s2b'],
+    practice=PR('ex3', '1–3', '4–11', 'Find the intercepts from each equation.', [('1–3', 'Intercepts from an equation')], 2))
+SPECS['u5l4'] = dict(
+    warm=dict(title='Ride Restrictions', rule='Which of the four friends may ride?', strip=strip(sroad(), sdrive('🎢', 5, 0, 40, 44)),
+              body='<div class="vw-q">THE CYCLONE: riders must be <b>at least 120 cm</b> and <b>no taller than 195 cm</b>.</div>' + TILES(4, [('Ava', '118 cm'), ('Ben', '120 cm'), ('Cleo', '160 cm'), ('Dev', '196 cm')], 30),
+              reveal='<b>Ben and Cleo.</b> “At least 120” includes exactly 120, so Ben is in. Ava is 2 cm too short and Dev is 1 cm too tall.'),
+    extra_cards=['s3b'], extra_expl=['dots'],
+    practice=PR('ex3', '1–4', '5–9', 'Domain and range from ordered pairs and graphs.', [('1–4', 'Domain and range')], 3))
+SPECS['u5l5'] = dict(
+    warm=dict(title='The Birthday Match', rule='What is the chance that at least two people in the room share a birthday?', strip=strip(sb('🎂', 130, 0), sfloat('🎈', 190, 3, 0), sfloat('🎈', 230, 3.6, .8), sb('🎂', 290, .5)),
+              body='<div class="vw-q">A class has <b>30 students</b>.</div>' + TILES(4, [('A', 'about 8%'), ('B', 'about 30%'), ('C', 'about 50%'), ('D', 'about 70%')], 30),
+              nudge='Guess first. Then check: does anyone in this room match?',
+              reveal='<b>D, about 70%.</b> Every person has exactly one birthday, but one birthday can belong to many people. There are 435 different pairs of people in a class of 30.'),
+    extra_cards=['wub', 's1d', 's3b'], extra_expl=['nested'],
+    practice=PR('s2b', '1–2', '3–6', 'Is it a function? Give a reason.', [('1', 'Is it a function? Give a reason'), ('2', 'Function or not, in many forms')], 1))
+SPECS['u5l6'] = dict(
+    warm=dict(title='The Phone Keypad', rule='Which four digits do you press after 555?', strip=strip(srock('📞', 140, 14, .7, 40), sb('🌮', 210, 0, 40)),
+              body=BIG('A sign says <b>CALL 555-TACO</b>.<small>2 ABC · 3 DEF · 4 GHI · 5 JKL · 6 MNO · 7 PQRS · 8 TUV · 9 WXYZ</small>'),
+              nudge='Could another word give the same four digits?',
+              reveal='<b>8226.</b> Each letter sits on exactly one key, so the letters decide the digits. Going backwards is not so tidy: 8226 could also spell VACO, TBAN and many more.'),
+    extra_cards=['s2b', 's3c', 's4b'], extra_expl=['mapNote'],
+    practice=PR('ex3', '1–10', '11–21', 'Function notation, then evaluating.', [('1–5', 'Function notation, tables and graphs'), ('6–10', 'Evaluating functions')], 7))
+SPECS['u5l7'] = dict(
+    warm=dict(title='Celsius and Fahrenheit', rule='Is there a temperature where both scales show the <b>same number</b>?', strip=strip(sb('❄️', 120, 0, 34), srock('🌡️', 185, 10, 2.4, 44), sb('🔥', 250, .5, 34)),
+              body=BIG(f'{T("F=1.8C+32")}<small>Water freezes at 0 °C, which is 32 °F. It boils at 100 °C, which is 212 °F.</small>'),
+              nudge='Try a few. Do the two numbers get closer going up, or going down?',
+              reveal=f'<b>Yes: −40.</b> {T("1.8(-40)+32=-72+32=-40")}. At −40 it does not matter which scale you read.'),
+    extra_expl=['exThree', 'cost'],
+    practice=PR('ex3', '1–8', '9–16', 'Convert between notations, then read graphs both ways.', [('1–3', 'Converting between the two notations'), ('4–8', 'Reading a graph in both directions')], 5))
+SPECS['u5l8'] = dict(
+    warm=dict(title='The Bathtub Graph', rule='Which part of the graph shows Sam <b>getting into</b> the tub?', pic=BATH,
+              body=BIG('Sam runs a bath, gets in, soaks, gets out and pulls the plug.<small>The graph shows the depth of the water the whole time.</small>'),
+              reveal='<b>Part 3.</b> The tap is already off, but the water jumps up quickly because Sam’s body pushes it up. Part 5 is Sam getting out.'),
+    replace=[('Watch the bath from the warm-up play out with its graph.', 'Watch the bath play out with its graph.'), ('<b>The drain rate in the warm-up.</b>', '<b>The drain rate for the bath.</b>')],
+    extra_cards=['s1d'],
+    practice=PR('ex1b', '1–5', '6–16', 'Read the story in each graph.', [('1–5', 'Reading the story in a graph')], 3))
+SPECS['u5l9'] = dict(
+    warm=dict(title='Which One Doesn’t Belong?', rule='Which one is the odd one out? Pick one and be ready to say <b>why</b>.', strip=strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4))),
+              body=TILES(4, [('A', T(r'\{(1,2),\ (2,3),\ (3,4)\}')), ('B', T('y=2x+1')), ('C', T('x=3')), ('D', T('f(x)=x^2'))], 26),
+              reveal='<b>Any of them can be right.</b> A is the only one made of separate points. B is the only slanted straight line. C is the only one that is not a function. D is the only curve.'),
+    extra_cards=['s1b', 's1c', 's3b', 's3c'], extra_expl=['discCont', 'machine'])
+
+# ======================= Unit 6 =======================
+SPECS['u6l1'] = dict(
+    warm=dict(title='Can You Get Wi-Fi?', rule='Does house C get Wi-Fi?', strip=strip(sblink('📶', 150, 0, 40, 1.4), sb('🏠', 215, .3, 38)),
+              body=BIG('A Wi-Fi router reaches <b>5 units</b> in a straight line, in every direction.<small>House C is 4 units left and 4 units up from the router.</small>'),
+              nudge='Both numbers are less than 5. Is that enough?',
+              reveal=f'<b>No.</b> The straight-line distance is {T(r"\sqrt{4^2+4^2}=\sqrt{32}\approx5.66")} units, which is more than 5.'),
+    extra_cards=['s2b', 's3b', 's4b'],
+    practice=PR('ex4', '1–5', '6–11', 'Lengths of horizontal, vertical and slanted segments.', [('1–5', 'Lengths of segments')], 3))
+SPECS['u6l2'] = dict(
+    warm=dict(title='Ramp Rules', rule='How far out from the step must the ramp start?', strip=strip(sroad(), sdrive('🧑‍🦽', 6, 0, 38, 44, flip=False)),
+              body=BIG('A ramp may rise at most <b>1 cm for every 12 cm</b> it goes across.<small>A café door sits on top of one 60 cm step.</small>'),
+              reveal=f'<b>At least 720 cm, or 7.2 m.</b> Every 1 cm of rise needs 12 cm across, and {T(r"60\times12=720")}.'),
+    extra_cards=['s7b'], extra_expl=['order'],
+    practice=PR('ex4', '1–2', '3–18', 'Find the rise, the run and the slope.', [('1–2', 'Rise, run and slope')]))
+SPECS['u6l3'] = dict(
+    warm=dict(title='Trees in a Row', rule='The farmer says all five trees are in one perfect straight row. Which tree is out of line?', strip=strip(*[sb('🌳', 80 + i * 50, i * .2, 34) for i in range(5)]),
+              body=TILES(5, [('Apple', T('(0,\\ 1)')), ('Cherry', T('(3,\\ 3)')), ('Plum', T('(6,\\ 5)')), ('Peach', T('(9,\\ 8)')), ('Pear', T('(12,\\ 9)'))], 24),
+              nudge='How do you get from each tree to the next?',
+              reveal='<b>Peach.</b> Each step should be 3 across and 2 up. Peach is 3 up from Plum, so it sits one unit too high. It should be at (9, 7).'),
+    extra_cards=['s2b', 's5b', 's5c', 's5d'],
+    practice=PR('ex4', '1–7', '8–25', 'The slope formula, then collinear points.', [('1–4', 'The slope formula'), ('5–7', 'Collinear points')], 5))
+SPECS['u6l4'] = dict(
+    warm=dict(title='Low Battery', rule='Neither of them has a charger. Whose phone dies first?', strip=strip(sbatt(120, GREEN, 4), sbatt(200, AMBER, 6)),
+              body=BIG('At noon, Mia’s phone is at <b>90%</b> and loses <b>15%</b> every hour.<small>Leo’s phone is at 40% and loses 5% every hour.</small>'),
+              nudge='When does each phone reach 0%?',
+              reveal='<b>Mia’s.</b> Hers lasts 6 hours, until 6:00. Leo’s lasts 8 hours, until 8:00. Starting higher doesn’t help if you drain three times as fast.'),
+    extra_cards=['s1b', 's2b', 's4b', 's4c', 's5b'],
+    practice=PR('ex3', '1–5', '6–14', 'Linear tables, intercepts, domain and range.', [('1–2', 'Is it linear?'), ('3–4', 'Intercepts'), ('5', 'Domain and range')], 3))
+SPECS['u6l5'] = dict(
+    warm=dict(title='Two Truths and a Lie', rule='Two of these are true. One is a lie. Which one?', strip=LIE,
+              body='<div class="vw-q">A line segment joins <b>A(0, 0)</b> and <b>B(6, 8)</b>.</div>' + TILES(3, [('A', 'Its length is 10'), ('B', 'Its midpoint is (3, 4)'), ('C', 'Its slope is ' + T(r'\tfrac34'))], 26),
+              nudge='How could you prove it?',
+              reveal=f'<b>C is the lie.</b> Rise 8 over run 6 gives a slope of {T(r"\tfrac86=\tfrac43")}. The length is {T(r"\sqrt{36+64}=10")} and the midpoint is halfway along each coordinate.'),
+    replace=[(' That was Hunter B’s mistake in the warm-up.', '')],
+    extra_expl=['stair', 'linear'])
+
+# ======================= Unit 7 =======================
+SPECS['u7l1'] = dict(
+    warm=dict(title='Stacking Cups', rule='How many nested cups make a stack as tall as the door?', strip=strip(sb('🥤', 120, 0, 36), sb('🥤', 170, .3, 36), sb('🥤', 220, .6, 36), sb('🚪', 285, 0, 40, 2, 3)),
+              body=BIG('One plastic cup is <b>12 cm</b> tall. Each extra cup nested on top adds <b>2 cm</b>.<small>The classroom door is about 200 cm tall.</small>'),
+              nudge='How tall is a stack of 4 cups? Of 10?',
+              reveal=f'<b>95 cups.</b> The first cup gives 12 cm, and the other 188 cm takes 94 more cups. As a rule: {T("h=2n+10")}.'),
+    extra_cards=['s4c'], extra_expl=['intercepts'],
+    practice=PR('ex5', '1–3', '4–14', 'Linear or not? Then read the slope and the y-intercept.', [('1–3', 'Linear or not? Reading ' + T('m') + ' and ' + T('b'))], 2))
+SPECS['u7l2'] = dict(
+    warm=dict(title='The Cricket Thermometer', rule='You count <b>100 chirps</b> in one minute. How warm is it?', strip=strip(sb('🦗', 140, 0, 38, 12, .6), srock('🌡️', 215, 10, 2.4, 42)),
+              body=BIG('A cricket chirps faster when it is warmer, at a steady rate.<small>At 10 °C it chirps 20 times a minute. At 20 °C it chirps 60 times a minute.</small>'),
+              nudge='How many extra chirps for each extra degree?',
+              reveal='<b>30 °C.</b> 40 more chirps for 10 more degrees is 4 chirps per degree. From 60 chirps up to 100 is 40 more chirps, so 10 more degrees.'),
+    extra_cards=['s2b', 's3b', 's3c'],
+    practice=PR('ex2', '1–3', '4–14', 'Write the equation of each line.', [('1–3', 'Equations from ' + T('m') + ' and ' + T('b') + ', and from graphs')], 2))
+SPECS['u7l3'] = dict(
+    warm=dict(title='Concert Ticket Combos', rule='How many different combos spend <b>exactly $80</b>?', strip=strip(srock('🎟️', 130, 10, 1.8, 40), sb('🎸', 195, 0, 40), srock('🎟️', 260, 10, 1.8, 40)),
+              body=BIG('Lawn tickets cost <b>$5</b>. Floor tickets cost <b>$8</b>.<small>You have an $80 gift card. Buying zero of one kind is allowed.</small>'),
+              reveal=f'<b>Three.</b> 16 lawn and 0 floor, 8 lawn and 5 floor, or 0 lawn and 10 floor. They are the whole-number points on the line {T("5x+8y=80")}.'),
+    extra_cards=['s1b', 's2b'], extra_expl=['judge'],
+    practice=PR('ex2', '1–5', '6–18', 'Into general form, then out of it.', [('1–2', 'Into general form'), ('3–5', 'Out of general form')], 3))
+SPECS['u7l4'] = dict(
+    warm=dict(title='Hot Air Balloon', rule='If it keeps dropping at the same rate, at what time does it touch down?', strip=strip(sb('🎈', 170, 0, 44, 16, 3.5, 40), sb('☁️', 90, .5, 30, 3, 4, 30), sb('☁️', 260, 1.2, 30, 3, 4, 34)),
+              body=BIG('At <b>10:05</b> a hot-air balloon is <b>800 m</b> up.<small>It is dropping a steady 40 m every minute.</small>'),
+              nudge='How high was it at 10:00?',
+              reveal='<b>10:25.</b> 800 m at 40 m a minute takes 20 minutes. One point and one rate were enough to know the whole flight.'),
+    extra_expl=['toMxB', 'race', 'read', 'solve6', 'solve7', 'solve8'],
+    practice=PR('ex4', '1–6', '7–24', 'Write and use slope–point form.', [('1–6', 'Slope–point form')], 4))
+SPECS['u7l5'] = dict(
+    warm=dict(title='Same Line in Disguise', rule='Two of these are secretly the <b>same line</b>. Which two?', strip=strip(sroad(), sdrive('🏎️', 3.2, 0, 36, 44), sdrive('🚗', 5, 1, 36, 44)),
+              body=TILES(4, [('A', T(r'y=-\tfrac12x+3')), ('B', T('2x+3y-12=0')), ('C', T('y-1=2(x-3)')), ('D', T('4x-2y-10=0'))], 26),
+              nudge='No need to rearrange everything. What can you read off each one?',
+              reveal=f'<b>C and D.</b> Both are {T("y=2x-5")}: the same slope and the same y-intercept, written in different forms.'),
+    extra_cards=['s3b', 's5c'],
+    practice=PR('ex2', '1–4', '5–11', 'Graph each line without changing its form.', [('1–4', 'Graphing without changing the form')], 3))
+SPECS['u7l6'] = dict(
+    warm=dict(title='How Fast Does It Grow?', rule='The Atlantic Ocean gets about <b>2.5 cm wider every year</b>. Which of these is closest to that speed?', strip=strip(sspin('🌍', 150, 8, 38), sb('💅', 215, 0, 36)),
+              body=TILES(3, [('Hair', 'about 1 cm<small>every month</small>'), ('Fingernails', 'about 3 mm<small>every month</small>'), ('A lawn', 'about 5 cm<small>every week</small>')], 28),
+              nudge='Careful: the units are all different.',
+              reveal='<b>Fingernails.</b> In centimetres per year: nails about 3.6, hair about 12 and a lawn about 260. Rates only compare when the units match.'),
+    extra_cards=['s2b', 's3b', 's4b'],
+    practice=PR('ex2', '1–3', '4–9', 'Read each rate of change and write the equation.', [('1–3', 'Rate of change and the equation')], 2))
+SPECS['u7l7'] = dict(
+    warm=dict(title='City Planner', rule='Which equation is the new road?', strip=strip(sroad(), sb('🏫', 60, 0, 34, 2, 3, 40), sdrive('🚧', 9, 0, 34, 44, flip=False)),
+              body='<div class="vw-q">Main Street is the line ' + T('x-2y+4=0') + '. A new road must pass through the school at <b>(8, 1)</b> and meet Main Street at a <b>right angle</b>.</div>' + TILES(4, [('A', T(r'y=\tfrac12x-3')), ('B', T('y=-2x+17')), ('C', T('y=-2x+1')), ('D', T('y=2x-15'))], 26),
+              nudge='What is the slope of Main Street?',
+              reveal=f'<b>B.</b> Main Street has slope {T(r"\tfrac12")}, so the new road has slope {T("-2")}. Through (8, 1): {T("1=-2(8)+b")}, so {T("b=17")}.'),
+    replace=[(' (traps B and C in the warm-up).', '.')],
+    extra_expl=['dials', 'rate'])

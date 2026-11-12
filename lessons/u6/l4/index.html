@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u6l4.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Low Battery">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><rect x="120" y="14" width="92" height="36" rx="7" fill="#fffdf6" stroke="#4a4436" stroke-width="3.5"/><rect x="212" y="24" width="7" height="16" rx="2" fill="#4a4436"/><rect x="126" y="20" height="24" rx="3" fill="#12805a"><animate attributeName="width" values="80;4;80" keyTimes="0;.9;1" dur="4s" repeatCount="indefinite"/></rect><rect x="200" y="14" width="92" height="36" rx="7" fill="#fffdf6" stroke="#4a4436" stroke-width="3.5"/><rect x="292" y="24" width="7" height="16" rx="2" fill="#4a4436"/><rect x="206" y="20" height="24" rx="3" fill="#e0a11b"><animate attributeName="width" values="80;4;80" keyTimes="0;.9;1" dur="6s" repeatCount="indefinite"/></rect></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Low Battery</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">At noon, Mia’s phone is at <b>90%</b> and loses <b>15%</b> every hour.</p><p class="vw-ctx">Leo’s phone is at 40% and loses 5% every hour.</p><p class="vw-ask">Neither of them has a charger. Whose phone dies first?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>When does each phone reach 0%?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Mia’s.</b> Hers lasts 6 hours, until 6:00. Leo’s lasts 8 hours, until 8:00. Starting higher doesn’t help if you drain three times as fast.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,51 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Low Battery" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Low Battery</h2>
-  <p class="wf-rule">At noon, Mia and Leo forget their chargers. Each phone drains <b>steadily</b>. <span class="muted small">(tap a ? to fill it in)</span></p></div>
-  <div class="wf-grid u6l4-grid">
-  <div id="u6l4-phones" class="u6l4-phones"></div>
-  <div class="u6l4-clockrow">
-    <button type="button" class="pill" id="u6l4-run">Run the clock ▸</button>
-    <button type="button" class="pill" id="u6l4-reset">Back to noon</button>
-    <span class="u6l4-clockmsg" id="u6l4-clockmsg"></span>
-  </div>
 
-  <div class="u6l4-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>What will each phone read at <b>3:00</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u6l4-wa"><div class="bk-ans">Mia <b>45%</b> (down 15 each hour); Leo <b>25%</b> (down 5 each hour).</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How many percent does each phone lose <b>every hour</b>? Is it the same every hour? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u6l4-wa"><div class="bk-ans">Mia loses <b>15%</b> per hour and Leo <b>5%</b> per hour: the <b>same</b> drop every hour, so each pattern is <b>linear</b>.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>At what time was Mia’s phone at <b>100%</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u6l4-wa"><div class="bk-ans"><b>11:20 am.</b> From 100% to 90% is 10 points, and at 15 points per hour that takes <span class="tex">\tfrac{10}{15}=\tfrac23</span> h <span class="tex">=40</span> min before noon.</div></div>
-    </div>
-  </div>
-
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mia’s phone has more than <b>twice</b> the charge of Leo’s. If neither stops, whose phone hits <b>0%</b> first? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt right"><b>A</b> Mia’s</div>
-      <div class="opt"><b>B</b> Leo’s</div>
-      <div class="opt"><b>C</b> They die at the same moment</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>A: Mia’s phone.</b> Mia: <span class="tex">90\div15=6</span> hours, so it dies at <b>6:00 pm</b>. Leo: <span class="tex">40\div5=8</span> hours, so <b>8:00 pm</b>. The fuller phone dies first because it drains <b>3 times as fast</b>.<br>
-      <span class="muted"><b>B</b> looks only at the starting value (“less charge dies first”) and ignores the rate. <b>C</b> guesses that the bigger charge and the faster drain cancel out. They don’t: 6 h for Mia, 8 h for Leo.</span></div>
-  </div>
-  </div>
-
-  <div class="bk-wq u6l4-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what time do the two phones show the <b>same</b> charge?</div></div>
-    <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5:00 pm</b>, both at 15%: <span class="tex">90-15(5)=40-5(5)=15</span>.</div></div>
-  </div>
-  <p class="u6l4-social">Check your own phone: how much battery has it lost since you woke up?</p>
-</section>
 
 <!-- ================= 1. Is it linear? ================= -->
 <section class="card" data-ink="s1" data-section="1. Is It Linear?">
@@ -124,7 +90,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. The uneven-steps trap">
+<section data-extra class="card" data-ink="s1b" data-section="1. The uneven-steps trap">
   <h3 class="sub">The uneven-steps trap</h3>
   <p>Bigger steps in <span class="tex">x</span> make bigger changes in <span class="tex">y</span>, even on a straight line. Every step hides a slope triangle: what has to match is <b>rise ÷ run</b>, not the rise alone.</p>
   <div class="explainer" data-explainer="uneven"></div>
@@ -159,7 +125,7 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Intercepts in a table">
+<section data-extra class="card" data-ink="s2b" data-section="2. Intercepts in a table">
   <h3 class="sub">Intercepts hiding in a table</h3>
   <p>A table shows the intercepts when it contains an entry with <span class="tex">x=0</span> or <span class="tex">y=0</span>. When it doesn’t, a linear table can be <b>continued</b>: keep the same change going until you reach the zero.</p>
   <div class="explainer" data-explainer="tableInts"></div>
@@ -213,6 +179,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 4 · Questions 1–5</h2>
+  <p class="pr-t">Linear tables, intercepts, domain and range.</p>
+  <div class="pr-chips n3"><span><b>1–2</b>Is it linear?</span><span><b>3–4</b>Intercepts</span><span><b>5</b>Domain and range</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u6l4">Open the Practice site</a></div>
+</section>
+
 <section class="card" data-ink="s3b" data-section="3. A real situation">
   <h3 class="sub">Reading a graph of a real situation</h3>
   <p>In a story the graph has a <b>start</b> and an <b>end</b>. The intercepts are where the story starts and where it runs out, the slope is the rate (with units), and the domain and range stop at the endpoints.</p>
@@ -239,12 +214,12 @@
   <p>Rotate a line and slide it around the grid, and watch what its intercepts, slope, domain and range do.</p>
   <div class="explainer" data-explainer="lineLab"></div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could a line have <b>zero</b> intercepts? Try to draw one.</div><div class="work" style="--h:100px"></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Could a line have <b>zero</b> intercepts? Try to draw one.</div><div class="work" style="--h:100px"></div>
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> To miss the <span class="tex">x</span>-axis a line must be horizontal, and every horizontal line crosses the <span class="tex">y</span>-axis. To miss the <span class="tex">y</span>-axis it must be vertical, and every vertical line crosses the <span class="tex">x</span>-axis. A line can’t be both, so it always meets at least one axis.</div></div></div>
   </div>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Counting intercepts">
+<section data-extra class="card" data-ink="s4b" data-section="4. Counting intercepts">
   <h3 class="sub">Counting intercepts: three questions</h3>
   <p>Ask the questions in this order and the count falls out. Each chip is one of the five summary lines.</p>
   <div class="explainer" data-explainer="countFlow"></div>
@@ -275,7 +250,7 @@
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s4c" data-section="4. Example 4 check">
+<section data-extra class="card" data-ink="s4c" data-section="4. Example 4 check">
   <h3 class="sub">Example 4 check: try a line, then fix it</h3>
   <p>A first try often has one intercept too many. Rotate or slide it until it fits every condition.</p>
   <div class="explainer" data-explainer="sketch"></div>
@@ -315,10 +290,56 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. Example 5 check">
+<section data-extra class="card" data-ink="s5b" data-section="5. Example 5 check">
   <h3 class="sub">Example 5 check: one characteristic at a time</h3>
   <p>The slope sign rules out most graphs at once; the intercepts settle the rest.</p>
   <div class="explainer" data-explainer="match"></div>
+</section>
+
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Low Battery" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Low Battery</h2>
+  <p class="wf-rule">At noon, Mia and Leo forget their chargers. Each phone drains <b>steadily</b>. <span class="muted small">(tap a ? to fill it in)</span></p></div>
+  <div class="wf-grid u6l4-grid">
+  <div id="u6l4-phones" class="u6l4-phones"></div>
+  <div class="u6l4-clockrow">
+    <button type="button" class="pill" id="u6l4-run">Run the clock ▸</button>
+    <button type="button" class="pill" id="u6l4-reset">Back to noon</button>
+    <span class="u6l4-clockmsg" id="u6l4-clockmsg"></span>
+  </div>
+
+  <div class="u6l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>What will each phone read at <b>3:00</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l4-wa"><div class="bk-ans">Mia <b>45%</b> (down 15 each hour); Leo <b>25%</b> (down 5 each hour).</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many percent does each phone lose <b>every hour</b>? Is it the same every hour? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l4-wa"><div class="bk-ans">Mia loses <b>15%</b> per hour and Leo <b>5%</b> per hour: the <b>same</b> drop every hour, so each pattern is <b>linear</b>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>At what time was Mia’s phone at <b>100%</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l4-wa"><div class="bk-ans"><b>11:20 am.</b> From 100% to 90% is 10 points, and at 15 points per hour that takes <span class="tex">\tfrac{10}{15}=\tfrac23</span> h <span class="tex">=40</span> min before noon.</div></div>
+    </div>
+  </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mia’s phone has more than <b>twice</b> the charge of Leo’s. If neither stops, whose phone hits <b>0%</b> first? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt right"><b>A</b> Mia’s</div>
+      <div class="opt"><b>B</b> Leo’s</div>
+      <div class="opt"><b>C</b> They die at the same moment</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>A: Mia’s phone.</b> Mia: <span class="tex">90\div15=6</span> hours, so it dies at <b>6:00 pm</b>. Leo: <span class="tex">40\div5=8</span> hours, so <b>8:00 pm</b>. The fuller phone dies first because it drains <b>3 times as fast</b>.<br>
+      <span class="muted"><b>B</b> looks only at the starting value (“less charge dies first”) and ignores the rate. <b>C</b> guesses that the bigger charge and the faster drain cancel out. They don’t: 6 h for Mia, 8 h for Leo.</span></div>
+  </div>
+  </div>
+
+  <div class="bk-wq u6l4-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what time do the two phones show the <b>same</b> charge?</div></div>
+    <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5:00 pm</b>, both at 15%: <span class="tex">90-15(5)=40-5(5)=15</span>.</div></div>
+  </div>
+  <p class="u6l4-social">Check your own phone: how much battery has it lost since you woke up?</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -331,7 +352,7 @@
     <div><b>How many intercepts?</b> Two (slanted, not through the origin), one (horizontal, vertical, or through the origin), or infinitely many (an axis). Never zero. Match graphs using the slope sign first, then the intercepts.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u6l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Characteristics of Linear Graphs</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 · Questions 6–14</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l5/">
     <div><div class="kicker">Next lesson</div><b>Lesson 5 — Characteristics of Linear Relations Unit Review</b><div class="muted">Slope, intercepts, domain and range, length and midpoint: the whole unit in one lesson</div></div><span class="arrow">→</span>
@@ -344,7 +365,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u6l4.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u6l4', homeHref: '../../', title: '6.4 Characteristics of Linear Graphs' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

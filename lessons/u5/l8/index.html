@@ -17,12 +17,21 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u5l8.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Bathtub Graph">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Bathtub Graph</h2></div>
+  <div class="vw-seq has-art"><div class="vw-txt"><p class="vw-ctx">Sam runs a bath, gets in, soaks, gets out and pulls the plug.</p><p class="vw-ctx">The graph shows the depth of the water the whole time.</p><p class="vw-ask">Which part of the graph shows Sam <b>getting into</b> the tub?</p></div><div class="vw-art"><svg viewBox="0 0 330 250" role="img" aria-label="A graph of water depth against time in six straight parts"><line x1="40" y1="30" x2="40" y2="215" stroke="#4a4436" stroke-width="3"/><line x1="40" y1="215" x2="310" y2="215" stroke="#4a4436" stroke-width="3"/><text x="175" y="240" font-size="15" fill="#4a4436" text-anchor="middle">time</text><text x="18" y="125" font-size="15" fill="#4a4436" text-anchor="middle" transform="rotate(-90 18 125)">water depth</text><path d="M40 215 L115 125 L150 125 L160 95 L225 95 L235 125 L295 215" fill="none" stroke="#4a4436" stroke-width="4" stroke-linejoin="round"/><text x="63.5" y="166.0" font-size="19" font-weight="800" fill="#2b55a0" text-anchor="middle">1</text><text x="132.5" y="116.0" font-size="19" font-weight="800" fill="#2b55a0" text-anchor="middle">2</text><text x="142.0" y="112.0" font-size="19" font-weight="800" fill="#2b55a0" text-anchor="middle">3</text><text x="192.5" y="86.0" font-size="19" font-weight="800" fill="#2b55a0" text-anchor="middle">4</text><text x="243.0" y="112.0" font-size="19" font-weight="800" fill="#2b55a0" text-anchor="middle">5</text><text x="279.0" y="166.0" font-size="19" font-weight="800" fill="#2b55a0" text-anchor="middle">6</text><circle r="7" fill="#c93a33"><animateMotion dur="7s" repeatCount="indefinite" path="M40 215 L115 125 L150 125 L160 95 L225 95 L235 125 L295 215"/></circle></svg></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Part 3.</b> The tap is already off, but the water jumps up quickly because Sam’s body pushes it up. Part 5 is Sam getting out.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,49 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Bathtub Graph" id="wu" style="--wf-side: 470px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Bathtub Graph</h2>
-  <p class="wf-rule">Sam takes a bath. The graph shows the water’s depth the whole time.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div id="wu-graph"></div>
-  <div class="u5l8-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Which segment shows the tap <b>filling</b> the tub? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l8-wqa"><div class="bk-ans"><b>Segment 1.</b> The depth increases steadily from 0 to 20 cm over 8 minutes.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How deep is the water when the tap is turned <b>off</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l8-wqa"><div class="bk-ans"><b>20 cm.</b> Segment 2 is flat at 20: the tap is off and the depth is constant.</div></div>
-    </div>
-  </div>
-  </div><div class="wf-side">
-    <div class="u5l8-wtub" id="wu-tub"></div>
-  <div class="u5l8-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Which is faster, filling <span class="u5l8-seg sm">1</span> or draining <span class="u5l8-seg sm">6</span>? How do you know? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l8-wqa"><div class="bk-ans"><b>Draining is faster:</b> segment 6 is <b>steeper</b>. It drops 20 cm in 4.5 min, about 4.4 cm/min. Filling rises 20 cm in 8 min, 2.5 cm/min.</div></div>
-    </div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which segment shows the moment Sam <b>gets into</b> the tub? <b>Guess first.</b></div></div>
-    <div class="poll-opts u5l8-c4">
-      <div class="opt"><b>A</b> segment <span class="u5l8-seg sm">1</span></div>
-      <div class="opt right"><b>B</b> segment <span class="u5l8-seg sm">3</span></div>
-      <div class="opt"><b>C</b> segment <span class="u5l8-seg sm">4</span></div>
-      <div class="opt"><b>D</b> segment <span class="u5l8-seg sm">5</span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B, segment 3.</b> Sam’s body pushes the water up (it is <b>displaced</b>), so the depth jumps from 20 to 28 cm almost instantly. Segment 4 (constant at 28 cm) is Sam soaking, segment 5 (a sudden drop back to 20) is Sam getting out, and segment 6 is the plug pulled.<br>
-      <span class="muted"><b>A</b> mixes up Sam and the tap: filling is slow and steady, while getting in is almost vertical. <b>C</b> is Sam <i>staying</i> in, not getting in. <b>D</b>: the water level doesn’t drop as you sink in; it rises.</span></div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq" style="margin-top:16px">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> Sam’s dog jumps in mid-soak, then leaps out. Sketch the new graph.</div></div>
-    <div class="u5l8-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">During segment 4, add a <b>sudden jump up</b> (dog in), a <b>flat</b> piece, then a <b>sudden drop</b> back to 28 cm (dog out). A smaller dog means a smaller jump. (Watch it in the first explainer below: choose “Dog jumps in”.)</div></div>
-  </div>
-  <p class="u5l8-social">With a neighbour: tell the whole bath story, one segment at a time.</p>
-</section>
 
 <!-- ================= 1. Increasing, decreasing, constant ================= -->
 <section class="card" data-ink="s1" data-section="1. Increasing, Decreasing, Constant">
@@ -96,7 +63,7 @@
     <div class="u5l8-k dec"><svg viewBox="0 0 90 60"><path d="M10 10L80 52"/></svg><div><b>decreasing</b><br>the graph <b>falls</b> left to right</div></div>
     <div class="u5l8-k con"><svg viewBox="0 0 90 60"><path d="M10 31H80"/></svg><div><b>constant</b><br>the graph is <b>flat</b></div></div>
   </div>
-  <p>Read a graph like a book: <b>left to right</b>, the way time moves. Watch the bath from the warm-up play out with its graph.</p>
+  <p>Read a graph like a book: <b>left to right</b>, the way time moves. Watch the bath play out with its graph.</p>
   <div class="explainer" data-explainer="bath"></div>
 </section>
 
@@ -115,11 +82,11 @@
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Faster means steeper, not higher.</b> A falling segment can be the fastest one on the graph. Compare the <b>size</b> of the rates and ignore the sign: draining at <span class="tex">-4.4</span> cm/min beats filling at <span class="tex">2.5</span> cm/min.</div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The drain rate in the warm-up.</b> The depth changes by <span class="tex">-20</span> cm in <span class="tex">4.5</span> min: <span class="keys"><kbd>(−)</kbd><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>.</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives about <span class="tex">-4.4</span> cm/min. Filling: <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives <span class="tex">2.5</span> cm/min.</div>
+    <div><b>The drain rate for the bath.</b> The depth changes by <span class="tex">-20</span> cm in <span class="tex">4.5</span> min: <span class="keys"><kbd>(−)</kbd><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>.</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives about <span class="tex">-4.4</span> cm/min. Filling: <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives <span class="tex">2.5</span> cm/min.</div>
     <div class="pill-col"><button class="pill" data-keys="(−) 20 ÷ 4.5 =">Show drain</button><button class="pill" data-keys="20 ÷ 8 =">Show fill</button></div>
   </div>
   <div class="parts c1" style="margin-top:16px">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Segment A rises 30 cm in 6 min. Segment B falls 30 cm in 3 min. Which shows the faster change, and which is steeper?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A: <span class="tex">\dfrac{30}{6}=5</span> cm/min. B: <span class="tex">\dfrac{-30}{3}=-10</span> cm/min. <b>B is faster and steeper</b>: its magnitude, 10, is bigger than 5. It covers the same change in half the time.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Segment A rises 30 cm in 6 min. Segment B falls 30 cm in 3 min. Which shows the faster change, and which is steeper?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A: <span class="tex">\dfrac{30}{6}=5</span> cm/min. B: <span class="tex">\dfrac{-30}{3}=-10</span> cm/min. <b>B is faster and steeper</b>: its magnitude, 10, is bigger than 5. It covers the same change in half the time.</div></div></div>
   </div>
 </section>
 
@@ -150,10 +117,19 @@
   <div class="explainer" data-explainer="garage"></div>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 8 · Questions 1–5</h2>
+  <p class="pr-t">Read the story in each graph.</p>
+  <div class="pr-chips n1"><span><b>1–5</b>Reading the story in a graph</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u5l8">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u5l8"></section>
 
-<section class="card" data-ink="s1d" data-section="1. The vertical line test, revisited">
+<section data-extra class="card" data-ink="s1d" data-section="1. The vertical line test, revisited">
   <h3 class="sub">The vertical line test, revisited</h3>
   <div class="u5l8-vlt">
     <div>
@@ -165,7 +141,7 @@
   </div>
   <div class="explainer" data-explainer="vlt"></div>
   <div class="parts c1" style="margin-top:16px">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could a graph of water depth against time ever have a perfectly <b>vertical</b> segment? What about a very steep one?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Never vertical:</b> a vertical piece would give many depths at one instant, which fails the vertical line test. A <b>very steep</b> piece is fine: a fast change (like Sam getting in) still takes a little time, so the segment leans slightly right.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Could a graph of water depth against time ever have a perfectly <b>vertical</b> segment? What about a very steep one?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Never vertical:</b> a vertical piece would give many depths at one instant, which fails the vertical line test. A <b>very steep</b> piece is fine: a fast change (like Sam getting in) still takes a little time, so the segment leans slightly right.</div></div></div>
   </div>
 </section>
 
@@ -213,10 +189,54 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(a) The temperature inside a kiln while pottery is fired: the kiln heats up steadily, holds at a high temperature for a long soak, then is turned off and cools back toward room temperature.</div><div class="work u5l8-axwork" style="--h:290px"><div class="u5l8-ax" id="ex3a-ax"></div></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l8-ansfig" id="ex3a-ans"></div>Three pieces, in order: a straight <b>increase</b> (steady heating), a <b>constant</b> flat stretch (the long soak), then a <b>decrease</b> (cooling once switched off). The fall stops above the axis: the kiln cools to room temperature, not to <span class="tex">0^\circ\text{C}</span>.</div></div></div>
     <div class="part"><div class="pl">(b) The speed of a cyclist on a flat trail with one steep hill in the middle: she rides at a steady speed, slows sharply climbing the hill, nearly stops at the crest, then speeds up quickly down the far side before levelling off.</div><div class="work u5l8-axwork" style="--h:290px"><div class="u5l8-ax" id="ex3b-ax"></div></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l8-ansfig" id="ex3b-ans"></div><b>Constant</b> on the flat trail, a sharp <b>decrease</b> to just above zero at the crest, a sharp <b>increase</b> down the far side, then <b>constant</b> again. The horizontal axis is <b>distance</b>, not time, and the speed never reaches 0: she nearly stops.</div></div></div>
-    <div class="part think u5l8-span2"><div class="pl"><span class="think-tag">Think</span> In part (b) the horizontal axis is <b>distance</b>. Could her graph show her <b>stopping</b> at the crest for a minute to enjoy the view?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> While she is stopped, her distance doesn’t change, so the graph can’t move to the right at all: the speed would just touch 0 at that one distance, and the minute’s rest itself is invisible on a speed–distance graph. The low flat piece means she kept riding <b>slowly</b> over that stretch of trail.</div></div></div>
+    <div data-extra class="part think u5l8-span2"><div class="pl"><span class="think-tag">Think</span> In part (b) the horizontal axis is <b>distance</b>. Could her graph show her <b>stopping</b> at the crest for a minute to enjoy the view?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> While she is stopped, her distance doesn’t change, so the graph can’t move to the right at all: the speed would just touch 0 at that one distance, and the minute’s rest itself is invisible on a speed–distance graph. The low flat piece means she kept riding <b>slowly</b> over that stretch of trail.</div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Bathtub Graph" id="wu" style="--wf-side: 470px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Bathtub Graph</h2>
+  <p class="wf-rule">Sam takes a bath. The graph shows the water’s depth the whole time.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div id="wu-graph"></div>
+  <div class="u5l8-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>Which segment shows the tap <b>filling</b> the tub? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l8-wqa"><div class="bk-ans"><b>Segment 1.</b> The depth increases steadily from 0 to 20 cm over 8 minutes.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How deep is the water when the tap is turned <b>off</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l8-wqa"><div class="bk-ans"><b>20 cm.</b> Segment 2 is flat at 20: the tap is off and the depth is constant.</div></div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+    <div class="u5l8-wtub" id="wu-tub"></div>
+  <div class="u5l8-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Which is faster, filling <span class="u5l8-seg sm">1</span> or draining <span class="u5l8-seg sm">6</span>? How do you know? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l8-wqa"><div class="bk-ans"><b>Draining is faster:</b> segment 6 is <b>steeper</b>. It drops 20 cm in 4.5 min, about 4.4 cm/min. Filling rises 20 cm in 8 min, 2.5 cm/min.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which segment shows the moment Sam <b>gets into</b> the tub? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l8-c4">
+      <div class="opt"><b>A</b> segment <span class="u5l8-seg sm">1</span></div>
+      <div class="opt right"><b>B</b> segment <span class="u5l8-seg sm">3</span></div>
+      <div class="opt"><b>C</b> segment <span class="u5l8-seg sm">4</span></div>
+      <div class="opt"><b>D</b> segment <span class="u5l8-seg sm">5</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B, segment 3.</b> Sam’s body pushes the water up (it is <b>displaced</b>), so the depth jumps from 20 to 28 cm almost instantly. Segment 4 (constant at 28 cm) is Sam soaking, segment 5 (a sudden drop back to 20) is Sam getting out, and segment 6 is the plug pulled.<br>
+      <span class="muted"><b>A</b> mixes up Sam and the tap: filling is slow and steady, while getting in is almost vertical. <b>C</b> is Sam <i>staying</i> in, not getting in. <b>D</b>: the water level doesn’t drop as you sink in; it rises.</span></div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq" style="margin-top:16px">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> Sam’s dog jumps in mid-soak, then leaps out. Sketch the new graph.</div></div>
+    <div class="u5l8-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">During segment 4, add a <b>sudden jump up</b> (dog in), a <b>flat</b> piece, then a <b>sudden drop</b> back to 28 cm (dog out). A smaller dog means a smaller jump. (Watch it in the first explainer below: choose “Dog jumps in”.)</div></div>
+  </div>
+  <p class="u5l8-social">With a neighbour: tell the whole bath story, one segment at a time.</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -229,7 +249,7 @@
     <div><b>Sketching:</b> read the axes, one piece per phrase, then check the ends (does it ever reach 0?). A quantity against time must pass the <b>vertical line test</b>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u5l8">
-    <div><div class="kicker">Your turn</div><b>Assignment 8 — Interpreting and Sketching Real-World Graphs</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 8 · Questions 6–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l9/">
     <div><div class="kicker">Next lesson</div><b>Lesson 9 — Relations and Functions Unit Review</b><div class="muted">Domain, range, intercepts, function notation and the vertical line test, all together</div></div><span class="arrow">→</span>
@@ -242,7 +262,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l8.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u5l8', homeHref: '../../', title: '5.8 Real-World Graphs' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

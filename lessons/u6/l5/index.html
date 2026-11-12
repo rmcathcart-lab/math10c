@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u6l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Two Truths and a Lie">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="90" y="46" font-size="40" text-anchor="middle">😇</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="170" y="46" font-size="40" text-anchor="middle">😇</text></g><g><animateTransform attributeName="transform" type="rotate" values="-12 250 46;12 250 46;-12 250 46" dur="2.2s" repeatCount="indefinite"/><text x="250" y="46" font-size="44" text-anchor="middle">🤥</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Two Truths and a Lie</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A line segment joins <b>A(0, 0)</b> and <b>B(6, 8)</b>.</div><div class="vw-tiles" style="--n:3;--fs:26px"><div><b>A</b>Its length is 10</div><div><b>B</b>Its midpoint is (3, 4)</div><div><b>C</b>Its slope is <span class="tex">\tfrac34</span></div></p><p class="vw-ask">Two of these are true. One is a lie. Which one?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How could you prove it?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>C is the lie.</b> Rise 8 over run 6 gives a slope of <span class="tex">\tfrac86=\tfrac43</span>. The length is <span class="tex">\sqrt{36+64}=10</span> and the midpoint is halfway along each coordinate.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -48,51 +58,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Geocache Hunt" id="wu" style="--wf-side: 372px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Geocache Hunt</h2>
-  <p class="wf-rule">A cache is hidden in the park. Four hunters dug in four different spots.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div id="u6l5-park" class="u6l5-parkfig"></div>
-  </div><div class="wf-side">
-    <div class="u6l5-clues">
-      <div class="u6l5-clue"><b>Clue 1.</b> Start exactly <b>halfway</b> between the Bridge and the Tower.</div>
-      <div class="u6l5-clue"><b>Clue 2.</b> The cache is exactly <b>5 units</b> from there.</div>
-      <div class="u6l5-clue"><b>Clue 3.</b> Heading <b>right</b>, the path to the cache has <b>slope</b> <span class="tex">-\dfrac{3}{4}</span>.</div>
-    </div>
-  <div class="u6l5-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Coordinates of the Bridge? The Tower? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans">Bridge <span class="tex">(-5,\ -3)</span>, Tower <span class="tex">(3,\ 3)</span>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How far is it from the Bridge to the Tower? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans">Run 8, rise 6: <span class="tex">\sqrt{8^2+6^2}=\sqrt{100}=10</span> units.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Clue 1: where is the halfway point? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans">Average the coordinates: <span class="tex">\left(\frac{-5+3}{2},\ \frac{-3+3}{2}\right)=(-1,\ 0)</span>.</div></div>
-  </div>
-  </div>
 
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Use all three clues. Which hunter found the cache? <b>Guess first.</b></div></div>
-    <div class="poll-opts u6l5-c4">
-      <div class="opt"><b>A</b> <span class="tex">(2,\ -4)</span></div>
-      <div class="opt"><b>B</b> <span class="tex">(8,\ 0)</span></div>
-      <div class="opt right"><b>C</b> <span class="tex">(3,\ -3)</span></div>
-      <div class="opt"><b>D</b> <span class="tex">(-5,\ 3)</span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C, <span class="tex">(3,\ -3)</span>.</b> From <span class="tex">(-1,\ 0)</span>, slope <span class="tex">-\frac34</span> heading right means “4 right, 3 down”, and that step is <span class="tex">\sqrt{4^2+3^2}=5</span> long. So <span class="tex">(-1+4,\ 0-3)=(3,\ -3)</span>: the only point that fits all three clues.<br>
-      <span class="muted"><b>A</b> is 5 away, but its slope is <span class="tex">-\frac43</span>: rise and run swapped. <b>B</b> found the “midpoint” by <i>subtracting</i>, <span class="tex">(4,\ 3)</span>; from there B really is 5 away with slope <span class="tex">-\frac34</span>. <b>D</b> is 5 away with slope <span class="tex">-\frac34</span>, but it heads <i>left</i> (4 left, 3 up). That is why Clue 3 says “heading right”.</span><br>
-      <b>Today’s lesson:</b> each clue needed a different tool (midpoint, distance, slope). Choosing the right tool is the whole review.</div>
-  </div>
-  </div>
-
-  <h3 class="sub u6l5-gap">One tool per clue</h3>
-  <div class="explainer" data-explainer="hunt"></div>
-
-  <div class="bk-wq u6l5-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Show that the Bridge, the Tower and the cache form a right triangle.</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Bridge to cache is horizontal (both have <span class="tex">y=-3</span>): 8 long. Cache to Tower is vertical (both have <span class="tex">x=3</span>): 6 long. <span class="tex">6^2+8^2=100=10^2</span>, so the right angle is at the cache. (Horizontal and vertical are always perpendicular.)</div>
-  </div>
-  <p class="u6l5-social">Team up: one clue per person. Which team finds the cache first?</p>
-</section>
 
 <!-- ================= tools at a glance ================= -->
 <section class="card u6l5-recap" data-ink="recap" data-section="Tools at a Glance">
@@ -184,7 +150,7 @@
     <span class="tex display">M\left(\dfrac{x_1+x_2}{2},\ \dfrac{y_1+y_2}{2}\right).</span></div>
   <p>Run backwards (given the midpoint and one endpoint), each coordinate gives an equation that is solved for the missing endpoint.</p>
   <div class="explainer" data-explainer="midpoint"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Add, then halve.</b> Subtracting the coordinates and halving gives half the <b>run</b> and half the <b>rise</b>: a step, not a point. That was Hunter B’s mistake in the warm-up.</div></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Add, then halve.</b> Subtracting the coordinates and halving gives half the <b>run</b> and half the <b>rise</b>: a step, not a point.</div></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
@@ -207,7 +173,7 @@
   <div class="def">The slope of the segment joining <span class="tex">P(x_1,y_1)</span> and <span class="tex">Q(x_2,y_2)</span> is
     <span class="tex display">m=\frac{y_2-y_1}{x_2-x_1}.</span></div>
   <p>A rising line has a positive slope and a falling line a negative slope; a horizontal segment has slope <span class="tex">0</span>, and a vertical segment has an <b>undefined</b> slope, since its run is <span class="tex">0</span>. The size of the slope, <span class="tex">|m|</span>, measures <b>steepness</b>, and when the axes carry units the slope is a <b>rate of change</b> (for example, km/h).</p>
-  <div class="explainer" data-explainer="stair"></div>
+  <div data-extra><div class="explainer" data-explainer="stair"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Same order, top and bottom.</b> If the top is <span class="tex">y_2-y_1</span>, the bottom must be <span class="tex">x_2-x_1</span>. And it is rise over run, never run over rise.</div></div>
 </section>
 
@@ -221,7 +187,7 @@
     <button class="pill" data-keys="(−) 4 ÷ 10 = F◂▸D">Show me</button>
   </div>
   <div class="parts c1 u6l5-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> The perpendicular slope to <span class="tex">-\frac35</span> is <span class="tex">\frac53</span>, not <span class="tex">-\frac53</span> and not <span class="tex">\frac35</span>. Why do you need <b>both</b> the flip and the sign change?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Turning a slope triangle 90° swaps the rise and the run (the <b>flip</b>) and points one of them the other way (the <b>sign change</b>). Check with the product: <span class="tex">\left(-\frac35\right)\left(\frac53\right)=-1</span>, but <span class="tex">\left(-\frac35\right)\left(-\frac53\right)=1</span> and <span class="tex">\left(-\frac35\right)\left(\frac35\right)=-\frac{9}{25}</span>.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> The perpendicular slope to <span class="tex">-\frac35</span> is <span class="tex">\frac53</span>, not <span class="tex">-\frac53</span> and not <span class="tex">\frac35</span>. Why do you need <b>both</b> the flip and the sign change?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Turning a slope triangle 90° swaps the rise and the run (the <b>flip</b>) and points one of them the other way (the <b>sign change</b>). Check with the product: <span class="tex">\left(-\frac35\right)\left(\frac53\right)=-1</span>, but <span class="tex">\left(-\frac35\right)\left(-\frac53\right)=1</span> and <span class="tex">\left(-\frac35\right)\left(\frac35\right)=-\frac{9}{25}</span>.</div></div></div>
   </div>
 </section>
 
@@ -251,7 +217,7 @@
     <div class="def u6l5-defpu">The <b><span class="tex">y</span>-intercept</b> is where <span class="tex">x=0</span>. A slanted line has range <span class="tex">\{y\mid y\in\mathbb{R}\}</span>; a horizontal line <span class="tex">y=b</span> has range <span class="tex">\{b\}</span>.</div>
   </div>
   <p>A segment or a real situation has a restricted domain and range. A line has one intercept (horizontal, vertical, or through the origin), two intercepts, or infinitely many (an axis).</p>
-  <div class="explainer" data-explainer="linear"></div>
+  <div data-extra><div class="explainer" data-explainer="linear"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Unequal steps in <span class="tex">x</span>?</b> The table can still be linear. Divide each change in <span class="tex">y</span> by its change in <span class="tex">x</span> before you decide.</div></div>
 </section>
 
@@ -327,7 +293,7 @@
   <p>To find which of four points does not belong, compute the slope from one fixed point to each of the other three; the point producing the odd slope is the one off the line. If the fixed point is itself the odd one out, all three slopes will be different: then repeat with a different fixed point.</p>
   <div class="explainer" data-explainer="collinear"></div>
   <div class="parts c1 u6l5-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why is showing <span class="tex">m_{PQ}=m_{PR}</span> enough? Couldn’t two segments have the same slope and still be on different lines?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Different segments with equal slopes are parallel, and parallel lines never meet. But <span class="tex">PQ</span> and <span class="tex">PR</span> <b>share the point</b> <span class="tex">P</span>, so they can’t be two separate parallel lines: they are the same line through <span class="tex">P</span>.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Why is showing <span class="tex">m_{PQ}=m_{PR}</span> enough? Couldn’t two segments have the same slope and still be on different lines?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Different segments with equal slopes are parallel, and parallel lines never meet. But <span class="tex">PQ</span> and <span class="tex">PR</span> <b>share the point</b> <span class="tex">P</span>, so they can’t be two separate parallel lines: they are the same line through <span class="tex">P</span>.</div></div></div>
   </div>
 </section>
 
@@ -526,6 +492,52 @@
   <button class="more" data-more="r7-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Geocache Hunt" id="wu" style="--wf-side: 372px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Geocache Hunt</h2>
+  <p class="wf-rule">A cache is hidden in the park. Four hunters dug in four different spots.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div id="u6l5-park" class="u6l5-parkfig"></div>
+  </div><div class="wf-side">
+    <div class="u6l5-clues">
+      <div class="u6l5-clue"><b>Clue 1.</b> Start exactly <b>halfway</b> between the Bridge and the Tower.</div>
+      <div class="u6l5-clue"><b>Clue 2.</b> The cache is exactly <b>5 units</b> from there.</div>
+      <div class="u6l5-clue"><b>Clue 3.</b> Heading <b>right</b>, the path to the cache has <b>slope</b> <span class="tex">-\dfrac{3}{4}</span>.</div>
+    </div>
+  <div class="u6l5-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Coordinates of the Bridge? The Tower? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans">Bridge <span class="tex">(-5,\ -3)</span>, Tower <span class="tex">(3,\ 3)</span>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How far is it from the Bridge to the Tower? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans">Run 8, rise 6: <span class="tex">\sqrt{8^2+6^2}=\sqrt{100}=10</span> units.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Clue 1: where is the halfway point? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans">Average the coordinates: <span class="tex">\left(\frac{-5+3}{2},\ \frac{-3+3}{2}\right)=(-1,\ 0)</span>.</div></div>
+  </div>
+  </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Use all three clues. Which hunter found the cache? <b>Guess first.</b></div></div>
+    <div class="poll-opts u6l5-c4">
+      <div class="opt"><b>A</b> <span class="tex">(2,\ -4)</span></div>
+      <div class="opt"><b>B</b> <span class="tex">(8,\ 0)</span></div>
+      <div class="opt right"><b>C</b> <span class="tex">(3,\ -3)</span></div>
+      <div class="opt"><b>D</b> <span class="tex">(-5,\ 3)</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C, <span class="tex">(3,\ -3)</span>.</b> From <span class="tex">(-1,\ 0)</span>, slope <span class="tex">-\frac34</span> heading right means “4 right, 3 down”, and that step is <span class="tex">\sqrt{4^2+3^2}=5</span> long. So <span class="tex">(-1+4,\ 0-3)=(3,\ -3)</span>: the only point that fits all three clues.<br>
+      <span class="muted"><b>A</b> is 5 away, but its slope is <span class="tex">-\frac43</span>: rise and run swapped. <b>B</b> found the “midpoint” by <i>subtracting</i>, <span class="tex">(4,\ 3)</span>; from there B really is 5 away with slope <span class="tex">-\frac34</span>. <b>D</b> is 5 away with slope <span class="tex">-\frac34</span>, but it heads <i>left</i> (4 left, 3 up). That is why Clue 3 says “heading right”.</span><br>
+      <b>Today’s lesson:</b> each clue needed a different tool (midpoint, distance, slope). Choosing the right tool is the whole review.</div>
+  </div>
+  </div>
+
+  <h3 class="sub u6l5-gap">One tool per clue</h3>
+  <div class="explainer" data-explainer="hunt"></div>
+
+  <div class="bk-wq u6l5-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Show that the Bridge, the Tower and the cache form a right triangle.</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Bridge to cache is horizontal (both have <span class="tex">y=-3</span>): 8 long. Cache to Tower is vertical (both have <span class="tex">x=3</span>): 6 long. <span class="tex">6^2+8^2=100=10^2</span>, so the right angle is at the cache. (Horizontal and vertical are always perpendicular.)</div>
+  </div>
+  <p class="u6l5-social">Team up: one clue per person. Which team finds the cache first?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -556,7 +568,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u6l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u6l5', homeHref: '../../', title: '6.5 Characteristics of Linear Relations Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u7l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Concert Ticket Combos">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="rotate" values="-10 130 46;10 130 46;-10 130 46" dur="1.8s" repeatCount="indefinite"/><text x="130" y="46" font-size="40" text-anchor="middle">🎟️</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="195" y="46" font-size="40" text-anchor="middle">🎸</text></g><g><animateTransform attributeName="transform" type="rotate" values="-10 260 46;10 260 46;-10 260 46" dur="1.8s" repeatCount="indefinite"/><text x="260" y="46" font-size="40" text-anchor="middle">🎟️</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Concert Ticket Combos</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Lawn tickets cost <b>$5</b>. Floor tickets cost <b>$8</b>.</p><p class="vw-ctx">You have an $80 gift card. Buying zero of one kind is allowed.</p><p class="vw-ask">How many different combos spend <b>exactly $80</b>?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Three.</b> 16 lawn and 0 floor, 8 lawn and 5 floor, or 0 lawn and 10 floor. They are the whole-number points on the line <span class="tex">5x+8y=80</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,62 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Concert Ticket Combos" id="wu" style="--wf-side: 470px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Concert Ticket Combos</h2>
-  <p class="wf-rule">Two kinds of tickets: <b>LAWN $5</b> and <b>FLOOR $8</b>. Spend an <b>$80</b> gift card <b>exactly</b>, with nothing left over.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-      <div class="u7l3-shop">
-        <div class="u7l3-tkrow">
-          <div class="u7l3-tk u7l3-tk-lawn"><span class="u7l3-tk-a">ADMIT ONE</span><b>LAWN</b><span class="u7l3-tk-p">$5</span></div>
-          <div class="u7l3-cnt"><button type="button" class="u7l3-pm" data-wu="x-" aria-label="one less lawn ticket">−</button><b id="u7l3-nx">0</b><button type="button" class="u7l3-pm" data-wu="x+" aria-label="one more lawn ticket">+</button></div>
-          <div class="u7l3-sub" id="u7l3-sx"></div>
-        </div>
-        <div class="u7l3-tkrow">
-          <div class="u7l3-tk u7l3-tk-floor"><span class="u7l3-tk-a">ADMIT ONE</span><b>FLOOR</b><span class="u7l3-tk-p">$8</span></div>
-          <div class="u7l3-cnt"><button type="button" class="u7l3-pm" data-wu="y-" aria-label="one less floor ticket">−</button><b id="u7l3-ny">0</b><button type="button" class="u7l3-pm" data-wu="y+" aria-label="one more floor ticket">+</button></div>
-          <div class="u7l3-sub" id="u7l3-sy"></div>
-        </div>
-        <div class="u7l3-total">Total <b id="u7l3-tot">$0</b> <span class="u7l3-of">of $80</span></div>
-      </div>
-    <div class="u7l3-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>What do <b>4</b> lawn and <b>3</b> floor tickets cost?</div></div>
-        <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">4(5)+3(8)=20+24=\$44</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>Spend exactly <b>$40</b> using only <em>one</em> kind of ticket. Find both ways.</div></div>
-        <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>8 lawn</b> tickets (<span class="tex">8\times5</span>) or <b>5 floor</b> tickets (<span class="tex">5\times8</span>).</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>You buy <span class="tex">x</span> lawn and <span class="tex">y</span> floor tickets and spend exactly $80. Write an equation.</div></div>
-        <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5x+8y=80</span>. Move the 80 across: <span class="tex">5x+8y-80=0</span>. That is today’s <b>general form</b>.</div></div>
-      </div>
-    </div>
-  </div><div class="wf-side">
-      <div id="u7l3-wgraph"></div>
-      <div class="u7l3-wbtns">
-        <button type="button" class="pill" id="u7l3-wall">Show every $80 combo</button>
-        <button type="button" class="pill" id="u7l3-wreset">Reset</button>
-      </div>
-    <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many different combos of lawn and floor tickets spend <b>exactly $80</b>? (Zero of one kind is allowed.) <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 2</div>
-      <div class="opt right"><b>B</b> 3</div>
-      <div class="opt"><b>C</b> 5</div>
-      <div class="opt"><b>D</b> 16</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: 3 combos.</b> List by floor tickets <span class="tex">y</span>: the $80 left after the floor tickets must split into $5 lawn tickets, and <span class="tex">8y</span> is a multiple of 5 only when <span class="tex">y</span> is. <span class="tex">y=0</span>: 16 lawn. <span class="tex">y=5</span>: $40 left, 8 lawn. <span class="tex">y=10</span>: 0 lawn. The combos are the three whole-number points <span class="tex">(0,\ 10)</span>, <span class="tex">(8,\ 5)</span>, <span class="tex">(16,\ 0)</span> on the line.<br>
-      <span class="muted"><b>A</b> counts only the “all one kind” answers. <b>C</b> is a round-number guess. <b>D</b> gives one combo for every lawn count from 0 to 16, forgetting the floor count must come out whole.</span></div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq u7l3-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> Find an amount under $30 you <em>can’t</em> spend exactly.</div></div>
-    <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Impossible: $1–$4, 6, 7, 9, 11, 12, 14, 17, 19, 22 and <b>27</b>. $27 is the largest; every whole amount above it works.</div></div>
-  </div>
-</section>
 
 <!-- ================= 1. Rewriting in general form ================= -->
 <section class="card" data-ink="s1" data-section="1. Rewriting in General Form">
@@ -132,7 +87,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Why the rules?">
+<section data-extra class="card" data-ink="s1b" data-section="1. Why the rules?">
   <h3 class="sub">Why the rules? One line, many equations</h3>
   <p>Multiplying every term by the same number never changes the line, so every line has endless equations. The three rules pick out <b>exactly one</b> of them, so everyone’s answer looks the same.</p>
   <div class="explainer" data-explainer="costumes"></div>
@@ -166,7 +121,16 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Example 2(c) and the general rule">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–5</h2>
+  <p class="pr-t">Into general form, then out of it.</p>
+  <div class="pr-chips n2"><span><b>1–2</b>Into general form</span><span><b>3–5</b>Out of general form</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u7l3">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s2b" data-section="2. Example 2(c) and the general rule">
   <h3 class="sub">Example 2(c): a whole family of lines</h3>
   <p>A letter in the equation makes a different line for every value. Find the one value that gives the right y-intercept.</p>
   <div class="explainer" data-explainer="sameInt"></div>
@@ -247,9 +211,66 @@
     <div><b>Statement 3 on the calculator.</b> Substitute and look for <span class="tex">0</span>: <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>−</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>0</kbd><kbd>+</kbd><kbd>1</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives <span class="tex">0</span>, so <span class="tex">(3,\ 10)</span> is on the line.</div>
     <div class="pill-col"><button class="pill" data-keys="4 × 3 − 3 × 10 + 18 =">Show (3, 10)</button></div>
   </div>
-  <div class="explainer u7l3-exgap" data-explainer="judge"></div>
+  <div data-extra><div class="explainer u7l3-exgap" data-explainer="judge"></div></div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Concert Ticket Combos" id="wu" style="--wf-side: 470px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Concert Ticket Combos</h2>
+  <p class="wf-rule">Two kinds of tickets: <b>LAWN $5</b> and <b>FLOOR $8</b>. Spend an <b>$80</b> gift card <b>exactly</b>, with nothing left over.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+      <div class="u7l3-shop">
+        <div class="u7l3-tkrow">
+          <div class="u7l3-tk u7l3-tk-lawn"><span class="u7l3-tk-a">ADMIT ONE</span><b>LAWN</b><span class="u7l3-tk-p">$5</span></div>
+          <div class="u7l3-cnt"><button type="button" class="u7l3-pm" data-wu="x-" aria-label="one less lawn ticket">−</button><b id="u7l3-nx">0</b><button type="button" class="u7l3-pm" data-wu="x+" aria-label="one more lawn ticket">+</button></div>
+          <div class="u7l3-sub" id="u7l3-sx"></div>
+        </div>
+        <div class="u7l3-tkrow">
+          <div class="u7l3-tk u7l3-tk-floor"><span class="u7l3-tk-a">ADMIT ONE</span><b>FLOOR</b><span class="u7l3-tk-p">$8</span></div>
+          <div class="u7l3-cnt"><button type="button" class="u7l3-pm" data-wu="y-" aria-label="one less floor ticket">−</button><b id="u7l3-ny">0</b><button type="button" class="u7l3-pm" data-wu="y+" aria-label="one more floor ticket">+</button></div>
+          <div class="u7l3-sub" id="u7l3-sy"></div>
+        </div>
+        <div class="u7l3-total">Total <b id="u7l3-tot">$0</b> <span class="u7l3-of">of $80</span></div>
+      </div>
+    <div class="u7l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>What do <b>4</b> lawn and <b>3</b> floor tickets cost?</div></div>
+        <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">4(5)+3(8)=20+24=\$44</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>Spend exactly <b>$40</b> using only <em>one</em> kind of ticket. Find both ways.</div></div>
+        <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>8 lawn</b> tickets (<span class="tex">8\times5</span>) or <b>5 floor</b> tickets (<span class="tex">5\times8</span>).</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>You buy <span class="tex">x</span> lawn and <span class="tex">y</span> floor tickets and spend exactly $80. Write an equation.</div></div>
+        <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5x+8y=80</span>. Move the 80 across: <span class="tex">5x+8y-80=0</span>. That is today’s <b>general form</b>.</div></div>
+      </div>
+    </div>
+  </div><div class="wf-side">
+      <div id="u7l3-wgraph"></div>
+      <div class="u7l3-wbtns">
+        <button type="button" class="pill" id="u7l3-wall">Show every $80 combo</button>
+        <button type="button" class="pill" id="u7l3-wreset">Reset</button>
+      </div>
+    <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many different combos of lawn and floor tickets spend <b>exactly $80</b>? (Zero of one kind is allowed.) <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 2</div>
+      <div class="opt right"><b>B</b> 3</div>
+      <div class="opt"><b>C</b> 5</div>
+      <div class="opt"><b>D</b> 16</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: 3 combos.</b> List by floor tickets <span class="tex">y</span>: the $80 left after the floor tickets must split into $5 lawn tickets, and <span class="tex">8y</span> is a multiple of 5 only when <span class="tex">y</span> is. <span class="tex">y=0</span>: 16 lawn. <span class="tex">y=5</span>: $40 left, 8 lawn. <span class="tex">y=10</span>: 0 lawn. The combos are the three whole-number points <span class="tex">(0,\ 10)</span>, <span class="tex">(8,\ 5)</span>, <span class="tex">(16,\ 0)</span> on the line.<br>
+      <span class="muted"><b>A</b> counts only the “all one kind” answers. <b>C</b> is a round-number guess. <b>D</b> gives one combo for every lawn count from 0 to 16, forgetting the floor count must come out whole.</span></div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u7l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> Find an amount under $30 you <em>can’t</em> spend exactly.</div></div>
+    <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Impossible: $1–$4, 6, 7, 9, 11, 12, 14, 17, 19, 22 and <b>27</b>. $27 is the largest; every whole amount above it works.</div></div>
+  </div>
 </section>
 
 <!-- ================= summary ================= -->
@@ -262,7 +283,7 @@
     <div><b>Parallel and perpendicular.</b> Equal slopes: parallel. Slopes multiplying to <span class="tex">-1</span>: perpendicular. To build a line: target slope, target y-intercept, assemble <span class="tex">y=mx+b</span>, convert.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u7l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — The General Form of a Linear Equation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 6–18</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Slope–Point Form</b><div class="muted">An equation straight from one point and the slope: <span class="tex">y-y_1=m(x-x_1)</span></div></div><span class="arrow">→</span>
@@ -275,7 +296,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u7l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u7l3', homeHref: '../../', title: '7.3 General Form' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

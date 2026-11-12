@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u6l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Trees in a Row">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.0s" repeatCount="indefinite"/><text x="80" y="46" font-size="34" text-anchor="middle">🌳</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.2s" repeatCount="indefinite"/><text x="130" y="46" font-size="34" text-anchor="middle">🌳</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.4s" repeatCount="indefinite"/><text x="180" y="46" font-size="34" text-anchor="middle">🌳</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.6000000000000001s" repeatCount="indefinite"/><text x="230" y="46" font-size="34" text-anchor="middle">🌳</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.8s" repeatCount="indefinite"/><text x="280" y="46" font-size="34" text-anchor="middle">🌳</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Trees in a Row</h2>
+  <p class="wf-rule vw-rule">The farmer says all five trees are in one perfect straight row. Which tree is out of line?</p></div>
+  <div class="vw-tiles" style="--n:5;--fs:24px"><div class="lab"><b>Apple</b><span><span class="tex">(0,\ 1)</span></span></div><div class="lab"><b>Cherry</b><span><span class="tex">(3,\ 3)</span></span></div><div class="lab"><b>Plum</b><span><span class="tex">(6,\ 5)</span></span></div><div class="lab"><b>Peach</b><span><span class="tex">(9,\ 8)</span></span></div><div class="lab"><b>Pear</b><span><span class="tex">(12,\ 9)</span></span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How do you get from each tree to the next?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Peach.</b> Each step should be 3 across and 2 up. Peach is 3 up from Plum, so it sits one unit too high. It should be at (9, 7).</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,53 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Trees in a Row" id="wu" style="--wf-side: 362px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Trees in a Row</h2>
-  <p class="wf-rule">A farmer planted five fruit trees at grid points in her orchard. <span class="u6l3-farmer">“All five trees are in one <b>perfect straight row!</b>”</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div class="u6l3-wfig">
-      <div id="u6l3-orchard"></div>
-      <div class="u6l3-wbtns">
-        <button type="button" class="pill" id="u6l3-wtri">Apple → Cherry → Plum steps</button>
-        <button type="button" class="pill" id="u6l3-wruler">Hold up a ruler</button>
-      </div>
-    </div>
-  </div><div class="wf-side">
-    <div class="u6l3-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>Apple → Cherry: rise? run? slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-        <div class="u6l3-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span>, slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>Cherry → Plum: slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-        <div class="u6l3-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span> again: slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>If trees are in one straight row, what must be true about the slopes between them? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-        <div class="u6l3-wa"><div class="bk-ans">Every pair must give the <b>same slope</b>. Apple, Cherry and Plum pass.</div></div>
-      </div>
-    </div>
-  <div class="poll wf-poll u6l3-poll4">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the farmer right? If a tree is out of line, which one? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> Plum</div>
-      <div class="opt right"><b>B</b> Pear</div>
-      <div class="opt"><b>C</b> Peach</div>
-      <div class="opt"><b>D</b> None: it’s a perfect row</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B, the Pear.</b> Trees: Apple <span class="tex">(1,\ 1)</span>, Cherry <span class="tex">(4,\ 3)</span>, Plum <span class="tex">(7,\ 5)</span>, Pear <span class="tex">(11,\ 8)</span>, Peach <span class="tex">(13,\ 9)</span>. Slopes from the Apple tree: Cherry <span class="tex">\tfrac{2}{3}</span>, Plum <span class="tex">\tfrac{4}{6}=\tfrac{2}{3}</span>, Pear <span class="tex">\tfrac{7}{10}</span>, Peach <span class="tex">\tfrac{8}{12}=\tfrac{2}{3}</span>. The row passes <span class="tex">x=11</span> at <span class="tex">y=7\tfrac{2}{3}</span>, so the Pear is only <span class="tex">\tfrac13</span> of a unit too high: invisible to most eyes.<br>
-      <span class="muted"><b>D</b> is the eyeball answer: it <em>looks</em> straight. <b>C</b> is tempting because the slope from Pear to Peach is <span class="tex">\tfrac12</span>, so the row seems to “bend” at the end, but Peach is back on Apple’s line. <b>A</b> is a guess for the middle tree.</span><br>
-      <b>The lesson:</b> slopes settle it when eyes can’t.</div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq u6l3-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> (1) Move the Pear to the nearest grid point that <em>is</em> in the row. (2) A second row starts at <span class="tex">(1,\ 4)</span> and runs <b>parallel</b> to the first. Where is its next grid-point tree? (3) What slope would an irrigation pipe crossing the row at a right angle have?</div></div>
-    <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">(1) <span class="tex">(10,\ 7)</span>: 3 right and 2 up from the Plum. (2) <span class="tex">(4,\ 6)</span>: same slope <span class="tex">\tfrac23</span>. (3) <span class="tex">-\tfrac32</span> (Sections 3 to 5 explain why).</div></div>
-  </div>
-  <p class="u6l3-social">Guess by eye first, then hold a ruler up to the screen. Did your eyes fool you?</p>
-</section>
 
 <!-- ================= 1. The slope formula ================= -->
 <section class="card" data-ink="s1" data-section="1. The Slope Formula">
@@ -186,7 +151,16 @@
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. A missing coordinate">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–7</h2>
+  <p class="pr-t">The slope formula, then collinear points.</p>
+  <div class="pr-chips n2"><span><b>1–4</b>The slope formula</span><span><b>5–7</b>Collinear points</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u6l3">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s2b" data-section="2. A missing coordinate">
   <h3 class="sub">A missing coordinate: slide until the slope matches</h3>
   <p>A point on a line must give the line’s slope from <b>any</b> other point on it. So an unknown coordinate is whatever value makes the slopes equal: write the slope with the unknown in it, set it equal to the known slope, and solve.</p>
   <div class="explainer" data-explainer="missing"></div>
@@ -298,7 +272,7 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. Parallel, perpendicular, or neither?">
+<section data-extra class="card" data-ink="s5b" data-section="5. Parallel, perpendicular, or neither?">
   <h3 class="sub">Parallel, perpendicular, or neither?</h3>
   <p>Simplify both slopes first. Equal means parallel; a product of <span class="tex">-1</span> means perpendicular. Watch the trap: flipping the fraction <b>without</b> changing the sign gives neither.</p>
   <div class="explainer" data-explainer="classify"></div>
@@ -315,7 +289,7 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5c" data-section="5. Using slope to find a right angle">
+<section data-extra class="card" data-ink="s5c" data-section="5. Using slope to find a right angle">
   <h3 class="sub">Using slope to find a right angle</h3>
   <p>A triangle has a right angle at a vertex when the <b>two sides that meet there</b> are perpendicular: their slopes multiply to <span class="tex">-1</span>.</p>
   <div class="explainer" data-explainer="rightAngle"></div>
@@ -332,7 +306,7 @@
   <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5d" data-section="5. Solving for an unknown slope">
+<section data-extra class="card" data-ink="s5d" data-section="5. Solving for an unknown slope">
   <h3 class="sub">Solving for an unknown slope</h3>
   <p>When one slope contains an unknown, write the condition as an equation: <b>parallel</b>: set the slopes <b>equal</b>; <b>perpendicular</b>: set the <b>product equal to <span class="tex">-1</span></b> (or set the unknown slope equal to the negative reciprocal).</p>
   <div class="explainer" data-explainer="dialK"></div>
@@ -354,6 +328,54 @@
   <button class="more" data-more="ex8-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Trees in a Row" id="wu" style="--wf-side: 362px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Trees in a Row</h2>
+  <p class="wf-rule">A farmer planted five fruit trees at grid points in her orchard. <span class="u6l3-farmer">“All five trees are in one <b>perfect straight row!</b>”</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div class="u6l3-wfig">
+      <div id="u6l3-orchard"></div>
+      <div class="u6l3-wbtns">
+        <button type="button" class="pill" id="u6l3-wtri">Apple → Cherry → Plum steps</button>
+        <button type="button" class="pill" id="u6l3-wruler">Hold up a ruler</button>
+      </div>
+    </div>
+  </div><div class="wf-side">
+    <div class="u6l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Apple → Cherry: rise? run? slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l3-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span>, slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>Cherry → Plum: slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l3-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span> again: slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>If trees are in one straight row, what must be true about the slopes between them? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l3-wa"><div class="bk-ans">Every pair must give the <b>same slope</b>. Apple, Cherry and Plum pass.</div></div>
+      </div>
+    </div>
+  <div class="poll wf-poll u6l3-poll4">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the farmer right? If a tree is out of line, which one? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> Plum</div>
+      <div class="opt right"><b>B</b> Pear</div>
+      <div class="opt"><b>C</b> Peach</div>
+      <div class="opt"><b>D</b> None: it’s a perfect row</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B, the Pear.</b> Trees: Apple <span class="tex">(1,\ 1)</span>, Cherry <span class="tex">(4,\ 3)</span>, Plum <span class="tex">(7,\ 5)</span>, Pear <span class="tex">(11,\ 8)</span>, Peach <span class="tex">(13,\ 9)</span>. Slopes from the Apple tree: Cherry <span class="tex">\tfrac{2}{3}</span>, Plum <span class="tex">\tfrac{4}{6}=\tfrac{2}{3}</span>, Pear <span class="tex">\tfrac{7}{10}</span>, Peach <span class="tex">\tfrac{8}{12}=\tfrac{2}{3}</span>. The row passes <span class="tex">x=11</span> at <span class="tex">y=7\tfrac{2}{3}</span>, so the Pear is only <span class="tex">\tfrac13</span> of a unit too high: invisible to most eyes.<br>
+      <span class="muted"><b>D</b> is the eyeball answer: it <em>looks</em> straight. <b>C</b> is tempting because the slope from Pear to Peach is <span class="tex">\tfrac12</span>, so the row seems to “bend” at the end, but Peach is back on Apple’s line. <b>A</b> is a guess for the middle tree.</span><br>
+      <b>The lesson:</b> slopes settle it when eyes can’t.</div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u6l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> (1) Move the Pear to the nearest grid point that <em>is</em> in the row. (2) A second row starts at <span class="tex">(1,\ 4)</span> and runs <b>parallel</b> to the first. Where is its next grid-point tree? (3) What slope would an irrigation pipe crossing the row at a right angle have?</div></div>
+    <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">(1) <span class="tex">(10,\ 7)</span>: 3 right and 2 up from the Plum. (2) <span class="tex">(4,\ 6)</span>: same slope <span class="tex">\tfrac23</span>. (3) <span class="tex">-\tfrac32</span> (Sections 3 to 5 explain why).</div></div>
+  </div>
+  <p class="u6l3-social">Guess by eye first, then hold a ruler up to the screen. Did your eyes fool you?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -364,7 +386,7 @@
     <div><b>Perpendicular</b>: the slope triangle turned <span class="tex">90^\circ</span>. Rise and run swap and one sign flips: <b>negative reciprocals</b>, <span class="tex">m_1\times m_2=-1</span>. Horizontal <span class="tex">\perp</span> vertical (0 and undefined).</div>
   </div>
   <a class="assign" href="../../../#/lesson/u6l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Slope Relationships</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 8–25</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Characteristics of Linear Graphs</b><div class="muted">The orchard row rises 2 for every 3 across: the constant change that makes a relation linear</div></div><span class="arrow">→</span>
@@ -377,7 +399,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u6l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u6l3', homeHref: '../../', title: '6.3 Slope Relationships' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u5l4.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Ride Restrictions">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><line x1="0" y1="52" x2="340" y2="52" stroke="#d9d3c4" stroke-width="3" stroke-dasharray="16 12"><animate attributeName="stroke-dashoffset" values="0;-28" dur=".7s" repeatCount="indefinite"/></line><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="5s" begin="0s" repeatCount="indefinite"/><text x="0" y="44" font-size="40" text-anchor="middle" transform="scale(-1 1)">🎢</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Ride Restrictions</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">THE CYCLONE: riders must be <b>at least 120 cm</b> and <b>no taller than 195 cm</b>.</div><div class="vw-tiles" style="--n:4;--fs:30px"><div class="lab"><b>Ava</b><span>118 cm</span></div><div class="lab"><b>Ben</b><span>120 cm</span></div><div class="lab"><b>Cleo</b><span>160 cm</span></div><div class="lab"><b>Dev</b><span>196 cm</span></div></p><p class="vw-ask">Which of the four friends may ride?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Ben and Cleo.</b> “At least 120” includes exactly 120, so Ben is in. Ava is 2 cm too short and Dev is 1 cm too tall.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,61 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Ride Restrictions" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Ride Restrictions</h2>
-  <div class="u5l4-sign"><b>THE CYCLONE:</b> riders must be <b class="u5l4-acc">at least 120&nbsp;cm</b> and <b class="u5l4-acc">no taller than 195&nbsp;cm</b></div></div>
-  <div class="wf-grid"><div class="wf-main u5l4-wcols">
-  <div class="u5l4-wcol">
-    <div class="u5l4-kidsbox">
-      <div id="u5l4-kids"></div>
-      <div class="u5l4-tiny">Tap a rider to check them at the gate.</div>
-    </div>
-    <div class="u5l4-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Which of the four friends may ride? <button class="pill small" type="button" data-bk-toggle data-wu="1">Answer</button></div></div>
-      <div class="u5l4-wa"><div class="bk-ans"><b>Ben and Cleo.</b> Ava (118) is too short. Ben (exactly 120) counts: “at least 120” <b>includes</b> 120. Dev (196) is 1&nbsp;cm too tall.</div></div></div>
-    </div>
-  </div>
-  <div class="u5l4-wcol">
-    <div class="u5l4-trackbox">
-      <div class="u5l4-trh">The Cyclone’s track <span class="u5l4-trsub">height <span class="tex">h</span> (m) against distance along the ride <span class="tex">d</span> (m)</span></div>
-      <div id="u5l4-track"></div>
-      <div class="u5l4-trctl">
-        <button type="button" class="pill small" data-track="ext">Highest &amp; lowest</button>
-        <button type="button" class="pill small" data-track="x">Light from above</button>
-        <button type="button" class="pill small" data-track="y">Light from the side</button>
-      </div>
-    </div>
-    <div class="u5l4-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How high is the track’s <b>highest</b> point? Its <b>lowest</b> point? <button class="pill small" type="button" data-bk-toggle data-wu="2">Answer</button></div></div>
-      <div class="u5l4-wa"><div class="bk-ans">Highest: <span class="tex">40</span>&nbsp;m, at the top of the lift hill. Lowest: <span class="tex">-6</span>&nbsp;m, in the tunnel 6&nbsp;m underground.</div></div></div>
-    </div>
-  </div>
-  </div><div class="wf-side">
-  <div class="u5l4-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>The graph covers distances from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m, and heights from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m. <button class="pill small" type="button" data-bk-toggle data-wu="3">Answer</button></div></div>
-      <div class="u5l4-wa"><div class="bk-ans">Distances from <span class="tex">0</span> to <span class="tex">800</span>&nbsp;m. Heights from <span class="tex">-6</span> to <span class="tex">40</span>&nbsp;m. Those are the graph’s two <b>shadows</b>: try the light buttons.</div></div></div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which set is <b>exactly</b> the rider heights <span class="tex">h</span> (in cm) allowed on The Cyclone? <b>Guess first.</b></div></div>
-    <div class="poll-opts u5l4-p2">
-      <div class="opt"><b>A</b> <span class="tex">\{h\mid 120&lt;h&lt;195,\ h\in\mathbb{R}\}</span></div>
-      <div class="opt right"><b>B</b> <span class="tex">\{h\mid 120\le h\le 195,\ h\in\mathbb{R}\}</span></div>
-      <div class="opt"><b>C</b> <span class="tex">\{h\mid 120\le h\le 195,\ h\in I\}</span></div>
-      <div class="opt"><b>D</b> <span class="tex">\{120,\ 195\}</span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: <span class="tex">\{h\mid 120\le h\le 195,\ h\in\mathbb{R}\}</span>.</b> “At least” and “no taller than” both <b>include</b> the endpoint, so we need <span class="tex">\le</span>.<br>
-      <span class="muted"><b>A</b> uses <span class="tex">&lt;</span>, which would turn Ben away at exactly 120&nbsp;cm. <b>C</b> uses <span class="tex">I</span> (integers), but height is <b>measured</b>: a rider who is 150.5&nbsp;cm tall may ride, and C leaves them out. <b>D</b> lists only the two boundary heights, not everything in between.</span><br>
-      <b>Today’s lesson:</b> the distances a graph uses are its <b>domain</b> and the heights it produces are its <b>range</b>: <span class="tex">D=\{d\mid 0\le d\le 800,\ d\in\mathbb{R}\}</span>, <span class="tex">R=\{h\mid -6\le h\le 40,\ h\in\mathbb{R}\}</span>.</div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq u5l4-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A Cyclone train holds at most 24 riders and never runs empty. Write the set of possible numbers of riders <span class="tex">n</span>.</div></div>
-    <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\{n\mid 1\le n\le 24,\ n\in I\}</span>, or the list <span class="tex">\{1,\ 2,\ 3,\ \dots,\ 24\}</span>. Riders are <b>counted</b>, so no fractions and no decimals.</div></div>
-  </div>
-  <p class="u5l4-social">Challenge a neighbour: invent your own ride’s height rule, then trade and write it as a set.</p>
-</section>
 
 <!-- ================= 1. Domain and range defined ================= -->
 <section class="card" data-ink="s1" data-section="1. Domain and Range Defined">
@@ -160,7 +116,7 @@
     <div class="u5l4-feat"><div class="u5l4-fic" data-feat="arrow"></div><div><b>An arrow</b> on an end means the graph continues forever in that direction, so that side is unbounded: an unbounded domain is written <span class="tex">\{x\mid x\in\mathbb{R}\}</span>, and a range bounded on one side only is written <span class="tex">\{y\mid y\le 3,\ y\in\mathbb{R}\}</span> or <span class="tex">\{y\mid y\ge -3,\ y\in\mathbb{R}\}</span>.</div></div>
     <div class="u5l4-feat"><div class="u5l4-fic" data-feat="ends"></div><div>A <b>solid endpoint</b> belongs to the graph, so its value is <b>included</b> and the inequality uses <span class="tex">\le</span> or <span class="tex">\ge</span>; a <b>hollow endpoint</b> does not belong to the graph, so its value is <b>excluded</b> and the inequality uses <span class="tex">&lt;</span> or <span class="tex">&gt;</span>.</div></div>
   </div>
-  <div class="explainer" data-explainer="dots"></div>
+  <div data-extra><div class="explainer" data-explainer="dots"></div></div>
 </section>
 
 <section class="card" data-ink="s2c" data-section="2. Arrows: no end">
@@ -176,7 +132,7 @@
     <div class="part"><div class="pl">(a)<div class="u5l4-fig" data-fig="e2a"></div></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Five isolated points: <span class="tex">(-4,-3),</span> <span class="tex">(-2,-1),</span> <span class="tex">(-1,1),</span> <span class="tex">(0,2),</span> <span class="tex">(2,1)</span>. Discrete, so both are lists; the <span class="tex">y</span>-value 1 occurs twice.<br><span class="tex">\boldsymbol{D=\{-4,\ -2,\ -1,\ 0,\ 2\}}</span><br><span class="tex">\boldsymbol{R=\{-3,\ -1,\ 1,\ 2\}}</span></div></div></div>
     <div class="part"><div class="pl">(b)<div class="u5l4-fig" data-fig="e2b"></div></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A continuous “tent” with <b>solid</b> endpoints at <span class="tex">(-4,-1)</span> and <span class="tex">(4,-1)</span>, so both ends are included: <span class="tex">\le</span>. The <span class="tex">x</span>-shadow runs <span class="tex">-4</span> to <span class="tex">4</span>; the <span class="tex">y</span>-shadow runs from the lowest point <span class="tex">y=-1</span> to the peak <span class="tex">y=3</span>.<br><span class="tex">\boldsymbol{D=\{x\mid -4\le x\le 4,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid -1\le y\le 3,\ y\in\mathbb{R}\}}</span></div></div></div>
     <div class="part"><div class="pl">(c)<div class="u5l4-fig" data-fig="e2c"></div></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two rays leaving <span class="tex">(0,3)</span>, both arrowed, so the graph spreads left and right without end and falls forever. The highest point is the vertex, <span class="tex">y=3</span>.<br><span class="tex">\boldsymbol{D=\{x\mid x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid y\le 3,\ y\in\mathbb{R}\}}</span></div></div></div>
-    <div class="part think u5l4-span3"><div class="pl"><span class="think-tag">Think</span> Graphs (a) and (b) both stay between <span class="tex">x=-4</span> and <span class="tex">x=4</span>. Why does (a) get a <b>list</b> and (b) an <b>inequality</b>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(a) is <b>separate dots</b>: only five <span class="tex">x</span>-values are used, so we can list them. (b) is an <b>unbroken</b> line: every <span class="tex">x</span> from <span class="tex">-4</span> to <span class="tex">4</span> is used, decimals included, which is infinitely many values, so we need an inequality.</div></div></div>
+    <div data-extra class="part think u5l4-span3"><div class="pl"><span class="think-tag">Think</span> Graphs (a) and (b) both stay between <span class="tex">x=-4</span> and <span class="tex">x=4</span>. Why does (a) get a <b>list</b> and (b) an <b>inequality</b>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(a) is <b>separate dots</b>: only five <span class="tex">x</span>-values are used, so we can list them. (b) is an <b>unbroken</b> line: every <span class="tex">x</span> from <span class="tex">-4</span> to <span class="tex">4</span> is used, decimals included, which is infinitely many values, so we need an inequality.</div></div></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
@@ -194,10 +150,19 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(a) A segment from a solid endpoint at <span class="tex">(-3,1)</span> to a hollow endpoint at <span class="tex">(4,5)</span>.<div class="u5l4-fig" data-fig="e3a"></div></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The solid end <span class="tex">(-3,1)</span> is included (<span class="tex">\le</span>); the hollow end <span class="tex">(4,5)</span> is not (<span class="tex">&lt;</span>). The <span class="tex">x</span>-shadow runs from <span class="tex">-3</span> up to, but not including, <span class="tex">4</span>; the <span class="tex">y</span>-shadow from <span class="tex">1</span> up to, but not including, <span class="tex">5</span>.<br><span class="tex">\boldsymbol{D=\{x\mid -3\le x&lt;4,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid 1\le y&lt;5,\ y\in\mathbb{R}\}}</span></div></div></div>
     <div class="part"><div class="pl">(b) A ray that starts at a hollow endpoint at <span class="tex">(1,-2)</span> and continues up to the left forever.<div class="u5l4-fig" data-fig="e3b"></div></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The arrow means the ray goes on forever to the left and upward; the hollow start <span class="tex">(1,-2)</span> is not included, so use <span class="tex">&lt;</span> and <span class="tex">&gt;</span>.<br><span class="tex">\boldsymbol{D=\{x\mid x&lt;1,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid y&gt;-2,\ y\in\mathbb{R}\}}</span></div></div></div>
-    <div class="part think u5l4-span2"><div class="pl"><span class="think-tag">Think</span> Could the domain in (a) be written <span class="tex">-3\le x\le 3.999</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. <span class="tex">x=3.9999</span> is also on the segment, and so is <span class="tex">3.99999</span>. Whatever number below 4 we pick, a bigger one is still on the graph. Only <span class="tex">x&lt;4</span> catches them all.</div></div></div>
+    <div data-extra class="part think u5l4-span2"><div class="pl"><span class="think-tag">Think</span> Could the domain in (a) be written <span class="tex">-3\le x\le 3.999</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. <span class="tex">x=3.9999</span> is also on the segment, and so is <span class="tex">3.99999</span>. Whatever number below 4 we pick, a bigger one is still on the graph. Only <span class="tex">x&lt;4</span> catches them all.</div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 4 · Questions 1–4</h2>
+  <p class="pr-t">Domain and range from ordered pairs and graphs.</p>
+  <div class="pr-chips n1"><span><b>1–4</b>Domain and range</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u5l4">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -252,10 +217,66 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Choosing the notation">
+<section data-extra class="card" data-ink="s3b" data-section="3. Choosing the notation">
   <h3 class="sub">Putting it together: which notation?</h3>
   <p>Every question today came down to the same few decisions. Can the values be listed? If not, what happens at each end, and what kind of number is the variable?</p>
   <div class="explainer" data-explainer="which"></div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Ride Restrictions" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Ride Restrictions</h2>
+  <div class="u5l4-sign"><b>THE CYCLONE:</b> riders must be <b class="u5l4-acc">at least 120&nbsp;cm</b> and <b class="u5l4-acc">no taller than 195&nbsp;cm</b></div></div>
+  <div class="wf-grid"><div class="wf-main u5l4-wcols">
+  <div class="u5l4-wcol">
+    <div class="u5l4-kidsbox">
+      <div id="u5l4-kids"></div>
+      <div class="u5l4-tiny">Tap a rider to check them at the gate.</div>
+    </div>
+    <div class="u5l4-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Which of the four friends may ride? <button class="pill small" type="button" data-bk-toggle data-wu="1">Answer</button></div></div>
+      <div class="u5l4-wa"><div class="bk-ans"><b>Ben and Cleo.</b> Ava (118) is too short. Ben (exactly 120) counts: “at least 120” <b>includes</b> 120. Dev (196) is 1&nbsp;cm too tall.</div></div></div>
+    </div>
+  </div>
+  <div class="u5l4-wcol">
+    <div class="u5l4-trackbox">
+      <div class="u5l4-trh">The Cyclone’s track <span class="u5l4-trsub">height <span class="tex">h</span> (m) against distance along the ride <span class="tex">d</span> (m)</span></div>
+      <div id="u5l4-track"></div>
+      <div class="u5l4-trctl">
+        <button type="button" class="pill small" data-track="ext">Highest &amp; lowest</button>
+        <button type="button" class="pill small" data-track="x">Light from above</button>
+        <button type="button" class="pill small" data-track="y">Light from the side</button>
+      </div>
+    </div>
+    <div class="u5l4-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How high is the track’s <b>highest</b> point? Its <b>lowest</b> point? <button class="pill small" type="button" data-bk-toggle data-wu="2">Answer</button></div></div>
+      <div class="u5l4-wa"><div class="bk-ans">Highest: <span class="tex">40</span>&nbsp;m, at the top of the lift hill. Lowest: <span class="tex">-6</span>&nbsp;m, in the tunnel 6&nbsp;m underground.</div></div></div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="u5l4-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>The graph covers distances from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m, and heights from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m. <button class="pill small" type="button" data-bk-toggle data-wu="3">Answer</button></div></div>
+      <div class="u5l4-wa"><div class="bk-ans">Distances from <span class="tex">0</span> to <span class="tex">800</span>&nbsp;m. Heights from <span class="tex">-6</span> to <span class="tex">40</span>&nbsp;m. Those are the graph’s two <b>shadows</b>: try the light buttons.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which set is <b>exactly</b> the rider heights <span class="tex">h</span> (in cm) allowed on The Cyclone? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l4-p2">
+      <div class="opt"><b>A</b> <span class="tex">\{h\mid 120&lt;h&lt;195,\ h\in\mathbb{R}\}</span></div>
+      <div class="opt right"><b>B</b> <span class="tex">\{h\mid 120\le h\le 195,\ h\in\mathbb{R}\}</span></div>
+      <div class="opt"><b>C</b> <span class="tex">\{h\mid 120\le h\le 195,\ h\in I\}</span></div>
+      <div class="opt"><b>D</b> <span class="tex">\{120,\ 195\}</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: <span class="tex">\{h\mid 120\le h\le 195,\ h\in\mathbb{R}\}</span>.</b> “At least” and “no taller than” both <b>include</b> the endpoint, so we need <span class="tex">\le</span>.<br>
+      <span class="muted"><b>A</b> uses <span class="tex">&lt;</span>, which would turn Ben away at exactly 120&nbsp;cm. <b>C</b> uses <span class="tex">I</span> (integers), but height is <b>measured</b>: a rider who is 150.5&nbsp;cm tall may ride, and C leaves them out. <b>D</b> lists only the two boundary heights, not everything in between.</span><br>
+      <b>Today’s lesson:</b> the distances a graph uses are its <b>domain</b> and the heights it produces are its <b>range</b>: <span class="tex">D=\{d\mid 0\le d\le 800,\ d\in\mathbb{R}\}</span>, <span class="tex">R=\{h\mid -6\le h\le 40,\ h\in\mathbb{R}\}</span>.</div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u5l4-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A Cyclone train holds at most 24 riders and never runs empty. Write the set of possible numbers of riders <span class="tex">n</span>.</div></div>
+    <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\{n\mid 1\le n\le 24,\ n\in I\}</span>, or the list <span class="tex">\{1,\ 2,\ 3,\ \dots,\ 24\}</span>. Riders are <b>counted</b>, so no fractions and no decimals.</div></div>
+  </div>
+  <p class="u5l4-social">Challenge a neighbour: invent your own ride’s height rule, then trade and write it as a set.</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -268,7 +289,7 @@
     <div><b>Real situations:</b> keep only values that make sense. Counts use <span class="tex">W</span> (separate dots); measurements use <span class="tex">\mathbb{R}</span> (unbroken): <span class="tex">\{n\mid 50\le n\le 300,\ n\in W\}</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u5l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Determining the Domain and Range of a Relation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 · Questions 5–9</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l5/">
     <div><div class="kicker">Next lesson</div><b>Lesson 5 — What Is a Function?</b><div class="muted">Exactly one output for every input: spotting a function in ordered pairs, tables, arrow diagrams and graphs, and the vertical line test</div></div><span class="arrow">→</span>
@@ -281,7 +302,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l4.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u5l4', homeHref: '../../', title: '5.4 Domain and Range' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

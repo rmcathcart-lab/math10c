@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u5l9.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Which One Doesn’t Belong?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><circle cx="95" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="0.0s" repeatCount="indefinite"/></circle><circle cx="145" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="0.8s" repeatCount="indefinite"/></circle><circle cx="195" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="1.6s" repeatCount="indefinite"/></circle><circle cx="245" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="2.4000000000000004s" repeatCount="indefinite"/></circle></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Which One Doesn’t Belong?</h2>
+  <p class="wf-rule vw-rule">Which one is the odd one out? Pick one and be ready to say <b>why</b>.</p></div>
+  <div class="vw-tiles" style="--n:4;--fs:26px"><div><b>A</b><span class="tex">\{(1,2),\ (2,3),\ (3,4)\}</span></div><div><b>B</b><span class="tex">y=2x+1</span></div><div><b>C</b><span class="tex">x=3</span></div><div><b>D</b><span class="tex">f(x)=x^2</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Any of them can be right.</b> A is the only one made of separate points. B is the only slanted straight line. C is the only one that is not a function. D is the only curve.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -48,61 +59,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Wanted: One Graph" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Wanted: One Graph</h2>
-  <p class="wf-rule">Four suspects. Only one matches <b>every</b> clue on the poster.</p></div>
-  <div class="wf-grid u5l9-wgrid"><div class="u5l9-wleft">
-    <div class="u5l9-poster">
-      <div class="u5l9-pin l"></div><div class="u5l9-pin r"></div>
-      <div class="u5l9-wanted">WANTED</div>
-      <div class="u5l9-one">one graph</div>
-      <ul class="u5l9-clues">
-        <li><b>is a function</b></li>
-        <li><b>domain:</b><br><span class="tex">\{x\mid -4\le x\le 4,\ x\in\mathbb{R}\}</span></li>
-        <li><b>range:</b><br><span class="tex">\{y\mid -2\le y\le 2,\ y\in\mathbb{R}\}</span></li>
-        <li><b><span class="tex">x</span>-intercepts:</b> <span class="tex">-2</span> and <span class="tex">2</span></li>
-        <li><b><span class="tex">y</span>-intercept:</b> <span class="tex">2</span></li>
-      </ul>
-    </div>
-  </div><div class="u5l9-wright">
-    <div class="u5l9-suspects">
-      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="A"></div><b class="u5l9-tagl">A</b></div>
-      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="B"></div><b class="u5l9-tagl">B</b></div>
-      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="C"></div><b class="u5l9-tagl">C</b></div>
-      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="D"></div><b class="u5l9-tagl">D</b></div>
-    </div>
-  <div class="u5l9-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Read suspect C’s <span class="tex">x</span>-intercepts. <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l9-wa"><div class="bk-ans"><span class="tex">-2</span> and <span class="tex">2</span>: C crosses the <span class="tex">x</span>-axis at <span class="tex">(-2,\ 0)</span> and <span class="tex">(2,\ 0)</span>.</div></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is suspect D’s <span class="tex">y</span>-intercept? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l9-wa"><div class="bk-ans"><span class="tex">1</span>. D crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 1)</span>, in the dip between its two peaks.</div></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which one fails the <b>vertical line test</b>? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="u5l9-wa"><div class="bk-ans"><b>A</b>. Its hook runs back along <span class="tex">y=-2</span> from <span class="tex">x=4</span> to <span class="tex">x=1</span>, so the line <span class="tex">x=3</span> hits it twice: <span class="tex">(3,\ -1)</span> and <span class="tex">(3,\ -2)</span>.</div></div></div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which suspect matches <b>every</b> clue on the poster? <b>Guess first.</b></div></div>
-    <div class="poll-opts u5l9-c4">
-      <div class="opt"><b>A</b> suspect A</div>
-      <div class="opt"><b>B</b> suspect B</div>
-      <div class="opt right"><b>C</b> suspect C</div>
-      <div class="opt"><b>D</b> suspect D</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C.</b> It passes all five: a function on <span class="tex">-4\le x\le 4</span> with range <span class="tex">-2\le y\le 2</span>, crossing the axes at <span class="tex">x=\pm2</span> and <span class="tex">y=2</span>. Each decoy breaks <b>exactly one</b> clue.<br>
-      <span class="muted"><b>A</b> is not a function (its domain, range and intercepts all match, which makes it the sneakiest). <b>B</b>’s range is <span class="tex">\{y\mid -3\le y\le 2,\ y\in\mathbb{R}\}</span>: its ends sit one unit too low. <b>D</b>’s <span class="tex">y</span>-intercept is <span class="tex">1</span>, not <span class="tex">2</span>.</span><br>
-      <b>Today’s lesson:</b> the poster is a checklist of the whole unit. Check <b>every</b> clue.</div>
-  </div>
-  </div></div>
 
-  <h3 class="sub u5l9-gap">Check every clue</h3>
-  <div class="explainer" data-explainer="wanted"></div>
-
-  <div class="bk-wq u5l9-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Write the rule of suspect C in two pieces. Then find <span class="tex">f(-3)</span> and <span class="tex">f(3)</span>.</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">f(x)=x+2</span> for <span class="tex">-4\le x\le 0</span>, and <span class="tex">f(x)=-x+2</span> for <span class="tex">0\le x\le 4</span>. Then <span class="tex">f(-3)=-1</span> and <span class="tex">f(3)=-1</span>.</div>
-  </div>
-  <p class="u5l9-social">Challenge a neighbour: sketch a suspect that breaks <b>exactly one</b> clue. Can they spot which?</p>
-</section>
 
 <!-- ================= rules at a glance ================= -->
 <section class="card u5l9-recap" data-ink="recap" data-section="Rules at a Glance">
@@ -146,10 +103,10 @@
   <div class="sec-h"><span class="badge">1</span><h2>Variables, Domain, and Range</h2></div>
   <div class="def">A variable is <b>discrete</b> if it can take only separate, countable values, such as a number of items. It is <b>continuous</b> if it can take any value within an interval, such as a measurement of time, length or volume.</div>
   <div class="def amber">The <b>domain</b> of a relation is the set of values taken by the <b>independent</b> variable: the inputs, the first coordinates, plotted on the <b>horizontal</b> axis. The <b>range</b> is the set of values taken by the <b>dependent</b> variable: the outputs, the second coordinates, plotted on the <b>vertical</b> axis.</div>
-  <div class="explainer" data-explainer="discCont"></div>
+  <div data-extra><div class="explainer" data-explainer="discCont"></div></div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. How the answer is written">
+<section data-extra class="card" data-ink="s1b" data-section="1. How the answer is written">
   <h3 class="sub">How the answer is written</h3>
   <p>A relation with finitely many values gets a <b>list</b> inside braces, each value written <b>once</b> and in <b>increasing order</b>, e.g. <span class="tex">D=\{2,5,9\}</span>. A relation with infinitely many values gets <b>set-builder notation</b>, e.g. <span class="tex">R=\{y\mid y\ge-3,\ y\in\mathbb{R}\}</span> (here <span class="tex">R</span> names the range and <span class="tex">\mathbb{R}</span> the real numbers). A set unbounded in both directions is written <span class="tex">\{x\mid x\in\mathbb{R}\}</span>. For a count, use <span class="tex">W</span> (whole numbers), or <span class="tex">I</span> with a lower bound such as <span class="tex">n\ge0</span>, in place of <span class="tex">\mathbb{R}</span>.</p>
   <div class="explainer" data-explainer="notation"></div>
@@ -168,7 +125,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1c" data-section="1. Inputs across, outputs up">
+<section data-extra class="card" data-ink="s1c" data-section="1. Inputs across, outputs up">
   <h3 class="sub">Inputs across, outputs up</h3>
   <p>Every ordered pair <span class="tex">(x,\ y)</span> is an input and its output. The input is the <b>independent</b> variable (the cause); the output is the <b>dependent</b> variable (the effect, which <b>depends on</b> the input).</p>
   <div class="explainer" data-explainer="ioAxes"></div>
@@ -263,11 +220,11 @@
   <div class="sec-h"><span class="badge">3</span><h2>Functions in Context</h2></div>
   <div class="def">A relation is a <b>function</b> only when every input produces <b>exactly one</b> output. On a graph this is checked with the <b>vertical line test</b>: if every vertical line crosses the graph at most once, the relation is a function; if any vertical line crosses it more than once, it is <i>not</i>.</div>
   <div class="def amber">Function notation <span class="tex">f(x)</span>, read “<span class="tex">f</span> of <span class="tex">x</span>”, names the output that the function <span class="tex">f</span> produces from the input <span class="tex">x</span>; it does <b>not</b> mean <span class="tex">f</span> times <span class="tex">x</span>. To evaluate <span class="tex">f(a)</span>, replace <b>every</b> <span class="tex">x</span> in the rule for <span class="tex">f</span> with <span class="tex">a</span> and simplify.</div>
-  <div class="explainer" data-explainer="machine"></div>
+  <div data-extra><div class="explainer" data-explainer="machine"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Brackets around a negative input.</b> <span class="tex">f(-3)=2(-3)^2-5=2(9)-5=13</span>. Without brackets, <span class="tex">-3^2</span> means <span class="tex">-(3^2)=-9</span>, and the answer comes out <span class="tex">-23</span>. On the calculator use <kbd>(−)</kbd> inside brackets.</div><button class="pill" data-keys="2 × ( (−) 3 ) x² − 5 =">Show me</button></div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. A model in context">
+<section data-extra class="card" data-ink="s3b" data-section="3. A model in context">
   <h3 class="sub">A model in context: forwards, then its domain and range</h3>
   <p>A real-world model is a function too. Use it <b>forwards</b> by substituting the input; read a sensible domain and range from what the variables mean.</p>
   <div class="explainer" data-explainer="costModel"></div>
@@ -299,7 +256,7 @@
   <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s3c" data-section="3. Reading a function's graph">
+<section data-extra class="card" data-ink="s3c" data-section="3. Reading a function's graph">
   <h3 class="sub">Reading function values off a graph</h3>
   <p><span class="tex">f(a)</span> is the <b>height</b> of the graph above (or below) <span class="tex">x=a</span>: go to <span class="tex">a</span> on the <span class="tex">x</span>-axis, up or down to the graph, then across to the <span class="tex">y</span>-axis. Solving <span class="tex">f(x)=b</span> runs the same path backwards.</p>
   <div class="explainer" data-explainer="readGraph"></div>
@@ -360,6 +317,62 @@
   <button class="more" data-more="ex10-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Wanted: One Graph" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Wanted: One Graph</h2>
+  <p class="wf-rule">Four suspects. Only one matches <b>every</b> clue on the poster.</p></div>
+  <div class="wf-grid u5l9-wgrid"><div class="u5l9-wleft">
+    <div class="u5l9-poster">
+      <div class="u5l9-pin l"></div><div class="u5l9-pin r"></div>
+      <div class="u5l9-wanted">WANTED</div>
+      <div class="u5l9-one">one graph</div>
+      <ul class="u5l9-clues">
+        <li><b>is a function</b></li>
+        <li><b>domain:</b><br><span class="tex">\{x\mid -4\le x\le 4,\ x\in\mathbb{R}\}</span></li>
+        <li><b>range:</b><br><span class="tex">\{y\mid -2\le y\le 2,\ y\in\mathbb{R}\}</span></li>
+        <li><b><span class="tex">x</span>-intercepts:</b> <span class="tex">-2</span> and <span class="tex">2</span></li>
+        <li><b><span class="tex">y</span>-intercept:</b> <span class="tex">2</span></li>
+      </ul>
+    </div>
+  </div><div class="u5l9-wright">
+    <div class="u5l9-suspects">
+      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="A"></div><b class="u5l9-tagl">A</b></div>
+      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="B"></div><b class="u5l9-tagl">B</b></div>
+      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="C"></div><b class="u5l9-tagl">C</b></div>
+      <div class="u5l9-sus"><div class="u5l9-susfig" data-suspect="D"></div><b class="u5l9-tagl">D</b></div>
+    </div>
+  <div class="u5l9-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Read suspect C’s <span class="tex">x</span>-intercepts. <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l9-wa"><div class="bk-ans"><span class="tex">-2</span> and <span class="tex">2</span>: C crosses the <span class="tex">x</span>-axis at <span class="tex">(-2,\ 0)</span> and <span class="tex">(2,\ 0)</span>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is suspect D’s <span class="tex">y</span>-intercept? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l9-wa"><div class="bk-ans"><span class="tex">1</span>. D crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 1)</span>, in the dip between its two peaks.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which one fails the <b>vertical line test</b>? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l9-wa"><div class="bk-ans"><b>A</b>. Its hook runs back along <span class="tex">y=-2</span> from <span class="tex">x=4</span> to <span class="tex">x=1</span>, so the line <span class="tex">x=3</span> hits it twice: <span class="tex">(3,\ -1)</span> and <span class="tex">(3,\ -2)</span>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which suspect matches <b>every</b> clue on the poster? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l9-c4">
+      <div class="opt"><b>A</b> suspect A</div>
+      <div class="opt"><b>B</b> suspect B</div>
+      <div class="opt right"><b>C</b> suspect C</div>
+      <div class="opt"><b>D</b> suspect D</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C.</b> It passes all five: a function on <span class="tex">-4\le x\le 4</span> with range <span class="tex">-2\le y\le 2</span>, crossing the axes at <span class="tex">x=\pm2</span> and <span class="tex">y=2</span>. Each decoy breaks <b>exactly one</b> clue.<br>
+      <span class="muted"><b>A</b> is not a function (its domain, range and intercepts all match, which makes it the sneakiest). <b>B</b>’s range is <span class="tex">\{y\mid -3\le y\le 2,\ y\in\mathbb{R}\}</span>: its ends sit one unit too low. <b>D</b>’s <span class="tex">y</span>-intercept is <span class="tex">1</span>, not <span class="tex">2</span>.</span><br>
+      <b>Today’s lesson:</b> the poster is a checklist of the whole unit. Check <b>every</b> clue.</div>
+  </div>
+  </div></div>
+
+  <h3 class="sub u5l9-gap">Check every clue</h3>
+  <div class="explainer" data-explainer="wanted"></div>
+
+  <div class="bk-wq u5l9-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Write the rule of suspect C in two pieces. Then find <span class="tex">f(-3)</span> and <span class="tex">f(3)</span>.</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">f(x)=x+2</span> for <span class="tex">-4\le x\le 0</span>, and <span class="tex">f(x)=-x+2</span> for <span class="tex">0\le x\le 4</span>. Then <span class="tex">f(-3)=-1</span> and <span class="tex">f(3)=-1</span>.</div>
+  </div>
+  <p class="u5l9-social">Challenge a neighbour: sketch a suspect that breaks <b>exactly one</b> clue. Can they spot which?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -394,7 +407,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l9.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u5l9', homeHref: '../../', title: '5.9 Relations and Functions Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

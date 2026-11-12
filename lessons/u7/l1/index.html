@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u7l1.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Stacking Cups">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="120" y="46" font-size="36" text-anchor="middle">🥤</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="170" y="46" font-size="36" text-anchor="middle">🥤</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/><text x="220" y="46" font-size="36" text-anchor="middle">🥤</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="3s" begin="0s" repeatCount="indefinite"/><text x="285" y="46" font-size="40" text-anchor="middle">🚪</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Stacking Cups</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">One plastic cup is <b>12 cm</b> tall. Each extra cup nested on top adds <b>2 cm</b>.</p><p class="vw-ctx">The classroom door is about 200 cm tall.</p><p class="vw-ask">How many nested cups make a stack as tall as the door?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How tall is a stack of 4 cups? Of 10?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>95 cups.</b> The first cup gives 12 cm, and the other 188 cm takes 94 more cups. As a rule: <span class="tex">h=2n+10</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,56 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Stacking Cups" id="wu" style="--wf-side: 410px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Stacking Cups</h2>
-  <p class="wf-rule">Plastic cups nest inside each other. Each new cup sticks up a little.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div class="u7l1-wfig">
-      <div id="u7l1-cups"></div>
-      <div class="u7l1-wbtns">
-        <button type="button" class="pill" id="u7l1-c4">Show 4 cups</button>
-        <button type="button" class="pill" id="u7l1-cplot">Plot the stacks</button>
-      </div>
-    </div>
-    <div class="u7l1-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>How tall is a stack of <b>4</b> cups?</div></div>
-        <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>18 cm</b>: the heights go <span class="tex">12,\ 14,\ 16,\ 18</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>How tall is a stack of <b>10</b> cups?</div></div>
-        <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>30 cm</b>: the first cup plus 9 more lips, <span class="tex">12+9\times2=30</span>.</div></div>
-      </div>
-    </div>
-  </div><div class="wf-side">
-    <div class="u7l1-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>How much does each extra cup add? If the pattern ran <em>backwards</em>, how tall would a stack of <b>0</b> cups be?</div></div>
-        <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Each cup adds <b>2 cm</b> (its lip). Backwards, <span class="tex">12-2=10</span> cm for 0 cups: a “ghost” starting height. So <span class="tex">h=2n+10</span> (check: <span class="tex">n=3</span> gives <span class="tex">16</span>).</div></div>
-      </div>
-    </div>
 
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Our classroom door is about <b>200 cm</b> tall. How many nested cups make a stack <b>exactly</b> as tall as the door? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 17</div>
-      <div class="opt right"><b>B</b> 95</div>
-      <div class="opt"><b>C</b> 100</div>
-      <div class="opt"><b>D</b> 190</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: 95 cups.</b> <span class="tex">2n+10=200\;\Rightarrow\;2n=190\;\Rightarrow\;n=95</span>. Check: <span class="tex">12+94\times2=200</span> cm.<br>
-      <span class="muted"><b>A</b> did <span class="tex">200\div12</span>: stacking cups <em>on top</em> of each other instead of nesting. <b>C</b> did <span class="tex">200\div2</span>, forgetting the first cup is 12 cm, not 2 cm. <b>D</b> did the first step (<span class="tex">200-10</span>) and stopped.</span><br>
-      A 12 cm cup, yet it takes almost a hundred of them: after the first one, each cup only buys 2 cm.</div>
-  </div>
-  </div></div>
-
-  <div class="bk-wq u7l1-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Brand B cups are <b>15 cm</b> tall with a <b>1 cm</b> lip. Which stack is taller at 20 cups? Is there a number of cups where the two stacks are equal?</div></div>
-    <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Brand B: <span class="tex">h=n+14</span>. At 20 cups: ours <span class="tex">2(20)+10=50</span> cm, Brand B <span class="tex">20+14=34</span> cm, so ours is taller. Equal when <span class="tex">2n+10=n+14</span>: at <b>4 cups</b>, both 18 cm.</div></div>
-  </div>
-  <p class="u7l1-social">Poll the room: hands up for A, B, C or D. Then prove it to your neighbour!</p>
-</section>
 
 <!-- ================= 1. Linear relations ================= -->
 <section class="card" data-ink="s1" data-section="1. Recognizing Linear Relations">
@@ -234,7 +195,7 @@
     <div class="part"><div class="pl">(c) <span class="tex">8y=6x+3</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide every term by 8:<br><span class="tex">y=\dfrac{6}{8}x+\dfrac{3}{8}=\dfrac{3}{4}x+\dfrac{3}{8}</span><br>slope <span class="tex">=\boldsymbol{\tfrac{3}{4}}</span><br><span class="tex">y</span>-intercept <span class="tex">=\boldsymbol{\tfrac{3}{8}}</span></div></div></div>
   </div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> In (c), what goes wrong if you divide only <span class="tex">8y</span> and <span class="tex">6x</span> by 8, and leave the 3 alone?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">You would get <span class="tex">y=\tfrac{3}{4}x+3</span>: the right slope but the wrong <span class="tex">y</span>-intercept. The balance tips, because the 3 is still 8 times too big. Every term must be divided.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> In (c), what goes wrong if you divide only <span class="tex">8y</span> and <span class="tex">6x</span> by 8, and leave the 3 alone?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">You would get <span class="tex">y=\tfrac{3}{4}x+3</span>: the right slope but the wrong <span class="tex">y</span>-intercept. The balance tips, because the 3 is still 8 times too big. Every term must be divided.</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
@@ -243,6 +204,15 @@
   </div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–3">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 1 · Questions 1–3</h2>
+  <p class="pr-t">Linear or not? Then read the slope and the y-intercept.</p>
+  <div class="pr-chips n1"><span><b>1–3</b>Linear or not? Reading <span class="tex">m</span> and <span class="tex">b</span></span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 2.</span><a class="pill" href="../../../#/lesson/u7l1">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -260,7 +230,7 @@
   <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative slope has one negative part.</b> <span class="tex">-\tfrac{3}{4}=\tfrac{-3}{4}=\tfrac{3}{-4}</span>: step it off as <b>down 3, right 4</b>, or as <b>up 3, left 4</b>. Both steps land on the same line.</div></div>
   <h3 class="sub">The two-intercepts method</h3>
   <p>Every point on the <span class="tex">y</span>-axis has <span class="tex">x=0</span>, and every point on the <span class="tex">x</span>-axis has <span class="tex">y=0</span>. Put those zeros into the equation.</p>
-  <div class="explainer" data-explainer="intercepts"></div>
+  <div data-extra><div class="explainer" data-explainer="intercepts"></div></div>
 </section>
 
 <section class="card example" data-ink="ex6" data-section="Example 6">
@@ -286,13 +256,64 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s4c" data-section="4. Which line is which?">
+<section data-extra class="card" data-ink="s4c" data-section="4. Which line is which?">
   <h3 class="sub">Which line is which?</h3>
   <p>With <span class="tex">y=mx+b</span> you can match an equation to its graph at a glance: <b class="u7l1-cb">b</b> says where the line crosses the <span class="tex">y</span>-axis, and <b class="u7l1-cm">m</b> says which way it tilts and how steeply.</p>
   <div class="explainer" data-explainer="match"></div>
   <div class="def gray u7l1-flowbox"><b>From any linear equation to its graph</b>
     <div id="u7l1-flow"></div>
   </div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Stacking Cups" id="wu" style="--wf-side: 410px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Stacking Cups</h2>
+  <p class="wf-rule">Plastic cups nest inside each other. Each new cup sticks up a little.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div class="u7l1-wfig">
+      <div id="u7l1-cups"></div>
+      <div class="u7l1-wbtns">
+        <button type="button" class="pill" id="u7l1-c4">Show 4 cups</button>
+        <button type="button" class="pill" id="u7l1-cplot">Plot the stacks</button>
+      </div>
+    </div>
+    <div class="u7l1-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How tall is a stack of <b>4</b> cups?</div></div>
+        <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>18 cm</b>: the heights go <span class="tex">12,\ 14,\ 16,\ 18</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>How tall is a stack of <b>10</b> cups?</div></div>
+        <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>30 cm</b>: the first cup plus 9 more lips, <span class="tex">12+9\times2=30</span>.</div></div>
+      </div>
+    </div>
+  </div><div class="wf-side">
+    <div class="u7l1-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>How much does each extra cup add? If the pattern ran <em>backwards</em>, how tall would a stack of <b>0</b> cups be?</div></div>
+        <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Each cup adds <b>2 cm</b> (its lip). Backwards, <span class="tex">12-2=10</span> cm for 0 cups: a “ghost” starting height. So <span class="tex">h=2n+10</span> (check: <span class="tex">n=3</span> gives <span class="tex">16</span>).</div></div>
+      </div>
+    </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Our classroom door is about <b>200 cm</b> tall. How many nested cups make a stack <b>exactly</b> as tall as the door? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 17</div>
+      <div class="opt right"><b>B</b> 95</div>
+      <div class="opt"><b>C</b> 100</div>
+      <div class="opt"><b>D</b> 190</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: 95 cups.</b> <span class="tex">2n+10=200\;\Rightarrow\;2n=190\;\Rightarrow\;n=95</span>. Check: <span class="tex">12+94\times2=200</span> cm.<br>
+      <span class="muted"><b>A</b> did <span class="tex">200\div12</span>: stacking cups <em>on top</em> of each other instead of nesting. <b>C</b> did <span class="tex">200\div2</span>, forgetting the first cup is 12 cm, not 2 cm. <b>D</b> did the first step (<span class="tex">200-10</span>) and stopped.</span><br>
+      A 12 cm cup, yet it takes almost a hundred of them: after the first one, each cup only buys 2 cm.</div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u7l1-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Brand B cups are <b>15 cm</b> tall with a <b>1 cm</b> lip. Which stack is taller at 20 cups? Is there a number of cups where the two stacks are equal?</div></div>
+    <div class="u7l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Brand B: <span class="tex">h=n+14</span>. At 20 cups: ours <span class="tex">2(20)+10=50</span> cm, Brand B <span class="tex">20+14=34</span> cm, so ours is taller. Equal when <span class="tex">2n+10=n+14</span>: at <b>4 cups</b>, both 18 cm.</div></div>
+  </div>
+  <p class="u7l1-social">Poll the room: hands up for A, B, C or D. Then prove it to your neighbour!</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -305,7 +326,7 @@
     <div><b>Graph without a table.</b> Plot <span class="tex">(0,b)</span> and step the <b class="u7l1-c-rise">rise</b> over the <b class="u7l1-c-run">run</b>; or set <span class="tex">x=0</span> and <span class="tex">y=0</span> to find both intercepts and join them.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u7l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Slope–Intercept Form and the Graph of a Line</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 · Questions 4–14</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l2/">
     <div><div class="kicker">Next lesson</div><b>Lesson 2 — From Slope to Equation</b><div class="muted">Build <span class="tex">y=mx+b</span> from a slope and intercept, from a graph, from parallel and perpendicular lines, and for horizontal and vertical lines</div></div><span class="arrow">→</span>
@@ -318,7 +339,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u7l1.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u7l1', homeHref: '../../', title: '7.1 Slope–Intercept Form' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

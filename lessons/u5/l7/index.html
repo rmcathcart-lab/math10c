@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u5l7.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Celsius and Fahrenheit">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="120" y="46" font-size="34" text-anchor="middle">❄️</text></g><g><animateTransform attributeName="transform" type="rotate" values="-10 185 46;10 185 46;-10 185 46" dur="2.4s" repeatCount="indefinite"/><text x="185" y="46" font-size="44" text-anchor="middle">🌡️</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><text x="250" y="46" font-size="34" text-anchor="middle">🔥</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Celsius and Fahrenheit</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx"><span class="tex">F=1.8C+32</span></p><p class="vw-ctx">Water freezes at 0 °C, which is 32 °F. It boils at 100 °C, which is 212 °F.</p><p class="vw-ask">Is there a temperature where both scales show the <b>same number</b>?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Try a few. Do the two numbers get closer going up, or going down?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Yes: −40.</b> <span class="tex">1.8(-40)+32=-72+32=-40</span>. At −40 it does not matter which scale you read.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,61 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Celsius vs Fahrenheit" id="wu" style="--wf-side: 390px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Celsius vs Fahrenheit</h2>
-  <p class="wf-rule">Canada reads the <b>top</b> scale. The United States reads the <b style="color:#1e6eb4">bottom</b> one.</p></div>
-  <div class="u5l7-thermo" id="u5l7-thermo"></div>
-  <div class="u5l7-tctl no-ink">
-    <span class="muted">Move the red fluid to:</span>
-    <button type="button" class="pill small" data-tc="-30">−30 °C</button>
-    <button type="button" class="pill small" data-tc="0">0 °C</button>
-    <button type="button" class="pill small" data-tc="20">20 °C</button>
-    <button type="button" class="pill small" data-tc="37">37 °C</button>
-    <span class="u5l7-tread" id="u5l7-tread"></span>
-  </div>
-  <div class="u5l7-rulebox">The conversion is a function: <span class="tex">F(C)=1.8\,C+32</span></div>
-  <div class="wf-grid"><div class="wf-main u5l7-wqs">
-  <div class="bk-wq">
-    <div class="q-line"><div class="q-num">1</div><div>Find <span class="tex">F(0)</span>. Check it on the picture. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-    <div class="u5l7-wqa"><div class="bk-ans"><span class="tex">F(0)=1.8(0)+32=32</span>. Water freezes at <span class="tex">0^{\circ}\text{C}</span>, which is <span class="tex">32^{\circ}\text{F}</span>: the 0 on top sits right above the 32 on the bottom.</div></div>
-  </div>
-  <div class="bk-wq">
-    <div class="q-line"><div class="q-num">2</div><div>Find <span class="tex">F(100)</span>. What happens to water at <span class="tex">100^{\circ}\text{C}</span>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-    <div class="u5l7-wqa"><div class="bk-ans"><span class="tex">F(100)=180+32=212</span>. Water <b>boils</b> at <span class="tex">100^{\circ}\text{C}</span>, which is <span class="tex">212^{\circ}\text{F}</span> (at sea level).</div></div>
-  </div>
-  <div class="bk-wq">
-    <div class="q-line"><div class="q-num">3</div><div>Finish the sentence: “<span class="tex">F(20)=</span> ____ means a ____ °C room is ____ °F.” <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-    <div class="u5l7-wqa"><div class="bk-ans">“<span class="tex">F(20)=68</span> means a <b>20 °C</b> room is <b>68 °F</b>.” The number in the brackets is the <b>input</b> (Celsius); <span class="tex">68</span> is the <b>output</b> (Fahrenheit).</div></div>
-  </div>
-  </div><div class="wf-side">
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is there a temperature where the two scales show the <b>same</b> number? <b>Guess first.</b></div></div>
-    <div class="poll-opts u5l7-c4">
-      <div class="opt"><b>A</b> yes, at <span class="tex">0^{\circ}</span></div>
-      <div class="opt right"><b>B</b> yes, at <span class="tex">-40^{\circ}</span></div>
-      <div class="opt"><b>C</b> yes, at <span class="tex">100^{\circ}</span></div>
-      <div class="opt"><b>D</b> never</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans">
-      <div class="u5l7-pa">
-        <div><b>B: <span class="tex">-40^{\circ}</span>.</b> Same number means the output equals the input:<br>
-          <span class="tex">1.8C+32=C \;\Rightarrow\; 0.8C=-32 \;\Rightarrow\; C=-40</span>.<br>
-          Check: <span class="tex">F(-40)=-72+32=-40</span>. So <span class="tex">-40^{\circ}\text{C}</span> is exactly <span class="tex">-40^{\circ}\text{F}</span>.<br>
-          <span class="muted"><b>A</b> and <b>C</b> are the famous landmarks, but <span class="tex">F(0)=32</span> and <span class="tex">F(100)=212</span>. <b>D</b> is tempting because the Fahrenheit number is bigger all along the thermometer, but each Celsius degree is 1.8 Fahrenheit degrees, so going down the Fahrenheit number drops faster and catches up. At <span class="tex">-30^{\circ}\text{C}</span> it is already <span class="tex">-22^{\circ}\text{F}</span>, only 8 apart.</span><br>
-          On a graph: where the line <span class="tex">F(C)=1.8C+32</span> meets the line <span class="tex">F=C</span>.</div>
-        <div id="u5l7-g-wu"></div>
-      </div>
-    </div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq" style="margin-top:14px">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A US forecast says <span class="tex">95^{\circ}\text{F}</span>. Is that hot?</div></div>
-    <div class="u5l7-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Solve <span class="tex">1.8C+32=95</span>: <span class="tex">1.8C=63</span>, so <span class="tex">C=35</span>. <span class="tex">35^{\circ}\text{C}</span>: yes, very hot!</div></div>
-  </div>
-  <p class="u5l7-social">Poll the room: what’s the coldest weather you’ve ever been out in? Convert it to °F.</p>
-</section>
 
 <!-- ================= 1. Function notation and x-y notation ================= -->
 <section class="card" data-ink="s1" data-section="1. Function Notation and x-y Notation">
@@ -192,7 +148,16 @@
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
-  <div class="explainer" data-explainer="exThree"></div>
+  <div data-extra><div class="explainer" data-explainer="exThree"></div></div>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–8">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 7 · Questions 1–8</h2>
+  <p class="pr-t">Convert between notations, then read graphs both ways.</p>
+  <div class="pr-chips n2"><span><b>1–3</b>Converting between the two notations</span><span><b>4–8</b>Reading a graph in both directions</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u5l7">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -267,7 +232,7 @@
   <div class="tip u5l7-note"><div class="tip-ic">i</div><div><b>Dots or a line?</b> <span class="tex">n</span> counts pairs of earbuds, so strictly only whole numbers make sense: the graph is really 5&#8239;001 separate dots. They are so close together that we draw them as a line.</div></div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
-  <div class="explainer" data-explainer="cost"></div>
+  <div data-extra><div class="explainer" data-explainer="cost"></div></div>
 </section>
 
 <section class="card example" data-ink="ex6" data-section="Example 6">
@@ -302,6 +267,62 @@
   <div class="explainer" data-explainer="rocket"></div>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Celsius vs Fahrenheit" id="wu" style="--wf-side: 390px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Celsius vs Fahrenheit</h2>
+  <p class="wf-rule">Canada reads the <b>top</b> scale. The United States reads the <b style="color:#1e6eb4">bottom</b> one.</p></div>
+  <div class="u5l7-thermo" id="u5l7-thermo"></div>
+  <div class="u5l7-tctl no-ink">
+    <span class="muted">Move the red fluid to:</span>
+    <button type="button" class="pill small" data-tc="-30">−30 °C</button>
+    <button type="button" class="pill small" data-tc="0">0 °C</button>
+    <button type="button" class="pill small" data-tc="20">20 °C</button>
+    <button type="button" class="pill small" data-tc="37">37 °C</button>
+    <span class="u5l7-tread" id="u5l7-tread"></span>
+  </div>
+  <div class="u5l7-rulebox">The conversion is a function: <span class="tex">F(C)=1.8\,C+32</span></div>
+  <div class="wf-grid"><div class="wf-main u5l7-wqs">
+  <div class="bk-wq">
+    <div class="q-line"><div class="q-num">1</div><div>Find <span class="tex">F(0)</span>. Check it on the picture. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u5l7-wqa"><div class="bk-ans"><span class="tex">F(0)=1.8(0)+32=32</span>. Water freezes at <span class="tex">0^{\circ}\text{C}</span>, which is <span class="tex">32^{\circ}\text{F}</span>: the 0 on top sits right above the 32 on the bottom.</div></div>
+  </div>
+  <div class="bk-wq">
+    <div class="q-line"><div class="q-num">2</div><div>Find <span class="tex">F(100)</span>. What happens to water at <span class="tex">100^{\circ}\text{C}</span>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u5l7-wqa"><div class="bk-ans"><span class="tex">F(100)=180+32=212</span>. Water <b>boils</b> at <span class="tex">100^{\circ}\text{C}</span>, which is <span class="tex">212^{\circ}\text{F}</span> (at sea level).</div></div>
+  </div>
+  <div class="bk-wq">
+    <div class="q-line"><div class="q-num">3</div><div>Finish the sentence: “<span class="tex">F(20)=</span> ____ means a ____ °C room is ____ °F.” <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u5l7-wqa"><div class="bk-ans">“<span class="tex">F(20)=68</span> means a <b>20 °C</b> room is <b>68 °F</b>.” The number in the brackets is the <b>input</b> (Celsius); <span class="tex">68</span> is the <b>output</b> (Fahrenheit).</div></div>
+  </div>
+  </div><div class="wf-side">
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is there a temperature where the two scales show the <b>same</b> number? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l7-c4">
+      <div class="opt"><b>A</b> yes, at <span class="tex">0^{\circ}</span></div>
+      <div class="opt right"><b>B</b> yes, at <span class="tex">-40^{\circ}</span></div>
+      <div class="opt"><b>C</b> yes, at <span class="tex">100^{\circ}</span></div>
+      <div class="opt"><b>D</b> never</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans">
+      <div class="u5l7-pa">
+        <div><b>B: <span class="tex">-40^{\circ}</span>.</b> Same number means the output equals the input:<br>
+          <span class="tex">1.8C+32=C \;\Rightarrow\; 0.8C=-32 \;\Rightarrow\; C=-40</span>.<br>
+          Check: <span class="tex">F(-40)=-72+32=-40</span>. So <span class="tex">-40^{\circ}\text{C}</span> is exactly <span class="tex">-40^{\circ}\text{F}</span>.<br>
+          <span class="muted"><b>A</b> and <b>C</b> are the famous landmarks, but <span class="tex">F(0)=32</span> and <span class="tex">F(100)=212</span>. <b>D</b> is tempting because the Fahrenheit number is bigger all along the thermometer, but each Celsius degree is 1.8 Fahrenheit degrees, so going down the Fahrenheit number drops faster and catches up. At <span class="tex">-30^{\circ}\text{C}</span> it is already <span class="tex">-22^{\circ}\text{F}</span>, only 8 apart.</span><br>
+          On a graph: where the line <span class="tex">F(C)=1.8C+32</span> meets the line <span class="tex">F=C</span>.</div>
+        <div id="u5l7-g-wu"></div>
+      </div>
+    </div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq" style="margin-top:14px">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A US forecast says <span class="tex">95^{\circ}\text{F}</span>. Is that hot?</div></div>
+    <div class="u5l7-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Solve <span class="tex">1.8C+32=95</span>: <span class="tex">1.8C=63</span>, so <span class="tex">C=35</span>. <span class="tex">35^{\circ}\text{C}</span>: yes, very hot!</div></div>
+  </div>
+  <p class="u5l7-social">Poll the room: what’s the coldest weather you’ve ever been out in? Convert it to °F.</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -312,7 +333,7 @@
     <div><b>Models:</b> say <span class="tex">f(a)=b</span> in words with units (input, then output). Restrict the domain and range to what makes sense: <span class="tex">V(22)=-900</span> L is impossible.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u5l7">
-    <div><div class="kicker">Your turn</div><b>Assignment 7 — Function Notation: Graphs, Conversions, and Real-World Models</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 7 · Questions 9–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l8/">
     <div><div class="kicker">Next lesson</div><b>Lesson 8 — Interpreting and Sketching Real-World Graphs</b><div class="muted">Reading a graph’s story (increasing, decreasing, constant, steeper means faster) and sketching a graph from a description</div></div><span class="arrow">→</span>
@@ -325,7 +346,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l7.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u5l7', homeHref: '../../', title: '5.7 Function Notation: Graphs and Models' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

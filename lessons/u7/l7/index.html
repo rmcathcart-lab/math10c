@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u7l7.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: City Planner">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><line x1="0" y1="52" x2="340" y2="52" stroke="#d9d3c4" stroke-width="3" stroke-dasharray="16 12"><animate attributeName="stroke-dashoffset" values="0;-28" dur=".7s" repeatCount="indefinite"/></line><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="3s" begin="0s" repeatCount="indefinite"/><text x="60" y="40" font-size="34" text-anchor="middle">🏫</text></g><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="9s" begin="0s" repeatCount="indefinite"/><text x="0" y="44" font-size="34" text-anchor="middle">🚧</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>City Planner</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Main Street is the line <span class="tex">x-2y+4=0</span>. A new road must pass through the school at <b>(8, 1)</b> and meet Main Street at a <b>right angle</b>.</div><div class="vw-tiles" style="--n:4;--fs:26px"><div><b>A</b><span class="tex">y=\tfrac12x-3</span></div><div><b>B</b><span class="tex">y=-2x+17</span></div><div><b>C</b><span class="tex">y=-2x+1</span></div><div><b>D</b><span class="tex">y=2x-15</span></div></p><p class="vw-ask">Which equation is the new road?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>What is the slope of Main Street?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>B.</b> Main Street has slope <span class="tex">\tfrac12</span>, so the new road has slope <span class="tex">-2</span>. Through (8, 1): <span class="tex">1=-2(8)+b</span>, so <span class="tex">b=17</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -47,56 +57,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: City Planner" id="wu" style="--wf-side: 450px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>City Planner</h2>
-  <p class="wf-rule">Plan a new road from the <b>school</b> that meets Main St at a <b>right angle</b>.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div id="u7l7-city" class="u7l7-cityfig"></div>
-    <div class="u7l7-memo">
-      <div class="u7l7-memo-h">City Hall Memo</div>
-      <div class="u7l7-memo-l"><b>Main St:</b> <span class="tex">x-2y+4=0</span></div>
-      <div class="u7l7-memo-l"><b>School:</b> at <span class="tex">(8,\ 1)</span></div>
-      <div class="u7l7-memo-l"><b>The new road must</b></div>
-      <ul>
-        <li>pass through the school</li>
-        <li>be <b>perpendicular</b> to Main St</li>
-      </ul>
-      <div class="u7l7-memo-f">Map: 1 square = 1 block</div>
-    </div>
-  </div><div class="wf-side">
-    <div class="u7l7-wqs">
-      <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Where does Main St cross the <span class="tex">y</span>-axis?</div></div>
-        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">At <span class="tex">(0,\ 2)</span>. From the equation: <span class="tex">x=0</span> gives <span class="tex">-2y+4=0</span>, so <span class="tex">y=2</span>.</div></div>
-      <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is the slope of Main St? (Use the map <i>or</i> the equation.)</div></div>
-        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\frac12</span>. Map: up 1 block for every 2 across. Equation: <span class="tex">2y=x+4</span>, so <span class="tex">y=\frac12x+2</span>.</div></div>
-      <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>A road at a right angle to Main St: what is <i>its</i> slope?</div></div>
-        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">-2</span>: flip <span class="tex">\frac12</span> to <span class="tex">2</span> and change the sign. Check: <span class="tex">\frac12\times(-2)=-1</span>.</div></div>
-    </div>
-    <div class="poll wf-poll">
-      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which equation is the new road? <b>Guess first.</b></div></div>
-      <div class="poll-opts u7l7-c4">
-        <div class="opt right"><b>A</b> <span class="tex">y=-2x+17</span></div>
-        <div class="opt"><b>B</b> <span class="tex">y=2x-15</span></div>
-        <div class="opt"><b>C</b> <span class="tex">y=-\frac12x+5</span></div>
-        <div class="opt"><b>D</b> <span class="tex">y=-2x+2</span></div>
-      </div>
-      <button class="pill" type="button" data-poll-reveal>Reveal</button>
-      <div class="poll-ans"><b>A, <span class="tex">y=-2x+17</span>.</b> Slope <span class="tex">-2</span> through the school <span class="tex">(8,\ 1)</span>: <span class="tex">y-1=-2(x-8)</span>, so <span class="tex">y=-2x+17</span>. Check the school: <span class="tex">-2(8)+17=1</span> ✓. In general form, <span class="tex">2x+y-17=0</span>.<br>
-        <span class="muted"><b>B</b> passes the school, but slope <span class="tex">2</span> only flips <span class="tex">\frac12</span> and forgets the sign: it crosses Main St at a slant. <b>C</b> passes the school, but only changes the sign and forgets to flip. <b>D</b> has the right slope but copies Main St’s intercept of 2: that road misses the school.</span><br>
-        <b>Today’s lesson:</b> reading an equation (Questions 1 and 2), perpendicular slopes (Question 3), and the new road <i>is</i> an altitude: a perpendicular dropped from a point to a line.</div>
-    </div>
-  </div></div>
 
-  <h3 class="sub u7l7-gap">Build the road</h3>
-  <div class="explainer" data-explainer="planner"></div>
-
-  <div class="bk-wq u7l7-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> At what corner will the new road meet Main St?</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Where the two equations agree: <span class="tex">\frac12x+2=-2x+17</span> gives <span class="tex">\frac52x=15</span>, <span class="tex">x=6</span>, <span class="tex">y=5</span>. The corner is <span class="tex">(6,\ 5)</span>, and the new road is <span class="tex">\sqrt{2^2+4^2}=\sqrt{20}\approx4.5</span> blocks long. (Solving two equations at once is Unit 8: <b>systems of linear equations</b>.)</div>
-  </div>
-  <p class="u7l7-social">Follow-up: a bike path through the school <b>parallel</b> to Main St. What is its equation?
-    <span class="u7l7-inline-ans" data-reveal="tap for the answer"><span class="tex">y-1=\frac12(x-8)</span>, so <span class="tex">y=\frac12x-3</span>, or <span class="tex">x-2y-6=0</span></span></p>
-</section>
 
 <!-- ================= Unit 7 at a glance ================= -->
 <section class="card u7l7-recap" data-ink="recap" data-section="Unit 7 at a Glance">
@@ -151,11 +112,11 @@
   <div class="sec-h"><span class="badge">1</span><h2>Reading Slope and Intercepts From an Equation</h2></div>
   <div class="def">An equation in general form <span class="tex">Ax+By+C=0</span> becomes slope–intercept form <span class="tex">y=mx+b</span> once <span class="tex">y</span> is <b>isolated</b>: the coefficient of <span class="tex">x</span> is then the slope and the constant is the <span class="tex">y</span>-intercept.</div>
   <div class="def amber">Either intercept can also be read straight from general form without solving for <span class="tex">y</span>: substitute <span class="tex">x=0</span> and solve for <span class="tex">y</span> to get the <b class="u7l7-c-b"><span class="tex">y</span>-intercept</b>, or <span class="tex">y=0</span> and solve for <span class="tex">x</span> to get the <b class="u7l7-c-a"><span class="tex">x</span>-intercept</b>.</div>
-  <div class="explainer" data-explainer="dials"></div>
+  <div data-extra><div class="explainer" data-explainer="dials"></div></div>
   <div class="explainer u7l7-exgap" data-explainer="coverUp"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Only once <span class="tex">y</span> is alone.</b> In <span class="tex">5y=4x-20</span> the slope is <b>not</b> 4: divide by 5 first. The number in front of <span class="tex">x</span> is the slope only when the <span class="tex">y</span> has coefficient 1.</div></div>
   <div class="parts c1 u7l7-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why does “covering up” the <span class="tex">x</span>-term give the <span class="tex">y</span>-intercept?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">y</span>-intercept is the point on the line where <span class="tex">x=0</span>. Putting <span class="tex">x=0</span> makes the <span class="tex">Ax</span> term zero, so it disappears: covering it up is substituting <span class="tex">x=0</span>.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Why does “covering up” the <span class="tex">x</span>-term give the <span class="tex">y</span>-intercept?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">y</span>-intercept is the point on the line where <span class="tex">x=0</span>. Putting <span class="tex">x=0</span> makes the <span class="tex">Ax</span> term zero, so it disappears: covering it up is substituting <span class="tex">x=0</span>.</div></div></div>
   </div>
 </section>
 
@@ -220,9 +181,9 @@
   <div class="def">Two non-vertical lines are <b>parallel</b> exactly when their slopes are equal; all vertical lines are parallel.</div>
   <div class="def amber">Two non-vertical lines are <b>perpendicular</b> exactly when their slopes are <b>negative reciprocals</b> of one another; equivalently, when the two slopes multiply to <span class="tex">-1</span> (the turned slope triangle in Lesson 2, Section 3 shows why). A vertical line <span class="tex">x=k</span> has an undefined slope, so it is excluded from that test; it is perpendicular to every horizontal line <span class="tex">y=k</span>, whose slope is <span class="tex">0</span>.</div>
   <div class="explainer" data-explainer="perpTest"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Flip and change the sign: both.</b> From <span class="tex">-\frac14</span>, flipping alone gives <span class="tex">-4</span> and changing the sign alone gives <span class="tex">\frac14</span>; only <span class="tex">4</span> multiplies to <span class="tex">-1</span>. Those two half-mistakes are the usual wrong answers (traps B and C in the warm-up).</div></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Flip and change the sign: both.</b> From <span class="tex">-\frac14</span>, flipping alone gives <span class="tex">-4</span> and changing the sign alone gives <span class="tex">\frac14</span>; only <span class="tex">4</span> multiplies to <span class="tex">-1</span>. Those two half-mistakes are the usual wrong answers.</div></div>
   <div class="parts c1 u7l7-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> To test general-form lines quickly, is there a shortcut for the slope of <span class="tex">Ax+By+C=0</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Isolating <span class="tex">y</span> gives <span class="tex">By=-Ax-C</span>, so <span class="tex">y=-\frac{A}{B}x-\frac{C}{B}</span> and <span class="tex">m=-\frac{A}{B}</span>. For <span class="tex">4y+x+8=0</span>: <span class="tex">A=1</span>, <span class="tex">B=4</span>, <span class="tex">m=-\frac14</span>. (Isolating <span class="tex">y</span> every time is just as good, and harder to get wrong.)</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> To test general-form lines quickly, is there a shortcut for the slope of <span class="tex">Ax+By+C=0</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Isolating <span class="tex">y</span> gives <span class="tex">By=-Ax-C</span>, so <span class="tex">y=-\frac{A}{B}x-\frac{C}{B}</span> and <span class="tex">m=-\frac{A}{B}</span>. For <span class="tex">4y+x+8=0</span>: <span class="tex">A=1</span>, <span class="tex">B=4</span>, <span class="tex">m=-\frac14</span>. (Isolating <span class="tex">y</span> every time is just as good, and harder to get wrong.)</div></div></div>
   </div>
 </section>
 
@@ -288,7 +249,7 @@
 <section class="card" data-ink="s5" data-section="5. Rates of Change">
   <div class="sec-h"><span class="badge">5</span><h2>Rates of Change in Applied Contexts</h2></div>
   <div class="def">The slope of a linear model is a <b>rate of change</b>: the change in the output quantity per unit change in the input quantity. It carries the units of <b>output per unit of input</b>, and two data points are enough to calculate it even when no equation has been given.</div>
-  <div class="explainer" data-explainer="rate"></div>
+  <div data-extra><div class="explainer" data-explainer="rate"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Match the units the question asks for.</b> Per <b>km</b> means the run must be in km: convert <span class="tex">2\,400</span> m to <span class="tex">2.4</span> km <i>before</i> dividing, or you get <span class="tex">-0.006</span> °C per metre.</div></div>
 </section>
 
@@ -490,6 +451,57 @@
   <button class="more" data-more="r7-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: City Planner" id="wu" style="--wf-side: 450px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>City Planner</h2>
+  <p class="wf-rule">Plan a new road from the <b>school</b> that meets Main St at a <b>right angle</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div id="u7l7-city" class="u7l7-cityfig"></div>
+    <div class="u7l7-memo">
+      <div class="u7l7-memo-h">City Hall Memo</div>
+      <div class="u7l7-memo-l"><b>Main St:</b> <span class="tex">x-2y+4=0</span></div>
+      <div class="u7l7-memo-l"><b>School:</b> at <span class="tex">(8,\ 1)</span></div>
+      <div class="u7l7-memo-l"><b>The new road must</b></div>
+      <ul>
+        <li>pass through the school</li>
+        <li>be <b>perpendicular</b> to Main St</li>
+      </ul>
+      <div class="u7l7-memo-f">Map: 1 square = 1 block</div>
+    </div>
+  </div><div class="wf-side">
+    <div class="u7l7-wqs">
+      <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Where does Main St cross the <span class="tex">y</span>-axis?</div></div>
+        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">At <span class="tex">(0,\ 2)</span>. From the equation: <span class="tex">x=0</span> gives <span class="tex">-2y+4=0</span>, so <span class="tex">y=2</span>.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is the slope of Main St? (Use the map <i>or</i> the equation.)</div></div>
+        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\frac12</span>. Map: up 1 block for every 2 across. Equation: <span class="tex">2y=x+4</span>, so <span class="tex">y=\frac12x+2</span>.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>A road at a right angle to Main St: what is <i>its</i> slope?</div></div>
+        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">-2</span>: flip <span class="tex">\frac12</span> to <span class="tex">2</span> and change the sign. Check: <span class="tex">\frac12\times(-2)=-1</span>.</div></div>
+    </div>
+    <div class="poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which equation is the new road? <b>Guess first.</b></div></div>
+      <div class="poll-opts u7l7-c4">
+        <div class="opt right"><b>A</b> <span class="tex">y=-2x+17</span></div>
+        <div class="opt"><b>B</b> <span class="tex">y=2x-15</span></div>
+        <div class="opt"><b>C</b> <span class="tex">y=-\frac12x+5</span></div>
+        <div class="opt"><b>D</b> <span class="tex">y=-2x+2</span></div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>A, <span class="tex">y=-2x+17</span>.</b> Slope <span class="tex">-2</span> through the school <span class="tex">(8,\ 1)</span>: <span class="tex">y-1=-2(x-8)</span>, so <span class="tex">y=-2x+17</span>. Check the school: <span class="tex">-2(8)+17=1</span> ✓. In general form, <span class="tex">2x+y-17=0</span>.<br>
+        <span class="muted"><b>B</b> passes the school, but slope <span class="tex">2</span> only flips <span class="tex">\frac12</span> and forgets the sign: it crosses Main St at a slant. <b>C</b> passes the school, but only changes the sign and forgets to flip. <b>D</b> has the right slope but copies Main St’s intercept of 2: that road misses the school.</span><br>
+        <b>Today’s lesson:</b> reading an equation (Questions 1 and 2), perpendicular slopes (Question 3), and the new road <i>is</i> an altitude: a perpendicular dropped from a point to a line.</div>
+    </div>
+  </div></div>
+
+  <h3 class="sub u7l7-gap">Build the road</h3>
+  <div class="explainer" data-explainer="planner"></div>
+
+  <div class="bk-wq u7l7-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> At what corner will the new road meet Main St?</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Where the two equations agree: <span class="tex">\frac12x+2=-2x+17</span> gives <span class="tex">\frac52x=15</span>, <span class="tex">x=6</span>, <span class="tex">y=5</span>. The corner is <span class="tex">(6,\ 5)</span>, and the new road is <span class="tex">\sqrt{2^2+4^2}=\sqrt{20}\approx4.5</span> blocks long. (Solving two equations at once is Unit 8: <b>systems of linear equations</b>.)</div>
+  </div>
+  <p class="u7l7-social">Follow-up: a bike path through the school <b>parallel</b> to Main St. What is its equation?
+    <span class="u7l7-inline-ans" data-reveal="tap for the answer"><span class="tex">y-1=\frac12(x-8)</span>, so <span class="tex">y=\frac12x-3</span>, or <span class="tex">x-2y-6=0</span></span></p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -522,7 +534,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u7l7.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u7l7', homeHref: '../../', title: '7.7 Equations of Linear Relations Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>
