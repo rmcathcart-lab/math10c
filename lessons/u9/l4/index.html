@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l4.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Roof Pitch">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="2.6s" begin="0s" repeatCount="indefinite"/><text x="150" y="46" font-size="42" text-anchor="middle">🏠</text></g><g><animateTransform attributeName="transform" type="rotate" values="-10 215 46;10 215 46;-10 215 46" dur="2.2s" repeatCount="indefinite"/><text x="215" y="46" font-size="36" text-anchor="middle">📐</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Roof Pitch</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A <b>12/12</b> roof rises 12 for every 12 across. It makes a <b>45°</b> angle with the horizontal.</div><div class="vw-tiles" style="--n:3;--fs:30px"><div><b>A</b>about 63°</div><div><b>B</b>about 75°</div><div><b>C</b>90°</div></p><p class="vw-ask">A 24/12 roof is twice as steep. What angle does it make with the horizontal?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Sketch it: up 24, across 12.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>A, about 63°.</b> Doubling the steepness does not double the angle. Today’s tool finds it exactly: <span class="tex">\tan^{-1}(2)\approx63.4^\circ</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,51 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Roof Pitch" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Roof Pitch</h2>
-  <p class="wf-rule">A roof’s <b>pitch</b> is how far it rises for every <b>12</b> across. (6/12: up 6, across 12.)</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u9l4-wfig" id="u9l4-roofs"></div>
-  <div class="u9l4-wbtns">
-    <button type="button" class="pill" id="u9l4-wroof">Build the 24/12 roof</button>
-    <button type="button" class="pill" id="u9l4-wang">Show every roof angle</button>
-  </div>
-  <div class="u9l4-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A <b>6/12</b> roof goes <b>36</b> across. How far up does it rise? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l4-wa"><div class="bk-ans"><b>18.</b> Three groups of 12 across, so three groups of 6 up.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Write each pitch as a decimal (rise <span class="tex">\div</span> run): 4/12, 6/12, 12/12. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l4-wa"><div class="bk-ans"><span class="tex">4/12\approx0.33</span>, <span class="tex">6/12=0.5</span>, <span class="tex">12/12=1</span>.</div></div>
-    </div>
-  </div>
-  </div><div class="wf-side">
-  <div class="u9l4-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>On the <b>12/12</b> roof, rise = run. What angle does the roof make with the horizontal? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l4-wa"><div class="bk-ans"><span class="tex">\mathbf{45^\circ}</span>. Rise = run makes an isosceles right triangle, so its two acute angles are equal: <span class="tex">90^\circ\div2=45^\circ</span>.</div></div>
-    </div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A <b>24/12</b> roof is twice as steep as a 12/12 roof. So is it a <span class="tex">90^\circ</span> wall of shingles? <b>Guess first:</b> the 24/12 roof’s angle is…</div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> <span class="tex">90^\circ</span></div>
-      <div class="opt"><b>B</b> <span class="tex">67.5^\circ</span></div>
-      <div class="opt right"><b>C</b> about <span class="tex">63^\circ</span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: about <span class="tex">63^\circ</span>.</b> The pitch is <span class="tex">\dfrac{\text{rise}}{\text{run}}=\dfrac{\text{opp}}{\text{adj}}</span>, so <span class="tex">\tan\theta=\dfrac{24}{12}=2</span> and <span class="tex">\theta=\tan^{-1}(2)\approx63.4^\circ</span>.<br>
-      <span class="muted"><b>A</b> is “twice as steep, so twice the angle, <span class="tex">2\times45^\circ</span>”: doubling the ratio does <b>not</b> double the angle, and a <span class="tex">90^\circ</span> roof would need an endless pitch. <b>B</b> is “halfway from <span class="tex">45^\circ</span> to <span class="tex">90^\circ</span>”: the same straight-line thinking, softened.</span></div>
-  </div>
 
-  </div></div>
-  <div class="bk-wq u9l4-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Double the 4/12 roof to 8/12. Does its angle double from <span class="tex">18.4^\circ</span> to <span class="tex">36.9^\circ</span>? And what pitch gives a <span class="tex">30^\circ</span> roof?</div></div>
-    <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No:</b> <span class="tex">\tan^{-1}\!\left(\tfrac{8}{12}\right)\approx33.7^\circ</span>. A <span class="tex">30^\circ</span> roof rises <span class="tex">12\tan30^\circ\approx6.9</span>, so about a <b>7/12</b> pitch.</div></div>
-  </div>
-  <p class="u9l4-social">Vote with your arm: hold it at the angle you think a 24/12 roof makes!</p>
-</section>
 
 <!-- ================= 1. Inverse ratios ================= -->
 <section class="card" data-ink="s1" data-section="1. Inverse Trigonometric Ratios">
@@ -124,13 +90,13 @@
     <div class="pill-col u9l4-pills2"><button class="pill" data-keys="sin⁻¹ .4217 ) =">(i)</button><button class="pill" data-keys="cos⁻¹ .6820 ) =">(ii)</button><button class="pill" data-keys="tan⁻¹ 2.75 ) =">(iii)</button><button class="pill" data-keys="sin⁻¹ 3 ÷ 5 ) =">(iv)</button></div>
   </div>
   <div class="parts c1 u9l4-qgap">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> What does the calculator say for <span class="tex">\sin^{-1}(1.2)</span>? Why must that happen?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>An error</b> (DOMAIN). <span class="tex">\sin\theta=\dfrac{\text{opp}}{\text{hyp}}</span>, and the hypotenuse is the longest side, so a sine can never be more than 1. No angle has a sine of 1.2. <button class="pill small" data-keys="sin⁻¹ 1.2 ) =">Show me</button></div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> What does the calculator say for <span class="tex">\sin^{-1}(1.2)</span>? Why must that happen?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>An error</b> (DOMAIN). <span class="tex">\sin\theta=\dfrac{\text{opp}}{\text{hyp}}</span>, and the hypotenuse is the longest side, so a sine can never be more than 1. No angle has a sine of 1.2. <button class="pill small" data-keys="sin⁻¹ 1.2 ) =">Show me</button></div></div></div>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Reading a ratio graph backwards">
+<section data-extra class="card" data-ink="s1b" data-section="1. Reading a ratio graph backwards">
   <h3 class="sub">Why the inverse works: read the graph backwards</h3>
   <p>As an angle opens from <span class="tex">0^\circ</span> to <span class="tex">90^\circ</span>, its sine climbs, its cosine falls and its tangent climbs without end. Each ratio value meets the graph <b>once</b>, so it belongs to exactly <b>one</b> acute angle. Forwards: up from the angle, across to the ratio. Backwards: across from the ratio, down to the angle.</p>
   <div class="explainer" data-explainer="readBack"></div>
@@ -189,10 +155,19 @@
     <div class="pill-col u9l4-pills2"><button class="pill" data-keys="sin⁻¹ 5 ÷ 11 ) =">(a)</button><button class="pill" data-keys="cos⁻¹ 15 ÷ 23 ) =">(b)</button><button class="pill" data-keys="tan⁻¹ 19 ÷ 14 ) =">(c)</button></div>
   </div>
   <div class="parts c1 u9l4-qgap">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> In (a), what is the <b>other</b> acute angle? Find it two ways.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The angles of a right triangle add to <span class="tex">180^\circ</span>, so <span class="tex">90^\circ-27.04^\circ=62.96^\circ\approx63^\circ</span>. Or name the sides from the bottom angle: <span class="tex">5</span> is now ADJACENT, so <span class="tex">\cos^{-1}\!\left(\tfrac{5}{11}\right)=62.96^\circ</span>. The same side is opposite one acute angle and adjacent to the other.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> In (a), what is the <b>other</b> acute angle? Find it two ways.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The angles of a right triangle add to <span class="tex">180^\circ</span>, so <span class="tex">90^\circ-27.04^\circ=62.96^\circ\approx63^\circ</span>. Or name the sides from the bottom angle: <span class="tex">5</span> is now ADJACENT, so <span class="tex">\cos^{-1}\!\left(\tfrac{5}{11}\right)=62.96^\circ</span>. The same side is opposite one acute angle and adjacent to the other.</div></div></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 4 · Questions 1–7</h2>
+  <p class="pr-t">Inverse ratios, then an angle from two sides.</p>
+  <div class="pr-chips n2"><span><b>1–2</b>Inverse trigonometric ratios</span><span><b>3–7</b>An angle from two known sides</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 4.</span><a class="pill" href="../../../#/lesson/u9l4">Open the Practice site</a></div>
 </section>
 
 <!-- ================= 3. Elevation & depression ================= -->
@@ -329,6 +304,52 @@
   <div class="explainer" data-explainer="chain"></div>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Roof Pitch" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Roof Pitch</h2>
+  <p class="wf-rule">A roof’s <b>pitch</b> is how far it rises for every <b>12</b> across. (6/12: up 6, across 12.)</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u9l4-wfig" id="u9l4-roofs"></div>
+  <div class="u9l4-wbtns">
+    <button type="button" class="pill" id="u9l4-wroof">Build the 24/12 roof</button>
+    <button type="button" class="pill" id="u9l4-wang">Show every roof angle</button>
+  </div>
+  <div class="u9l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A <b>6/12</b> roof goes <b>36</b> across. How far up does it rise? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l4-wa"><div class="bk-ans"><b>18.</b> Three groups of 12 across, so three groups of 6 up.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Write each pitch as a decimal (rise <span class="tex">\div</span> run): 4/12, 6/12, 12/12. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l4-wa"><div class="bk-ans"><span class="tex">4/12\approx0.33</span>, <span class="tex">6/12=0.5</span>, <span class="tex">12/12=1</span>.</div></div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="u9l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>On the <b>12/12</b> roof, rise = run. What angle does the roof make with the horizontal? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l4-wa"><div class="bk-ans"><span class="tex">\mathbf{45^\circ}</span>. Rise = run makes an isosceles right triangle, so its two acute angles are equal: <span class="tex">90^\circ\div2=45^\circ</span>.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A <b>24/12</b> roof is twice as steep as a 12/12 roof. So is it a <span class="tex">90^\circ</span> wall of shingles? <b>Guess first:</b> the 24/12 roof’s angle is…</div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> <span class="tex">90^\circ</span></div>
+      <div class="opt"><b>B</b> <span class="tex">67.5^\circ</span></div>
+      <div class="opt right"><b>C</b> about <span class="tex">63^\circ</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about <span class="tex">63^\circ</span>.</b> The pitch is <span class="tex">\dfrac{\text{rise}}{\text{run}}=\dfrac{\text{opp}}{\text{adj}}</span>, so <span class="tex">\tan\theta=\dfrac{24}{12}=2</span> and <span class="tex">\theta=\tan^{-1}(2)\approx63.4^\circ</span>.<br>
+      <span class="muted"><b>A</b> is “twice as steep, so twice the angle, <span class="tex">2\times45^\circ</span>”: doubling the ratio does <b>not</b> double the angle, and a <span class="tex">90^\circ</span> roof would need an endless pitch. <b>B</b> is “halfway from <span class="tex">45^\circ</span> to <span class="tex">90^\circ</span>”: the same straight-line thinking, softened.</span></div>
+  </div>
+
+  </div></div>
+  <div class="bk-wq u9l4-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Double the 4/12 roof to 8/12. Does its angle double from <span class="tex">18.4^\circ</span> to <span class="tex">36.9^\circ</span>? And what pitch gives a <span class="tex">30^\circ</span> roof?</div></div>
+    <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No:</b> <span class="tex">\tan^{-1}\!\left(\tfrac{8}{12}\right)\approx33.7^\circ</span>. A <span class="tex">30^\circ</span> roof rises <span class="tex">12\tan30^\circ\approx6.9</span>, so about a <b>7/12</b> pitch.</div></div>
+  </div>
+  <p class="u9l4-social">Vote with your arm: hold it at the angle you think a 24/12 roof makes!</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -341,7 +362,7 @@
   <h3 class="sub u9l4-qgap">Which inverse ratio? Every example on one flowchart</h3>
   <div class="explainer" data-explainer="choose"></div>
   <a class="assign" href="../../../#/lesson/u9l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Finding the Measure of an Angle in a Right Triangle</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 · Questions 8–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l5/">
     <div><div class="kicker">Next lesson</div><b>Lesson 5 — Solving Right Triangles Completely</b><div class="muted">Every side and every angle: sides with SOH CAH TOA or Pythagoras, angles with the inverse ratios</div></div><span class="arrow">→</span>
@@ -354,7 +375,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l4.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l4', homeHref: '../../', title: '9.4 Finding an Angle' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

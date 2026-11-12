@@ -374,3 +374,103 @@ SPECS['u7l7'] = dict(
               reveal=f'<b>B.</b> Main Street has slope {T(r"\tfrac12")}, so the new road has slope {T("-2")}. Through (8, 1): {T("1=-2(8)+b")}, so {T("b=17")}.'),
     replace=[(' (traps B and C in the warm-up).', '.')],
     extra_expl=['dials', 'rate'])
+
+# ======================= Unit 8 =======================
+SPECS['u8l1'] = dict(
+    warm=dict(title='Head Start', rule='Does Max catch Rosa before the finish line? If so, where?', strip=strip(sroad(), sdrive('🏃‍♀️', 6.5, 0, 34, 44), sdrive('🏃', 4.2, 1.2, 34, 44)),
+              body=BIG('A 200 m race. Rosa gets a <b>30 m head start</b> and runs <b>4 m</b> every second.<small>Max starts on the line and runs 6 m every second.</small>'),
+              nudge='Where is each runner after 5 seconds? After 10?',
+              reveal=f'<b>Yes, at the 90 m mark.</b> Max closes the gap by 2 m every second, so 30 m takes 15 seconds. Check: {T("30+4(15)=90")} and {T("6(15)=90")}.'),
+    extra_cards=['s2b', 's3b', 's3c', 's4b', 's5b', 'ex5c', 'ex7c'],
+    practice=PR('ex2', '1–3', '4–10', 'Solve each system by graphing, then check.', [('1–3', 'Solving systems by graphing')], 2))
+SPECS['u8l2'] = dict(
+    warm=dict(title='The Coin Jar', rule='How many of the coins are dimes?', pic=JAR,
+              body=BIG('A jar holds only <b>nickels</b> and <b>dimes</b>.<small>There are 20 coins, worth $1.40 altogether.</small>'),
+              nudge='What if all 20 were nickels?',
+              reveal='<b>8 dimes</b> and 12 nickels. Twenty nickels make $1.00. Each nickel you swap for a dime adds 5¢, and you need 40¢ more: 8 swaps.'),
+    extra_cards=['s1e', 's3b'],
+    practice=PR('ex3', '1–3', '4–11', 'Solve each system by substitution, then check.', [('1–3', 'Solving by substitution')], 2))
+SPECS['u8l3'] = dict(
+    warm=dict(title='Weigh the Pets', rule='All three pets on one big scale: what would it read?', strip=strip(sb('🐈', 110, 0, 38), sb('🐕', 170, .3, 38), sb('🐇', 230, .6, 38), srock('⚖️', 295, 8, 2.2, 38)),
+              body='<div class="vw-q">The vet’s scale only works with <b>two pets</b> on it at a time.</div>' + TILES(3, [('Scale A', 'cat + dog<small>14 kg</small>'), ('Scale B', 'dog + rabbit<small>12 kg</small>'), ('Scale C', 'cat + rabbit<small>6 kg</small>')], 28),
+              nudge='What happens if you add all three readings?',
+              reveal='<b>16 kg.</b> The three readings add to 32 kg, and that total weighs every pet exactly twice. Half of 32 is 16.'),
+    extra_cards=['warm2', 's2c', 's4b', 's5b'],
+    practice=PR('ex5', '1–4', '5–14', 'Add or subtract directly, then scale first.', [('1–2', 'Adding or subtracting directly'), ('3–4', 'Scaling one or both equations')], 3))
+SPECS['u8l4'] = dict(
+    warm=dict(title='How Old Am I?', rule='How old is Sam right now?', strip=strip(sb('👨', 130, 0, 42), sb('👦', 190, .4, 34), sblink('🎂', 250, 0, 34, 2.4)),
+              body=BIG('Sam’s dad says: “Right now I’m <b>4 times</b> your age.<small>In 20 years, I’ll be only twice your age.”</small>'),
+              nudge='Try an age for Sam and test it.',
+              reveal=f'<b>Sam is 10</b> and his dad is 40. In 20 years they are 30 and 60. As equations: {T("d=4s")} and {T("d+20=2(s+20)")}.'),
+    extra_cards=['s1b', 'ex2c', 'ex3c', 'ex4c', 'ex5c'],
+    practice=PR('ex3', '1–5', '6–15', 'Introduce variables, form a system, solve and check.', [('1–5', 'Word problems with systems')], 3))
+SPECS['u8l5'] = dict(
+    warm=dict(title='Upstream, Downstream', rule='How fast is the current?', strip=strip(sdrive('🛶', 4, 0, 38, 44), sb('🌊', 80, 0, 26, 3, 2, 52), sb('🌊', 260, .8, 26, 3, 2, 52)),
+              body=BIG('Paddling just as hard both ways, a kayak goes <b>8 km/h downstream</b> and <b>4 km/h upstream</b>.'),
+              nudge='And how fast would the kayak go on a still lake?',
+              reveal=f'<b>2 km/h.</b> The kayak alone does 6 km/h. Downstream is {T("6+2")} and upstream is {T("6-2")}. The two speeds differ by two currents.'),
+    extra_cards=['s1b', 's2c', 's2e'],
+    practice=PR('ex3', '1–5', '6–9', 'Mixture and motion problems.', [('1–5', 'Mixture and motion problems')], 3))
+SPECS['u8l6'] = dict(
+    warm=dict(title='How Many Solutions?', rule='One of these systems has <b>no solution</b>. Which one?', strip=strip(srock('⚖️', 170, 10, 2.4, 44)),
+              body=TILES(3, [('A', T(r'\begin{aligned}y&=2x+1\\y&=2x-3\end{aligned}')), ('B', T(r'\begin{aligned}y&=2x+1\\y&=-x+4\end{aligned}')), ('C', T(r'\begin{aligned}y&=2x+1\\2y&=4x+2\end{aligned}'))], 24),
+              nudge='How many solutions do the other two have?',
+              reveal='<b>A.</b> Same slope, different y-intercepts: parallel lines never meet. B crosses once, at (1, 3). C is the same line written twice, so it has infinitely many solutions.'),
+    extra_cards=['ex1b', 'ex2b', 'ex3b'])
+
+# ======================= Unit 9 =======================
+SPECS['u9l1'] = dict(
+    warm=dict(title='Shadow Height', rule='How tall is the flagpole?', strip=strip(sspin('☀️', 80, 10, 36), sb('🧍', 180, 0, 36, 2, 3), srock('🚩', 250, 6, 2.6, 42)),
+              body=BIG('A student <b>1.6 m</b> tall casts a shadow <b>2 m</b> long.<small>At the same moment, the school flagpole’s shadow is 15 m long.</small>'),
+              nudge='Right now, how does anything’s height compare with its shadow?',
+              reveal=f'<b>12 m.</b> Everything is 0.8 times as tall as its shadow, because {T(r"1.6\div2=0.8")}. So the flagpole is {T(r"0.8\times15=12")} m.'),
+    extra_cards=['s4b'],
+    practice=PR('ex3', '1–5', '6–12', 'Name the sides, then write the ratios.', [('1–5', 'Naming sides and writing ratios')], 3))
+SPECS['u9l2'] = dict(
+    warm=dict(title='The 4-to-1 Ladder Rule', rule='A ladder that follows the rule makes what angle with the ground?', strip=strip(srock('🪜', 170, 8, 2.6, 46)),
+              body='<div class="vw-q">Safety sticker: “For every <b>4 m up</b> the wall, put the foot <b>1 m out</b>.”</div>' + TILES(4, [('A', 'about 45°'), ('B', 'about 60°'), ('C', 'about 76°'), ('D', 'about 86°')], 30),
+              nudge='Guess first. Does a longer ladder lean at a different angle?',
+              reveal='<b>C, about 76°.</b> Every ladder that follows the rule leans at the same angle, long or short: the same ratio of sides always gives the same angle.'),
+    extra_expl=['tan90'],
+    practice=PR('ex3', '1–5', '6–12', 'Calculator values, then how the ratios change.', [('1', 'Calculator values'), ('2–4', 'Why the ratios grow or shrink'), ('5', 'Comparing ratios without a calculator')], 3))
+SPECS['u9l3'] = dict(
+    warm=dict(title='Kite Height', rule='About how high is the kite above your hand?', strip=strip(sfloat('🪁', 150, 3.4, 0, 36), sfloat('☁️', 240, 5, 1, 28)),
+              body='<div class="vw-q">You let out all <b>50 m</b> of string. It makes a <b>40°</b> angle with the level ground.</div>' + TILES(4, [('A', 'about 22 m'), ('B', 'about 29 m'), ('C', 'about 32 m'), ('D', 'about 38 m')], 30),
+              nudge='Guess first. It has to be less than 50 m. Why?',
+              reveal=f'<b>C, about 32 m.</b> The string is the hypotenuse and the height is opposite the 40° angle: {T(r"h=50\sin40^\circ\approx32.1")} m.'),
+    extra_cards=['warm2', 's2c', 's3b', 's3c', 's4b'],
+    practice=PR('ex5', '1–6', '7–14', 'Find each missing side.', [('1–6', 'Finding a missing side')], 4))
+SPECS['u9l4'] = dict(
+    warm=dict(title='Roof Pitch', rule='A 24/12 roof is twice as steep. What angle does it make with the horizontal?', strip=strip(sb('🏠', 150, 0, 42, 3, 2.6), srock('📐', 215, 10, 2.2, 36)),
+              body='<div class="vw-q">A <b>12/12</b> roof rises 12 for every 12 across. It makes a <b>45°</b> angle with the horizontal.</div>' + TILES(3, [('A', 'about 63°'), ('B', 'about 75°'), ('C', '90°')], 30),
+              nudge='Sketch it: up 24, across 12.',
+              reveal=f'<b>A, about 63°.</b> Doubling the steepness does not double the angle. Today’s tool finds it exactly: {T(r"\tan^{-1}(2)\approx63.4^\circ")}.'),
+    extra_cards=['s1b'],
+    practice=PR('ex2', '1–7', '8–16', 'Inverse ratios, then an angle from two sides.', [('1–2', 'Inverse trigonometric ratios'), ('3–7', 'An angle from two known sides')], 4))
+SPECS['u9l5'] = dict(
+    warm=dict(title='The Leaning Tower', rule='About how far sideways is the top shifted?', strip=strip(srock('🗼', 170, 5, 3.5, 48)),
+              body='<div class="vw-q">The tower of Pisa is about <b>56 m</b> long and leans about <b>4°</b> from upright.</div>' + TILES(4, [('A', 'about 0.4 m'), ('B', 'about 2 m'), ('C', 'about 4 m'), ('D', 'about 10 m')], 30),
+              nudge='Guess first. Then sketch the right triangle.',
+              reveal=f'<b>C, about 4 m.</b> The tower is the hypotenuse and the shift is opposite the 4° angle: {T(r"56\sin4^\circ\approx3.9")} m.'),
+    extra_cards=['s3e'],
+    practice=PR('ex2', '1–6', '7–14', 'Choose the tool, then find each measure.', [('1–6', 'Choosing the right tool')], 3))
+SPECS['u9l6'] = dict(
+    warm=dict(title='Lighthouse Lookout', rule='Boat C is seen at <b>15°</b> down, one third of boat A’s angle. How far is C from the lighthouse?', strip=strip(sdrive('⛵', 9, 0, 34, 46), sblink('💡', 30, 0, 26, 1.8, 26)),
+              body='<div class="vw-q">The keeper’s eyes are <b>40 m</b> above the water. Boat A is seen <b>45°</b> below the horizontal, so it is 40 m from the lighthouse.</div>' + TILES(3, [('A', '80 m'), ('B', '120 m'), ('C', 'about 149 m')], 30),
+              nudge='One third of the angle. Three times the distance?',
+              reveal=f'<b>C, about 149 m.</b> {T(r"\dfrac{40}{\tan15^\circ}\approx149")}. A third of the angle is not three times the distance.'),
+    extra_cards=['s2b', 's3c', 's5b'],
+    practice=PR('ex3', '1–5', '6–11', 'Eye level, elevation and depression.', [('1–5', 'Multi-step problems')], 3))
+SPECS['u9l7'] = dict(
+    warm=dict(title='The Unreachable Cliff', rule='Without ever crossing the river: how tall is the cliff?', strip=strip(sb('🏔️', 250, 0, 44, 2, 3), sdrive('🚶', 8, 0, 32, 46, x0=20, x1=190)),
+              body=BIG('A river blocks the base of a cliff. From point A, the angle up to the top is <b>30°</b>.<small>You walk 40 m straight toward the cliff to point B. Now the angle up to the top is 60°.</small>'),
+              nudge='Sketch it. What are the angles of the triangle A, B, top?',
+              reveal=f'<b>About 34.6 m.</b> Triangle A, B, top has two 30° angles, so the sight line from B is also 40 m. Then {T(r"h=40\sin60^\circ\approx34.6")} m.'),
+    extra_cards=['s2c', 's4b'],
+    practice=PR('ex3', '1–3', '4–11', 'Two right triangles sharing a side.', [('1–3', 'Two right triangles sharing a side')], 2))
+SPECS['u9l8'] = dict(
+    warm=dict(title='The Great Pyramid', rule='What angle does a face make with the ground?', strip=strip(sroad(56), sdrive('🐫', 9, 0, 34, 44), sdrive('🐫', 9, 1.5, 28, 46)),
+              body='<div class="vw-q">The Great Pyramid is about <b>146 m</b> tall. Its square base is about <b>230 m</b> wide.</div>' + TILES(4, [('A', 'about 32°'), ('B', 'about 38°'), ('C', '45°'), ('D', 'about 52°')], 30),
+              nudge='Steeper or shallower than 45°? How can you tell without a calculator?',
+              reveal=f'<b>D, about 52°.</b> The height is more than half the base (115 m), so it is steeper than 45°. {T(r"\tan^{-1}\left(\tfrac{146}{115}\right)\approx51.8^\circ")}.'),
+    extra_cards=['s7'], extra_expl=['cofunction'])

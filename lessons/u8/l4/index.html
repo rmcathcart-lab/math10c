@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u8l4.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: How Old Am I?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="130" y="46" font-size="42" text-anchor="middle">👨</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.4s" repeatCount="indefinite"/><text x="190" y="46" font-size="34" text-anchor="middle">👦</text></g><text x="250" y="46" font-size="34" text-anchor="middle">🎂<animate attributeName="opacity" values="1;0.15;1" dur="2.4s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>How Old Am I?</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Sam’s dad says: “Right now I’m <b>4 times</b> your age.</p><p class="vw-ctx">In 20 years, I’ll be only twice your age.”</p><p class="vw-ask">How old is Sam right now?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Try an age for Sam and test it.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Sam is 10</b> and his dad is 40. In 20 years they are 30 and 60. As equations: <span class="tex">d=4s</span> and <span class="tex">d+20=2(s+20)</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,49 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: How Old Am I?" id="wu" style="--wf-side: 380px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>How Old Am I?</h2>
-  <p class="wf-rule">Maya and her little brother Leo. Everyone ages <b>one year per year</b>. Right now Maya is <b>12</b> and Leo is <b>4</b>.</p></div>
-  <div id="u8l4-ages" class="u8l4-ages"></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u8l4-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>How old were they <b>4 years ago</b>?</div></div>
-      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Maya was <b>8</b> and Leo was <b>0</b>: Leo had just been born.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How old will they be <b>in 4 years</b>? Now Maya is <b>3 times</b> Leo’s age. Is she still?</div></div>
-      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Maya <b>16</b>, Leo <b>8</b>. <b>No:</b> <span class="tex">16=2\times8</span>, so she is only <b>twice</b> his age then. The “times as old” number shrinks as they grow up.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>In each picture, how much <b>older</b> is Maya? Will that ever change?</div></div>
-      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Always <b>8 years</b> (<span class="tex">8-0</span>, <span class="tex">12-4</span>, <span class="tex">16-8</span>). The <b>difference</b> never changes, because both add the same number of years.</div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="poll u8l4-poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Sam’s dad says: <i>“Right now I’m <b>4 times</b> your age. In <b>20 years</b>, I’ll be only <b>twice</b> your age.”</i> How old is Sam? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> 5</div>
-      <div class="opt right"><b>B</b> 10</div>
-      <div class="opt"><b>C</b> 20</div>
-      <div class="opt"><b>D</b> Impossible</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: Sam is 10</b> (Dad is 40). Check: <span class="tex">40=4\times10</span> ✓. In 20 years: Dad 60, Sam 30, and <span class="tex">60=2\times30</span> ✓.<br>
-      <span class="muted"><b>A (5):</b> Dad 20 now; in 20 years 40 and 25, not double. <b>C (20):</b> Dad 80 now; in 20 years 100 and 40, which is 2.5 times. <b>D</b> is the big misconception: “4 times as old” does not last forever. Question 2 showed the ratio shrinks while the gap stays fixed.</span></div>
-  </div>
-  </div></div>
-
-  <div class="bk-wq u8l4-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Mom is <b>30 years older</b> than her daughter. In <b>5 years</b> she will be <b>3 times</b> as old. How old is each now?</div></div>
-    <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Daughter <b>10</b>, Mom <b>40</b>: <span class="tex">m=k+30</span> and <span class="tex">m+5=3(k+5)</span>. Check: in 5 years, <span class="tex">45=3\times15</span> ✓.</div></div>
-  </div>
-  <p class="u8l4-social">Your turn: write an age riddle about you and a family member. Can a neighbour solve it?</p>
-</section>
 
 <!-- ================= 1. Four-step strategy ================= -->
 <section class="card" data-ink="s1" data-section="1. The Four-Step Strategy">
@@ -102,7 +70,7 @@
   <div class="explainer" data-explainer="pipeline"></div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Step 3: Choosing a Method">
+<section data-extra class="card" data-ink="s1b" data-section="1. Step 3: Choosing a Method">
   <h3 class="sub">Step 3: choosing a method <span class="muted small">(the table from Lesson 3, Section 6)</span></h3>
   <div class="u8l4-mtab">
     <div class="u8l4-mh">Graphing</div><div>a picture or estimate is enough (by hand: exact only for integer solutions)</div>
@@ -182,7 +150,7 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex2c" data-section="Example 2 check">
+<section data-extra class="card" data-ink="ex2c" data-section="Example 2 check">
   <h3 class="sub">Example 2 check: the four steps</h3>
   <div class="explainer" data-explainer="ex2chk"></div>
 </section>
@@ -215,7 +183,16 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex3c" data-section="Example 3 check">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 4 · Questions 1–5</h2>
+  <p class="pr-t">Introduce variables, form a system, solve and check.</p>
+  <div class="pr-chips n1"><span><b>1–5</b>Word problems with systems</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u8l4">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="ex3c" data-section="Example 3 check">
   <h3 class="sub">Example 3 check: the four steps</h3>
   <div class="explainer" data-explainer="ex3chk"></div>
 </section>
@@ -255,7 +232,7 @@
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex4c" data-section="Example 4 check">
+<section data-extra class="card" data-ink="ex4c" data-section="Example 4 check">
   <h3 class="sub">Example 4 check: the four steps</h3>
   <div class="explainer" data-explainer="ex4chk"></div>
 </section>
@@ -293,9 +270,53 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex5c" data-section="Example 5 check">
+<section data-extra class="card" data-ink="ex5c" data-section="Example 5 check">
   <h3 class="sub">Example 5 check: the four steps</h3>
   <div class="explainer" data-explainer="ex5chk"></div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: How Old Am I?" id="wu" style="--wf-side: 380px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>How Old Am I?</h2>
+  <p class="wf-rule">Maya and her little brother Leo. Everyone ages <b>one year per year</b>. Right now Maya is <b>12</b> and Leo is <b>4</b>.</p></div>
+  <div id="u8l4-ages" class="u8l4-ages"></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="u8l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>How old were they <b>4 years ago</b>?</div></div>
+      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Maya was <b>8</b> and Leo was <b>0</b>: Leo had just been born.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How old will they be <b>in 4 years</b>? Now Maya is <b>3 times</b> Leo’s age. Is she still?</div></div>
+      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Maya <b>16</b>, Leo <b>8</b>. <b>No:</b> <span class="tex">16=2\times8</span>, so she is only <b>twice</b> his age then. The “times as old” number shrinks as they grow up.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>In each picture, how much <b>older</b> is Maya? Will that ever change?</div></div>
+      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Always <b>8 years</b> (<span class="tex">8-0</span>, <span class="tex">12-4</span>, <span class="tex">16-8</span>). The <b>difference</b> never changes, because both add the same number of years.</div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="poll u8l4-poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Sam’s dad says: <i>“Right now I’m <b>4 times</b> your age. In <b>20 years</b>, I’ll be only <b>twice</b> your age.”</i> How old is Sam? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 5</div>
+      <div class="opt right"><b>B</b> 10</div>
+      <div class="opt"><b>C</b> 20</div>
+      <div class="opt"><b>D</b> Impossible</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: Sam is 10</b> (Dad is 40). Check: <span class="tex">40=4\times10</span> ✓. In 20 years: Dad 60, Sam 30, and <span class="tex">60=2\times30</span> ✓.<br>
+      <span class="muted"><b>A (5):</b> Dad 20 now; in 20 years 40 and 25, not double. <b>C (20):</b> Dad 80 now; in 20 years 100 and 40, which is 2.5 times. <b>D</b> is the big misconception: “4 times as old” does not last forever. Question 2 showed the ratio shrinks while the gap stays fixed.</span></div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u8l4-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Mom is <b>30 years older</b> than her daughter. In <b>5 years</b> she will be <b>3 times</b> as old. How old is each now?</div></div>
+    <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Daughter <b>10</b>, Mom <b>40</b>: <span class="tex">m=k+30</span> and <span class="tex">m+5=3(k+5)</span>. Check: in 5 years, <span class="tex">45=3\times15</span> ✓.</div></div>
+  </div>
+  <p class="u8l4-social">Your turn: write an age riddle about you and a family member. Can a neighbour solve it?</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -308,7 +329,7 @@
     <div><b>Check against the story.</b> Totals add up, counts are whole numbers, prices, lengths and times are positive, and the sentence answers the question that was asked.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u8l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Solving Word Problems with Systems</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 · Questions 6–15</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l5/">
     <div><div class="kicker">Next lesson</div><b>Lesson 5 — Mixture and Motion</b><div class="muted">Mixture tables (amount × rate) and distance, speed and time with wind and current</div></div><span class="arrow">→</span>
@@ -321,7 +342,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u8l4.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u8l4', homeHref: '../../', title: '8.4 Word Problems with Systems' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

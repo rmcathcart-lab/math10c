@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Kite Height">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><text x="150" font-size="36" text-anchor="middle">🪁<animate attributeName="y" values="64;-6" dur="3.4s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="3.4s" begin="0s" repeatCount="indefinite"/></text><text x="240" font-size="28" text-anchor="middle">☁️<animate attributeName="y" values="64;-6" dur="5s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="5s" begin="1s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Kite Height</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">You let out all <b>50 m</b> of string. It makes a <b>40°</b> angle with the level ground.</div><div class="vw-tiles" style="--n:4;--fs:30px"><div><b>A</b>about 22 m</div><div><b>B</b>about 29 m</div><div><b>C</b>about 32 m</div><div><b>D</b>about 38 m</div></p><p class="vw-ask">About how high is the kite above your hand?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Guess first. It has to be less than 50 m. Why?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>C, about 32 m.</b> The string is the hypotenuse and the height is opposite the 40° angle: <span class="tex">h=50\sin40^\circ\approx32.1</span> m.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,49 +52,9 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Kite Height" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Kite Height</h2>
-  <p class="wf-rule">You let out all <b>50 m</b> of string. It makes a <b><span class="tex">40^\circ</span></b> angle with the level ground.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u9l3-wfig" id="u9l3-wfig"></div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At <span class="tex">40^\circ</span>, about how high is the kite above your hand? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> about 22 m</div>
-      <div class="opt"><b>B</b> about 29 m</div>
-      <div class="opt right"><b>C</b> about 32 m</div>
-      <div class="opt"><b>D</b> about 38 m</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: about 32 m.</b> The string is the <b class="u9l3-ch">hypotenuse</b> and the height is <b class="u9l3-co">opposite</b> the <span class="tex">40^\circ</span> angle, so <span class="tex">\sin40^\circ=\dfrac{h}{50}</span> and <span class="tex">h=50\sin40^\circ\approx32.1</span> m.<br>
-      <span class="muted"><b>A</b> is <span class="tex">\tfrac{40}{90}\times50</span>: “height grows in step with the angle.” <b>B</b> is a straight line between the <span class="tex">30^\circ</span> (25 m) and <span class="tex">90^\circ</span> (50 m) rows, but sine is not linear: the height climbs fast at low angles and levels off near <span class="tex">90^\circ</span> (at <span class="tex">60^\circ</span> it is already 43 m). <b>D</b> is <span class="tex">50\cos40^\circ\approx38.3</span>: the <b>adjacent</b> side, the ground distance to the spot under the kite. Wrong side.</span></div>
-  </div>
 
-  </div><div class="wf-side">
-  <div id="u9l3-wtab"></div>
-  <div class="u9l3-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>If the string went <b>straight up</b> (<span class="tex">90^\circ</span>), how high is the kite? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l3-wa"><div class="bk-ans"><b>50 m</b>: all of the string is height.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>If the string lay <b>flat</b> (<span class="tex">0^\circ</span>), how high is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l3-wa"><div class="bk-ans"><b>0 m</b>: the kite is at hand height.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>At <span class="tex">30^\circ</span>, the kite’s height is exactly <b>half</b> the string’s length. How high is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l3-wa"><div class="bk-ans"><b>25 m.</b> This is <span class="tex">\sin30^\circ=\tfrac12</span> stated in words.</div></div>
-    </div>
-  </div>
-  </div></div>
-  <div class="bk-wq u9l3-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At the same <span class="tex">40^\circ</span>, how much string do you need for the kite to be <b>40 m</b> up?</div></div>
-    <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\sin40^\circ=\dfrac{40}{x}\ \Rightarrow\ x=\dfrac{40}{\sin40^\circ}\approx62.2</span> m. The unknown is now on the <b>bottom</b>: a preview of Section 3.</div></div>
-  </div>
-  <p class="u9l3-social">Stand up and point at a kite at 30°, then at 40°. How far did your finger rise? (About 7 m of kite height for only 10°.)</p>
-</section>
 
-<section class="card" data-ink="warm2" data-section="Warm-up: the kite, solved">
+<section data-extra class="card" data-ink="warm2" data-section="Warm-up: the kite, solved">
   <h3 class="sub">The kite, solved</h3>
   <p>The string is the hypotenuse, the height is the side opposite the angle. That is the whole recipe of this lesson: <b>name the sides, choose the ratio, then multiply or divide</b>.</p>
   <div class="explainer" data-explainer="kite"></div>
@@ -192,7 +162,7 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. The ladder, animated">
+<section data-extra class="card" data-ink="s2c" data-section="2. The ladder, animated">
   <h3 class="sub">The ladder, and the rounding trap</h3>
   <p>Slide the ladder to see the height and the distance trade off, then check Example 3, and see exactly why (b) and (c) disagree.</p>
   <div class="explainer" data-explainer="ladder"></div>
@@ -207,7 +177,7 @@
   <div class="explainer" data-explainer="solveBot"></div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Cover-up triangles">
+<section data-extra class="card" data-ink="s3b" data-section="3. Cover-up triangles">
   <h3 class="sub">A quick way to remember: cover the unknown</h3>
   <p>Write each ratio as a little triangle: the side on top, the ratio and the other side on the bottom. Cover the side you want. If what is left sits <b>side by side</b>, multiply; if it is <b>one over the other</b>, divide.</p>
   <div class="explainer" data-explainer="cover"></div>
@@ -254,10 +224,19 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–6">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–6</h2>
+  <p class="pr-t">Find each missing side.</p>
+  <div class="pr-chips n1"><span><b>1–6</b>Finding a missing side</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 4.</span><a class="pill" href="../../../#/lesson/u9l3">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u9l3"></section>
 
-<section class="card" data-ink="s3c" data-section="3. Reading the letters">
+<section data-extra class="card" data-ink="s3c" data-section="3. Reading the letters">
   <h3 class="sub">From words to a labelled triangle</h3>
   <p>In <span class="tex">\angle JLK</span> the <b>middle letter</b> is the vertex where the angle is. A side is named by its <b>two endpoints</b>: <span class="tex">KL</span> runs from <span class="tex">K</span> to <span class="tex">L</span>, across from the third vertex <span class="tex">J</span>.</p>
   <div class="explainer" data-explainer="letters"></div>
@@ -330,7 +309,7 @@
   <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Two sides, checked">
+<section data-extra class="card" data-ink="s4b" data-section="4. Two sides, checked">
   <h3 class="sub">Two unknowns: two fresh starts</h3>
   <p>Each unknown gets its own ratio, set up from the given side and angle. Then check the pair with the Pythagorean theorem and the angle sum.</p>
   <div class="explainer" data-explainer="solve7"></div>
@@ -349,6 +328,48 @@
   <div class="explainer" data-explainer="tool"></div>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Kite Height" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Kite Height</h2>
+  <p class="wf-rule">You let out all <b>50 m</b> of string. It makes a <b><span class="tex">40^\circ</span></b> angle with the level ground.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u9l3-wfig" id="u9l3-wfig"></div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At <span class="tex">40^\circ</span>, about how high is the kite above your hand? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 22 m</div>
+      <div class="opt"><b>B</b> about 29 m</div>
+      <div class="opt right"><b>C</b> about 32 m</div>
+      <div class="opt"><b>D</b> about 38 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about 32 m.</b> The string is the <b class="u9l3-ch">hypotenuse</b> and the height is <b class="u9l3-co">opposite</b> the <span class="tex">40^\circ</span> angle, so <span class="tex">\sin40^\circ=\dfrac{h}{50}</span> and <span class="tex">h=50\sin40^\circ\approx32.1</span> m.<br>
+      <span class="muted"><b>A</b> is <span class="tex">\tfrac{40}{90}\times50</span>: “height grows in step with the angle.” <b>B</b> is a straight line between the <span class="tex">30^\circ</span> (25 m) and <span class="tex">90^\circ</span> (50 m) rows, but sine is not linear: the height climbs fast at low angles and levels off near <span class="tex">90^\circ</span> (at <span class="tex">60^\circ</span> it is already 43 m). <b>D</b> is <span class="tex">50\cos40^\circ\approx38.3</span>: the <b>adjacent</b> side, the ground distance to the spot under the kite. Wrong side.</span></div>
+  </div>
+
+  </div><div class="wf-side">
+  <div id="u9l3-wtab"></div>
+  <div class="u9l3-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>If the string went <b>straight up</b> (<span class="tex">90^\circ</span>), how high is the kite? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l3-wa"><div class="bk-ans"><b>50 m</b>: all of the string is height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>If the string lay <b>flat</b> (<span class="tex">0^\circ</span>), how high is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l3-wa"><div class="bk-ans"><b>0 m</b>: the kite is at hand height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>At <span class="tex">30^\circ</span>, the kite’s height is exactly <b>half</b> the string’s length. How high is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l3-wa"><div class="bk-ans"><b>25 m.</b> This is <span class="tex">\sin30^\circ=\tfrac12</span> stated in words.</div></div>
+    </div>
+  </div>
+  </div></div>
+  <div class="bk-wq u9l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At the same <span class="tex">40^\circ</span>, how much string do you need for the kite to be <b>40 m</b> up?</div></div>
+    <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\sin40^\circ=\dfrac{40}{x}\ \Rightarrow\ x=\dfrac{40}{\sin40^\circ}\approx62.2</span> m. The unknown is now on the <b>bottom</b>: a preview of Section 3.</div></div>
+  </div>
+  <p class="u9l3-social">Stand up and point at a kite at 30°, then at 40°. How far did your finger rise? (About 7 m of kite height for only 10°.)</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -359,7 +380,7 @@
     <div><b>Precision and sense.</b> Start each unknown from the <b>given</b> values, round only at the end, and check: the hypotenuse is the longest side.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u9l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Finding a Missing Side Length</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 7–14</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Finding the Measure of an Angle</b><div class="muted">Two sides known, the angle unknown: run the calculator backwards with sin⁻¹, cos⁻¹ and tan⁻¹</div></div><span class="arrow">→</span>
@@ -372,7 +393,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l3', homeHref: '../../', title: '9.3 Missing Side Length' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

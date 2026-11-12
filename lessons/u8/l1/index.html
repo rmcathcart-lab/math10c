@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u8l1.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Head Start">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><line x1="0" y1="52" x2="340" y2="52" stroke="#d9d3c4" stroke-width="3" stroke-dasharray="16 12"><animate attributeName="stroke-dashoffset" values="0;-28" dur=".7s" repeatCount="indefinite"/></line><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="6.5s" begin="0s" repeatCount="indefinite"/><text x="0" y="44" font-size="34" text-anchor="middle" transform="scale(-1 1)">🏃‍♀️</text></g><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="4.2s" begin="1.2s" repeatCount="indefinite"/><text x="0" y="44" font-size="34" text-anchor="middle" transform="scale(-1 1)">🏃</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Head Start</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A 200 m race. Rosa gets a <b>30 m head start</b> and runs <b>4 m</b> every second.</p><p class="vw-ctx">Max starts on the line and runs 6 m every second.</p><p class="vw-ask">Does Max catch Rosa before the finish line? If so, where?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Where is each runner after 5 seconds? After 10?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Yes, at the 90 m mark.</b> Max closes the gap by 2 m every second, so 30 m takes 15 seconds. Check: <span class="tex">30+4(15)=90</span> and <span class="tex">6(15)=90</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,59 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Head Start" id="wu" style="--wf-side: 364px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Head Start</h2>
-  <div class="u8l1-m-clockrow">
-    <button type="button" class="pill" id="u8l1-m-run">Run the races ▸</button>
-    <button type="button" class="pill" id="u8l1-m-step">+5 s</button>
-    <button type="button" class="pill" id="u8l1-m-reset">Back to the start</button>
-    <span class="u8l1-m-clock" id="u8l1-m-clock"><span class="u8l1-m-ck-k">time</span> <b id="u8l1-m-clockv">0 s</b></span>
-  </div>
-  <p class="wf-rule">Three races on a <b>200 m</b> track. Every runner keeps a <b>steady</b> pace.</p></div>
-  <div id="u8l1-m-races" class="u8l1-m-races"></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u8l1-m-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Race 1: where are <b class="u8l1-m-c1">Rosa</b> and <b class="u8l1-m-c2">Max</b> after <b>5</b> s?</div></div>
-      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rosa: <span class="tex">30+4(5)=50</span> m. Max: <span class="tex">6(5)=30</span> m. Rosa is still 20 m ahead, but the gap is shrinking by 2 m every second.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Race 2: how far apart are <b class="u8l1-m-c1">Lee</b> and <b class="u8l1-m-c2">Ana</b> after <b>10</b> s? After <b>30</b> s?</div></div>
-      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>20 m both times</b> (at 10 s: 70 m and 50 m; at 30 s: 170 m and 150 m). Same speed, so the gap never changes.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Race 3: Jo’s coach says that after <span class="tex">t</span> seconds, <b class="u8l1-m-c2">Jo</b> is at <span class="tex">2(5+1.5t)</span> m. Where is Jo at <span class="tex">t=0</span>? At <span class="tex">t=10</span>? Where is <b class="u8l1-m-c1">Kai</b> (10 m head start, 3 m/s) at those times?</div></div>
-      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Jo: <span class="tex">2(5+0)=10</span> m and <span class="tex">2(5+15)=40</span> m. Kai: <span class="tex">10</span> m and <span class="tex">10+3(10)=40</span> m. They match, because <span class="tex">2(5+1.5t)=10+3t</span>, which <b>is</b> Kai’s rule.</div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How often are the two runners <b>side by side</b>? <b>Guess first.</b></div></div>
-    <div class="u8l1-m-pollhead"><span></span><b>Race 1</b><b>Race 2</b><b>Race 3</b></div>
-    <div class="poll-opts u8l1-m-popts">
-      <div class="opt"><b>A</b> <span class="u8l1-m-o3"><i>once</i><i>once</i><i>once</i></span></div>
-      <div class="opt"><b>B</b> <span class="u8l1-m-o3"><i>once</i><i>never</i><i>once</i></span></div>
-      <div class="opt right"><b>C</b> <span class="u8l1-m-o3"><i>once</i><i>never</i><i>the whole race</i></span></div>
-      <div class="opt"><b>D</b> <span class="u8l1-m-o3"><i>never</i><i>never</i><i>never</i></span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C.</b> Race 1: Max catches Rosa once, when <span class="tex">30+4t=6t</span>, at <span class="tex">t=15</span> s, 90 m from the start. Race 2: never. Race 3: Jo and Kai run step for step the whole race; they are side by side at <b>every</b> moment.<br>
-      <span class="muted"><b>B</b> is the popular trap: Jo’s coach’s formula <i>looks</i> different, so it seems they meet once. Simplify it first. <b>A</b> assumes any two runners must pass each other eventually; not if their speeds are equal.</span></div>
-  </div>
-  </div></div>
-
-  <div class="bk-wq u8l1-m-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How fast must Max run to catch Rosa <b>exactly at the 200 m finish</b>?</div></div>
-    <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rosa finishes at <span class="tex">t=170\div4=42.5</span> s, so Max needs <span class="tex">200\div42.5\approx4.7</span> m/s.</div></div>
-  </div>
-  <div class="bk-wq u8l1-m-early">
-    <div class="q-line"><div class="q-num bonus">?</div><div><b>Challenge your neighbour:</b> invent a Race 4 where the runners are <b>never</b> side by side. What has to be true?</div></div>
-    <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Equal speeds, different head starts</b> (Race 2 is one example). Keep that in mind: speed will turn out to be the <b>slope</b>, and the head start the <b><span class="tex">y</span>-intercept</b>.</div></div>
-  </div>
-</section>
 
 <!-- ================= 1. What is a system? ================= -->
 <section class="card" data-ink="s1" data-section="1. What Is a System?">
@@ -110,7 +68,7 @@
   <p>Every point on a line makes <b>that</b> equation true. Drag the point around the grid (or press <b>Next</b> for a tour): each equation gets a ✓ or a ✗. Only one point gets <b>✓ ✓</b>.</p>
   <div class="explainer" data-explainer="dragLab"></div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">(4,\ 2)</span> a solution of the system <span class="tex u8l1-c1">x+2y=8</span>, <span class="tex u8l1-c2">2x-y=1</span>?</div><div class="work" style="--h:100px"></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">(4,\ 2)</span> a solution of the system <span class="tex u8l1-c1">x+2y=8</span>, <span class="tex u8l1-c2">2x-y=1</span>?</div><div class="work" style="--h:100px"></div>
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4+2(2)=8</span> ✓, but <span class="tex">2(4)-2=6\neq1</span> ✗. The point is on the first line only. A solution of the <b>system</b> must check in <b>both</b> equations.</div></div></div>
   </div>
 </section>
@@ -142,7 +100,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Example 1 check">
+<section data-extra class="card" data-ink="s2b" data-section="2. Example 1 check">
   <h3 class="sub">Example 1 check: read it, then verify it</h3>
   <p>Drop from the crossing to each axis to read the coordinates, then substitute into <b>both</b> equations.</p>
   <div class="explainer" data-explainer="readGraph"></div>
@@ -166,7 +124,7 @@
   </div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. The shortcut">
+<section data-extra class="card" data-ink="s3b" data-section="3. The shortcut">
   <h3 class="sub">Shortcut when both equations are already in the form <span class="tex">y=\ldots</span></h3>
   <div class="def amber">At the crossing point both lines have the <b>same <span class="tex">y</span></b>, so the two expressions can be set equal. For <span class="tex u8l1-c1">y=x+1</span> and <span class="tex u8l1-c2">y=-2x+7</span>: <span class="tex">x+1=-2x+7\ \Rightarrow\ 3x=6\ \Rightarrow\ x=2</span>, and then <span class="tex">y=2+1=3</span>. The solution is <span class="tex">(2,\ 3)</span>.</div>
   <div class="explainer" data-explainer="sameY"></div>
@@ -192,7 +150,16 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s3c" data-section="3. Example 2 check">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–3">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 1 · Questions 1–3</h2>
+  <p class="pr-t">Solve each system by graphing, then check.</p>
+  <div class="pr-chips n1"><span><b>1–3</b>Solving systems by graphing</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 2.</span><a class="pill" href="../../../#/lesson/u8l1">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s3c" data-section="3. Example 2 check">
   <h3 class="sub">Example 2 check: two lines by hand</h3>
   <p>Rearrange, graph each line, read the crossing, then check it in <b>both original</b> equations.</p>
   <div class="explainer" data-explainer="byHand"></div>
@@ -221,7 +188,7 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Example 3 check">
+<section data-extra class="card" data-ink="s4b" data-section="4. Example 3 check">
   <h3 class="sub">Example 3 check: from the story to the crossing point</h3>
   <p>One equation for each family. Each line holds every price pair that fits <b>one</b> family; the crossing fits <b>both</b>.</p>
   <div class="explainer" data-explainer="tickets"></div>
@@ -305,12 +272,12 @@
   <p>Watch one line <b>turn</b> until it is parallel to the other, then <b>slide</b> until it lies on top. Keep an eye on the solution count and the chart.</p>
   <div class="explainer" data-explainer="turnSlide"></div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could two different straight lines cross at exactly <b>two</b> points?</div><div class="work" style="--h:80px"></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Could two different straight lines cross at exactly <b>two</b> points?</div><div class="work" style="--h:80px"></div>
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> Only one straight line passes through two given points. If two lines share two points, they are the <b>same line</b>, and then they share every point: infinitely many solutions. So the only possible counts are 1, 0 or infinitely many.</div></div></div>
   </div>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. The warm-up races as lines">
+<section data-extra class="card" data-ink="s5b" data-section="5. The warm-up races as lines">
   <h3 class="sub">The warm-up races as lines</h3>
   <p>Distance after <span class="tex">t</span> seconds <span class="tex">=</span> head start <span class="tex">+</span> speed <span class="tex">\times\,t</span>. That is <span class="tex">y=mx+b</span>: the <b>speed is the slope</b> and the <b>head start is the intercept</b>. “Side by side” means the same <span class="tex">t</span> and the same <span class="tex">d</span>: a point on <b>both</b> lines.</p>
   <div class="explainer" data-explainer="races"></div>
@@ -341,7 +308,7 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex5c" data-section="Example 5 check">
+<section data-extra class="card" data-ink="ex5c" data-section="Example 5 check">
   <h3 class="sub">Example 5 check: graph, then count</h3>
   <p>Plot each <span class="tex">y</span>-intercept, step out the slope, draw the line. Then <b>count</b> the points that are on <b>both</b> lines.</p>
   <div class="explainer" data-explainer="count"></div>
@@ -405,10 +372,64 @@
   <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex7c" data-section="Example 7 check">
+<section data-extra class="card" data-ink="ex7c" data-section="Example 7 check">
   <h3 class="sub">Example 7 check: two questions decide it</h3>
   <p>Rearrange both, then ask: <b>same slope?</b> If not, one solution. If so, <b>same intercept?</b></p>
   <div class="explainer" data-explainer="classify"></div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Head Start" id="wu" style="--wf-side: 364px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Head Start</h2>
+  <div class="u8l1-m-clockrow">
+    <button type="button" class="pill" id="u8l1-m-run">Run the races ▸</button>
+    <button type="button" class="pill" id="u8l1-m-step">+5 s</button>
+    <button type="button" class="pill" id="u8l1-m-reset">Back to the start</button>
+    <span class="u8l1-m-clock" id="u8l1-m-clock"><span class="u8l1-m-ck-k">time</span> <b id="u8l1-m-clockv">0 s</b></span>
+  </div>
+  <p class="wf-rule">Three races on a <b>200 m</b> track. Every runner keeps a <b>steady</b> pace.</p></div>
+  <div id="u8l1-m-races" class="u8l1-m-races"></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="u8l1-m-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>Race 1: where are <b class="u8l1-m-c1">Rosa</b> and <b class="u8l1-m-c2">Max</b> after <b>5</b> s?</div></div>
+      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rosa: <span class="tex">30+4(5)=50</span> m. Max: <span class="tex">6(5)=30</span> m. Rosa is still 20 m ahead, but the gap is shrinking by 2 m every second.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Race 2: how far apart are <b class="u8l1-m-c1">Lee</b> and <b class="u8l1-m-c2">Ana</b> after <b>10</b> s? After <b>30</b> s?</div></div>
+      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>20 m both times</b> (at 10 s: 70 m and 50 m; at 30 s: 170 m and 150 m). Same speed, so the gap never changes.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Race 3: Jo’s coach says that after <span class="tex">t</span> seconds, <b class="u8l1-m-c2">Jo</b> is at <span class="tex">2(5+1.5t)</span> m. Where is Jo at <span class="tex">t=0</span>? At <span class="tex">t=10</span>? Where is <b class="u8l1-m-c1">Kai</b> (10 m head start, 3 m/s) at those times?</div></div>
+      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Jo: <span class="tex">2(5+0)=10</span> m and <span class="tex">2(5+15)=40</span> m. Kai: <span class="tex">10</span> m and <span class="tex">10+3(10)=40</span> m. They match, because <span class="tex">2(5+1.5t)=10+3t</span>, which <b>is</b> Kai’s rule.</div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How often are the two runners <b>side by side</b>? <b>Guess first.</b></div></div>
+    <div class="u8l1-m-pollhead"><span></span><b>Race 1</b><b>Race 2</b><b>Race 3</b></div>
+    <div class="poll-opts u8l1-m-popts">
+      <div class="opt"><b>A</b> <span class="u8l1-m-o3"><i>once</i><i>once</i><i>once</i></span></div>
+      <div class="opt"><b>B</b> <span class="u8l1-m-o3"><i>once</i><i>never</i><i>once</i></span></div>
+      <div class="opt right"><b>C</b> <span class="u8l1-m-o3"><i>once</i><i>never</i><i>the whole race</i></span></div>
+      <div class="opt"><b>D</b> <span class="u8l1-m-o3"><i>never</i><i>never</i><i>never</i></span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C.</b> Race 1: Max catches Rosa once, when <span class="tex">30+4t=6t</span>, at <span class="tex">t=15</span> s, 90 m from the start. Race 2: never. Race 3: Jo and Kai run step for step the whole race; they are side by side at <b>every</b> moment.<br>
+      <span class="muted"><b>B</b> is the popular trap: Jo’s coach’s formula <i>looks</i> different, so it seems they meet once. Simplify it first. <b>A</b> assumes any two runners must pass each other eventually; not if their speeds are equal.</span></div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u8l1-m-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How fast must Max run to catch Rosa <b>exactly at the 200 m finish</b>?</div></div>
+    <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rosa finishes at <span class="tex">t=170\div4=42.5</span> s, so Max needs <span class="tex">200\div42.5\approx4.7</span> m/s.</div></div>
+  </div>
+  <div class="bk-wq u8l1-m-early">
+    <div class="q-line"><div class="q-num bonus">?</div><div><b>Challenge your neighbour:</b> invent a Race 4 where the runners are <b>never</b> side by side. What has to be true?</div></div>
+    <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Equal speeds, different head starts</b> (Race 2 is one example). Keep that in mind: speed will turn out to be the <b>slope</b>, and the head start the <b><span class="tex">y</span>-intercept</b>.</div></div>
+  </div>
 </section>
 
 <!-- ================= summary ================= -->
@@ -421,7 +442,7 @@
     <div><b>Without graphing.</b> Rewrite <b>both</b> equations as <span class="tex">y=mx+b</span>. Different slopes: one solution. Equal slopes, different intercepts: no solution. Equal slopes, equal intercepts: infinitely many.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u8l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Solving Systems by Graphing: How Many Solutions?</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 · Questions 4–10</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l2/">
     <div><div class="kicker">Next lesson</div><b>Lesson 2 — Solving Systems of Equations by Substitution</b><div class="muted">An exact algebraic method: isolate one variable, substitute it into the other equation, solve, then back-substitute</div></div><span class="arrow">→</span>
@@ -434,7 +455,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u8l1.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u8l1', homeHref: '../../', title: '8.1 Solving Systems by Graphing' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

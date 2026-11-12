@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u8l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Upstream, Downstream">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="4s" begin="0s" repeatCount="indefinite"/><text x="0" y="44" font-size="38" text-anchor="middle" transform="scale(-1 1)">🛶</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="2s" begin="0s" repeatCount="indefinite"/><text x="80" y="52" font-size="26" text-anchor="middle">🌊</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="2s" begin="0.8s" repeatCount="indefinite"/><text x="260" y="52" font-size="26" text-anchor="middle">🌊</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Upstream, Downstream</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Paddling just as hard both ways, a kayak goes <b>8 km/h downstream</b> and <b>4 km/h upstream</b>.</p><p class="vw-ask">How fast is the current?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>And how fast would the kayak go on a still lake?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>2 km/h.</b> The kayak alone does 6 km/h. Downstream is <span class="tex">6+2</span> and upstream is <span class="tex">6-2</span>. The two speeds differ by two currents.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,56 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Upstream, Downstream" id="wu" style="--wf-side: 400px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Upstream, Downstream</h2>
-  <p class="wf-rule">Moving water and moving air can <b>help</b> you or <b>fight</b> you.</p></div>
-  <div class="u8l5-wtop">
-  <div id="u8l5-scene" class="u8l5-scene"></div>
-  <div class="u8l5-scenebtns">
-    <button type="button" class="pill" id="u8l5-down">Paddle downstream ▸</button>
-    <button type="button" class="pill" id="u8l5-up">◂ Paddle upstream</button>
-    <span class="u8l5-scenemsg" id="u8l5-scenemsg"></span>
-  </div>
-  </div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u8l5-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>How fast does the kayak really go <b>downstream</b>?</div></div>
-      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6+2=\boldsymbol{8}</span> <b>km/h</b>: the current carries the kayak along.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How fast going <b>upstream</b>?</div></div>
-      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6-2=\boldsymbol{4}</span> <b>km/h</b>: the current pushes back.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>A new kayaker clocks <b>10 km/h</b> downstream and <b>6 km/h</b> upstream. How fast is <i>that</i> current?</div></div>
-      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>2 km/h.</b> Downstream is “boat <span class="tex">+</span> current”, upstream is “boat <span class="tex">-</span> current”; the two differ by <b>two</b> currents: <span class="tex">10-6=4=2c</span>, so <span class="tex">c=2</span> (and the boat does 8 km/h in still water).</div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In still air the plane flies <b>300 km/h</b>: there and back takes <b>4 h</b>. Today a <b>60 km/h</b> wind helps one way and fights the other. The round trip takes… <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> less than 4 h</div>
-      <div class="opt"><b>B</b> exactly 4 h</div>
-      <div class="opt right"><b>C</b> more than 4 h</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: 4 h 10 min, longer than calm air.</b> Out with the wind: <span class="tex">300+60=360</span> km/h, so <span class="tex">600\div360=1\tfrac23</span> h <span class="tex">=</span> 1 h 40 min. Back into the wind: <span class="tex">300-60=240</span> km/h, so <span class="tex">600\div240=2.5</span> h <span class="tex">=</span> 2 h 30 min.<br>
-      <span class="muted"><b>B</b> is the popular answer: “the wind helps as much as it hurts.” The <b>speeds</b> cancel, but the <b>times</b> don’t: the plane spends longer on the slow headwind leg, so the wind gets more time to hurt than to help. <b>A</b> comes from focusing on the exciting fast leg.</span></div>
-  </div>
-  </div></div>
-  <div class="explainer" data-explainer="roundTrip"></div>
-
-  <div class="bk-wq u8l5-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How strong a wind would make the round trip <b>impossible</b>?</div></div>
-    <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A <b>300 km/h</b> headwind: the plane’s ground speed would be <span class="tex">300-300=0</span>, so it would hang in place.</div></div>
-  </div>
-  <p class="u8l5-social">Stand up for A, sit for B, hands on head for C, then defend your pick to a neighbour.</p>
-</section>
 
 <!-- ================= 1. Mixtures ================= -->
 <section class="card" data-ink="s1" data-section="1. Mixture Applications">
@@ -174,7 +135,7 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Solving the mixture systems">
+<section data-extra class="card" data-ink="s1b" data-section="1. Solving the mixture systems">
   <h3 class="sub">Examples 1 and 2 check: solve, graph, check both</h3>
   <p>Each mixture system has a variable with coefficient 1, so <b>substitution</b> is quick: replace one variable with what it equals. The <span class="u8l5-c1"><b>amount</b> equation</span> is blue and the <span class="u8l5-c2"><b>value</b> equation</span> amber; the solution is where both lines meet.</p>
   <div class="explainer" data-explainer="mixSolve"></div>
@@ -185,7 +146,7 @@
   <p>The mixture rate is always <b>between</b> the two ingredient rates, and it sits <b>closer to the ingredient you used more of</b>. Picture the amounts as weights on a beam: the mixture rate is where the beam balances.</p>
   <div class="explainer" data-explainer="mixLever"></div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> A shop mixes $8/kg cashews with $20/kg pecans and sells the mix for $11/kg. Without solving: is there more cashew or more pecan in the mix? Could the mix ever sell for $25/kg?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>More cashews.</b> $11 is much closer to $8 than to $20 (3 away versus 9 away), so the cashews outweigh the pecans, 3 to 1. <b>Never $25</b>: a mix can’t cost more than its most expensive ingredient.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> A shop mixes $8/kg cashews with $20/kg pecans and sells the mix for $11/kg. Without solving: is there more cashew or more pecan in the mix? Could the mix ever sell for $25/kg?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>More cashews.</b> $11 is much closer to $8 than to $20 (3 away versus 9 away), so the cashews outweigh the pecans, 3 to 1. <b>Never $25</b>: a mix can’t cost more than its most expensive ingredient.</div></div></div>
   </div>
 </section>
 
@@ -242,7 +203,16 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. Example 3 check">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 5 · Questions 1–5</h2>
+  <p class="pr-t">Mixture and motion problems.</p>
+  <div class="pr-chips n1"><span><b>1–5</b>Mixture and motion problems</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u8l5">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s2c" data-section="2. Example 3 check">
   <h3 class="sub">Example 3 check: take out the stops, then fill the organizer</h3>
   <p>The clock ran for 11.5 h, but the truck only moved for part of it. Times add and distances add; the two speeds stay in their own rows.</p>
   <div class="explainer" data-explainer="trip"></div>
@@ -298,10 +268,61 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2e" data-section="2. Examples 4 and 5 check">
+<section data-extra class="card" data-ink="s2e" data-section="2. Examples 4 and 5 check">
   <h3 class="sub">Examples 4 and 5 check: add the equations and the current cancels</h3>
   <p>With <span class="tex">+c</span> in one equation and <span class="tex">-c</span> in the other, <b>elimination</b> by adding is instant. On a number line, the still-water speed <span class="tex">b</span> sits exactly <b>halfway</b> between the two ground speeds, and the current is the distance from <span class="tex">b</span> to either one.</p>
   <div class="explainer" data-explainer="speedSolve"></div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Upstream, Downstream" id="wu" style="--wf-side: 400px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Upstream, Downstream</h2>
+  <p class="wf-rule">Moving water and moving air can <b>help</b> you or <b>fight</b> you.</p></div>
+  <div class="u8l5-wtop">
+  <div id="u8l5-scene" class="u8l5-scene"></div>
+  <div class="u8l5-scenebtns">
+    <button type="button" class="pill" id="u8l5-down">Paddle downstream ▸</button>
+    <button type="button" class="pill" id="u8l5-up">◂ Paddle upstream</button>
+    <span class="u8l5-scenemsg" id="u8l5-scenemsg"></span>
+  </div>
+  </div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="u8l5-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>How fast does the kayak really go <b>downstream</b>?</div></div>
+      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6+2=\boldsymbol{8}</span> <b>km/h</b>: the current carries the kayak along.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How fast going <b>upstream</b>?</div></div>
+      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6-2=\boldsymbol{4}</span> <b>km/h</b>: the current pushes back.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>A new kayaker clocks <b>10 km/h</b> downstream and <b>6 km/h</b> upstream. How fast is <i>that</i> current?</div></div>
+      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>2 km/h.</b> Downstream is “boat <span class="tex">+</span> current”, upstream is “boat <span class="tex">-</span> current”; the two differ by <b>two</b> currents: <span class="tex">10-6=4=2c</span>, so <span class="tex">c=2</span> (and the boat does 8 km/h in still water).</div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In still air the plane flies <b>300 km/h</b>: there and back takes <b>4 h</b>. Today a <b>60 km/h</b> wind helps one way and fights the other. The round trip takes… <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> less than 4 h</div>
+      <div class="opt"><b>B</b> exactly 4 h</div>
+      <div class="opt right"><b>C</b> more than 4 h</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: 4 h 10 min, longer than calm air.</b> Out with the wind: <span class="tex">300+60=360</span> km/h, so <span class="tex">600\div360=1\tfrac23</span> h <span class="tex">=</span> 1 h 40 min. Back into the wind: <span class="tex">300-60=240</span> km/h, so <span class="tex">600\div240=2.5</span> h <span class="tex">=</span> 2 h 30 min.<br>
+      <span class="muted"><b>B</b> is the popular answer: “the wind helps as much as it hurts.” The <b>speeds</b> cancel, but the <b>times</b> don’t: the plane spends longer on the slow headwind leg, so the wind gets more time to hurt than to help. <b>A</b> comes from focusing on the exciting fast leg.</span></div>
+  </div>
+  </div></div>
+  <div class="explainer" data-explainer="roundTrip"></div>
+
+  <div class="bk-wq u8l5-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How strong a wind would make the round trip <b>impossible</b>?</div></div>
+    <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A <b>300 km/h</b> headwind: the plane’s ground speed would be <span class="tex">300-300=0</span>, so it would hang in place.</div></div>
+  </div>
+  <p class="u8l5-social">Stand up for A, sit for B, hands on head for C, then defend your pick to a neighbour.</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -314,7 +335,7 @@
     <div><b>Current or wind.</b> With it: <span class="tex">b+c</span>; against it: <span class="tex">b-c</span>. Find each trip’s speed with <span class="tex">\tfrac{d}{t}</span>, then <b>add</b> the equations: <span class="tex">c</span> cancels. Check against <b>both</b> trips and answer in a sentence.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u8l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — Mixture and Motion</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 5 · Questions 6–9</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l6/">
     <div><div class="kicker">Next lesson</div><b>Lesson 6 — Systems of Linear Equations Unit Review</b><div class="muted">Graphing, substitution, elimination and word problems: every method of the unit on one page</div></div><span class="arrow">→</span>
@@ -327,7 +348,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u8l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u8l5', homeHref: '../../', title: '8.5 Mixture and Motion' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

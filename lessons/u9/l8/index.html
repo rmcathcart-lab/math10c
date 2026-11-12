@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l8.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Great Pyramid">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><line x1="0" y1="56" x2="340" y2="56" stroke="#d9d3c4" stroke-width="3" stroke-dasharray="16 12"><animate attributeName="stroke-dashoffset" values="0;-28" dur=".7s" repeatCount="indefinite"/></line><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="9s" begin="0s" repeatCount="indefinite"/><text x="0" y="44" font-size="34" text-anchor="middle" transform="scale(-1 1)">🐫</text></g><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="9s" begin="1.5s" repeatCount="indefinite"/><text x="0" y="46" font-size="28" text-anchor="middle" transform="scale(-1 1)">🐫</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Great Pyramid</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">The Great Pyramid is about <b>146 m</b> tall. Its square base is about <b>230 m</b> wide.</div><div class="vw-tiles" style="--n:4;--fs:30px"><div><b>A</b>about 32°</div><div><b>B</b>about 38°</div><div><b>C</b>45°</div><div><b>D</b>about 52°</div></p><p class="vw-ask">What angle does a face make with the ground?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Steeper or shallower than 45°? How can you tell without a calculator?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>D, about 52°.</b> The height is more than half the base (115 m), so it is steeper than 45°. <span class="tex">\tan^{-1}\left(\tfrac{146}{115}\right)\approx51.8^\circ</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,48 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Great Pyramid" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Great Pyramid</h2>
-  <p class="wf-rule">Egypt’s Great Pyramid: about <b>146 m</b> tall, square base about <b>230 m</b> wide.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div id="u9l8-pyr" class="u9l8-pyrfig"></div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the face steeper or shallower than <span class="tex">45^\circ</span>? What angle does it make with the ground? <b>Guess first.</b></div></div>
-    <div class="poll-opts u9l8-c4">
-      <div class="opt"><b>A</b> about <span class="tex">32^\circ</span></div>
-      <div class="opt"><b>B</b> about <span class="tex">38^\circ</span></div>
-      <div class="opt"><b>C</b> <span class="tex">45^\circ</span></div>
-      <div class="opt right"><b>D</b> about <span class="tex">52^\circ</span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>D, about <span class="tex">52^\circ</span></b>: steeper than <span class="tex">45^\circ</span>. <span class="tex">\tan\theta=\frac{146}{115}\approx1.27</span>, so <span class="tex">\theta=\tan^{-1}(1.27)\approx51.8^\circ</span>. No calculator needed for “steeper”: the height (146) is more than the half-base (115), so <span class="tex">\tan\theta&gt;1</span>.<br>
-      <span class="muted"><b>A</b> uses the <i>whole</i> base, <span class="tex">\tan^{-1}\!\left(\frac{146}{230}\right)</span>: forgetting to halve. <b>B</b> flips the ratio, <span class="tex">\tan^{-1}\!\left(\frac{115}{146}\right)</span>: that is the angle at the <i>tip</i>. <b>C</b> would need height = half-base.</span></div>
-  </div>
 
-  </div><div class="wf-side">
-  <div class="u9l8-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>How far is a base corner from the spot right under the tip? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans"><b>115 m</b>: half of 230, because the tip is centred over the base.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In one half, which two sides do you know? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans">The height, <b>146 m</b>, and the half-base, <b>115 m</b>. (The sloping face is unknown.)</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which ratio (SOH, CAH or TOA) uses those two sides? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans"><b>TOA.</b> From the base angle, 146 is <b class="u9l8-o">opposite</b> and 115 is <b class="u9l8-a">adjacent</b>.</div></div>
-  </div>
-  </div></div>
-  <h3 class="sub u9l8-gap">Halve it, then TOA</h3>
-  <div class="explainer" data-explainer="pyramid"></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The face angle.</b> In DEG mode, <span class="keys"><kbd>2nd</kbd><kbd>tan</kbd><kbd>1</kbd><kbd>4</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>1</kbd><kbd>5</kbd><kbd>)</kbd><kbd>=</kbd></span> shows about <span class="tex">51.77</span>. (<kbd>2nd</kbd><kbd>tan</kbd> is <span class="tex">\tan^{-1}</span>; it opens a bracket.)</div>
-    <button class="pill" data-keys="tan⁻¹ 146 ÷ 115 ) =">Show me</button>
-  </div>
-
-  <div class="bk-wq u9l8-bonus">
-    <div class="q-line"><div class="q-num u9l8-plus">+</div><div><b>Early finishers.</b> How long is the walk from a base edge straight up the middle of a face to the tip?</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">It is the hypotenuse of the half: <span class="tex">\sqrt{146^2+115^2}\approx186</span> m. Or with trig: <span class="tex">\frac{146}{\sin51.8^\circ}\approx186</span> m. The tip angle of each half is <span class="tex">90^\circ-51.8^\circ=38.2^\circ</span> (option B), so the whole apex angle is about <span class="tex">76^\circ</span>.</div>
-  </div>
-  <p class="u9l8-social">Poll the room: could you <i>walk</i> up the face, or would you have to climb?</p>
-</section>
 
 <!-- ================= which tool? ================= -->
 <section class="card u9l8-recap" data-ink="tool" data-section="★ Which Tool?">
@@ -112,7 +81,7 @@
   <div class="explainer" data-explainer="names"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>The hypotenuse is never “adjacent”.</b> It touches the angle too, but it has its own name. Adjacent is the <i>leg</i> that touches the angle.</div></div>
   <h3 class="sub u9l8-gap">Why sine of one is cosine of the other</h3>
-  <div class="explainer" data-explainer="cofunction"></div>
+  <div data-extra><div class="explainer" data-explainer="cofunction"></div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
@@ -196,7 +165,7 @@
   <div class="def">Finding an angle runs SOH CAH TOA <b>in reverse</b>: with two sides known, name them relative to the unknown angle, evaluate the matching ratio as a decimal, then apply <span class="tex">\sin^{-1}</span>, <span class="tex">\cos^{-1}</span> or <span class="tex">\tan^{-1}</span> to recover the angle.</div>
   <div class="explainer" data-explainer="solveAngle"></div>
   <div class="parts c1 u9l8-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 3, why can you state the other acute angle in part (b) without the calculator, but not the hypotenuse in part (c)?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The acute angles always add to <span class="tex">90^\circ</span>, so (b) is one subtraction. The hypotenuse needs a computation: Pythagoras with the two legs (or a trig ratio with the angle from (a)).</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 3, why can you state the other acute angle in part (b) without the calculator, but not the hypotenuse in part (c)?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The acute angles always add to <span class="tex">90^\circ</span>, so (b) is one subtraction. The hypotenuse needs a computation: Pythagoras with the two legs (or a trig ratio with the angle from (a)).</div></div></div>
   </div>
 </section>
 
@@ -235,7 +204,7 @@
   <p>Translate the words into a labelled right triangle first; SOH CAH TOA then solves it directly. If an angle is measured from someone’s eyes, the triangle starts at <b>eye level</b>: add the eye height at the end.</p>
   <div class="explainer" data-explainer="elevation"></div>
   <div class="parts c1 u9l8-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> A student puts the angle of depression at the top corner of the triangle, inside the cliff. What goes wrong, and how big is the angle that really sits there?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Depression is measured down from the <b>horizontal</b>, not from the vertical cliff. The angle inside the triangle at the top is <span class="tex">90^\circ</span> minus the angle of depression, so the opposite and adjacent sides get swapped and the answer is wrong.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> A student puts the angle of depression at the top corner of the triangle, inside the cliff. What goes wrong, and how big is the angle that really sits there?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Depression is measured down from the <b>horizontal</b>, not from the vertical cliff. The angle inside the triangle at the top is <span class="tex">90^\circ</span> minus the angle of depression, so the opposite and adjacent sides get swapped and the answer is wrong.</div></div></div>
   </div>
 </section>
 
@@ -340,7 +309,7 @@
 </section>
 
 <!-- ================= Extension: bearings ================= -->
-<section class="card u9l8-extcard" data-ink="s7" data-section="Extension: Bearings">
+<section data-extra class="card u9l8-extcard" data-ink="s7" data-section="Extension: Bearings">
   <div class="sec-h"><span class="badge">E</span><h2>Bearings</h2><span class="u9l8-ext-tag">Extension</span></div>
   <div class="def">A <b>bearing</b> describes a direction as an angle measured <b>clockwise from north</b>, always written with three digits (<span class="tex">065^\circ</span>, not <span class="tex">65^\circ</span>). To use a bearing in a right triangle, work with the <b>acute angle between the direction and the north–south line</b>.</div>
   <div class="u9l8-bear">
@@ -546,6 +515,49 @@
   <button class="more" data-more="r7-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Great Pyramid" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Great Pyramid</h2>
+  <p class="wf-rule">Egypt’s Great Pyramid: about <b>146 m</b> tall, square base about <b>230 m</b> wide.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div id="u9l8-pyr" class="u9l8-pyrfig"></div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the face steeper or shallower than <span class="tex">45^\circ</span>? What angle does it make with the ground? <b>Guess first.</b></div></div>
+    <div class="poll-opts u9l8-c4">
+      <div class="opt"><b>A</b> about <span class="tex">32^\circ</span></div>
+      <div class="opt"><b>B</b> about <span class="tex">38^\circ</span></div>
+      <div class="opt"><b>C</b> <span class="tex">45^\circ</span></div>
+      <div class="opt right"><b>D</b> about <span class="tex">52^\circ</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>D, about <span class="tex">52^\circ</span></b>: steeper than <span class="tex">45^\circ</span>. <span class="tex">\tan\theta=\frac{146}{115}\approx1.27</span>, so <span class="tex">\theta=\tan^{-1}(1.27)\approx51.8^\circ</span>. No calculator needed for “steeper”: the height (146) is more than the half-base (115), so <span class="tex">\tan\theta&gt;1</span>.<br>
+      <span class="muted"><b>A</b> uses the <i>whole</i> base, <span class="tex">\tan^{-1}\!\left(\frac{146}{230}\right)</span>: forgetting to halve. <b>B</b> flips the ratio, <span class="tex">\tan^{-1}\!\left(\frac{115}{146}\right)</span>: that is the angle at the <i>tip</i>. <b>C</b> would need height = half-base.</span></div>
+  </div>
+
+  </div><div class="wf-side">
+  <div class="u9l8-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>How far is a base corner from the spot right under the tip? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><b>115 m</b>: half of 230, because the tip is centred over the base.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In one half, which two sides do you know? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans">The height, <b>146 m</b>, and the half-base, <b>115 m</b>. (The sloping face is unknown.)</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which ratio (SOH, CAH or TOA) uses those two sides? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><b>TOA.</b> From the base angle, 146 is <b class="u9l8-o">opposite</b> and 115 is <b class="u9l8-a">adjacent</b>.</div></div>
+  </div>
+  </div></div>
+  <h3 class="sub u9l8-gap">Halve it, then TOA</h3>
+  <div class="explainer" data-explainer="pyramid"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The face angle.</b> In DEG mode, <span class="keys"><kbd>2nd</kbd><kbd>tan</kbd><kbd>1</kbd><kbd>4</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>1</kbd><kbd>5</kbd><kbd>)</kbd><kbd>=</kbd></span> shows about <span class="tex">51.77</span>. (<kbd>2nd</kbd><kbd>tan</kbd> is <span class="tex">\tan^{-1}</span>; it opens a bracket.)</div>
+    <button class="pill" data-keys="tan⁻¹ 146 ÷ 115 ) =">Show me</button>
+  </div>
+
+  <div class="bk-wq u9l8-bonus">
+    <div class="q-line"><div class="q-num u9l8-plus">+</div><div><b>Early finishers.</b> How long is the walk from a base edge straight up the middle of a face to the tip?</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">It is the hypotenuse of the half: <span class="tex">\sqrt{146^2+115^2}\approx186</span> m. Or with trig: <span class="tex">\frac{146}{\sin51.8^\circ}\approx186</span> m. The tip angle of each half is <span class="tex">90^\circ-51.8^\circ=38.2^\circ</span> (option B), so the whole apex angle is about <span class="tex">76^\circ</span>.</div>
+  </div>
+  <p class="u9l8-social">Poll the room: could you <i>walk</i> up the face, or would you have to climb?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -579,7 +591,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l8.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l8', homeHref: '../../', title: '9.8 Trigonometry Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

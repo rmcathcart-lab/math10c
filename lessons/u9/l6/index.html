@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l6.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Lighthouse Lookout">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="9s" begin="0s" repeatCount="indefinite"/><text x="0" y="46" font-size="34" text-anchor="middle" transform="scale(-1 1)">⛵</text></g><text x="30" y="26" font-size="26" text-anchor="middle">💡<animate attributeName="opacity" values="1;0.15;1" dur="1.8s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Lighthouse Lookout</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">The keeper’s eyes are <b>40 m</b> above the water. Boat A is seen <b>45°</b> below the horizontal, so it is 40 m from the lighthouse.</div><div class="vw-tiles" style="--n:3;--fs:30px"><div><b>A</b>80 m</div><div><b>B</b>120 m</div><div><b>C</b>about 149 m</div></p><p class="vw-ask">Boat C is seen at <b>15°</b> down, one third of boat A’s angle. How far is C from the lighthouse?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>One third of the angle. Three times the distance?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>C, about 149 m.</b> <span class="tex">\dfrac{40}{\tan15^\circ}\approx149</span>. A third of the angle is not three times the distance.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,47 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Lighthouse Lookout" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Lighthouse Lookout</h2>
-  <p class="wf-rule">The keeper’s eyes are <b>40 m</b> above the water. She looks <b>down</b> at three boats.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u9l6-wfig" id="u9l6-wfig"></div>
-  <div class="u9l6-wbtns">
-    <button type="button" class="pill" id="u9l6-wz">Move the 15° down to boat C</button>
-    <button type="button" class="pill" id="u9l6-wtri">Show boat C’s right triangle</button>
-  </div>
-  <div class="u9l6-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Each angle is measured down from which line? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l6-wa"><div class="bk-ans">The <b>horizontal</b> through the keeper’s eyes (the dashed line), never the lighthouse wall.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Boat <b>A</b> is <span class="tex">45^\circ</span> down. How far is it from the lighthouse? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l6-wa"><div class="bk-ans"><b>40 m.</b> At <span class="tex">45^\circ</span> the triangle is isosceles: distance <span class="tex">=</span> height.</div></div>
-    </div>
-  </div>
-  </div><div class="wf-side">
-  <div class="u9l6-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>As a boat sails away, does its angle get bigger or smaller? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l6-wa"><div class="bk-ans"><b>Smaller.</b> Farther boats need a shallower look down, so the <b>biggest</b> angle belongs to the <b>closest</b> boat.</div></div>
-    </div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Boat C’s angle (<span class="tex">15^\circ</span>) is one third of boat A’s (<span class="tex">45^\circ</span>). How far is C from the lighthouse? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> about 11 m</div>
-      <div class="opt"><b>B</b> 120 m</div>
-      <div class="opt right"><b>C</b> about 149 m</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: about 149 m.</b> The angle of depression equals the angle of elevation from the boat up to the keeper (alternate angles between the two horizontals). From the boat, 40 m is <b>opposite</b> <span class="tex">15^\circ</span> and the distance <span class="tex">d</span> is <b>adjacent</b>: <span class="tex">\tan15^\circ=\dfrac{40}{d}\Rightarrow d=\dfrac{40}{\tan15^\circ}\approx149.3</span> m.<br>
-      <span class="muted"><b>A</b> is <span class="tex">40\tan15^\circ\approx10.7</span>: multiplying instead of dividing (a boat 11 m out would be almost straight down). <b>B</b> is “a third of the angle, so three times as far”: distance is not proportional to the angle. (Boat B: <span class="tex">40\div\tan25^\circ\approx85.8</span> m.)</span>
-      <div class="u9l6-inl"><button class="pill small" type="button" data-keys="40 ÷ tan 15 ) =">Show me 40 ÷ tan 15°</button></div></div>
-  </div>
-  </div></div>
-  <p class="u9l6-social">Look down at your feet, then at the floor by the door. Which angle of depression is bigger?</p>
-</section>
+
 
 <!-- ================= 1. Multi-step, single triangle ================= -->
 <section class="card" data-ink="s1" data-section="1. Two Calculations, One Triangle">
@@ -145,7 +115,7 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Example 2 check">
+<section data-extra class="card" data-ink="s2b" data-section="2. Example 2 check">
   <h3 class="sub">Example 2 check: stack the heights</h3>
   <p>Three pieces make the building: below Malik’s eye level, the rise the trig gives, and the bit above his friend’s eyes.</p>
   <div class="explainer" data-explainer="twoEyes"></div>
@@ -193,7 +163,16 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s3c" data-section="3. Example 3(c): one degree">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 6 · Questions 1–5</h2>
+  <p class="pr-t">Eye level, elevation and depression.</p>
+  <div class="pr-chips n1"><span><b>1–5</b>Multi-step problems</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u9l6">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s3c" data-section="3. Example 3(c): one degree">
   <h3 class="sub">Example 3(c): how much does one degree matter?</h3>
   <p>The string is thin, the washer swings, and the scale has tiny marks. Misread by just <span class="tex">1^\circ</span> and watch where the line of sight hits the pole.</p>
   <div class="explainer" data-explainer="wobble"></div>
@@ -289,7 +268,7 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card u9l6-extcard" data-ink="s5b" data-section="5. Example 5 check">
+<section data-extra class="card u9l6-extcard" data-ink="s5b" data-section="5. Example 5 check">
   <h3 class="sub">Example 5 check: follow the ferry <span class="u9l6-ext sm">Extension</span></h3>
   <div class="explainer" data-explainer="ferry"></div>
 </section>
@@ -325,6 +304,48 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Lighthouse Lookout" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Lighthouse Lookout</h2>
+  <p class="wf-rule">The keeper’s eyes are <b>40 m</b> above the water. She looks <b>down</b> at three boats.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u9l6-wfig" id="u9l6-wfig"></div>
+  <div class="u9l6-wbtns">
+    <button type="button" class="pill" id="u9l6-wz">Move the 15° down to boat C</button>
+    <button type="button" class="pill" id="u9l6-wtri">Show boat C’s right triangle</button>
+  </div>
+  <div class="u9l6-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>Each angle is measured down from which line? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l6-wa"><div class="bk-ans">The <b>horizontal</b> through the keeper’s eyes (the dashed line), never the lighthouse wall.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Boat <b>A</b> is <span class="tex">45^\circ</span> down. How far is it from the lighthouse? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l6-wa"><div class="bk-ans"><b>40 m.</b> At <span class="tex">45^\circ</span> the triangle is isosceles: distance <span class="tex">=</span> height.</div></div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="u9l6-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>As a boat sails away, does its angle get bigger or smaller? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l6-wa"><div class="bk-ans"><b>Smaller.</b> Farther boats need a shallower look down, so the <b>biggest</b> angle belongs to the <b>closest</b> boat.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Boat C’s angle (<span class="tex">15^\circ</span>) is one third of boat A’s (<span class="tex">45^\circ</span>). How far is C from the lighthouse? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 11 m</div>
+      <div class="opt"><b>B</b> 120 m</div>
+      <div class="opt right"><b>C</b> about 149 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about 149 m.</b> The angle of depression equals the angle of elevation from the boat up to the keeper (alternate angles between the two horizontals). From the boat, 40 m is <b>opposite</b> <span class="tex">15^\circ</span> and the distance <span class="tex">d</span> is <b>adjacent</b>: <span class="tex">\tan15^\circ=\dfrac{40}{d}\Rightarrow d=\dfrac{40}{\tan15^\circ}\approx149.3</span> m.<br>
+      <span class="muted"><b>A</b> is <span class="tex">40\tan15^\circ\approx10.7</span>: multiplying instead of dividing (a boat 11 m out would be almost straight down). <b>B</b> is “a third of the angle, so three times as far”: distance is not proportional to the angle. (Boat B: <span class="tex">40\div\tan25^\circ\approx85.8</span> m.)</span>
+      <div class="u9l6-inl"><button class="pill small" type="button" data-keys="40 ÷ tan 15 ) =">Show me 40 ÷ tan 15°</button></div></div>
+  </div>
+  </div></div>
+  <p class="u9l6-social">Look down at your feet, then at the floor by the door. Which angle of depression is bigger?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -335,7 +356,7 @@
     <div><span class="u9l6-ext sm">Ext</span> <b>Hidden right angles:</b> in a semicircle; between a tangent and its radius. <b>Bearings:</b> clockwise from north, three digits; split each leg into <span class="tex">d\sin</span> (E–W) and <span class="tex">d\cos</span> (N–S).</div>
   </div>
   <a class="assign" href="../../../#/lesson/u9l6">
-    <div><div class="kicker">Your turn</div><b>Assignment 6 — Multi-Step Trigonometry</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 6 · Questions 6–11</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l7/">
     <div><div class="kicker">Next lesson</div><b>Lesson 7 — Chaining Right Triangles Together</b><div class="muted">Two triangles sharing a side: towers, two sightings from different spots, and a length found in one triangle carried into the next</div></div><span class="arrow">→</span>
@@ -348,7 +369,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l6.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l6', homeHref: '../../', title: '9.6 Multi-Step Trigonometry' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

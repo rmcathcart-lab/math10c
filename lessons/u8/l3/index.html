@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u8l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Weigh the Pets">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="110" y="46" font-size="38" text-anchor="middle">🐈</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="170" y="46" font-size="38" text-anchor="middle">🐕</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/><text x="230" y="46" font-size="38" text-anchor="middle">🐇</text></g><g><animateTransform attributeName="transform" type="rotate" values="-8 295 46;8 295 46;-8 295 46" dur="2.2s" repeatCount="indefinite"/><text x="295" y="46" font-size="38" text-anchor="middle">⚖️</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Weigh the Pets</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">The vet’s scale only works with <b>two pets</b> on it at a time.</div><div class="vw-tiles" style="--n:3;--fs:28px"><div class="lab"><b>Scale A</b><span>cat + dog</p><p class="vw-ctx">14 kg</span></div><div class="lab"><b>Scale B</b><span>dog + rabbit</p><p class="vw-ctx">12 kg</span></div><div class="lab"><b>Scale C</b><span>cat + rabbit</p><p class="vw-ctx">6 kg</span></div></p><p class="vw-ask">All three pets on one big scale: what would it read?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>What happens if you add all three readings?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>16 kg.</b> The three readings add to 32 kg, and that total weighs every pet exactly twice. Half of 32 is 16.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,48 +53,9 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Weigh the Pets" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Weigh the Pets</h2>
-  <p class="wf-rule">The vet’s scale only works with <b>two</b> pets on it at a time.</p></div>
-  <div class="wf-grid wf-solo"><!-- the first screen (one column) -->
-  <div id="u8l3-pets" class="u8l3-pets"></div>
 
-  <div class="u8l3-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Scales B and C both have the rabbit. Who is heavier, the <b>dog</b> or the <b>cat</b>?</div></div>
-      <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>dog</b>. Scales B and C share the rabbit, so the difference between them (12 kg vs 6 kg) is all dog versus cat.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>By how many kilograms?</div></div>
-      <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">12-6=6</span>: the dog is <b>6 kg</b> heavier.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Add all three readings. How many cats, dogs and rabbits did that weigh?</div></div>
-      <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">14+12+6=32</span> kg, and every pet was weighed exactly <b>twice</b>: 2 cats, 2 dogs and 2 rabbits.</div></div>
-    </div>
-  </div>
 
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> All three pets on one big scale: what would it read? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> 32 kg</div>
-      <div class="opt right"><b>B</b> 16 kg</div>
-      <div class="opt"><b>C</b> Can’t tell</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: 16 kg.</b> Two of each pet weigh 32 kg, so one of each weighs <span class="tex">32\div2=16</span> kg. <b>Then each pet:</b> take away one scale at a time. Rabbit <span class="tex">=16-14=2</span> kg (Scale A has no rabbit), cat <span class="tex">=16-12=4</span> kg, dog <span class="tex">=16-6=10</span> kg. Check: <span class="tex">4+10=14,\ 10+2=12,\ 4+2=6</span> ✓<br>
-      <span class="muted"><b>A</b> adds the readings and stops, forgetting that every pet stood on a scale twice. <b>C</b> feels safe (“three unknowns, never weighed alone”), but three different readings are exactly enough.</span></div>
-  </div>
-  </div>
-
-  <div class="bk-wq u8l3-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Pen <span class="tex">+</span> pencil <span class="tex">=\$5</span>, pencil <span class="tex">+</span> eraser <span class="tex">=\$3</span>, pen <span class="tex">+</span> eraser <span class="tex">=\$6</span>. What does each one cost?</div></div>
-    <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">All three totals add to <span class="tex">\$14</span>, which is two of each, so one of each costs <span class="tex">\$7</span>. Pen <span class="tex">=7-3=\$4</span>, pencil <span class="tex">=7-6=\$1</span>, eraser <span class="tex">=7-5=\$2</span>.</div></div>
-  </div>
-  <p class="u8l3-social">Poll the room before anyone calculates: A, B or C? Then convince a neighbour.</p>
-</section>
-
-<section class="card" data-ink="warm2" data-section="Warm-up: the pets, solved">
+<section data-extra class="card" data-ink="warm2" data-section="Warm-up: the pets, solved">
   <h3 class="sub">The pets, solved by combining scales</h3>
   <p>Let <span class="tex">c</span>, <span class="tex">d</span> and <span class="tex">r</span> be the masses in kilograms. Subtracting two scales, or adding them, made one pet <b>disappear</b>. That move has a name: <b>elimination</b>.</p>
   <div class="explainer" data-explainer="pets"></div>
@@ -173,12 +144,12 @@
   <div class="explainer" data-explainer="signs"></div>
   <div class="def amber"><b>Choosing which variable to eliminate.</b> When either would do, pick the one with the simpler coefficients (already equal or opposite, or small numbers), since that keeps the arithmetic in the later steps simple.</div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 2, could you eliminate <span class="tex">y</span> instead of <span class="tex">x</span>? What would you have to do first?</div><div class="work" style="--h:110px"></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 2, could you eliminate <span class="tex">y</span> instead of <span class="tex">x</span>? What would you have to do first?</div><div class="work" style="--h:110px"></div>
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Yes. Multiply every term of Eq. 2 by <span class="tex">2</span>: <span class="tex">6x-4y=38</span>. Now <span class="tex">+4y</span> and <span class="tex">-4y</span> are opposites, so add to Eq. 1: <span class="tex">9x=45</span>, <span class="tex">x=5</span>. Same answer, one extra step, so eliminating <span class="tex">x</span> (already matching) is simpler.</div></div></div>
   </div>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. On the graph">
+<section data-extra class="card" data-ink="s2c" data-section="2. On the graph">
   <h3 class="sub">What elimination does on the graph</h3>
   <p>Adding the equations makes a <b>new</b> line. Every point on <b>both</b> lines also fits the sum, so the new line passes through the <b>crossing</b> too. Elimination picks the combination that is a <b>vertical</b> line (<span class="tex">x=\ldots</span>) or a <b>horizontal</b> line (<span class="tex">y=\ldots</span>) through that crossing.</p>
   <div class="explainer" data-explainer="pencil"></div>
@@ -278,7 +249,16 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Examples 3 to 5 check">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–4</h2>
+  <p class="pr-t">Add or subtract directly, then scale first.</p>
+  <div class="pr-chips n2"><span><b>1–2</b>Adding or subtracting directly</span><span><b>3–4</b>Scaling one or both equations</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u8l3">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s4b" data-section="4. Examples 3 to 5 check">
   <h3 class="sub">Examples 3, 4 and 5 check: the four steps</h3>
   <p>Step through a full solution, one line at a time, to check the class’s work.</p>
   <div class="explainer" data-explainer="walk"></div>
@@ -318,7 +298,7 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. Example 6 check">
+<section data-extra class="card" data-ink="s5b" data-section="5. Example 6 check">
   <h3 class="sub">Example 6 check: prepare, then the four steps</h3>
   <div class="explainer" data-explainer="walk6"></div>
 </section>
@@ -342,6 +322,47 @@
   <div class="explainer" data-explainer="choose"></div>
 </section>
 
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Weigh the Pets" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Weigh the Pets</h2>
+  <p class="wf-rule">The vet’s scale only works with <b>two</b> pets on it at a time.</p></div>
+  <div class="wf-grid wf-solo"><!-- the first screen (one column) -->
+  <div id="u8l3-pets" class="u8l3-pets"></div>
+
+  <div class="u8l3-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>Scales B and C both have the rabbit. Who is heavier, the <b>dog</b> or the <b>cat</b>?</div></div>
+      <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>dog</b>. Scales B and C share the rabbit, so the difference between them (12 kg vs 6 kg) is all dog versus cat.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>By how many kilograms?</div></div>
+      <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">12-6=6</span>: the dog is <b>6 kg</b> heavier.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Add all three readings. How many cats, dogs and rabbits did that weigh?</div></div>
+      <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">14+12+6=32</span> kg, and every pet was weighed exactly <b>twice</b>: 2 cats, 2 dogs and 2 rabbits.</div></div>
+    </div>
+  </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> All three pets on one big scale: what would it read? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 32 kg</div>
+      <div class="opt right"><b>B</b> 16 kg</div>
+      <div class="opt"><b>C</b> Can’t tell</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: 16 kg.</b> Two of each pet weigh 32 kg, so one of each weighs <span class="tex">32\div2=16</span> kg. <b>Then each pet:</b> take away one scale at a time. Rabbit <span class="tex">=16-14=2</span> kg (Scale A has no rabbit), cat <span class="tex">=16-12=4</span> kg, dog <span class="tex">=16-6=10</span> kg. Check: <span class="tex">4+10=14,\ 10+2=12,\ 4+2=6</span> ✓<br>
+      <span class="muted"><b>A</b> adds the readings and stops, forgetting that every pet stood on a scale twice. <b>C</b> feels safe (“three unknowns, never weighed alone”), but three different readings are exactly enough.</span></div>
+  </div>
+  </div>
+
+  <div class="bk-wq u8l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Pen <span class="tex">+</span> pencil <span class="tex">=\$5</span>, pencil <span class="tex">+</span> eraser <span class="tex">=\$3</span>, pen <span class="tex">+</span> eraser <span class="tex">=\$6</span>. What does each one cost?</div></div>
+    <div class="u8l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">All three totals add to <span class="tex">\$14</span>, which is two of each, so one of each costs <span class="tex">\$7</span>. Pen <span class="tex">=7-3=\$4</span>, pencil <span class="tex">=7-6=\$1</span>, eraser <span class="tex">=7-5=\$2</span>.</div></div>
+  </div>
+  <p class="u8l3-social">Poll the room before anyone calculates: A, B or C? Then convince a neighbour.</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -352,7 +373,7 @@
     <div><b>Before and after.</b> First get <span class="tex">Ax+By=C</span> with no fractions. <span class="tex">0=0</span>: infinitely many solutions; <span class="tex">0=10</span>: none. Choose the easiest method, and <b>verify in both</b> equations.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u8l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — The Elimination Method</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 5–14</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Word Problems</b><div class="muted">Translating a situation into two equations, solving the system, and interpreting the answer</div></div><span class="arrow">→</span>
@@ -365,7 +386,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u8l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u8l3', homeHref: '../../', title: '8.3 The Elimination Method' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

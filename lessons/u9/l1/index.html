@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l1.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Shadow Height">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="rotate" values="0 80 30;360 80 30" dur="10s" repeatCount="indefinite"/><text x="80" y="30" font-size="36" text-anchor="middle" dominant-baseline="central">☀️</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="3s" begin="0s" repeatCount="indefinite"/><text x="180" y="46" font-size="36" text-anchor="middle">🧍</text></g><g><animateTransform attributeName="transform" type="rotate" values="-6 250 46;6 250 46;-6 250 46" dur="2.6s" repeatCount="indefinite"/><text x="250" y="46" font-size="42" text-anchor="middle">🚩</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Shadow Height</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A student <b>1.6 m</b> tall casts a shadow <b>2 m</b> long.</p><p class="vw-ctx">At the same moment, the school flagpole’s shadow is 15 m long.</p><p class="vw-ask">How tall is the flagpole?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Right now, how does anything’s height compare with its shadow?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>12 m.</b> Everything is 0.8 times as tall as its shadow, because <span class="tex">1.6\div2=0.8</span>. So the flagpole is <span class="tex">0.8\times15=12</span> m.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,53 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Shadow Height" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Shadow Height</h2>
-  <p class="wf-rule">Same sunny moment. A student and the school flagpole both cast shadows.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u9l1-wfig" id="u9l1-wfig"></div>
-  <div class="u9l1-wbtns">
-    <button type="button" class="pill" id="u9l1-wtri">Show the two right triangles</button>
-    <button type="button" class="pill" id="u9l1-wgrow">Check the big one: grow the student’s triangle</button>
-    <button type="button" class="pill" id="u9l1-wreset">Reset</button>
-  </div>
-  <div class="u9l1-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A kid <b>0.8 m</b> tall stands beside the student. How long is the kid’s shadow? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l1-wa"><div class="bk-ans"><b>1 m.</b> Half the height, so half the shadow: <span class="tex">2\div2=1</span>.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>For the student: height <span class="tex">\div</span> shadow <span class="tex">=</span> ? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l1-wa"><div class="bk-ans"><span class="tex">1.6\div2=\boldsymbol{0.8}</span>. Right now, everything is 0.8 times as tall as its shadow.</div></div>
-    </div>
-  </div>
-  </div><div class="wf-side">
-  <div class="u9l1-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Right now, would a tree give the <b>same</b> height <span class="tex">\div</span> shadow? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l1-wa"><div class="bk-ans"><b>Yes.</b> The sun’s rays arrive parallel, so every upright object and its shadow make a right triangle with the <b>same angle</b> <span class="tex">\theta</span>. Same angles, similar triangles, same ratio.</div></div>
-    </div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At that same moment, the flagpole’s shadow is <b>15 m</b> long. How tall is the flagpole? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt right"><b>A</b> 12 m</div>
-      <div class="opt"><b>B</b> 14.6 m</div>
-      <div class="opt"><b>C</b> 18.75 m</div>
-      <div class="opt"><b>D</b> 24 m</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>A: 12 m.</b> Height <span class="tex">=0.8\times15=12</span> m. Check: <span class="tex">12\div15=0.8</span>, the same ratio as the student. The flagpole’s triangle is the student’s triangle scaled up <span class="tex">\times7.5</span>.<br>
-      <span class="muted"><b>B</b> is the adding trap (“the shadow is 0.4 m longer, so <span class="tex">15-0.4</span>”): similar shapes scale by <b>multiplying</b>, not adding. <b>C</b> flips the ratio, <span class="tex">15\div0.8</span>, but the pole must be shorter than its shadow, like the student. <b>D</b> is <span class="tex">15\times1.6</span>: the height instead of the ratio.</span></div>
-  </div>
-  </div></div>
 
-  <div class="bk-wq u9l1-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Later that day the student’s shadow is <b>3.2 m</b>. How long is the flagpole’s shadow now? At what sun angle is your shadow exactly as long as you are? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-    <div class="u9l1-wa"><div class="bk-ans">Now height <span class="tex">\div</span> shadow <span class="tex">=1.6\div3.2=0.5</span>, so the pole’s shadow is <span class="tex">12\div0.5=\boldsymbol{24}</span> m. Shadow = height when the ratio is 1: the sun is <span class="tex">45^\circ</span> up.</div></div>
-  </div>
-  <p class="u9l1-social">At lunch: measure a friend and their shadow. How tall is our school?</p>
-</section>
 
 <!-- ================= 1. Similar right triangles ================= -->
 <section class="card" data-ink="s1" data-section="1. Similar Triangles, Constant Ratio">
@@ -182,7 +146,7 @@
   <div class="explainer" data-explainer="soh"></div>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Size check">
+<section data-extra class="card" data-ink="s4b" data-section="4. Size check">
   <h3 class="sub">Size check</h3>
   <div class="def gray">The hypotenuse is always the longest side, so for an acute angle <span class="tex">\sin x^\circ</span> and <span class="tex">\cos x^\circ</span> are always <b>less than 1</b>. The tangent compares the two legs, so it can be any positive number: less than <span class="tex">1</span> when opp <span class="tex">&lt;</span> adj, and greater than <span class="tex">1</span> when opp <span class="tex">&gt;</span> adj.</div>
   <div class="explainer" data-explainer="size"></div>
@@ -231,6 +195,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 1 · Questions 1–5</h2>
+  <p class="pr-t">Name the sides, then write the ratios.</p>
+  <div class="pr-chips n1"><span><b>1–5</b>Naming sides and writing ratios</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u9l1">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u9l1"></section>
 
@@ -274,10 +247,58 @@
     <div class="part"><div class="pl">(vi) <span class="tex">\tan Z</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tan Z=\boldsymbol{\dfrac{24}{7}}</span></div></div></div>
   </div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> How do you know which side is the hypotenuse in each triangle? Which of the six ratios is greater than 1, and why is that allowed?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">\triangle ABC</span> the right angle is at <span class="tex">C</span>, so <span class="tex">AB=13</span> is the hypotenuse; from <span class="tex">\angle A</span>, opp <span class="tex">=CB=5</span> and adj <span class="tex">=CA=12</span>. In <span class="tex">\triangle XYZ</span> the right angle is at <span class="tex">Y</span>, so <span class="tex">XZ=25</span> is the hypotenuse; from <span class="tex">\angle Z</span>, opp <span class="tex">=XY=24</span> and adj <span class="tex">=YZ=7</span>. Only <span class="tex">\tan Z=\frac{24}{7}</span> is greater than 1: a tangent compares the two legs and may exceed 1; a sine or cosine never can.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> How do you know which side is the hypotenuse in each triangle? Which of the six ratios is greater than 1, and why is that allowed?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">\triangle ABC</span> the right angle is at <span class="tex">C</span>, so <span class="tex">AB=13</span> is the hypotenuse; from <span class="tex">\angle A</span>, opp <span class="tex">=CB=5</span> and adj <span class="tex">=CA=12</span>. In <span class="tex">\triangle XYZ</span> the right angle is at <span class="tex">Y</span>, so <span class="tex">XZ=25</span> is the hypotenuse; from <span class="tex">\angle Z</span>, opp <span class="tex">=XY=24</span> and adj <span class="tex">=YZ=7</span>. Only <span class="tex">\tan Z=\frac{24}{7}</span> is greater than 1: a tangent compares the two legs and may exceed 1; a sine or cosine never can.</div></div></div>
   </div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Shadow Height" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Shadow Height</h2>
+  <p class="wf-rule">Same sunny moment. A student and the school flagpole both cast shadows.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u9l1-wfig" id="u9l1-wfig"></div>
+  <div class="u9l1-wbtns">
+    <button type="button" class="pill" id="u9l1-wtri">Show the two right triangles</button>
+    <button type="button" class="pill" id="u9l1-wgrow">Check the big one: grow the student’s triangle</button>
+    <button type="button" class="pill" id="u9l1-wreset">Reset</button>
+  </div>
+  <div class="u9l1-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A kid <b>0.8 m</b> tall stands beside the student. How long is the kid’s shadow? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l1-wa"><div class="bk-ans"><b>1 m.</b> Half the height, so half the shadow: <span class="tex">2\div2=1</span>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>For the student: height <span class="tex">\div</span> shadow <span class="tex">=</span> ? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l1-wa"><div class="bk-ans"><span class="tex">1.6\div2=\boldsymbol{0.8}</span>. Right now, everything is 0.8 times as tall as its shadow.</div></div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="u9l1-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Right now, would a tree give the <b>same</b> height <span class="tex">\div</span> shadow? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l1-wa"><div class="bk-ans"><b>Yes.</b> The sun’s rays arrive parallel, so every upright object and its shadow make a right triangle with the <b>same angle</b> <span class="tex">\theta</span>. Same angles, similar triangles, same ratio.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At that same moment, the flagpole’s shadow is <b>15 m</b> long. How tall is the flagpole? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt right"><b>A</b> 12 m</div>
+      <div class="opt"><b>B</b> 14.6 m</div>
+      <div class="opt"><b>C</b> 18.75 m</div>
+      <div class="opt"><b>D</b> 24 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>A: 12 m.</b> Height <span class="tex">=0.8\times15=12</span> m. Check: <span class="tex">12\div15=0.8</span>, the same ratio as the student. The flagpole’s triangle is the student’s triangle scaled up <span class="tex">\times7.5</span>.<br>
+      <span class="muted"><b>B</b> is the adding trap (“the shadow is 0.4 m longer, so <span class="tex">15-0.4</span>”): similar shapes scale by <b>multiplying</b>, not adding. <b>C</b> flips the ratio, <span class="tex">15\div0.8</span>, but the pole must be shorter than its shadow, like the student. <b>D</b> is <span class="tex">15\times1.6</span>: the height instead of the ratio.</span></div>
+  </div>
+  </div></div>
+
+  <div class="bk-wq u9l1-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Later that day the student’s shadow is <b>3.2 m</b>. How long is the flagpole’s shadow now? At what sun angle is your shadow exactly as long as you are? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u9l1-wa"><div class="bk-ans">Now height <span class="tex">\div</span> shadow <span class="tex">=1.6\div3.2=0.5</span>, so the pole’s shadow is <span class="tex">12\div0.5=\boldsymbol{24}</span> m. Shadow = height when the ratio is 1: the sun is <span class="tex">45^\circ</span> up.</div></div>
+  </div>
+  <p class="u9l1-social">At lunch: measure a friend and their shadow. How tall is our school?</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -290,7 +311,7 @@
     <div><b>From side lengths:</b> missing hypotenuse? Pythagoras first. Write each fraction, then simplify. The sine of one acute angle is the cosine of the other.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u9l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Right-Triangle Trigonometry: Sine, Cosine, and Tangent</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 · Questions 6–12</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l2/">
     <div><div class="kicker">Next lesson</div><b>Lesson 2 — Trig Ratios: Calculator Values and Angle Patterns</b><div class="muted">The calculator knows the ratio for every angle: how sine, cosine and tangent change as the angle opens from 0° to 90°</div></div><span class="arrow">→</span>
@@ -303,7 +324,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l1.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l1', homeHref: '../../', title: '9.1 Sine, Cosine and Tangent' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

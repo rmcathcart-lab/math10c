@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l2.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The 4-to-1 Ladder Rule">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="rotate" values="-8 170 46;8 170 46;-8 170 46" dur="2.6s" repeatCount="indefinite"/><text x="170" y="46" font-size="46" text-anchor="middle">🪜</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The 4-to-1 Ladder Rule</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Safety sticker: “For every <b>4 m up</b> the wall, put the foot <b>1 m out</b>.”</div><div class="vw-tiles" style="--n:4;--fs:30px"><div><b>A</b>about 45°</div><div><b>B</b>about 60°</div><div><b>C</b>about 76°</div><div><b>D</b>about 86°</div></p><p class="vw-ask">A ladder that follows the rule makes what angle with the ground?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Guess first. Does a longer ladder lean at a different angle?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>C, about 76°.</b> Every ladder that follows the rule leans at the same angle, long or short: the same ratio of sides always gives the same angle.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,49 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The 4-to-1 Ladder Rule" id="wu" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The 4-to-1 Ladder Rule</h2>
-  <p class="wf-rule">Safety sticker: <b>“For every 4 m up the wall, put the foot 1 m out.”</b></p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u9l2-wfig" id="u9l2-wfig"></div>
-  <div class="u9l2-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A ladder reaches <b>12 m</b> up a wall. How far out should its foot be? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l2-wa"><div class="bk-ans"><b>3 m.</b> 12 m up is three groups of “4 up”, so three groups of “1 out”.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Which of ladders <b>A–D</b> follow the rule? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l2-wa"><div class="bk-ans"><b>A</b> (<span class="tex">4:1</span>) and <b>C</b> (<span class="tex">8:2=4:1</span>). B is <span class="tex">6:3=2:1</span>, too shallow (it could slide out). D is <span class="tex">5:0.5=10:1</span>, too steep (it could tip backward).</div></div>
-    </div>
-  </div>
-  </div><div class="wf-side">
-  <div class="u9l2-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Two of the ladders are different sizes but both follow the rule. Do they lean at the <b>same angle</b>? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="u9l2-wa"><div class="bk-ans"><b>Yes.</b> Both have up <span class="tex">\div</span> out <span class="tex">=4</span>, so C is just A scaled by 2: similar triangles, same angles.</div></div>
-    </div>
-  </div>
-  <div class="poll u9l2-poll4 wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A ladder that follows the 4-to-1 rule makes what angle with the <b>ground</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> about <span class="tex">14^\circ</span></div>
-      <div class="opt"><b>B</b> <span class="tex">22.5^\circ</span></div>
-      <div class="opt"><b>C</b> <span class="tex">72^\circ</span></div>
-      <div class="opt right"><b>D</b> about <span class="tex">76^\circ</span></div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>D: about <span class="tex">76^\circ</span>.</b> Relative to the angle <span class="tex">\theta</span> at the foot, “up” is <b class="u9l2-o">opposite</b> and “out” is <b class="u9l2-a">adjacent</b>, so <span class="tex">\tan\theta=\frac{4}{1}=4</span>. Nobody can “see” that angle, so hunt for it with the calculator (degree mode!): <span class="tex">\tan72^\circ\approx3.08</span>, <span class="tex">\tan76^\circ\approx4.01</span>, <span class="tex">\tan80^\circ\approx5.67</span>. So <span class="tex">\theta\approx76^\circ</span>.
-      <div class="u9l2-hunt"><button class="pill" type="button" data-keys="tan 72 ) =">tan 72°</button><button class="pill" type="button" data-keys="tan 76 ) =">tan 76°</button><button class="pill" type="button" data-keys="tan 80 ) =">tan 80°</button></div>
-      <span class="muted"><b>A</b> (about <span class="tex">14^\circ</span>) is out over up: the angle at the <em>top</em>, between the ladder and the wall (<span class="tex">14^\circ+76^\circ=90^\circ</span>). <b>B</b> is “<span class="tex">\tfrac14</span> of <span class="tex">90^\circ</span>” and <b>C</b> is “<span class="tex">\tfrac45</span> of <span class="tex">90^\circ</span>”: both assume the angle grows in step with the ratio. It doesn’t, and that is what this lesson is about.</span></div>
-  </div>
 
-  </div></div>
-  <div class="bk-wq u9l2-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Some safety guides measure the 4 <b>along the ladder</b> instead: foot out <span class="tex">=\tfrac14</span> of the ladder’s length. Which ratio is that, and about what angle?</div></div>
-    <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Out is <b class="u9l2-a">adjacent</b> and the ladder is the <b class="u9l2-h">hypotenuse</b>: <span class="tex">\cos\theta=0.25</span>. <span class="tex">\cos75^\circ\approx0.26</span> and <span class="tex">\cos76^\circ\approx0.24</span>, so about <span class="tex">75.5^\circ</span>. (The <span class="tex">\cos^{-1}</span> key does this directly in Lesson 4.)</div></div>
-  </div>
-  <p class="u9l2-social">Hands up if you’ve set up a ladder. Show the rule’s angle with your arm!</p>
-</section>
 
 <!-- ================= 1. Calculator ================= -->
 <section class="card" data-ink="s1" data-section="1. Evaluating Ratios with a Calculator">
@@ -224,6 +192,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 2 · Questions 1–5</h2>
+  <p class="pr-t">Calculator values, then how the ratios change.</p>
+  <div class="pr-chips n3"><span><b>1</b>Calculator values</span><span><b>2–4</b>Why the ratios grow or shrink</span><span><b>5</b>Comparing ratios without a calculator</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u9l2">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u9l2"></section>
 
@@ -285,7 +262,7 @@
     <div class="pill-col"><button class="pill" data-keys="tan 89 ) =">tan 89°</button><button class="pill" data-keys="tan 89.9 ) =">tan 89.9°</button></div>
     <div class="pill-col"><button class="pill" data-keys="tan 89.99 ) =">tan 89.99°</button><button class="pill" data-keys="tan 90 ) =">tan 90°</button></div>
   </div>
-  <div class="explainer" data-explainer="tan90" style="margin-top:16px"></div>
+  <div data-extra><div class="explainer" data-explainer="tan90" style="margin-top:16px"></div></div>
   <div class="space" id="ex4d-space"></div>
   <button class="more" data-more="ex4d-space">+ More space</button>
 </section>
@@ -322,6 +299,50 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The 4-to-1 Ladder Rule" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The 4-to-1 Ladder Rule</h2>
+  <p class="wf-rule">Safety sticker: <b>“For every 4 m up the wall, put the foot 1 m out.”</b></p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u9l2-wfig" id="u9l2-wfig"></div>
+  <div class="u9l2-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A ladder reaches <b>12 m</b> up a wall. How far out should its foot be? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l2-wa"><div class="bk-ans"><b>3 m.</b> 12 m up is three groups of “4 up”, so three groups of “1 out”.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Which of ladders <b>A–D</b> follow the rule? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l2-wa"><div class="bk-ans"><b>A</b> (<span class="tex">4:1</span>) and <b>C</b> (<span class="tex">8:2=4:1</span>). B is <span class="tex">6:3=2:1</span>, too shallow (it could slide out). D is <span class="tex">5:0.5=10:1</span>, too steep (it could tip backward).</div></div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="u9l2-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Two of the ladders are different sizes but both follow the rule. Do they lean at the <b>same angle</b>? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l2-wa"><div class="bk-ans"><b>Yes.</b> Both have up <span class="tex">\div</span> out <span class="tex">=4</span>, so C is just A scaled by 2: similar triangles, same angles.</div></div>
+    </div>
+  </div>
+  <div class="poll u9l2-poll4 wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A ladder that follows the 4-to-1 rule makes what angle with the <b>ground</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about <span class="tex">14^\circ</span></div>
+      <div class="opt"><b>B</b> <span class="tex">22.5^\circ</span></div>
+      <div class="opt"><b>C</b> <span class="tex">72^\circ</span></div>
+      <div class="opt right"><b>D</b> about <span class="tex">76^\circ</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>D: about <span class="tex">76^\circ</span>.</b> Relative to the angle <span class="tex">\theta</span> at the foot, “up” is <b class="u9l2-o">opposite</b> and “out” is <b class="u9l2-a">adjacent</b>, so <span class="tex">\tan\theta=\frac{4}{1}=4</span>. Nobody can “see” that angle, so hunt for it with the calculator (degree mode!): <span class="tex">\tan72^\circ\approx3.08</span>, <span class="tex">\tan76^\circ\approx4.01</span>, <span class="tex">\tan80^\circ\approx5.67</span>. So <span class="tex">\theta\approx76^\circ</span>.
+      <div class="u9l2-hunt"><button class="pill" type="button" data-keys="tan 72 ) =">tan 72°</button><button class="pill" type="button" data-keys="tan 76 ) =">tan 76°</button><button class="pill" type="button" data-keys="tan 80 ) =">tan 80°</button></div>
+      <span class="muted"><b>A</b> (about <span class="tex">14^\circ</span>) is out over up: the angle at the <em>top</em>, between the ladder and the wall (<span class="tex">14^\circ+76^\circ=90^\circ</span>). <b>B</b> is “<span class="tex">\tfrac14</span> of <span class="tex">90^\circ</span>” and <b>C</b> is “<span class="tex">\tfrac45</span> of <span class="tex">90^\circ</span>”: both assume the angle grows in step with the ratio. It doesn’t, and that is what this lesson is about.</span></div>
+  </div>
+
+  </div></div>
+  <div class="bk-wq u9l2-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Some safety guides measure the 4 <b>along the ladder</b> instead: foot out <span class="tex">=\tfrac14</span> of the ladder’s length. Which ratio is that, and about what angle?</div></div>
+    <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Out is <b class="u9l2-a">adjacent</b> and the ladder is the <b class="u9l2-h">hypotenuse</b>: <span class="tex">\cos\theta=0.25</span>. <span class="tex">\cos75^\circ\approx0.26</span> and <span class="tex">\cos76^\circ\approx0.24</span>, so about <span class="tex">75.5^\circ</span>. (The <span class="tex">\cos^{-1}</span> key does this directly in Lesson 4.)</div></div>
+  </div>
+  <p class="u9l2-social">Hands up if you’ve set up a ladder. Show the rule’s angle with your arm!</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -332,7 +353,7 @@
     <div><b>Extremes:</b> <span class="tex">\sin0^\circ=0</span>, <span class="tex">\cos0^\circ=1</span>, <span class="tex">\tan0^\circ=0</span>; <span class="tex">\sin90^\circ=1</span>, <span class="tex">\cos90^\circ=0</span>, <span class="tex">\tan90^\circ</span> undefined. <span class="u9l2-ext sm">Extension</span> <span class="tex">\sin x^\circ=\cos(90-x)^\circ</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u9l2">
-    <div><div class="kicker">Your turn</div><b>Assignment 2 — Trig Ratios: Calculator Values and Angle Patterns</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 2 · Questions 6–12</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l3/">
     <div><div class="kicker">Next lesson</div><b>Lesson 3 — Finding a Missing Side Length</b><div class="muted">Put the ratio to work: one side and one angle are enough to find any other side of a right triangle</div></div><span class="arrow">→</span>
@@ -345,7 +366,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l2.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l2', homeHref: '../../', title: '9.2 Calculator Values and Angle Patterns' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u8l6.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: How Many Solutions?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="rotate" values="-10 170 46;10 170 46;-10 170 46" dur="2.4s" repeatCount="indefinite"/><text x="170" y="46" font-size="44" text-anchor="middle">⚖️</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>How Many Solutions?</h2>
+  <p class="wf-rule vw-rule">One of these systems has <b>no solution</b>. Which one?</p></div>
+  <div class="vw-tiles" style="--n:3;--fs:24px"><div><b>A</b><span class="tex">\begin{aligned}y&=2x+1\\y&=2x-3\end{aligned}</span></div><div><b>B</b><span class="tex">\begin{aligned}y&=2x+1\\y&=-x+4\end{aligned}</span></div><div><b>C</b><span class="tex">\begin{aligned}y&=2x+1\\2y&=4x+2\end{aligned}</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How many solutions do the other two have?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>A.</b> Same slope, different y-intercepts: parallel lines never meet. B crosses once, at (1, 3). C is the same line written twice, so it has infinitely many solutions.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -46,45 +57,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Balance the Mobile" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Balance the Mobile</h2>
-  <p class="wf-rule">A <b>level</b> bar means both sides weigh the <b>same</b>. Bars and strings weigh nothing.</p></div>
-  <div class="wf-grid wf-solo"><!-- the first screen (one column) -->
-  <div id="u8l6-mobiles" class="u8l6-mobfig"></div>
 
-  <div class="u8l6-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Mobile A: which weighs more, a <b>star</b> or a <b>moon</b>? How do you know?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">A <b>star</b>. The bar is level, so 1 star balances 2 moons: a star weighs as much as <b>2 moons</b>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Swap the star for moons. The whole mobile now weighs as much as how many moons?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>4 moons</b>: 2 in place of the star, plus the 2 already hanging.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>How heavy is one moon? One star?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Moon <span class="tex">=20\div4=\mathbf{5}</span> g; star <span class="tex">=2\times5=\mathbf{10}</span> g. Check: <span class="tex">10=5+5</span> and <span class="tex">10+10=20</span> ✓</div></div>
-  </div>
-
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mobile B weighs <b>48 g</b> in total. How heavy is the <b>square</b>? <b>Guess first.</b> Then find the triangle and the circle too.</div></div>
-    <div class="poll-opts u8l6-c4">
-      <div class="opt"><b>A</b> 8 g</div>
-      <div class="opt"><b>B</b> 12 g</div>
-      <div class="opt right"><b>C</b> 18 g</div>
-      <div class="opt"><b>D</b> 24 g</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: the square is 18 g</b> (triangle 6 g, circle 12 g). The top bar is level, so each side is <span class="tex">48\div2=24</span> g. The small bar is level, so circle <span class="tex">=</span> 2 triangles and the left side is 4 triangles <span class="tex">=24</span> g: triangle 6 g, circle 12 g. Right side: square <span class="tex">+</span> triangle <span class="tex">=24</span>, so square <span class="tex">=24-6=18</span> g. Check: <span class="tex">6+6+12+18+6=48</span> ✓<br>
-      <span class="muted"><b>D (24)</b> is half the total: it forgets the triangle hanging under the square. <b>A (8)</b> spreads 48 g evenly over 6 shapes, ignoring the balance clues. <b>B (12)</b> guesses the square matches the circle because they hang at the same height.</span><br>
-      <b>Today’s lesson:</b> every level bar is an <b>equation</b>. Solving the mobile used substitution (swap the circle for 2 triangles) — the whole unit is about tools like that.</div>
-  </div>
-  </div>
-
-  <h3 class="sub u8l6-gap">Each level bar is an equation</h3>
-  <div class="explainer" data-explainer="mobile"></div>
-
-  <div class="bk-wq u8l6-bonus">
-    <div class="q-line"><div class="q-num u8l6-bonus">+</div><div><b>Early finishers.</b> On Mobile A, hang a heart opposite a star and a moon. How heavy is the heart? Could Mobile B still balance if the square weighed 20 g?</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Heart <span class="tex">=10+5=15</span> g. For Mobile B, a 20 g square needs a 4 g triangle to make the right side 24 g, but then the left side is 4 triangles <span class="tex">=16</span> g, not 24. <b>No.</b></div>
-  </div>
-  <p class="u8l6-social">Your turn: design a two-bar mobile puzzle with one total weight. Can a neighbour balance it?</p>
-</section>
 
 <!-- ================= 1. Method summary ================= -->
 <section class="card" data-ink="s1" data-section="1. How Many Solutions?">
@@ -101,7 +74,7 @@
   </table>
   <div class="explainer" data-explainer="howMany"></div>
   <div class="parts c1 u8l6-think">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Elimination ends with <span class="tex">0=0</span>. A classmate writes “<span class="tex">x=0</span>”. What does <span class="tex">0=0</span> really tell you?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both variables vanished and what is left is <b>always true</b>, whatever <span class="tex">x</span> and <span class="tex">y</span> are. So every point that satisfies one equation satisfies the other: the two equations are the <b>same line</b>, with <b>infinitely many</b> solutions. It says nothing about <span class="tex">x</span> being 0. (A false leftover such as <span class="tex">0=5</span> means no point works: parallel lines.)</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Elimination ends with <span class="tex">0=0</span>. A classmate writes “<span class="tex">x=0</span>”. What does <span class="tex">0=0</span> really tell you?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both variables vanished and what is left is <b>always true</b>, whatever <span class="tex">x</span> and <span class="tex">y</span> are. So every point that satisfies one equation satisfies the other: the two equations are the <b>same line</b>, with <b>infinitely many</b> solutions. It says nothing about <span class="tex">x</span> being 0. (A false leftover such as <span class="tex">0=5</span> means no point works: parallel lines.)</div></div></div>
   </div>
 </section>
 
@@ -155,7 +128,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex1b" data-section="Example 1 check">
+<section data-extra class="card" data-ink="ex1b" data-section="Example 1 check">
   <h3 class="sub">Two tables, one crossing</h3>
   <div class="explainer" data-explainer="tables"></div>
 </section>
@@ -183,7 +156,7 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex2b" data-section="Example 2(c) check">
+<section data-extra class="card" data-ink="ex2b" data-section="Example 2(c) check">
   <h3 class="sub">Example 2(c): decimals? Set the expressions equal</h3>
   <p>With decimal coefficients the lines cross <b>between</b> grid lines, so a hand-drawn graph only gives an estimate. Both equations are already <span class="tex">y=\ldots</span>: at the crossing the two <span class="tex">y</span>-values are equal.</p>
   <div class="explainer" data-explainer="setEq"></div>
@@ -215,7 +188,7 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="ex3b" data-section="Example 3 check">
+<section data-extra class="card" data-ink="ex3b" data-section="Example 3 check">
   <h3 class="sub">Two trips, two equations</h3>
   <div class="explainer" data-explainer="trip"></div>
 </section>
@@ -401,6 +374,46 @@
   <button class="more" data-more="r6-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Balance the Mobile" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Balance the Mobile</h2>
+  <p class="wf-rule">A <b>level</b> bar means both sides weigh the <b>same</b>. Bars and strings weigh nothing.</p></div>
+  <div class="wf-grid wf-solo"><!-- the first screen (one column) -->
+  <div id="u8l6-mobiles" class="u8l6-mobfig"></div>
+
+  <div class="u8l6-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Mobile A: which weighs more, a <b>star</b> or a <b>moon</b>? How do you know?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">A <b>star</b>. The bar is level, so 1 star balances 2 moons: a star weighs as much as <b>2 moons</b>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Swap the star for moons. The whole mobile now weighs as much as how many moons?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>4 moons</b>: 2 in place of the star, plus the 2 already hanging.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>How heavy is one moon? One star?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Moon <span class="tex">=20\div4=\mathbf{5}</span> g; star <span class="tex">=2\times5=\mathbf{10}</span> g. Check: <span class="tex">10=5+5</span> and <span class="tex">10+10=20</span> ✓</div></div>
+  </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mobile B weighs <b>48 g</b> in total. How heavy is the <b>square</b>? <b>Guess first.</b> Then find the triangle and the circle too.</div></div>
+    <div class="poll-opts u8l6-c4">
+      <div class="opt"><b>A</b> 8 g</div>
+      <div class="opt"><b>B</b> 12 g</div>
+      <div class="opt right"><b>C</b> 18 g</div>
+      <div class="opt"><b>D</b> 24 g</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: the square is 18 g</b> (triangle 6 g, circle 12 g). The top bar is level, so each side is <span class="tex">48\div2=24</span> g. The small bar is level, so circle <span class="tex">=</span> 2 triangles and the left side is 4 triangles <span class="tex">=24</span> g: triangle 6 g, circle 12 g. Right side: square <span class="tex">+</span> triangle <span class="tex">=24</span>, so square <span class="tex">=24-6=18</span> g. Check: <span class="tex">6+6+12+18+6=48</span> ✓<br>
+      <span class="muted"><b>D (24)</b> is half the total: it forgets the triangle hanging under the square. <b>A (8)</b> spreads 48 g evenly over 6 shapes, ignoring the balance clues. <b>B (12)</b> guesses the square matches the circle because they hang at the same height.</span><br>
+      <b>Today’s lesson:</b> every level bar is an <b>equation</b>. Solving the mobile used substitution (swap the circle for 2 triangles) — the whole unit is about tools like that.</div>
+  </div>
+  </div>
+
+  <h3 class="sub u8l6-gap">Each level bar is an equation</h3>
+  <div class="explainer" data-explainer="mobile"></div>
+
+  <div class="bk-wq u8l6-bonus">
+    <div class="q-line"><div class="q-num u8l6-bonus">+</div><div><b>Early finishers.</b> On Mobile A, hang a heart opposite a star and a moon. How heavy is the heart? Could Mobile B still balance if the square weighed 20 g?</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Heart <span class="tex">=10+5=15</span> g. For Mobile B, a 20 g square needs a 4 g triangle to make the right side 24 g, but then the left side is 4 triangles <span class="tex">=16</span> g, not 24. <b>No.</b></div>
+  </div>
+  <p class="u8l6-social">Your turn: design a two-bar mobile puzzle with one total weight. Can a neighbour balance it?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -433,7 +446,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u8l6.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u8l6', homeHref: '../../', title: '8.6 Systems of Linear Equations Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

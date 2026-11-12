@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u9l7.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Unreachable Cliff">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="3s" begin="0s" repeatCount="indefinite"/><text x="250" y="46" font-size="44" text-anchor="middle">🏔️</text></g><g transform="translate(20 0)"><animateTransform attributeName="transform" type="translate" values="20 0;190 0" dur="8s" begin="0s" repeatCount="indefinite"/><text x="0" y="46" font-size="32" text-anchor="middle" transform="scale(-1 1)">🚶</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Unreachable Cliff</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A river blocks the base of a cliff. From point A, the angle up to the top is <b>30°</b>.</p><p class="vw-ctx">You walk 40 m straight toward the cliff to point B. Now the angle up to the top is 60°.</p><p class="vw-ask">Without ever crossing the river: how tall is the cliff?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Sketch it. What are the angles of the triangle A, B, top?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>About 34.6 m.</b> Triangle A, B, top has two 30° angles, so the sight line from B is also 40 m. Then <span class="tex">h=40\sin60^\circ\approx34.6</span> m.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,43 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: The Unreachable Cliff" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Unreachable Cliff</h2>
-  <p class="wf-rule">A river blocks the cliff’s base. You measure two angles to the top, <b>40 m</b> apart. Walk from A to B: the angle to the top grows from <span class="tex">30^\circ</span> to <span class="tex">60^\circ</span>. Angles <b>1</b> and <b>2</b> are angles of the shaded triangle.</p></div>
-  <div class="explainer" data-explainer="cliff"></div>
-  <div class="u9l7-wrow">
-  <div class="u9l7-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Angle <b>1</b> sits next to the <span class="tex">60^\circ</span> angle on a straight line. What is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans"><span class="tex">180^\circ-60^\circ=\mathbf{120^\circ}</span></div></div>
-  </div>
-  <div class="u9l7-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>The shaded triangle’s angles add to <span class="tex">180^\circ</span>. What is angle <b>2</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans"><span class="tex">180^\circ-30^\circ-120^\circ=\mathbf{30^\circ}</span></div></div>
-  </div>
-  <div class="u9l7-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Two equal angles! So how long is the sight line from <b>B</b> to the top? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-      <div class="bk-ans"><b>40 m.</b> The angle at A and angle 2 are both <span class="tex">30^\circ</span>, so the triangle is isosceles: the side opposite A equals the side opposite angle 2, the 40 m walk.</div></div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Without ever crossing the river: how tall is the cliff? <b>Guess first.</b></div></div>
-    <div class="poll-opts u9l7-c4">
-      <div class="opt"><b>A</b> 20 m</div>
-      <div class="opt right"><b>B</b> about 35 m</div>
-      <div class="opt"><b>C</b> 40 m</div>
-      <div class="opt"><b>D</b> about 69 m</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: about 35 m.</b> Hand the 40 m sight line to the right triangle at the cliff. It is the <b>hypotenuse</b>, and the height is <b>opposite</b> <span class="tex">60^\circ</span>: <span class="tex">h=40\sin 60^\circ\approx34.6</span> m. Check: from A the base is <span class="tex">20+40=60</span> m away, and <span class="tex">\tan^{-1}(34.64\div60)=30^\circ</span>, as measured.<br>
-      <span class="muted"><b>A</b> (20 m) is <span class="tex">40\cos 60^\circ</span>: the <em>adjacent</em> side, B’s distance to the cliff base, not the height. <b>C</b> (40 m) mistakes the sight line (the hypotenuse) for the height. <b>D</b> (69 m) is <span class="tex">40\tan 60^\circ</span>: pretending B is 40 m from the base.</span></div>
-  </div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The big one on the TI-30XIIS.</b> <span class="keys"><kbd>4</kbd><kbd>0</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 34.64…, and the check <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>4</kbd><kbd>0</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">30^\circ</span>.</div>
-    <div class="pill-col"><button class="pill" data-keys="40 × sin 60 ) =">Height</button><button class="pill" data-keys="tan⁻¹ 40 × sin 60 ) ÷ 60 ) =">Check from A</button></div>
-  </div>
-  <p class="u9l7-social">Challenge a neighbour: how could we find the gym’s height from the floor?</p>
-</section>
+
 
 <!-- ================= 1. Two structures ================= -->
 <section class="card" data-ink="s1" data-section="1. Indirect Measurement Across Two Structures">
@@ -116,7 +90,7 @@
     <div class="pill-col"><button class="pill" data-keys="38 × tan 51 ) =">Ashgrove</button><button class="pill" data-keys="38 × tan 22 ) =">Extra height</button><button class="pill" data-keys="38 × tan 51 ) + 38 × tan 22 ) =">Birchwood</button></div>
   </div>
   <div class="parts c1" style="margin-top:14px">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why do the two pieces <b>add</b> to Birchwood’s height? When would you <b>subtract</b> instead?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The horizontal at eye level cuts Birchwood at Ashgrove’s height: below it is a piece equal to Ashgrove (47 m), above it the extra 15 m seen at the <span class="tex">22^\circ</span> elevation. If the observer looked <b>down</b> to the top of the second tower (an angle of depression), that tower is shorter: subtract the piece instead.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Why do the two pieces <b>add</b> to Birchwood’s height? When would you <b>subtract</b> instead?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The horizontal at eye level cuts Birchwood at Ashgrove’s height: below it is a piece equal to Ashgrove (47 m), above it the extra 15 m seen at the <span class="tex">22^\circ</span> elevation. If the observer looked <b>down</b> to the top of the second tower (an angle of depression), that tower is shorter: subtract the piece instead.</div></div></div>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
@@ -174,7 +148,7 @@
     <div class="pill-col"><button class="pill" data-keys="24 × tan 48 ) =">PS</button><button class="pill" data-keys="24 × tan 48 ) × tan 57 ) =">RS</button><button class="pill" data-keys="24 + 24 × tan 48 ) × tan 57 ) =">QR</button></div>
   </div>
   <div class="parts c1" style="margin-top:14px">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could you start with <span class="tex">\triangle PSR</span> instead?</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">\triangle PSR</span> has only one known measure, the <span class="tex">57^\circ</span> angle. A right triangle needs a side and an angle (or two sides) to be solved. Its side <span class="tex">PS</span> has to come from <span class="tex">\triangle PSQ</span> first.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Could you start with <span class="tex">\triangle PSR</span> instead?</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">\triangle PSR</span> has only one known measure, the <span class="tex">57^\circ</span> angle. A right triangle needs a side and an angle (or two sides) to be solved. Its side <span class="tex">PS</span> has to come from <span class="tex">\triangle PSQ</span> first.</div></div></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
@@ -209,7 +183,16 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. Which triangle first?">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–3">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 7 · Questions 1–3</h2>
+  <p class="pr-t">Two right triangles sharing a side.</p>
+  <div class="pr-chips n1"><span><b>1–3</b>Two right triangles sharing a side</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 2.</span><a class="pill" href="../../../#/lesson/u9l7">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s2c" data-section="2. Which triangle first?">
   <h3 class="sub">Which triangle first? Which ratio? How to finish?</h3>
   <p>Every question in this lesson follows the same plan. The only real decision is the first one: does <b>one</b> of the triangles have enough to be solved on its own?</p>
   <div class="explainer" data-explainer="which"></div>
@@ -247,7 +230,7 @@
     <div class="pill-col"><button class="pill" data-keys="1 ÷ tan 32 ) =">1 ÷ tan 32°</button><button class="pill" data-keys="1 ÷ tan 47 ) =">1 ÷ tan 47°</button><button class="pill" data-keys="25 ÷ ( 1 ÷ tan 32 ) − 1 ÷ tan 47 ) ) =">h</button></div>
   </div>
   <div class="parts c1" style="margin-top:14px">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> A classmate writes <span class="tex">\tan 32^\circ=\dfrac{h}{25}</span>. What went wrong?</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The 25 m is <b>not</b> a side of <span class="tex">\triangle TAC</span>: it is only the piece <span class="tex">AB</span> between the two observers. The side adjacent to <span class="tex">32^\circ</span> is the whole <span class="tex">AC=x+25</span>.</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> A classmate writes <span class="tex">\tan 32^\circ=\dfrac{h}{25}</span>. What went wrong?</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The 25 m is <b>not</b> a side of <span class="tex">\triangle TAC</span>: it is only the piece <span class="tex">AB</span> between the two observers. The side adjacent to <span class="tex">32^\circ</span> is the whole <span class="tex">AC=x+25</span>.</div></div></div>
   </div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
@@ -313,10 +296,48 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
-<section class="card u9l7-extcard" data-ink="s4b" data-section="4. Extension: the wedge">
+<section data-extra class="card u9l7-extcard" data-ink="s4b" data-section="4. Extension: the wedge">
   <h3 class="sub">The wedge, turned around <span class="u9l7-ext-tag" style="margin-left:10px">Extension</span></h3>
   <p>Turn the solid to see which faces are rectangles, then turn the side face <span class="tex">ADHE</span> to face us and split it with a horizontal line.</p>
   <div class="explainer" data-explainer="wedge"></div>
+</section>
+
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: The Unreachable Cliff" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Unreachable Cliff</h2>
+  <p class="wf-rule">A river blocks the cliff’s base. You measure two angles to the top, <b>40 m</b> apart. Walk from A to B: the angle to the top grows from <span class="tex">30^\circ</span> to <span class="tex">60^\circ</span>. Angles <b>1</b> and <b>2</b> are angles of the shaded triangle.</p></div>
+  <div class="explainer" data-explainer="cliff"></div>
+  <div class="u9l7-wrow">
+  <div class="u9l7-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Angle <b>1</b> sits next to the <span class="tex">60^\circ</span> angle on a straight line. What is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><span class="tex">180^\circ-60^\circ=\mathbf{120^\circ}</span></div></div>
+  </div>
+  <div class="u9l7-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>The shaded triangle’s angles add to <span class="tex">180^\circ</span>. What is angle <b>2</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><span class="tex">180^\circ-30^\circ-120^\circ=\mathbf{30^\circ}</span></div></div>
+  </div>
+  <div class="u9l7-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Two equal angles! So how long is the sight line from <b>B</b> to the top? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><b>40 m.</b> The angle at A and angle 2 are both <span class="tex">30^\circ</span>, so the triangle is isosceles: the side opposite A equals the side opposite angle 2, the 40 m walk.</div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Without ever crossing the river: how tall is the cliff? <b>Guess first.</b></div></div>
+    <div class="poll-opts u9l7-c4">
+      <div class="opt"><b>A</b> 20 m</div>
+      <div class="opt right"><b>B</b> about 35 m</div>
+      <div class="opt"><b>C</b> 40 m</div>
+      <div class="opt"><b>D</b> about 69 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: about 35 m.</b> Hand the 40 m sight line to the right triangle at the cliff. It is the <b>hypotenuse</b>, and the height is <b>opposite</b> <span class="tex">60^\circ</span>: <span class="tex">h=40\sin 60^\circ\approx34.6</span> m. Check: from A the base is <span class="tex">20+40=60</span> m away, and <span class="tex">\tan^{-1}(34.64\div60)=30^\circ</span>, as measured.<br>
+      <span class="muted"><b>A</b> (20 m) is <span class="tex">40\cos 60^\circ</span>: the <em>adjacent</em> side, B’s distance to the cliff base, not the height. <b>C</b> (40 m) mistakes the sight line (the hypotenuse) for the height. <b>D</b> (69 m) is <span class="tex">40\tan 60^\circ</span>: pretending B is 40 m from the base.</span></div>
+  </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The big one on the TI-30XIIS.</b> <span class="keys"><kbd>4</kbd><kbd>0</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 34.64…, and the check <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>4</kbd><kbd>0</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">30^\circ</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="40 × sin 60 ) =">Height</button><button class="pill" data-keys="tan⁻¹ 40 × sin 60 ) ÷ 60 ) =">Check from A</button></div>
+  </div>
+  <p class="u9l7-social">Challenge a neighbour: how could we find the gym’s height from the floor?</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -329,7 +350,7 @@
     <div><b>No known side?</b> Write both distances in terms of <span class="tex">h</span> and subtract (two sightings). <span class="u9l7-ext">Extension</span> In 3-D: base triangle first, then the vertical one.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u9l7">
-    <div><div class="kicker">Your turn</div><b>Assignment 7 — Chaining Right Triangles Together</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 7 · Questions 4–11</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l8/">
     <div><div class="kicker">Next lesson</div><b>Lesson 8 — Trigonometry Unit Review</b><div class="muted">The whole unit on one page: SOH CAH TOA, inverse ratios, elevation and depression, and chains of right triangles</div></div><span class="arrow">→</span>
@@ -342,7 +363,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u9l7.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u9l7', homeHref: '../../', title: '9.7 Chaining Right Triangles' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>
