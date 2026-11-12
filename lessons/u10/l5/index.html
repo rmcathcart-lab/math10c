@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u10l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Tennis Ball Can">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -14;0 0" dur="0.9s" begin="0s" repeatCount="indefinite"/><text x="130" y="46" font-size="34" text-anchor="middle">🎾</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -14;0 0" dur="0.9s" begin="0.2s" repeatCount="indefinite"/><text x="180" y="46" font-size="34" text-anchor="middle">🎾</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -14;0 0" dur="0.9s" begin="0.4s" repeatCount="indefinite"/><text x="230" y="46" font-size="34" text-anchor="middle">🎾</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Tennis Ball Can</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Three tennis balls fit snugly in a can. They touch the sides, the bottom and the lid.</p><div class="vw-tiles" style="--n:3;--fs:26px"><div><b>A</b>the can’s height</div><div><b>B</b>the distance around the can</div><div><b>C</b>they are the same</div></div><p class="vw-ask">Which is longer?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Measure both in tennis balls.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>B, the distance around.</b> The height is 3 ball-widths. The distance around is <span class="tex">\pi</span> ball-widths, about 3.14.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,58 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Tennis Ball Can" id="wu" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Tennis Ball Can</h2>
-  <p class="wf-rule">Three tennis balls fit <b>snugly</b> in a can: touching the sides, the bottom and the lid. One ball is <b>about 6.7 cm</b> across.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u10l5-wtop">
-    <div class="u10l5-wfig">
-      <div id="u10l5-can"></div>
-      <div class="u10l5-wbtns">
-        <button type="button" class="pill" id="u10l5-wstring">Unroll the string</button>
-        <button type="button" class="pill" id="u10l5-wsnug">Split into snug cylinders</button>
-      </div>
-    </div>
-    <div class="u10l5-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>How <b>tall</b> is the inside of the can?</div></div>
-        <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Three diameters: <span class="tex">3\times6.7\approx\boldsymbol{20.1}</span> cm.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>What is the <b>radius</b> of one ball? Of the can?</div></div>
-        <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6.7\div2=\boldsymbol{3.35}</span> cm for <b>both</b>: the balls touch the sides, so the can’s radius equals the ball’s.</div></div>
-      </div>
-    </div>
-  </div>
 
-  <div class="u10l5-wqs u10l5-wq3">
-    <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>Guess: what fraction of the can do the balls fill? <span class="tex">\tfrac12</span>? <span class="tex">\tfrac23</span>? <span class="tex">\tfrac34</span>?</div></div>
-        <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b><span class="tex">\tfrac23</span>.</b> Can: <span class="tex">\pi r^2(6r)=6\pi r^3</span>. Balls: <span class="tex">3\times\tfrac43\pi r^3=4\pi r^3</span>. <span class="tex">4\div6=\tfrac23</span>. With numbers: balls <span class="tex">\approx472</span> cm³, can <span class="tex">\approx709</span> cm³. That is today’s first big idea.</div></div>
-      </div>
-  </div>
-  </div><div class="wf-side">
-  <div class="poll u10l5-poll3 wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which is <b>longer</b>: the can’s <b>height</b>, or the <b>distance around</b> the can? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> the height</div>
-      <div class="opt right"><b>B</b> the distance around</div>
-      <div class="opt"><b>C</b> exactly the same</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: the distance around.</b> Height <span class="tex">=3d</span>. Distance around <span class="tex">=\pi d\approx3.14d</span>. Since <span class="tex">\pi&gt;3</span>, the circumference always wins: <span class="tex">\pi(6.7)\approx21.0</span> cm vs <span class="tex">3(6.7)=20.1</span> cm. Tap <b>Unroll the string</b> to see it.<br>
-      <span class="muted"><b>A</b> is what almost everyone picks: a tall, skinny can <em>looks</em> much taller than it is wide. <b>C</b> is close (only about 1 cm apart), and it would be exactly right if <span class="tex">\pi</span> were 3.</span></div>
-  </div>
-  </div></div>
-
-  <div class="u10l5-early">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How much <b>empty space</b> is in the can?</div></div>
-      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">709-472\approx236</span> cm³: exactly <span class="tex">\tfrac13</span> of the can, the volume of <b>one and a half</b> balls.</div></div>
-    </div>
-  </div>
-  <p class="u10l5-social">Try it: wrap a string around a ball or a pop can. Is it longer than 3 widths?</p>
-</section>
 
 <!-- ================= 1. Volume of a sphere ================= -->
 <section class="card" data-ink="s1" data-section="1. Volume of a Sphere">
@@ -104,11 +63,11 @@
   <div class="def">So <b>a sphere’s volume is <span class="tex">\tfrac23</span> of the volume of a cylinder with the same radius whose height equals the sphere’s diameter.</b></div>
   <div class="explainer" data-explainer="overflow"></div>
   <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">For discussion</span> If Mika instead filled the same cylinder with <span class="tex">900</span> mL of water under the same conditions (cylinder radius <span class="tex">=</span> ball radius, cylinder height <span class="tex">=</span> ball diameter), how many millilitres would overflow, and how many would remain in the cylinder?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Overflow <span class="tex">=\tfrac23(900)=\boldsymbol{600}</span> mL. Remaining <span class="tex">=\tfrac13(900)=\boldsymbol{300}</span> mL. (Pick the <b>900 mL</b> chip above to watch it.)</div></div></div>
+    <div data-extra class="part think"><div class="pl"><span class="think-tag">For discussion</span> If Mika instead filled the same cylinder with <span class="tex">900</span> mL of water under the same conditions (cylinder radius <span class="tex">=</span> ball radius, cylinder height <span class="tex">=</span> ball diameter), how many millilitres would overflow, and how many would remain in the cylinder?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Overflow <span class="tex">=\tfrac23(900)=\boldsymbol{600}</span> mL. Remaining <span class="tex">=\tfrac13(900)=\boldsymbol{300}</span> mL. (Pick the <b>900 mL</b> chip above to watch it.)</div></div></div>
   </div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. The Snug Cylinder">
+<section data-extra class="card" data-ink="s1b" data-section="1. The Snug Cylinder">
   <h3 class="sub">The snug cylinder: a formula for every radius</h3>
   <div class="u10l5-s1row">
     <div id="u10l5-snugfig"></div>
@@ -174,7 +133,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. Example 1 check">
+<section data-extra class="card" data-ink="s1d" data-section="1. Example 1 check">
   <h3 class="sub">Example 1 check: radius, not diameter</h3>
   <div class="explainer" data-explainer="halve"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Halve the diameter first.</b> Every sphere and hemisphere formula uses the <b>radius</b>. Putting the diameter in by mistake makes the surface area 4 times too big and the volume 8 times too big.</div></div>
@@ -200,7 +159,7 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Example 2 check">
+<section data-extra class="card" data-ink="s2b" data-section="2. Example 2 check">
   <h3 class="sub">Example 2 check: 2 great circles curved, + 1 floor</h3>
   <div class="explainer" data-explainer="slice"></div>
   <div class="u10l5-hemi">
@@ -226,7 +185,16 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. Example 3 check">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 5 · Questions 1–4</h2>
+  <p class="pr-t">Spheres and hemispheres.</p>
+  <div class="pr-chips n1"><span><b>1–4</b>Spheres and hemispheres</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u10l5">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s2c" data-section="2. Example 3 check">
   <h3 class="sub">Example 3 check: string, radius, volume</h3>
   <div class="explainer" data-explainer="string"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t round the radius.</b> The radius is cubed, so a small rounding error grows. Carry every digit (brackets, or the shortcut <span class="tex">\frac{C^3}{6\pi^2}</span>) and round only the final answer.</div></div>
@@ -241,7 +209,7 @@
   <div class="parts c2">
     <div class="part"><div class="u10l5-center"><div id="u10l5-ex4a"></div></div><div class="pl">(a) Calculate, in terms of <span class="tex">\pi</span>, how much material Sana needs to build her shed.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">r=\dfrac{12}{2}=6</span> ft, so <span class="tex">r^2=36</span> ft².<br>The floor is built too, so Sana needs the curved surface <em>and</em> the base:<br><span class="tex">SA=2\pi r^2+\pi r^2=3\pi r^2=3\pi(36)=\boldsymbol{108\pi}\text{ ft}^2\ (\approx339.3\text{ ft}^2)</span></div></div></div>
     <div class="part"><div class="u10l5-center"><div id="u10l5-ex4b"></div></div><div class="pl">(b) Calculate, in terms of <span class="tex">\pi</span>, how much material Tavi needs to build his shed.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Same <span class="tex">r=6</span> ft, but no floor, so only the curved surface counts:<br><span class="tex">SA=2\pi r^2=2\pi(36)=\boldsymbol{72\pi}\text{ ft}^2\ (\approx226.2\text{ ft}^2)</span></div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Which takes more material: Sana’s floor or her curved dome? How many times more?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The dome: <span class="tex">72\pi</span> vs <span class="tex">36\pi</span>, exactly <b>2 times</b> the floor. The curved part is 2 great circles; the floor is 1.</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> Which takes more material: Sana’s floor or her curved dome? How many times more?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The dome: <span class="tex">72\pi</span> vs <span class="tex">36\pi</span>, exactly <b>2 times</b> the floor. The curved part is 2 great circles; the floor is 1.</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
@@ -274,10 +242,63 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2e" data-section="2. Example 5 check">
+<section data-extra class="card" data-ink="s2e" data-section="2. Example 5 check">
   <h3 class="sub">Example 5 check: run the formula backwards</h3>
   <div class="explainer" data-explainer="backwards"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Undo in reverse order.</b> The formula cubes <span class="tex">r</span> first and multiplies by <span class="tex">\tfrac43\pi</span> last, so undo the <span class="tex">\tfrac43\pi</span> first (<span class="tex">\times3\div4\pi</span>) and take the <b>cube root</b> last. A square root here would be wrong: the radius is <b>cubed</b>.</div></div>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Tennis Ball Can" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Tennis Ball Can</h2>
+  <p class="wf-rule">Three tennis balls fit <b>snugly</b> in a can: touching the sides, the bottom and the lid. One ball is <b>about 6.7 cm</b> across.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u10l5-wtop">
+    <div class="u10l5-wfig">
+      <div id="u10l5-can"></div>
+      <div class="u10l5-wbtns">
+        <button type="button" class="pill" id="u10l5-wstring">Unroll the string</button>
+        <button type="button" class="pill" id="u10l5-wsnug">Split into snug cylinders</button>
+      </div>
+    </div>
+    <div class="u10l5-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How <b>tall</b> is the inside of the can?</div></div>
+        <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Three diameters: <span class="tex">3\times6.7\approx\boldsymbol{20.1}</span> cm.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>What is the <b>radius</b> of one ball? Of the can?</div></div>
+        <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6.7\div2=\boldsymbol{3.35}</span> cm for <b>both</b>: the balls touch the sides, so the can’s radius equals the ball’s.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="u10l5-wqs u10l5-wq3">
+    <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Guess: what fraction of the can do the balls fill? <span class="tex">\tfrac12</span>? <span class="tex">\tfrac23</span>? <span class="tex">\tfrac34</span>?</div></div>
+        <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b><span class="tex">\tfrac23</span>.</b> Can: <span class="tex">\pi r^2(6r)=6\pi r^3</span>. Balls: <span class="tex">3\times\tfrac43\pi r^3=4\pi r^3</span>. <span class="tex">4\div6=\tfrac23</span>. With numbers: balls <span class="tex">\approx472</span> cm³, can <span class="tex">\approx709</span> cm³. That is today’s first big idea.</div></div>
+      </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="poll u10l5-poll3 wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which is <b>longer</b>: the can’s <b>height</b>, or the <b>distance around</b> the can? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> the height</div>
+      <div class="opt right"><b>B</b> the distance around</div>
+      <div class="opt"><b>C</b> exactly the same</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: the distance around.</b> Height <span class="tex">=3d</span>. Distance around <span class="tex">=\pi d\approx3.14d</span>. Since <span class="tex">\pi&gt;3</span>, the circumference always wins: <span class="tex">\pi(6.7)\approx21.0</span> cm vs <span class="tex">3(6.7)=20.1</span> cm. Tap <b>Unroll the string</b> to see it.<br>
+      <span class="muted"><b>A</b> is what almost everyone picks: a tall, skinny can <em>looks</em> much taller than it is wide. <b>C</b> is close (only about 1 cm apart), and it would be exactly right if <span class="tex">\pi</span> were 3.</span></div>
+  </div>
+  </div></div>
+
+  <div class="u10l5-early">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How much <b>empty space</b> is in the can?</div></div>
+      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">709-472\approx236</span> cm³: exactly <span class="tex">\tfrac13</span> of the can, the volume of <b>one and a half</b> balls.</div></div>
+    </div>
+  </div>
+  <p class="u10l5-social">Try it: wrap a string around a ball or a pop can. Is it longer than 3 widths?</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -290,7 +311,7 @@
     <div><b>Working backwards.</b> <span class="tex">r^3=\frac{3V}{4\pi}</span>, then <span class="tex">r=\sqrt[3]{\frac{3V}{4\pi}}</span>. Check by putting <span class="tex">r</span> back into <span class="tex">\tfrac43\pi r^3</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u10l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — Surface Area and Volume of Spheres and Hemispheres</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 5 · Questions 5–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l6/">
     <div><div class="kicker">Next lesson</div><b>Lesson 6 — Measurement Unit Review</b><div class="muted">No new formulas: every skill of the unit together, starting with how many basketballs would fill our classroom.</div></div><span class="arrow">→</span>
@@ -303,7 +324,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u10l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u10l5', homeHref: '../../', title: '10.5 Spheres and Hemispheres' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

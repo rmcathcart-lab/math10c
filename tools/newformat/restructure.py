@@ -64,7 +64,12 @@ def run(key):
     <div class="bk-ans">{w['reveal']}</div></div>'''
     pic = f'<div class="vw-art">{w["pic"]}</div>' if w.get('pic') else ''
     mq = re.match(r'<div class="vw-q">(.*)</div>$', w['body'], flags=re.S)
-    if mq and w['rule'].rstrip().endswith('?'):
+    mt = re.match(r'<div class="vw-q">(.*?)</div>(<div class="vw-tiles".*</div>)$', w['body'], flags=re.S)
+    if mt and w['rule'].rstrip().endswith('?'):
+        # situation, then the choices, then the question, all in one box
+        inner = f'<div class="vw-seq{" has-art" if pic else ""}"><div class="vw-txt"><p class="vw-ctx">{mt.group(1)}</p>{mt.group(2)}<p class="vw-ask">{w["rule"]}</p></div>{pic}</div>'
+        head = ''
+    elif mq and w['rule'].rstrip().endswith('?'):
         # read in order: the situation first, then the question (Ryan: the question was small and above a big box)
         ctx = re.sub(r'<small[^>]*>(.*?)</small>', r'</p><p class="vw-ctx">\1', mq.group(1), flags=re.S)
         inner = f'<div class="vw-seq{" has-art" if pic else ""}"><div class="vw-txt"><p class="vw-ctx">{ctx}</p><p class="vw-ask">{w["rule"]}</p></div>{pic}</div>'

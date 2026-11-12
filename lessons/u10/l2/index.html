@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u10l2.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Crossing the Border">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><line x1="0" y1="52" x2="340" y2="52" stroke="#d9d3c4" stroke-width="3" stroke-dasharray="16 12"><animate attributeName="stroke-dashoffset" values="0;-28" dur=".7s" repeatCount="indefinite"/></line><g transform="translate(-40 0)"><animateTransform attributeName="transform" type="translate" values="-40 0;380 0" dur="4.5s" begin="0s" repeatCount="indefinite"/><text x="0" y="44" font-size="38" text-anchor="middle" transform="scale(-1 1)">🚗</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="3s" begin="0s" repeatCount="indefinite"/><text x="300" y="40" font-size="30" text-anchor="middle">🛂</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Crossing the Border</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">You drive north from Montana into Alberta, and the speed limit sign changes.</p><div class="vw-tiles" style="--n:2;--fs:30px"><div class="lab"><b>Montana</b><span>65 miles per hour</span></div><div class="lab"><b>Alberta</b><span>110 km per hour</span></div></div><p class="vw-ask">Which speed limit is faster?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Which is longer, a mile or a kilometre?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Alberta’s.</b> One mile is about 1.6 km, so 65 miles per hour is about <span class="tex">65\times1.6=104</span> km/h.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,42 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Crossing the Border" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Crossing the Border</h2>
-  <p class="wf-rule">You drive north from the U.S. into Alberta. The speed limit sign changes…</p></div>
-  <div id="u10l2-road" class="u10l2-road"></div>
-  <div class="u10l2-wtop">
-    <div class="u10l2-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>Which is longer: <b>1 mile</b> or <b>1 km</b>?</div></div>
-        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>1 mile</b>. It is about <span class="tex">1.6</span> km (the bars are drawn to scale).</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>The next town is <b>10 miles</b> away. About how many km is that?</div></div>
-        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">10\times1.6093\approx\boldsymbol{16}</span> <b>km</b>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>Driving <b>1 mile per hour</b> is the same as driving about how many <b>km per hour</b>?</div></div>
-        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">About <span class="tex">\boldsymbol{1.6}</span> <b>km/h</b>. The “per hour” part doesn’t change, so only the distance converts.</div></div>
-      </div>
-      <div class="bk-wq u10l2-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour:</b> in your head, about how many mph is <b>100 km/h</b>?</div></div>
-    <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">100\times0.6214\approx\boldsymbol{62}</span> <b>mph</b>. Mental shortcut: km/h <span class="tex">\times\,0.6</span> gives mph, and mph <span class="tex">\times\,1.6</span> gives km/h.</div></div>
-      </div>
-    </div>
-    <div class="poll u10l2-poll wf-poll">
-      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You cross the border driving right at the speed limit. Which limit is <b>faster</b>? <b>Guess first.</b></div></div>
-      <div class="poll-opts">
-        <div class="opt"><b>A</b> 65 mph (U.S.)</div>
-        <div class="opt right"><b>B</b> 110 km/h (Alberta)</div>
-        <div class="opt"><b>C</b> exactly the same</div>
-      </div>
-      <button class="pill" type="button" data-poll-reveal>Reveal</button>
-      <div class="poll-ans"><b>B: 110 km/h.</b> <span class="tex">65\ \dfrac{\text{mi}}{\text{h}}\times\dfrac{1.6093\ \text{km}}{1\ \text{mi}}\approx104.6\ \dfrac{\text{km}}{\text{h}}</span>, so 110 km/h is about 5 km/h faster: you may <b>speed up</b> a little after crossing into Alberta. Tap <b>Convert 65 mph</b> under the picture to watch the miles cancel.<br>
-        <span class="muted"><b>A</b> is the “miles are bigger, so 65 mph must be faster” instinct: right idea, but a mile is only 1.6 km, so 65 mph is just under 105 km/h. <b>C</b> is tempting because the two limits <em>feel</em> like the same highway speed, and they are close.</span></div>
-    </div>
-  </div>
-</section>
+
 
 <!-- ================= 1. SI review: prefix chart and number line ================= -->
 <section class="card" data-ink="s1" data-section="1. SI Review: the Prefix Chart">
@@ -189,6 +164,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 2 · Questions 1–7</h2>
+  <p class="pr-t">The metric number line, proportions and unit analysis.</p>
+  <div class="pr-chips n1"><span><b>1–7</b>SI review</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 4.</span><a class="pill" href="../../../#/lesson/u10l2">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Part 2: imperial units and converting between the systems (the old Lesson 4B) ================= -->
 <!-- ================= 4. Key facts ================= -->
 <section class="card" data-ink="s4" data-section="4. Key Conversion Facts">
@@ -215,7 +199,7 @@
   <div class="explainer" data-explainer="exact"></div>
 </section>
 
-<section class="card" data-ink="s4b" data-section="4. Benchmarks">
+<section data-extra class="card" data-ink="s4b" data-section="4. Benchmarks">
   <h3 class="sub">Benchmarks for checking (mental math)</h3>
   <div class="def amber u10l2b-bench">Before converting, <b>estimate</b> with a round benchmark; after converting, <b>compare</b>. If the two are far apart, look for a multiply/divide mix-up.
     <div class="u10l2b-bmrow"><span>1 in ≈ 2.5 cm</span><span>1 ft ≈ 30 cm</span><span>1 m ≈ 1.1 yd</span><span>1 mi ≈ 1.6 km <small>(so 5 mi ≈ 8 km)</small></span><span>1 kg ≈ 2.2 lb</span></div>
@@ -265,7 +249,7 @@
     <div class="def"><b>Unit analysis.</b> Multiply by conversion factors (each worth 1) so the unwanted units cancel:
       <div class="u10l2b-disp"><span class="tex">\dfrac{3\text{ ft}}{1}\times\dfrac{12\text{ in}}{1\text{ ft}}=36\text{ in}</span></div></div>
   </div>
-  <div class="explainer" data-explainer="twoways"></div>
+  <div data-extra><div class="explainer" data-explainer="twoways"></div></div>
 </section>
 
 <section class="card example" data-ink="ex5" data-section="Example 5">
@@ -397,7 +381,7 @@
     <div><b>Inches → metres in one line:</b> <span class="keys"><kbd>7</kbd><kbd>2</kbd><kbd>×</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span>. <b>Pounds → kilograms:</b> divide by 2.2 (a kilogram is the heavier unit, so the number gets smaller).</div>
     <div class="pill-col u10l2b-pills2"><button class="pill" data-keys="72 × 2.54 ÷ 100 =">(a)</button><button class="pill" data-keys="85 × 2.54 ÷ 100 =">(b)</button><button class="pill" data-keys="56 × 2.54 ÷ 100 =">(c)</button><button class="pill" data-keys="1200 ÷ 2.2 =">(d)</button><button class="pill" data-keys="9 ÷ 2.2 =">(e)</button><button class="pill" data-keys="600 ÷ 2.2 =">(f)</button></div>
   </div>
-  <div class="explainer" data-explainer="heights"></div>
+  <div data-extra><div class="explainer" data-explainer="heights"></div></div>
   <div class="space" id="ex9-space"></div>
   <button class="more" data-more="ex9-space">+ More space</button>
 </section>
@@ -414,9 +398,46 @@
     <div><b>Exact factor, then divide by the capacity.</b> <span class="keys"><kbd>1</kbd><kbd>6</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>.</kbd><kbd>3</kbd><kbd>0</kbd><kbd>4</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> then <span class="keys"><kbd>÷</kbd><kbd>1</kbd><kbd>2</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span>.</div>
     <div class="pill-col"><button class="pill" data-keys="1650 ÷ 0.3048 =">1650÷0.3048</button><button class="pill" data-keys="1650 ÷ 0.3048 ÷ 1200 =">÷1200</button></div>
   </div>
-  <div class="explainer" data-explainer="roundup"></div>
+  <div data-extra><div class="explainer" data-explainer="roundup"></div></div>
   <div class="space" id="ex10-space"></div>
   <button class="more" data-more="ex10-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Crossing the Border" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Crossing the Border</h2>
+  <p class="wf-rule">You drive north from the U.S. into Alberta. The speed limit sign changes…</p></div>
+  <div id="u10l2-road" class="u10l2-road"></div>
+  <div class="u10l2-wtop">
+    <div class="u10l2-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Which is longer: <b>1 mile</b> or <b>1 km</b>?</div></div>
+        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>1 mile</b>. It is about <span class="tex">1.6</span> km (the bars are drawn to scale).</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>The next town is <b>10 miles</b> away. About how many km is that?</div></div>
+        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">10\times1.6093\approx\boldsymbol{16}</span> <b>km</b>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Driving <b>1 mile per hour</b> is the same as driving about how many <b>km per hour</b>?</div></div>
+        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">About <span class="tex">\boldsymbol{1.6}</span> <b>km/h</b>. The “per hour” part doesn’t change, so only the distance converts.</div></div>
+      </div>
+      <div class="bk-wq u10l2-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour:</b> in your head, about how many mph is <b>100 km/h</b>?</div></div>
+    <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">100\times0.6214\approx\boldsymbol{62}</span> <b>mph</b>. Mental shortcut: km/h <span class="tex">\times\,0.6</span> gives mph, and mph <span class="tex">\times\,1.6</span> gives km/h.</div></div>
+      </div>
+    </div>
+    <div class="poll u10l2-poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You cross the border driving right at the speed limit. Which limit is <b>faster</b>? <b>Guess first.</b></div></div>
+      <div class="poll-opts">
+        <div class="opt"><b>A</b> 65 mph (U.S.)</div>
+        <div class="opt right"><b>B</b> 110 km/h (Alberta)</div>
+        <div class="opt"><b>C</b> exactly the same</div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>B: 110 km/h.</b> <span class="tex">65\ \dfrac{\text{mi}}{\text{h}}\times\dfrac{1.6093\ \text{km}}{1\ \text{mi}}\approx104.6\ \dfrac{\text{km}}{\text{h}}</span>, so 110 km/h is about 5 km/h faster: you may <b>speed up</b> a little after crossing into Alberta. Tap <b>Convert 65 mph</b> under the picture to watch the miles cancel.<br>
+        <span class="muted"><b>A</b> is the “miles are bigger, so 65 mph must be faster” instinct: right idea, but a mile is only 1.6 km, so 65 mph is just under 105 km/h. <b>C</b> is tempting because the two limits <em>feel</em> like the same highway speed, and they are close.</span></div>
+    </div>
+  </div>
 </section>
 
 <!-- ================= summary ================= -->
@@ -429,7 +450,7 @@
     <div><b>Estimate first, then check.</b> 1 in ≈ 2.5 cm, 1 ft ≈ 30 cm, 1 m ≈ 1.1 yd, 5 mi ≈ 8 km, 1 kg ≈ 2.2 lb. <b>Smaller unit ⇒ bigger number.</b> Far from the estimate? Look for a multiply/divide mix-up.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u10l2">
-    <div><div class="kicker">Your turn</div><b>Assignment 2 — Converting Units Within and Between SI and Imperial</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 2 · Questions 8–23</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l3/">
     <div><div class="kicker">Next lesson</div><b>Lesson 3 — Surface Area and Volume of Prisms and Cylinders</b><div class="muted">From lengths to whole solids: volume is base area times height, and surface area is every face added up.</div></div><span class="arrow">→</span>
@@ -441,7 +462,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u10l2.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u10l2', homeHref: '../../', title: '10.2 SI and Imperial Conversions' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

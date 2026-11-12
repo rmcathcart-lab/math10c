@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u10l6.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Fill the Classroom">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -16;0 0" dur="0.8s" begin="0s" repeatCount="indefinite"/><text x="110" y="46" font-size="34" text-anchor="middle">🏀</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -16;0 0" dur="0.8s" begin="0.25s" repeatCount="indefinite"/><text x="170" y="46" font-size="34" text-anchor="middle">🏀</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -16;0 0" dur="0.8s" begin="0.5s" repeatCount="indefinite"/><text x="230" y="46" font-size="34" text-anchor="middle">🏀</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Fill the Classroom</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A classroom is about <b>9 m</b> by <b>8 m</b> by <b>3 m</b>. A basketball is about <b>24 cm</b> across.</p><div class="vw-tiles" style="--n:4;--fs:24px"><div><b>A</b>about 150</div><div><b>B</b>about 1&nbsp;500</div><div><b>C</b>about 15&nbsp;000</div><div><b>D</b>about 150&nbsp;000</div></div><p class="vw-ask">About how many basketballs would fill the whole room?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How many fit in one row along the 9 m wall?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>C, about 15&nbsp;000.</b> Stacked in rows: 37 along one wall, 33 along the other and 12 layers high. <span class="tex">37\times33\times12\approx14\,650</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -50,49 +60,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Fill the Classroom" id="wu">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Fill the Classroom</h2>
-  <p class="wf-rule">Imagine filling our classroom with basketballs, floor to ceiling, wall to wall.</p></div>
-  <div class="u10l6-roomwrap"><div id="u10l6-room" class="u10l6-room"></div></div>
 
-  <div class="u10l6-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>What is the room’s <b>volume</b>, in <span class="tex">\text{m}^3</span>?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">9\times8\times3=\mathbf{216}\ \text{m}^3</span>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How many balls in one row along the <b>9 m</b> wall? (24 cm <span class="tex">=0.24</span> m)</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">9\div0.24=37.5</span>, so <b>37</b> whole balls per row.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>How many stack <b>floor to ceiling</b>?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\div0.24=12.5</span>, so <b>12</b> layers.</div></div>
-  </div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> About how many basketballs to <b>fill the whole room</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts u10l6-c4">
-      <div class="opt"><b>A</b> about 150</div>
-      <div class="opt"><b>B</b> about 1 500</div>
-      <div class="opt right"><b>C</b> about 15 000</div>
-      <div class="opt"><b>D</b> about 150 000</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C, about 15 000.</b> <b>Stack them in a grid:</b> along the 8 m wall, <span class="tex">8\div0.24\approx33</span>, so <span class="tex">37\times33\times12=14\,652\approx15\,000</span>. <b>Or by volume:</b> give each ball its own 24 cm cube box, <span class="tex">0.24^3=0.013\,824\ \text{m}^3</span>, and <span class="tex">216\div0.013\,824=15\,625</span>.<br>
-      <span class="muted">Anything from about 10 000 to 25 000 is a great Fermi estimate (a jumbled pile packs a little tighter than a neat grid); the point is the order of magnitude, <span class="tex">10^4</span>. <b>A</b> and <b>B</b> are the usual gut guesses: we forget to multiply <i>three</i> dimensions. <b>D</b> uses the radius (12 cm) as the ball’s width: <span class="tex">216\div0.12^3=125\,000</span>.</span><br>
-      <b>Today’s lesson:</b> convert first (24 cm to 0.24 m), check it makes sense, and pick the right formula. That is the whole review.</div>
-  </div>
-
-  <h3 class="sub u10l6-gap">Count the balls</h3>
-  <div class="explainer" data-explainer="fill"></div>
-
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Cube boxes in one line.</b> <span class="keys"><kbd>2</kbd><kbd>1</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>0</kbd><kbd>.</kbd><kbd>2</kbd><kbd>4</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 15 625. The grid count: <span class="keys"><kbd>3</kbd><kbd>7</kbd><kbd>×</kbd><kbd>3</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 14 652.</div>
-    <div class="pill-col"><button class="pill" data-keys="216 ÷ 0.24 ^ 3 =">Cube boxes</button><button class="pill" data-keys="37 × 33 × 12 =">Grid count</button></div>
-  </div>
-
-  <div class="bk-wq u10l6-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many ping-pong balls (4 cm across) would fill the room?</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Cube boxes: <span class="tex">4\text{ cm}=0.04\text{ m}</span>, and <span class="tex">216\div0.04^3=216\div0.000\,064=3\,375\,000</span>. Over 3 million!</div>
-  </div>
-  <p class="u10l6-social">Poll the room: everyone writes a gut guess first. Closest guess wins!</p>
-</section>
 
 <!-- ================= toolkit ================= -->
 <section class="card u10l6-recap" data-ink="recap" data-section="Unit 10 at a Glance">
@@ -150,7 +118,7 @@
 <section class="card" data-ink="s2" data-section="2. Referents, Units, Instruments">
   <div class="sec-h"><span class="badge">2</span><h2>Choosing Referents, Units, and Instruments</h2></div>
   <div class="def">Choosing a <b>unit</b> means matching the size of the unit to the size of the object; choosing an <b>instrument</b> means matching the precision the job needs to a tool that can deliver it. A <b>referent</b> is a familiar object (often a part of the body) whose size is known, used to estimate a measurement with no tool in hand.</div>
-  <div class="explainer" data-explainer="sizeUp"></div>
+  <div data-extra><div class="explainer" data-explainer="sizeUp"></div></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
@@ -254,7 +222,7 @@
 <section class="card" data-ink="s6" data-section="6. Comparing Imperial and SI">
   <div class="sec-h"><span class="badge">6</span><h2>Comparing Imperial and Metric Measurements</h2></div>
   <div class="def">Two lengths given in different systems can be compared without a full conversion of both, as long as each is placed on the <b>same number line</b>. Lesson 2’s bridge, <span class="tex">1\text{ cm}=0.3937\text{ in}</span>, does it in either direction: <span class="tex">1\text{ mm}=0.03937\text{ in}</span>, and <span class="tex">1\text{ in}=2.54\text{ cm}=25.4\text{ mm}</span>.</div>
-  <div class="explainer" data-explainer="wrench"></div>
+  <div data-extra><div class="explainer" data-explainer="wrench"></div></div>
 </section>
 
 <section class="card example" data-ink="ex6" data-section="Example 6">
@@ -606,6 +574,50 @@
   <button class="more" data-more="r11-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Fill the Classroom" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Fill the Classroom</h2>
+  <p class="wf-rule">Imagine filling our classroom with basketballs, floor to ceiling, wall to wall.</p></div>
+  <div class="u10l6-roomwrap"><div id="u10l6-room" class="u10l6-room"></div></div>
+
+  <div class="u10l6-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>What is the room’s <b>volume</b>, in <span class="tex">\text{m}^3</span>?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">9\times8\times3=\mathbf{216}\ \text{m}^3</span>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How many balls in one row along the <b>9 m</b> wall? (24 cm <span class="tex">=0.24</span> m)</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">9\div0.24=37.5</span>, so <b>37</b> whole balls per row.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>How many stack <b>floor to ceiling</b>?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\div0.24=12.5</span>, so <b>12</b> layers.</div></div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> About how many basketballs to <b>fill the whole room</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts u10l6-c4">
+      <div class="opt"><b>A</b> about 150</div>
+      <div class="opt"><b>B</b> about 1 500</div>
+      <div class="opt right"><b>C</b> about 15 000</div>
+      <div class="opt"><b>D</b> about 150 000</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C, about 15 000.</b> <b>Stack them in a grid:</b> along the 8 m wall, <span class="tex">8\div0.24\approx33</span>, so <span class="tex">37\times33\times12=14\,652\approx15\,000</span>. <b>Or by volume:</b> give each ball its own 24 cm cube box, <span class="tex">0.24^3=0.013\,824\ \text{m}^3</span>, and <span class="tex">216\div0.013\,824=15\,625</span>.<br>
+      <span class="muted">Anything from about 10 000 to 25 000 is a great Fermi estimate (a jumbled pile packs a little tighter than a neat grid); the point is the order of magnitude, <span class="tex">10^4</span>. <b>A</b> and <b>B</b> are the usual gut guesses: we forget to multiply <i>three</i> dimensions. <b>D</b> uses the radius (12 cm) as the ball’s width: <span class="tex">216\div0.12^3=125\,000</span>.</span><br>
+      <b>Today’s lesson:</b> convert first (24 cm to 0.24 m), check it makes sense, and pick the right formula. That is the whole review.</div>
+  </div>
+
+  <h3 class="sub u10l6-gap">Count the balls</h3>
+  <div class="explainer" data-explainer="fill"></div>
+
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube boxes in one line.</b> <span class="keys"><kbd>2</kbd><kbd>1</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>0</kbd><kbd>.</kbd><kbd>2</kbd><kbd>4</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 15 625. The grid count: <span class="keys"><kbd>3</kbd><kbd>7</kbd><kbd>×</kbd><kbd>3</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 14 652.</div>
+    <div class="pill-col"><button class="pill" data-keys="216 ÷ 0.24 ^ 3 =">Cube boxes</button><button class="pill" data-keys="37 × 33 × 12 =">Grid count</button></div>
+  </div>
+
+  <div class="bk-wq u10l6-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many ping-pong balls (4 cm across) would fill the room?</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Cube boxes: <span class="tex">4\text{ cm}=0.04\text{ m}</span>, and <span class="tex">216\div0.04^3=216\div0.000\,064=3\,375\,000</span>. Over 3 million!</div>
+  </div>
+  <p class="u10l6-social">Poll the room: everyone writes a gut guess first. Closest guess wins!</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -637,7 +649,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u10l6.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u10l6', homeHref: '../../', title: '10.6 Measurement Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

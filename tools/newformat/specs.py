@@ -92,7 +92,7 @@ SPECS['u2l3'] = dict(
               body=BIG('A ball is dropped from <b>100 cm</b>.<small>Every bounce rises to half the height of the one before: 50 cm, 25 cm, …</small>'),
               nudge='Does it ever stop bouncing?',
               reveal=f'<b>The 7th bounce.</b> 50, 25, 12.5, 6.25, 3.125, 1.5625, then about 0.78 cm. That is {T(r"100\times2^{-7}")}.'),
-    extra_cards=['s2'], extra_expl=['hops', 'sorter', 'snmuldiv'],
+    extra_cards=['s2'], extra_expl=['hops', 'sorter', 'snmuldiv'], replace_all=[('is the tricky part, so picture the exponents on a number line:</p>', 'is the tricky part, so picture the exponents on a number line.</p>')],
     practice=PR('ex3', '1–7', '8–21', 'Use the negative exponent law.', [('1–7', 'The negative exponent law')], 5))
 SPECS['u2l4'] = dict(
     warm=dict(pic=CUBE, title='One Million Cubes', rule='How tall is the giant cube?',
@@ -123,7 +123,7 @@ SPECS['u3l1'] = dict(
               body=BIG('🍎 + 🍎 + 🍎 = 30<br>🍎 + 🍌 + 🍌 = 18<br>🍌 − 🥥 = 2<small style="font-size:40px;color:inherit">🥥 + 🍎 + 🍌 = ?</small>'),
               nudge='What is each fruit worth?',
               reveal='<b>16.</b> An apple is 10, a banana is 4 and a coconut is 2, so the last line is 2 + 10 + 4.'),
-    extra_cards=['s4b'], extra_expl=['polyCheck', 'degree', 'order', 'addTiles'],
+    extra_cards=['s4b'], extra_expl=['polyCheck', 'degree', 'order'],
     practice=PR('ex4', '1–5', '6–19', 'Vocabulary, terms and degree.', [('1–5', 'Vocabulary, terms and degree')], 4))
 SPECS['u3l2'] = dict(
     warm=dict(pic=GARDEN, title='Grow the Garden', rule='How much garden area is added?',
@@ -156,7 +156,7 @@ SPECS['u3l6'] = dict(
               body=BIG('Think of a number. <b>Add 3.</b> <b>Double it.</b> <b>Subtract 4.</b> <b>Halve it.</b><small>Now subtract the number you started with.</small>'),
               nudge='Compare answers with the person beside you.',
               reveal=f'<b>Everyone gets 1.</b> Start with {T("n")}: {T(r"n+3\to2n+6\to2n+2\to n+1")}, and taking away {T("n")} leaves 1.'),
-    extra_expl=['classify', 'zeroPairs', 'tileMul', 'foil', 'audit', 'square', 'frame', 'groups', 'grid', 'three', 'complete', 'box'],
+    extra_expl=['classify', 'zeroPairs', 'tileMul', 'foil', 'audit', 'square', 'frame', 'groups', 'grid', 'three', 'complete', 'box'], replace_all=[('four pieces, not two:</p>', 'four pieces, not two.</p>')],
     practice=PR('ex7', '1–8', '9–13', 'Multiple choice from across the unit.', [('1–8', 'Multiple choice')], 6))
 
 # ======================= Unit 4 =======================
@@ -222,7 +222,7 @@ def _bath():
     pts = [(40, 215), (115, 125), (150, 125), (160, 95), (225, 95), (235, 125), (295, 215)]
     d = 'M' + ' L'.join(f'{x} {y}' for x, y in pts)
     labs = ''.join(f'<text x="{(a[0]+b[0])/2 + dx}" y="{(a[1]+b[1])/2 + dy}" font-size="19" font-weight="800" fill="{BLUE}" text-anchor="middle">{i+1}</text>'
-                   for i, ((a, b), (dx, dy)) in enumerate(zip(zip(pts, pts[1:]), [(-14, -4), (0, -9), (-13, 2), (0, -9), (13, 2), (14, -4)])))
+                   for i, ((a, b), (dx, dy)) in enumerate(zip(zip(pts, pts[1:]), [(-14, -4), (0, 22), (-14, 2), (0, -10), (14, 6), (14, -4)])))
     return (f'<line x1="40" y1="30" x2="40" y2="215" stroke="{INK}" stroke-width="3"/><line x1="40" y1="215" x2="310" y2="215" stroke="{INK}" stroke-width="3"/>'
             f'<text x="175" y="240" font-size="15" fill="{INK}" text-anchor="middle">time</text><text x="18" y="125" font-size="15" fill="{INK}" text-anchor="middle" transform="rotate(-90 18 125)">water depth</text>'
             f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>{labs}'
@@ -304,8 +304,8 @@ SPECS['u6l2'] = dict(
     extra_cards=['s7b'], extra_expl=['order'],
     practice=PR('ex4', '1–2', '3–18', 'Find the rise, the run and the slope.', [('1–2', 'Rise, run and slope')]))
 SPECS['u6l3'] = dict(
-    warm=dict(title='Trees in a Row', rule='The farmer says all five trees are in one perfect straight row. Which tree is out of line?', strip=strip(*[sb('🌳', 80 + i * 50, i * .2, 34) for i in range(5)]),
-              body=TILES(5, [('Apple', T('(0,\\ 1)')), ('Cherry', T('(3,\\ 3)')), ('Plum', T('(6,\\ 5)')), ('Peach', T('(9,\\ 8)')), ('Pear', T('(12,\\ 9)'))], 24),
+    warm=dict(title='Trees in a Row', rule='Which tree is out of line?', strip=strip(*[sb('🌳', 80 + i * 50, i * .2, 34) for i in range(5)]),
+              body='<div class="vw-q">A farmer planted five fruit trees. She says all five are in <b>one perfect straight row</b>.</div>' + TILES(5, [('Apple', T('(0,\\ 1)')), ('Cherry', T('(3,\\ 3)')), ('Plum', T('(6,\\ 5)')), ('Peach', T('(9,\\ 8)')), ('Pear', T('(12,\\ 9)'))], 24),
               nudge='How do you get from each tree to the next?',
               reveal='<b>Peach.</b> Each step should be 3 across and 2 up. Peach is 3 up from Plum, so it sits one unit too high. It should be at (9, 7).'),
     extra_cards=['s2b', 's5b', 's5c', 's5d'],
@@ -361,8 +361,8 @@ SPECS['u7l5'] = dict(
     extra_cards=['s3b', 's5c'],
     practice=PR('ex2', '1–4', '5–11', 'Graph each line without changing its form.', [('1–4', 'Graphing without changing the form')], 3))
 SPECS['u7l6'] = dict(
-    warm=dict(title='How Fast Does It Grow?', rule='The Atlantic Ocean gets about <b>2.5 cm wider every year</b>. Which of these is closest to that speed?', strip=strip(sspin('🌍', 150, 8, 38), sb('💅', 215, 0, 36)),
-              body=TILES(3, [('Hair', 'about 1 cm<small>every month</small>'), ('Fingernails', 'about 3 mm<small>every month</small>'), ('A lawn', 'about 5 cm<small>every week</small>')], 28),
+    warm=dict(title='How Fast Does It Grow?', rule='Which of these is closest to that speed?', strip=strip(sspin('🌍', 150, 8, 38), sb('💅', 215, 0, 36)),
+              body='<div class="vw-q">The Atlantic Ocean gets about <b>2.5 cm wider every year</b>.</div>' + TILES(3, [('Hair', 'about 1 cm<br>every month'), ('Fingernails', 'about 3 mm<br>every month'), ('A lawn', 'about 5 cm<br>every week')], 26),
               nudge='Careful: the units are all different.',
               reveal='<b>Fingernails.</b> In centimetres per year: nails about 3.6, hair about 12 and a lawn about 260. Rates only compare when the units match.'),
     extra_cards=['s2b', 's3b', 's4b'],
@@ -392,7 +392,7 @@ SPECS['u8l2'] = dict(
     practice=PR('ex3', '1–3', '4–11', 'Solve each system by substitution, then check.', [('1–3', 'Solving by substitution')], 2))
 SPECS['u8l3'] = dict(
     warm=dict(title='Weigh the Pets', rule='All three pets on one big scale: what would it read?', strip=strip(sb('🐈', 110, 0, 38), sb('🐕', 170, .3, 38), sb('🐇', 230, .6, 38), srock('⚖️', 295, 8, 2.2, 38)),
-              body='<div class="vw-q">The vet’s scale only works with <b>two pets</b> on it at a time.</div>' + TILES(3, [('Scale A', 'cat + dog<small>14 kg</small>'), ('Scale B', 'dog + rabbit<small>12 kg</small>'), ('Scale C', 'cat + rabbit<small>6 kg</small>')], 28),
+              body='<div class="vw-q">The vet’s scale only works with <b>two pets</b> on it at a time.</div>' + TILES(3, [('Scale A', 'cat + dog<br><b>14 kg</b>'), ('Scale B', 'dog + rabbit<br><b>12 kg</b>'), ('Scale C', 'cat + rabbit<br><b>6 kg</b>')], 26),
               nudge='What happens if you add all three readings?',
               reveal='<b>16 kg.</b> The three readings add to 32 kg, and that total weighs every pet exactly twice. Half of 32 is 16.'),
     extra_cards=['warm2', 's2c', 's4b', 's5b'],
@@ -474,3 +474,46 @@ SPECS['u9l8'] = dict(
               nudge='Steeper or shallower than 45°? How can you tell without a calculator?',
               reveal=f'<b>D, about 52°.</b> The height is more than half the base (115 m), so it is steeper than 45°. {T(r"\tan^{-1}\left(\tfrac{146}{115}\right)\approx51.8^\circ")}.'),
     extra_cards=['s7'], extra_expl=['cofunction'])
+
+# ======================= Unit 10 =======================
+SPECS['u10l1'] = dict(
+    warm=dict(title='Your Body Is a Ruler', rule='Your arm span, fingertip to fingertip, is closest to which of these?', strip=strip(sb('🙆', 150, 0, 42), srock('📏', 215, 12, 2.2, 38)),
+              body='<div class="vw-q">Stretch your arms out wide.</div>' + TILES(3, [('A', 'half your height'), ('B', 'your height'), ('C', 'twice your height')], 28),
+              nudge='Guess first. Then test it with a partner.',
+              reveal='<b>B, your height.</b> For most people the two are within a few centimetres. You carry a whole set of rulers around with you.'),
+    extra_expl=['towel', 'shed', 'wheel', 'card', 'km'],
+    practice=PR('ex3', '1–4', '5–18', 'Referents and estimating.', [('1–4', 'Referents and estimating')], 3))
+SPECS['u10l2'] = dict(
+    warm=dict(title='Crossing the Border', rule='Which speed limit is faster?', strip=strip(sroad(), sdrive('🚗', 4.5, 0, 38, 44), sb('🛂', 300, 0, 30, 2, 3, 40)),
+              body='<div class="vw-q">You drive north from Montana into Alberta, and the speed limit sign changes.</div>' + TILES(2, [('Montana', '65 miles per hour'), ('Alberta', '110 km per hour')], 30),
+              nudge='Which is longer, a mile or a kilometre?',
+              reveal=f'<b>Alberta’s.</b> One mile is about 1.6 km, so 65 miles per hour is about {T(r"65\times1.6=104")} km/h.'),
+    extra_cards=['s4b'], extra_expl=['twoways', 'heights', 'roundup'],
+    practice=PR('ex3', '1–7', '8–23', 'The metric number line, proportions and unit analysis.', [('1–7', 'SI review')], 4))
+SPECS['u10l3'] = dict(
+    warm=dict(title='Roll It Two Ways', rule='Fill both tubes with rice. Which one holds more?', strip=strip(srock('📄', 140, 14, 2, 40), sb('🍚', 210, 0, 38)),
+              body='<div class="vw-q">Roll one sheet of paper into a tube the <b>tall</b> way. Roll another sheet the <b>short</b> way. No overlap.</div>' + TILES(3, [('A', 'the tall, thin tube'), ('B', 'the short, wide tube'), ('C', 'they hold the same')], 26),
+              nudge='Both use exactly the same amount of paper.',
+              reveal='<b>B, the short, wide tube.</b> It holds about 30% more. The radius gets squared in the volume, so a wider base matters more than extra height.'),
+    extra_cards=['s4c', 's7b'],
+    practice=PR('ex4', '1–5', '6–16', 'Volume and capacity units, then surface area and volume.', [('1', 'Volume and capacity units'), ('2–5', 'Surface area and volume')], 3))
+SPECS['u10l4'] = dict(
+    warm=dict(title='The Popcorn Deal', rule='Which is the better deal?', strip=strip(sb('🍿', 130, 0, 34), sb('🍿', 205, .4, 48)),
+              body=BIG('Movie night. A <b>cone</b> of popcorn costs <b>$4</b>. A <b>tub</b> costs <b>$9</b>.<small>The cone and the tub have the same radius and the same height.</small>'),
+              nudge='Guess: how many full cones would it take to fill the tub?',
+              reveal='<b>The tub.</b> It holds exactly three cones. Three cones would cost $12, and the tub is $9.'),
+    extra_cards=['ex1n'], extra_expl=['hex', 'scale', 'shed'],
+    practice=PR('ex2', '1–6', '7–18', 'Pyramids and cones.', [('1–6', 'Pyramids and cones')], 4))
+SPECS['u10l5'] = dict(
+    warm=dict(title='The Tennis Ball Can', rule='Which is longer?', strip=strip(sb('🎾', 130, 0, 34, 14, .9), sb('🎾', 180, .2, 34, 14, .9), sb('🎾', 230, .4, 34, 14, .9)),
+              body='<div class="vw-q">Three tennis balls fit snugly in a can. They touch the sides, the bottom and the lid.</div>' + TILES(3, [('A', 'the can’s height'), ('B', 'the distance around the can'), ('C', 'they are the same')], 26),
+              nudge='Measure both in tennis balls.',
+              reveal=f'<b>B, the distance around.</b> The height is 3 ball-widths. The distance around is {T(r"\pi")} ball-widths, about 3.14.'),
+    extra_cards=['s1b', 's1d', 's2b', 's2c', 's2e'],
+    practice=PR('ex3', '1–4', '5–16', 'Spheres and hemispheres.', [('1–4', 'Spheres and hemispheres')], 3))
+SPECS['u10l6'] = dict(
+    warm=dict(title='Fill the Classroom', rule='About how many basketballs would fill the whole room?', strip=strip(sb('🏀', 110, 0, 34, 16, .8), sb('🏀', 170, .25, 34, 16, .8), sb('🏀', 230, .5, 34, 16, .8)),
+              body='<div class="vw-q">A classroom is about <b>9 m</b> by <b>8 m</b> by <b>3 m</b>. A basketball is about <b>24 cm</b> across.</div>' + TILES(4, [('A', 'about 150'), ('B', 'about 1&nbsp;500'), ('C', 'about 15&nbsp;000'), ('D', 'about 150&nbsp;000')], 24),
+              nudge='How many fit in one row along the 9 m wall?',
+              reveal=f'<b>C, about 15&nbsp;000.</b> Stacked in rows: 37 along one wall, 33 along the other and 12 layers high. {T(r"37\times33\times12\approx14\,650")}.'),
+    extra_expl=['sizeUp', 'wrench'])
