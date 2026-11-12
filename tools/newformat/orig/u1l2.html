@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GCF and LCM · Math 10C 1.2</title>
+<meta name="description" content="Math 10C Unit 1 Lesson 2: prime factorization at work — greatest common factor, least common multiple, and choosing which one a problem needs. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u1l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson screen">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 1 Number · Lesson 2</div>
+  <h1>Prime Factorization at Work: GCF and LCM</h1>
+  <p class="lede">Once a number is broken into primes, a lot of questions get easy. Today prime factors give us a fast, reliable route to the greatest common factor and the least common multiple — and we learn to tell which one a problem is asking for.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>find the <b>greatest common factor</b> of a group of numbers, by inspection and by prime factorization</li>
+      <li>find the <b>least common multiple</b> of a group of numbers, by listing multiples and by prime factorization</li>
+      <li>decide whether a word problem needs the <b>GCF</b> or the <b>LCM</b>, and solve it</li>
+      <li>check a GCF or an LCM on the calculator</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Hot Dogs and Buns" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Dogs and Buns</h2>
+  <p class="wf-rule">Hot dogs come in <b>packs of 10</b>. Buns come in <b>packs of 8</b>. You can only buy <b>whole packs</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="hd-box">
+    <svg class="hd-svg" id="hd-svg" viewBox="0 0 640 190" role="img" aria-label="Packs of hot dogs and packs of buns lined up, with any hot dogs or buns left over marked in red"></svg>
+    <div class="hd-bar no-ink">
+      <div class="hd-ctl"><span class="hd-lab">Hot dogs</span><button class="exb" type="button" data-hd="h-" aria-label="One pack of hot dogs fewer">−</button><button class="exb" type="button" data-hd="h+">+ pack</button></div>
+      <div class="hd-ctl"><span class="hd-lab">Buns</span><button class="exb" type="button" data-hd="b-" aria-label="One pack of buns fewer">−</button><button class="exb" type="button" data-hd="b+">+ pack</button></div>
+      <button class="exb" type="button" data-hd="reset" title="Back to 2 packs of each" aria-label="Back to 2 packs of each"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+      <button class="exb next" type="button" data-hd="match">Buy until they match <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
+    </div>
+    <div class="hd-status" id="hd-status"></div>
+  </div>
+  <div class="wq">
+    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>You buy 2 packs of each. How many hot dogs have no bun?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>4 hot dogs</b>: 20 hot dogs, but only 16 buns.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>List the numbers of hot dogs you could buy. Then the numbers of buns.</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Hot dogs: 10, 20, 30, 40, … Buns: 8, 16, 24, 32, 40, … — the <b>multiples</b> of 10 and of 8.</div></div></div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="wq wq-side">
+    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>After the BBQ: 24 hot dogs and 32 buns. Share them into identical bags, nothing left over. Most bags?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>8 bags</b>, each with 3 hot dogs and 4 buns. 8 is the biggest number that divides <b>both</b>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>smallest</b> number of hot dogs and buns you can buy with <b>none left over</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 80</div>
+      <div class="opt right"><b>B</b> 40</div>
+      <div class="opt"><b>C</b> 18</div>
+      <div class="opt"><b>D</b> never</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B — 40:</b> 4 packs of hot dogs and 5 packs of buns (press <b>Buy until they match</b>). 40 is the first number in <b>both</b> lists from question 2.
+      <div class="traps"><span><b>A (80)?</b> 10 × 8 matches too, but it isn’t the <b>smallest</b>.</span><span><b>C (18)?</b> 10 + 8 isn’t a multiple of either.</span><span><b>D?</b> They match at 40, 80, 120, …</span></div>
+    </div>
+  </div>
+  </div></div>
+</section>
+
+<!-- ================= starter ================= -->
+<section class="card example" data-ink="start" data-section="Starter: 60 and 90">
+  <div class="ex-head"><span class="ex-tag">Starter</span><h3>Back to Lesson 1</h3></div>
+  <p class="q">Write each of the following as a product of prime factors.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">60</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">60 = 2 × 2 × 3 × 5<br><b>60 = 2<sup>2</sup> × 3 × 5</b></div></div></div>
+    <div class="part"><div class="pl">90</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">90 = 2 × 3 × 3 × 5<br><b>90 = 2 × 3<sup>2</sup> × 5</b></div></div></div>
+  </div>
+  <div class="space" id="start-space"></div>
+  <button class="more" data-more="start-space">+ More space</button>
+</section>
+
+<!-- ================= 1. GCF ================= -->
+<section class="card" data-ink="s1" data-section="1. Greatest Common Factor">
+  <div class="sec-h"><span class="badge">1</span><h2>Greatest Common Factor</h2></div>
+  <div class="def">The <b>greatest common factor</b> (GCF) of a group of whole numbers is the <b>largest</b> whole number that divides evenly into <b>every</b> member of the group.<div class="eg">The GCF of 10, 15 and 25 is 5.</div></div>
+  <p>Back to the warm-up: the number of take-home bags had to divide into <b>both</b> 24 and 32. Numbers that divide into every number in a group are its <b>common factors</b>; the most bags is the <b>greatest</b> common factor.</p>
+  <div class="explainer" data-explainer="gcfList"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Sanity check.</b> The GCF can never be <b>bigger</b> than the smallest number in the group — it has to fit into that number.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>GCF by inspection</h3></div>
+  <p class="q">State the greatest common factor of each group.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) 16, 24, and 40</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">16 = 2<sup>4</sup>, 24 = 2<sup>3</sup> × 3, 40 = 2<sup>3</sup> × 5<br>only 2 is in all three, lowest power 2<sup>3</sup><br><b>GCF = 8</b></div></div></div>
+    <div class="part"><div class="pl">(b) 21 and 28</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">21 = 3 × 7, 28 = 2<sup>2</sup> × 7<br>the only common prime is 7<br><b>GCF = 7</b></div></div></div>
+    <div class="part"><div class="pl">(c) 48 and 72</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">48 = 2<sup>4</sup> × 3, 72 = 2<sup>3</sup> × 3<sup>2</sup><br>lower power of each: 2<sup>3</sup> × 3<br><b>GCF = 24</b></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. GCF by prime factors">
+  <h3 class="sub">A shortcut: prime factorization</h3>
+  <p>Inspection gets hard once a number has lots of factors, like in (c). Prime factors give a shortcut. From the starter:</p>
+  <div class="trio">
+    <div class="fig"><div class="fig-h">Division ladder: 60</div><div class="mini-ladder"><span>2</span><span>60</span><span>2</span><span>30</span><span>3</span><span>15</span><span>5</span><span>5</span><span></span><span>1</span></div></div>
+    <div class="fig"><div class="fig-h">Division ladder: 90</div><div class="mini-ladder"><span>2</span><span>90</span><span>3</span><span>45</span><span>3</span><span>15</span><span>5</span><span>5</span><span></span><span>1</span></div></div>
+    <div class="fig"><div class="fig-h">Factor tree: 60</div><div class="mini-tree" data-tree="60:4,15|4:2,2|15:3,5"></div></div>
+  </div>
+  <div class="def"><b>To find the GCF</b>, multiply together every prime factor (matching repeats) that appears in <b>every</b> factorization.</div>
+  <p class="display">60 = <span class="hl2">2</span> × 2 × <span class="hl3">3</span> × <span class="hl5">5</span> &nbsp;&nbsp;&nbsp; 90 = <span class="hl2">2</span> × <span class="hl3">3</span> × 3 × <span class="hl5">5</span><span class="small muted">both share one 2, one 3 and one 5, so the GCF of 60 and 90 is 2 × 3 × 5 = 30</span></p>
+  <div class="explainer" data-explainer="vennG"></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. GCF with exponents">
+  <h3 class="sub">With exponents: the lowest power</h3>
+  <p>The GCF uses only the primes that appear in <b>every</b> factorization, each to its <b>lowest</b> power. Here 60 = 2<sup>2</sup> × 3 × 5 and 90 = 2 × 3<sup>2</sup> × 5, so</p>
+  <p class="display">GCF = 2<sup>1</sup> × 3<sup>1</sup> × 5<sup>1</sup> = 30</p>
+  <div class="explainer" data-explainer="tableG"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check a GCF by dividing.</b> Every number in the group ÷ the GCF should be a whole number: <span class="keys"><kbd>3</kbd><kbd>9</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 9. <span class="muted">If the answers (here 3, 5, 7, 9) share no common factor, nothing bigger will work.</span></div>
+    <button class="pill" data-keys="396 ÷ 44 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>GCF by prime factorization</h3></div>
+  <p class="q">Use prime factorization to determine the greatest common factor of the given whole numbers.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) 126 and 210</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">126 = 2 × 3<sup>2</sup> × 7<br>210 = 2 × 3 × 5 × 7<br>common: 2, 3, 7<br><b>GCF = 42</b></div></div></div>
+    <div class="part"><div class="pl">(b) 165 and 275</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">165 = 3 × 5 × 11<br>275 = 5<sup>2</sup> × 11<br>common: 5, 11<br><b>GCF = 55</b></div></div></div>
+    <div class="part"><div class="pl">(c) 180, 240, and 420</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">180 = 2<sup>2</sup> × 3<sup>2</sup> × 5<br>240 = 2<sup>4</sup> × 3 × 5<br>420 = 2<sup>2</sup> × 3 × 5 × 7<br>lowest: 2<sup>2</sup>, 3, 5<br><b>GCF = 60</b></div></div></div>
+    <div class="part"><div class="pl">(d) 132, 220, 308, and 396</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">132 = 2<sup>2</sup> × 3 × 11<br>220 = 2<sup>2</sup> × 5 × 11<br>308 = 2<sup>2</sup> × 7 × 11<br>396 = 2<sup>2</sup> × 3<sup>2</sup> × 11<br>in all four: 2<sup>2</sup>, 11<br><b>GCF = 44</b></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Why “greatest”? Tiles">
+  <h3 class="sub">Picture it: the biggest square tile</h3>
+  <p>Cover a 60 by 90 rectangle with identical square tiles, none cut. A tile only fits if its side divides <b>both</b> sides of the rectangle — it must be a <b>common factor</b>. The <b>biggest</b> tile that fits is the GCF.</p>
+  <div class="explainer" data-explainer="tiles"></div>
+</section>
+
+<!-- ================= 2. LCM ================= -->
+<section class="card" data-ink="s2" data-section="2. Least Common Multiple">
+  <div class="sec-h"><span class="badge">2</span><h2>Least Common Multiple</h2></div>
+  <div class="def">The <b>least common multiple</b> (LCM) of a group of numbers is the <b>smallest</b> number that appears in <b>every</b> list of multiples.</div>
+  <p class="display">9: 9, 18, 27, <span class="hl-lcm">36</span>, 45, … &nbsp;&nbsp;&nbsp; 12: 12, 24, <span class="hl-lcm">36</span>, 48, …<span class="small muted">the first number in both lists is 36, so the LCM of 9 and 12 is 36</span></p>
+  <div class="explainer" data-explainer="frogs"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Multiplying gives a common multiple — not always the least.</b> 6 × 8 = 48, but 6 and 8 both land on 24 first.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Sanity check.</b> The LCM can never be <b>smaller</b> than the largest number in the group.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>LCM by listing multiples</h3></div>
+  <p class="q">State the least common multiple of each group.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) 5 and 9</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">5 and 9 share no common factor (except 1), so the LCM is their product<br><b>LCM = 45</b></div></div></div>
+    <div class="part"><div class="pl">(b) 6, 8, and 12</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">multiples of 8: 8, 16, 24, …<br>24 is also a multiple of 6 and of 12<br><b>LCM = 24</b></div></div></div>
+    <div class="part"><div class="pl">(c) 15, 18, and 21</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">15 = 3 × 5, 18 = 2 × 3<sup>2</sup>, 21 = 3 × 7<br>highest powers: 2, 3<sup>2</sup>, 5, 7<br><b>LCM = 2 × 9 × 5 × 7 = 630</b></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. LCM by prime factors">
+  <h3 class="sub">A shortcut: prime factorization</h3>
+  <p>Trial and error gets slow once the numbers grow, like in (c). Prime factors make it manageable:</p>
+  <p class="display">15 = 3 × 5 &nbsp;&nbsp;&nbsp; 18 = 2 × 3 × 3 &nbsp;&nbsp;&nbsp; 21 = 3 × 7</p>
+  <div class="def"><b>To build the LCM</b>, start with all the prime factors of one number, then bring in any <b>extra</b> factors needed from the others (factors already counted are not repeated).<div class="eg">3 and 5 from 15, an extra 2 and 3 from 18, a 7 from 21: &nbsp;3 × 5 × 2 × 3 × 7 = 630</div></div>
+  <div class="explainer" data-explainer="vennL"></div>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. LCM with exponents">
+  <h3 class="sub">With exponents: the highest power</h3>
+  <p>The LCM uses <b>every</b> prime that appears in any of the factorizations, each to its <b>highest</b> power. Here 15 = 3 × 5, 18 = 2 × 3<sup>2</sup> and 21 = 3 × 7, so</p>
+  <p class="display">LCM = 2 × 3<sup>2</sup> × 5 × 7 = 630</p>
+  <div class="explainer" data-explainer="tableL"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check an LCM by dividing.</b> The LCM ÷ each number should be whole: <span class="keys"><kbd>6</kbd><kbd>3</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>1</kbd><kbd>ENTER</kbd></span> gives 30. <span class="muted">(630 ÷ 15 = 42 and 630 ÷ 18 = 35 too.)</span></div>
+    <button class="pill" data-keys="630 ÷ 21 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>LCM by prime factorization</h3></div>
+  <p class="q">Use prime factorization to determine the least common multiple of each group.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) 18 and 45</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">18 = 2 × 3<sup>2</sup>, 45 = 3<sup>2</sup> × 5<br>highest: 2, 3<sup>2</sup>, 5<br><b>LCM = 2 × 9 × 5 = 90</b></div></div></div>
+    <div class="part"><div class="pl">(b) 84 and 126</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">84 = 2<sup>2</sup> × 3 × 7, 126 = 2 × 3<sup>2</sup> × 7<br>highest: 2<sup>2</sup>, 3<sup>2</sup>, 7<br><b>LCM = 4 × 9 × 7 = 252</b></div></div></div>
+    <div class="part"><div class="pl">(c) 20, 45, and 75</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">20 = 2<sup>2</sup> × 5, 45 = 3<sup>2</sup> × 5, 75 = 3 × 5<sup>2</sup><br>highest: 2<sup>2</sup>, 3<sup>2</sup>, 5<sup>2</sup><br><b>LCM = 4 × 9 × 25 = 900</b></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> For 60 and 90: GCF × LCM = 30 × 180. Compare that with 60 × 90. Coincidence? Use the Venn diagram to explain.</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both are <b>5 400</b>. The GCF is the middle of the Venn diagram and the LCM is everything, so GCF × LCM uses the middle <b>twice</b> plus each side once — exactly the primes of 60 times the primes of 90.</div></div></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
+<section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u1l2"></section>
+
+<!-- ================= Math History box (brown) ================= -->
+<section class="card history" data-ink="hist" data-section="Math History: cicadas">
+  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">1803 · 2024 · 2245</span></div>
+  <div class="hist-grid">
+    <div class="hist-text">
+      <h3 class="hist-title">The cicadas that keep an LCM calendar</h3>
+      <p>Periodical cicadas live underground for years, then millions climb out in the same spring. <b class="c13">Brood XIX</b> comes out every <b class="c13">13</b> years. <b class="c17">Brood XIII</b> comes out every <b class="c17">17</b> years.</p>
+      <p>In 2024 they came out <b>together</b>, in a strip of central Illinois: the first time since <b>1803</b>, when Thomas Jefferson was president.</p>
+      <div class="part hist-q"><div class="pl">How many years apart are the times they come out together? When is the next one?</div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">13 and 17 are both prime, so LCM = 13 × 17 = <b>221 years</b>. The next time is 2024 + 221 = <b>2245</b>.</div></div></div>
+    </div>
+    <figure class="hist-anim">
+      <svg id="cicada-anim" viewBox="0 0 600 300" role="img" aria-label="A timeline from 1803 to 2245: one brood every 13 years, the other every 17 years; they meet in 1803, 2024 and 2245."></svg>
+      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the timeline to play it again.</span></figcaption>
+      <p class="hist-note">Why prime numbers? One idea scientists have: a prime cycle rarely lines up with the boom years of animals that eat cicadas, which often come every 2, 3 or 4 years.</p>
+    </figure>
+  </div>
+</section>
+
+<section class="card" data-ink="ref" data-section="GCF vs LCM">
+  <h3 class="sub">Quick reference: GCF or LCM?</h3>
+  <div class="vs">
+    <div class="vs-col g"><div class="vs-h">GCF <span>greatest common factor</span></div>
+      <ul><li>the biggest number that <b>divides into</b> all of them</li><li>primes in <b>every</b> factorization</li><li>each to its <b>lowest</b> power</li><li>the <b>middle</b> of the Venn diagram</li><li>never bigger than the smallest number</li></ul>
+      <div class="vs-eg">60 and 90 → <b>30</b></div></div>
+    <div class="vs-col l"><div class="vs-h">LCM <span>least common multiple</span></div>
+      <ul><li>the smallest number they all <b>divide into</b></li><li>primes from <b>any</b> factorization</li><li>each to its <b>highest</b> power</li><li><b>everything</b> in the Venn diagram</li><li>never smaller than the largest number</li></ul>
+      <div class="vs-eg">60 and 90 → <b>180</b></div></div>
+  </div>
+</section>
+
+<!-- ================= 3. GCF or LCM? ================= -->
+<section class="card" data-ink="s3" data-section="3. GCF or LCM?">
+  <div class="sec-h"><span class="badge">3</span><h2>GCF or LCM? Reading a Word Problem</h2></div>
+  <p>Both tools come from the same prime factorizations, so the real work in a word problem is <b>choosing</b>. Ask what the answer has to do.</p>
+  <div class="vs">
+    <div class="vs-col g"><div class="vs-h">GCF <span>the answer divides into each number</span></div>
+      <ul><li>share things into <b>identical groups</b>, nothing left over</li><li>cut lengths into the <b>longest equal pieces</b></li><li>the <b>largest</b> square tile that fits</li></ul>
+      <div class="vs-eg">warm-up: 24 hot dogs, 32 buns → <b>8</b> bags</div></div>
+    <div class="vs-col l"><div class="vs-h">LCM <span>each number divides into the answer</span></div>
+      <ul><li>events on different cycles <b>happen together again</b></li><li>buy packages until the totals <b>match</b></li><li>the <b>first</b> or <b>smallest</b> time both happen</li></ul>
+      <div class="vs-eg">big one: packs of 10 and 8 → <b>40</b></div></div>
+  </div>
+  <div class="explainer" data-explainer="bags"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Together again: LCM">
+  <h3 class="sub">Together again: that’s an LCM</h3>
+  <p>Two lights flash on different cycles. They flash together at the <b>common multiples</b> of the two cycles, and the first time is the <b>LCM</b>.</p>
+  <div class="explainer" data-explainer="beacons"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>GCF or LCM?</h3></div>
+  <p class="q">Decide whether each problem calls for the GCF or the LCM, then solve it.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A florist has 48 roses and 60 tulips. She makes identical bouquets using all of the flowers. What is the greatest number of bouquets she can make, and what is in each one?</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>GCF</b>: the bouquets must divide into both numbers.<br>48 = 2<sup>4</sup> × 3, 60 = 2<sup>2</sup> × 3 × 5 → 2<sup>2</sup> × 3 = 12<br><b>12 bouquets, each with 4 roses and 5 tulips</b></div></div></div>
+    <div class="part"><div class="pl">(b) Two lighthouse beacons flash together at midnight. One flashes every 12 seconds and the other every 20 seconds. How many seconds will it be until they next flash together?</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>LCM</b>: both cycles must divide into the time.<br>12 = 2<sup>2</sup> × 3, 20 = 2<sup>2</sup> × 5 → 2<sup>2</sup> × 3 × 5 = 60<br><b>60 seconds</b> (one minute)</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>GCF:</b> the primes in <b>every</b> factorization, each to its <b>lowest</b> power. 60 = 2<sup>2</sup> × 3 × 5, 90 = 2 × 3<sup>2</sup> × 5 → GCF = 2 × 3 × 5 = 30.</div>
+    <div><b>LCM:</b> every prime from <b>any</b> factorization, each to its <b>highest</b> power. 60 and 90 → LCM = 2<sup>2</sup> × 3<sup>2</sup> × 5 = 180.</div>
+    <div><b>Which one?</b> Splitting into identical groups or pieces that fit <b>into</b> the numbers → <b>GCF</b>. Cycles that line up <b>again</b>, totals that match → <b>LCM</b>.</div>
+    <div><b>Sanity checks:</b> GCF ≤ the smallest number; LCM ≥ the largest. Multiplying gives <i>a</i> common multiple, not always the least: 10 × 8 = 80, but the LCM is 40.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u1l2">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Prime Factorization at Work: GCF and LCM</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Perfect Squares and Perfect Cubes</b></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u1l2.js';
+  boot({ key: 'u1l2', homeHref: '../../', title: '1.2 GCF and LCM' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

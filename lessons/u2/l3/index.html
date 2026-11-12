@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u2l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Bouncing Ball">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -34;0 0" dur="0.9s" begin="0s" repeatCount="indefinite"/><text x="170" y="56" font-size="26" text-anchor="middle">🏀</text></g><line x1="110" y1="58" x2="230" y2="58" stroke="#4a4436" stroke-width="3" stroke-linecap="round"/></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Bouncing Ball</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A ball is dropped from <b>100 cm</b>.</p><p class="vw-ctx">Every bounce rises to half the height of the one before: 50 cm, 25 cm, …</p><p class="vw-ask">Which bounce is the first one that rises <b>less than 1 cm</b>?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Does it ever stop bouncing?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>The 7th bounce.</b> 50, 25, 12.5, 6.25, 3.125, 1.5625, then about 0.78 cm. That is <span class="tex">100\times2^{-7}</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,49 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Bouncing Ball" style="--wf-side: 340px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Bouncing Ball</h2>
-  <p class="wf-rule">A super ball drops from <b>16 m</b>. Each bounce reaches <b>half</b> the height of the last one. <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="bb-scene" id="bb-scene"><button class="pill bb-drop" type="button">Drop the ball</button></div>
 
-  <div class="wq-row">
-    <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>How high are bounces 1 and 2, in ordinary metres?</div></div>
-      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans">Bounce 1: <span class="tex">2^3=8</span> m.<br>Bounce 2: <span class="tex">2^2=4</span> m.</div></div>
-    </div>
-    <div class="wq">
-      <div class="q-line"><div class="q-num">2</div><div>Bounce 4 reaches <b>1 m</b>. Continue the pattern: <span class="tex">2^3,\ 2^2,\ 2^1,\ 2^{\color{#c93a33}?}</span></div></div>
-      <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">2^0</span>. The exponent drops by 1 every bounce (4, 3, 2, 1, <b>0</b>), and bounce 4 is 1 m, so <span class="tex">2^0=1</span>.</div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-  <div class="wq-row wq-side">
-    <div class="wq">
-      <div class="q-line"><div class="q-num">3</div><div>Bounce 5 reaches <span class="tex">\tfrac12</span> m. Write <span class="tex">\tfrac12</span> as a <b>power of 2</b>.</div></div>
-      <div class="wq-a"><button class="pill small" data-wq="5">Answer</button><div class="q-ans"><span class="tex">\tfrac12=2^{-1}</span>. One more step down the pattern: exponent <span class="tex">0-1=-1</span>.</div></div>
-    </div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which bounce is the <b>first</b> one that rises less than <b>1 cm</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> bounce 7</div>
-      <div class="opt right"><b>B</b> bounce 11</div>
-      <div class="opt"><b>C</b> bounce 20</div>
-      <div class="opt"><b>D</b> never!</div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B, bounce 11.</b> Bounce <span class="tex">n</span> reaches <span class="tex">2^{4-n}</span> m, so keep halving: bounce 10 is <span class="tex">2^{-6}=\tfrac{1}{64}</span> m ≈ 1.6 cm, and bounce 11 is <span class="tex">2^{-7}=\tfrac{1}{128}</span> m ≈ <b>0.8 cm</b>. <b>A</b>: <span class="tex">2^{-3}=\tfrac18</span> m is still 12.5 cm, a hand-width. <b>D</b>: halving never reaches zero, but it gets below 1 cm fast. A negative exponent means <b>small</b>, not negative: the ball never goes underground!</div>
-  </div>
-  </div></div>
-
-  <div class="halve-card">
-    <div class="q-line"><div class="q-num ok-n">✓</div><div><b>Check it: keep halving.</b> <span class="muted">Tap a bounce to fill in its height.</span> <button class="pill small" id="halve-all">Fill all</button></div></div>
-    <div class="halve" id="halve"></div>
-  </div>
-  <p class="try-it">Try it: drop a ball from your desk. Does it really bounce half as high each time?</p>
-</section>
 
 <!-- ================= 1. The pattern ================= -->
 <section class="card" data-ink="s1" data-section="1. The Negative Exponent Pattern">
@@ -124,13 +92,13 @@
     <div class="part"><div class="pl">(b) <span class="tex">x^{-7}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^{-7}=\mathbf{\dfrac{1}{x^7}}</span></div></div></div>
     <div class="part"><div class="pl">(c) <span class="tex">a^{-m}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a^{-m}=\mathbf{\dfrac{1}{a^m}}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which is bigger, <span class="tex">2^{-3}</span> or <span class="tex">2^{-4}</span>? Is either one negative?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2^{-3}=\tfrac18</span> is bigger than <span class="tex">2^{-4}=\tfrac1{16}</span>: one more step down the stairs halves it again. <b>Neither is negative</b>; both are small positive numbers.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Which is bigger, <span class="tex">2^{-3}</span> or <span class="tex">2^{-4}</span>? Is either one negative?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2^{-3}=\tfrac18</span> is bigger than <span class="tex">2^{-4}=\tfrac1{16}</span>: one more step down the stairs halves it again. <b>Neither is negative</b>; both are small positive numbers.</div></div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
 <!-- ================= 2. Where the law comes from ================= -->
-<section class="card" data-ink="s2" data-section="2. Where Does the Law Come From?">
+<section data-extra class="card" data-ink="s2" data-section="2. Where Does the Law Come From?">
   <div class="sec-h"><span class="badge">2</span><h2>Where Does the Negative Exponent Law Come From?</h2></div>
   <p>The quotient law confirms the pattern. It gives <span class="tex">6^3\div6^8=6^{3-8}=6^{-5}</span>. Expanding the same quotient instead, three 6’s cancel from the top, leaving five on the bottom:</p>
   <p class="display"><span class="tex">6^3\div6^8=\dfrac{6\times6\times6}{6\times6\times6\times6\times6\times6\times6\times6}=\dfrac{1}{6^5}</span></p>
@@ -142,7 +110,7 @@
   <div class="def law"><b>Negative Exponent Law</b> &nbsp;For any nonzero base <span class="tex">a</span> and positive integer <span class="tex">n</span>,
     <div class="rule-tex"><span class="tex">a^{-n}=\dfrac{1}{a^n}\qquad\text{and}\qquad\dfrac{1}{a^{-n}}=a^n</span></div></div>
   <p>The other exponent laws work exactly the same with negative exponents. Adding and subtracting negative numbers is the tricky part, so picture the exponents on a number line:</p>
-  <div class="explainer" data-explainer="hops"></div>
+  <div data-extra><div class="explainer" data-explainer="hops"></div></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
@@ -211,6 +179,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–7</h2>
+  <p class="pr-t">Use the negative exponent law.</p>
+  <div class="pr-chips n1"><span><b>1–7</b>The negative exponent law</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u2l3">Open the Practice site</a></div>
+</section>
+
 <!-- ================= 3. Algebraic expressions ================= -->
 <section class="card" data-ink="s3" data-section="3. Algebraic Expressions">
   <div class="sec-h"><span class="badge">3</span><h2>Applying the Law to Algebraic Expressions</h2></div>
@@ -221,7 +198,7 @@
     <div><span class="pn">3</span><span>Each variable on its own: exponents on top <b>add</b>, exponents on the bottom <b>subtract</b>.</span></div>
     <div><span class="pn">4</span><span><b>Last:</b> move any negative exponent across the fraction bar.</span></div>
   </div>
-  <div class="explainer" data-explainer="sorter"></div>
+  <div data-extra><div class="explainer" data-explainer="sorter"></div></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
@@ -235,7 +212,7 @@
     <div class="part"><div class="pl">(e) <span class="tex">\dfrac{9a^{-4}}{3b^{-2}}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">=3a^{-4}b^{2}</span><br><span class="tex">=\mathbf{\dfrac{3b^2}{a^4}}</span></div></div></div>
     <div class="part"><div class="pl">(f) <span class="tex">\dfrac{(2p)^{-2}}{7q^3}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">=\dfrac{1}{(2p)^2\cdot7q^3}=\dfrac{1}{4p^2\cdot7q^3}</span><br><span class="tex">=\mathbf{\dfrac{1}{28p^2q^3}}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why is the answer to (d) negative? What would <span class="tex">(-3x)^{-2}</span> be?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-3)^3=-27</span>: an <b>odd</b> power of a negative stays negative. With an even power the sign disappears: <span class="tex">(-3x)^{-2}=\dfrac{1}{(-3x)^2}=\dfrac{1}{9x^2}</span>.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Why is the answer to (d) negative? What would <span class="tex">(-3x)^{-2}</span> be?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-3)^3=-27</span>: an <b>odd</b> power of a negative stays negative. With an even power the sign disappears: <span class="tex">(-3x)^{-2}=\dfrac{1}{(-3x)^2}=\dfrac{1}{9x^2}</span>.</div></div></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
@@ -309,7 +286,7 @@
     <div class="def"><b>Divide</b> the coefficients, <b>subtract</b> the exponents (quotient law).<div class="rule-tex"><span class="tex">(a\times10^{m})\div(b\times10^{n})=(a\div b)\times10^{m-n}</span></div></div>
   </div>
   <p>If the new coefficient is not between 1 and 10, move its decimal point and change the exponent the <b>other way</b> by the same number of places: <span class="nw"><span class="tex">30\times10^{7}=3\times10^{8}</span></span>.</p>
-  <div class="explainer" data-explainer="snmuldiv"></div>
+  <div data-extra><div class="explainer" data-explainer="snmuldiv"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>The <kbd>EE</kbd> key means “× 10 to the”.</b> It is the 2nd function of <kbd>x⁻¹</kbd>. To type <span class="tex">4.1\times10^{-3}</span>: <span class="keys"><kbd>4</kbd><kbd>.</kbd><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>ENTER</kbd></span>. The screen shows <b>4.1E-3</b> and the answer 0.0041. An answer too long for the screen shows as, say, <b>2.5 ×10<sup>−9</sup></b>: that means <span class="tex">2.5\times10^{-9}</span>, never <span class="tex">2.5^{-9}</span>.</div>
@@ -338,6 +315,50 @@
   <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Bouncing Ball" style="--wf-side: 340px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Bouncing Ball</h2>
+  <p class="wf-rule">A super ball drops from <b>16 m</b>. Each bounce reaches <b>half</b> the height of the last one. <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="bb-scene" id="bb-scene"><button class="pill bb-drop" type="button">Drop the ball</button></div>
+
+  <div class="wq-row">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>How high are bounces 1 and 2, in ordinary metres?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans">Bounce 1: <span class="tex">2^3=8</span> m.<br>Bounce 2: <span class="tex">2^2=4</span> m.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>Bounce 4 reaches <b>1 m</b>. Continue the pattern: <span class="tex">2^3,\ 2^2,\ 2^1,\ 2^{\color{#c93a33}?}</span></div></div>
+      <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">2^0</span>. The exponent drops by 1 every bounce (4, 3, 2, 1, <b>0</b>), and bounce 4 is 1 m, so <span class="tex">2^0=1</span>.</div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+  <div class="wq-row wq-side">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>Bounce 5 reaches <span class="tex">\tfrac12</span> m. Write <span class="tex">\tfrac12</span> as a <b>power of 2</b>.</div></div>
+      <div class="wq-a"><button class="pill small" data-wq="5">Answer</button><div class="q-ans"><span class="tex">\tfrac12=2^{-1}</span>. One more step down the pattern: exponent <span class="tex">0-1=-1</span>.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which bounce is the <b>first</b> one that rises less than <b>1 cm</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> bounce 7</div>
+      <div class="opt right"><b>B</b> bounce 11</div>
+      <div class="opt"><b>C</b> bounce 20</div>
+      <div class="opt"><b>D</b> never!</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B, bounce 11.</b> Bounce <span class="tex">n</span> reaches <span class="tex">2^{4-n}</span> m, so keep halving: bounce 10 is <span class="tex">2^{-6}=\tfrac{1}{64}</span> m ≈ 1.6 cm, and bounce 11 is <span class="tex">2^{-7}=\tfrac{1}{128}</span> m ≈ <b>0.8 cm</b>. <b>A</b>: <span class="tex">2^{-3}=\tfrac18</span> m is still 12.5 cm, a hand-width. <b>D</b>: halving never reaches zero, but it gets below 1 cm fast. A negative exponent means <b>small</b>, not negative: the ball never goes underground!</div>
+  </div>
+  </div></div>
+
+  <div class="halve-card">
+    <div class="q-line"><div class="q-num ok-n">✓</div><div><b>Check it: keep halving.</b> <span class="muted">Tap a bounce to fill in its height.</span> <button class="pill small" id="halve-all">Fill all</button></div></div>
+    <div class="halve" id="halve"></div>
+  </div>
+  <p class="try-it">Try it: drop a ball from your desk. Does it really bounce half as high each time?</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -348,7 +369,7 @@
     <div><b>Scientific notation</b> <span class="tex">a\times10^{n}</span>, <span class="tex">1\le a\lt10</span>: <span class="tex">0.00047=4.7\times10^{-4}</span>. Multiply: coefficients ×, exponents +. Divide: coefficients ÷, exponents −. Check with <kbd>EE</kbd>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u2l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Negative Exponents and Scientific Notation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 8–21</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Rational Exponents and Radicals</b><div class="muted">What exponents like <span class="tex">\tfrac{1}{2}</span> and <span class="tex">\tfrac{2}{3}</span> mean</div></div><span class="arrow">→</span>
@@ -361,7 +382,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u2l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u2l3', homeHref: '../../', title: '2.3 Negative Exponents and Scientific Notation' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

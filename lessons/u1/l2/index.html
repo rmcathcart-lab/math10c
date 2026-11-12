@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l2.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Hot Dogs and Buns">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="110" y="46" font-size="40" text-anchor="middle">🌭</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="160" y="46" font-size="40" text-anchor="middle">🌭</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/><text x="220" y="46" font-size="40" text-anchor="middle">🍞</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.9s" repeatCount="indefinite"/><text x="270" y="46" font-size="40" text-anchor="middle">🍞</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Dogs and Buns</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Hot dogs come in packs of <b>10</b>. Buns come in packs of <b>8</b>.</p><p class="vw-ask">What is the smallest number of hot dogs and buns you can buy with none left over?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How many packs of each?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>40 of each.</b> That is 4 packs of hot dogs and 5 packs of buns. 40 is the first number in both the 10 times table and the 8 times table.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,49 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Hot Dogs and Buns" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Dogs and Buns</h2>
-  <p class="wf-rule">Hot dogs come in <b>packs of 10</b>. Buns come in <b>packs of 8</b>. You can only buy <b>whole packs</b>.</p></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="hd-box">
-    <svg class="hd-svg" id="hd-svg" viewBox="0 0 640 190" role="img" aria-label="Packs of hot dogs and packs of buns lined up, with any hot dogs or buns left over marked in red"></svg>
-    <div class="hd-bar no-ink">
-      <div class="hd-ctl"><span class="hd-lab">Hot dogs</span><button class="exb" type="button" data-hd="h-" aria-label="One pack of hot dogs fewer">−</button><button class="exb" type="button" data-hd="h+">+ pack</button></div>
-      <div class="hd-ctl"><span class="hd-lab">Buns</span><button class="exb" type="button" data-hd="b-" aria-label="One pack of buns fewer">−</button><button class="exb" type="button" data-hd="b+">+ pack</button></div>
-      <button class="exb" type="button" data-hd="reset" title="Back to 2 packs of each" aria-label="Back to 2 packs of each"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
-      <button class="exb next" type="button" data-hd="match">Buy until they match <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
-    </div>
-    <div class="hd-status" id="hd-status"></div>
-  </div>
-  <div class="wq">
-    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>You buy 2 packs of each. How many hot dogs have no bun?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans"><b>4 hot dogs</b>: 20 hot dogs, but only 16 buns.</div></div></div>
-    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>List the numbers of hot dogs you could buy. Then the numbers of buns.</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans">Hot dogs: 10, 20, 30, 40, … Buns: 8, 16, 24, 32, 40, … — the <b>multiples</b> of 10 and of 8.</div></div></div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="wq wq-side">
-    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>After the BBQ: 24 hot dogs and 32 buns. Share them into identical bags, nothing left over. Most bags?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans"><b>8 bags</b>, each with 3 hot dogs and 4 buns. 8 is the biggest number that divides <b>both</b>.</div></div></div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>smallest</b> number of hot dogs and buns you can buy with <b>none left over</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 80</div>
-      <div class="opt right"><b>B</b> 40</div>
-      <div class="opt"><b>C</b> 18</div>
-      <div class="opt"><b>D</b> never</div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B — 40:</b> 4 packs of hot dogs and 5 packs of buns (press <b>Buy until they match</b>). 40 is the first number in <b>both</b> lists from question 2.
-      <div class="traps"><span><b>A (80)?</b> 10 × 8 matches too, but it isn’t the <b>smallest</b>.</span><span><b>C (18)?</b> 10 + 8 isn’t a multiple of either.</span><span><b>D?</b> They match at 40, 80, 120, …</span></div>
-    </div>
-  </div>
-  </div></div>
-</section>
 
 <!-- ================= starter ================= -->
 <section class="card example" data-ink="start" data-section="Starter: 60 and 90">
@@ -102,7 +70,7 @@
 <section class="card" data-ink="s1" data-section="1. Greatest Common Factor">
   <div class="sec-h"><span class="badge">1</span><h2>Greatest Common Factor</h2></div>
   <div class="def">The <b>greatest common factor</b> (GCF) of a group of whole numbers is the <b>largest</b> whole number that divides evenly into <b>every</b> member of the group.<div class="eg">The GCF of 10, 15 and 25 is 5.</div></div>
-  <p>Back to the warm-up: the number of take-home bags had to divide into <b>both</b> 24 and 32. Numbers that divide into every number in a group are its <b>common factors</b>; the most bags is the <b>greatest</b> common factor.</p>
+  <p>Share 24 hot dogs and 32 buns into identical take-home bags with nothing left over. The number of bags has to divide into <b>both</b> 24 and 32. Numbers that divide into every number in a group are its <b>common factors</b>; the most bags is the <b>greatest</b> common factor.</p>
   <div class="explainer" data-explainer="gcfList"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Sanity check.</b> The GCF can never be <b>bigger</b> than the smallest number in the group — it has to fit into that number.</div></div>
 </section>
@@ -119,7 +87,7 @@
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. GCF by prime factors">
+<section data-extra class="card" data-ink="s1b" data-section="1. GCF by prime factors">
   <h3 class="sub">A shortcut: prime factorization</h3>
   <p>Inspection gets hard once a number has lots of factors, like in (c). Prime factors give a shortcut. From the starter:</p>
   <div class="trio">
@@ -157,7 +125,16 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. Why “greatest”? Tiles">
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 2 · Questions 1–4</h2>
+  <p class="pr-t">Find each greatest common factor.</p>
+  <div class="pr-chips n1"><span><b>1–4</b>Greatest common factor</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u1l2">Open the Practice site</a></div>
+</section>
+
+<section data-extra class="card" data-ink="s1d" data-section="1. Why “greatest”? Tiles">
   <h3 class="sub">Picture it: the biggest square tile</h3>
   <p>Cover a 60 by 90 rectangle with identical square tiles, none cut. A tile only fits if its side divides <b>both</b> sides of the rectangle — it must be a <b>common factor</b>. The <b>biggest</b> tile that fits is the GCF.</p>
   <div class="explainer" data-explainer="tiles"></div>
@@ -187,7 +164,7 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. LCM by prime factors">
+<section data-extra class="card" data-ink="s2b" data-section="2. LCM by prime factors">
   <h3 class="sub">A shortcut: prime factorization</h3>
   <p>Trial and error gets slow once the numbers grow, like in (c). Prime factors make it manageable:</p>
   <p class="display">15 = 3 × 5 &nbsp;&nbsp;&nbsp; 18 = 2 × 3 × 3 &nbsp;&nbsp;&nbsp; 21 = 3 × 7</p>
@@ -215,7 +192,7 @@
     <div class="part"><div class="pl">(b) 84 and 126</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">84 = 2<sup>2</sup> × 3 × 7, 126 = 2 × 3<sup>2</sup> × 7<br>highest: 2<sup>2</sup>, 3<sup>2</sup>, 7<br><b>LCM = 4 × 9 × 7 = 252</b></div></div></div>
     <div class="part"><div class="pl">(c) 20, 45, and 75</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">20 = 2<sup>2</sup> × 5, 45 = 3<sup>2</sup> × 5, 75 = 3 × 5<sup>2</sup><br>highest: 2<sup>2</sup>, 3<sup>2</sup>, 5<sup>2</sup><br><b>LCM = 4 × 9 × 25 = 900</b></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> For 60 and 90: GCF × LCM = 30 × 180. Compare that with 60 × 90. Coincidence? Use the Venn diagram to explain.</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both are <b>5 400</b>. The GCF is the middle of the Venn diagram and the LCM is everything, so GCF × LCM uses the middle <b>twice</b> plus each side once — exactly the primes of 60 times the primes of 90.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> For 60 and 90: GCF × LCM = 30 × 180. Compare that with 60 × 90. Coincidence? Use the Venn diagram to explain.</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both are <b>5 400</b>. The GCF is the middle of the Venn diagram and the LCM is everything, so GCF × LCM uses the middle <b>twice</b> plus each side once — exactly the primes of 60 times the primes of 90.</div></div></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
@@ -260,12 +237,12 @@
   <div class="vs">
     <div class="vs-col g"><div class="vs-h">GCF <span>the answer divides into each number</span></div>
       <ul><li>share things into <b>identical groups</b>, nothing left over</li><li>cut lengths into the <b>longest equal pieces</b></li><li>the <b>largest</b> square tile that fits</li></ul>
-      <div class="vs-eg">warm-up: 24 hot dogs, 32 buns → <b>8</b> bags</div></div>
+      <div class="vs-eg">24 hot dogs, 32 buns → <b>8</b> bags</div></div>
     <div class="vs-col l"><div class="vs-h">LCM <span>each number divides into the answer</span></div>
       <ul><li>events on different cycles <b>happen together again</b></li><li>buy packages until the totals <b>match</b></li><li>the <b>first</b> or <b>smallest</b> time both happen</li></ul>
       <div class="vs-eg">big one: packs of 10 and 8 → <b>40</b></div></div>
   </div>
-  <div class="explainer" data-explainer="bags"></div>
+  <div data-extra><div class="explainer" data-explainer="bags"></div></div>
 </section>
 
 <section class="card" data-ink="s3b" data-section="3. Together again: LCM">
@@ -285,6 +262,50 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Hot Dogs and Buns" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Hot Dogs and Buns</h2>
+  <p class="wf-rule">Hot dogs come in <b>packs of 10</b>. Buns come in <b>packs of 8</b>. You can only buy <b>whole packs</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="hd-box">
+    <svg class="hd-svg" id="hd-svg" viewBox="0 0 640 190" role="img" aria-label="Packs of hot dogs and packs of buns lined up, with any hot dogs or buns left over marked in red"></svg>
+    <div class="hd-bar no-ink">
+      <div class="hd-ctl"><span class="hd-lab">Hot dogs</span><button class="exb" type="button" data-hd="h-" aria-label="One pack of hot dogs fewer">−</button><button class="exb" type="button" data-hd="h+">+ pack</button></div>
+      <div class="hd-ctl"><span class="hd-lab">Buns</span><button class="exb" type="button" data-hd="b-" aria-label="One pack of buns fewer">−</button><button class="exb" type="button" data-hd="b+">+ pack</button></div>
+      <button class="exb" type="button" data-hd="reset" title="Back to 2 packs of each" aria-label="Back to 2 packs of each"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+      <button class="exb next" type="button" data-hd="match">Buy until they match <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
+    </div>
+    <div class="hd-status" id="hd-status"></div>
+  </div>
+  <div class="wq">
+    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>You buy 2 packs of each. How many hot dogs have no bun?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>4 hot dogs</b>: 20 hot dogs, but only 16 buns.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>List the numbers of hot dogs you could buy. Then the numbers of buns.</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Hot dogs: 10, 20, 30, 40, … Buns: 8, 16, 24, 32, 40, … — the <b>multiples</b> of 10 and of 8.</div></div></div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="wq wq-side">
+    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>After the BBQ: 24 hot dogs and 32 buns. Share them into identical bags, nothing left over. Most bags?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>8 bags</b>, each with 3 hot dogs and 4 buns. 8 is the biggest number that divides <b>both</b>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>smallest</b> number of hot dogs and buns you can buy with <b>none left over</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 80</div>
+      <div class="opt right"><b>B</b> 40</div>
+      <div class="opt"><b>C</b> 18</div>
+      <div class="opt"><b>D</b> never</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B — 40:</b> 4 packs of hot dogs and 5 packs of buns (press <b>Buy until they match</b>). 40 is the first number in <b>both</b> lists from question 2.
+      <div class="traps"><span><b>A (80)?</b> 10 × 8 matches too, but it isn’t the <b>smallest</b>.</span><span><b>C (18)?</b> 10 + 8 isn’t a multiple of either.</span><span><b>D?</b> They match at 40, 80, 120, …</span></div>
+    </div>
+  </div>
+  </div></div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -295,7 +316,7 @@
     <div><b>Sanity checks:</b> GCF ≤ the smallest number; LCM ≥ the largest. Multiplying gives <i>a</i> common multiple, not always the least: 10 × 8 = 80, but the LCM is 40.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l2">
-    <div><div class="kicker">Your turn</div><b>Assignment 2 — Prime Factorization at Work: GCF and LCM</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 2 · Questions 5–13</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l3/">
     <div><div class="kicker">Next lesson</div><b>Lesson 3 — Perfect Squares and Perfect Cubes</b></div><span class="arrow">→</span>
@@ -308,7 +329,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l2.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l2', homeHref: '../../', title: '1.2 GCF and LCM' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

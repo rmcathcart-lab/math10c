@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u3l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Squaring Trick">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="150" y="46" font-size="42" text-anchor="middle">🧠</text></g><text x="205" y="46" font-size="34" text-anchor="middle">💡<animate attributeName="opacity" values="1;0.15;1" dur="1.4s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Squaring Trick</h2>
+  <p class="wf-rule vw-rule">No calculator, no paper.</p></div>
+  <div class="vw-q"><span class="tex">105^2</span></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>You know 100 squared.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>11 025.</b> <span class="tex">105^2=(100+5)^2=10\,000+1\,000+25</span>. The 1 000 is <span class="tex">2\times100\times5</span>, the part people forget.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,51 +55,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Squaring Trick" style="--wf-side: 320px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Squaring Trick</h2>
-  <p class="wf-rule">How to square any number ending in <b>5</b>, in your head.</p></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="sp-trick" id="trick"></div>
-
-  <div class="sp-wu">
-    <div class="sp-sq" id="sq35"></div>
-    <div class="sp-wqs">
-      <div class="wq">
-        <div class="q-line"><div class="q-num">1</div><div>Use the trick to find <b>15²</b> and <b>25²</b>.</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">1\times2=2</span>, then 25: <b>225</b>. &nbsp; <span class="tex">2\times3=6</span>, then 25: <b>625</b>.</div></div>
-      </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">2</div><div>Now try <b>45²</b> and <b>65²</b>. Check one of them the long way (or with a calculator).</div></div>
-        <div class="wq-a"><div class="sp-row"><button class="pill small" type="button" data-wq>Answer</button><button class="pill small" type="button" data-keys="65 x² =">Check 65² on the calculator</button></div><div class="q-ans"><span class="tex">4\times5=20</span>, then 25: <b>2&#8239;025</b>. &nbsp; <span class="tex">6\times7=42</span>, then 25: <b>4&#8239;225</b>.</div></div>
-      </div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-      <div class="wq">
-        <div class="q-line"><div class="q-num">3</div><div>The picture cuts a 35 by 35 square into <b>30 + 5</b> each way. Tap each piece to find its area, then add them. <b>Which piece makes the “25”?</b></div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">900+150+150+25=1\,225</span>. The <b>corner</b> is always <span class="tex">5\times5=25</span>; the two strips make <span class="tex">300</span>, and <span class="tex">900+300=1\,200=3\times4\times100</span>.</div></div>
-      </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> No calculator, no paper. What is <b>105²</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> 10&#8239;025</div>
-      <div class="opt"><b>B</b> 10&#8239;525</div>
-      <div class="opt right"><b>C</b> 11&#8239;025</div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C, 11&#8239;025.</b> Treat the “tens digit” as 10: <span class="tex">10\times11=110</span>, then 25. Check: <span class="tex">100^2+2(100)(5)+5^2=10\,000+1\,000+25</span>.<br>
-      <span class="muted"><b>A</b> is <span class="tex">100^2+5^2</span>: it squares each part and forgets <b>both</b> middle strips (the classic mistake we fix today). <b>B</b> counts only <b>one</b> strip, 500 instead of 1&#8239;000.</span></div>
-  </div>
-  </div></div>
-
-  <div class="wq sp-bonus">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Bend the trick.</b> Can you do <b>41 × 49</b> in your head? <span class="muted">(Hint: the tens digits match and the ones digits add to 10.)</span></div></div>
-    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">4\times5=20</span>, then <span class="tex">1\times9=09</span>: <b>2&#8239;009</b>. Why it works: <span class="tex">41\times49=(45-4)(45+4)=45^2-4^2=2\,025-16</span>. That’s a <b>sum times a difference</b>, pattern #2 today.</div></div>
-  </div>
-  <p class="sp-hum">Call out a number ending in 5 and challenge a neighbour to square it in their head. Then swap!</p>
-</section>
 
 <!-- ================= 1. Squaring a binomial ================= -->
 <section class="card" data-ink="s1" data-section="1. Squaring a Binomial">
@@ -103,16 +70,16 @@
     <div><b>Watch out: <span class="tex">(a+b)^2\neq a^2+b^2</span>.</b> Try numbers: <span class="tex">(3+4)^2=7^2=49</span>, but <span class="tex">3^2+4^2=9+16=25</span>. The missing <b>24</b> is the two <span class="tex">ab</span> rectangles (<span class="tex">2\times3\times4=24</span>). Squaring a binomial <b>always</b> produces a middle term.</div>
   </div>
   <div class="explainer" data-explainer="classicError"></div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">(a+b)^2=a^2+b^2</span> <b>ever</b> true? For which numbers?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Only when the missing piece is zero: <span class="tex">2ab=0</span>, so <span class="tex">a=0</span> or <span class="tex">b=0</span>. Example: <span class="tex">(5+0)^2=25=5^2+0^2</span>. For any other numbers the two <span class="tex">ab</span> rectangles are really there.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">(a+b)^2=a^2+b^2</span> <b>ever</b> true? For which numbers?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Only when the missing piece is zero: <span class="tex">2ab=0</span>, so <span class="tex">a=0</span> or <span class="tex">b=0</span>. Example: <span class="tex">(5+0)^2=25=5^2+0^2</span>. For any other numbers the two <span class="tex">ab</span> rectangles are really there.</div></div></div>
 </section>
 
-<section class="card" data-ink="s1c" data-section="1. Squaring a difference">
+<section data-extra class="card" data-ink="s1c" data-section="1. Squaring a difference">
   <h3 class="sub">Squaring a difference: <span class="tex">(a-b)^2</span></h3>
   <p>Start with a square of side <span class="tex">a</span>. Cut a strip of width <span class="tex">b</span> off the right side and another off the top. Each strip has area <span class="tex">ab</span>, but the two strips <b>overlap</b> in the <span class="tex">b</span>-by-<span class="tex">b</span> corner, so that corner gets cut away <b>twice</b>. Add it back once: <span class="tex">(a-b)^2=a^2-ab-ab+b^2=a^2-2ab+b^2</span>.</p>
   <div class="explainer" data-explainer="minusSquare"></div>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. Sum times difference">
+<section data-extra class="card" data-ink="s1d" data-section="1. Sum times difference">
   <h3 class="sub">Sum times difference: <span class="tex">(a+b)(a-b)</span></h3>
   <p>Multiply a sum by a difference of the <b>same</b> two terms and the two middle terms of FOIL are opposites, so they <b>cancel</b>: <span class="tex">(a+b)(a-b)=a^2-ab+ab-b^2=a^2-b^2</span>. The answer is a <b>difference of squares</b>, and a picture shows it too.</p>
   <div class="explainer" data-explainer="sumDiff"></div>
@@ -192,7 +159,7 @@
 <section class="card" data-ink="s2" data-section="2. A Coefficient Out Front">
   <div class="sec-h"><span class="badge">2</span><h2>A Coefficient Out Front</h2></div>
   <div class="def">A special product may be multiplied by a number (or a negative sign) sitting outside the brackets. <b>Expand the binomial product first</b>, then <b>distribute</b> the outside factor across <b>every</b> resulting term.</div>
-  <div class="explainer" data-explainer="outside"></div>
+  <div data-extra><div class="explainer" data-explainer="outside"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t push the number inside a square.</b> <span class="tex">3(x+2)^2\neq(3x+6)^2</span>. The exponent belongs to the bracket only: <span class="tex">(3x+6)^2=9(x+2)^2</span>, three times too big.</div></div>
 </section>
 
@@ -207,6 +174,15 @@
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–2">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–2</h2>
+  <p class="pr-t">The two patterns, then a number out front.</p>
+  <div class="pr-chips n2"><span><b>1</b>Squares of binomials and sum × difference</span><span><b>2</b>A number out front</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 1.</span><a class="pill" href="../../../#/lesson/u3l3">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u3l3"></section>
 
@@ -214,7 +190,7 @@
 <section class="card" data-ink="s3" data-section="3. Combining Products">
   <div class="sec-h"><span class="badge">3</span><h2>Combining Two or Three Products</h2></div>
   <div class="def">A longer expression may add or subtract several products in a row. <b>Expand every product completely</b> (a subtraction sign in front of a product <b>flips the sign of every term</b> that comes out of it), and only then <b>collect like terms</b>.</div>
-  <div class="explainer" data-explainer="combine"></div>
+  <div data-extra><div class="explainer" data-explainer="combine"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Keep the second product in brackets until the minus is used.</b> <span class="tex">-(x^2+12x+27)=-x^2-12x-27</span>. Writing <span class="tex">-x^2+12x+27</span> flips only the first term, and that’s the most common mistake in this section.</div></div>
 </section>
 
@@ -242,7 +218,7 @@
   <div class="sec-h"><span class="badge">4</span><h2>Extension: Matching the Form <span class="tex">(x+a)^2+b</span></h2></div>
   <p class="sp-ext-note"><span class="sp-ext-tag">Extension</span> Rewriting a trinomial this way is called <b>completing the square</b>, a Math 20-1 skill.</p>
   <p>Because <span class="tex">(x+a)^2=x^2+2ax+a^2</span>, any trinomial <span class="tex">x^2+kx+c</span> can be rewritten as <span class="tex">(x+a)^2+b</span>: choose <span class="tex">a</span> so that <span class="tex">2a</span> matches the middle coefficient <span class="tex">k</span>, then adjust <span class="tex">b</span> so the two expressions agree once expanded. Algebra tiles show it: half the <span class="tex">x</span>-tiles go on each side of the <span class="tex">x^2</span>-tile, and the unit tiles fill the corner.</p>
-  <div class="explainer" data-explainer="complete"></div>
+  <div data-extra><div class="explainer" data-explainer="complete"></div></div>
   <div class="sp-legend"><span class="sp-lg"><i class="sp-t x2"></i> <span class="tex">x^2</span>-tile</span><span class="sp-lg"><i class="sp-t x1"></i> <span class="tex">x</span>-tile</span><span class="sp-lg"><i class="sp-t u1"></i> 1-tile</span><span class="sp-lg"><i class="sp-t u1 neg"></i> <span class="tex">-1</span>-tile <span class="muted">(unshaded = negative)</span></span></div>
 </section>
 
@@ -258,6 +234,52 @@
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Squaring Trick" style="--wf-side: 320px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Squaring Trick</h2>
+  <p class="wf-rule">How to square any number ending in <b>5</b>, in your head.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="sp-trick" id="trick"></div>
+
+  <div class="sp-wu">
+    <div class="sp-sq" id="sq35"></div>
+    <div class="sp-wqs">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">1</div><div>Use the trick to find <b>15²</b> and <b>25²</b>.</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">1\times2=2</span>, then 25: <b>225</b>. &nbsp; <span class="tex">2\times3=6</span>, then 25: <b>625</b>.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">2</div><div>Now try <b>45²</b> and <b>65²</b>. Check one of them the long way (or with a calculator).</div></div>
+        <div class="wq-a"><div class="sp-row"><button class="pill small" type="button" data-wq>Answer</button><button class="pill small" type="button" data-keys="65 x² =">Check 65² on the calculator</button></div><div class="q-ans"><span class="tex">4\times5=20</span>, then 25: <b>2&#8239;025</b>. &nbsp; <span class="tex">6\times7=42</span>, then 25: <b>4&#8239;225</b>.</div></div>
+      </div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">3</div><div>The picture cuts a 35 by 35 square into <b>30 + 5</b> each way. Tap each piece to find its area, then add them. <b>Which piece makes the “25”?</b></div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">900+150+150+25=1\,225</span>. The <b>corner</b> is always <span class="tex">5\times5=25</span>; the two strips make <span class="tex">300</span>, and <span class="tex">900+300=1\,200=3\times4\times100</span>.</div></div>
+      </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> No calculator, no paper. What is <b>105²</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 10&#8239;025</div>
+      <div class="opt"><b>B</b> 10&#8239;525</div>
+      <div class="opt right"><b>C</b> 11&#8239;025</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C, 11&#8239;025.</b> Treat the “tens digit” as 10: <span class="tex">10\times11=110</span>, then 25. Check: <span class="tex">100^2+2(100)(5)+5^2=10\,000+1\,000+25</span>.<br>
+      <span class="muted"><b>A</b> is <span class="tex">100^2+5^2</span>: it squares each part and forgets <b>both</b> middle strips (the classic mistake we fix today). <b>B</b> counts only <b>one</b> strip, 500 instead of 1&#8239;000.</span></div>
+  </div>
+  </div></div>
+
+  <div class="wq sp-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Bend the trick.</b> Can you do <b>41 × 49</b> in your head? <span class="muted">(Hint: the tens digits match and the ones digits add to 10.)</span></div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">4\times5=20</span>, then <span class="tex">1\times9=09</span>: <b>2&#8239;009</b>. Why it works: <span class="tex">41\times49=(45-4)(45+4)=45^2-4^2=2\,025-16</span>. That’s a <b>sum times a difference</b>, pattern #2 today.</div></div>
+  </div>
+  <p class="sp-hum">Call out a number ending in 5 and challenge a neighbour to square it in their head. Then swap!</p>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -268,7 +290,7 @@
     <div>A number out front waits: <b>expand first, then distribute</b>. A minus in front of a product <b>flips every term</b>. Collect like terms last.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u3l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Multiplying Polynomials I: Special Products</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 3–9</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Multiplying Polynomials II: Binomial × Trinomial and Three Binomials</b><div class="muted">Six partial products at a time: the grid just gets another column</div></div><span class="arrow">→</span>
@@ -281,7 +303,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u3l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u3l3', homeHref: '../../', title: '3.3 Special Products' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

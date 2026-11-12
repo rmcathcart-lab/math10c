@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l6.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Error or Not?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="150" y="46" font-size="40" text-anchor="middle">📟</text></g><text x="205" y="46" font-size="34" text-anchor="middle">⚠️<animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Error or Not?</h2>
+  <p class="wf-rule vw-rule">One of these makes a calculator show <b>ERROR</b>. Which one?</p></div>
+  <div class="vw-tiles" style="--n:4"><div><b>A</b><span class="tex">\sqrt[3]{-8}</span></div><div><b>B</b><span class="tex">\sqrt{-9}</span></div><div><b>C</b><span class="tex">\sqrt{0}</span></div><div><b>D</b><span class="tex">\sqrt[4]{16}</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>What number, times itself, gives each one?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>B.</b> No real number times itself gives <span class="tex">-9</span>. A is fine: <span class="tex">(-2)\times(-2)\times(-2)=-8</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,47 +55,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Error or Not?" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Error or Not?</h2>
-  <p class="wf-rule">Six calculators, six roots. Some show a number. Some show <b class="red">ERROR</b>. <span class="muted">Tap a calculator to press ENTER.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="wc-row" id="wc-row">
-    <div class="wc-lab even">Even index</div>
-    <div class="wc-lab odd">Odd index</div>
-    <button class="wcalc" data-k="A" data-even="1" data-res="ERROR"><span class="wc-letter">A</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt{-9}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="B" data-res="−2"><span class="wc-letter">B</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[3]{-8}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="C" data-even="1" data-res="ERROR"><span class="wc-letter">C</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[4]{-16}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="D" data-res="−2"><span class="wc-letter">D</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[5]{-32}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="E" data-even="1" data-res="0"><span class="wc-letter">E</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt{0}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button class="wcalc" data-k="F" data-res="-\tfrac{1}{2}" data-texres="1"><span class="wc-letter">F</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[3]{-\tfrac{1}{8}}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
-  </div>
-  <div class="wc-ctl"><button class="pill" data-wc="all">Press ENTER on all six</button><button class="pill" data-wc="sort">Sort by index</button><button class="pill" data-wc="reset">Reset</button></div>
-  <div class="wc-note" id="wc-note"><b class="red">Even index</b> (A, C, E): a negative radicand gives ERROR — but zero is fine. <b class="teal">Odd index</b> (B, D, F): always a real answer.</div>
-  <div class="wq"><div class="q-num">1</div><div class="wq-body">What does screen <b>E</b> show? <div class="wq-a"><span class="tex">\sqrt{0}=0</span>, since <span class="tex">0\times0=0</span>. No error.</div></div><button class="reveal" data-wq>Answer</button></div>
-  <div class="wq"><div class="q-num">2</div><div class="wq-body">Screen <b>B</b>: <span class="tex">\square\times\square\times\square=-8</span>. What is <span class="tex">\square</span>? <div class="wq-a"><b>−2</b>, since <span class="tex">(-2)(-2)(-2)=-8</span>.</div></div><button class="reveal" data-wq>Answer</button></div>
-  <div class="wq"><div class="q-num">3</div><div class="wq-body">Screen <b>A</b>: can <em>any</em> number times itself make −9? Try 3, then try −3. <div class="wq-a"><b>No.</b> <span class="tex">3\times3=9</span> and <span class="tex">(-3)(-3)=9</span>. Same signs always multiply to a positive, so <span class="tex">\sqrt{-9}</span> is ERROR (not a real number).</div></div><button class="reveal" data-wq>Answer</button></div>
-  </div><div class="wf-side">
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the six screens show <b class="red">ERROR</b>? <b>Guess first.</b> <span class="muted">Hands up for C… now D. Any switchers?</span></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 1</div>
-      <div class="opt right"><b>B</b> 2</div>
-      <div class="opt"><b>C</b> 5</div>
-      <div class="opt"><b>D</b> 6</div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B — two screens: A and C.</b> <span class="tex">\sqrt{-9}</span> and <span class="tex">\sqrt[4]{-16}</span> are ERROR: any real number to the 2nd or 4th power is ≥ 0. The other four work: <span class="tex">\sqrt[3]{-8}=-2</span>, <span class="tex">\sqrt[5]{-32}=-2</span> since <span class="tex">(-2)^5=-32</span>, <span class="tex">\sqrt{0}=0</span>, <span class="tex">\sqrt[3]{-\tfrac{1}{8}}=-\tfrac{1}{2}</span>.
-      <div class="small muted" style="margin-top:6px">The traps: <b>5</b> = “a negative under <em>any</em> root is an error”. <b>6</b> = “zero is an error too”. <b>1</b> = a 4th root behaves like a square root.</div>
-      <div class="wq"><div class="q-num">?</div><div class="wq-body"><b>Follow-up:</b> <span class="tex">\sqrt[6]{-64}</span> or <span class="tex">-\sqrt[6]{64}</span> — which one is an error? <div class="wq-a"><span class="tex">\sqrt[6]{-64}</span> is the error (even index, negative radicand). <span class="tex">-\sqrt[6]{64}=-2</span>: the negative is <b>outside</b> the radical.</div></div><button class="reveal" data-wq>Answer</button></div>
-    </div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Test C and D on the TI-30XIIS.</b> <span class="muted">Some phone apps show an error for <span class="tex">\sqrt[5]{-32}</span> even though the real answer is −2 — worth a quick chat.</span></div>
-    <button class="pill" data-keys="CLEAR 4 ˣ√ (−) 16 =">Screen C</button><button class="pill" data-keys="CLEAR 5 ˣ√ (−) 32 =">Screen D</button>
-  </div>
-  </div></div>
-</section>
+
 
 <!-- ================= 1. Recap ================= -->
 <section class="card" data-ink="s1" data-section="1. Recap from Lesson 5">
@@ -112,7 +83,7 @@
   <div class="explainer" data-explainer="machine"></div>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Roots from prime factors">
+<section data-extra class="card" data-ink="s2b" data-section="2. Roots from prime factors">
   <h3 class="sub">Can’t see it? Use prime factors</h3>
   <p>Write the radicand as a product of primes (Lesson 1!). Make <b>groups the size of the index</b> — groups of 4 for a fourth root. <b>One prime from each group</b> comes out. A prime left over means the radicand is <b>not</b> a perfect power.</p>
   <div class="explainer" data-explainer="groups"></div>
@@ -142,7 +113,7 @@
     <div class="part"><div class="pl">(e) <span class="tex">\sqrt[4]{-81}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Index 4 is even and the radicand is negative.<br><b>Not possible</b> (not a real number)</div></div></div>
     <div class="part"><div class="pl">(f) <span class="tex">3\sqrt[3]{8}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[3]{8}=2</span> since <span class="tex">2^3=8</span>; <span class="tex">3\times2</span><br><b>= 6</b></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> (e) is not possible. What about <span class="tex">-\sqrt[4]{81}</span>?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-\sqrt[4]{81}=-3</span>. The negative is <b>outside</b> the radical: find <span class="tex">\sqrt[4]{81}=3</span> first, then take the opposite.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> (e) is not possible. What about <span class="tex">-\sqrt[4]{81}</span>?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-\sqrt[4]{81}=-3</span>. The negative is <b>outside</b> the radical: find <span class="tex">\sqrt[4]{81}=3</span> first, then take the opposite.</div></div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
@@ -223,7 +194,7 @@
   <div class="sec-h"><span class="badge">4</span><h2>Radical Vocabulary</h2></div>
   <div class="def">Any expression <span class="tex">\sqrt[n]{x}</span>, where <span class="tex">n\in N</span> and <span class="tex">n\ge2</span>, is a <b>radical</b>: <span class="tex">\sqrt{19}</span>, <span class="tex">\sqrt[3]{54}</span>, <span class="tex">\sqrt[5]{7}</span>, <span class="tex">\sqrt[6]{2\,000\,000}</span>.
     <div class="eg"><span class="tex">\sqrt{\phantom{x}}</span> is the <b>radical sign</b>, <i>x</i> is the <b>radicand</b>, and <i>n</i> is the <b>index</b>: how many times the root is used as a <b>factor</b> to make <i>x</i>.</div></div>
-  <div class="explainer" data-explainer="anatomy"></div>
+  <div data-extra><div class="explainer" data-explainer="anatomy"></div></div>
   <div class="tip-row">
     <div class="def amber" style="margin:14px 0 0"><b>If the index is even, the radicand must be non-negative</b>, or the radical is not a real number.</div>
     <div class="def gray" style="margin:14px 0 0">No index written? It’s <b>2</b>: <span class="tex">\sqrt{85}=\sqrt[2]{85}</span>. A number in front, like the 4 in <span class="tex">4\sqrt[5]{7}</span>, is a <b>coefficient</b> that multiplies.</div>
@@ -240,6 +211,15 @@
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 6 · Questions 1–7</h2>
+  <p class="pr-t">Evaluate radicals, then name their parts.</p>
+  <div class="pr-chips n2"><span><b>1–5</b>Evaluating radicals</span><span><b>6–7</b>Radical vocabulary</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u1l6">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -261,7 +241,7 @@
     <div class="def no"><b>(ii) Sums and differences — NO.</b> The sum (or difference) of the roots is <b>not</b> the root of the sum (or difference).
       <div class="eg"><span class="tex">\sqrt{a}+\sqrt{b}\ne\sqrt{a+b}</span><br><span class="tex">\sqrt{a}-\sqrt{b}\ne\sqrt{a-b}</span></div></div>
   </div>
-  <div class="explainer" data-explainer="area"></div>
+  <div data-extra><div class="explainer" data-explainer="area"></div></div>
 </section>
 
 <section class="card" data-ink="s5b" data-section="5. The sum trap">
@@ -282,7 +262,7 @@
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5c" data-section="5. True or false checker">
+<section data-extra class="card" data-ink="s5c" data-section="5. True or false checker">
   <h3 class="sub">Check both sides</h3>
   <p>To test a radical statement, work out each side on its own. Use a rule only if it really applies — then compare.</p>
   <div class="explainer" data-explainer="tf"></div>
@@ -319,9 +299,51 @@
     <div class="part"><div class="pl">(b) <span class="tex">\sqrt{98}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">98=49\times2</span>, and 49 is a perfect square<br><b>= <span class="tex">\sqrt{49}\times\sqrt{2}</span></b> (which is <span class="tex">7\sqrt{2}</span>)</div></div></div>
     <div class="part"><div class="pl">(c) <span class="tex">\sqrt{32}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">32=16\times2</span>, and 16 is a perfect square<br><b>= <span class="tex">\sqrt{16}\times\sqrt{2}</span></b> (which is <span class="tex">4\sqrt{2}</span>)</div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> <span class="tex">\sqrt{98}=\sqrt{7}\times\sqrt{14}</span> is also correct. Why is <span class="tex">\sqrt{49}\times\sqrt{2}</span> the most useful split?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{49}=7</span> is a whole number, so <span class="tex">\sqrt{98}=7\sqrt{2}</span> — a simpler way to write it. That’s Lesson 7!</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> <span class="tex">\sqrt{98}=\sqrt{7}\times\sqrt{14}</span> is also correct. Why is <span class="tex">\sqrt{49}\times\sqrt{2}</span> the most useful split?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{49}=7</span> is a whole number, so <span class="tex">\sqrt{98}=7\sqrt{2}</span> — a simpler way to write it. That’s Lesson 7!</div></div></div>
   <div class="space" id="ex6-space"></div>
   <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Error or Not?" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Error or Not?</h2>
+  <p class="wf-rule">Six calculators, six roots. Some show a number. Some show <b class="red">ERROR</b>. <span class="muted">Tap a calculator to press ENTER.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="wc-row" id="wc-row">
+    <div class="wc-lab even">Even index</div>
+    <div class="wc-lab odd">Odd index</div>
+    <button class="wcalc" data-k="A" data-even="1" data-res="ERROR"><span class="wc-letter">A</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt{-9}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="wcalc" data-k="B" data-res="−2"><span class="wc-letter">B</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[3]{-8}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="wcalc" data-k="C" data-even="1" data-res="ERROR"><span class="wc-letter">C</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[4]{-16}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="wcalc" data-k="D" data-res="−2"><span class="wc-letter">D</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[5]{-32}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="wcalc" data-k="E" data-even="1" data-res="0"><span class="wc-letter">E</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt{0}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+    <button class="wcalc" data-k="F" data-res="-\tfrac{1}{2}" data-texres="1"><span class="wc-letter">F</span><span class="wc-lcd"><span class="wc-exp tex">\sqrt[3]{-\tfrac{1}{8}}</span><span class="wc-res">= ?</span></span><span class="wc-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+  </div>
+  <div class="wc-ctl"><button class="pill" data-wc="all">Press ENTER on all six</button><button class="pill" data-wc="sort">Sort by index</button><button class="pill" data-wc="reset">Reset</button></div>
+  <div class="wc-note" id="wc-note"><b class="red">Even index</b> (A, C, E): a negative radicand gives ERROR — but zero is fine. <b class="teal">Odd index</b> (B, D, F): always a real answer.</div>
+  <div class="wq"><div class="q-num">1</div><div class="wq-body">What does screen <b>E</b> show? <div class="wq-a"><span class="tex">\sqrt{0}=0</span>, since <span class="tex">0\times0=0</span>. No error.</div></div><button class="reveal" data-wq>Answer</button></div>
+  <div class="wq"><div class="q-num">2</div><div class="wq-body">Screen <b>B</b>: <span class="tex">\square\times\square\times\square=-8</span>. What is <span class="tex">\square</span>? <div class="wq-a"><b>−2</b>, since <span class="tex">(-2)(-2)(-2)=-8</span>.</div></div><button class="reveal" data-wq>Answer</button></div>
+  <div class="wq"><div class="q-num">3</div><div class="wq-body">Screen <b>A</b>: can <em>any</em> number times itself make −9? Try 3, then try −3. <div class="wq-a"><b>No.</b> <span class="tex">3\times3=9</span> and <span class="tex">(-3)(-3)=9</span>. Same signs always multiply to a positive, so <span class="tex">\sqrt{-9}</span> is ERROR (not a real number).</div></div><button class="reveal" data-wq>Answer</button></div>
+  </div><div class="wf-side">
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the six screens show <b class="red">ERROR</b>? <b>Guess first.</b> <span class="muted">Hands up for C… now D. Any switchers?</span></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 1</div>
+      <div class="opt right"><b>B</b> 2</div>
+      <div class="opt"><b>C</b> 5</div>
+      <div class="opt"><b>D</b> 6</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B — two screens: A and C.</b> <span class="tex">\sqrt{-9}</span> and <span class="tex">\sqrt[4]{-16}</span> are ERROR: any real number to the 2nd or 4th power is ≥ 0. The other four work: <span class="tex">\sqrt[3]{-8}=-2</span>, <span class="tex">\sqrt[5]{-32}=-2</span> since <span class="tex">(-2)^5=-32</span>, <span class="tex">\sqrt{0}=0</span>, <span class="tex">\sqrt[3]{-\tfrac{1}{8}}=-\tfrac{1}{2}</span>.
+      <div class="small muted" style="margin-top:6px">The traps: <b>5</b> = “a negative under <em>any</em> root is an error”. <b>6</b> = “zero is an error too”. <b>1</b> = a 4th root behaves like a square root.</div>
+      <div class="wq"><div class="q-num">?</div><div class="wq-body"><b>Follow-up:</b> <span class="tex">\sqrt[6]{-64}</span> or <span class="tex">-\sqrt[6]{64}</span> — which one is an error? <div class="wq-a"><span class="tex">\sqrt[6]{-64}</span> is the error (even index, negative radicand). <span class="tex">-\sqrt[6]{64}=-2</span>: the negative is <b>outside</b> the radical.</div></div><button class="reveal" data-wq>Answer</button></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Test C and D on the TI-30XIIS.</b> <span class="muted">Some phone apps show an error for <span class="tex">\sqrt[5]{-32}</span> even though the real answer is −2 — worth a quick chat.</span></div>
+    <button class="pill" data-keys="CLEAR 4 ˣ√ (−) 16 =">Screen C</button><button class="pill" data-keys="CLEAR 5 ˣ√ (−) 32 =">Screen D</button>
+  </div>
+  </div></div>
 </section>
 
 <!-- ================= summary ================= -->
@@ -334,7 +356,7 @@
     <div><span class="tex">\sqrt{a}\times\sqrt{b}=\sqrt{ab}</span> and <span class="tex">\tfrac{\sqrt{a}}{\sqrt{b}}=\sqrt{\tfrac{a}{b}}</span> — but <span class="tex">\sqrt{a+b}\ne\sqrt{a}+\sqrt{b}</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l6">
-    <div><div class="kicker">Your turn</div><b>Assignment 6 — Roots of Real Numbers</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 6 · Questions 8–13</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next" href="../l7/">
     <div><div class="kicker">Next lesson</div><b>1.7 Entire and Mixed Radicals</b><div class="muted">Try it: put <span class="tex">\sqrt{12}</span> and <span class="tex">2\sqrt{3}</span> into your calculator. Both give 3.4641… Why?</div></div><span class="arrow">→</span>
@@ -347,7 +369,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l6.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l6', homeHref: '../../', title: '1.6 Roots of Real Numbers' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

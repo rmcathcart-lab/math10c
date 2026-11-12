@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u3l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Frame It">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="2.2s" begin="0s" repeatCount="indefinite"/><text x="170" y="46" font-size="44" text-anchor="middle">🖼️</text></g><text x="120" y="46" font-size="22" text-anchor="middle">✨<animate attributeName="opacity" values="1;0.15;1" dur="1.6s" begin="0s" repeatCount="indefinite"/></text><text x="222" y="46" font-size="22" text-anchor="middle">✨<animate attributeName="opacity" values="1;0.15;1" dur="1.6s" begin="0.6s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Frame It</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A photo is <b>20 cm by 30 cm</b>.</p><p class="vw-ctx">A frame of the same width goes all the way around it.</p><p class="vw-ask">How wide must the frame be so that the <b>frame’s area equals the photo’s area</b>?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Try a width and check.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>5 cm.</b> The outside is then <span class="tex">30\times40=1200</span> cm², exactly double the photo’s 600 cm².</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,8 +53,162 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Frame It" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Frame It</h2>
+
+
+<!-- ================= 1. Composite area figures ================= -->
+<section class="card" data-ink="s1" data-section="1. Composite Area Figures">
+  <div class="sec-h"><span class="badge">1</span><h2>Composite Area Figures</h2></div>
+  <p>A figure made entirely of horizontal and vertical segments has two common strategies for writing its area as a single polynomial.</p>
+  <div class="def-grid">
+    <div class="def"><b>Strategy A: add the pieces.</b> Slice the figure into non-overlapping rectangles, find each area as a product of its side lengths, and <b>add</b>.</div>
+    <div class="def amber"><b>Strategy B: subtract from a bounding box.</b> Take the smallest rectangle that contains the figure and <b>subtract</b> the missing corner piece (the <b>notch</b>).</div>
+  </div>
+  <p>Both give the <b>same polynomial</b> once expanded. Choose whichever is easier to see in a given figure.</p>
+  <div class="explainer" data-explainer="notch"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Subtract the whole notch.</b> Keep its brackets: <span class="tex">-(x^2+5x+6)=-x^2-5x-6</span>. Dropping the brackets gives <span class="tex">-x^2+5x+6</span>, which only subtracts the first term.</div></div>
+</section>
+
+<section data-extra class="card" data-ink="s1b" data-section="1. Adding the pieces">
+  <h3 class="sub">Strategy A on the same figure: slice it and add</h3>
+  <p>A slice makes new rectangles, and some of their sides aren’t labelled. A missing side is a <b>subtraction</b>: the whole side minus the part you know.</p>
+  <div class="explainer" data-explainer="pieces"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Bounding box minus a notch</h3></div>
+  <p class="q">The L-shaped figure below is the piece left over after a rectangular notch is cut from the top-right corner of a larger rectangle.</p>
+  <div class="u5-exg">
+    <div class="u5-fig" data-fig="ex1" style="--fw:330px;--fh:300px"></div>
+    <div class="u5-exparts">
+      <div class="part"><div class="pl">(a) Write the area of the figure as a trinomial <span class="tex">ax^2+bx+c</span>.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Box <span class="tex">(3x+4)(2x+5)=6x^2+15x+8x+20=6x^2+23x+20</span><br>Notch <span class="tex">(x+1)(x+2)=x^2+2x+x+2=x^2+3x+2</span><br>Area <span class="tex">=(6x^2+23x+20)-(x^2+3x+2)=\mathbf{5x^2+20x+18}</span>, so <span class="tex">a=5,\ b=20,\ c=18</span></div></div></div>
+      <div class="part"><div class="pl">(b) Evaluate the area when <span class="tex">x=2</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5(2)^2+20(2)+18=20+40+18=\mathbf{78}</span><br>Check with the figure: box <span class="tex">10\times9=90</span>, notch <span class="tex">3\times4=12</span>, <span class="tex">90-12=78</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (b) two ways.</b> Put <span class="tex">x=2</span> into the trinomial: <span class="keys"><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>2</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>1</kbd><kbd>8</kbd><kbd>ENTER</kbd></span>. Then use the figure’s own lengths at <span class="tex">x=2</span>: box minus notch. Both should say <b>78</b>.</div>
+    <div class="pill-col"><button class="pill" type="button" data-keys="5 × 2 x² + 20 × 2 + 18 =">The trinomial</button><button class="pill" type="button" data-keys="10 × 9 − 3 × 4 =">The figure</button></div>
+  </div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Slice the L <b>sideways</b> instead, along the bottom of the notch. Do you get the same trinomial?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> Top piece <span class="tex">(2x+3)(x+2)=2x^2+7x+6</span>, bottom piece <span class="tex">(3x+4)(x+3)=3x^2+13x+12</span>. Sum: <span class="tex">5x^2+20x+18</span>. Any slicing (or the box minus the notch) gives the same area.</div></div></div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Framed regions ================= -->
+<section class="card" data-ink="s2" data-section="2. Framed Regions">
+  <div class="sec-h"><span class="badge">2</span><h2>Framed Regions</h2></div>
+  <div class="def">A rectangular <b>frame</b> is a rectangle with a smaller rectangle removed from its interior. The shaded (remaining) area is <div class="u5-rule"><b>shaded area = outer area − inner area</b></div></div>
+  <p>If the opening is <b>set in</b> by the same amount on two opposite sides, that amount comes off the outer length <b>twice</b>.</p>
+  <div class="explainer" data-explainer="frame"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Set in on both sides means subtract twice.</b> A frame 3 cm wide around a 40 cm board leaves an opening <span class="tex">40-2(3)=34</span> cm wide, not 37 cm.</div></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A frame with two different widths</h3></div>
+  <p class="q">In the figure below, a rectangular frame surrounds a smaller rectangular opening. The frame’s sides are <span class="tex">p</span> wide and its top and bottom are <span class="tex">q</span> wide, so the opening is set in by <span class="tex">p</span> on the left and right and by <span class="tex">q</span> along the top and bottom.</p>
+  <div class="u5-exg">
+    <div class="u5-fig" data-fig="ex2" style="--fw:340px;--fh:260px"></div>
+    <div class="u5-exparts">
+      <div class="part"><div class="pl">(a) Determine a simplified expression, in terms of <span class="tex">p</span> and <span class="tex">q</span>, for the shaded area.</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Opening: <span class="tex">(4p+3q)-2p=2p+3q</span> wide, <span class="tex">(3p+5q)-2q=3p+3q</span> high<br>Outer <span class="tex">(4p+3q)(3p+5q)=12p^2+29pq+15q^2</span><br>Inner <span class="tex">(2p+3q)(3p+3q)=6p^2+15pq+9q^2</span><br>Shaded <span class="tex">=\mathbf{6p^2+14pq+6q^2}</span></div></div></div>
+      <div class="part"><div class="pl">(b) Calculate the shaded area when <span class="tex">p=2</span> and <span class="tex">q=1</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6(4)+14(2)(1)+6(1)=24+28+6=\mathbf{58}</span><br>Check: outer <span class="tex">11\times11=121</span>, opening <span class="tex">7\times9=63</span>, <span class="tex">121-63=58</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Two letters, two values.</b> Type each value where its letter was: <span class="keys"><kbd>6</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>4</kbd><kbd>×</kbd><kbd>2</kbd><kbd>×</kbd><kbd>1</kbd><kbd>+</kbd><kbd>6</kbd><kbd>×</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span>. The figure check is outer minus opening.</div>
+    <div class="pill-col"><button class="pill" type="button" data-keys="6 × 2 x² + 14 × 2 × 1 + 6 × 1 x² =">The polynomial</button><button class="pill" type="button" data-keys="11 × 11 − 7 × 9 =">The figure</button></div>
+  </div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> When <span class="tex">p=2</span> and <span class="tex">q=1</span>, how big is the outer rectangle? Is the figure drawn to scale?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4(2)+3(1)=11</span> by <span class="tex">3(2)+5(1)=11</span>: it’s a <b>square</b>, with an opening 7 wide and 9 tall. The figure is <b>not to scale</b>. Trust the labels, not the picture.</div></div></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
+<section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u3l5"></section>
+
+<!-- ================= 3. Modelling with squares and rectangles ================= -->
+<section class="card" data-ink="s3" data-section="3. Squares and Rectangles">
+  <div class="sec-h"><span class="badge">3</span><h2>Modelling with Squares and Rectangles</h2></div>
+  <p>Many real-world area problems are modelled the same way: a large region with one or more smaller regions removed from inside it.</p>
+  <div class="def gray"><b>region left over = big region − (number of pieces) × (area of one piece)</b></div>
+  <div data-extra><div class="explainer" data-explainer="garden"></div></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">(n+2)^2\ne n^2+4</span>. Squaring a binomial gives <b>three</b> terms: <span class="tex">n^2+4n+4</span>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">3(n+2)^2</span>: <b>square first</b>, then multiply by 3. It is not <span class="tex">(3n+6)^2</span>.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Garden with three flower beds</h3></div>
+  <p class="q">A rectangular garden has length <span class="tex">(3n+12)</span> m and width <span class="tex">(n+9)</span> m. Three square flower beds, each with side length <span class="tex">(n+2)</span> m, are planted inside the garden. The rest of the garden is grass.</p>
+  <div class="u5-exg">
+    <div class="u5-fig" data-fig="ex3" style="--fw:350px;--fh:220px"></div>
+    <div class="u5-exparts">
+      <div class="part"><div class="pl">(a) Write and simplify an expression for the area of grass in the garden.</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Garden <span class="tex">(3n+12)(n+9)=3n^2+27n+12n+108=3n^2+39n+108</span><br>Three beds <span class="tex">3(n+2)^2=3(n^2+4n+4)=3n^2+12n+12</span><br>Grass <span class="tex">=\mathbf{27n+96}</span> m² (the <span class="tex">n^2</span> terms cancel)</div></div></div>
+      <div class="part"><div class="pl">(b) Determine the area of grass when <span class="tex">n=2</span>, and check your answer using the dimensions.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">27(2)+96=\mathbf{150}</span> m²<br>Check: garden <span class="tex">18\times11=198</span>, beds <span class="tex">3\times4^2=48</span>, <span class="tex">198-48=150</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check with the dimensions.</b> At <span class="tex">n=2</span> the garden is 18 m by 11 m and each bed is 4 m by 4 m: <span class="keys"><kbd>1</kbd><kbd>8</kbd><kbd>×</kbd><kbd>1</kbd><kbd>1</kbd><kbd>−</kbd><kbd>3</kbd><kbd>×</kbd><kbd>4</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> should match <span class="tex">27(2)+96</span>.</div>
+    <div class="pill-col"><button class="pill" type="button" data-keys="27 × 2 + 96 =">The polynomial</button><button class="pill" type="button" data-keys="18 × 11 − 3 × 4 x² =">The dimensions</button></div>
+  </div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Why did the <span class="tex">n^2</span> terms cancel in this garden?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The garden’s <span class="tex">n^2</span> term is <span class="tex">3n\times n=3n^2</span>, and three beds give <span class="tex">3\times n^2=3n^2</span>. They’re <b>equal</b>, so the grass area grows only <b>linearly</b> as <span class="tex">n</span> grows.</div></div></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- volume -->
+<section class="card" data-ink="s3b" data-section="3. Volume: one more factor">
+  <h3 class="sub">From area to volume: one more factor</h3>
+  <p>A rectangular box has volume <b>length × width × height</b>, so its volume is a product of <b>three</b> polynomials. Multiply two of them first (the base area), then multiply that result by the third (the height).</p>
+  <div data-extra><div class="explainer" data-explainer="box"></div></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Pick a friendly pair first.</b> In <span class="tex">(x-2)(x+5)(x-5)</span>, the pair <span class="tex">(x+5)(x-5)</span> is a difference of squares, <span class="tex">x^2-25</span>: multiply that pair first and only <b>four</b> partial products are left.</div></div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Check a cubic.</b> <span class="tex">x^3+6x^2+11x+6</span> at <span class="tex">x=2</span>: <span class="keys"><kbd>2</kbd><kbd>^</kbd><kbd>3</kbd><kbd>+</kbd><kbd>6</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>1</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives <b>60</b>, and so does <span class="tex">3\times4\times5</span>.</div>
+      <button class="pill" type="button" data-keys="2 ^ 3 + 6 × 2 x² + 11 × 2 + 6 =">Show me</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. Equation solving ================= -->
+<section class="card" data-ink="s4" data-section="4. Equation Solving">
+  <div class="sec-h"><span class="badge">4</span><h2>Equation Solving</h2></div>
+  <p>Some problems describe a figure with polynomial expressions <b>plus a rule</b> that must hold, for example the <b>Pythagorean theorem</b> for a right triangle. Expanding both sides of the resulting equation often <b>cancels the highest-degree terms</b>, leaving a linear equation to solve.</p>
+  <div class="u5-steps">
+    <div><span class="u5-n">1</span><b>Write the rule</b> with the polynomials in it.</div>
+    <div><span class="u5-n">2</span><b>Expand</b> each side and collect like terms.</div>
+    <div><span class="u5-n">3</span>The <span class="tex">x^2</span> terms <b>cancel</b>: solve the linear equation.</div>
+    <div><span class="u5-n">4</span><b>Check</b>: put the value back into the figure.</div>
+  </div>
+  <div class="explainer" data-explainer="cancel"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The squared terms must match exactly to cancel.</b> If they don’t, recheck the squares: the middle term is the usual casualty. <span class="tex">(4x+8)^2=16x^2+64x+64</span>, not <span class="tex">16x^2+64</span>.</div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> A <b>square</b> photo gets a frame 2 cm wide all the way around, and the frame’s area is 96 cm². How big is the photo?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Side <span class="tex">s</span>: outside <span class="tex">s+4</span>. <span class="tex">(s+4)^2-s^2=96\Rightarrow 8s+16=96\Rightarrow s=\mathbf{10}</span> cm. The <span class="tex">s^2</span> terms cancel. (Replay it with the <b>Framed photo</b> chip above.)</div></div></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The Pythagorean theorem with polynomial sides</h3></div>
+  <p class="q">The hypotenuse of a right triangle is <span class="tex">(5x+1)</span> cm long, and the lengths of the other two sides are <span class="tex">(4x+8)</span> cm and <span class="tex">(3x-15)</span> cm.</p>
+  <div class="u5-exg">
+    <div class="u5-fig" data-fig="ex4" style="--fw:300px;--fh:230px"></div>
+    <div class="u5-exparts">
+      <div class="part"><div class="pl">Form an equation using the Pythagorean theorem, and solve it to determine the lengths of all three sides of the triangle.</div><div class="work" style="--h:470px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5x+1)^2=(4x+8)^2+(3x-15)^2</span><br><span class="tex">25x^2+10x+1=(16x^2+64x+64)+(9x^2-90x+225)</span><br><span class="tex">25x^2+10x+1=25x^2-26x+289</span><br><span class="tex">36x=288</span>, so <span class="tex">x=8</span><br><b>The sides are 9 cm, 40 cm and 41 cm</b> (check: <span class="tex">9^2+40^2=1\,681=41^2</span> ✓)</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the triangle.</b> The two legs squared and added should equal the hypotenuse squared: <span class="keys"><kbd>9</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>4</kbd><kbd>0</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>4</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> both give 1 681.</div>
+    <div class="pill-col"><button class="pill" type="button" data-keys="9 x² + 40 x² =">The legs</button><button class="pill" type="button" data-keys="41 x² =">The hypotenuse</button></div>
+  </div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Why must <span class="tex">x</span> be greater than 5 in this triangle?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A side length must be <b>positive</b>: <span class="tex">3x-15&gt;0</span> means <span class="tex">x&gt;5</span>. Our <span class="tex">x=8</span> passes, giving <span class="tex">3(8)-15=9</span> cm.</div></div></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Frame It" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Frame It</h2>
   <p class="wf-rule">A <b>20 cm by 30 cm</b> photo gets a frame of the same width, <span class="tex">w</span>, all the way around. <span class="muted">Tap a width to try it on.</span></p></div>
   <div class="wf-grid"><div class="wf-main">
 
@@ -103,158 +267,6 @@
   </div>
 </section>
 
-<!-- ================= 1. Composite area figures ================= -->
-<section class="card" data-ink="s1" data-section="1. Composite Area Figures">
-  <div class="sec-h"><span class="badge">1</span><h2>Composite Area Figures</h2></div>
-  <p>A figure made entirely of horizontal and vertical segments has two common strategies for writing its area as a single polynomial.</p>
-  <div class="def-grid">
-    <div class="def"><b>Strategy A: add the pieces.</b> Slice the figure into non-overlapping rectangles, find each area as a product of its side lengths, and <b>add</b>.</div>
-    <div class="def amber"><b>Strategy B: subtract from a bounding box.</b> Take the smallest rectangle that contains the figure and <b>subtract</b> the missing corner piece (the <b>notch</b>).</div>
-  </div>
-  <p>Both give the <b>same polynomial</b> once expanded. Choose whichever is easier to see in a given figure.</p>
-  <div class="explainer" data-explainer="notch"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Subtract the whole notch.</b> Keep its brackets: <span class="tex">-(x^2+5x+6)=-x^2-5x-6</span>. Dropping the brackets gives <span class="tex">-x^2+5x+6</span>, which only subtracts the first term.</div></div>
-</section>
-
-<section class="card" data-ink="s1b" data-section="1. Adding the pieces">
-  <h3 class="sub">Strategy A on the same figure: slice it and add</h3>
-  <p>A slice makes new rectangles, and some of their sides aren’t labelled. A missing side is a <b>subtraction</b>: the whole side minus the part you know.</p>
-  <div class="explainer" data-explainer="pieces"></div>
-</section>
-
-<section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Bounding box minus a notch</h3></div>
-  <p class="q">The L-shaped figure below is the piece left over after a rectangular notch is cut from the top-right corner of a larger rectangle.</p>
-  <div class="u5-exg">
-    <div class="u5-fig" data-fig="ex1" style="--fw:330px;--fh:300px"></div>
-    <div class="u5-exparts">
-      <div class="part"><div class="pl">(a) Write the area of the figure as a trinomial <span class="tex">ax^2+bx+c</span>.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Box <span class="tex">(3x+4)(2x+5)=6x^2+15x+8x+20=6x^2+23x+20</span><br>Notch <span class="tex">(x+1)(x+2)=x^2+2x+x+2=x^2+3x+2</span><br>Area <span class="tex">=(6x^2+23x+20)-(x^2+3x+2)=\mathbf{5x^2+20x+18}</span>, so <span class="tex">a=5,\ b=20,\ c=18</span></div></div></div>
-      <div class="part"><div class="pl">(b) Evaluate the area when <span class="tex">x=2</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5(2)^2+20(2)+18=20+40+18=\mathbf{78}</span><br>Check with the figure: box <span class="tex">10\times9=90</span>, notch <span class="tex">3\times4=12</span>, <span class="tex">90-12=78</span> ✓</div></div></div>
-    </div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check (b) two ways.</b> Put <span class="tex">x=2</span> into the trinomial: <span class="keys"><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>2</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>1</kbd><kbd>8</kbd><kbd>ENTER</kbd></span>. Then use the figure’s own lengths at <span class="tex">x=2</span>: box minus notch. Both should say <b>78</b>.</div>
-    <div class="pill-col"><button class="pill" type="button" data-keys="5 × 2 x² + 20 × 2 + 18 =">The trinomial</button><button class="pill" type="button" data-keys="10 × 9 − 3 × 4 =">The figure</button></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Slice the L <b>sideways</b> instead, along the bottom of the notch. Do you get the same trinomial?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> Top piece <span class="tex">(2x+3)(x+2)=2x^2+7x+6</span>, bottom piece <span class="tex">(3x+4)(x+3)=3x^2+13x+12</span>. Sum: <span class="tex">5x^2+20x+18</span>. Any slicing (or the box minus the notch) gives the same area.</div></div></div>
-  <div class="space" id="ex1-space"></div>
-  <button class="more" data-more="ex1-space">+ More space</button>
-</section>
-
-<!-- ================= 2. Framed regions ================= -->
-<section class="card" data-ink="s2" data-section="2. Framed Regions">
-  <div class="sec-h"><span class="badge">2</span><h2>Framed Regions</h2></div>
-  <div class="def">A rectangular <b>frame</b> is a rectangle with a smaller rectangle removed from its interior. The shaded (remaining) area is <div class="u5-rule"><b>shaded area = outer area − inner area</b></div></div>
-  <p>If the opening is <b>set in</b> by the same amount on two opposite sides, that amount comes off the outer length <b>twice</b>.</p>
-  <div class="explainer" data-explainer="frame"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Set in on both sides means subtract twice.</b> A frame 3 cm wide around a 40 cm board leaves an opening <span class="tex">40-2(3)=34</span> cm wide, not 37 cm.</div></div>
-</section>
-
-<section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A frame with two different widths</h3></div>
-  <p class="q">In the figure below, a rectangular frame surrounds a smaller rectangular opening. The frame’s sides are <span class="tex">p</span> wide and its top and bottom are <span class="tex">q</span> wide, so the opening is set in by <span class="tex">p</span> on the left and right and by <span class="tex">q</span> along the top and bottom.</p>
-  <div class="u5-exg">
-    <div class="u5-fig" data-fig="ex2" style="--fw:340px;--fh:260px"></div>
-    <div class="u5-exparts">
-      <div class="part"><div class="pl">(a) Determine a simplified expression, in terms of <span class="tex">p</span> and <span class="tex">q</span>, for the shaded area.</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Opening: <span class="tex">(4p+3q)-2p=2p+3q</span> wide, <span class="tex">(3p+5q)-2q=3p+3q</span> high<br>Outer <span class="tex">(4p+3q)(3p+5q)=12p^2+29pq+15q^2</span><br>Inner <span class="tex">(2p+3q)(3p+3q)=6p^2+15pq+9q^2</span><br>Shaded <span class="tex">=\mathbf{6p^2+14pq+6q^2}</span></div></div></div>
-      <div class="part"><div class="pl">(b) Calculate the shaded area when <span class="tex">p=2</span> and <span class="tex">q=1</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6(4)+14(2)(1)+6(1)=24+28+6=\mathbf{58}</span><br>Check: outer <span class="tex">11\times11=121</span>, opening <span class="tex">7\times9=63</span>, <span class="tex">121-63=58</span> ✓</div></div></div>
-    </div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Two letters, two values.</b> Type each value where its letter was: <span class="keys"><kbd>6</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>4</kbd><kbd>×</kbd><kbd>2</kbd><kbd>×</kbd><kbd>1</kbd><kbd>+</kbd><kbd>6</kbd><kbd>×</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span>. The figure check is outer minus opening.</div>
-    <div class="pill-col"><button class="pill" type="button" data-keys="6 × 2 x² + 14 × 2 × 1 + 6 × 1 x² =">The polynomial</button><button class="pill" type="button" data-keys="11 × 11 − 7 × 9 =">The figure</button></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> When <span class="tex">p=2</span> and <span class="tex">q=1</span>, how big is the outer rectangle? Is the figure drawn to scale?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4(2)+3(1)=11</span> by <span class="tex">3(2)+5(1)=11</span>: it’s a <b>square</b>, with an opening 7 wide and 9 tall. The figure is <b>not to scale</b>. Trust the labels, not the picture.</div></div></div>
-  <div class="space" id="ex2-space"></div>
-  <button class="more" data-more="ex2-space">+ More space</button>
-</section>
-
-<!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
-<section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u3l5"></section>
-
-<!-- ================= 3. Modelling with squares and rectangles ================= -->
-<section class="card" data-ink="s3" data-section="3. Squares and Rectangles">
-  <div class="sec-h"><span class="badge">3</span><h2>Modelling with Squares and Rectangles</h2></div>
-  <p>Many real-world area problems are modelled the same way: a large region with one or more smaller regions removed from inside it.</p>
-  <div class="def gray"><b>region left over = big region − (number of pieces) × (area of one piece)</b></div>
-  <div class="explainer" data-explainer="garden"></div>
-  <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">(n+2)^2\ne n^2+4</span>. Squaring a binomial gives <b>three</b> terms: <span class="tex">n^2+4n+4</span>.</div></div>
-    <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">3(n+2)^2</span>: <b>square first</b>, then multiply by 3. It is not <span class="tex">(3n+6)^2</span>.</div></div>
-  </div>
-</section>
-
-<section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Garden with three flower beds</h3></div>
-  <p class="q">A rectangular garden has length <span class="tex">(3n+12)</span> m and width <span class="tex">(n+9)</span> m. Three square flower beds, each with side length <span class="tex">(n+2)</span> m, are planted inside the garden. The rest of the garden is grass.</p>
-  <div class="u5-exg">
-    <div class="u5-fig" data-fig="ex3" style="--fw:350px;--fh:220px"></div>
-    <div class="u5-exparts">
-      <div class="part"><div class="pl">(a) Write and simplify an expression for the area of grass in the garden.</div><div class="work" style="--h:320px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Garden <span class="tex">(3n+12)(n+9)=3n^2+27n+12n+108=3n^2+39n+108</span><br>Three beds <span class="tex">3(n+2)^2=3(n^2+4n+4)=3n^2+12n+12</span><br>Grass <span class="tex">=\mathbf{27n+96}</span> m² (the <span class="tex">n^2</span> terms cancel)</div></div></div>
-      <div class="part"><div class="pl">(b) Determine the area of grass when <span class="tex">n=2</span>, and check your answer using the dimensions.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">27(2)+96=\mathbf{150}</span> m²<br>Check: garden <span class="tex">18\times11=198</span>, beds <span class="tex">3\times4^2=48</span>, <span class="tex">198-48=150</span> ✓</div></div></div>
-    </div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check with the dimensions.</b> At <span class="tex">n=2</span> the garden is 18 m by 11 m and each bed is 4 m by 4 m: <span class="keys"><kbd>1</kbd><kbd>8</kbd><kbd>×</kbd><kbd>1</kbd><kbd>1</kbd><kbd>−</kbd><kbd>3</kbd><kbd>×</kbd><kbd>4</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> should match <span class="tex">27(2)+96</span>.</div>
-    <div class="pill-col"><button class="pill" type="button" data-keys="27 × 2 + 96 =">The polynomial</button><button class="pill" type="button" data-keys="18 × 11 − 3 × 4 x² =">The dimensions</button></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why did the <span class="tex">n^2</span> terms cancel in this garden?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The garden’s <span class="tex">n^2</span> term is <span class="tex">3n\times n=3n^2</span>, and three beds give <span class="tex">3\times n^2=3n^2</span>. They’re <b>equal</b>, so the grass area grows only <b>linearly</b> as <span class="tex">n</span> grows.</div></div></div>
-  <div class="space" id="ex3-space"></div>
-  <button class="more" data-more="ex3-space">+ More space</button>
-</section>
-
-<!-- volume -->
-<section class="card" data-ink="s3b" data-section="3. Volume: one more factor">
-  <h3 class="sub">From area to volume: one more factor</h3>
-  <p>A rectangular box has volume <b>length × width × height</b>, so its volume is a product of <b>three</b> polynomials. Multiply two of them first (the base area), then multiply that result by the third (the height).</p>
-  <div class="explainer" data-explainer="box"></div>
-  <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Pick a friendly pair first.</b> In <span class="tex">(x-2)(x+5)(x-5)</span>, the pair <span class="tex">(x+5)(x-5)</span> is a difference of squares, <span class="tex">x^2-25</span>: multiply that pair first and only <b>four</b> partial products are left.</div></div>
-    <div class="tip calc-tip">
-      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-      <div><b>Check a cubic.</b> <span class="tex">x^3+6x^2+11x+6</span> at <span class="tex">x=2</span>: <span class="keys"><kbd>2</kbd><kbd>^</kbd><kbd>3</kbd><kbd>+</kbd><kbd>6</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>1</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives <b>60</b>, and so does <span class="tex">3\times4\times5</span>.</div>
-      <button class="pill" type="button" data-keys="2 ^ 3 + 6 × 2 x² + 11 × 2 + 6 =">Show me</button>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 4. Equation solving ================= -->
-<section class="card" data-ink="s4" data-section="4. Equation Solving">
-  <div class="sec-h"><span class="badge">4</span><h2>Equation Solving</h2></div>
-  <p>Some problems describe a figure with polynomial expressions <b>plus a rule</b> that must hold, for example the <b>Pythagorean theorem</b> for a right triangle. Expanding both sides of the resulting equation often <b>cancels the highest-degree terms</b>, leaving a linear equation to solve.</p>
-  <div class="u5-steps">
-    <div><span class="u5-n">1</span><b>Write the rule</b> with the polynomials in it.</div>
-    <div><span class="u5-n">2</span><b>Expand</b> each side and collect like terms.</div>
-    <div><span class="u5-n">3</span>The <span class="tex">x^2</span> terms <b>cancel</b>: solve the linear equation.</div>
-    <div><span class="u5-n">4</span><b>Check</b>: put the value back into the figure.</div>
-  </div>
-  <div class="explainer" data-explainer="cancel"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>The squared terms must match exactly to cancel.</b> If they don’t, recheck the squares: the middle term is the usual casualty. <span class="tex">(4x+8)^2=16x^2+64x+64</span>, not <span class="tex">16x^2+64</span>.</div></div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> A <b>square</b> photo gets a frame 2 cm wide all the way around, and the frame’s area is 96 cm². How big is the photo?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Side <span class="tex">s</span>: outside <span class="tex">s+4</span>. <span class="tex">(s+4)^2-s^2=96\Rightarrow 8s+16=96\Rightarrow s=\mathbf{10}</span> cm. The <span class="tex">s^2</span> terms cancel. (Replay it with the <b>Framed photo</b> chip above.)</div></div></div>
-</section>
-
-<section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The Pythagorean theorem with polynomial sides</h3></div>
-  <p class="q">The hypotenuse of a right triangle is <span class="tex">(5x+1)</span> cm long, and the lengths of the other two sides are <span class="tex">(4x+8)</span> cm and <span class="tex">(3x-15)</span> cm.</p>
-  <div class="u5-exg">
-    <div class="u5-fig" data-fig="ex4" style="--fw:300px;--fh:230px"></div>
-    <div class="u5-exparts">
-      <div class="part"><div class="pl">Form an equation using the Pythagorean theorem, and solve it to determine the lengths of all three sides of the triangle.</div><div class="work" style="--h:470px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5x+1)^2=(4x+8)^2+(3x-15)^2</span><br><span class="tex">25x^2+10x+1=(16x^2+64x+64)+(9x^2-90x+225)</span><br><span class="tex">25x^2+10x+1=25x^2-26x+289</span><br><span class="tex">36x=288</span>, so <span class="tex">x=8</span><br><b>The sides are 9 cm, 40 cm and 41 cm</b> (check: <span class="tex">9^2+40^2=1\,681=41^2</span> ✓)</div></div></div>
-    </div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check the triangle.</b> The two legs squared and added should equal the hypotenuse squared: <span class="keys"><kbd>9</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>4</kbd><kbd>0</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>4</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> both give 1 681.</div>
-    <div class="pill-col"><button class="pill" type="button" data-keys="9 x² + 40 x² =">The legs</button><button class="pill" type="button" data-keys="41 x² =">The hypotenuse</button></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why must <span class="tex">x</span> be greater than 5 in this triangle?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A side length must be <b>positive</b>: <span class="tex">3x-15&gt;0</span> means <span class="tex">x&gt;5</span>. Our <span class="tex">x=8</span> passes, giving <span class="tex">3(8)-15=9</span> cm.</div></div></div>
-  <div class="space" id="ex4-space"></div>
-  <button class="more" data-more="ex4-space">+ More space</button>
-</section>
-
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -278,7 +290,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u3l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u3l5', homeHref: '../../', title: '3.5 Applying Polynomial Products' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

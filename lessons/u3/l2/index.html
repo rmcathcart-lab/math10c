@@ -17,12 +17,21 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u3l2.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Grow the Garden">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Grow the Garden</h2></div>
+  <div class="vw-seq has-art"><div class="vw-txt"><p class="vw-ctx">A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>.</p><p class="vw-ask">How much garden area is added?</p></div><div class="vw-art"><svg viewBox="0 0 330 250" role="img" aria-label="A garden growing longer and wider"><rect x="40" y="60" fill="#cfe8c9" stroke="#12805a" stroke-width="4" stroke-dasharray="8 6"><animate attributeName="width" values="200;240;240;200" keyTimes="0;.4;.85;1" dur="4s" repeatCount="indefinite"/><animate attributeName="height" values="120;160;160;120" keyTimes="0;.4;.85;1" dur="4s" repeatCount="indefinite"/></rect><rect x="40" y="60" width="200" height="120" fill="#8fcf8a" stroke="#4a4436" stroke-width="4"/><text x="140" y="128" font-size="26" text-anchor="middle">🌷 🥕 🌻</text><text x="140" y="48" font-size="20" fill="#4a4436" text-anchor="middle">10 m</text><text x="22" y="126" font-size="20" fill="#4a4436" text-anchor="middle">6 m</text></svg></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Is it just 2 × 2?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>36 m².</b> The new garden is <span class="tex">12\times8=96</span> m², and <span class="tex">96-60=36</span>. That is two strips (12 and 20) plus a 2 by 2 corner.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,42 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Grow the Garden" style="--wf-side: 370px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Grow the Garden</h2>
-  <p class="wf-rule">A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>. Each little square is 1 m². <span class="muted">Tap the buttons to grow one side at a time.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div class="u3l2-gd" id="garden"></div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">1</div><div>What is the area of the old (green) garden?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times6=\boldsymbol{60}</span> m²</div></div>
-      </div>
-  </div><div class="wf-side">
-      <div class="wq">
-        <div class="q-line"><div class="q-num">2</div><div>Suppose only the <b>10 m</b> side grew, to 12 m. How much area would be added?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">12\times6=72</span>, so <b>12 m²</b> is added: one strip, 2 m by 6 m.</div></div>
-      </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">3</div><div>Suppose only the <b>6 m</b> side grew, to 8 m. How much area would be added?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times8=80</span>, so <b>20 m²</b> is added: one strip, 10 m by 2 m.</div></div>
-      </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Now <b>both</b> sides grow by 2 m. How much garden area is added? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> 4 m²</div>
-      <div class="opt"><b>B</b> 32 m²</div>
-      <div class="opt right"><b>C</b> 36 m²</div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C, 36 m².</b> The new garden is <span class="tex">12\times8=96</span> m², and <span class="tex">96-60=36</span>. Grow both sides in the picture: the new land is <b>three</b> pieces, <span class="tex">20+12+4=36</span>.<br>
-      <span class="muted"><b>B</b> adds the answers to 2 and 3 (<span class="tex">12+20</span>) and forgets the <b>2 × 2 corner</b>. <b>A</b> is only the corner. The corner is today’s whole lesson.</span></div>
-  </div>
-  </div></div>
 
-  <div class="wq wq-wide">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A 10 m by 10 m garden grows 3 m each way. How much area is added?</div></div>
-    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>69 m²:</b> two strips and a corner, <span class="tex">30+30+9=69</span>. Check: <span class="tex">13^2-100=169-100=69</span>.</div></div>
-  </div>
-</section>
 
 <!-- ================= 1. The area model ================= -->
 <section class="card" data-ink="s1" data-section="1. The Area Model">
@@ -135,7 +109,7 @@
 <section class="card" data-ink="s3" data-section="3. Expanding and Simplifying">
   <div class="sec-h"><span class="badge">3</span><h2>Expanding and Simplifying</h2></div>
   <div class="def">When an expression has <b>more than one set of brackets</b>, expand each bracket first, then <b>combine like terms</b>.</div>
-  <div class="explainer" data-explainer="distB"></div>
+  <div data-extra><div class="explainer" data-explainer="distB"></div></div>
   <div class="tip-row">
     <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t do <span class="tex">8-3</span> first.</b> In <span class="tex">8-3(5x+2)</span> the 3 is stuck to the bracket: multiply before you subtract. <span class="tex">8-15x-6</span>, not <span class="tex">5(5x+2)</span>.</div></div>
     <div class="tip watch"><div class="tip-ic">!</div><div><b>A bare minus means <span class="tex">-1</span>.</b> <span class="tex">-(6x+2x^2)=-6x-2x^2</span>: <b>every</b> sign inside the bracket flips, not just the first.</div></div>
@@ -163,7 +137,7 @@
     <div class="def amber"><b>Subtract</b> a missing corner from a larger rectangle.</div>
   </div>
   <p>Both must give the <b>same</b> expression, so doing it both ways is a built-in check.</p>
-  <div class="explainer" data-explainer="composite"></div>
+  <div data-extra><div class="explainer" data-explainer="composite"></div></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
@@ -176,6 +150,15 @@
   </div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–10">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 2 · Questions 1–10</h2>
+  <p class="pr-t">Area models and the distributive property.</p>
+  <div class="pr-chips n1"><span><b>1–10</b>Area models and the distributive property</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 7.</span><a class="pill" href="../../../#/lesson/u3l2">Open the Practice site</a></div>
 </section>
 
 <!-- ================= 5. Binomials with an area model ================= -->
@@ -227,7 +210,7 @@
 <section class="card" data-ink="s5c" data-section="5. Two-digit numbers">
   <h3 class="sub">The same grid multiplies two-digit numbers</h3>
   <p>Split each number into <b>tens and ones</b>, then add the four partial products. No calculator needed, and it shows <b>why</b> the grid works: let <span class="tex">t=10</span>, and every two-digit number is a binomial in <span class="tex">t</span>.</p>
-  <div class="explainer" data-explainer="digits"></div>
+  <div data-extra><div class="explainer" data-explainer="digits"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Check the grid on the calculator.</b> <span class="keys"><kbd>4</kbd><kbd>1</kbd><kbd>×</kbd><kbd>5</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 2 173, the same as <span class="tex">2\,000+50+120+3</span>.</div>
@@ -241,7 +224,7 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(a) <span class="tex">32\times45</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Split <span class="tex">32=30+2</span> and <span class="tex">45=40+5</span>.<div class="u3l2-grid" data-top="30,2" data-side="40,5"></div><span class="tex">1\,200+80+150+10=\boldsymbol{1\,440}</span></div></div></div>
     <div class="part"><div class="pl">(b) <span class="tex">67\times84</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Split <span class="tex">67=60+7</span> and <span class="tex">84=80+4</span>.<div class="u3l2-grid" data-top="60,7" data-side="80,4"></div><span class="tex">4\,800+560+240+28=\boldsymbol{5\,628}</span></div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Sam says <span class="tex">41\times53=40\times50+1\times3=2\,003</span>. Use the grid to explain what Sam forgot.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sam only used <b>two</b> of the four cells. The other two, <span class="tex">50\times1=50</span> and <span class="tex">3\times40=120</span>, are missing: <span class="tex">2\,003+170=\boldsymbol{2\,173}</span>. It’s the same mistake as <span class="tex">(x+4)(x+1)=x^2+4</span>.</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> Sam says <span class="tex">41\times53=40\times50+1\times3=2\,003</span>. Use the grid to explain what Sam forgot.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sam only used <b>two</b> of the four cells. The other two, <span class="tex">50\times1=50</span> and <span class="tex">3\times40=120</span>, are missing: <span class="tex">2\,003+170=\boldsymbol{2\,173}</span>. It’s the same mistake as <span class="tex">(x+4)(x+1)=x^2+4</span>.</div></div></div>
   </div>
   <div class="space" id="ex7-space"></div>
   <button class="more" data-more="ex7-space">+ More space</button>
@@ -263,7 +246,7 @@
     <div class="part"><div class="pl">(b) <span class="tex">(a-6)(3a-2)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a(3a-2)-6(3a-2)=3a^2-2a-18a+12</span><br><span class="tex">=\boldsymbol{3a^2-20a+12}</span></div></div></div>
     <div class="part"><div class="pl">(c) <span class="tex">(m-9)(n-9)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m(n-9)-9(n-9)=mn-9m-9n+81</span><br>No like terms: <span class="tex">\boldsymbol{mn-9m-9n+81}</span></div></div></div>
     <div class="part"><div class="pl">(d) <span class="tex">(x+3y)(x-8y)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x(x-8y)+3y(x-8y)=x^2-8xy+3xy-24y^2</span><br><span class="tex">=\boldsymbol{x^2-5xy-24y^2}</span></div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Parts (a), (b) and (d) each had two middle terms to collect. Why didn’t (c)?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In (c) the two binomials use <b>different letters</b>, so the middle products <span class="tex">-9m</span> and <span class="tex">-9n</span> aren’t like terms. In the others both middle products have the same letters (<span class="tex">3x</span> and <span class="tex">5x</span>; <span class="tex">-8xy</span> and <span class="tex">3xy</span>).</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> Parts (a), (b) and (d) each had two middle terms to collect. Why didn’t (c)?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In (c) the two binomials use <b>different letters</b>, so the middle products <span class="tex">-9m</span> and <span class="tex">-9n</span> aren’t like terms. In the others both middle products have the same letters (<span class="tex">3x</span> and <span class="tex">5x</span>; <span class="tex">-8xy</span> and <span class="tex">3xy</span>).</div></div></div>
   </div>
   <div class="space" id="ex8-space"></div>
   <button class="more" data-more="ex8-space">+ More space</button>
@@ -281,7 +264,7 @@
   <div class="explainer" data-explainer="foil"></div>
 </section>
 
-<section class="card" data-ink="s6c" data-section="6. FOIL is only 2 × 2">
+<section data-extra class="card" data-ink="s6c" data-section="6. FOIL is only 2 × 2">
   <h3 class="sub">FOIL is only the 2 × 2 case</h3>
   <p>FOIL works only for a <b>binomial times a binomial</b>: exactly <span class="tex">2\times2=4</span> products. A binomial times a trinomial (Lesson 4) has <span class="tex">2\times3=6</span> products, and FOIL would miss two of them. The distributive property, “<b>every term times every term</b>”, always works.</p>
   <div class="explainer" data-explainer="foilLimit"></div>
@@ -304,7 +287,7 @@
 <section class="card" data-ink="s6d" data-section="6. Check by substitution">
   <h3 class="sub">Is my expansion right? Check by substitution</h3>
   <p>A product and its expansion are <b>equal for every value</b> of the variable. Substitute a small number such as <span class="tex">x=2</span> into both: they must give the same value. For Example 9(a): <span class="tex">(2+7)(2+2)=36</span> and <span class="tex">2^2+9(2)+14=36</span> ✓</p>
-  <div class="explainer" data-explainer="subCheck"></div>
+  <div data-extra><div class="explainer" data-explainer="subCheck"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Check Example 9(a) at <span class="tex">x=2</span>.</b> The product: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>+</kbd><kbd>7</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>2</kbd><kbd>+</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. The expansion: <span class="keys"><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>9</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>1</kbd><kbd>4</kbd><kbd>ENTER</kbd></span>. Both give 36 ✓</div>
@@ -330,6 +313,43 @@
   <button class="more" data-more="ex10-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Grow the Garden" style="--wf-side: 370px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Grow the Garden</h2>
+  <p class="wf-rule">A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>. Each little square is 1 m². <span class="muted">Tap the buttons to grow one side at a time.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div class="u3l2-gd" id="garden"></div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">1</div><div>What is the area of the old (green) garden?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times6=\boldsymbol{60}</span> m²</div></div>
+      </div>
+  </div><div class="wf-side">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">2</div><div>Suppose only the <b>10 m</b> side grew, to 12 m. How much area would be added?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">12\times6=72</span>, so <b>12 m²</b> is added: one strip, 2 m by 6 m.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">3</div><div>Suppose only the <b>6 m</b> side grew, to 8 m. How much area would be added?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times8=80</span>, so <b>20 m²</b> is added: one strip, 10 m by 2 m.</div></div>
+      </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Now <b>both</b> sides grow by 2 m. How much garden area is added? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 4 m²</div>
+      <div class="opt"><b>B</b> 32 m²</div>
+      <div class="opt right"><b>C</b> 36 m²</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C, 36 m².</b> The new garden is <span class="tex">12\times8=96</span> m², and <span class="tex">96-60=36</span>. Grow both sides in the picture: the new land is <b>three</b> pieces, <span class="tex">20+12+4=36</span>.<br>
+      <span class="muted"><b>B</b> adds the answers to 2 and 3 (<span class="tex">12+20</span>) and forgets the <b>2 × 2 corner</b>. <b>A</b> is only the corner. The corner is today’s whole lesson.</span></div>
+  </div>
+  </div></div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A 10 m by 10 m garden grows 3 m each way. How much area is added?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>69 m²:</b> two strips and a corner, <span class="tex">30+30+9=69</span>. Check: <span class="tex">13^2-100=169-100=69</span>.</div></div>
+  </div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -340,7 +360,7 @@
     <div><b>Check by substitution</b> at <span class="tex">x=2</span>: both forms give the same number. And two-digit multiplication <b>is</b> binomial multiplication: <span class="tex">41\times53=(40+1)(50+3)</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u3l2">
-    <div><div class="kicker">Your turn</div><b>Assignment 2 — Multiplying Monomials and Binomials</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 2 · Questions 11–21</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l3/">
     <div><div class="kicker">Next lesson</div><b>Lesson 3 — Multiplying Polynomials I: Special Products</b><div class="muted">Squaring a binomial, and sum times difference</div></div><span class="arrow">→</span>
@@ -353,7 +373,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u3l2.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u3l2', homeHref: '../../', title: '3.2 Multiplying Monomials and Binomials' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

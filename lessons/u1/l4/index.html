@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l4.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The 100th Digit">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="150" y="46" font-size="42" text-anchor="middle">🧮</text></g><text x="210" y="46" font-size="32" text-anchor="middle">❓<animate attributeName="opacity" values="1;0.15;1" dur="1.6s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The 100th Digit</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx"><span class="tex">\dfrac17=0.142857142857\ldots</span></p><p class="vw-ask">What is the <b>100th digit</b> after the decimal point in <span class="tex">\dfrac17</span>?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>You don’t need to write out 100 digits.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>8.</b> The six digits 142857 repeat. 96 digits is 16 full blocks, so the 100th digit is the 4th digit of the block.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,52 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Cyclic Number" style="--wf-side: 310px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Cyclic Number 142857</h2>
-  <p class="wf-rule">Divide by 7 and the same six digits go round and round, like a clock. <b>Same digits, same order</b> — each fraction just starts at a different spot on the clock.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="cy-top">
-    <div class="cy-clockcol">
-      <div id="cy-clock" class="cy-clock"></div>
-      <div class="cy-chips no-ink" id="cy-chips"></div>
-      <div class="cy-read" id="cy-read">Tap a fraction to spin the clock.</div>
-    </div>
-    <div class="cy-table">
-      <div class="cy-row"><span class="tex">\dfrac{1}{7}=</span><span class="cy-dec">0.<b>142857</b>&thinsp;142857&thinsp;142…</span></div>
-      <div class="cy-row"><span class="tex">\dfrac{2}{7}=</span><span class="cy-dec">0.<b>285714</b>&thinsp;285714&thinsp;285…</span></div>
-      <div class="cy-row"><span class="tex">\dfrac{3}{7}=</span><span class="cy-dec">0.<b>428571</b>&thinsp;428571&thinsp;428…</span></div>
-      <div class="cy-row"><span class="tex">\dfrac{4}{7}=</span><span class="cy-dec">0.<span class="cy-blanks"><button class="blank" data-a="5"></button><button class="blank" data-a="7"></button><button class="blank" data-a="1"></button><button class="blank" data-a="4"></button><button class="blank" data-a="2"></button><button class="blank" data-a="8"></button></span>…</span></div>
-    </div>
-  </div>
-  <div class="cy-qcol">
-      <div class="q-line"><div class="q-num">1</div><div>Use the clock to write <span class="tex">\dfrac{4}{7}</span> as a decimal. <span class="muted">(Tap the blanks, or tap <span class="tex">\dfrac{4}{7}</span> under the clock.)</span></div></div>
-      <div class="q-line"><div class="q-num">2</div><div>Predict <b>142857 × 3</b> <em>without</em> multiplying.
-        <div class="cy-ans" id="cy-a2"><button class="pill small" data-toggle="cy-a2">Reveal</button><span><b>428571</b> — it’s the <span class="tex">\dfrac37</span> row, because <span class="tex">3\times\dfrac17=\dfrac37</span>.</span></div></div></div>
-      <div class="q-line"><div class="q-num">3</div><div>In <span class="tex">\dfrac17</span>, what is the <b>7th</b> digit after the decimal point? The <b>12th</b>?
-        <div class="cy-ans" id="cy-a3"><button class="pill small" data-toggle="cy-a3">Reveal</button><span><b>7th: 1</b> (the block starts over) &nbsp; <b>12th: 7</b> (end of the 2nd block)</span></div></div></div>
-      <div class="cy-strip" id="cy-strip"></div>
-  </div>
-  </div><div class="wf-side">
-  <div class="cy-bet">
-    <div><b>Bet a neighbour:</b> what is <b>142857 × 7</b>? Both predict, <b>then</b> check.</div>
-    <button class="pill" data-keys="142857 × 7 =">Show me</button><button class="pill" data-toggle="cy-a4">Why?</button>
-    <div class="cy-ans" id="cy-a4"><span><b>999 999.</b> Because <span class="tex">7\times\dfrac17=\dfrac77=1</span>, and <span class="tex">1=0.999999\ldots</span> So <span class="tex">\dfrac17=0.\overline{142857}</span> is <b>repeating</b>, <b>non-terminating</b> — and still a fraction.</span></div>
-  </div>
-    <div class="poll cy-poll wf-poll">
-      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>100th</b> digit after the decimal point in <span class="tex">\dfrac{1}{7}</span>? <b>Guess first.</b></div></div>
-      <div class="poll-opts cy-opts">
-        <div class="opt"><b>A</b> 1</div>
-        <div class="opt"><b>B</b> 2</div>
-        <div class="opt"><b>C</b> 7</div>
-        <div class="opt right"><b>D</b> 8</div>
-      </div>
-      <button class="pill" data-poll>Reveal</button>
-      <button class="pill" id="cy-count">Count to 100 on the clock</button>
-      <div class="poll-ans"><b>D — 8.</b> The block has 6 digits. <b>100 = 16 × 6 + 4</b>: sixteen full trips round the clock (96 digits), then 4 more: 1, 4, 2, <b>8</b>.
-        <div class="muted small">Traps: A — “100 is round, so it starts over”; B — counting 3 instead of 4; C — the end of a block is at 96, not 100.</div></div>
-    </div>
-  </div></div>
-</section>
+
 
 <!-- ================= 1. Starter ================= -->
 <section class="card" data-ink="s1" data-section="1. Starter: Where does the decimal lead?">
@@ -150,7 +115,7 @@
   <div class="tip watch"><div class="tip-ic">!</div><div><b>The bar goes over the repeating block only.</b> <span class="tex">0.8333\ldots=0.8\overline{3}</span>, not <span class="tex">0.\overline{83}</span> (that would be 0.838383…).</div></div>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Why fractions repeat">
+<section data-extra class="card" data-ink="s2b" data-section="2. Why fractions repeat">
   <h3 class="sub">Why does a fraction always terminate or repeat?</h3>
   <p>Divide one digit at a time and watch the <b>remainders</b>. Dividing by 7 can only leave a remainder of 0, 1, 2, 3, 4, 5 or 6 — so sooner or later we either get <b>0</b> (it stops) or a remainder <b>comes back</b> (and everything after it repeats).</p>
   <div class="explainer" data-explainer="longdiv"></div>
@@ -181,10 +146,10 @@
       <div class="eg"><span class="tex">\sqrt{7}=2.6457513\ldots</span> &nbsp; <span class="tex">\pi=3.14159\ldots</span></div></div>
   </div>
   <div class="def gray"><b>Quick test for a fraction in lowest terms:</b> if the denominator’s prime factors are <b>only 2s and 5s</b>, the decimal terminates; otherwise it repeats. Either way, it’s <b>rational</b>.</div>
-  <div class="explainer" data-explainer="denoms"></div>
+  <div data-extra><div class="explainer" data-explainer="denoms"></div></div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Does it repeat?">
+<section data-extra class="card" data-ink="s3b" data-section="3. Does it repeat?">
   <h3 class="sub">Does it ever repeat? Wrap the digits and look for stripes</h3>
   <p>Write the digits in rows. If a block repeats, some row length lines the block up and every column becomes a <b>single digit</b>. Irrational numbers never line up — no matter how long the rows.</p>
   <div class="explainer" data-explainer="stripes"></div>
@@ -198,7 +163,7 @@
   <h3 class="sub">Rational or irrational? Ask one question at a time</h3>
   <div class="explainer" data-explainer="flow"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>A root sign doesn’t make a number irrational.</b> <span class="tex">\sqrt{121}=11</span>, <span class="tex">\sqrt{2.89}=1.7</span> and <span class="tex">\sqrt{0.25}=0.5</span> are all rational. Only roots of <b>non-perfect squares</b> are irrational.</div></div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> People sometimes use <span class="tex">\dfrac{22}{7}</span> for π. Is <span class="tex">\dfrac{22}{7}</span> equal to π?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">\dfrac{22}{7}=3.\overline{142857}</span> repeats, so it’s <b>rational</b>. <span class="tex">\pi=3.14159\ldots</span> never repeats. They agree only to 3.14 — <span class="tex">\dfrac{22}{7}</span> is just <b>close</b> to π.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> People sometimes use <span class="tex">\dfrac{22}{7}</span> for π. Is <span class="tex">\dfrac{22}{7}</span> equal to π?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">\dfrac{22}{7}=3.\overline{142857}</span> repeats, so it’s <b>rational</b>. <span class="tex">\pi=3.14159\ldots</span> never repeats. They agree only to 3.14 — <span class="tex">\dfrac{22}{7}</span> is just <b>close</b> to π.</div></div></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
@@ -282,6 +247,15 @@
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–8">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 4 · Questions 1–8</h2>
+  <p class="pr-t">Decimal patterns, ordering and calculator conversions.</p>
+  <div class="pr-chips n2"><span><b>1–3</b>Rational or irrational?</span><span><b>4–8</b>Ordering and calculator conversions</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u1l4">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -371,6 +345,53 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Cyclic Number" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Cyclic Number 142857</h2>
+  <p class="wf-rule">Divide by 7 and the same six digits go round and round, like a clock. <b>Same digits, same order</b> — each fraction just starts at a different spot on the clock.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="cy-top">
+    <div class="cy-clockcol">
+      <div id="cy-clock" class="cy-clock"></div>
+      <div class="cy-chips no-ink" id="cy-chips"></div>
+      <div class="cy-read" id="cy-read">Tap a fraction to spin the clock.</div>
+    </div>
+    <div class="cy-table">
+      <div class="cy-row"><span class="tex">\dfrac{1}{7}=</span><span class="cy-dec">0.<b>142857</b>&thinsp;142857&thinsp;142…</span></div>
+      <div class="cy-row"><span class="tex">\dfrac{2}{7}=</span><span class="cy-dec">0.<b>285714</b>&thinsp;285714&thinsp;285…</span></div>
+      <div class="cy-row"><span class="tex">\dfrac{3}{7}=</span><span class="cy-dec">0.<b>428571</b>&thinsp;428571&thinsp;428…</span></div>
+      <div class="cy-row"><span class="tex">\dfrac{4}{7}=</span><span class="cy-dec">0.<span class="cy-blanks"><button class="blank" data-a="5"></button><button class="blank" data-a="7"></button><button class="blank" data-a="1"></button><button class="blank" data-a="4"></button><button class="blank" data-a="2"></button><button class="blank" data-a="8"></button></span>…</span></div>
+    </div>
+  </div>
+  <div class="cy-qcol">
+      <div class="q-line"><div class="q-num">1</div><div>Use the clock to write <span class="tex">\dfrac{4}{7}</span> as a decimal. <span class="muted">(Tap the blanks, or tap <span class="tex">\dfrac{4}{7}</span> under the clock.)</span></div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Predict <b>142857 × 3</b> <em>without</em> multiplying.
+        <div class="cy-ans" id="cy-a2"><button class="pill small" data-toggle="cy-a2">Reveal</button><span><b>428571</b> — it’s the <span class="tex">\dfrac37</span> row, because <span class="tex">3\times\dfrac17=\dfrac37</span>.</span></div></div></div>
+      <div class="q-line"><div class="q-num">3</div><div>In <span class="tex">\dfrac17</span>, what is the <b>7th</b> digit after the decimal point? The <b>12th</b>?
+        <div class="cy-ans" id="cy-a3"><button class="pill small" data-toggle="cy-a3">Reveal</button><span><b>7th: 1</b> (the block starts over) &nbsp; <b>12th: 7</b> (end of the 2nd block)</span></div></div></div>
+      <div class="cy-strip" id="cy-strip"></div>
+  </div>
+  </div><div class="wf-side">
+  <div class="cy-bet">
+    <div><b>Bet a neighbour:</b> what is <b>142857 × 7</b>? Both predict, <b>then</b> check.</div>
+    <button class="pill" data-keys="142857 × 7 =">Show me</button><button class="pill" data-toggle="cy-a4">Why?</button>
+    <div class="cy-ans" id="cy-a4"><span><b>999 999.</b> Because <span class="tex">7\times\dfrac17=\dfrac77=1</span>, and <span class="tex">1=0.999999\ldots</span> So <span class="tex">\dfrac17=0.\overline{142857}</span> is <b>repeating</b>, <b>non-terminating</b> — and still a fraction.</span></div>
+  </div>
+    <div class="poll cy-poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>100th</b> digit after the decimal point in <span class="tex">\dfrac{1}{7}</span>? <b>Guess first.</b></div></div>
+      <div class="poll-opts cy-opts">
+        <div class="opt"><b>A</b> 1</div>
+        <div class="opt"><b>B</b> 2</div>
+        <div class="opt"><b>C</b> 7</div>
+        <div class="opt right"><b>D</b> 8</div>
+      </div>
+      <button class="pill" data-poll>Reveal</button>
+      <button class="pill" id="cy-count">Count to 100 on the clock</button>
+      <div class="poll-ans"><b>D — 8.</b> The block has 6 digits. <b>100 = 16 × 6 + 4</b>: sixteen full trips round the clock (96 digits), then 4 more: 1, 4, 2, <b>8</b>.
+        <div class="muted small">Traps: A — “100 is round, so it starts over”; B — counting 3 instead of 4; C — the end of a block is at 96, not 100.</div></div>
+    </div>
+  </div></div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -381,7 +402,7 @@
     <div>Repeating decimal → fraction: <b>F◂▸D</b> on the calculator (fill the screen), or algebra: multiply by powers of 10 so the tails <b>cancel</b>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Rational Numbers, Irrational Numbers, and Decimal Patterns</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 · Questions 9–12</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign l3-next" href="../l5/">
     <div><div class="kicker">Next lesson</div><b>1.5 Classifying the Real Number System</b></div><span class="arrow">→</span>
@@ -394,7 +415,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l4.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l4', homeHref: '../../', title: '1.4 Rational and Irrational Numbers' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

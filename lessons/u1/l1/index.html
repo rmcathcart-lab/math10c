@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l1.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Unwrap the Number">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="110" y="46" font-size="40" text-anchor="middle">🎁</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="170" y="46" font-size="30" text-anchor="middle">🎁</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/><text x="220" y="46" font-size="22" text-anchor="middle">🎁</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Unwrap the Number</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Split <b>360</b> into two smaller numbers that multiply to it. Then split those, and keep going until nothing splits any more.</p><p class="vw-ctx">Everyone starts a different way: 36 × 10, 6 × 60, 2 × 180…</p><p class="vw-ask">Will everyone end up with the same pile of numbers?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Try two different starts.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Yes, always.</b> Every route ends at <span class="tex">2\times2\times2\times3\times3\times5</span>. A number has only one set of prime building blocks.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,44 +52,7 @@
 </section>
 
 <!-- ================= warm-up (one screen: the questions and the picture together) ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Unwrap the Number">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Unwrap the Number</h2>
-    <p class="wf-rule">Open any box into <b>two smaller boxes that multiply</b> to it. <b class="teal">Prime</b> boxes are <b class="teal">sealed</b>. <span class="muted">(No 1 boxes!)</span></p></div>
-  <div class="wf-grid">
-    <div class="wf-main">
-      <div class="seal-q">
-        <div class="q-num">1</div>
-        <div class="wf-q1"><div><b>Which of these are sealed?</b><div class="muted wf-hint">Tap a box to try to open it.</div></div>
-          <div class="gift-row">
-            <button class="giftbtn" data-v="9"><span>9</span><small>&nbsp;</small></button>
-            <button class="giftbtn" data-v="11"><span>11</span><small>&nbsp;</small></button>
-            <button class="giftbtn" data-v="15"><span>15</span><small>&nbsp;</small></button>
-            <button class="giftbtn" data-v="17"><span>17</span><small>&nbsp;</small></button>
-            <button class="giftbtn" data-v="21"><span>21</span><small>&nbsp;</small></button>
-          </div>
-        </div>
-      </div>
-      <div class="q-line"><div class="q-num">2</div><div><b>Unwrap 360 all the way.</b> Maya opened it as 2 × 180. Leo opened it as 10 × 36. Tap a box that can still open and pick how to split it.</div></div>
-      <div class="two-trees">
-        <div class="tree-card"><div class="tree-name">Maya</div><div id="tree-maya" class="ft-host" style="--fth:252px"></div></div>
-        <div class="tree-card"><div class="tree-name">Leo</div><div id="tree-leo" class="ft-host" style="--fth:252px"></div></div>
-      </div>
-    </div>
-    <div class="wf-side">
-    <div id="compare" class="compare"></div>
-    <aside class="poll wf-poll">
-      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Everyone in the class unwraps 360 their own way. How many <b>different sets</b> of sealed boxes will we get? <b>Guess first.</b></div></div>
-      <div class="poll-opts">
-        <div class="opt"><b>A</b> Lots — about one per student</div>
-        <div class="opt"><b>B</b> A few — it depends on the first split</div>
-        <div class="opt right"><b>C</b> Just one set</div>
-      </div>
-      <button class="pill" data-poll>Reveal</button>
-      <div class="poll-ans"><b>C — just one set.</b> Every route ends at 360 = 2 × 2 × 2 × 3 × 3 × 5. The trees look different, but the sealed boxes never change. <b>Every composite number has exactly one set of prime building blocks.</b></div>
-    </aside>
-    </div>
-  </div>
-</section>
+
 
 <!-- ================= 1. Factors ================= -->
 <section class="card" data-ink="s1" data-section="1. Factors">
@@ -87,7 +60,7 @@
   <div class="def"><b>Factors</b> of a whole number are the whole numbers that divide into it <b>evenly</b> (no remainder).</div>
   <p>Only 1, 2, 7 and 14 divide evenly into 14, so 14 has <b>four factors</b>. Factors come in <b>pairs</b> that multiply to the number:</p>
   <p class="display">14 = 1 × 14 = 2 × 7</p>
-  <div class="explainer" data-explainer="rectangles"></div>
+  <div data-extra><div class="explainer" data-explainer="rectangles"></div></div>
 </section>
 
 <section class="card" data-ink="s1b" data-section="1. Factor rainbow">
@@ -111,7 +84,7 @@
     <div class="part"><div class="pl">(iv) 11</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1, 11<br><b>2 factors</b></div></div></div>
     <div class="part"><div class="pl">(v) 28</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1, 2, 4, 7, 14, 28<br><b>6 factors</b></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which numbers in this example have an <b>odd</b> number of factors? What do they have in common?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">16, 4 and 1. They’re <b>perfect squares</b>: the middle pair (4 × 4, 2 × 2, 1 × 1) only counts once. More on these in Lesson 3.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Which numbers in this example have an <b>odd</b> number of factors? What do they have in common?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">16, 4 and 1. They’re <b>perfect squares</b>: the middle pair (4 × 4, 2 × 2, 1 × 1) only counts once. More on these in Lesson 3.</div></div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
@@ -200,7 +173,7 @@
   <div class="sec-h"><span class="badge">3</span><h2>Prime Factors</h2></div>
   <div class="def">The <b>prime factors</b> of a whole number are the factors that are themselves <b>prime</b>.</div>
   <p>The factors of 18 are 1, 2, 3, 6, 9 and 18. Only 2 and 3 are prime, so the prime factors of 18 are <b>2 and 3</b>.</p>
-  <div class="explainer" data-explainer="primeFilter"></div>
+  <div data-extra><div class="explainer" data-explainer="primeFilter"></div></div>
   <div class="compare-2">
     <div><div class="c2-h">Prime factors of 18</div><div class="c2-b">2, 3</div><div class="muted">a <b>list</b> — each prime once</div></div>
     <div><div class="c2-h">18 as a product of prime factors</div><div class="c2-b">18 = 2 × 3 × 3 = 2 × 3<sup>2</sup></div><div class="muted">an <b>equation</b> — repeats included, so it multiplies back to 18</div></div>
@@ -216,6 +189,15 @@
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–5">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 1 · Questions 1–5</h2>
+  <p class="pr-t">Factors, primes and composites.</p>
+  <div class="pr-chips n1"><span><b>1–5</b>Factors, primes and composites</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 4.</span><a class="pill" href="../../../#/lesson/u1l1">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -275,6 +257,45 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Unwrap the Number">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Unwrap the Number</h2>
+    <p class="wf-rule">Open any box into <b>two smaller boxes that multiply</b> to it. <b class="teal">Prime</b> boxes are <b class="teal">sealed</b>. <span class="muted">(No 1 boxes!)</span></p></div>
+  <div class="wf-grid">
+    <div class="wf-main">
+      <div class="seal-q">
+        <div class="q-num">1</div>
+        <div class="wf-q1"><div><b>Which of these are sealed?</b><div class="muted wf-hint">Tap a box to try to open it.</div></div>
+          <div class="gift-row">
+            <button class="giftbtn" data-v="9"><span>9</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="11"><span>11</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="15"><span>15</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="17"><span>17</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="21"><span>21</span><small>&nbsp;</small></button>
+          </div>
+        </div>
+      </div>
+      <div class="q-line"><div class="q-num">2</div><div><b>Unwrap 360 all the way.</b> Maya opened it as 2 × 180. Leo opened it as 10 × 36. Tap a box that can still open and pick how to split it.</div></div>
+      <div class="two-trees">
+        <div class="tree-card"><div class="tree-name">Maya</div><div id="tree-maya" class="ft-host" style="--fth:252px"></div></div>
+        <div class="tree-card"><div class="tree-name">Leo</div><div id="tree-leo" class="ft-host" style="--fth:252px"></div></div>
+      </div>
+    </div>
+    <div class="wf-side">
+    <div id="compare" class="compare"></div>
+    <aside class="poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Everyone in the class unwraps 360 their own way. How many <b>different sets</b> of sealed boxes will we get? <b>Guess first.</b></div></div>
+      <div class="poll-opts">
+        <div class="opt"><b>A</b> Lots — about one per student</div>
+        <div class="opt"><b>B</b> A few — it depends on the first split</div>
+        <div class="opt right"><b>C</b> Just one set</div>
+      </div>
+      <button class="pill" data-poll>Reveal</button>
+      <div class="poll-ans"><b>C — just one set.</b> Every route ends at 360 = 2 × 2 × 2 × 3 × 3 × 5. The trees look different, but the sealed boxes never change. <b>Every composite number has exactly one set of prime building blocks.</b></div>
+    </aside>
+    </div>
+  </div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -285,7 +306,7 @@
     <div>Ladder or tree, every composite number has <b>one</b> prime factorization.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Prime Building Blocks</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 · Questions 6–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l2/">
     <div><div class="kicker">Next lesson</div><b>Lesson 2 — Prime Factorization at Work: GCF and LCM</b></div><span class="arrow">→</span>
@@ -298,7 +319,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l1.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l1', homeHref: '../../', title: '1.1 Prime Building Blocks' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

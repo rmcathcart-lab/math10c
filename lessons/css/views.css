@@ -1,0 +1,68 @@
+/* Class view / Full notes (pilot; see js/views.js) and the blocks the new lesson format adds. */
+body.view-class [data-extra] { display: none !important; }
+body.view-full .card[data-extra] { box-shadow: inset 5px 0 0 #b9c3d6, var(--shadow, 0 1px 3px rgba(0,0,0,.08)); }
+body.view-full .card[data-extra]::before { content: 'Full notes'; float: right; font: 800 13px var(--font); color: #5b6880; background: #e9edf4; border-radius: 999px; padding: 4px 11px; margin: -6px -8px 0 12px; }
+
+
+/* the Class | Full notes switch: in the header bar on view-only pages, and in the ••• menu for everyone */
+.vw-hswitch { display: none; flex: none; background: #e9e6dd; border-radius: 999px; padding: 3px; gap: 2px; }
+body.viewer #tb .vw-hswitch, .vw-hswitch.in-menu { display: inline-flex; }
+.vw-hswitch button { border: 0; background: transparent; border-radius: 999px; padding: 6px 13px; font: 700 14px var(--font); color: var(--muted); cursor: pointer; white-space: nowrap; }
+.vw-hswitch button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.16); }
+.vw-mrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* practice break: stop and try these questions */
+.card.practice { background: #17613d; color: #fff; border-color: #17613d; }
+.card.practice .pr-k { font: 800 15px var(--font); letter-spacing: .02em; color: #bfe6d0; }
+.card.practice h2 { font: 800 40px/1.15 var(--round); margin: 4px 0 6px; color: #fff; }
+.card.practice .pr-t { font-size: 21px; margin: 0 0 16px; color: #e6f5ec; }
+.pr-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pr-chips > span { background: rgba(255,255,255,.12); border-radius: 12px; padding: 10px 14px; font-size: 17px; line-height: 1.3; }
+.pr-chips > span > b { display: block; font: 800 24px var(--round); }
+.pr-foot { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 18px; font-size: 16.5px; color: #d5eedf; }
+.pr-foot .pill { color: #17613d; text-decoration: none; border: 0; }
+
+/* warm-up: which one doesn't belong? */
+.vw-wodb { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0 16px; }
+.vw-wodb > div { position: relative; display: grid; place-items: center; min-height: 150px; background: #fff; border: 2px solid var(--line); border-radius: 18px; font-size: 44px; }
+.vw-wodb > div b { position: absolute; left: 14px; top: 10px; font: 800 20px var(--round); color: var(--muted); }
+
+/* warm-up: one big question */
+.vw-q { text-align: center; margin: 12px 0 14px; padding: 46px 28px; background: #fff; border: 2px solid var(--line); border-radius: 18px; font: 600 40px/1.3 var(--round); }
+.vw-q small { display: block; font: 600 26px var(--font); color: var(--muted); margin-top: 10px; }
+.vw-q .katex { font-size: 1.05em; }
+.vw-tiles { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 14px; margin: 14px 0 16px; }
+.vw-tiles > div { position: relative; display: grid; place-items: center; text-align: center; min-height: 130px; padding: 12px; background: #fff; border: 2px solid var(--line); border-radius: 18px; font-size: var(--fs, 34px); line-height: 1.25; }
+.vw-tiles > div > b:first-child { position: absolute; left: 14px; top: 10px; font: 800 20px var(--round); color: var(--muted); }
+.vw-tiles > div small { display: block; font-size: 18px; color: var(--muted); }
+.pr-chips.n3 { grid-template-columns: repeat(3, 1fr); } .pr-chips.n2 { grid-template-columns: repeat(2, 1fr); } .pr-chips.n5 { grid-template-columns: repeat(5, 1fr); }
+.vw-pic { display: grid; justify-items: center; gap: 8px; margin: 12px 0 14px; padding: 16px; background: #fff; border: 2px solid var(--line); border-radius: 18px; }
+.vw-pic svg { width: 100%; height: auto; display: block; }
+.vw-pic p { margin: 0; font-size: 20px; color: var(--muted); text-align: center; }
+.vw-mach { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 14px 0 16px; }
+.vw-mach > div { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; justify-items: center; background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 26px 10px; font: 700 40px var(--round); }
+.vw-mach i { font-style: normal; color: var(--muted); font-size: 30px; }
+.vw-mach .q { color: var(--red); }
+.vw-vend { display: grid; gap: 6px; font-size: 27px; text-align: left; padding: 22px 0 6px; }
+.bk-wq.vw-rev .bk-ans { display: none; font-size: 21px; }
+.bk-wq.vw-rev.shown .bk-ans { display: block; }
+.vw-cal { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.vw-cal span { display: grid; place-items: center; width: 84px; height: 64px; border: 2px solid var(--line); border-radius: 10px; font: 700 30px var(--round); }
+.vw-tiles > div.lab { align-content: center; gap: 4px; }
+.vw-tiles > div.lab > b:first-child { position: static; font: 800 19px var(--round); color: var(--brand2); }
+
+/* warm-up, read in order: the situation, then the question (same weight of attention), picture beside them */
+.vw-seq { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: center; margin: 14px 0 16px; padding: 30px 34px; background: #fff; border: 2px solid var(--line); border-radius: 18px; }
+.vw-seq.has-art { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.vw-txt { display: grid; gap: 12px; min-width: 0; }
+.vw-ctx { margin: 0; font: 500 30px/1.35 var(--font); color: var(--ink); }
+.vw-ask { margin: 8px 0 0; font: 800 34px/1.25 var(--round); color: var(--brand2); }
+.vw-art { display: grid; place-items: center; min-width: 0; }
+.vw-art svg { width: 100%; max-width: 360px; height: auto; }
+.vw-seq .vw-txt > .vw-q, .vw-seq .vw-txt > .vw-tiles { margin: 0; border: 0; padding: 0; }
+[data-ink="warmq"] .vw-rule { font-size: 26px; line-height: 1.35; color: var(--ink); margin-top: 8px; }
+
+/* a tiny moving scene in the white space at the top right of the warm-up card */
+[data-ink="warmq"] { position: relative; }
+.vw-strip { position: absolute; top: 10px; right: 24px; width: 320px; height: 56px; pointer-events: none; }
+.vw-strip svg { width: 100%; height: 100%; display: block; overflow: hidden; }

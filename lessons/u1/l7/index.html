@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l7.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Which Is Biggest?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="100" y="46" font-size="40" text-anchor="middle">🥉</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="170" y="46" font-size="40" text-anchor="middle">🥈</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/><text x="240" y="46" font-size="40" text-anchor="middle">🥇</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Which Is Biggest?</h2>
+  <p class="wf-rule vw-rule">No calculator. Which one is the biggest?</p></div>
+  <div class="vw-tiles" style="--n:3"><div><b>A</b><span class="tex">2\sqrt{5}</span></div><div><b>B</b><span class="tex">3\sqrt{2}</span></div><div><b>C</b><span class="tex">\sqrt{19}</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>A.</b> Put each one under a single root: <span class="tex">2\sqrt5=\sqrt{20}</span>, <span class="tex">3\sqrt2=\sqrt{18}</span> and <span class="tex">\sqrt{19}</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,47 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Snail Spiral" style="--wf-side: 1fr">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Snail Spiral</h2>
-  <p class="wf-rule">Stick right triangles together. Every <b>outside edge</b> is <b>1</b> unit long. <span class="muted">Tap a spoke’s label to measure it.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div class="snail-box" id="spiral"></div>
-  </div><div class="wf-side">
-    <div class="snail-qs">
-      <div class="wq">
-        <div class="q-line"><div class="q-num">1</div><div>How long is the <span class="tex">\sqrt{4}</span> spoke?</div></div>
-        <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">\sqrt{4}=2</span> units.</div></div>
-      </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">2</div><div>Which spoke is <b>3</b> long? <b>4</b> long?</div></div>
-        <div class="wq-a"><button class="pill small" data-wq="9,16">Answer</button><div class="q-ans"><span class="tex">\sqrt{9}=3</span> and <span class="tex">\sqrt{16}=4</span>. The whole-number spokes are the <b>perfect squares</b> 1, 4, 9, 16.</div></div>
-      </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">3</div><div>The <span class="tex">\sqrt{4}</span> spoke is <b>twice</b> <span class="tex">\sqrt{1}</span>. Which spoke is <b>twice</b> <span class="tex">\sqrt{4}</span>?</div></div>
-        <div class="wq-a"><button class="pill small" data-wq="4,16">Answer</button><div class="q-ans"><span class="tex">\sqrt{16}</span> (length 4). Doubling a length multiplies the number under the root by <span class="tex">2^2=4</span>, <b>not</b> by 2.</div></div>
-      </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus.</b> The <span class="tex">\sqrt{8}</span> spoke is twice which spoke?</div></div>
-        <div class="wq-a"><button class="pill small" data-wq="2,8">Answer</button><div class="q-ans"><span class="tex">\sqrt{8}=\sqrt{4}\times\sqrt{2}=2\sqrt{2}</span>: twice the <span class="tex">\sqrt{2}</span> spoke.</div></div>
-      </div>
-    </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which spoke is exactly <b>twice</b> as long as the <b class="red">red <span class="tex">\sqrt{3}</span></b> spoke? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> <span class="tex">\sqrt{5}</span></div>
-      <div class="opt"><b>B</b> <span class="tex">\sqrt{6}</span></div>
-      <div class="opt"><b>C</b> <span class="tex">\sqrt{9}</span></div>
-      <div class="opt right"><b>D</b> <span class="tex">\sqrt{12}</span></div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>D, <span class="tex">\sqrt{12}</span>.</b> Twice <span class="tex">\sqrt{3}</span> is <span class="tex">2\sqrt{3}=\sqrt{4}\times\sqrt{3}=\sqrt{12}</span>. Check: <span class="tex">2\times1.732\approx3.464</span> and <span class="tex">\sqrt{12}\approx3.464</span>. <b>B</b> doubles the inside: <span class="tex">\sqrt{6}\approx2.45</span>, too short. <b>C</b> looks tidy, but <span class="tex">\sqrt{9}=3</span> is too short too. Today: <span class="tex">\sqrt{12}</span> is an <b>entire radical</b>, <span class="tex">2\sqrt{3}</span> is a <b>mixed radical</b>, and they’re the <b>same length</b>.</div>
-  </div>
-  </div></div>
-  <div class="strip-card">
-    <div class="q-line"><div class="q-num ok-n">✓</div><div><b>Check it with a paper strip.</b> Mark the red spoke twice, end to end. Which spoke matches? <span class="muted">Tap a spoke to lay it under the strip.</span></div></div>
-    <div class="strip" id="strip"></div>
-  </div>
-</section>
+
 
 <!-- ================= 1. Splitting ================= -->
 <section class="card" data-ink="s1" data-section="1. Splitting a Radical Apart">
@@ -93,7 +64,7 @@
     <div class="def"><b>Quotient rule</b><div class="rule-tex"><span class="tex">\sqrt{\dfrac{a}{b}}=\dfrac{\sqrt{a}}{\sqrt{b}}</span></div><div class="eg">for <span class="tex">a\ge0,\ b&gt;0</span></div></div>
   </div>
   <p><b>Any</b> square root can be rewritten as a product or quotient of two smaller square roots, once we choose a <b>sensible split</b>.</p>
-  <div class="explainer" data-explainer="split"></div>
+  <div data-extra><div class="explainer" data-explainer="split"></div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
@@ -131,7 +102,7 @@
   <div class="def gray">Every mixed radical with a <b>positive</b> coefficient can be rewritten as an entire radical (a negative stays outside: <span class="tex">-7\sqrt{5}=-\sqrt{245}</span>). An entire square root can be rewritten as a mixed radical <b>exactly when</b> its radicand has a perfect-square factor: <span class="tex">\sqrt{30}</span> can’t, because <span class="tex">30=2\times3\times5</span>.</div>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. What a mixed radical means">
+<section data-extra class="card" data-ink="s2b" data-section="2. What a mixed radical means">
   <h3 class="sub">What does a mixed radical like <span class="tex">5\sqrt{2}</span> actually mean?</h3>
   <p>A mixed radical is <b>copies</b> of a smaller root: <span class="tex">5\sqrt{2}</span> is five <span class="tex">\sqrt{2}</span>’s laid end to end, and <span class="tex">6\sqrt{5}</span> is six <span class="tex">\sqrt{5}</span>’s. Cut a square into equal smaller squares and you can see it.</p>
   <div class="explainer" data-explainer="area"></div>
@@ -154,7 +125,7 @@
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Use the largest perfect square.</b> A mixed radical is finished only when <b>nothing</b> under the root has a perfect-square factor. Pull out a smaller square and you must go again.</div></div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Pair up the primes">
+<section data-extra class="card" data-ink="s3b" data-section="3. Pair up the primes">
   <h3 class="sub">Can’t spot the largest square? Use prime factors.</h3>
   <p>Break the radicand into primes. A <b>pair</b> of matching primes is a perfect square (<span class="tex">3\times3=9</span>), so each pair leaves the root as <b>one</b> number.</p>
   <div class="explainer" data-explainer="pairs"></div>
@@ -173,7 +144,7 @@
     <div class="part"><div class="pl">(b) <span class="tex">\sqrt{63}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Largest square factor of 63 is 9.<br><span class="tex">\sqrt{9\times7}=\sqrt{9}\times\sqrt{7}=\mathbf{3\sqrt{7}}</span></div></div></div>
     <div class="part"><div class="pl">(c) <span class="tex">\sqrt{288}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Largest square factor of 288 is 144.<br><span class="tex">\sqrt{144\times2}=\sqrt{144}\times\sqrt{2}=\mathbf{12\sqrt{2}}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Ali wrote <span class="tex">\sqrt{72}=2\sqrt{18}</span>. Is he right? Is he finished?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">It’s <b>true</b> (<span class="tex">\sqrt{4}\times\sqrt{18}=\sqrt{72}</span>) but <b>not finished</b>: 18 = 9 × 2 still has a perfect square. <span class="tex">2\sqrt{18}=2\times3\sqrt{2}=\mathbf{6\sqrt{2}}</span>. Using 36 first does it in one step.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Ali wrote <span class="tex">\sqrt{72}=2\sqrt{18}</span>. Is he right? Is he finished?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">It’s <b>true</b> (<span class="tex">\sqrt{4}\times\sqrt{18}=\sqrt{72}</span>) but <b>not finished</b>: 18 = 9 × 2 still has a perfect square. <span class="tex">2\sqrt{18}=2\times3\sqrt{2}=\mathbf{6\sqrt{2}}</span>. Using 36 first does it in one step.</div></div></div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
@@ -184,7 +155,7 @@
     <div class="rule"><span class="rp">a√n</span>Simplify the <b>radical first</b>, then multiply the numbers in front.</div>
     <div class="rule"><span class="rp">√(a/b)</span>Use the <b>quotient rule</b>: root of the top over root of the bottom.</div>
   </div>
-  <div class="explainer" data-explainer="coef"></div>
+  <div data-extra><div class="explainer" data-explainer="coef"></div></div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
@@ -238,11 +209,20 @@
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–8">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 7 · Questions 1–8</h2>
+  <p class="pr-t">Entire to mixed, and mixed to entire.</p>
+  <div class="pr-chips n1"><span><b>1–8</b>Entire and mixed radicals</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 6.</span><a class="pill" href="../../../#/lesson/u1l7">Open the Practice site</a></div>
+</section>
+
 <!-- ================= 5. Comparing ================= -->
 <section class="card" data-ink="s5" data-section="5. Comparing Radicals">
   <div class="sec-h"><span class="badge">5</span><h2>Comparing Radicals</h2></div>
   <div class="def">To compare mixed radicals <b>without a calculator</b>, convert them all to <b>entire radicals</b>. Then compare the numbers under the root signs: <b>bigger radicand, bigger value</b>.</div>
-  <div class="explainer" data-explainer="numline"></div>
+  <div data-extra><div class="explainer" data-explainer="numline"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t rank by the number in front.</b> Is <span class="tex">3\sqrt{2}</span> bigger than <span class="tex">2\sqrt{11}</span> because 3 &gt; 2? No: <span class="tex">3\sqrt{2}=\sqrt{18}</span> but <span class="tex">2\sqrt{11}=\sqrt{44}</span>.</div></div>
 </section>
 
@@ -260,7 +240,7 @@
 <section class="card" data-ink="s6" data-section="6. Radicals and Pythagoras">
   <div class="sec-h"><span class="badge">6</span><h2>Radicals in the Pythagorean Theorem</h2></div>
   <p>Lengths found with the Pythagorean theorem, <span class="tex">c^2=a^2+b^2</span>, are often <b>irrational</b>. So answers are usually left <b>exact</b>, in simplest mixed radical form, instead of rounded.</p>
-  <div class="explainer" data-explainer="pyth"></div>
+  <div data-extra><div class="explainer" data-explainer="pyth"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Roots don’t split over +.</b> <span class="tex">\sqrt{4+16}=\sqrt{20}\approx4.47</span>, but <span class="tex">\sqrt{4}+\sqrt{16}=6</span>. The product and quotient rules work for <b>×</b> and <b>÷</b> only.</div></div>
 </section>
 
@@ -290,6 +270,48 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Snail Spiral" style="--wf-side: 1fr">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Snail Spiral</h2>
+  <p class="wf-rule">Stick right triangles together. Every <b>outside edge</b> is <b>1</b> unit long. <span class="muted">Tap a spoke’s label to measure it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+    <div class="snail-box" id="spiral"></div>
+  </div><div class="wf-side">
+    <div class="snail-qs">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">1</div><div>How long is the <span class="tex">\sqrt{4}</span> spoke?</div></div>
+        <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">\sqrt{4}=2</span> units.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">2</div><div>Which spoke is <b>3</b> long? <b>4</b> long?</div></div>
+        <div class="wq-a"><button class="pill small" data-wq="9,16">Answer</button><div class="q-ans"><span class="tex">\sqrt{9}=3</span> and <span class="tex">\sqrt{16}=4</span>. The whole-number spokes are the <b>perfect squares</b> 1, 4, 9, 16.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">3</div><div>The <span class="tex">\sqrt{4}</span> spoke is <b>twice</b> <span class="tex">\sqrt{1}</span>. Which spoke is <b>twice</b> <span class="tex">\sqrt{4}</span>?</div></div>
+        <div class="wq-a"><button class="pill small" data-wq="4,16">Answer</button><div class="q-ans"><span class="tex">\sqrt{16}</span> (length 4). Doubling a length multiplies the number under the root by <span class="tex">2^2=4</span>, <b>not</b> by 2.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus.</b> The <span class="tex">\sqrt{8}</span> spoke is twice which spoke?</div></div>
+        <div class="wq-a"><button class="pill small" data-wq="2,8">Answer</button><div class="q-ans"><span class="tex">\sqrt{8}=\sqrt{4}\times\sqrt{2}=2\sqrt{2}</span>: twice the <span class="tex">\sqrt{2}</span> spoke.</div></div>
+      </div>
+    </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which spoke is exactly <b>twice</b> as long as the <b class="red">red <span class="tex">\sqrt{3}</span></b> spoke? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> <span class="tex">\sqrt{5}</span></div>
+      <div class="opt"><b>B</b> <span class="tex">\sqrt{6}</span></div>
+      <div class="opt"><b>C</b> <span class="tex">\sqrt{9}</span></div>
+      <div class="opt right"><b>D</b> <span class="tex">\sqrt{12}</span></div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>D, <span class="tex">\sqrt{12}</span>.</b> Twice <span class="tex">\sqrt{3}</span> is <span class="tex">2\sqrt{3}=\sqrt{4}\times\sqrt{3}=\sqrt{12}</span>. Check: <span class="tex">2\times1.732\approx3.464</span> and <span class="tex">\sqrt{12}\approx3.464</span>. <b>B</b> doubles the inside: <span class="tex">\sqrt{6}\approx2.45</span>, too short. <b>C</b> looks tidy, but <span class="tex">\sqrt{9}=3</span> is too short too. Today: <span class="tex">\sqrt{12}</span> is an <b>entire radical</b>, <span class="tex">2\sqrt{3}</span> is a <b>mixed radical</b>, and they’re the <b>same length</b>.</div>
+  </div>
+  </div></div>
+  <div class="strip-card">
+    <div class="q-line"><div class="q-num ok-n">✓</div><div><b>Check it with a paper strip.</b> Mark the red spoke twice, end to end. Which spoke matches? <span class="muted">Tap a spoke to lay it under the strip.</span></div></div>
+    <div class="strip" id="strip"></div>
+  </div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -300,7 +322,7 @@
     <div><b>Mixed → entire:</b> square the coefficient and bring it in: <span class="tex">4\sqrt{11}=\sqrt{176}</span>. Use it to <b>order</b> radicals. Keep Pythagorean answers <b>exact</b>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l7">
-    <div><div class="kicker">Your turn</div><b>Assignment 7 — Entire and Mixed Radicals</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 7 · Questions 9–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-lesson" href="../l8/">
     <div><div class="kicker">Next lesson</div><b>1.8 Entire and Mixed Radicals: Index 3 and Higher</b><div class="muted">The same idea for cube roots and beyond</div></div><span class="arrow">→</span>
@@ -313,7 +335,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l7.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l7', homeHref: '../../', title: '1.7 Entire and Mixed Radicals' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

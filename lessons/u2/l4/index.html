@@ -17,12 +17,21 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u2l4.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: One Million Cubes">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>One Million Cubes</h2></div>
+  <div class="vw-seq has-art"><div class="vw-txt"><p class="vw-ctx">A unit cube is <b>1 cm</b> on each edge.</p><p class="vw-ctx">Stack exactly one million of them into one giant cube.</p><p class="vw-ask">How tall is the giant cube?</p></div><div class="vw-art"><svg viewBox="0 0 330 250" role="img" aria-label="One unit cube beside a giant cube"><g stroke="#4a4436" stroke-width="3.5" stroke-linejoin="round"><polygon points="110,80 230,80 230,200 110,200" fill="#fffdf6"/><polygon points="110,80 150,45 270,45 230,80" fill="#f3ecd9"/><polygon points="230,80 270,45 270,165 230,200" fill="#e6dcc3"/></g><g stroke="#d9d3c4" stroke-width="1.5"><line x1="130" y1="80" x2="130" y2="200"/><line x1="110" y1="100" x2="230" y2="100"/><line x1="150" y1="80" x2="150" y2="200"/><line x1="110" y1="120" x2="230" y2="120"/><line x1="170" y1="80" x2="170" y2="200"/><line x1="110" y1="140" x2="230" y2="140"/><line x1="190" y1="80" x2="190" y2="200"/><line x1="110" y1="160" x2="230" y2="160"/><line x1="210" y1="80" x2="210" y2="200"/><line x1="110" y1="180" x2="230" y2="180"/></g><g stroke="#2b55a0" stroke-width="3" stroke-linecap="round"><line x1="88" y1="80" x2="88" y2="200"/><line x1="80" y1="80" x2="96" y2="80"/><line x1="80" y1="200" x2="96" y2="200"/></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.4s" begin="0s" repeatCount="indefinite"/><text x="62" y="152" font-size="40" font-weight="800" fill="#2b55a0" text-anchor="middle">?</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="2s" begin="0s" repeatCount="indefinite"/><rect x="24" y="214" width="18" height="18" fill="#fffdf6" stroke="#4a4436" stroke-width="2.5"/></g><text x="52" y="230" font-size="16" fill="#4a4436">1 cm</text></svg></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Taller than you? Taller than the school?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>100 cm, just 1 metre.</b> <span class="tex">100\times100\times100=1\,000\,000</span>, so each edge is 100 cubes long. That is <span class="tex">1\,000\,000^{1/3}</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,55 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Piano Puzzle" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Piano Puzzle</h2>
-  <p class="wf-rule">Each step to the next key multiplies the pitch by the <b>same number</b>, <span class="tex">r</span>. <span class="muted">(Black keys count as steps too. Tap a key to hear it.)</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="pn-wrap">
-    <div class="pn" id="piano"></div>
-    <div class="pn-bar no-ink">
-      <div class="pn-read" id="pn-read"><span class="muted">Tap a key</span></div>
-      <button class="pill small" id="pn-count">Count the steps</button>
-      <button class="pill small" id="pn-play">Play A to A</button>
-    </div>
-  </div>
 
-  <div class="wq-grid">
-    <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>The top A is how many times the frequency of the bottom A?</div></div>
-      <div class="wq-a"><button class="pill small" data-wq="0,12">Answer</button><div class="q-ans"><b>2 times</b>: <span class="tex">880\div440=2</span>. Going up one octave <b>doubles</b> the frequency.</div></div>
-    </div>
-    <div class="wq">
-      <div class="q-line"><div class="q-num">2</div><div>Count the steps (<span class="tex">\times r</span>) from one A up to the next A.</div></div>
-      <div class="wq-a"><button class="pill small" data-wq="count">Answer</button><div class="q-ans"><b>12 steps</b>: A, A♯, B, C, C♯, D, D♯, E, F, F♯, G, G♯, A.</div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-  <div class="wq-grid wq-side">
-    <div class="wq">
-      <div class="q-line"><div class="q-num">3</div><div>Fill in the exponent: <span class="nw"><span class="tex">r^{\,\textcolor{#c93a33}{?}}=2</span></span></div></div>
-      <div class="wq-a"><button class="pill small" data-wq="12">Answer</button><div class="q-ans"><span class="tex">r^{12}=2</span>. Twelve equal multiplications take 440 to 880.</div></div>
-    </div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The <b class="red">red key</b> is <b>6 steps</b> up, exactly halfway. Its frequency is about… <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> 587 Hz</div>
-      <div class="opt right"><b>B</b> 622 Hz</div>
-      <div class="opt"><b>C</b> 660 Hz</div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B, about 622 Hz.</b> Six steps multiply by <span class="tex">r^6</span>, and <span class="tex">r^6\times r^6=r^{12}=2</span>, so <span class="tex">r^6</span> is the number that squares to 2: <span class="tex">r^6=\sqrt{2}\approx1.414</span> and <span class="tex">440\times\sqrt{2}\approx622.3</span> Hz. <b>C</b> is halfway by <em>adding</em>, but the keys <em>multiply</em> (660 Hz is about 7 steps up). <b>A</b> is 5 steps up. <span class="muted">Tap the keys: the frequencies now show.</span></div>
-  </div>
-  </div></div>
-
-  <div class="wq bonus-q">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus.</b> So what is <span class="tex">r</span> itself? It’s the number that, used <b>12 times</b> as a factor, gives 2. And which key is <span class="tex">440\times\sqrt[3]{2}</span> Hz?</div></div>
-    <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">r=\sqrt[12]{2}\approx1.0595</span>. Today we’ll write it as <span class="tex">2^{1/12}</span>. And <span class="tex">\sqrt[3]{2}\times\sqrt[3]{2}\times\sqrt[3]{2}=2</span>, so it’s <b>4 steps</b> (12 ÷ 3): <b>C♯</b>, about 554 Hz.</div></div>
-  </div>
-  <p class="hum">Hum a note, then hum it an octave higher: you just doubled the frequency!</p>
-</section>
 
 <!-- ================= 1. a^(1/n) ================= -->
 <section class="card" data-ink="s1" data-section="1. What a^(1/n) means">
@@ -99,7 +60,7 @@
   <p>The exponent laws were built for whole-number exponents, but they ought to work for a fraction too, and that <b>forces</b> a meaning on <span class="tex">a^{1/2}</span>. Multiply <span class="tex">7^{1/2}</span> by itself, using the product law:</p>
   <p class="eqn"><span class="tex">7^{1/2}\times7^{1/2}=7^{\frac12+\frac12}=7^{1}=7</span></p>
   <p>But <span class="tex">\sqrt{7}\times\sqrt{7}=7</span> too. Both numbers give 7 when multiplied by themselves, so they’re the <b>same number</b>: <span class="tex">7^{1/2}=\sqrt{7}</span>. Three equal factors work the same way: <span class="tex">2^{1/3}\times2^{1/3}\times2^{1/3}=2^1=2</span>, so <span class="tex">2^{1/3}=\sqrt[3]{2}</span>.</p>
-  <div class="explainer" data-explainer="whyRoot"></div>
+  <div data-extra><div class="explainer" data-explainer="whyRoot"></div></div>
   <div class="def rule-card"><b>The <span class="tex">n</span>th root as a power</b> <span class="muted small">(for a natural number <span class="tex">n\ge2</span>)</span>
     <div class="rule-tex"><span class="tex">a^{1/n}=\sqrt[n]{a}</span></div>
     <div class="eg">If <span class="tex">n</span> is <b>even</b>, <span class="tex">a</span> must be non-negative (<span class="tex">a\ge0</span>) for a real root. If <span class="tex">n</span> is <b>odd</b>, <span class="tex">a</span> can be any real number.</div>
@@ -177,7 +138,7 @@
     <div class="part"><div class="pl">(c) <span class="tex">8^{-4/3}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Negative ⇒ reciprocal:<br><span class="tex">\dfrac{1}{\left(\sqrt[3]{8}\right)^4}=\dfrac{1}{2^4}=\mathbf{\dfrac{1}{16}}</span></div></div></div>
     <div class="part"><div class="pl">(d) <span class="tex">\left(5^2+12^2\right)^{1/2}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Brackets first: <span class="tex">25+144=169</span><br><span class="tex">169^{1/2}=\sqrt{169}=\mathbf{13}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Mo did (d) as <span class="tex">5+12=17</span>. Why is that wrong?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">An exponent doesn’t split over <b>+</b>: <span class="tex">\left(5^2+12^2\right)^{1/2}=\sqrt{169}=13</span>, not <span class="tex">5+12</span>. (It’s the hypotenuse of a 5-12-13 triangle!)</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Mo did (d) as <span class="tex">5+12=17</span>. Why is that wrong?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">An exponent doesn’t split over <b>+</b>: <span class="tex">\left(5^2+12^2\right)^{1/2}=\sqrt{169}=13</span>, not <span class="tex">5+12</span>. (It’s the hypotenuse of a 5-12-13 triangle!)</div></div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
@@ -189,7 +150,7 @@
     <div class="def"><b><span class="tex">(-27)^{2/3}</span></b>: the brackets make <span class="tex">-27</span> the <b>base</b>. The minus goes <b>into</b> the root.</div>
     <div class="def amber"><b><span class="tex">-27^{2/3}</span></b>: the exponent belongs to <span class="tex">27</span> only. The minus <b>waits outside</b>: <span class="tex">-\left(27^{2/3}\right)</span>.</div>
   </div>
-  <div class="explainer" data-explainer="minus"></div>
+  <div data-extra><div class="explainer" data-explainer="minus"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Negative base: take the root first.</b> The TI-30XIIS only takes a negative base when the exponent is 1 over an odd number, like <span class="tex">\tfrac13</span>. Typed straight in, <span class="tex">(-27)^{2/3}</span> gives a <b>DOMAIN error</b>. So find <span class="tex">(-27)^{1/3}=-3</span> first, then square it: <span class="keys"><kbd>(</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>7</kbd><kbd>)</kbd><kbd>^</kbd><kbd>(</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd><kbd>)</kbd><kbd>x²</kbd></span> gives <b>9</b>. Without brackets, <span class="keys"><kbd>(−)</kbd><kbd>2</kbd><kbd>7</kbd><kbd>^</kbd><kbd>(</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd></span> does the power first, then the negative: <b>−9</b>, which is <span class="tex">-27^{2/3}</span>. And <span class="tex">(-16)^{1/4}</span> is an error because it has no real value.</div>
@@ -235,6 +196,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 4 · Questions 1–7</h2>
+  <p class="pr-t">Evaluate powers with rational exponents.</p>
+  <div class="pr-chips n1"><span><b>1–7</b>Evaluating rational-exponent powers</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u2l4">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u2l4"></section>
 
@@ -242,7 +212,7 @@
 <section class="card" data-ink="s4d" data-section="4. A cube of known volume">
   <h3 class="sub">A cube of known volume</h3>
   <p>A cube’s volume is <span class="tex">V=e^3</span>, so its edge is the number that cubes to <span class="tex">V</span>: <span class="tex">e=V^{1/3}=\sqrt[3]{V}</span>. Each face is a square with area <span class="tex">e^2=\left(V^{1/3}\right)^2=V^{2/3}</span>.</p>
-  <div class="explainer" data-explainer="cube"></div>
+  <div data-extra><div class="explainer" data-explainer="cube"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Two ways to type it.</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd></span> or <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>^</kbd><kbd>(</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd></span> both give 4.641588834. For the surface area, type it all at once and round <b>once</b>, at the end.</div>
@@ -258,7 +228,7 @@
     <div class="part"><div class="pl">(b) Write a power that represents the surface area of the cube.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">6 square faces, each <span class="tex">e^2=V^{2/3}</span>:<br>SA <span class="tex">=\mathbf{6\left(100^{2/3}\right)}</span></div></div></div>
     <div class="part"><div class="pl">(c) Use a calculator to find the edge length and surface area, each to the nearest tenth.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">100^{1/3}\approx4.6416</span>, edge <span class="tex">\approx\mathbf{4.6}</span> cm<br><span class="tex">6\left(100^{2/3}\right)\approx6(21.544)</span>, SA <span class="tex">\approx\mathbf{129.3\text{ cm}^2}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Ali rounded the edge to 4.6 cm first, then found <span class="tex">6(4.6)^2\approx127.0\text{ cm}^2</span>. What went wrong?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">He <b>rounded too early</b>. Squaring 4.6 instead of 4.6416… loses accuracy, and multiplying by 6 makes the error bigger. Keep every digit (or use <span class="tex">6\left(100^{2/3}\right)</span>) and round once at the end: <b>129.3</b>.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Ali rounded the edge to 4.6 cm first, then found <span class="tex">6(4.6)^2\approx127.0\text{ cm}^2</span>. What went wrong?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">He <b>rounded too early</b>. Squaring 4.6 instead of 4.6416… loses accuracy, and multiplying by 6 makes the error bigger. Keep every digit (or use <span class="tex">6\left(100^{2/3}\right)</span>) and round once at the end: <b>129.3</b>.</div></div></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
@@ -297,7 +267,7 @@
     <div class="cmp-c"><div class="cmp-h">Outside: the exponent skips it</div><span class="tex">-a^{2/3}=-\sqrt[3]{a^2}</span><span class="tex">5a^{2/3}=5\sqrt[3]{a^2}</span></div>
     <div class="cmp-c in"><div class="cmp-h">Bracketed: it’s part of the base</div><span class="tex">(-a)^{2/3}=\sqrt[3]{(-a)^2}</span><span class="tex">(5a)^{2/3}=\sqrt[3]{(5a)^2}=\sqrt[3]{25a^2}</span></div>
   </div>
-  <div class="explainer" data-explainer="conv2"></div>
+  <div data-extra><div class="explainer" data-explainer="conv2"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Square the coefficient too</b> when it’s inside the brackets: <span class="tex">(5a)^2=25a^2</span>, not <span class="tex">5a^2</span>.</div></div>
 </section>
 
@@ -312,7 +282,7 @@
     <div class="part"><div class="pl">(e) <span class="tex">4s^{2/3}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The exponent applies only to <span class="tex">s</span>; the 4 stays in front:<br><span class="tex">\boldsymbol{4\sqrt[3]{s^2}}</span></div></div></div>
     <div class="part"><div class="pl">(f) <span class="tex">(4s)^{2/3}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Here the base is <span class="tex">(4s)</span>:<br><span class="tex">\sqrt[3]{(4s)^2}=\boldsymbol{\sqrt[3]{16s^2}}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Are <span class="tex">4s^{2/3}</span> and <span class="tex">(4s)^{2/3}</span> the same? Try <span class="tex">s=2</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4(2)^{2/3}=4\sqrt[3]{4}\approx6.35</span>, but <span class="tex">(4\times2)^{2/3}=8^{2/3}=4</span>. The brackets change the base.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Are <span class="tex">4s^{2/3}</span> and <span class="tex">(4s)^{2/3}</span> the same? Try <span class="tex">s=2</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4(2)^{2/3}=4\sqrt[3]{4}\approx6.35</span>, but <span class="tex">(4\times2)^{2/3}=8^{2/3}=4</span>. The brackets change the base.</div></div></div>
   <div class="space" id="ex6-space"></div>
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
@@ -325,7 +295,7 @@
     <div class="def"><b>Radical → power</b><div class="rule-tex"><span class="tex">\sqrt[n]{x^m}=x^{m/n}</span></div><div class="eg">A plain <span class="tex">\sqrt{\ }</span> has index <b>2</b>: <span class="tex">\sqrt{x^5}=x^{5/2}</span></div></div>
     <div class="def amber"><b>One over a radical</b><div class="rule-tex"><span class="tex">\dfrac{1}{\sqrt[n]{x^m}}=x^{-m/n}</span></div><div class="eg">A factor in the denominator gets a <b>negative</b> exponent.</div></div>
   </div>
-  <div class="explainer" data-explainer="toPow"></div>
+  <div data-extra><div class="explainer" data-explainer="toPow"></div></div>
 </section>
 
 <section class="card example" data-ink="ex7" data-section="Example 7">
@@ -337,9 +307,59 @@
     <div class="part"><div class="pl">(c) <span class="tex">\sqrt{k^7}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A square root has index 2:<br><span class="tex">\boldsymbol{k^{7/2}}</span></div></div></div>
     <div class="part"><div class="pl">(d) <span class="tex">\dfrac{1}{\sqrt[3]{k^5}}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In the denominator ⇒ negative exponent:<br><span class="tex">\boldsymbol{k^{-5/3}}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Write <span class="tex">\sqrt{k}</span> and <span class="tex">\dfrac{1}{\sqrt{k}}</span> as powers.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{k}=k^{1/2}</span> and <span class="tex">\dfrac{1}{\sqrt{k}}=k^{-1/2}</span>. The hidden index is 2 and the hidden power is 1.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Write <span class="tex">\sqrt{k}</span> and <span class="tex">\dfrac{1}{\sqrt{k}}</span> as powers.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{k}=k^{1/2}</span> and <span class="tex">\dfrac{1}{\sqrt{k}}=k^{-1/2}</span>. The hidden index is 2 and the hidden power is 1.</div></div></div>
   <div class="space" id="ex7-space"></div>
   <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Piano Puzzle" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Piano Puzzle</h2>
+  <p class="wf-rule">Each step to the next key multiplies the pitch by the <b>same number</b>, <span class="tex">r</span>. <span class="muted">(Black keys count as steps too. Tap a key to hear it.)</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="pn-wrap">
+    <div class="pn" id="piano"></div>
+    <div class="pn-bar no-ink">
+      <div class="pn-read" id="pn-read"><span class="muted">Tap a key</span></div>
+      <button class="pill small" id="pn-count">Count the steps</button>
+      <button class="pill small" id="pn-play">Play A to A</button>
+    </div>
+  </div>
+
+  <div class="wq-grid">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>The top A is how many times the frequency of the bottom A?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq="0,12">Answer</button><div class="q-ans"><b>2 times</b>: <span class="tex">880\div440=2</span>. Going up one octave <b>doubles</b> the frequency.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>Count the steps (<span class="tex">\times r</span>) from one A up to the next A.</div></div>
+      <div class="wq-a"><button class="pill small" data-wq="count">Answer</button><div class="q-ans"><b>12 steps</b>: A, A♯, B, C, C♯, D, D♯, E, F, F♯, G, G♯, A.</div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+  <div class="wq-grid wq-side">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>Fill in the exponent: <span class="nw"><span class="tex">r^{\,\textcolor{#c93a33}{?}}=2</span></span></div></div>
+      <div class="wq-a"><button class="pill small" data-wq="12">Answer</button><div class="q-ans"><span class="tex">r^{12}=2</span>. Twelve equal multiplications take 440 to 880.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The <b class="red">red key</b> is <b>6 steps</b> up, exactly halfway. Its frequency is about… <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 587 Hz</div>
+      <div class="opt right"><b>B</b> 622 Hz</div>
+      <div class="opt"><b>C</b> 660 Hz</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B, about 622 Hz.</b> Six steps multiply by <span class="tex">r^6</span>, and <span class="tex">r^6\times r^6=r^{12}=2</span>, so <span class="tex">r^6</span> is the number that squares to 2: <span class="tex">r^6=\sqrt{2}\approx1.414</span> and <span class="tex">440\times\sqrt{2}\approx622.3</span> Hz. <b>C</b> is halfway by <em>adding</em>, but the keys <em>multiply</em> (660 Hz is about 7 steps up). <b>A</b> is 5 steps up. <span class="muted">Tap the keys: the frequencies now show.</span></div>
+  </div>
+  </div></div>
+
+  <div class="wq bonus-q">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus.</b> So what is <span class="tex">r</span> itself? It’s the number that, used <b>12 times</b> as a factor, gives 2. And which key is <span class="tex">440\times\sqrt[3]{2}</span> Hz?</div></div>
+    <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">r=\sqrt[12]{2}\approx1.0595</span>. Today we’ll write it as <span class="tex">2^{1/12}</span>. And <span class="tex">\sqrt[3]{2}\times\sqrt[3]{2}\times\sqrt[3]{2}=2</span>, so it’s <b>4 steps</b> (12 ÷ 3): <b>C♯</b>, about 554 Hz.</div></div>
+  </div>
+  <p class="hum">Hum a note, then hum it an octave higher: you just doubled the frequency!</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -352,7 +372,7 @@
     <div><b>Watch the base.</b> <span class="tex">-n^{3/7}=-\sqrt[7]{n^3}</span> but <span class="tex">(4s)^{2/3}=\sqrt[3]{16s^2}</span>. Going back: <span class="tex">\sqrt[n]{x^m}=x^{m/n}</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u2l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Rational Exponents and Radicals</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 · Questions 8–19</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l5/">
     <div><div class="kicker">Next lesson</div><b>Lesson 5 — Simplifying with Rational Exponents</b><div class="muted">The exponent laws, now with fraction exponents</div></div><span class="arrow">→</span>
@@ -365,7 +385,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u2l4.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u2l4', homeHref: '../../', title: '2.4 Rational Exponents and Radicals' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

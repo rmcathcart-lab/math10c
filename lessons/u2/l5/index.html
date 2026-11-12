@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u2l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Earthquake Scale">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="rotate" values="-6 130 46;6 130 46;-6 130 46" dur="0.35s" repeatCount="indefinite"/><text x="130" y="46" font-size="40" text-anchor="middle">🏚️</text></g><g><animateTransform attributeName="transform" type="rotate" values="-5 200 46;5 200 46;-5 200 46" dur="0.4s" repeatCount="indefinite"/><text x="200" y="46" font-size="38" text-anchor="middle">🌳</text></g><text x="255" y="46" font-size="28" text-anchor="middle">💥<animate attributeName="opacity" values="1;0.15;1" dur="0.8s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Earthquake Scale</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">Each step up the magnitude scale releases about <b>32 times</b> as much energy.</p><p class="vw-ask">A magnitude 7 earthquake releases about how many times as much energy as a magnitude 5?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Is it 64 times?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>About 1000 times.</b> Two steps up is <span class="tex">32\times32=1024</span>, not <span class="tex">32\times2</span>.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,42 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: The Earthquake Scale">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Earthquake Scale</h2>
-  <p class="wf-rule">One step up the magnitude scale: <b>10 times</b> the shaking, about <b class="red">32 times</b> the energy.</p></div>
-  <div class="quake" id="quake"></div>
 
-  <div class="wq-grid">
-    <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>An <b>M5</b> quake shakes the ground how many times as much as an <b>M4</b>?</div></div>
-      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><b>10 times</b> (one step up).</div></div>
-    </div>
-    <div class="wq">
-      <div class="q-line"><div class="q-num">2</div><div>An <b>M7</b> shakes the ground how many times as much as an <b>M5</b>?</div></div>
-      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times10=</span> <b>100 times</b> (two steps up).</div></div>
-    </div>
-    <div class="wq wide">
-      <div class="q-line"><div class="q-num">3</div><div>“About 32” is really <span class="tex">10^{3/2}</span>. Fill in: <span class="wq-fill" id="q3fill"></span> <span class="muted small">(tap the box)</span></div></div>
-      <div class="wq-a"><button class="pill small" data-wq data-q3>Answer</button><div class="q-ans"><span class="tex">10^{3/2}\times10^{3/2}=10^{\frac32+\frac32}=10^{6/2}=10^{3}</span>. That’s the <b>Product Law</b>, with fractions.</div></div>
-    </div>
-  </div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> An <b>M7</b> earthquake releases about how many times as much <b>energy</b> as an <b>M5</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> 64</div>
-      <div class="opt"><b>B</b> 100</div>
-      <div class="opt right"><b>C</b> 1 000</div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C — about 1 000 times.</b> Two steps multiply the energy by <span class="tex">10^{3/2}</span> <b>twice</b>: <span class="tex">\left(10^{3/2}\right)^{2}=10^{\frac32\times2}=10^{3}=1\,000</span> &nbsp;<span class="muted">(<span class="tex">32\times32\approx1\,024</span>)</span>. <b>A</b> adds <span class="tex">32+32</span>, but the steps <b>multiply</b>. <b>B</b> is the <b>shaking</b> (Question 2), not the energy. Question 3 was the <b>Product Law</b> and this was the <b>Power of a Power Law</b>: the same answer two ways.</div>
-  </div>
-
-  <div class="qc-card">
-    <div class="q-line"><div class="q-num ok-n">?</div><div><b>Challenge a neighbour:</b> an <b>M9</b> versus an <b>M6</b>: how many times the energy? Then try a <b>half</b> step, M5 to M5.5. <span class="muted">Pick two magnitudes to compare.</span></div></div>
-    <div class="qc" id="qc"></div>
-  </div>
-</section>
 
 <!-- ================= 1. Laws ================= -->
 <section class="card" data-ink="s1" data-section="1. Reviewing the Exponent Laws">
@@ -92,7 +67,7 @@
     <div class="law"><div class="law-n">Power of a Power Law</div><span class="tex">(x^m)^n=x^{mn}</span></div>
     <div class="law"><div class="law-n">Negative Exponent Law</div><span class="tex">x^{-m}=\dfrac{1}{x^m},\ x\neq0</span></div>
   </div>
-  <div class="explainer" data-explainer="laws"></div>
+  <div data-extra><div class="explainer" data-explainer="laws"></div></div>
 </section>
 
 <section class="card" data-ink="s1b" data-section="1. Fraction toolbox">
@@ -154,7 +129,7 @@
     <div class="rr-card"><span class="tex">\dfrac{1}{\sqrt{x}}=\dfrac{1}{x^{1/2}}=x^{-1/2}</span></div>
   </div>
   <div class="explainer" data-explainer="machinesNum"></div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">\sqrt[3]{\sqrt{x}}</span> the same as <span class="tex">\sqrt{\sqrt[3]{x}}</span>? Does the order of the roots matter?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Same.</b> <span class="tex">\tfrac12\times\tfrac13=\tfrac13\times\tfrac12=\tfrac16</span>, so both are <span class="tex">x^{1/6}</span>. Multiplying fractions works in either order. Check: <span class="tex">\sqrt[3]{\sqrt{64}}=\sqrt[3]{8}=2</span> and <span class="tex">\sqrt{\sqrt[3]{64}}=\sqrt{4}=2</span>.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Is <span class="tex">\sqrt[3]{\sqrt{x}}</span> the same as <span class="tex">\sqrt{\sqrt[3]{x}}</span>? Does the order of the roots matter?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Same.</b> <span class="tex">\tfrac12\times\tfrac13=\tfrac13\times\tfrac12=\tfrac16</span>, so both are <span class="tex">x^{1/6}</span>. Multiplying fractions works in either order. Check: <span class="tex">\sqrt[3]{\sqrt{64}}=\sqrt[3]{8}=2</span> and <span class="tex">\sqrt{\sqrt[3]{64}}=\sqrt{4}=2</span>.</div></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>On the calculator.</b> Evaluate the single power <span class="tex">2401^{1/4}</span> with brackets, <span class="keys"><kbd>2</kbd><kbd>4</kbd><kbd>0</kbd><kbd>1</kbd><kbd>^</kbd><kbd>(</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>, or with the x-th root key, <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>2</kbd><kbd>4</kbd><kbd>0</kbd><kbd>1</kbd><kbd>ENTER</kbd></span>. For <span class="tex">361^{-1/2}</span>, <kbd>2nd</kbd><kbd>F◂▸D</kbd> turns the decimal into a fraction.</div>
@@ -207,6 +182,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 5 · Questions 1–4</h2>
+  <p class="pr-t">Simplify and convert.</p>
+  <div class="pr-chips n1"><span><b>1–4</b>Simplifying and converting</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u2l5">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u2l5"></section>
 
@@ -214,7 +198,7 @@
 <section class="card" data-ink="s5" data-section="5. Nested Radicals and Powers">
   <div class="sec-h"><span class="badge">5</span><h2>Simplifying Nested Radicals and Powers</h2></div>
   <p>Now the roots carry <b>variables</b> too. Two ways, same answer: work from the <b>inside out</b>, one root at a time, or <b>multiply the indices first</b> and take one single power of everything inside. Either way, every factor inside (number and variable) gets the power.</p>
-  <div class="explainer" data-explainer="machinesVar"></div>
+  <div data-extra><div class="explainer" data-explainer="machinesVar"></div></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
@@ -239,13 +223,13 @@
     <div class="cr"><span class="cr-n">3</span><div>Combine <b>base by base</b>: numbers with numbers, then add or subtract each variable’s exponents.</div></div>
     <div class="cr"><span class="cr-n">4</span><div>Finish with <b>positive exponents</b>: a negative exponent moves its factor across the fraction bar.</div></div>
   </div>
-  <div class="explainer" data-explainer="rootFirst"></div>
+  <div data-extra><div class="explainer" data-explainer="rootFirst"></div></div>
 </section>
 
 <section class="card" data-ink="s6b" data-section="6. One base at a time">
   <h3 class="sub">One base at a time</h3>
   <p>Give every base its own <b>lane</b> and its own colour. Each step works down the lanes, so nothing gets mixed up.</p>
-  <div class="explainer" data-explainer="lanes"></div>
+  <div data-extra><div class="explainer" data-explainer="lanes"></div></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative exponent never makes a number negative.</b> <span class="tex">y^{-2}=\tfrac{1}{y^2}</span> moves <span class="tex">y^2</span> below the fraction bar; the coefficient stays where it is.</div></div>
 </section>
 
@@ -265,6 +249,43 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: The Earthquake Scale">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Earthquake Scale</h2>
+  <p class="wf-rule">One step up the magnitude scale: <b>10 times</b> the shaking, about <b class="red">32 times</b> the energy.</p></div>
+  <div class="quake" id="quake"></div>
+
+  <div class="wq-grid">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>An <b>M5</b> quake shakes the ground how many times as much as an <b>M4</b>?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><b>10 times</b> (one step up).</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>An <b>M7</b> shakes the ground how many times as much as an <b>M5</b>?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times10=</span> <b>100 times</b> (two steps up).</div></div>
+    </div>
+    <div class="wq wide">
+      <div class="q-line"><div class="q-num">3</div><div>“About 32” is really <span class="tex">10^{3/2}</span>. Fill in: <span class="wq-fill" id="q3fill"></span> <span class="muted small">(tap the box)</span></div></div>
+      <div class="wq-a"><button class="pill small" data-wq data-q3>Answer</button><div class="q-ans"><span class="tex">10^{3/2}\times10^{3/2}=10^{\frac32+\frac32}=10^{6/2}=10^{3}</span>. That’s the <b>Product Law</b>, with fractions.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> An <b>M7</b> earthquake releases about how many times as much <b>energy</b> as an <b>M5</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 64</div>
+      <div class="opt"><b>B</b> 100</div>
+      <div class="opt right"><b>C</b> 1 000</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C — about 1 000 times.</b> Two steps multiply the energy by <span class="tex">10^{3/2}</span> <b>twice</b>: <span class="tex">\left(10^{3/2}\right)^{2}=10^{\frac32\times2}=10^{3}=1\,000</span> &nbsp;<span class="muted">(<span class="tex">32\times32\approx1\,024</span>)</span>. <b>A</b> adds <span class="tex">32+32</span>, but the steps <b>multiply</b>. <b>B</b> is the <b>shaking</b> (Question 2), not the energy. Question 3 was the <b>Product Law</b> and this was the <b>Power of a Power Law</b>: the same answer two ways.</div>
+  </div>
+
+  <div class="qc-card">
+    <div class="q-line"><div class="q-num ok-n">?</div><div><b>Challenge a neighbour:</b> an <b>M9</b> versus an <b>M6</b>: how many times the energy? Then try a <b>half</b> step, M5 to M5.5. <span class="muted">Pick two magnitudes to compare.</span></div></div>
+    <div class="qc" id="qc"></div>
+  </div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -275,7 +296,7 @@
     <div><b>Chains:</b> brackets first (every factor), numbers <b>root first</b>, then <b>one base at a time</b>, positive exponents last. <span class="tex">\sqrt[3]{64x^8}=4x^{8/3}</span></div>
   </div>
   <a class="assign" href="../../../#/lesson/u2l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — Simplifying with Rational Exponents</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 5 · Questions 5–14</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l6/">
     <div><div class="kicker">Next lesson</div><b>Lesson 6 — Exponents Unit Review</b><div class="muted">Every law together, integer and rational exponents</div></div><span class="arrow">→</span>
@@ -288,7 +309,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u2l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u2l5', homeHref: '../../', title: '2.5 Simplifying with Rational Exponents' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

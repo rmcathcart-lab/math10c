@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Which One Doesn’t Belong?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><circle cx="95" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="0.0s" repeatCount="indefinite"/></circle><circle cx="145" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="0.8s" repeatCount="indefinite"/></circle><circle cx="195" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="1.6s" repeatCount="indefinite"/></circle><circle cx="245" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="2.4000000000000004s" repeatCount="indefinite"/></circle></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Which One Doesn’t Belong?</h2>
+  <p class="wf-rule vw-rule">Which one is the odd one out? Pick one and be ready to say <b>why</b>.</p></div>
+  <div class="vw-tiles" style="--n:4"><div><b>A</b><span class="tex">\sqrt{16}</span></div><div><b>B</b><span class="tex">-3</span></div><div><b>C</b><span class="tex">0.5</span></div><div><b>D</b><span class="tex">\sqrt{7}</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Any of them can be right.</b> A is a whole number in disguise. B is the only negative. C is the only one that is not a root or an integer. D is the only one whose decimal never ends or repeats.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,41 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Guess Who?" style="--wf-side: 330px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Guess Who? Number Edition</h2>
-  <p class="wf-rule">I’m thinking of one of these <b>12 numbers</b>. You may only ask <b>yes / no</b> questions. <span class="muted">Tap a face to flip it down.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="gw-board" id="gw"></div>
-  <div class="gw-tools">
-    <button class="pill" data-gw="values">Show what each face equals</button>
-    <button class="pill" data-gw="reset">Stand them all up</button>
-  </div>
-  <div class="q-line"><div class="q-num">1</div><div class="gw-qtext"><b>Which two faces are negative?</b> <button class="pill small" data-gw="neg">Show</button> <span class="gw-ans" id="gw-a-neg"><span class="tex">-\sqrt{9} = -3</span> and <span class="tex">-7</span></span></div></div>
-  <div class="q-line"><div class="q-num">2</div><div class="gw-qtext"><b>Which two faces are the same number?</b> <button class="pill small" data-gw="same">Show</button> <span class="gw-ans" id="gw-a-same"><span class="tex">\sqrt{16}</span> and <span class="tex">\tfrac{12}{3}</span>: both are <b>4</b></span></div></div>
-  </div><div class="wf-side">
-  <div class="q-line"><div class="q-num">3</div><div class="gw-qtext"><b>Find my mystery face from my answers.</b> <span class="muted">Tap each answer to flip down the faces it rules out.</span>
-    <div class="gw-qs">
-      <button class="gw-q" data-q="rat">Rational? <b>YES</b></button>
-      <button class="gw-q" data-q="int">Integer? <b>NO</b></button>
-      <button class="gw-q" data-q="gt">More than 0.3? <b>YES</b></button>
-      <button class="gw-q" data-q="ends">Decimal ends? <b>YES</b></button>
-    </div>
-    <div class="gw-result" id="gw-result"></div>
-  </div></div>
-  <div class="poll wf-poll" id="gw-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the 12 faces are secretly <b>integers</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 2</div>
-      <div class="opt"><b>B</b> 3</div>
-      <div class="opt"><b>C</b> 4</div>
-      <div class="opt right"><b>D</b> 5</div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>D — five integers:</b> <span class="tex">\sqrt{16} = 4</span>, <span class="tex">-\sqrt{9} = -3</span>, <span class="tex">\tfrac{12}{3} = 4</span>, <span class="tex">0</span> and <span class="tex">-7</span>. Roots and fractions can <b>hide</b> integers, and 0 and negatives count too. Watch out: <span class="tex">\sqrt{\tfrac14}</span> isn’t irrational just because it has a root sign — it’s exactly <span class="tex">\tfrac12</span>.</div>
-  </div>
-  <p class="gw-play">Play a round: pick a secret face. Can a neighbour find it in 4 questions?</p>
-  </div></div>
-</section>
+
 
 <!-- ================= 1. The real number system ================= -->
 <section class="card" data-ink="s1" data-section="1. The Real Number System">
@@ -94,7 +71,7 @@
   <div class="explainer" data-explainer="build"></div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Why fractions end or repeat">
+<section data-extra class="card" data-ink="s1b" data-section="1. Why fractions end or repeat">
   <h3 class="sub">Rational or irrational? Look at the decimal</h3>
   <p>Why can a fraction’s decimal <b>only</b> end or repeat? Watch the <b>remainders</b> in the long division.</p>
   <div class="explainer" data-explainer="remainders"></div>
@@ -109,7 +86,7 @@
   <p>Each set sits <b>inside</b> the next: every natural number is whole, every whole number is an integer, every integer is rational. The irrationals sit <b>beside</b> the rationals — no number is both. To sort a number, <b>simplify it first</b>, then test from the outside in.</p>
   <div class="explainer" data-explainer="sorter"></div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>A root sign doesn’t make a number irrational.</b> <span class="tex">\sqrt{9} = 3</span>, <span class="tex">\sqrt{\tfrac14} = \tfrac12</span> and <span class="tex">\sqrt[3]{-8} = -2</span> are all rational. Only roots that don’t come out exactly, like <span class="tex">\sqrt{10}</span>, are irrational.</div></div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> There is exactly <b>one</b> number in <span class="tex">W</span> that is not in <span class="tex">N</span>. Which one? And why is no number in both <span class="tex">Q</span> and <span class="tex">\overline{Q}</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>0</b> is whole but not natural. A decimal can’t both repeat (or end) <b>and</b> never repeat, so <span class="tex">Q</span> and <span class="tex">\overline{Q}</span> never overlap.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> There is exactly <b>one</b> number in <span class="tex">W</span> that is not in <span class="tex">N</span>. Which one? And why is no number in both <span class="tex">Q</span> and <span class="tex">\overline{Q}</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>0</b> is whole but not natural. A decimal can’t both repeat (or end) <b>and</b> never repeat, so <span class="tex">Q</span> and <span class="tex">\overline{Q}</span> never overlap.</div></div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
@@ -140,7 +117,7 @@
     <div><b>Know your perfect squares</b> <span class="muted">— they’re how we estimate. Tap a blank to fill it.</span> <button class="pill small" data-fillall="sq">Fill all</button></div>
     <div class="pow-grid" id="sq-grid"></div>
   </div>
-  <div class="explainer" data-explainer="tiles"></div>
+  <div data-extra><div class="explainer" data-explainer="tiles"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Check it on the calculator.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>5</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives <span class="tex">\sqrt{53} = 7.280\ldots</span> ≈ 7.3. Estimate <b>first</b>, so you’ll notice a typing mistake.</div>
@@ -155,7 +132,7 @@
 <section class="card" data-ink="s2b" data-section="2. Estimating expressions">
   <h3 class="sub">Estimating a whole expression</h3>
   <p>Replace each root with its whole-number estimate, work out the arithmetic, then compare with the calculator. Work <b>inside out</b> when roots are nested.</p>
-  <div class="explainer" data-explainer="exprSq"></div>
+  <div data-extra><div class="explainer" data-explainer="exprSq"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Type it as written.</b> The calculator opens a bracket after <kbd>√</kbd>, so close it before you go on: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>2</kbd><kbd>0</kbd><kbd>)</kbd><kbd>+</kbd><kbd>4</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>4</kbd><kbd>1</kbd><kbd>)</kbd><kbd>ENTER</kbd></span></div>
@@ -206,6 +183,15 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–12">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 5 · Questions 1–12</h2>
+  <p class="pr-t">The real number system, then estimating square roots.</p>
+  <div class="pr-chips n2"><span><b>1–8</b>The real number system</span><span><b>9–12</b>Estimating square roots</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 9.</span><a class="pill" href="../../../#/lesson/u1l5">Open the Practice site</a></div>
+</section>
+
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
 <section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u1l5"></section>
 
@@ -217,7 +203,7 @@
     <div><b>Know your perfect cubes</b> <span class="muted">— tap a blank to fill it.</span> <button class="pill small" data-fillall="cb">Fill all</button></div>
     <div class="pow-grid cubes" id="cb-grid"></div>
   </div>
-  <div class="explainer" data-explainer="cubes"></div>
+  <div data-extra><div class="explainer" data-explainer="cubes"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Cube roots on the calculator.</b> Type the <b>index first</b>: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">\sqrt[3]{30} = 3.107\ldots</span></div>
@@ -237,7 +223,7 @@
 <section class="card" data-ink="s3b" data-section="3. Estimating with cube roots">
   <h3 class="sub">Estimating expressions with cube roots</h3>
   <p>Same plan as before: estimate each root from the perfect squares <b>or cubes</b> on either side, do the arithmetic, then check. Read the index carefully — <span class="tex">\sqrt{50}</span> and <span class="tex">\sqrt[3]{50}</span> are very different numbers.</p>
-  <div class="explainer" data-explainer="exprCb"></div>
+  <div data-extra><div class="explainer" data-explainer="exprCb"></div></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
@@ -268,7 +254,7 @@
 <section class="card" data-ink="s4b" data-section="4. Graphing |x| inequalities">
   <h3 class="sub">Graphing absolute value inequalities</h3>
   <p>To graph <span class="tex">\lvert a \rvert \lt 3,\ a \in R</span>, we need every point <b>less than 3 units from 0</b>. The endpoints themselves aren’t included, so they’re <b>open</b>.</p>
-  <div class="explainer" data-explainer="ineq"></div>
+  <div data-extra><div class="explainer" data-explainer="ineq"></div></div>
   <div class="read-graph">
     <div><b>Between</b> the points → <span class="tex">\lvert x \rvert \lt k</span> or <span class="tex">\lvert x \rvert \le k</span></div>
     <div><b>Outside</b> the points → <span class="tex">\lvert x \rvert \gt k</span> or <span class="tex">\lvert x \rvert \ge k</span></div>
@@ -293,6 +279,42 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Guess Who?" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Guess Who? Number Edition</h2>
+  <p class="wf-rule">I’m thinking of one of these <b>12 numbers</b>. You may only ask <b>yes / no</b> questions. <span class="muted">Tap a face to flip it down.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="gw-board" id="gw"></div>
+  <div class="gw-tools">
+    <button class="pill" data-gw="values">Show what each face equals</button>
+    <button class="pill" data-gw="reset">Stand them all up</button>
+  </div>
+  <div class="q-line"><div class="q-num">1</div><div class="gw-qtext"><b>Which two faces are negative?</b> <button class="pill small" data-gw="neg">Show</button> <span class="gw-ans" id="gw-a-neg"><span class="tex">-\sqrt{9} = -3</span> and <span class="tex">-7</span></span></div></div>
+  <div class="q-line"><div class="q-num">2</div><div class="gw-qtext"><b>Which two faces are the same number?</b> <button class="pill small" data-gw="same">Show</button> <span class="gw-ans" id="gw-a-same"><span class="tex">\sqrt{16}</span> and <span class="tex">\tfrac{12}{3}</span>: both are <b>4</b></span></div></div>
+  </div><div class="wf-side">
+  <div class="q-line"><div class="q-num">3</div><div class="gw-qtext"><b>Find my mystery face from my answers.</b> <span class="muted">Tap each answer to flip down the faces it rules out.</span>
+    <div class="gw-qs">
+      <button class="gw-q" data-q="rat">Rational? <b>YES</b></button>
+      <button class="gw-q" data-q="int">Integer? <b>NO</b></button>
+      <button class="gw-q" data-q="gt">More than 0.3? <b>YES</b></button>
+      <button class="gw-q" data-q="ends">Decimal ends? <b>YES</b></button>
+    </div>
+    <div class="gw-result" id="gw-result"></div>
+  </div></div>
+  <div class="poll wf-poll" id="gw-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the 12 faces are secretly <b>integers</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 2</div>
+      <div class="opt"><b>B</b> 3</div>
+      <div class="opt"><b>C</b> 4</div>
+      <div class="opt right"><b>D</b> 5</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>D — five integers:</b> <span class="tex">\sqrt{16} = 4</span>, <span class="tex">-\sqrt{9} = -3</span>, <span class="tex">\tfrac{12}{3} = 4</span>, <span class="tex">0</span> and <span class="tex">-7</span>. Roots and fractions can <b>hide</b> integers, and 0 and negatives count too. Watch out: <span class="tex">\sqrt{\tfrac14}</span> isn’t irrational just because it has a root sign — it’s exactly <span class="tex">\tfrac12</span>.</div>
+  </div>
+  <p class="gw-play">Play a round: pick a secret face. Can a neighbour find it in 4 questions?</p>
+  </div></div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -304,7 +326,7 @@
   </div>
   <div class="sum-links">
     <a class="assign" href="../../../#/lesson/u1l5">
-      <div><div class="kicker">Your turn</div><b>Assignment 5 — Classifying the Real Number System</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+      <div><div class="kicker">Your turn</div><b>Assignment 5 · Questions 13–21</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
     </a>
     <a class="assign next" href="../l6/">
       <div><div class="kicker">Next lesson</div><b>1.6 Roots of Real Numbers</b><div class="muted">Square roots, cube roots and roots of any index</div></div><span class="arrow">→</span>
@@ -318,7 +340,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l5', homeHref: '../../', title: '1.5 Classifying the Real Number System' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

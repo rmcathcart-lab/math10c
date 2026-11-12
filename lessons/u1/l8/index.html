@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l8.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Double the Cube">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="130" y="46" font-size="30" text-anchor="middle">📦</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.4s" repeatCount="indefinite"/><text x="210" y="46" font-size="46" text-anchor="middle">📦</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Double the Cube</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A cube-shaped box with <b>10 cm</b> edges holds <b>1 litre</b>.</p><p class="vw-ctx">Another cube-shaped box holds 2 litres.</p><p class="vw-ask">About how many times as long are the edges of the 2-litre box?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Twice as long? Try it: how much would that box hold?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>About 1.26 times.</b> Doubling the edges would hold 8 litres, not 2. The edges only need to be <span class="tex">\sqrt[3]{2}\approx1.26</span> times as long, about 12.6 cm.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,8 +52,184 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Double the Cube">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Double the Cube</h2>
+
+
+<!-- ================= 1. Entire to mixed ================= -->
+<section class="card" data-ink="s1" data-section="1. Entire to Mixed">
+  <div class="sec-h"><span class="badge">1</span><h2>Entire to Mixed Radicals (Index 3 and Higher)</h2></div>
+  <p>In Lesson 7, <span class="tex">\sqrt{200}=\sqrt{100\times2}=10\sqrt{2}</span>: the largest perfect <b>square</b> factor came out in front of the root. For a cube root, pull out the largest perfect <b>cube</b> factor; for a fourth root, the largest perfect fourth power; and so on.</p>
+  <div class="def">An <b>entire radical</b> with index <span class="tex">n</span> becomes a <b>mixed radical</b> once the largest perfect <span class="tex">n</span>th-power factor is pulled out of the radicand. For index 3, that's the largest <b>perfect cube</b> dividing it.</div>
+  <div data-extra><div class="explainer" data-explainer="cubeMeaning"></div></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Perfect powers">
+  <h3 class="sub">Perfect powers to know</h3>
+  <p class="small muted">Tap a row to highlight it.</p>
+  <div class="ptable" id="ptable"></div>
+  <p class="display"><span class="tex">\sqrt[3]{250}=\sqrt[3]{125\times2}=\sqrt[3]{125}\times\sqrt[3]{2}=5\sqrt[3]{2}</span>
+    <span class="small muted">choose <span class="tex">125=5^3</span>, the <b>largest</b> perfect cube dividing 250 · any index works the same way</span></p>
+  <div class="explainer" data-explainer="finder"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch out: use the largest.</b> <span class="tex">\sqrt[3]{1\,080}=\sqrt[3]{8\times135}=2\sqrt[3]{135}</span> is true, but <b>not simplest form</b>: 135 = 27 × 5 still hides a perfect cube. Keep going (or start with 216) to get <span class="tex">6\sqrt[3]{5}</span>.</div></div>
+</section>
+
+<section data-extra class="card" data-ink="s1c" data-section="1. Prime factor method">
+  <h3 class="sub">Or use prime factors: groups of three</h3>
+  <p>Break the radicand into <b>prime factors</b> and sort them into <b>groups of three</b> identical factors. Each full group sends <b>one</b> factor outside the cube root; leftovers stay inside.</p>
+  <div class="explainer" data-explainer="groups"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check on the calculator.</b> Both sides must give the same decimal: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> both give 3.7798, so <span class="tex">\sqrt[3]{54}=3\sqrt[3]{2}</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ 54 =" type="button">Show <span class="tex">\sqrt[3]{54}</span></button><button class="pill" data-keys="3 × 3 ˣ√ 2 =" type="button">Show <span class="tex">3\sqrt[3]{2}</span></button></div>
+  </div>
+</section>
+
+<section data-extra class="card" data-ink="s1d" data-section="1. Higher index">
+  <h3 class="sub">Higher index: groups of 4, 5, …</h3>
+  <p>The <b>index</b> is the <b>group size</b>. A fourth root needs four identical factors to bring one out; a fifth root needs five.</p>
+  <div class="explainer" data-explainer="sameNumber"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Higher-index entire → mixed</h3></div>
+  <p class="q">Convert to mixed radicals in simplest form.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">\sqrt[3]{1\,080}</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Largest cube dividing 1 080 is <span class="tex">216=6^3</span> (1 080 = 216 × 5)<br><span class="tex">=\sqrt[3]{216}\times\sqrt[3]{5}=</span> <b><span class="tex">\boldsymbol{6\sqrt[3]{5}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\sqrt[5]{3\,072}</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Largest fifth power dividing 3 072 is <span class="tex">1\,024=4^5</span> (3 072 = 1 024 × 3)<br><span class="tex">=</span> <b><span class="tex">\boldsymbol{4\sqrt[5]{3}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\sqrt[3]{-135}</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Odd index, so the − can go inside: <span class="tex">-135=-27\times5</span><br><span class="tex">=\sqrt[3]{-27}\times\sqrt[3]{5}=</span> <b><span class="tex">\boldsymbol{-3\sqrt[3]{5}}</span></b></div></div></div>
+  </div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Without a calculator: <span class="tex">\sqrt[3]{1\,080}</span> is between which two whole numbers?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">10^3=1\,000</span> and <span class="tex">11^3=1\,331</span>, so <b><span class="tex">\sqrt[3]{1\,080}</span> is between 10 and 11</b>. Check: <span class="tex">6\sqrt[3]{5}\approx6\times1.71=10.26</span> ✓</div></div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (b) and (c).</b> <span class="keys"><kbd>5</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>0</kbd><kbd>7</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>5</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> both give 4.9829. For a negative radicand use <kbd>(−)</kbd>, not <kbd>−</kbd>: <span class="tex">\sqrt[3]{-135}\approx-5.1299</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="5 ˣ√ 3072 =" type="button">Show (b)</button><button class="pill" data-keys="3 ˣ√ (−) 135 =" type="button">Show (c)</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space" type="button">+ More space</button>
+</section>
+
+<!-- ================= 2. Mixed to entire ================= -->
+<section class="card" data-ink="s2" data-section="2. Mixed to Entire">
+  <div class="sec-h"><span class="badge">2</span><h2>Mixed to Entire Radicals (Index 3 and Higher)</h2></div>
+  <div class="def">To reverse the process, turn the <b>coefficient</b> into a radical of the <b>same index</b> by raising it to the power <span class="tex">n</span>, then multiply under <b>one root</b>.</div>
+  <p class="display"><span class="tex">\tfrac13\sqrt[3]{54}=\sqrt[3]{\left(\tfrac13\right)^3}\times\sqrt[3]{54}=\sqrt[3]{\tfrac{1}{27}}\times\sqrt[3]{54}=\sqrt[3]{\tfrac{54}{27}}=\sqrt[3]{2}</span></p>
+  <div class="explainer" data-explainer="toEntire"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Watch the sign">
+  <h3 class="sub">Watch the sign</h3>
+  <div class="def-grid">
+    <div class="def"><b>Odd index</b> (3, 5, 7, …): a negative sign travels <b>freely</b> in or out of the radical, since an odd power of a negative number is still negative.<div class="eg"><span class="tex">-2\sqrt[3]{5}=\sqrt[3]{(-2)^3\times5}=\sqrt[3]{-40}</span></div></div>
+    <div class="def amber"><b>Even index</b> (2, 4, 6, …): it <b>can't</b>. An even root of a negative number is not real, so a negative coefficient must <b>stay outside</b>.<div class="eg"><span class="tex">-2\sqrt[4]{3}=-\sqrt[4]{2^4\times3}=-\sqrt[4]{48}</span></div></div>
+  </div>
+  <div data-extra><div class="explainer" data-explainer="signs"></div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The calculator agrees.</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(−)</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives −2, but <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(−)</kbd><kbd>1</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives an <b>error</b>: <span class="tex">\sqrt[4]{-16}</span> is not a real number.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ (−) 8 =" type="button">Show <span class="tex">\sqrt[3]{-8}</span></button><button class="pill" data-keys="4 ˣ√ (−) 16 =" type="button">Show <span class="tex">\sqrt[4]{-16}</span></button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Higher-index mixed → entire</h3></div>
+  <p class="q">Convert to entire radicals.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">3\sqrt[4]{2}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">3^4=81</span><br><span class="tex">=\sqrt[4]{81}\times\sqrt[4]{2}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[4]{162}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">-3\sqrt[3]{11}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Odd index: <span class="tex">(-3)^3=-27</span><br><span class="tex">=\sqrt[3]{-27}\times\sqrt[3]{11}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[3]{-297}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{3}{4}\sqrt[3]{32}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">\left(\dfrac34\right)^3=\dfrac{27}{64}</span><br><span class="tex">\dfrac{27}{64}\times32=\dfrac{27}{2}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[3]{\dfrac{27}{2}}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">-2\sqrt[5]{5}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Odd index: <span class="tex">(-2)^5=-32</span><br><span class="tex">-32\times5=-160</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[5]{-160}}</span></b></div></div></div>
+  </div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Can <span class="tex">-3\sqrt[4]{2}</span> be written as <span class="tex">\sqrt[4]{-162}</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><b>No.</b> The index is even: <span class="tex">(-3)^4=+81</span>, and <span class="tex">\sqrt[4]{-162}</span> isn't a real number. The − stays outside: <b><span class="tex">\boldsymbol{-3\sqrt[4]{2}=-\sqrt[4]{162}}</span></b>.</div></div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (a).</b> <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>6</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> both give 3.5676.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 × 4 ˣ√ 2 =" type="button">Show <span class="tex">3\sqrt[4]{2}</span></button><button class="pill" data-keys="4 ˣ√ 162 =" type="button">Show <span class="tex">\sqrt[4]{162}</span></button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space" type="button">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–7">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 8 · Questions 1–7</h2>
+  <p class="pr-t">Radicals with index 3 and higher.</p>
+  <div class="pr-chips n1"><span><b>1–7</b>Index 3 and higher</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 5.</span><a class="pill" href="../../../#/lesson/u1l8">Open the Practice site</a></div>
+</section>
+
+<!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
+<section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u1l8"></section>
+
+<!-- ================= 3. Extension: variables ================= -->
+<section class="card" data-ink="s3" data-section="3. Extension: Variables">
+  <div class="sec-h"><span class="badge">3</span><h2>Extension: Radicals With Variables</h2></div>
+  <p>The same two conversions work when the radicand contains variables: track <b>exponents</b> instead of values. <em>Assume every variable is non-negative, so no absolute-value signs are needed.</em></p>
+  <div class="def"><b>Divide the exponent by the index.</b> The <b>quotient</b> is the exponent that comes out; the <b>remainder</b> stays inside.</div>
+  <div class="tapq-row">
+    <button class="tapq" type="button"><span class="tex">\sqrt{x^{10}}</span><span class="rhs"><span class="tex">=x^5</span></span></button>
+    <button class="tapq" type="button"><span class="tex">\sqrt{y^{14}}</span><span class="rhs"><span class="tex">=y^7</span></span></button>
+    <button class="tapq" type="button"><span class="tex">\sqrt{a^{12}b^4}</span><span class="rhs"><span class="tex">=a^6b^2</span></span></button>
+    <button class="tapq" type="button"><span class="tex">\sqrt[3]{x^{18}}</span><span class="rhs"><span class="tex">=x^6</span></span></button>
+    <button class="tapq" type="button"><span class="tex">\sqrt[3]{y^9}</span><span class="rhs"><span class="tex">=y^3</span></span></button>
+  </div>
+  <p class="small muted center">Tap each one to check.</p>
+  <p>When the exponent does <b>not</b> divide evenly by the index, split it into the largest multiple of the index plus a remainder:</p>
+  <p class="display"><span class="tex">\sqrt{x^7}=\sqrt{x^6\times x}=\sqrt{x^6}\times\sqrt{x}=x^3\sqrt{x}</span></p>
+  <div class="explainer" data-explainer="varGroups"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Exponent machine">
+  <h3 class="sub">The exponent machine</h3>
+  <p class="small muted">Pick an exponent and an index. Every full group of x's comes out as one x.</p>
+  <div class="xm" id="xm"></div>
+</section>
+
+<section data-extra class="card" data-ink="s3c" data-section="3. Numbers and variables">
+  <h3 class="sub">Numbers and variables together</h3>
+  <p>Do each factor on its own: the number by its largest perfect <span class="tex">n</span>th power, each variable by dividing its exponent by the index. Then put the outside parts together and the inside parts together.</p>
+  <div class="explainer" data-explainer="mixedGroups"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Variable entire → mixed</h3></div>
+  <p class="q">Convert the following entire radicals to mixed radicals in simplest form.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{a^9}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">a^9=a^8\times a</span>, <span class="tex">\sqrt{a^8}=a^4</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{a^4\sqrt{a}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{t^{11}}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">t^{11}=t^{10}\times t</span>, <span class="tex">\sqrt{t^{10}}=t^5</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{t^5\sqrt{t}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\sqrt[3]{x^8}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">x^8=x^6\times x^2</span>, <span class="tex">\sqrt[3]{x^6}=x^2</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{x^2\sqrt[3]{x^2}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\sqrt[3]{x^{10}}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">x^{10}=x^9\times x</span>, <span class="tex">\sqrt[3]{x^9}=x^3</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{x^3\sqrt[3]{x}}</span></b></div></div></div>
+  </div>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(e) <span class="tex">\sqrt{x^8y^7}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">x^8</span> is a perfect square; <span class="tex">y^7=y^6\times y</span><br><span class="tex">=\sqrt{x^8y^6\times y}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{x^4y^3\sqrt{y}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">\sqrt{50x^5}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">50=25\times2</span>, <span class="tex">x^5=x^4\times x</span><br><span class="tex">=\sqrt{25x^4\times2x}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{5x^2\sqrt{2x}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(g) <span class="tex">\sqrt{48y^5z^6}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">48=16\times3</span>, <span class="tex">y^5=y^4\times y</span>, <span class="tex">z^6</span> is a perfect square<br><span class="tex">=\sqrt{16y^4z^6\times3y}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{4y^2z^3\sqrt{3y}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(h) <span class="tex">\sqrt[3]{54x^7y^{10}}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">54=27\times2</span>, <span class="tex">x^7=x^6\times x</span>, <span class="tex">y^{10}=y^9\times y</span><br><span class="tex">=\sqrt[3]{27x^6y^9\times2xy}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{3x^2y^3\sqrt[3]{2xy}}</span></b></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space" type="button">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3d" data-section="3. Variable mixed to entire">
+  <h3 class="sub">Variable mixed → entire</h3>
+  <p>Same as Section 2: the whole coefficient goes in as its <span class="tex">n</span>th power. Raise each exponent: <span class="tex">(b^3)^2=b^6</span>, <span class="tex">(2pq^2)^3=8p^3q^6</span>. Then multiply under one root by <b>adding exponents</b> of matching variables.</p>
+  <div data-extra><div class="explainer" data-explainer="varToEntire"></div></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Variable mixed → entire</h3></div>
+  <p class="q">Convert the following mixed radicals to entire radicals.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">3\sqrt{x^5}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">3^2=9</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt{9x^5}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">b^3\sqrt{b}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">(b^3)^2=b^6</span><br><span class="tex">=\sqrt{b^6\times b}=</span> <b><span class="tex">\boldsymbol{\sqrt{b^7}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">x^4\sqrt{xy}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">(x^4)^2=x^8</span><br><span class="tex">=\sqrt{x^8\times xy}=</span> <b><span class="tex">\boldsymbol{\sqrt{x^9y}}</span></b></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">2pq^2\sqrt[3]{3r^5}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">(2pq^2)^3=8p^3q^6</span><br><span class="tex">8p^3q^6\times3r^5</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[3]{24p^3q^6r^5}}</span></b></div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space" type="button">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Double the Cube">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Double the Cube</h2>
   <p class="wf-rule">Sugar cubes, cardboard boxes, and an ancient Greek puzzle. <span class="muted">Tap a stack to count it.</span></p></div>
 
   <div class="q-line"><div class="q-num">1</div><div><b>How many sugar cubes</b> are in the 2 × 2 × 2 stack? The 3 × 3 × 3 stack?</div></div>
@@ -88,171 +274,6 @@
   </div>
 </section>
 
-<!-- ================= 1. Entire to mixed ================= -->
-<section class="card" data-ink="s1" data-section="1. Entire to Mixed">
-  <div class="sec-h"><span class="badge">1</span><h2>Entire to Mixed Radicals (Index 3 and Higher)</h2></div>
-  <p>In Lesson 7, <span class="tex">\sqrt{200}=\sqrt{100\times2}=10\sqrt{2}</span>: the largest perfect <b>square</b> factor came out in front of the root. For a cube root, pull out the largest perfect <b>cube</b> factor; for a fourth root, the largest perfect fourth power; and so on.</p>
-  <div class="def">An <b>entire radical</b> with index <span class="tex">n</span> becomes a <b>mixed radical</b> once the largest perfect <span class="tex">n</span>th-power factor is pulled out of the radicand. For index 3, that's the largest <b>perfect cube</b> dividing it.</div>
-  <div class="explainer" data-explainer="cubeMeaning"></div>
-</section>
-
-<section class="card" data-ink="s1b" data-section="1. Perfect powers">
-  <h3 class="sub">Perfect powers to know</h3>
-  <p class="small muted">Tap a row to highlight it.</p>
-  <div class="ptable" id="ptable"></div>
-  <p class="display"><span class="tex">\sqrt[3]{250}=\sqrt[3]{125\times2}=\sqrt[3]{125}\times\sqrt[3]{2}=5\sqrt[3]{2}</span>
-    <span class="small muted">choose <span class="tex">125=5^3</span>, the <b>largest</b> perfect cube dividing 250 · any index works the same way</span></p>
-  <div class="explainer" data-explainer="finder"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch out: use the largest.</b> <span class="tex">\sqrt[3]{1\,080}=\sqrt[3]{8\times135}=2\sqrt[3]{135}</span> is true, but <b>not simplest form</b>: 135 = 27 × 5 still hides a perfect cube. Keep going (or start with 216) to get <span class="tex">6\sqrt[3]{5}</span>.</div></div>
-</section>
-
-<section class="card" data-ink="s1c" data-section="1. Prime factor method">
-  <h3 class="sub">Or use prime factors: groups of three</h3>
-  <p>Break the radicand into <b>prime factors</b> and sort them into <b>groups of three</b> identical factors. Each full group sends <b>one</b> factor outside the cube root; leftovers stay inside.</p>
-  <div class="explainer" data-explainer="groups"></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check on the calculator.</b> Both sides must give the same decimal: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> both give 3.7798, so <span class="tex">\sqrt[3]{54}=3\sqrt[3]{2}</span>.</div>
-    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ 54 =" type="button">Show <span class="tex">\sqrt[3]{54}</span></button><button class="pill" data-keys="3 × 3 ˣ√ 2 =" type="button">Show <span class="tex">3\sqrt[3]{2}</span></button></div>
-  </div>
-</section>
-
-<section class="card" data-ink="s1d" data-section="1. Higher index">
-  <h3 class="sub">Higher index: groups of 4, 5, …</h3>
-  <p>The <b>index</b> is the <b>group size</b>. A fourth root needs four identical factors to bring one out; a fifth root needs five.</p>
-  <div class="explainer" data-explainer="sameNumber"></div>
-</section>
-
-<section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Higher-index entire → mixed</h3></div>
-  <p class="q">Convert to mixed radicals in simplest form.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt[3]{1\,080}</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Largest cube dividing 1 080 is <span class="tex">216=6^3</span> (1 080 = 216 × 5)<br><span class="tex">=\sqrt[3]{216}\times\sqrt[3]{5}=</span> <b><span class="tex">\boldsymbol{6\sqrt[3]{5}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt[5]{3\,072}</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Largest fifth power dividing 3 072 is <span class="tex">1\,024=4^5</span> (3 072 = 1 024 × 3)<br><span class="tex">=</span> <b><span class="tex">\boldsymbol{4\sqrt[5]{3}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\sqrt[3]{-135}</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Odd index, so the − can go inside: <span class="tex">-135=-27\times5</span><br><span class="tex">=\sqrt[3]{-27}\times\sqrt[3]{5}=</span> <b><span class="tex">\boldsymbol{-3\sqrt[3]{5}}</span></b></div></div></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Without a calculator: <span class="tex">\sqrt[3]{1\,080}</span> is between which two whole numbers?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">10^3=1\,000</span> and <span class="tex">11^3=1\,331</span>, so <b><span class="tex">\sqrt[3]{1\,080}</span> is between 10 and 11</b>. Check: <span class="tex">6\sqrt[3]{5}\approx6\times1.71=10.26</span> ✓</div></div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check (b) and (c).</b> <span class="keys"><kbd>5</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>0</kbd><kbd>7</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>5</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> both give 4.9829. For a negative radicand use <kbd>(−)</kbd>, not <kbd>−</kbd>: <span class="tex">\sqrt[3]{-135}\approx-5.1299</span>.</div>
-    <div class="pill-col"><button class="pill" data-keys="5 ˣ√ 3072 =" type="button">Show (b)</button><button class="pill" data-keys="3 ˣ√ (−) 135 =" type="button">Show (c)</button></div>
-  </div>
-  <div class="space" id="ex1-space"></div>
-  <button class="more" data-more="ex1-space" type="button">+ More space</button>
-</section>
-
-<!-- ================= 2. Mixed to entire ================= -->
-<section class="card" data-ink="s2" data-section="2. Mixed to Entire">
-  <div class="sec-h"><span class="badge">2</span><h2>Mixed to Entire Radicals (Index 3 and Higher)</h2></div>
-  <div class="def">To reverse the process, turn the <b>coefficient</b> into a radical of the <b>same index</b> by raising it to the power <span class="tex">n</span>, then multiply under <b>one root</b>.</div>
-  <p class="display"><span class="tex">\tfrac13\sqrt[3]{54}=\sqrt[3]{\left(\tfrac13\right)^3}\times\sqrt[3]{54}=\sqrt[3]{\tfrac{1}{27}}\times\sqrt[3]{54}=\sqrt[3]{\tfrac{54}{27}}=\sqrt[3]{2}</span></p>
-  <div class="explainer" data-explainer="toEntire"></div>
-</section>
-
-<section class="card" data-ink="s2b" data-section="2. Watch the sign">
-  <h3 class="sub">Watch the sign</h3>
-  <div class="def-grid">
-    <div class="def"><b>Odd index</b> (3, 5, 7, …): a negative sign travels <b>freely</b> in or out of the radical, since an odd power of a negative number is still negative.<div class="eg"><span class="tex">-2\sqrt[3]{5}=\sqrt[3]{(-2)^3\times5}=\sqrt[3]{-40}</span></div></div>
-    <div class="def amber"><b>Even index</b> (2, 4, 6, …): it <b>can't</b>. An even root of a negative number is not real, so a negative coefficient must <b>stay outside</b>.<div class="eg"><span class="tex">-2\sqrt[4]{3}=-\sqrt[4]{2^4\times3}=-\sqrt[4]{48}</span></div></div>
-  </div>
-  <div class="explainer" data-explainer="signs"></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The calculator agrees.</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(−)</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives −2, but <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(−)</kbd><kbd>1</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives an <b>error</b>: <span class="tex">\sqrt[4]{-16}</span> is not a real number.</div>
-    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ (−) 8 =" type="button">Show <span class="tex">\sqrt[3]{-8}</span></button><button class="pill" data-keys="4 ˣ√ (−) 16 =" type="button">Show <span class="tex">\sqrt[4]{-16}</span></button></div>
-  </div>
-</section>
-
-<section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Higher-index mixed → entire</h3></div>
-  <p class="q">Convert to entire radicals.</p>
-  <div class="parts c4">
-    <div class="part"><div class="pl">(a) <span class="tex">3\sqrt[4]{2}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">3^4=81</span><br><span class="tex">=\sqrt[4]{81}\times\sqrt[4]{2}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[4]{162}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">-3\sqrt[3]{11}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Odd index: <span class="tex">(-3)^3=-27</span><br><span class="tex">=\sqrt[3]{-27}\times\sqrt[3]{11}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[3]{-297}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{3}{4}\sqrt[3]{32}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">\left(\dfrac34\right)^3=\dfrac{27}{64}</span><br><span class="tex">\dfrac{27}{64}\times32=\dfrac{27}{2}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[3]{\dfrac{27}{2}}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">-2\sqrt[5]{5}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans">Odd index: <span class="tex">(-2)^5=-32</span><br><span class="tex">-32\times5=-160</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[5]{-160}}</span></b></div></div></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Can <span class="tex">-3\sqrt[4]{2}</span> be written as <span class="tex">\sqrt[4]{-162}</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><b>No.</b> The index is even: <span class="tex">(-3)^4=+81</span>, and <span class="tex">\sqrt[4]{-162}</span> isn't a real number. The − stays outside: <b><span class="tex">\boldsymbol{-3\sqrt[4]{2}=-\sqrt[4]{162}}</span></b>.</div></div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check (a).</b> <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>6</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> both give 3.5676.</div>
-    <div class="pill-col"><button class="pill" data-keys="3 × 4 ˣ√ 2 =" type="button">Show <span class="tex">3\sqrt[4]{2}</span></button><button class="pill" data-keys="4 ˣ√ 162 =" type="button">Show <span class="tex">\sqrt[4]{162}</span></button></div>
-  </div>
-  <div class="space" id="ex2-space"></div>
-  <button class="more" data-more="ex2-space" type="button">+ More space</button>
-</section>
-
-<!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
-<section class="card standup" data-ink="standup" data-section="Stand Up Break!" data-standup="u1l8"></section>
-
-<!-- ================= 3. Extension: variables ================= -->
-<section class="card" data-ink="s3" data-section="3. Extension: Variables">
-  <div class="sec-h"><span class="badge">3</span><h2>Extension: Radicals With Variables</h2></div>
-  <p>The same two conversions work when the radicand contains variables: track <b>exponents</b> instead of values. <em>Assume every variable is non-negative, so no absolute-value signs are needed.</em></p>
-  <div class="def"><b>Divide the exponent by the index.</b> The <b>quotient</b> is the exponent that comes out; the <b>remainder</b> stays inside.</div>
-  <div class="tapq-row">
-    <button class="tapq" type="button"><span class="tex">\sqrt{x^{10}}</span><span class="rhs"><span class="tex">=x^5</span></span></button>
-    <button class="tapq" type="button"><span class="tex">\sqrt{y^{14}}</span><span class="rhs"><span class="tex">=y^7</span></span></button>
-    <button class="tapq" type="button"><span class="tex">\sqrt{a^{12}b^4}</span><span class="rhs"><span class="tex">=a^6b^2</span></span></button>
-    <button class="tapq" type="button"><span class="tex">\sqrt[3]{x^{18}}</span><span class="rhs"><span class="tex">=x^6</span></span></button>
-    <button class="tapq" type="button"><span class="tex">\sqrt[3]{y^9}</span><span class="rhs"><span class="tex">=y^3</span></span></button>
-  </div>
-  <p class="small muted center">Tap each one to check.</p>
-  <p>When the exponent does <b>not</b> divide evenly by the index, split it into the largest multiple of the index plus a remainder:</p>
-  <p class="display"><span class="tex">\sqrt{x^7}=\sqrt{x^6\times x}=\sqrt{x^6}\times\sqrt{x}=x^3\sqrt{x}</span></p>
-  <div class="explainer" data-explainer="varGroups"></div>
-</section>
-
-<section class="card" data-ink="s3b" data-section="3. Exponent machine">
-  <h3 class="sub">The exponent machine</h3>
-  <p class="small muted">Pick an exponent and an index. Every full group of x's comes out as one x.</p>
-  <div class="xm" id="xm"></div>
-</section>
-
-<section class="card" data-ink="s3c" data-section="3. Numbers and variables">
-  <h3 class="sub">Numbers and variables together</h3>
-  <p>Do each factor on its own: the number by its largest perfect <span class="tex">n</span>th power, each variable by dividing its exponent by the index. Then put the outside parts together and the inside parts together.</p>
-  <div class="explainer" data-explainer="mixedGroups"></div>
-</section>
-
-<section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Variable entire → mixed</h3></div>
-  <p class="q">Convert the following entire radicals to mixed radicals in simplest form.</p>
-  <div class="parts c4">
-    <div class="part"><div class="pl">(a) <span class="tex">\sqrt{a^9}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">a^9=a^8\times a</span>, <span class="tex">\sqrt{a^8}=a^4</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{a^4\sqrt{a}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\sqrt{t^{11}}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">t^{11}=t^{10}\times t</span>, <span class="tex">\sqrt{t^{10}}=t^5</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{t^5\sqrt{t}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">\sqrt[3]{x^8}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">x^8=x^6\times x^2</span>, <span class="tex">\sqrt[3]{x^6}=x^2</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{x^2\sqrt[3]{x^2}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">\sqrt[3]{x^{10}}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">x^{10}=x^9\times x</span>, <span class="tex">\sqrt[3]{x^9}=x^3</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{x^3\sqrt[3]{x}}</span></b></div></div></div>
-  </div>
-  <div class="parts c4">
-    <div class="part"><div class="pl">(e) <span class="tex">\sqrt{x^8y^7}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">x^8</span> is a perfect square; <span class="tex">y^7=y^6\times y</span><br><span class="tex">=\sqrt{x^8y^6\times y}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{x^4y^3\sqrt{y}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(f) <span class="tex">\sqrt{50x^5}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">50=25\times2</span>, <span class="tex">x^5=x^4\times x</span><br><span class="tex">=\sqrt{25x^4\times2x}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{5x^2\sqrt{2x}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(g) <span class="tex">\sqrt{48y^5z^6}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">48=16\times3</span>, <span class="tex">y^5=y^4\times y</span>, <span class="tex">z^6</span> is a perfect square<br><span class="tex">=\sqrt{16y^4z^6\times3y}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{4y^2z^3\sqrt{3y}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(h) <span class="tex">\sqrt[3]{54x^7y^{10}}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">54=27\times2</span>, <span class="tex">x^7=x^6\times x</span>, <span class="tex">y^{10}=y^9\times y</span><br><span class="tex">=\sqrt[3]{27x^6y^9\times2xy}</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{3x^2y^3\sqrt[3]{2xy}}</span></b></div></div></div>
-  </div>
-  <div class="space" id="ex3-space"></div>
-  <button class="more" data-more="ex3-space" type="button">+ More space</button>
-</section>
-
-<section class="card" data-ink="s3d" data-section="3. Variable mixed to entire">
-  <h3 class="sub">Variable mixed → entire</h3>
-  <p>Same as Section 2: the whole coefficient goes in as its <span class="tex">n</span>th power. Raise each exponent: <span class="tex">(b^3)^2=b^6</span>, <span class="tex">(2pq^2)^3=8p^3q^6</span>. Then multiply under one root by <b>adding exponents</b> of matching variables.</p>
-  <div class="explainer" data-explainer="varToEntire"></div>
-</section>
-
-<section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Variable mixed → entire</h3></div>
-  <p class="q">Convert the following mixed radicals to entire radicals.</p>
-  <div class="parts c4">
-    <div class="part"><div class="pl">(a) <span class="tex">3\sqrt{x^5}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">3^2=9</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt{9x^5}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">b^3\sqrt{b}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">(b^3)^2=b^6</span><br><span class="tex">=\sqrt{b^6\times b}=</span> <b><span class="tex">\boldsymbol{\sqrt{b^7}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">x^4\sqrt{xy}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">(x^4)^2=x^8</span><br><span class="tex">=\sqrt{x^8\times xy}=</span> <b><span class="tex">\boldsymbol{\sqrt{x^9y}}</span></b></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">2pq^2\sqrt[3]{3r^5}</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal" type="button">Answer</button><div class="ans"><span class="tex">(2pq^2)^3=8p^3q^6</span><br><span class="tex">8p^3q^6\times3r^5</span><br><span class="tex">=</span> <b><span class="tex">\boldsymbol{\sqrt[3]{24p^3q^6r^5}}</span></b></div></div></div>
-  </div>
-  <div class="space" id="ex4-space"></div>
-  <button class="more" data-more="ex4-space" type="button">+ More space</button>
-</section>
-
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -263,7 +284,7 @@
     <div><b>Variables:</b> exponent ÷ index. The <b>quotient</b> comes out, the <b>remainder</b> stays in. <span class="tex">\sqrt[3]{x^7}=x^2\sqrt[3]{x}</span></div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l8">
-    <div><div class="kicker">Your turn</div><b>Assignment 8 — Entire and Mixed Radicals: Index 3 and Higher</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 8 · Questions 8–11</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l9/">
     <div><div class="kicker">Next lesson</div><b>Lesson 9 — Number Unit Review</b><div class="muted">Primes, GCF and LCM, perfect powers, the real numbers, and radicals</div></div><span class="arrow">→</span>
@@ -276,7 +297,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l8.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l8', homeHref: '../../', title: '1.8 Index 3 and Higher' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

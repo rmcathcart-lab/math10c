@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u1l3.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: The Locker Problem">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><rect x="30" y="20" width="20" height="20" rx="3" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.0s" repeatCount="indefinite"/></rect><rect x="54" y="20" width="20" height="20" rx="3" fill="#e0a11b"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.2s" repeatCount="indefinite"/></rect><rect x="78" y="20" width="20" height="20" rx="3" fill="#12805a"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.4s" repeatCount="indefinite"/></rect><rect x="102" y="20" width="20" height="20" rx="3" fill="#c93a33"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.6000000000000001s" repeatCount="indefinite"/></rect><rect x="126" y="20" width="20" height="20" rx="3" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/></rect><rect x="150" y="20" width="20" height="20" rx="3" fill="#e0a11b"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.0s" repeatCount="indefinite"/></rect><rect x="174" y="20" width="20" height="20" rx="3" fill="#12805a"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.2000000000000002s" repeatCount="indefinite"/></rect><rect x="198" y="20" width="20" height="20" rx="3" fill="#c93a33"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.4000000000000001s" repeatCount="indefinite"/></rect><rect x="222" y="20" width="20" height="20" rx="3" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.6s" repeatCount="indefinite"/></rect><rect x="246" y="20" width="20" height="20" rx="3" fill="#e0a11b"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.8s" repeatCount="indefinite"/></rect><rect x="270" y="20" width="20" height="20" rx="3" fill="#12805a"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="2.0s" repeatCount="indefinite"/></rect><rect x="294" y="20" width="20" height="20" rx="3" fill="#c93a33"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="2.2s" repeatCount="indefinite"/></rect></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Locker Problem</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A hallway has <b>100 closed lockers</b>. Student 1 opens every locker. Student 2 changes every 2nd locker. Student 3 changes every 3rd locker.</p><p class="vw-ctx">It carries on like that, all the way to student 100.</p><p class="vw-ask">After all 100 students have had a turn, how many lockers are open?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Which lockers get touched an odd number of times?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>10 lockers:</b> numbers 1, 4, 9, 16, 25, 36, 49, 64, 81 and 100. Only perfect squares have an odd number of factors.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,49 +52,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Locker Problem" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Locker Problem</h2>
-  <p class="wf-rule"><b>100 closed lockers, 100 students.</b> Student 1 <b>toggles</b> every locker, Student 2 every 2nd one, Student 3 every 3rd one, …, Student 100 just #100. <span class="muted">(Toggle = open it if it’s closed, close it if it’s open.)</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="lk-box">
-    <div class="lockers" id="lockers"></div>
-    <div class="lk-bar no-ink">
-      <div class="lk-status" id="lk-status"></div>
-      <button class="exb" type="button" data-lk="reset" title="All closed again" aria-label="Close every locker"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
-      <button class="exb next" type="button" data-lk="next">Next student <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
-      <button class="exb" type="button" data-lk="all">All 100 <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
-    </div>
-    <div class="lk-hist" id="lk-hist"></div>
-  </div>
-  <div class="wq">
-    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>Which students touch locker 12?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans">Students <b>1, 2, 3, 4, 6, 12</b> — exactly the <b>factors</b> of 12.</div></div></div>
-    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>Does locker 12 end open or closed?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans"><b>Closed.</b> 6 toggles: open, closed, open, closed, open, closed.</div></div></div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="wq wq-side">
-    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>Which students touch locker 9? Is it open or closed at the end?</b> <button class="pill small" type="button" data-wa>Reveal</button>
-      <div class="w-ans">Students <b>1, 3, 9</b>. Three toggles, so it ends <b>open</b>.</div></div></div>
-  </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> After all 100 students have had a turn, how many lockers are <b>open</b>? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b> 50</div>
-      <div class="opt"><b>B</b> 25</div>
-      <div class="opt right"><b>C</b> 10</div>
-      <div class="opt"><b>D</b> 0</div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C — 10 lockers:</b> 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 (press <b>All 100</b> to watch). A locker ends open only if it’s toggled an <b>odd</b> number of times — it has an odd number of factors. Factors come in pairs (12 = 1 × 12 = 2 × 6 = 3 × 4), but a <b>perfect square</b> has one pair that is the same number twice (9 = 1 × 9 = 3 × 3), so it has an odd number of factors.
-      <div class="traps"><span><b>A (50)?</b> That’s just the picture after Student 2.</span><span><b>B (25)?</b> There are 25 primes up to 100 — but a prime has exactly 2 factors, so it ends <b>closed</b>.</span><span><b>D (0)?</b> Not everything gets flipped back!</span></div>
-    </div>
-  </div>
-  </div></div>
-</section>
 
 <!-- ================= starter ================= -->
 <section class="card example" data-ink="start" data-section="Starter: 12, 12², 12³">
@@ -95,7 +63,7 @@
     <div class="part"><div class="pl">(b) 12<sup>2</sup> = 144</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>144 = 2<sup>4</sup> × 3<sup>2</sup></b></div></div></div>
     <div class="part"><div class="pl">(c) 12<sup>3</sup> = 1 728</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>1 728 = 2<sup>6</sup> × 3<sup>3</sup></b></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Compare the exponents in (a), (b) and (c). What happened to them?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Squaring <b>doubled</b> every exponent (2 → 4, 1 → 2); cubing <b>tripled</b> them (2 → 6, 1 → 3).</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Compare the exponents in (a), (b) and (c). What happened to them?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Squaring <b>doubled</b> every exponent (2 → 4, 1 → 2); cubing <b>tripled</b> them (2 → 6, 1 → 3).</div></div></div>
   <div class="space" id="start-space"></div>
   <button class="more" data-more="start-space">+ More space</button>
 </section>
@@ -113,7 +81,7 @@
   <div class="def why"><b>Why even?</b> A perfect square is a whole number times itself, so its factorization writes every prime factor down <b>twice</b>: from the starter, 12<sup>2</sup> = (2<sup>2</sup> × 3) × (2<sup>2</sup> × 3) = 2<sup>4</sup> × 3<sup>2</sup>. Squaring <b>doubles</b> every exponent, and double a whole number is always even.</div>
 </section>
 
-<section class="card" data-ink="s1w" data-section="1. Why the exponents double">
+<section data-extra class="card" data-ink="s1w" data-section="1. Why the exponents double">
   <h3 class="sub">Squaring doubles every exponent; cubing triples it</h3>
   <div class="explainer" data-explainer="powers"></div>
 </section>
@@ -172,7 +140,7 @@
     <div class="part"><div class="pl">(a) 1 089</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 089 ÷ 3 = 363, ÷ 3 = 121, ÷ 11 = 11, ÷ 11 = 1<br>1 089 = 3<sup>2</sup> × 11<sup>2</sup> — both exponents even<br><b>perfect square: <span class="tex">\sqrt{1\,089}</span> = 3 × 11 = 33</b></div></div></div>
     <div class="part"><div class="pl">(b) 2 028</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2 028 ÷ 2 = 1 014, ÷ 2 = 507, ÷ 3 = 169, ÷ 13 = 13, ÷ 13 = 1<br>2 028 = 2<sup>2</sup> × 3 × 13<sup>2</sup> — the 3 has no partner (odd exponent)<br><b>not a perfect square</b></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Back to the warm-up: why were the lockers left open exactly the perfect squares?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A locker is toggled once for each of its <b>factors</b>. Factors come in pairs, except a perfect square’s middle pair (6 × 6 for 36), which counts once. So only perfect squares have an <b>odd</b> number of factors and end <b>open</b>.</div></div></div>
+  <div data-extra class="part think"><div class="pl"><span class="think-tag">Think</span> Back to the warm-up: why were the lockers left open exactly the perfect squares?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A locker is toggled once for each of its <b>factors</b>. Factors come in pairs, except a perfect square’s middle pair (6 × 6 for 36), which counts once. So only perfect squares have an <b>odd</b> number of factors and end <b>open</b>.</div></div></div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
@@ -201,7 +169,7 @@
     <div class="root"><span class="tex">\sqrt[3]{1\,000} = 2\times5 = 10</span></div>
   </div>
   <p class="small muted" style="text-align:center">Take <b>one</b> factor from each triple. If the prime factorization does not break into matching triples, the number is not a perfect cube.</p>
-  <div class="explainer" data-explainer="cubes"></div>
+  <div data-extra><div class="explainer" data-explainer="cubes"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Cube root on the TI-30XIIS.</b> Type the <b>3 first</b>, then <span class="tex">\sqrt[x]{\phantom{0}}</span> (2nd of <kbd>^</kbd>), then the number: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 10.</div>
@@ -228,6 +196,15 @@
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–3">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 3 · Questions 1–3</h2>
+  <p class="pr-t">Test for perfect squares, then perfect cubes.</p>
+  <div class="pr-chips n2"><span><b>1</b>Perfect squares</span><span><b>2–3</b>Perfect cubes</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 2.</span><a class="pill" href="../../../#/lesson/u1l3">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -276,7 +253,7 @@
 <section class="card" data-ink="s5" data-section="5. Side lengths">
   <div class="sec-h"><span class="badge">5</span><h2>Squares and Cubes in Geometry</h2></div>
   <p>The area of a square is side × side, so the side length is <span class="tex">\sqrt{\text{area}}</span>. The volume of a cube is edge × edge × edge, so the edge length is <span class="tex">\sqrt[3]{\text{volume}}</span>. Prime factorization finds these roots exactly; the calculator checks them.</p>
-  <div class="explainer" data-explainer="sides"></div>
+  <div data-extra><div class="explainer" data-explainer="sides"></div></div>
 </section>
 
 <section class="card example" data-ink="ex6" data-section="Example 6">
@@ -294,6 +271,50 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Locker Problem" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Locker Problem</h2>
+  <p class="wf-rule"><b>100 closed lockers, 100 students.</b> Student 1 <b>toggles</b> every locker, Student 2 every 2nd one, Student 3 every 3rd one, …, Student 100 just #100. <span class="muted">(Toggle = open it if it’s closed, close it if it’s open.)</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="lk-box">
+    <div class="lockers" id="lockers"></div>
+    <div class="lk-bar no-ink">
+      <div class="lk-status" id="lk-status"></div>
+      <button class="exb" type="button" data-lk="reset" title="All closed again" aria-label="Close every locker"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+      <button class="exb next" type="button" data-lk="next">Next student <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="exb" type="button" data-lk="all">All 100 <svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M12 5l7 7-7 7"/></svg></button>
+    </div>
+    <div class="lk-hist" id="lk-hist"></div>
+  </div>
+  <div class="wq">
+    <div class="q-line"><div class="q-num">1</div><div class="wq-body"><b>Which students touch locker 12?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Students <b>1, 2, 3, 4, 6, 12</b> — exactly the <b>factors</b> of 12.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div class="wq-body"><b>Does locker 12 end open or closed?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans"><b>Closed.</b> 6 toggles: open, closed, open, closed, open, closed.</div></div></div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="wq wq-side">
+    <div class="q-line"><div class="q-num">3</div><div class="wq-body"><b>Which students touch locker 9? Is it open or closed at the end?</b> <button class="pill small" type="button" data-wa>Reveal</button>
+      <div class="w-ans">Students <b>1, 3, 9</b>. Three toggles, so it ends <b>open</b>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> After all 100 students have had a turn, how many lockers are <b>open</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 50</div>
+      <div class="opt"><b>B</b> 25</div>
+      <div class="opt right"><b>C</b> 10</div>
+      <div class="opt"><b>D</b> 0</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C — 10 lockers:</b> 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 (press <b>All 100</b> to watch). A locker ends open only if it’s toggled an <b>odd</b> number of times — it has an odd number of factors. Factors come in pairs (12 = 1 × 12 = 2 × 6 = 3 × 4), but a <b>perfect square</b> has one pair that is the same number twice (9 = 1 × 9 = 3 × 3), so it has an odd number of factors.
+      <div class="traps"><span><b>A (50)?</b> That’s just the picture after Student 2.</span><span><b>B (25)?</b> There are 25 primes up to 100 — but a prime has exactly 2 factors, so it ends <b>closed</b>.</span><span><b>D (0)?</b> Not everything gets flipped back!</span></div>
+    </div>
+  </div>
+  </div></div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -304,7 +325,7 @@
     <div><b>Geometry:</b> side of a square = <span class="tex">\sqrt{\text{area}}</span>; edge of a cube = <span class="tex">\sqrt[3]{\text{volume}}</span>. 3 375 cm<sup>3</sup> = 3<sup>3</sup> × 5<sup>3</sup> → edge 15 cm.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u1l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Perfect Squares and Perfect Cubes</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 · Questions 4–14</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
     <div><div class="kicker">Next lesson</div><b>Lesson 4 — Rational Numbers, Irrational Numbers, and Decimal Patterns</b></div><span class="arrow">→</span>
@@ -317,7 +338,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u1l3.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u1l3', homeHref: '../../', title: '1.3 Perfect Squares and Cubes' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>
