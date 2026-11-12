@@ -272,7 +272,7 @@ const COL = {
   yes: { label: 'Same slope, shared point', win: { xmin: -8, xmax: 8, ymin: -5, ymax: 6 }, pts: [['P', -5, -4, 'nw'], ['Q', -1, -1, 'nw'], ['R', 7, 5, 'nw']], pairs: [[0, 1], [1, 2]], share: 1, v: 'col' },
   par: { label: 'Same slope, no shared point', win: { xmin: -8, xmax: 7, ymin: -5, ymax: 8 }, pts: [['G', -5, 1, 'nw'], ['H', 3, 7, 'nw'], ['I', -2, -4, 'se'], ['J', 6, 2, 'se']], pairs: [[0, 1], [2, 3]], segs: [[0, 1], [2, 3]], v: 'par' },
   bend: { label: 'Different slopes', win: { xmin: -8, xmax: 7, ymin: -4, ymax: 6 }, pts: [['P', -5, -3, 'nw'], ['Q', -1, 1, 'nw'], ['R', 6, 4, 'n']], pairs: [[0, 1], [1, 2]], share: 1, v: 'bend' },
-  trees: { label: 'Warm-up orchard', win: { xmin: 0, xmax: 14, ymin: 0, ymax: 10 }, names: true, pts: [['Apple', 1, 1, 'nw'], ['Cherry', 4, 3, 'nw'], ['Plum', 7, 5, 'nw'], ['Pear', 11, 8, 'nw'], ['Peach', 13, 9, 'nw']], pairs: [[0, 1], [0, 2], [0, 3], [0, 4]], v: 'trees', lab: 2 },
+  trees: { label: 'The orchard', win: { xmin: 0, xmax: 14, ymin: 0, ymax: 10 }, names: true, pts: [['Apple', 1, 1, 'nw'], ['Cherry', 4, 3, 'nw'], ['Plum', 7, 5, 'nw'], ['Pear', 11, 8, 'nw'], ['Peach', 13, 9, 'nw']], pairs: [[0, 1], [0, 2], [0, 3], [0, 4]], v: 'trees', lab: 2 },
   ex4: { label: 'Example 4 check', win: { xmin: -6, xmax: 13, ymin: -22, ymax: 12 }, pts: [['X', -4, 10, 'ne'], ['Y', 2, -2, 'ne'], ['Z', 11, -20, 'w']], pairs: [[0, 1], [1, 2]], share: 1, v: 'col', lab: 2, ylab: 4 }
 };
 const collinear = {

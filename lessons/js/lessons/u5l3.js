@@ -320,7 +320,7 @@ const lineCount = {
 
 /* =============================== explainer 6: what the intercepts mean =============================== */
 const CTXS = {
-  dive: { label: 'Warm-up: the high dive', f: dive, t1: 2, g: { xmin: -1.4, xmax: 2.6, ymin: -2.5, ymax: 12.5, xstep: 0.5, ystep: 1, xlabels: 0.5, ylabels: 2, xtitle: 't', ytitle: 'h' },
+  dive: { label: 'The high dive', f: dive, t1: 2, g: { xmin: -1.4, xmax: 2.6, ymin: -2.5, ymax: 12.5, xstep: 0.5, ystep: 1, xlabels: 0.5, ylabels: 2, xtitle: 't', ytitle: 'h' },
     v0: 10, start: 'platform', end: 'splash', vint: [`Put ${T('t=0')}:`, T('h=10+5(0)-5(0)^2'), T('h=10')],
     hint: [`Put ${T('h=0')}:`, `${T('0=10+5t-5t^2')}`, `${T('0=-5(t-2)(t+1)')}`, `${T('t=2')} or ${T('t=-1')}`],
     cap1: `<b>Vertical intercept:</b> put ${T('t=0')}. ${T('h=10')}: at the start she is on the <b>10 m platform</b>.`,

@@ -327,7 +327,7 @@ const subTiles = {
 const FT = { x2: 'x^2', x: 'x', 1: '', xy: 'xy', p: 'p', q: 'q', r: 'r', y2: 'y^2', y: 'y', m3n: 'm^3n', m2n: 'm^2n', mn2: 'mn^2' };
 const FCOL = ['#0d6a64', '#a3610a', '#3558a0', '#7b4fc4'];
 const LT = {
-  sock: { name: 'the warm-up socks', groups: [{ s: 1, t: [[3, 'x'], [-2, 'x2'], [5, '1'], [1, 'x'], [7, 'x2'], [-4, '1'], [1, 'xy'], [-6, 'x'], [1, 'x2'], [-3, '1']] }], fams: ['x2', 'xy', 'x', '1'] },
+  sock: { name: 'the sock drawer', groups: [{ s: 1, t: [[3, 'x'], [-2, 'x2'], [5, '1'], [1, 'x'], [7, 'x2'], [-4, '1'], [1, 'xy'], [-6, 'x'], [1, 'x2'], [-3, '1']] }], fams: ['x2', 'xy', 'x', '1'] },
   e7a: { groups: [{ s: 1, br: true, t: [[5, 'p'], [-3, 'q'], [4, 'r']] }, { s: 1, br: true, t: [[2, 'q'], [-5, 'p'], [-7, 'r']] }], fams: ['p', 'q', 'r'] },
   e7b: { groups: [{ s: 1, br: true, t: [[6, 'x2'], [-5, 'x'], [4, '1']] }, { s: -1, br: true, t: [[3, 'x2'], [-8, 'x'], [-2, '1']] }], fams: ['x2', 'x', '1'] },
   e8a: { groups: [{ s: 1, t: [[7, 'y'], [-3, 'y2'], [4, '1'], [-5, 'y2'], [9, '1'], [-2, 'y']] }], fams: ['y2', 'y', '1'] },
@@ -341,7 +341,7 @@ const likeTerms = {
   title: 'Collect like terms: one family at a time',
   height: 446,
   minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'sock', label: 'Warm-up socks' }, { sep: 'Example 7 check:' }, { v: 'e7a', label: '(a)' }, { v: 'e7b', label: '(b)' }, { sep: 'Example 8 check:' }, { v: 'e8a', label: '(a)' }, { v: 'e8b', label: '(b)' }],
+  choices: [{ v: 'sock', label: 'Sock drawer' }, { sep: 'Example 7 check:' }, { v: 'e7a', label: '(a)' }, { v: 'e7b', label: '(b)' }, { sep: 'Example 8 check:' }, { v: 'e8a', label: '(a)' }, { v: 'e8b', label: '(b)' }],
   intro: (k) => `Simplify ${T(ltQ(LT[k]))}. <b>Like terms</b> have the same variable(s) with the same exponent(s): sort the terms into families.`,
   make(stage, key, ex) {
     const W = ex.W, d = LT[key], S = ltSum(d), FIX = { x2: KCOL.x2, y2: KCOL.x2, x: KCOL.x, y: KCOL.x, 1: KCOL[1], xy: '#7b4fc4' }, colOf = (f) => FIX[f] || FCOL[d.fams.indexOf(f) % FCOL.length];

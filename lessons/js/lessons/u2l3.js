@@ -170,7 +170,7 @@ const stairs = {
       if (e > 0) cap = i === 1 ? `${calc}: one fewer factor of ${tex(bT)}, so the value is <b>divided by ${tex(divT)}</b>${B.half ? ' (dividing by ½ <b>doubles</b>)' : ''}. ${tex(now)}.` : `Down another step: divide by ${tex(divT)} again. ${calc}, so ${tex(now)}.`;
       else if (e === 0) cap = `${calc}, so <b>${tex(`${pw(0)}=1`)}</b>. That’s why any nonzero base to the power 0 is 1.`;
       else if (e === -1) cap = `Keep going <b>past zero</b>! ${calc}, so ${tex(now)}. ` + (B.half ? 'It got <b>bigger</b>: dividing by ½ doubles.' : 'Small, but <b>not negative</b>.');
-      else cap = `${calc}, so ${tex(now)}.` + (e === -3 && v === 2 ? ' That’s bounce 7 from the warm-up: ⅛ m.' : e === -3 && v === 10 ? ' As a decimal that’s <b>0.001</b>: tiny numbers like this are coming up in Section 5, scientific notation.' : e === -2 && !B.half ? ' The value keeps shrinking, but it never reaches 0 and never goes negative.' : '');
+      else cap = `${calc}, so ${tex(now)}.` + (e === -3 && v === 2 ? ' Halve 1 three times and you get ⅛.' : e === -3 && v === 10 ? ' As a decimal that’s <b>0.001</b>: tiny numbers like this are coming up in Section 5, scientific notation.' : e === -2 && !B.half ? ' The value keeps shrinking, but it never reaches 0 and never goes negative.' : '');
       steps.push({ cap, run: (c) => Promise.all([c.pop(divs[i - 1], 360), c.fadeIn(cards[i], 450, { delay: 200, from: 'translateY(-14px)' })]) });
     }
     steps.push({

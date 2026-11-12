@@ -663,7 +663,7 @@ function skyThirdSteps(stage, ex) {
 const pour = {
   title: 'One third: three cones fill the cylinder',
   height: 490,
-  choices: [{ v: 'water', label: 'Water: cone into cylinder' }, { v: 'pop', label: 'Warm-up check: the popcorn deal' }],
+  choices: [{ v: 'water', label: 'Water: cone into cylinder' }, { v: 'pop', label: 'The popcorn deal' }],
   intro: 'Same base, same height. How many cones of water? Press <b>Next</b>.',
   make(stage, k, ex) {
     const popc = k === 'pop';

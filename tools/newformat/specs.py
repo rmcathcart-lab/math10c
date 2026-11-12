@@ -205,16 +205,17 @@ W['u10l6'] = dict(title='Which Holds the Least?', rule='Which one holds the leas
 # ======================= Unit 1 =======================
 SPECS['u1l1'] = dict(
     warm=W['u1l1'],
+    replace=[(' (that’s the warm-up!).', '.')],
     extra_expl=['rectangles', 'primeFilter'],
     practice=PR('ex3', '1–5', '6–16', 'Factors, primes and composites.', [('1–5', 'Factors, primes and composites')], 4))
 SPECS['u1l2'] = dict(
     warm=W['u1l2'],
-    extra_cards=['s1b', 's1d', 's2b'], extra_expl=['bags'],
-    replace=[('Back to the warm-up: the number of take-home bags had to divide into', 'Share 24 hot dogs and 32 buns into identical take-home bags with nothing left over. The number of bags has to divide into'), ('warm-up: 24 hot dogs, 32 buns', '24 hot dogs, 32 buns')],
+    extra_cards=['s1d'], extra_expl=['bags'],
+    replace=[('big one: packs of 10 and 8 → <b>40</b>', 'hot dogs in 10s, buns in 8s → <b>40</b>'), ('Back to the warm-up: the number of take-home bags had to divide into', 'Share 24 hot dogs and 32 buns into identical take-home bags with nothing left over. The number of bags has to divide into'), ('warm-up: 24 hot dogs, 32 buns', '24 hot dogs, 32 buns')],
     practice=PR('ex2', '1–4', '5–13', 'Find each greatest common factor.', [('1–4', 'Greatest common factor')], 3))
 SPECS['u1l3'] = dict(
     warm=W['u1l3'],
-    extra_cards=['s1w'], extra_expl=['cubes', 'sides'],
+    extra_cards=['s1w'], extra_expl=['sides'],
     practice=PR('ex3', '1–3', '4–14', 'Test for perfect squares, then perfect cubes.', [('1', 'Perfect squares'), ('2–3', 'Perfect cubes')], 2))
 SPECS['u1l4'] = dict(
     warm=W['u1l4'],
@@ -224,20 +225,20 @@ SPECS['u1l5'] = dict(
     warm=dict(title='Which One Doesn’t Belong?', rule='Which one is the odd one out? Pick one and be ready to say <b>why</b>.', strip=strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4))),
               body=TILES(4, [('A', T(r'\sqrt{16}')), ('B', T('-3')), ('C', T('0.5')), ('D', T(r'\sqrt{7}'))]),
               reveal=f'<b>Any of them can be right.</b> A is a whole number in disguise. B is the only negative. C is the only one that is not a root or an integer. D is the only one whose decimal never ends or repeats.'),
-    extra_cards=['s1b'], extra_expl=['tiles', 'exprSq', 'cubes', 'exprCb', 'ineq'],
+    extra_cards=['s1b'], extra_expl=['exprSq', 'exprCb', 'ineq'],
     practice=PR('ex3', '1–12', '13–21', 'The real number system, then estimating square roots.', [('1–8', 'The real number system'), ('9–12', 'Estimating square roots')], 9))
 SPECS['u1l6'] = dict(
     warm=dict(title='Error or Not?', rule='One of these makes a calculator show <b>ERROR</b>. Which one?', strip=strip(sb('📟', 150, 0, 40), sblink('⚠️', 205, 0, 34, 1.2)),
               body=TILES(4, [('A', T(r'\sqrt[3]{-8}')), ('B', T(r'\sqrt{-9}')), ('C', T(r'\sqrt{0}')), ('D', T(r'\sqrt[4]{16}'))]),
               nudge='What number, times itself, gives each one?',
               reveal=f'<b>B.</b> No real number times itself gives {T("-9")}. A is fine: {T(r"(-2)\times(-2)\times(-2)=-8")}.'),
-    extra_cards=['s2b', 's5c'], extra_expl=['anatomy', 'area'],
+    extra_cards=['s5c'], extra_expl=['anatomy', 'area'],
     practice=PR('ex3', '1–7', '8–13', 'Evaluate radicals, then name their parts.', [('1–5', 'Evaluating radicals'), ('6–7', 'Radical vocabulary')], 5))
 SPECS['u1l7'] = dict(
     warm=dict(title='Which Is Biggest?', rule='No calculator. Which one is the biggest?', strip=strip(sb('🥉', 100, 0), sb('🥈', 170, .3), sb('🥇', 240, .6)),
               body=TILES(3, [('A', T(r'2\sqrt{5}')), ('B', T(r'3\sqrt{2}')), ('C', T(r'\sqrt{19}'))]),
               reveal=f'<b>A.</b> Put each one under a single root: {T(r"2\sqrt5=\sqrt{20}")}, {T(r"3\sqrt2=\sqrt{18}")} and {T(r"\sqrt{19}")}.'),
-    extra_cards=['s2b', 's3b'], extra_expl=['split', 'coef', 'numline', 'pyth'],
+    extra_cards=['s2b', 's3b'], extra_expl=['split', 'coef', 'pyth'],
     practice=PR('ex4', '1–7', '8–16', 'Entire to mixed, and mixed to entire.', [('1–7', 'Entire and mixed radicals')], 5))
 SPECS['u1l8'] = dict(
     warm=W['u1l8'],
@@ -261,9 +262,10 @@ SPECS['u2l2'] = dict(
     practice=PR('ex3', '1–4', '5–13', 'Product and quotient laws with coefficients.', [('1–4', 'Product and quotient laws with coefficients')], 3))
 SPECS['u2l3'] = dict(
     warm=W['u2l3'],
-    extra_cards=['s2'], extra_expl=['hops', 'sorter', 'snmuldiv'], replace_all=[('is the tricky part, so picture the exponents on a number line:</p>', 'is the tricky part, so picture the exponents on a number line.</p>')],
+    extra_expl=['hops', 'sorter'], replace_all=[('is the tricky part, so picture the exponents on a number line:</p>', 'is the tricky part, so picture the exponents on a number line.</p>')],
     practice=PR('ex3', '1–7', '8–21', 'Use the negative exponent law.', [('1–7', 'The negative exponent law')], 5))
 SPECS['u2l4'] = dict(
+    replace=[('<b>Back to the piano.</b> Twelve equal steps make', '<b>A piano.</b> Going up 12 keys doubles a note’s frequency, in twelve equal steps. Twelve equal steps make')],
     warm=dict(pic=CUBE, title='One Million Cubes', rule='How tall is the giant cube?',
               body=BIG('A unit cube is <b>1 cm</b> on each edge.<small>Stack exactly one million of them into one giant cube.</small>'),
               nudge='Taller than you? Taller than the school?',
@@ -279,7 +281,7 @@ SPECS['u2l6'] = dict(
               body=TILES(3, [('A', T('10^{100}')), ('B', T('100^{10}')), ('C', T('1000^{5}'))]),
               nudge='Can you write them all with the same base?',
               reveal=f'<b>A, by a huge amount.</b> {T("100^{10}=(10^2)^{10}=10^{20}")} and {T("1000^5=(10^3)^5=10^{15}")}. Both are tiny beside {T("10^{100}")}.'),
-    extra_expl=['anatomy', 'expand', 'columns', 'flip', 'radical', 'distribute', 'sci', 'stack'],
+    extra_expl=['anatomy', 'expand', 'columns', 'flip', 'radical', 'distribute', 'sci'],
     practice=PR('ex5', '1–6', '7–19', 'Vocabulary, then the product and quotient laws.', [('1–3', 'Vocabulary and repeated multiplication'), ('4–6', 'Product and quotient laws')], 4))
 
 # ======================= Unit 3 =======================
@@ -293,15 +295,18 @@ SPECS['u3l1'] = dict(
     practice=PR('ex4', '1–5', '6–19', 'Vocabulary, terms and degree.', [('1–5', 'Vocabulary, terms and degree')], 4))
 SPECS['u3l2'] = dict(
     warm=W['u3l2'],
+    replace=[('It’s the garden from the warm-up, corner and all.', 'It’s the phone screen from the warm-up, corner and all.')],
     extra_cards=['s6c'], extra_expl=['distB', 'composite', 'digits', 'subCheck'],
     practice=PR('ex4', '1–10', '11–21', 'Area models and the distributive property.', [('1–10', 'Area models and the distributive property')], 7))
 SPECS['u3l3'] = dict(
     warm=W['u3l3'],
+    replace=[('(The warm-up square is this picture with <span class="tex">a=30</span> and <span class="tex">b=5</span>.)', '(The warm-up garden is this picture with <span class="tex">a=5</span> and <span class="tex">b=3</span>.)')],
     extra_cards=['s1c', 's1d'], extra_expl=['outside', 'combine', 'complete'],
     practice=PR('ex2', '1–2', '3–9', 'The two patterns, then a number out front.', [('1', 'Squares of binomials and sum × difference'), ('2', 'A number out front')], 1))
 SPECS['u3l4'] = dict(
     warm=W['u3l4'],
-    extra_cards=['s1c', 's2c'], extra_expl=['box', 'check'],
+    replace=[('<p>Back to the warm-up: the unpainted core of an', '<p>Paint the outside of a big cube built from small cubes. The unpainted core of an')],
+    extra_cards=['s2c'], extra_expl=['box', 'check'],
     practice=PR('ex2', '1–4', '5–10', 'Binomial times trinomial.', [('1–4', 'Binomial × trinomial')], 3))
 SPECS['u3l5'] = dict(
     warm=W['u3l5'],
@@ -322,11 +327,11 @@ SPECS['u4l1'] = dict(
     practice=PR('ex3', '1–8', '9–23', 'Find the GCF and take it out.', [('1–8', 'Monomial common factors')], 6))
 SPECS['u4l2'] = dict(
     warm=W['u4l2'],
-    extra_cards=['s1b'], extra_expl=['tileGroup', 'rearrange'],
+    extra_expl=['tileGroup', 'rearrange'],
     practice=PR('ex2', '1', '2–9', 'Take out the common binomial factor.', [('1', 'Binomial common factors')]))
 SPECS['u4l3'] = dict(
     warm=W['u4l3'],
-    extra_cards=['s2b'], extra_expl=['inspectB', 'tileNeg', 'twoVar', 'inspectC'],
+    extra_expl=['inspectB', 'tileNeg', 'twoVar', 'inspectC'],
     practice=PR('ex5', '1–7', '8–23', 'Sum and product pairs, then factoring.', [('1–4', 'Algebra tiles and sum–product pairs'), ('5–7', 'Factoring ' + T('x^2+bx+c') + ' with positive ' + T('c'))], 5))
 SPECS['u4l4'] = dict(
     warm=dict(title='The Prime Suspect', rule='It isn’t even, it doesn’t end in 5, and 3 doesn’t divide it. <b>Is it prime?</b> No calculator.', strip=strip(sdrive('🔍', 6, size=36, flip=False), sb('🕵️', 300, 0, 40)),
@@ -387,6 +392,7 @@ SPECS['u5l2'] = dict(
     extra_cards=['s3b'], extra_expl=['linOrNot'],
     practice=PR('ex2', '1–4', '5–13', 'Independent and dependent variables, inputs and outputs.', [('1–4', 'Independent and dependent variables')], 3))
 SPECS['u5l3'] = dict(
+    replace=[('Which inputs and which outputs actually happen: the diver’s times', 'Which inputs and which outputs actually happen: a diver’s times'), ('for the diver: a time before the story starts.', 'for a diver who jumps at <span class="tex">t=0</span>: a time before the story starts.')],
     warm=W['u5l3'],
     extra_cards=['s2b'],
     practice=PR('ex3', '1–3', '4–11', 'Find the intercepts from each equation.', [('1–3', 'Intercepts from an equation')], 2))
@@ -397,6 +403,7 @@ SPECS['u5l4'] = dict(
     extra_cards=['s3b'], extra_expl=['dots'],
     practice=PR('ex4', '1–4', '5–9', 'Domain and range from pairs, tables, diagrams and graphs.', [('1–4', 'Domain and range')], 3))
 SPECS['u5l5'] = dict(
+    replace=[('like Ben and Cleo sharing July 14.', 'like two people who share a birthday.')],
     warm=W['u5l5'],
     extra_cards=['wub', 's1d', 's3b'], extra_expl=['nested'],
     practice=PR('s2b', '1', '2–6', 'Is it a function? Give a reason.', [('1', 'Is it a function? Give a reason')]))
@@ -425,6 +432,7 @@ SPECS['u5l9'] = dict(
 # ======================= Unit 6 =======================
 SPECS['u6l1'] = dict(
     warm=W['u6l1'],
+    replace=[('(house C in the warm-up: legs 4 and 4, but the distance is about 5.66, not 8)', '(legs 4 and 4 give a distance of about 5.66, not 8)')],
     extra_cards=['s2b', 's3b', 's4b'],
     practice=PR('ex4', '1–5', '6–12', 'Lengths of horizontal, vertical and slanted segments.', [('1–5', 'Lengths of segments')], 3))
 SPECS['u6l2'] = dict(
@@ -432,12 +440,13 @@ SPECS['u6l2'] = dict(
     extra_cards=['s7b'], extra_expl=['order'],
     practice=PR('ex4', '1–2', '3–18', 'Find the rise, the run and the slope.', [('1–2', 'Rise, run and slope')]))
 SPECS['u6l3'] = dict(
+    replace=[('The orchard row rises 2 for every 3 across: the constant change that makes a relation linear', 'The same change for every step across: what makes a relation linear')],
     warm=W['u6l3'],
-    extra_cards=['s2b', 's5b', 's5c', 's5d'],
+    extra_cards=['s5b', 's5c'],
     practice=PR('ex4', '1–7', '8–25', 'The slope formula, then collinear points.', [('1–4', 'The slope formula'), ('5–7', 'Collinear points')], 5))
 SPECS['u6l4'] = dict(
     warm=W['u6l4'],
-    extra_cards=['s1b', 's2b', 's4b', 's4c', 's5b'],
+    extra_cards=['s4b', 's4c', 's5b'],
     practice=PR('ex3', '1–5', '6–14', 'Linear tables, intercepts, domain and range.', [('1–2', 'Is it linear?'), ('3–4', 'Intercepts'), ('5', 'Domain and range')], 3))
 SPECS['u6l5'] = dict(
     warm=dict(title='Two Truths and a Lie', rule='Two of these are true. One is a lie. Which one?', strip=LIE,
@@ -450,6 +459,7 @@ SPECS['u6l5'] = dict(
 # ======================= Unit 7 =======================
 SPECS['u7l1'] = dict(
     warm=W['u7l1'],
+    replace=[('<h3 class="sub">Remember the cups?</h3>', '<h3 class="sub">Stacking cups</h3>'), ('<p>The stacks from the warm-up make a straight line.', '<p>Stacks of nested cups make a straight line: one cup is 12 cm tall and each extra cup adds 2 cm.')],
     extra_cards=['s4c'], extra_expl=['intercepts'],
     practice=PR('ex5', '1–3', '4–14', 'Linear or not? Then read the slope and the y-intercept.', [('1–3', 'Linear or not? Reading ' + T('m') + ' and ' + T('b'))], 2))
 SPECS['u7l2'] = dict(
@@ -458,7 +468,7 @@ SPECS['u7l2'] = dict(
     practice=PR('ex2', '1–3', '4–14', 'Write the equation of each line.', [('1–3', 'Equations from ' + T('m') + ' and ' + T('b') + ', and from graphs')], 2))
 SPECS['u7l3'] = dict(
     warm=W['u7l3'],
-    extra_cards=['s1b', 's2b'], extra_expl=['judge'],
+    extra_cards=['s1b'], extra_expl=['judge'],
     practice=PR('ex2', '1–3', '4–16', 'Into general form, then out of it.', [('1', 'Into general form'), ('2–3', 'Out of general form')], 2))
 SPECS['u7l4'] = dict(
     warm=W['u7l4'],
@@ -516,7 +526,7 @@ SPECS['u9l2'] = dict(
     practice=PR('ex3', '1–5', '6–12', 'Calculator values, then how the ratios change.', [('1', 'Calculator values'), ('2–4', 'Why the ratios grow or shrink'), ('5', 'Comparing ratios without a calculator')], 3))
 SPECS['u9l3'] = dict(
     warm=W['u9l3'],
-    extra_cards=['warm2', 's2c', 's3b', 's3c', 's4b'],
+    extra_cards=['warm2', 's2c', 's3b', 's4b'],
     practice=PR('ex5', '1–6', '7–14', 'Find each missing side.', [('1–6', 'Finding a missing side')], 4))
 SPECS['u9l4'] = dict(
     warm=W['u9l4'],
@@ -556,6 +566,7 @@ SPECS['u10l4'] = dict(
     extra_cards=['ex1n'], extra_expl=['hex', 'scale', 'shed'],
     practice=PR('ex2', '1–6', '7–18', 'Pyramids and cones.', [('1–6', 'Pyramids and cones')], 4))
 SPECS['u10l5'] = dict(
+    replace=[('the unit together, starting with how many basketballs would fill our classroom.', 'the unit together.')],
     warm=W['u10l5'],
     extra_cards=['s1b', 's1d', 's2b', 's2c', 's2e'],
     practice=PR('ex3', '1–2', '3–16', 'Spheres and hemispheres.', [('1–2', 'Spheres and hemispheres')]))

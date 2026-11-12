@@ -538,7 +538,7 @@ const PT = {
       { m: 0.05, b: 280, note: '5% → flatter', cap: `The same $280 base but only <b>5%</b> commission: ${T('m=0.05')}. The line <b>tilts down</b> about ${T('(0,\\ 280)')}: sales add less.` },
       { m: 0.15, b: 280, note: '15% → steeper', cap: `A <b>15%</b> commission: ${T('m=0.15')}. Steeper: every $1\u202f000 of sales now adds $150. At ${T('S=5\\,000')} she earns ${T('0.15(5\\,000)+280=1\\,030')}.` }
     ] },
-  hair: { label: 'Warm-up: hair', X: 't', Y: 'L', m: 1, b: 20, xu: 'months',
+  hair: { label: 'Hair growth', X: 't', Y: 'L', m: 1, b: 20, xu: 'months',
     g: { xmin: 0, xmax: 12.5, ymin: 0, ymax: 36, xstep: 1, ystep: 2, xlabels: 2, ylabels: 4, xtitle: 't\\text{ (months)}', ytitle: 'L\\text{ (cm)}', origin: true },
     rate: (m) => `grows <b>${n(m)} cm per month</b>`, start: (b) => `starts at <b>${n(b)} cm</b>`,
     start0: `A 20 cm ponytail growing 1 cm per month: ${T('L=1t+20')}.`,

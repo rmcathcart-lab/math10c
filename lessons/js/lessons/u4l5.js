@@ -246,7 +246,7 @@ const areaBox = {
       cap: `Draw a ${T('2\\times2')} box. Put ${T(S.TL)} in the <b>top-left</b> cell and ${T(S.BR)} in the <b>bottom-right</b> cell.`,
       run: (c) => Promise.all([B.fill(c, 0), B.fill(c, 3, 200)])
     }, {
-      cap: `The two empty cells share the middle term ${T(S.bx)}. Like the warm-up’s diagonals, they must <b>multiply</b> to ${T(`(${S.TL})(${S.BR})=${acx}`)} and <b>add</b> to ${T(S.bx)}.`,
+      cap: `The two empty cells share the middle term ${T(S.bx)}. They must <b>multiply</b> to ${T(`(${S.TL})(${S.BR})=${acx}`)} and <b>add</b> to ${T(S.bx)}.`,
       run: (c) => c.fadeIn(tgt, 400)
     }, {
       cap: `Hunt for the pair. ${signNote(S)} Check each pair’s sum: only ${T(S.m)} and ${T(S.n)} add to ${T(S.b)}.`,

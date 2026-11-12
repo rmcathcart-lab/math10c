@@ -300,7 +300,7 @@ const readGraph = {
 const SY = {
   bk: { label: T('y=x+1,\\ y=-2x+7'), f1: (x) => x + 1, f2: (x) => -2 * x + 7, t1: 'x+1', t2: '-2x+7', n1: 'y', n2: 'y', v: 'x', x0: 0, xs: 2, ys: 3,
     win: { xmin: -1.5, xmax: 5.5, ymin: -3.5, ymax: 9.5 }, alg: ['3x=6', 'x=2'], back: 'y=2+1=3', sol: '(2,\\ 3)', d: 1 },
-  race: { label: 'Warm-up Race 1: ' + T('30+4t=6t'), f1: (x) => 30 + 4 * x, f2: (x) => 6 * x, t1: '30+4t', t2: '6t', n1: 'd', n2: 'd', v: 't', x0: 0, xs: 15, ys: 90,
+  race: { label: 'Head start: ' + T('30+4t=6t'), f1: (x) => 30 + 4 * x, f2: (x) => 6 * x, t1: '30+4t', t2: '6t', n1: 'd', n2: 'd', v: 't', x0: 0, xs: 15, ys: 90,
     win: { xmin: 0, xmax: 21, ymin: 0, ymax: 130, xstep: 1, ystep: 10, xlabels: 5, ylabels: 20, origin: true, xtitle: 't', ytitle: 'd' }, alg: ['30=2t', 't=15'], back: 'd=6(15)=90', sol: '(15,\\ 90)', d: 0,
     say: 'after <b>15 s</b> Max draws level with Rosa, <b>90 m</b> from the start' },
   ex4: { label: 'Example 4 (b) check', f1: (x) => 450 + 3 * x, f2: (x) => 9 * x, t1: '450+3n', t2: '9n', n1: 'C', n2: 'R', v: 'n', x0: 0, xs: 75, ys: 675,
@@ -625,7 +625,7 @@ const RC = {
     steps: [{ to: 190 / 3, cap: `Go! Step for step, the whole race. Every point on the line is on <b>both</b> lines: <b>infinitely many solutions</b>.` }] }
 };
 const races = {
-  title: 'The warm-up races as lines: speed = slope, head start = intercept',
+  title: 'Races as lines: speed = slope, head start = intercept',
   height: 500,
   minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
@@ -762,7 +762,7 @@ const classify = {
   title: 'Example 7 check: same slope? same intercept?',
   height: 470,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ sep: 'Warm-up' }, { v: 'jo', label: CL.jo.label }, { sep: 'Example 7 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: CL[k].label }))],
+  choices: [{ sep: 'A race' }, { v: 'jo', label: CL.jo.label }, { sep: 'Example 7 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: CL[k].label }))],
   value: 'a',
   intro: () => 'Rearrange both equations, then answer two questions. Press <b>Next</b>.',
   make(stage, k, ex) {

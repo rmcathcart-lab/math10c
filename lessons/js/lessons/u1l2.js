@@ -341,7 +341,7 @@ const frogs = {
     });
     const lab1 = add(stage, h('div', 'fr-lcm c', `LCM = ${fmt(L)}`), Math.min(X(L), W - 90), 26); lab1.style.opacity = 0;
     steps.push({
-      cap: `The first number <b>every</b> frog lands on is <b>${fmt(L)}</b>, so the LCM of ${nameList(ns)} is <b>${fmt(L)}</b>.` + (v === '8,10' ? ' The warm-up: 40 buns (5 packs) and 40 hot dogs (4 packs).' : hops > 40 ? ` That took ${hops} hops! With numbers like these, prime factors are much faster.` : ''),
+      cap: `The first number <b>every</b> frog lands on is <b>${fmt(L)}</b>, so the LCM of ${nameList(ns)} is <b>${fmt(L)}</b>.` + (v === '8,10' ? ' That is 40 hot dogs (4 packs of 10) and 40 buns (5 packs of 8).' : hops > 40 ? ` That took ${hops} hops! With numbers like these, prime factors are much faster.` : ''),
       run: async (c) => {
         lanes.forEach((ln) => ln.dots[L] && ln.dots[L].classList.add('hit'));
         await Promise.all([c.anim(b1, [{ opacity: 0, transform: 'scaleY(.2)' }, { opacity: 1, transform: 'none' }], 450), c.pop(lab1, 420, { delay: 200 }), ...lanes.map((ln, i) => pulse(c, ln.frog, 1.3, 400, { delay: 250 + i * 100 }))]);
@@ -362,7 +362,7 @@ const frogs = {
 const bags = {
   title: 'Identical groups, nothing left over: that’s a GCF',
   height: 400,
-  choices: [{ v: '24,32,hot dogs,buns,bags', label: '24 & 32 (warm-up)' }, { v: '12,18,red beads,blue beads,kits', label: '12 & 18' }, { v: '18,27,pencils,erasers,packs', label: '18 & 27' },
+  choices: [{ v: '24,32,hot dogs,buns,bags', label: '24 & 32 (bags)' }, { v: '12,18,red beads,blue beads,kits', label: '12 & 18' }, { v: '18,27,pencils,erasers,packs', label: '18 & 27' },
     { sep: 'Example 5 check:' }, { v: '48,60,roses,tulips,bouquets', label: '48 roses & 60 tulips' }],
   intro: (v) => { const [a, b, na, nb, grp] = v.split(','); return `<b>${a} ${na}</b> and <b>${b} ${nb}</b> are shared into identical ${grp}, with <b>nothing left over</b>. What is the greatest number of ${grp}?`; },
   make(stage, v, ex) {

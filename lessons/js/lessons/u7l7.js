@@ -205,7 +205,7 @@ const forms = {
   height: 470,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'morph', label: 'One line, three forms' }, { v: 'graph', label: 'Graph each form as it is' }, { v: 'hv', label: 'Horizontal and vertical' }],
-  intro: (v) => ({ morph: 'The bike path from the warm-up: through the school (8, 1), parallel to Main St. Press <b>Next</b>.', graph: 'Graph the same line three times, once from each form, without converting. Press <b>Next</b>.', hv: 'Turn a line through (−2, 4) until it is flat, then until it stands up. Press <b>Next</b>.' })[v],
+  intro: (v) => ({ morph: 'A bike path through the school (8, 1), parallel to Main St, x − 2y + 4 = 0. Press <b>Next</b>.', graph: 'Graph the same line three times, once from each form, without converting. Press <b>Next</b>.', hv: 'Turn a line through (−2, 4) until it is flat, then until it stands up. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
     const win = { xmin: -2, xmax: 10, ymin: -5, ymax: 4 };
     if (v === 'graph') {
@@ -490,7 +490,7 @@ const perpTest = {
   height: 470,
   minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'why', label: 'Why −1? Turn the triangle' }, { v: 'ex3a', label: 'Example 3(a) check' }, { v: 'ex3b', label: 'Example 3(b) check' }, { v: 'ex3c', label: 'Example 3(c) check' }],
-  intro: (v) => ({ why: 'Main St from the warm-up has slope ½. Turn its slope triangle 90°. Press <b>Next</b>.', ex3a: 'Example 3(a): perpendicular to 4y + x + 8 = 0. Press <b>Next</b>.', ex3b: 'Example 3(b): which pairs of the four lines are perpendicular? Press <b>Next</b>.', ex3c: 'Example 3(c): perpendicular to 6x + y + 5 = 0. Press <b>Next</b>.' })[v],
+  intro: (v) => ({ why: 'Main St, x − 2y + 4 = 0, has slope ½. Turn its slope triangle 90°. Press <b>Next</b>.', ex3a: 'Example 3(a): perpendicular to 4y + x + 8 = 0. Press <b>Next</b>.', ex3b: 'Example 3(b): which pairs of the four lines are perpendicular? Press <b>Next</b>.', ex3c: 'Example 3(c): perpendicular to 6x + y + 5 = 0. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
     const W = v === 'ex3b' || v === 'ex3c' || v === 'ex3a' ? { xmin: -4, xmax: 4, ymin: -4, ymax: 4 } : { xmin: -6, xmax: 6, ymin: -6, ymax: 6 };
     const G = new Graph(stage, { x: 14, y: 6, width: 456, height: 456, ...W, xlabels: v === 'why' ? 2 : 1, ylabels: v === 'why' ? 2 : 1 });

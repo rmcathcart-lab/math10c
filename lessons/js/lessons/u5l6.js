@@ -133,7 +133,7 @@ const AN = {
   },
   K: {
     label: T('K(\\text{M})=6'), parts: ['K', '(\\text{M})', '6'], labs: ['the <b>name</b>: the keypad rule', 'the <b>input</b>: a letter', 'the <b>output</b>: a key'],
-    caps: [`${T('K')} is the name of the keypad rule from the warm-up.`, 'The brackets hold the <b>input</b>: the letter M.', 'The <b>output</b> is the key that M is printed on.'],
+    caps: [`${T('K')} is the name of a rule: letter → phone key.`, 'The brackets hold the <b>input</b>: the letter M.', 'The <b>output</b> is the key that M is printed on.'],
     read: 'Say it: “<b>K of M is 6</b>”. Put in the letter M, get out the key 6.'
   },
   P: {

@@ -117,7 +117,7 @@ function mountWarm() {
 
 /* =============================== explainer 1: is it linear? =============================== */
 const LT = {
-  mia: { label: 'Warm-up: Mia’s battery', hx: 't\\text{ (h)}', hy: 'B\\ (\\%)', xs: [0, 1, 2, 3], ys: [90, 75, 60, 45], seg: [[0, 90], [6, 0]],
+  mia: { label: 'Mia’s battery', hx: 't\\text{ (h)}', hy: 'B\\ (\\%)', xs: [0, 1, 2, 3], ys: [90, 75, 60, 45], seg: [[0, 90], [6, 0]],
     rate: 'The battery loses 15% every hour.', g: { xmin: -0.8, xmax: 7, ymin: -8, ymax: 100, ystep: 10, ylabels: 20, xtitle: 't', ytitle: 'B' } },
   bend: { label: 'A table that bends', xs: [0, 1, 2, 3, 4], ys: [20, 19, 16, 11, 4], f: (x) => 20 - x * x, g: { xmin: -1, xmax: 5, ymin: -2, ymax: 22, ystep: 2, ylabels: 4 } },
   a: { label: 'Example 1 (a) check', xs: [0, 1, 2, 3, 4], ys: [-3, -1, 1, 3, 5], g: { xmin: -2, xmax: 6, ymin: -5, ymax: 7 } },
@@ -274,14 +274,14 @@ const graphInts = {
 /* =============================== explainer 4: intercepts in a table =============================== */
 const TI = {
   ex2: { label: 'Example 2 (b) check', xs: [-4, -2, 0, 2, 4], ys: [9, 6, 3, 0, -3], g: { xmin: -5.5, xmax: 5.5, ymin: -4.5, ymax: 10.5, xlabels: 2, ylabels: 2 } },
-  mia: { label: 'Warm-up: Mia’s phone', who: 'Mia', xs: [0, 1, 2, 3], ys: [90, 75, 60, 45], ext: 3, g: { xmin: -0.7, xmax: 9, ymin: -8, ymax: 100, ystep: 10, ylabels: 20, xtitle: 't', ytitle: 'B' } },
-  leo: { label: 'Warm-up: Leo’s phone', who: 'Leo', xs: [0, 1, 2, 3], ys: [40, 35, 30, 25], ext: 5, g: { xmin: -0.7, xmax: 9, ymin: -4, ymax: 50, ystep: 5, ylabels: 10, xtitle: 't', ytitle: 'B' } }
+  mia: { label: 'Mia’s phone', who: 'Mia', xs: [0, 1, 2, 3], ys: [90, 75, 60, 45], ext: 3, g: { xmin: -0.7, xmax: 9, ymin: -8, ymax: 100, ystep: 10, ylabels: 20, xtitle: 't', ytitle: 'B' } },
+  leo: { label: 'Leo’s phone', who: 'Leo', xs: [0, 1, 2, 3], ys: [40, 35, 30, 25], ext: 5, g: { xmin: -0.7, xmax: 9, ymin: -4, ymax: 50, ystep: 5, ylabels: 10, xtitle: 't', ytitle: 'B' } }
 };
 const tableInts = {
   title: 'Intercepts in a table of values',
   height: 470,
   minW: 920, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'ex2', label: TI.ex2.label }, { sep: 'Warm-up' }, { v: 'mia', label: 'Mia’s phone' }, { v: 'leo', label: 'Leo’s phone' }],
+  choices: [{ v: 'ex2', label: TI.ex2.label }, { sep: 'Phones' }, { v: 'mia', label: 'Mia’s phone' }, { v: 'leo', label: 'Leo’s phone' }],
   intro: (k) => (k === 'ex2' ? 'Is it linear? Then where are the zeros? Press <b>Next</b>.' : `${TI[k].who}’s battery: ${T('t')} hours after noon, ${T('B')} percent. Press <b>Next</b>.`),
   make(stage, k, ex) {
     const d = TI[k], bat = !!d.who, xv = bat ? 't' : 'x', yv = bat ? 'B' : 'y';
@@ -403,7 +403,7 @@ const ST = {
     res: ['vertical intercept <b>18</b>: full at the start', 'horizontal intercept <b>6</b>: empty after 6 days', `slope ${T('-3')} L per day`,
       `D: ${T('\\{d\\mid 0\\le d\\le 6,\\ d\\in\\mathbb{R}\\}')}`, `R: ${T('\\{V\\mid 0\\le V\\le 18,\\ V\\in\\mathbb{R}\\}')}`],
     run: '\\text{run } 6\\text{ days}', rise: '\\text{rise } -18\\text{ L}', read: (x, y) => `Day ${x.toFixed(1)} · ${y.toFixed(1)} L` },
-  phone: { label: 'Warm-up: Mia’s phone', kind: 'battery', x1: 6, y0: 90, g: { xmin: 0, xmax: 7.6, ymin: 0, ymax: 105, ystep: 10, ylabels: 10, origin: true, xtitle: 't\\text{ (h)}', ytitle: 'B\\ (\\%)' },
+  phone: { label: 'Mia’s phone', kind: 'battery', x1: 6, y0: 90, g: { xmin: 0, xmax: 7.6, ymin: 0, ymax: 105, ystep: 10, ylabels: 10, origin: true, xtitle: 't\\text{ (h)}', ytitle: 'B\\ (\\%)' },
     caps: [`Noon, ${T('t=0')}: Mia’s phone shows 90%. The point ${T('(0,\\ 90)')}: the <b>vertical intercept 90</b>, the starting charge.`,
       `It drains steadily. Watch the phone and the graph together.`,
       `${T('t=6')}: the battery is dead. ${T('(6,\\ 0)')} is the <b>horizontal intercept 6</b>: dead 6 h after noon, at 6:00 pm.`,
@@ -447,7 +447,7 @@ const story = {
   height: 470,
   minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cooler', label: ST.cooler.label }, { v: 'phone', label: ST.phone.label }],
-  intro: (k) => (k === 'cooler' ? 'An 18 L water-cooler jug, emptied at a steady rate. Press <b>Next</b>.' : 'Mia’s phone from the warm-up, 90% at noon. Press <b>Next</b>.'),
+  intro: (k) => (k === 'cooler' ? 'An 18 L water-cooler jug, emptied at a steady rate. Press <b>Next</b>.' : 'Mia’s phone: 90% at noon, losing 15% every hour. Press <b>Next</b>.'),
   make(stage, k, ex) {
     const d = ST[k], f = (x) => d.y0 * (1 - x / d.x1);
     const G = new Graph(stage, Object.assign({ x: 316, y: 10, width: ex.W - 330, height: 450 }, d.g));

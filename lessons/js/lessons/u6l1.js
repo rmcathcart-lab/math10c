@@ -374,7 +374,7 @@ const HID = {
   demo: { label: 'Demo: run 4, rise 3', A: ['P', -3, -1], B: ['Q', 1, 2] },
   ex3a: { label: 'Example 3(a) check: AB', A: ['A', -5, -2], B: ['B', -2, 7] },
   ex3b: { label: 'Example 3(b) check: CD', A: ['C', 3, 6], B: ['D', 7, -4] },
-  warm: { label: 'Warm-up: house C', A: ['O', 0, 0], B: ['C', -4, 4] }
+  warm: { label: 'House C', A: ['O', 0, 0], B: ['C', -4, 4] }
 };
 const hidden = {
   title: 'The right triangle hiding under a slanted segment',
@@ -681,7 +681,7 @@ const WALK = {
     whole: '6 right and 8 up', half: ['3 right', '4 up'], ax: ['\\dfrac{-2+4}{2}=1', '\\dfrac{-3+5}{2}=1'] },
   dec: { label: `A decimal midpoint: ${T('A(-4,\\ -2)')} to ${T('B(8,\\ 3)')}`, A: [-4, -2], B: [8, 3], nA: 'A', nB: 'B', win: { xmin: -6, xmax: 10, ymin: -4, ymax: 6 },
     whole: '12 right and 5 up', half: ['6 right', '2.5 up'], ax: ['\\dfrac{-4+8}{2}=2', '\\dfrac{-2+3}{2}=0.5'] },
-  warm: { label: 'Warm-up: the booster', A: [0, 0], B: [-4, 4], nA: 'O', nB: 'C', posA: 'se', win: { xmin: -6, xmax: 2, ymin: -1.5, ymax: 6 },
+  warm: { label: 'The Wi-Fi booster', A: [0, 0], B: [-4, 4], nA: 'O', nB: 'C', posA: 'se', win: { xmin: -6, xmax: 2, ymin: -1.5, ymax: 6 },
     whole: '4 left and 4 up', half: ['2 left', '2 up'], ax: ['\\dfrac{0+(-4)}{2}=-2', '\\dfrac{0+4}{2}=2'] }
 };
 const walker = {

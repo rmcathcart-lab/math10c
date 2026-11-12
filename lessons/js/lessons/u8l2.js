@@ -116,13 +116,13 @@ function mountWarm() {
 
 /* =============================== explainer 1 (the star): lift and drop =============================== */
 const SUB = {
-  coin: { label: 'Warm-up: the coin jar', eq: ['n+d=20', '5n+10d=140'], iso: 0,
+  coin: { label: 'The coin jar', eq: ['n+d=20', '5n+10d=140'], iso: 0,
     intro: `Let ${T('n')} = number of nickels and ${T('d')} = number of dimes. Two facts, two equations: ${bw(0, 'coins')} and ${bw(1, 'value in cents')}. The answer is where the lines cross. Press <b>Next</b>.`,
     chain: 'n+d=20\\ \\Rightarrow', lhs: 'n=', expr: '20-d', v: 'n', pre: '5', post: '{}+10d=140',
     why: `${T('n')} has a coefficient of 1 in ${T('n+d=20')}, so ${T('n=20-d')} in one move.`,
     solve: ['100-5d+10d=140', '100+5d=140', '5d=40', 'd=8'], sv: 'd', val: 8,
     back: 'n=20-8=12', sol: [8, 12], solTex: '(8,\\ 12)', solPos: 'e',
-    end: `<b>12 nickels and 8 dimes</b>, right where the lines cross. (The ${T('100')} is “all nickels” and the ${T('+5d')} is “each swap adds 5¢”: the warm-up <b>was</b> substitution!)`,
+    end: `<b>12 nickels and 8 dimes</b>, right where the lines cross. (The ${T('100')} is “all nickels” and the ${T('+5d')} is “each swap adds 5¢”: the “swap” reasoning <b>was</b> substitution!)`,
     lines: [{ m: -1, b: 20 }, { m: -2, b: 28 }], labs: [[17, 'ne'], [2.5, 'ne']],
     g: { xmin: -2, xmax: 22, ymin: -2, ymax: 30, xstep: 2, ystep: 2, xlabels: 4, ylabels: 4, xtitle: 'd', ytitle: 'n' } },
   e1a: { label: 'Example 1 (a)', eq: ['x+3y=13', '2x-y=5'], iso: 0,
@@ -217,10 +217,10 @@ const lift = {
 
 /* =============================== explainer 2: which variable to isolate? =============================== */
 const CH = {
-  coin: { label: 'Warm-up', eqs: [[['n', 1], ['+d', 1], ['=20']], [['5n', 5], ['+10d', 10], ['=140']]], vars: ['n', 'd'],
+  coin: { label: 'Coin jar', eqs: [[['n', 1], ['+d', 1], ['=20']], [['5n', 5], ['+10d', 10], ['=140']]], vars: ['n', 'd'],
     opts: [[0, 'n', 'n=20-d', true, 'no fraction'], [0, 'd', 'd=20-n', true, 'no fraction'], [1, 'n', 'n=28-2d', true, '5 divides every term evenly'], [1, 'd', 'd=14-\\dfrac{n}{2}', false, 'fraction']],
-    used: { 0: 'Warm-up' }, cap2: `Both coefficients in ${T('n+d=20')} are 1: either variable comes out with no dividing at all.`,
-    cap4: `The warm-up used ${T('n=20-d')}. Any of the four would give 12 nickels and 8 dimes.` },
+    used: { 0: 'Coin jar' }, cap2: `Both coefficients in ${T('n+d=20')} are 1: either variable comes out with no dividing at all.`,
+    cap4: `The coin jar used ${T('n=20-d')}. Any of the four would give 12 nickels and 8 dimes.` },
   e1: { label: 'Example 1', eqs: [[['x', 1], ['+3y', 3], ['=13']], [['2x', 2], ['-y', -1], ['=5']]], vars: ['x', 'y'],
     opts: [[0, 'x', 'x=13-3y', true, 'no fraction'], [0, 'y', 'y=\\dfrac{13-x}{3}', false, 'fraction'], [1, 'x', 'x=\\dfrac{y+5}{2}', false, 'fraction'], [1, 'y', 'y=2x-5', true, 'no fraction']],
     used: { 0: 'Example 1 (a)', 1: 'Example 1 (b)' }, cap2: `${T('x')} in ${T('x+3y=13')} has coefficient 1 and ${T('y')} in ${T('2x-y=5')} has coefficient ${T('-1')}: no dividing, no fractions.`,

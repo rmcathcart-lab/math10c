@@ -52,7 +52,7 @@ const squareSplit = {
   title: 'One square, four pieces',
   height: 430,
   minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'ab', label: tex('(a+b)^2') }, { v: 'x3', label: tex('(x+3)^2') }, { v: 'n35', label: 'Warm-up: ' + tex('35^2') }, { sep: 'Example 1 check:' }, { v: 'ex1a', label: '(a) ' + tex('(x+9)^2') }],
+  choices: [{ v: 'ab', label: tex('(a+b)^2') }, { v: 'x3', label: tex('(x+3)^2') }, { v: 'n35', label: tex('35^2') }, { sep: 'Example 1 check:' }, { v: 'ex1a', label: '(a) ' + tex('(x+9)^2') }],
   intro: (k) => { const d = SQ[k]; return `Here is a square with side ${T(`${d.A}+${d.B}`)}. Its area is ${T(d.num ? '35^2' : d.head)}. Let’s find that area <b>another way</b>, piece by piece.`; },
   make(stage, key, ex) {
     const W = ex.W, d = SQ[key], { A, B, p } = d, x0 = 86, y0 = 58, S = 304, pa = Math.round(S * d.ra), pb = S - pa;
@@ -375,7 +375,7 @@ const MM = {
 const mental = {
   title: 'Mental math with the patterns',
   height: 392,
-  choices: [{ v: 's51', label: tex('51^2') }, { v: 's49', label: tex('49^2') }, { v: 'p4951', label: tex('49\\times51') }, { v: 'p98', label: tex('98\\times102') }, { sep: 'Warm-up:' }, { v: 's35', label: tex('35^2') }, { v: 'p4149', label: tex('41\\times49') }],
+  choices: [{ v: 's51', label: tex('51^2') }, { v: 's49', label: tex('49^2') }, { v: 'p4951', label: tex('49\\times51') }, { v: 'p98', label: tex('98\\times102') }, { sep: 'More:' }, { v: 's35', label: tex('35^2') }, { v: 'p4149', label: tex('41\\times49') }],
   intro: (k) => `Work out ${T(MM[k].q)} in your head. First find a <b>friendly number</b> close by.`,
   make(stage, key, ex) {
     const W = ex.W, d = MM[key];
@@ -427,7 +427,7 @@ const mental = {
     }, {
       cap: `The middle terms cancel, so it’s the <b>difference of squares</b>: ${T(`${m}^2-${dd}^2=${tn(m * m)}-${dd * dd}`)}.`, run: (c) => c.fadeIn(l3, 400)
     }, {
-      cap: `${T(`${d.q}=${tn(m * m - dd * dd)}`)}.${key === 'p4149' ? ' Same answer as the warm-up’s bent trick: 20, then 09.' : ' No long multiplication needed.'}`,
+      cap: `${T(`${d.q}=${tn(m * m - dd * dd)}`)}.${' No long multiplication needed.'}`,
       run: async (c) => { q.innerHTML = K(`${d.q}=\\boldsymbol{${tn(m * m - dd * dd)}}`); await Promise.all([c.fadeIn(l4, 400), c.pop(q, 400, { delay: 200 })]); }
     }];
   }

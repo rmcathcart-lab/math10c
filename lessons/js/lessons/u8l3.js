@@ -405,7 +405,7 @@ const SG = {
     slip: ['Watch out: flipping only the <b>first</b> sign gives', '4y-2y=2y', '2y=-12\\ \\Rightarrow\\ y=-6', `Then Eq. 1 gives ${T('3x-24=7')}: ${T('x')} is not even a whole number, and Eq. 2 fails.`] },
   ex6: { label: 'Example 6 (a): a negative constant', vars: ['x', 'y'], r1: [15, -6, 21], r2: [4, -6, -12], n1: 'Eq. 1 × 3', n2: 'Eq. 2 × 2',
     slip: [`Watch out: subtracting ${T('-12')} <b>adds</b> 12.`, '21-(-12)=21+12=33', '\\text{not } 21-12=9', `With 9 you would get ${T('11x=9')}, and ${T('x')} is not 3.`] },
-  pets: { label: 'Warm-up: Scale B − Scale C', vars: ['d', 'c', 'r'], r1: [1, 0, 1, 12], r2: [0, 1, 1, 6], n1: 'Scale B', n2: 'Scale C' }
+  pets: { label: 'Pet scales: B − C', vars: ['d', 'c', 'r'], r1: [1, 0, 1, 12], r2: [0, 1, 1, 6], n1: 'Scale B', n2: 'Scale C' }
 };
 const signs = {
   title: 'Subtract = flip every sign, then add',

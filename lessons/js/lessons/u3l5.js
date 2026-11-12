@@ -279,7 +279,7 @@ const frame = {
   title: 'A frame: the outer area minus the opening',
   height: 460,
   minW: 940, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'photo', label: 'The warm-up photo frame' }, { v: 'mat', label: 'A picture mat' }, { sep: 'Example 2 check:' }, { v: 'ex2', label: 'Example 2' }],
+  choices: [{ v: 'photo', label: 'A photo frame' }, { v: 'mat', label: 'A picture mat' }, { sep: 'Example 2 check:' }, { v: 'ex2', label: 'Example 2' }],
   intro: (k) => { const S = FR[k]; return `The frame is a big rectangle, ${T(`(${S.W})`)} by ${T(`(${S.H})`)}, with an opening cut out of it. Shaded area = <b>outer − opening</b>. First we need the opening’s size.`; },
   make(stage, key, ex) {
     const S = FR[key], V = S.V, P = (s) => Poly.parse(s, V), W = P(S.W), H = P(S.H), SX = P(S.sx), SY = P(S.sy), cv = S.chk;

@@ -533,7 +533,7 @@ const lay = {
   height: 450,
   minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAY).map((k) => ({ v: k, label: LAY[k].label })),
-  intro: (k) => ({ desk: 'Warm-up question 1, for real: a desk, 3 hand spans wide. Press <b>Next</b>.', hall: 'Warm-up question 2: a hallway, 30 paces long. Press <b>Next</b>.', usb: 'How long is a USB flash drive? Press <b>Next</b>.', pony: 'How tall is a pony? Press <b>Next</b>.' })[k],
+  intro: (k) => ({ desk: 'A desk, 3 hand spans wide. Press <b>Next</b>.', hall: 'A hallway, 30 paces long. Press <b>Next</b>.', usb: 'How long is a USB flash drive? Press <b>Next</b>.', pony: 'How tall is a pony? Press <b>Next</b>.' })[k],
   make(stage, k, ex) { return k === 'pony' ? layPony(stage, ex) : layH(stage, k, ex); }
 };
 

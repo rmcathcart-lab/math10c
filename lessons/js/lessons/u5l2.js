@@ -203,7 +203,7 @@ const CE = {
   van: { label: 'Van: fuel and speed', A: { n: `fuel consumption rate,&nbsp;${T('F')}`, s: `the fuel consumption rate ${T('F')}`, ic: 'pump', ax: 'fuel consumption' }, B: { n: `speed,&nbsp;${T('s')}`, s: `the speed ${T('s')}`, ic: 'speedo', ax: 'speed' }, dep: 'A',
     tests: [['Does the fuel consumption rate depend on the speed?', true, 'Yes: speed changes how much fuel it burns.'], ['Does the speed depend on the fuel consumption rate?', false, 'No: the driver chooses the speed.']],
     f: (u) => { const s = 20 + 120 * u; return (0.002 * s * s - 0.32 * s + 18.8) / 15; } },
-  ice: { label: 'Ice cream (warm-up)', A: { n: 'temperature (°C)', s: 'the temperature', ic: 'thermo', ax: 'temperature' }, B: { n: 'ice cream sales', s: 'ice cream sales', ic: 'cone', ax: 'ice cream sales' }, dep: 'B',
+  ice: { label: 'Ice cream', A: { n: 'temperature (°C)', s: 'the temperature', ic: 'thermo', ax: 'temperature' }, B: { n: 'ice cream sales', s: 'ice cream sales', ic: 'cone', ax: 'ice cream sales' }, dep: 'B',
     tests: [['Does the temperature depend on ice cream sales?', false, 'No: selling cones doesn’t heat up the day.'], ['Do ice cream sales depend on the temperature?', true, 'Yes: hot days sell more cones.']],
     f: (u) => 0.1 + 0.78 * u * u },
   museum: { label: 'Example 2(c)', A: { n: `number of visitors,&nbsp;${T('v')}`, s: `the number of visitors ${T('v')}`, ic: 'people', ax: 'visitors' }, B: { n: `price of admission,&nbsp;${T('p')}`, s: `the price ${T('p')}`, ic: 'ticket', ax: 'price' }, dep: 'A',

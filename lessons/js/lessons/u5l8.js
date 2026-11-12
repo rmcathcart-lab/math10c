@@ -224,7 +224,7 @@ const bath = {
   height: 490,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'bath', label: 'Sam’s bath' }, { v: 'dog', label: 'Dog jumps in' }],
-  intro: (k) => (k === 'bath' ? 'Watch the tub and the graph together, one segment at a time. Press <b>Next</b>.' : 'The warm-up challenge: Sam’s dog jumps in mid-soak, then leaps out. Press <b>Next</b>.'),
+  intro: (k) => (k === 'bath' ? 'Watch the tub and the graph together, one segment at a time. Press <b>Next</b>.' : 'A challenge: Sam’s dog jumps in mid-soak, then leaps out. Press <b>Next</b>.'),
   make(stage, k, ex) {
     const S = BATHS[k], pts = S.pts, LW = 392;
     const clock = add(stage, box(h('div', 'u5l8-clock'), LW - 8, null), 4, 4);
@@ -329,7 +329,7 @@ const rate = {
   title: 'Steeper means faster',
   height: 470,
   minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'bath', label: 'Warm-up: fill or drain?' }, { v: 'st', label: 'Example 1(b) check' }, { v: 'all', label: 'Example 1(c) check' }],
+  choices: [{ v: 'bath', label: 'The bath: fill or drain?' }, { v: 'st', label: 'Example 1(b) check' }, { v: 'all', label: 'Example 1(c) check' }],
   intro: (k) => (k === 'bath' ? 'Which is faster: filling (segment 1) or draining (segment 6)? Press <b>Next</b>.' : k === 'st' ? 'The rate of change from S to T, in cars per hour. Press <b>Next</b>.' : 'Which segment shows the fastest rate of change? Press <b>Next</b>.'),
   make(stage, k, ex) {
     const d = RT[k], garage = d.graph === 'garage', pts = garage ? GAR : BATH, PW = 330;

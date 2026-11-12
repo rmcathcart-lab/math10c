@@ -480,7 +480,7 @@ const solveY = {
 
 /* =============================== explainer 4: cover x, cover y =============================== */
 const CV = {
-  warm: { label: 'Warm-up: ' + T('5x+8y-80=0'), A: 5, B: 8, C: -80, win: { xmin: -2, xmax: 22, ymin: -2, ymax: 12, xlabels: 4, ylabels: 2 }, story: true },
+  warm: { label: 'Tickets: ' + T('5x+8y-80=0'), A: 5, B: 8, C: -80, win: { xmin: -2, xmax: 22, ymin: -2, ymax: 12, xlabels: 4, ylabels: 2 }, story: true },
   demo: { label: T('2x+3y-12=0'), A: 2, B: 3, C: -12, win: { xmin: -3, xmax: 9, ymin: -3, ymax: 7, xlabels: 2, ylabels: 2 } },
   a: { label: 'Example 2(a) check', A: 3, B: -4, C: 20, win: { xmin: -10, xmax: 3, ymin: -3, ymax: 8, xlabels: 2, ylabels: 2 } },
   b: { label: 'Example 2(b) check', A: 8, B: 3, C: -21, win: { xmin: -3, xmax: 5, ymin: -2, ymax: 9, xlabels: 1, ylabels: 2 } }

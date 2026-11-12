@@ -362,7 +362,7 @@ const zero = {
       { cap: `${tex(`${b}^{1}`)} is a single factor of ${b}: ${v(2)} ÷ ${b} = <b>${b}</b>. Any number to the power 1 is itself.`, run: (c) => showRow(c, rows[3]) },
       { cap: `${tex(`${b}^{0}`)}: <b>no</b> factors of ${b} left at all. What should it equal? Keep the pattern going: divide by ${b} once more.`, run: (c) => showRow(c, rows[4]) },
       {
-        cap: `${b} ÷ ${b} = <b>1</b>. So ${tex(`${b}^{0}=1`)}, not 0!${b === 10 ? ' (Warm-up link: a 0-digit PIN has exactly <b>one</b> code — enter nothing.)' : ''}`,
+        cap: `${b} ÷ ${b} = <b>1</b>. So ${tex(`${b}^{0}=1`)}, not 0!${b === 10 ? ' (A 0-digit PIN has exactly <b>one</b> code: enter nothing.)' : ''}`,
         run: async (c) => { const r = rows[4]; await c.anim(r.val, [{ opacity: 1 }, { opacity: 0 }], 200); r.val.innerHTML = '=&nbsp;<b class="ok">1</b>'; await c.pop(r.val, 420); }
       },
       { cap: `Every nonzero base follows the same pattern: <b>${tex('a^{0}=1')}</b>. Not for a base of 0, though: we would have to divide by 0, so ${tex('0^{0}')} is undefined.`, run: (c) => c.pop(law, 450) }

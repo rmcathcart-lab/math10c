@@ -334,7 +334,7 @@ const TR = {
     nl: { min: 16.8, max: 17.0, step: 0.05, minor: 0.01, dec: 2 } },
   tower: { label: 'Demo: the tower’s height', pts: { B: [0, 0], H: [0, 5], T: [1.5, 5] }, right: 'H', names: false, pad: [34, 60, 40, 60], ntsc: true,
     sides: { BT: '56', HT: '\\text{shift}', BH: Object.assign({ label: '?' }, U) }, angles: { B: { label: '4^\\circ', r: 46 } }, unit: '\\text{ m}', unk: 'BH',
-    cap0: 'The warm-up tower: 56 m long, leaning 4°. Wanted: the height of the top.',
+    cap0: 'The Leaning Tower of Pisa: 56 m long, leaning 4°. Wanted: the height of the top.',
     r1: { h: 'Route 1: CAH, given data', lines: ['56\\cos4^\\circ'], v: 55.863587, s: '55.8636\\ldots', r: '55.9', cap: 'Route 1, <b>CAH</b>, uses only the given 56 and ' + T('4^\\circ') + ': ' + T('55.8636\\ldots') + ' m.' },
     r2: { h: 'Route 2: shift rounded', lines: ['\\text{shift}=3.906\\ldots\\to\\boldsymbol{3.9}', '\\sqrt{56^2-3.9^2}'], v: 55.864031, s: '55.8640\\ldots', r: '55.9', cap: 'Route 2 rounds the shift to 3.9 m first, then uses Pythagoras: ' + T('55.8640\\ldots') + ' m.' },
     r3: { lines: ['\\sqrt{56^2-3.9063\\ldots^2}'], v: '55.8636\\ldots', cap: 'Feed route 2 the <b>unrounded</b> shift, ' + T('3.9063\\ldots') + ': ' + T('55.8636\\ldots') + '. The routes agree exactly.' },

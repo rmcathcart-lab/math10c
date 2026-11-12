@@ -194,7 +194,7 @@ function mountFigures() {
 const BD = {
   idea: { label: 'The idea', A: [-3, -2], m: Q(2, 3), win: { xmin: -7, xmax: 7, ymin: -7, ymax: 7 }, xl: 2, yl: 2, P0: 3, stops: [6, -6, 3], gen: true, stampAt: [4.2, -5] },
   walk: { label: 'Walkthrough: ' + T('m=4,\\ A(2,-1)'), A: [2, -1], m: Q(4), win: { xmin: -2, xmax: 6, ymin: -10, ymax: 10 }, xl: 1, yl: 2, P0: 3, stops: [4, 0, 3], stampAt: [4.3, -6.5] },
-  balloon: { label: 'Warm-up balloon', A: [5, 800], m: Q(-40), win: { xmin: 0, xmax: 30, ymin: 0, ymax: 1100, xstep: 5, ystep: 100 }, xl: 5, yl: 200, P0: 10, stops: [15, 0, 10], xv: 't', yv: 'h', stampAt: [21, 900] }
+  balloon: { label: 'The balloon', A: [5, 800], m: Q(-40), win: { xmin: 0, xmax: 30, ymin: 0, ymax: 1100, xstep: 5, ystep: 100 }, xl: 5, yl: 200, P0: 10, stops: [15, 0, 10], xv: 't', yv: 'h', stampAt: [21, 900] }
 };
 const build = {
   title: 'Slope–point form: one point fixed, one point free',

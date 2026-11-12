@@ -582,7 +582,7 @@ const trip = {
 
 /* =============================== explainer: with and against the current =============================== */
 const CU = {
-  kayak: { label: 'Warm-up: the kayak', kind: 'river', veh: 'kayak', b: 6, c: 2, vb: 'b', vc: 'c', known: true, ends: ['upstream', 'downstream'] },
+  kayak: { label: 'The kayak', kind: 'river', veh: 'kayak', b: 6, c: 2, vb: 'b', vc: 'c', known: true, ends: ['upstream', 'downstream'] },
   ex4: { label: 'Example 4 check: ferry', kind: 'river', veh: 'ferry', b: 20, c: 4, vb: 'b', vc: 'c', ends: ['upstream', 'downstream'],
     legs: [{ dir: 1, d: 96, t: 4, name: 'Downstream' }, { dir: -1, d: 96, t: 6, name: 'Upstream' }] },
   ex5: { label: 'Example 5 check: plane', kind: 'sky', veh: 'plane', b: 255, c: 45, vb: 'p', vc: 'w', ends: ['Calgary', 'Saskatoon'],
@@ -593,7 +593,7 @@ const current = {
   height: 530,
   minW: 860, // drawn this wide and scaled to fit beside the sidebar (vectors 600 px + the "In general" panel)
   choices: [{ v: 'kayak', label: CU.kayak.label }, { sep: 'Check' }, { v: 'ex4', label: CU.ex4.label }, { v: 'ex5', label: CU.ex5.label }],
-  intro: (k) => (k === 'kayak' ? 'The warm-up kayak: 6 km/h in still water, a 2 km/h current. Press <b>Next</b>.'
+  intro: (k) => (k === 'kayak' ? 'A kayak: 6 km/h in still water, on a river with a 2 km/h current. Press <b>Next</b>.'
     : k === 'ex4' ? 'The ferry: 96 km downstream in 4 h, back upstream in 6 h. Press <b>Next</b>.' : 'The plane: 525 km into a headwind in 2.5 h, back with the wind in 1.75 h. Press <b>Next</b>.'),
   make(stage, k, ex) {
     const d = CU[k], W = ex.W, SH = 220, river = d.kind === 'river', flow = river ? 1 : -1;
@@ -691,7 +691,7 @@ const current = {
 
 /* =============================== explainer: halfway, add, graph, check =============================== */
 const SS = {
-  kayak: { label: 'Warm-up Q3', vb: 'b', vc: 'c', with: 10, ag: 6, b: 8, c: 2, order: ['with', 'against'], nl: { min: 4, max: 12, step: 1 },
+  kayak: { label: 'Kayak: 10 and 6 km/h', vb: 'b', vc: 'c', with: 10, ag: 6, b: 8, c: 2, order: ['with', 'against'], nl: { min: 4, max: 12, step: 1 },
     g: { xmin: 0, xmax: 12, ymin: 0, ymax: 12, xtitle: 'b', ytitle: 'c', xlabels: 2, ylabels: 2 }, words: 'The current is 2 km/h; the kayak does 8 km/h in still water.', chk: 'Check in both equations.',
     checks: [{ title: 'With the current', left: ['8+2', '10'], right: ['10', '10'] }, { title: 'Against the current', left: ['8-2', '6'], right: ['6', '6'] }] },
   ex4: { label: 'Example 4 check', vb: 'b', vc: 'c', with: 24, ag: 16, b: 20, c: 4, order: ['with', 'against'], nl: { min: 12, max: 28, step: 1, labelStep: 2 },

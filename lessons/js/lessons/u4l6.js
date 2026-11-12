@@ -255,7 +255,7 @@ const dolls = {
   title: 'Factor completely: keep opening until every doll is solid',
   height: 500,
   minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'mn', label: tex('m^4-81n^4') }, { v: 'x8', label: 'Warm-up: ' + tex('x^8-1') }, { sep: 'Example 6 check:' }, { v: 'w4', label: '(a)' }, { v: 'e6b', label: '(b)' }, { v: 'e6c', label: '(c)' }],
+  choices: [{ v: 'mn', label: tex('m^4-81n^4') }, { v: 'x8', label: tex('x^8-1') }, { sep: 'Example 6 check:' }, { v: 'w4', label: '(a)' }, { v: 'e6b', label: '(b)' }, { v: 'e6c', label: '(c)' }],
   intro: (k) => `Here is ${T(DL[k].root.t)} as a doll. Factoring a doll <b>opens</b> it. We keep opening until <b>every</b> doll is solid: that is what “factor completely” means.`,
   make(stage, k, ex) {
     const W = ex.W, d = DL[k];
