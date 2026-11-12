@@ -19,9 +19,38 @@
     if (k || t) try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
   })();
   var LV = HW.LEVELS, LVN = HW.LEVEL_NAMES;
-  function realApi(action, params) { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
+  /* A quick start (teacher/fast.js, in the <head>): the class list, the last class and its calendar were asked for
+     before this file had even downloaded, and each fresh answer is kept on this device so the next visit has something
+     to show at once. */
+  var FAST = root.HW_FAST || null, SAVE = { classes: 1, dash: 1, cal: 1 };
+  function mark(n) { if (FAST) FAST.mark(n); }
+  function realApi(action, params) {
+    function ask() { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
+    var early = FAST && FAST.take(action, params, st.key), p = early ? early.then(null, ask) : ask();
+    if (FAST && SAVE[action]) { var k0 = st.key; p.then(function (d) { if (d && d.ok) FAST.put(action, params, d, k0); }, function () {}); }
+    return p;
+  }
+  /* What has arrived. The question bank (js/lessons and js/exits: nearly all of the page's download) loads with `defer`,
+     so this file runs before it. partsIn = the dashboard's other files (tests.js, calendar.js … after this one) have
+     run; bankIn = the question bank is in. Until then only the Live tab is drawn (it needs nothing from the bank); the
+     other tabs say they're loading, and everything is drawn again when the bank arrives. */
+  var late = document.readyState !== 'loading', partsIn = late, bankIn = late, onBank = [], waiting = false, painted = false;
+  function whenBank(f) { if (bankIn) f(); else onBank.push(f); }
+  document.addEventListener('readystatechange', function () {
+    if (partsIn || document.readyState === 'loading') return;
+    partsIn = true; mark('page');
+    if (waiting) { waiting = false; drawTop(); render(); }
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+    var redraw = st.key && (painted || waiting);
+    partsIn = bankIn = true; waiting = false; mark('page'); mark('bank');
+    if (!st.lesson) st.lesson = Object.keys(HW.lessons)[0];
+    st.derived = null;
+    if (redraw) { drawTop(); render(); }
+    onBank.splice(0).forEach(function (f) { try { f(); } catch (e) {} });
+  });
   /* the demo class (teacher/demo.js) answers its own requests in the browser; everything else goes to the ledger */
-  function rawApi(action, params) { var Dm = HW.DashDemo; if (Dm && (Dm.isDemo(params) || (action === 'tests' && st.klass === Dm.CODE))) return Dm.api(action, params, realApi); return realApi(action, params); }
+  function rawApi(action, params) { var Dm = HW.DashDemo; if (Dm && (Dm.isDemo(params) || (action === 'tests' && st.klass === Dm.CODE))) return bankIn ? Dm.api(action, params, realApi) : new Promise(function (res) { whenBank(res); }).then(function () { return Dm.api(action, params, realApi); }); /* the demo class is built from the question bank */ return realApi(action, params); }
   /* Reads are shared: the same request while one is on its way gets that one's answer, and a few slow ones (the tests,
      sessions, retests, calendar) are kept for 15 s so tabs that ask for the same thing don't each wait on Apps Script.
      Anything else is a change: it drops what's kept, so the next read is fresh. */
@@ -55,13 +84,26 @@
       st.classes.forEach(function (c) { var o = el('option', '', esc(c.label) + ' (' + c.students + ')'); o.value = c.code; if (c.code === st.klass) o.selected = true; sel.appendChild(o); });
       sel.addEventListener('change', function () { st.klass = sel.value; ls('hw:tclass', st.klass); st.student = null; loadDash(); });
       top.appendChild(sel);
-      if (st.D) { top.appendChild(onlineChip()); top.appendChild(el('span', 'small muted top-upd', 'Updated ' + new Date(st.D.now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }))); }
+      if (st.D) { top.appendChild(onlineChip()); top.appendChild(updLabel()); }
     }
     var right = el('div', 'top-right');
     var stu = el('a', 'btn btn-ghost', 'Student site ↗'); stu.href = '../'; stu.target = '_blank'; right.appendChild(stu);
-    if (st.D && HW.DashCal) { HW.DashCal.topButtons(right); } // then Lessons (pop-up) and, farthest right, Launch Today's Lesson
+    if (st.D && HW.DashCal && bankIn) { HW.DashCal.topButtons(right); } // then Lessons (pop-up) and, farthest right, Launch Today's Lesson
     top.appendChild(right);
     topHeight();
+  }
+  /* header: when the numbers on screen are from. This device's saved copy (shown while the fresh data is on its way)
+     says so. Hover for how long the page took to open. */
+  function clock(ms) { var d = new Date(ms), t = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); return d.toDateString() === new Date().toDateString() ? t : d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ', ' + t; }
+  function updLabel() {
+    var s = el('span', 'small muted top-upd' + (st.saved ? ' is-saved' : ''), st.saved ? 'Saved copy from ' + clock(st.saved) + (st.offline ? ' · can’t reach the ledger' : ' · updating…') : 'Updated ' + clock(st.D.now));
+    var m = FAST ? FAST.marks : {}, t = [];
+    function sec(x) { return (x / 1000).toFixed(1) + ' s'; }
+    if (m.page != null) t.push('Page ready after ' + sec(m.page) + (m.bank != null ? ', question bank after ' + sec(m.bank) : ''));
+    if (m.saved != null) t.push('This device’s saved copy shown after ' + sec(m.saved));
+    if (m.fresh != null) t.push('Fresh data from the ledger after ' + sec(m.fresh));
+    if (t.length) s.title = 'When this page opened:\n' + t.join('\n');
+    return s;
   }
   /* ---------------- course switcher: the badge in the corner opens TEACH.menu (teaching/js/courses.js: This semester /
    * Other courses / Universal settings). The list below is only a fallback if that file can't load. ---------------- */
@@ -121,7 +163,31 @@
     if (!L.enabled) { view.innerHTML = '<div class="panel"><h2>No ledger connected</h2><p>Set <code>backend</code> in <code>js/config.js</code> to the Apps Script web-app URL.</p></div>'; return; }
     if (!st.key) return keyScreen();
     loadClasses();
+    restore();
   }
+  /* This device's copy of a class (teacher/fast.js), shown until the fresh one arrives: when the ledger opens, and when
+     another class is picked. Who is on the site is judged against the present moment, not the moment of the copy. */
+  function useClasses(d) { st.classes = d.classes.concat(demoEntry()); st.noSchool = d.noSchool; st.bell = d.bell; st.bellCustom = !!d.bellCustom; }
+  function applySaved(k, rec) {
+    var D = rec.d; D.liveNow = (D.liveNow || D.now || rec.at) + Math.max(0, Date.now() - rec.at);
+    st.D = D; st.dFor = k; st.saved = rec.at; st.offline = false; st.derived = null; mark('saved'); drawTop(); render();
+  }
+  function restore() {
+    if (!FAST) return;
+    FAST.saved.then(function (S) {
+      if (!S || !st.key || st.D || !S.dash || S.klass !== st.klass) return;
+      if (!st.gotClasses) { if (!S.classes) return; useClasses(S.classes.d); }
+      if (!st.classes.some(function (c) { return c.code === st.klass; })) return;
+      if (S.cal) useCal(st.klass, S.cal.d, true);
+      applySaved(st.klass, S.dash);
+    }, function () {});
+  }
+  function showSaved(k, seq) {
+    if (!FAST || isDemo()) return;
+    FAST.get('dash', { 'class': k }, st.key).then(function (rec) { if (rec && st.klass === k && st.dashSeq === seq && st.dashDone !== seq && !(st.saved && st.dFor === k)) applySaved(k, rec); });
+  }
+  function forgetSaved() { st.D = null; st.saved = 0; st.offline = false; if (FAST) FAST.forget(); }
+  function typing() { var a = document.activeElement; return !!a && view.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); }
   function keyScreen(msg) {
     drawTop(); view.innerHTML = '';
     var c = el('div', 'signin-card'); c.innerHTML = '<div class="signin-mark dark">10C</div><h1>Teacher Ledger</h1><p class="muted">Enter your teacher key. It’s in the Apps Script project (Project Settings → Script properties → TEACHER_KEY).</p>';
@@ -157,39 +223,53 @@
   /* where the Teaching Hub's settings are */
   function hubLink(hash, text) { var T = root.TEACH, a = el('a', '', text || 'Universal settings ↗'); a.href = (T ? T.HUB : '../../teaching/') + '#/' + (hash || 'settings'); return a; }
   function loadClasses() {
-    view.innerHTML = '<div class="loading">Opening the ledger…</div>';
+    if (!st.saved) view.innerHTML = '<div class="loading">Opening the ledger…</div>';
     api('classes').then(function (d) {
-      if (!d.ok) { if (d.error === 'bad key') { ls('hw:tkey', null); st.key = ''; return keyScreen('That key didn’t work.'); } throw new Error(d.error); }
-      st.classes = d.classes.concat(demoEntry()); st.noSchool = d.noSchool; st.bell = d.bell; st.bellCustom = !!d.bellCustom;
+      if (!d.ok) { if (d.error === 'bad key') { ls('hw:tkey', null); st.key = ''; forgetSaved(); return keyScreen('That key didn’t work.'); } throw new Error(d.error); }
+      useClasses(d); st.gotClasses = true;
       scheduleBlocks();
-      if (!st.classes.length) { st.tab = 'settings'; st.D = null; drawTop(); return render(); }
-      if (!st.classes.some(function (c) { return c.code === st.klass; })) st.klass = st.classes[0].code;
+      if (!st.classes.length) { st.tab = 'settings'; st.D = null; st.saved = 0; drawTop(); return render(); }
+      if (!st.classes.some(function (c) { return c.code === st.klass; })) { st.klass = st.classes[0].code; if (st.saved) { st.D = null; st.saved = 0; } }
       loadDash();
-    }).catch(function (e) { view.innerHTML = '<div class="panel"><h2>Can’t reach the ledger</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
+    }).catch(function (e) {
+      if (st.saved) { st.offline = true; drawTop(); setTimeout(function () { if (st.saved && st.offline) loadClasses(); }, 15000); return; }   // the saved copy stays up; try again shortly
+      view.innerHTML = '<div class="panel"><h2>Can’t reach the ledger</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
   }
   function loadDash(quiet) {
     if (!st.klass) return render();
-    if (!quiet) { st.loading = true; if (!st.D) view.innerHTML = '<div class="loading">Loading ' + esc(st.klass) + '…</div>'; }
-    return api('dash', { 'class': st.klass }).then(function (d) {
+    var k = st.klass, seq = 0;
+    if (!quiet) {
+      st.loading = true; seq = st.dashSeq = (st.dashSeq || 0) + 1;
+      if (!st.D) view.innerHTML = '<div class="loading">Loading ' + esc(st.klass) + '…</div>';
+      if (!st.D || st.dFor !== k) showSaved(k, seq);
+    }
+    return api('dash', { 'class': k }).then(function (d) {
       st.loading = false;
       if (!d.ok) throw new Error(d.error || 'error');
-      st.D = d; st.derived = null; drawTop(); if (!(quiet && (st.tab === 'powerschool' || st.tab === 'settings'))) render(); loadCal(); // the 2-minute refresh leaves forms being filled in alone
-      if (st.warmFor !== st.klass) { st.warmFor = st.klass; warm(st.klass); }
+      if (k !== st.klass) return;   // another class was picked while this one was on its way
+      var wasSaved = !!st.saved; if (seq) st.dashDone = seq;
+      st.D = d; st.dFor = k; st.saved = 0; st.offline = false; st.derived = null; mark('fresh'); drawTop();
+      if (!(quiet && (st.tab === 'powerschool' || st.tab === 'settings')) && !(wasSaved && typing())) render(); // the 2-minute refresh leaves forms being filled in alone
+      loadCal();
+      whenBank(function () { if (st.warmFor !== st.klass) { st.warmFor = st.klass; warm(st.klass); } });
       clearInterval(st.dashTimer); st.dashTimer = setInterval(function () { if (document.visibilityState === 'visible') loadDash(true); }, 120000);
       clearInterval(st.liveTimer); st.liveTimer = setInterval(pollLive, 10000);
-    }).catch(function (e) { st.loading = false; if (!quiet) view.innerHTML = '<div class="panel"><h2>Couldn’t load the class</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
+    }).catch(function (e) {
+      st.loading = false;
+      if (st.saved && st.dFor === k && st.klass === k) { st.offline = true; drawTop(); setTimeout(function () { if (st.saved && st.klass === k) loadDash(true); }, 15000); return; }   // the saved copy stays up; try again shortly
+      if (!quiet) view.innerHTML = '<div class="panel"><h2>Couldn’t load the class</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
   }
   /* the class calendar, for the header's Launch Today's Lesson and the Lessons pop-up */
-  function loadCal() {
-    var k = st.klass;
-    api('cal', { 'class': k }).then(function (d) {
-      if (k !== st.klass || !d || !d.ok) return;
-      var first = st.calFor !== k;
-      st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; st.lopts = d.lopts || null; drawTop();
-      if (HW.DashCal && HW.DashCal.seed) HW.DashCal.seed(k, d);
-      if (first && (st.tab === 'exits' || st.tab === 'tests') && HW.DashTests && HW.DashTests.atHome()) render(); // the lists mark today's lesson from the calendar
-    }).catch(function () {});
+  function useCal(k, d, saved) {   // saved = this device's copy, used for the header until the fresh calendar arrives
+    if (k !== st.klass || !d || !d.ok) return;
+    var first = st.calFor !== k || st.calSaved;
+    st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; st.calSaved = !!saved; st.lopts = d.lopts || null;
+    if (saved) return;
+    drawTop();
+    if (HW.DashCal && HW.DashCal.seed) HW.DashCal.seed(k, d);
+    if (first && (st.tab === 'exits' || st.tab === 'tests') && HW.DashTests && HW.DashTests.atHome()) render(); // the lists mark today's lesson from the calendar
   }
+  function loadCal() { var k = st.klass; api('cal', { 'class': k }).then(function (d) { useCal(k, d); }).catch(function () {}); }
   /* once a class is open, the other tabs' data loads in the background (one thing at a time), so opening a tab is quick:
      the exit slips and tests, the retest requests, then every closed exit slip and test marked for PowerSchool */
   function warm(k) {
@@ -265,10 +345,15 @@
 
   /* ---------------- render ---------------- */
   function render() {
+    if (!partsIn) { waiting = true; return; }   // the dashboard's other files (after this one) haven't run yet: drawn as soon as they have
     view.innerHTML = '';
     if (!st.D && st.tab !== 'settings') { if (!st.classes.length) st.tab = 'settings'; else return; }
+    painted = true;
+    if (!bankIn && !(st.tab === 'live' && st.D)) {   // every tab but Live is built from the questions
+      view.appendChild(tabs()); view.appendChild(el('div', 'tab-body', '<div class="loading">Loading the question bank…</div>')); return;
+    }
     // how many retest requests are waiting (the tab's badge): asked once per class, then kept fresh by the tab itself
-    if (HW.DashRetests && st.klass && st.rtAsked !== st.klass) { st.rtAsked = st.klass; HW.Dash.retestCount = 0; HW.DashRetests.load().then(function () { if (st.tab !== 'retests') updateBadge(); }, function () {}); }
+    if (bankIn && HW.DashRetests && st.klass && st.rtAsked !== st.klass) { st.rtAsked = st.klass; HW.Dash.retestCount = 0; HW.DashRetests.load().then(function () { if (st.tab !== 'retests') updateBadge(); }, function () {}); }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
     ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, retests: function (b) { HW.DashRetests.render(b); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, powerschool: function (b) { HW.DashReports.render(b); }, settings: renderSettings }[st.tab] || renderLive)(body);
@@ -851,7 +936,7 @@
     body.appendChild(notesPanel());
     var p6 = el('div', 'panel'); p6.appendChild(el('h3', '', 'This device'));
     if (HW.DashDemo && ls('hw:nodemo') === '1') { var sd = el('button', 'btn btn-small btn-ghost', 'Show the demo class'); sd.type = 'button'; sd.style.marginRight = '8px'; sd.addEventListener('click', function () { ls('hw:nodemo', null); loadClasses(); }); p6.appendChild(sd); }
-    var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
+    var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; forgetSaved(); keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
   }
   /* ---- the class's name and code. The first code stays inside the spreadsheet (every answer and PIN uses it); a new
    * code is stored beside it, so links, QR codes and typing use the new one and the old one keeps working. ---- */
@@ -1078,6 +1163,6 @@
     flying = {}; kept = {};
     if (st.tab === 'calendar' && HW.DashCal) { HW.DashCal.reload(); render(); }
   });
-  HW.Dash = { state: st, render: render, api: api, onWrite: function (f) { writeHooks.push(f); }, goTab: goTab, download: download, flash: flash, drawTop: function () { drawTop(); }, students: students, derive: derive, scopeSeg: scopeSeg, pronounSelect: pronounSelect, ippBox: ippBox, wrapTbl: wrapTbl, openStudent: function (n) { openStudent(n); } };
+  HW.Dash = { state: st, timing: function () { return FAST ? FAST.marks : {}; }, render: render, api: api, onWrite: function (f) { writeHooks.push(f); }, goTab: goTab, download: download, flash: flash, drawTop: function () { drawTop(); }, students: students, derive: derive, scopeSeg: scopeSeg, pronounSelect: pronounSelect, ippBox: ippBox, wrapTbl: wrapTbl, openStudent: function (n) { openStudent(n); } };
   boot();
 })(window);

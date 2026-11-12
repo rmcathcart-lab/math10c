@@ -51,7 +51,7 @@ Homework practice for every Math 10C lesson, built from the course booklets. Eve
 ## Adding a lesson
 
 1. Write `js/lessons/u1l2.js` with `HW.defineLesson({ id: 'u1l2', … questions: […], extra: […] })` (see `u1l1.js`). Each part has an `id`, a `level` (LIM BEG EMG PRG ADV MAS) and a `make(rng, shared)` that returns `{ prompt, input, check, key, answer, solution, hints }`.
-2. Add a `<script>` tag for it in `index.html` and `teacher/index.html`.
+2. Add a `<script>` tag for it in `index.html` and `teacher/index.html`. In `teacher/index.html` write it as `<script defer src=…>` like the others: the Teacher Ledger opens on its Live tab without waiting for the question bank (`teacher/fast.js`, and `partsIn` / `bankIn` in `teacher/dash.js`), so ledger code must not read `HW.lessons` while its file is loading. `tests/ledger_fast_test.py` checks the quick start.
 3. Run `node tests/gen_test.js 300 u1l2` (one lesson at a time is quicker).
 
 ## Backend
