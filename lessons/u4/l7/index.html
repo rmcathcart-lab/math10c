@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u4l7.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Which One Doesn’t Belong?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><circle cx="95" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="0.0s" repeatCount="indefinite"/></circle><circle cx="145" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="0.8s" repeatCount="indefinite"/></circle><circle cx="195" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="1.6s" repeatCount="indefinite"/></circle><circle cx="245" cy="30" r="15" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="3.2s" begin="2.4000000000000004s" repeatCount="indefinite"/></circle></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Which One Doesn’t Belong?</h2>
+  <p class="wf-rule vw-rule">Which one is the odd one out? Pick one and be ready to say <b>why</b>.</p></div>
+  <div class="vw-tiles" style="--n:4"><div><b>A</b><span class="tex">x^2-16</span></div><div><b>B</b><span class="tex">x^2+16</span></div><div><b>C</b><span class="tex">2x^2-32</span></div><div><b>D</b><span class="tex">x^2-8x+16</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>Convince the person beside you.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>Any of them can be right.</b> A is the only one that is a difference of squares straight away. B is the only one that can’t be factored. C is the only one with a number in front of <span class="tex">x^2</span>. D is the only one with three terms.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,50 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Factoring Airport" style="--wf-side: 420px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Factoring Airport</h2>
-  <p class="wf-rule">Every expression must clear security before it can board: <b>fully factored</b>. Lane 1 is security (common factor). Then count the terms to pick Lane 2, 3 or 4. The final check sends anything that can still factor <b>back through the lanes</b>.</p></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u4l7-wqs">
-    <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>Which lane does <span class="tex">x^2-25</span> need? <button class="pill small" type="button" data-wq>Answer</button></div></div>
-      <div class="wq-a"><div class="q-ans"><b>Lane 2</b> (no common factor, two terms): <span class="tex">(x-5)(x+5)</span></div></div>
-    </div>
-    <div class="wq">
-      <div class="q-line"><div class="q-num">2</div><div>Which lane does <span class="tex">x^2+7x+12</span> need? Factor it. <button class="pill small" type="button" data-wq>Answer</button></div></div>
-      <div class="wq-a"><div class="q-ans"><b>Lane 3</b>: product 12, sum 7 gives 3 and 4, so <span class="tex">(x+3)(x+4)</span></div></div>
-    </div>
-    <div class="wq">
-      <div class="q-line"><div class="q-num">3</div><div>This traveller <b>skipped Lane 1</b>: <span class="tex">4x^2-36=(2x-6)(2x+6)</span>. Can it board yet? <button class="pill small" type="button" data-wq>Answer</button></div></div>
-      <div class="wq-a"><div class="q-ans"><b>Not yet!</b> Each bracket still has a factor 2: <span class="tex">2(x-3)\cdot2(x+3)=4(x-3)(x+3)</span></div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="poll u4l7-poll4 wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A lane stamps your passport if its tool does some factoring. Who gets stamps from <b>three different</b> lanes? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> <span class="tex">x^2-9x+20</span></div>
-      <div class="opt"><b>B</b> <span class="tex">5x^2-45</span></div>
-      <div class="opt"><b>C</b> <span class="tex">x^4-81</span></div>
-      <div class="opt right"><b>D</b> <span class="tex">2x^4-10x^2+8</span></div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>D.</b> Lane 1: <span class="tex">2(x^4-5x^2+4)</span>. Lane 3: <span class="tex">2(x^2-1)(x^2-4)</span>. Lane 2, twice: <span class="tex">2(x-1)(x+1)(x-2)(x+2)</span>.<br>
-      <span class="muted"><b>A</b> uses Lane 3 only. <b>B</b> uses two lanes (1, then 2): <span class="tex">5(x-3)(x+3)</span>. <b>C is the trap:</b> two trips, but both through Lane 2: <span class="tex">(x-3)(x+3)(x^2+9)</span>, and <span class="tex">x^2+9</span> can’t be factored. Route each traveller through the airport below.</span></div>
-  </div>
-  </div></div>
-
-  <div class="explainer" data-explainer="airport"></div>
-
-  <div class="wq wq-wide">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Follow-up.</b> Route <span class="tex">3x^3+3x^2-12x-12</span> through the airport. How many different lanes stamp it?</div></div>
-    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>Three lanes too.</b> Lane 1: <span class="tex">3(x^3+x^2-4x-4)</span>. Lane 4: <span class="tex">3(x+1)(x^2-4)</span>. Lane 2: <span class="tex">3(x+1)(x-2)(x+2)</span>.</div></div>
-  </div>
-  <p class="small muted u4l7-foot">Be security: trace each traveller’s route with your finger, then compare with a neighbour. The airport <b>is</b> today’s checklist: Lane 1 is step 1, Lanes 2–4 are steps 2–5, and the final check is step 6.</p>
-</section>
 
 <!-- ================= 1. Strategy ================= -->
 <section class="card" data-ink="s1" data-section="1. The Factoring Checklist">
@@ -139,7 +107,7 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(a) <span class="tex">8x^2-50</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Common factor first, then difference of squares.</b><br>GCF <span class="tex">=2</span>: <span class="tex">8x^2-50=2(4x^2-25)</span><br><span class="tex">4x^2-25=(2x)^2-5^2</span><br><span class="tex">8x^2-50=\boldsymbol{2(2x-5)(2x+5)}</span><br>Check: no bracket factors further.</div></div></div>
     <div class="part"><div class="pl">(b) <span class="tex">-12x^2+27</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Common factor first (take the negative out too), then difference of squares.</b><br>GCF <span class="tex">=-3</span>: <span class="tex">-12x^2+27=-3(4x^2-9)</span><br><span class="tex">4x^2-9=(2x)^2-3^2</span><br><span class="tex">-12x^2+27=\boldsymbol{-3(2x-3)(2x+3)}</span></div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Why does the common factor have to come out <b>first</b> in (a)? Try the difference of squares on <span class="tex">8x^2-50</span> directly.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">8</span> and <span class="tex">50</span> aren’t perfect squares, so <span class="tex">8x^2-50</span> doesn’t <em>look</em> like a difference of squares at all. Only after the 2 comes out does <span class="tex">4x^2-25</span> appear. Step 1 uncovers the pattern.</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> Why does the common factor have to come out <b>first</b> in (a)? Try the difference of squares on <span class="tex">8x^2-50</span> directly.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">8</span> and <span class="tex">50</span> aren’t perfect squares, so <span class="tex">8x^2-50</span> doesn’t <em>look</em> like a difference of squares at all. Only after the 2 comes out does <span class="tex">4x^2-25</span> appear. Step 1 uncovers the pattern.</div></div></div>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
@@ -169,9 +137,18 @@
     <div class="part"><div class="pl">(a) <span class="tex">x^2-xy+3x-3y</span></div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No common factor across all four terms; four terms ⇒ grouping.</b><br><span class="tex">(x^2-xy)+(3x-3y)=x(x-y)+3(x-y)</span><br><span class="tex">x^2-xy+3x-3y=\boldsymbol{(x-y)(x+3)}</span></div></div></div>
     <div class="part"><div class="pl">(b) <span class="tex">x^4-13x^2+36</span></div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>A trinomial in <span class="tex">x^2</span> with <span class="tex">a=1</span> ⇒ inspection; then check each factor again.</b><br>Product <span class="tex">36</span>, sum <span class="tex">-13</span>: <span class="tex">-9</span> and <span class="tex">-4</span>, so <span class="tex">(x^2-9)(x^2-4)</span>.<br><b>Not finished:</b> both brackets are differences of squares.<br><span class="tex">x^4-13x^2+36=\boldsymbol{(x-3)(x+3)(x-2)(x+2)}</span></div></div></div>
   </div>
-  <p class="small muted">(b) is warm-up traveller D without its common factor: Lane 3, then Lane 2 twice.</p>
+  <p class="small muted" data-extra>(b) is traveller D from “Factoring Airport” without its common factor: Lane 3, then Lane 2 twice.</p>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 7 · Questions 1–4</h2>
+  <p class="pr-t">Choose a strategy, then factor completely.</p>
+  <div class="pr-chips n1"><span><b>1–4</b>Choosing and using a strategy</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u4l7">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -192,7 +169,7 @@
 <section class="card" data-ink="s2b" data-section="2. Check by expanding">
   <h3 class="sub">Is it right? Check by expanding</h3>
   <p>Factoring is <b>expanding run backwards</b>, so every answer carries its own check: multiply it out and you must get the question back. Substituting a number into both forms is a fast second check.</p>
-  <div class="explainer" data-explainer="expand"></div>
+  <div data-extra><div class="explainer" data-explainer="expand"></div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Check Example 2(b) at <span class="tex">x=2</span>.</b> The question: <span class="keys"><kbd>(−)</kbd><kbd>6</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>2</kbd><kbd>1</kbd><kbd>ENTER</kbd></span>. The answer: <span class="keys"><kbd>(</kbd><kbd>7</kbd><kbd>−</kbd><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. Both give 7 ✓</div>
@@ -201,12 +178,57 @@
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Expanding checks the multiplying, not the “completely”.</b> <span class="tex">(2x-6)(2x+6)</span> expands perfectly to <span class="tex">4x^2-36</span> and is still not fully factored. You need both checks: expand it back, <b>and</b> ask whether any factor factors again.</div></div>
 </section>
 
-<section class="card" data-ink="s2c" data-section="2. More travellers">
+<section data-extra class="card" data-ink="s2c" data-section="2. More travellers">
   <h3 class="sub">Lightning round: more travellers</h3>
   <p>A mixture, like a test. Name the route first, then factor completely. Tap a row to see its route and its boarding pass.</p>
   <div class="u4l7-board" id="board-mix" data-answers="1"></div>
   <div class="space" id="mix-space"></div>
   <button class="more" data-more="mix-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Factoring Airport" style="--wf-side: 420px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Factoring Airport</h2>
+  <p class="wf-rule">Every expression must clear security before it can board: <b>fully factored</b>. Lane 1 is security (common factor). Then count the terms to pick Lane 2, 3 or 4. The final check sends anything that can still factor <b>back through the lanes</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="u4l7-wqs">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>Which lane does <span class="tex">x^2-25</span> need? <button class="pill small" type="button" data-wq>Answer</button></div></div>
+      <div class="wq-a"><div class="q-ans"><b>Lane 2</b> (no common factor, two terms): <span class="tex">(x-5)(x+5)</span></div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>Which lane does <span class="tex">x^2+7x+12</span> need? Factor it. <button class="pill small" type="button" data-wq>Answer</button></div></div>
+      <div class="wq-a"><div class="q-ans"><b>Lane 3</b>: product 12, sum 7 gives 3 and 4, so <span class="tex">(x+3)(x+4)</span></div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>This traveller <b>skipped Lane 1</b>: <span class="tex">4x^2-36=(2x-6)(2x+6)</span>. Can it board yet? <button class="pill small" type="button" data-wq>Answer</button></div></div>
+      <div class="wq-a"><div class="q-ans"><b>Not yet!</b> Each bracket still has a factor 2: <span class="tex">2(x-3)\cdot2(x+3)=4(x-3)(x+3)</span></div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="poll u4l7-poll4 wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A lane stamps your passport if its tool does some factoring. Who gets stamps from <b>three different</b> lanes? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> <span class="tex">x^2-9x+20</span></div>
+      <div class="opt"><b>B</b> <span class="tex">5x^2-45</span></div>
+      <div class="opt"><b>C</b> <span class="tex">x^4-81</span></div>
+      <div class="opt right"><b>D</b> <span class="tex">2x^4-10x^2+8</span></div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>D.</b> Lane 1: <span class="tex">2(x^4-5x^2+4)</span>. Lane 3: <span class="tex">2(x^2-1)(x^2-4)</span>. Lane 2, twice: <span class="tex">2(x-1)(x+1)(x-2)(x+2)</span>.<br>
+      <span class="muted"><b>A</b> uses Lane 3 only. <b>B</b> uses two lanes (1, then 2): <span class="tex">5(x-3)(x+3)</span>. <b>C is the trap:</b> two trips, but both through Lane 2: <span class="tex">(x-3)(x+3)(x^2+9)</span>, and <span class="tex">x^2+9</span> can’t be factored. Route each traveller through the airport below.</span></div>
+  </div>
+  </div></div>
+
+  <div class="explainer" data-explainer="airport"></div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Follow-up.</b> Route <span class="tex">3x^3+3x^2-12x-12</span> through the airport. How many different lanes stamp it?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>Three lanes too.</b> Lane 1: <span class="tex">3(x^3+x^2-4x-4)</span>. Lane 4: <span class="tex">3(x+1)(x^2-4)</span>. Lane 2: <span class="tex">3(x+1)(x-2)(x+2)</span>.</div></div>
+  </div>
+  <p class="small muted u4l7-foot">Be security: trace each traveller’s route with your finger, then compare with a neighbour. The airport <b>is</b> today’s checklist: Lane 1 is step 1, Lanes 2–4 are steps 2–5, and the final check is step 6.</p>
 </section>
 
 <!-- ================= summary ================= -->
@@ -219,7 +241,7 @@
     <div><b>Finish with two checks:</b> can any factor be factored again (send it back through), and does the answer <b>expand</b> back to the question?</div>
   </div>
   <a class="assign" href="../../../#/lesson/u4l7">
-    <div><div class="kicker">Your turn</div><b>Assignment 7 — Choosing a Factoring Strategy</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 7 · Questions 5–9</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l8/">
     <div><div class="kicker">Next lesson</div><b>Lesson 8 — Factoring Polynomial Expressions Unit Review</b><div class="muted">Every tool and the checklist in one place, then questions laid out like the unit test</div></div><span class="arrow">→</span>
@@ -232,7 +254,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u4l7.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u4l7', homeHref: '../../', title: '4.7 Choosing a Factoring Strategy' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

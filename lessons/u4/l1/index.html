@@ -17,12 +17,22 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u4l1.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Tile the Floor">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><rect x="30" y="20" width="20" height="20" rx="3" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.0s" repeatCount="indefinite"/></rect><rect x="54" y="20" width="20" height="20" rx="3" fill="#e0a11b"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.2s" repeatCount="indefinite"/></rect><rect x="78" y="20" width="20" height="20" rx="3" fill="#12805a"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.4s" repeatCount="indefinite"/></rect><rect x="102" y="20" width="20" height="20" rx="3" fill="#c93a33"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.6000000000000001s" repeatCount="indefinite"/></rect><rect x="126" y="20" width="20" height="20" rx="3" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/></rect><rect x="150" y="20" width="20" height="20" rx="3" fill="#e0a11b"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.0s" repeatCount="indefinite"/></rect><rect x="174" y="20" width="20" height="20" rx="3" fill="#12805a"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.2000000000000002s" repeatCount="indefinite"/></rect><rect x="198" y="20" width="20" height="20" rx="3" fill="#c93a33"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.4000000000000001s" repeatCount="indefinite"/></rect><rect x="222" y="20" width="20" height="20" rx="3" fill="#2b55a0"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.6s" repeatCount="indefinite"/></rect><rect x="246" y="20" width="20" height="20" rx="3" fill="#e0a11b"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="1.8s" repeatCount="indefinite"/></rect><rect x="270" y="20" width="20" height="20" rx="3" fill="#12805a"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="2.0s" repeatCount="indefinite"/></rect><rect x="294" y="20" width="20" height="20" rx="3" fill="#c93a33"><animate attributeName="opacity" values="1;0.2;1" dur="2.4s" begin="2.2s" repeatCount="indefinite"/></rect></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Tile the Floor</h2></div>
+  <div class="vw-seq"><div class="vw-txt"><p class="vw-ctx">A floor is <b>240 cm by 180 cm</b>.</p><p class="vw-ask">What is the <b>biggest square tile</b> that covers the floor with no cutting? How many do you need?</p></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>The tile has to fit exactly along both walls.</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>60 cm tiles, and 12 of them.</b> 60 is the biggest number that divides both 240 and 180: 4 tiles along one wall, 3 along the other.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,52 +53,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Tile the Floor" style="--wf-side: 310px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Tile the Floor</h2>
-  <p class="wf-rule">Cover a <b>240 cm by 180 cm</b> floor with identical <b>square</b> tiles. <b>No cutting</b> allowed! <span class="muted">Tap a tile size to try it.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u4l1-wu">
-    <div class="u4l1-fl" id="floor"></div>
-    <div class="u4l1-wqs">
-      <div class="wq">
-        <div class="q-line"><div class="q-num">1</div><div>Using <b>20 cm</b> tiles: how many tiles?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div20=12</span> across, <span class="tex">180\div20=9</span> up: <span class="tex">12\times9=\boldsymbol{108}</span> tiles.</div></div>
-      </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">2</div><div>Why won’t <b>50 cm</b> tiles work? Will <b>40 cm</b> tiles work?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div50=4.8</span>: the last tile in each row would be cut. 40 cm fails too: <span class="tex">240\div40=6</span> is fine, but <span class="tex">180\div40=4.5</span>. A size must fit <b>both</b> sides.</div></div>
-      </div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-
-    <div class="wq wq-side">
-        <div class="q-line"><div class="q-num">3</div><div>A size works if it divides exactly into <span class="u4l1-bl"></span> <em>and</em> into <span class="u4l1-bl"></span>.</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>240</b><span> and <b>180</b>: it must be a <b>common factor</b>. Sizes that work: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 and 60 cm.</span></div></div>
-    </div>
-
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>biggest</b> square tile that fits with no cutting? And how many of them do you need? <b>Guess first.</b></div></div>
-    <div class="poll-opts c4">
-      <div class="opt"><b>A</b><span> 30 cm</span></div>
-      <div class="opt right"><b>B</b><span> 60 cm</span></div>
-      <div class="opt"><b>C</b> 90 cm</div>
-      <div class="opt"><b>D</b> 120 cm</div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B, 60 cm: only 12 tiles</b> (<span class="tex">240\div60=4</span> across, <span class="tex">180\div60=3</span> up). 60 is the <b>greatest common factor</b> of 240 and 180.<br>
-      <span class="muted"><b>A</b> works, but 30 is only <em>a</em> common factor, not the greatest: <span class="tex">8\times6=48</span> tiles. <b>C</b> fits the 180 side, but <span class="tex">240\div90\approx2.67</span>. <b>D</b> fits across, but <span class="tex">180\div120=1.5</span>.</span><br>
-      Today, the same idea with algebra: <span class="tex">240x+180y=60(4x+3y)</span>. The 4 and 3 left in the bracket are the tiles <b>across</b> and <b>up</b>.</div>
-  </div>
-  </div></div>
-
-  <div class="wq wq-wide">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A hallway is <b>210 cm by 150 cm</b>. What is the biggest square tile, and how many does it take?</div></div>
-    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>30 cm, 35 tiles.</b> <span class="tex">210=2\times3\times5\times7</span> and <span class="tex">150=2\times3\times5\times5</span>, so the GCF is <span class="tex">2\times3\times5=30</span>; <span class="tex">7\times5=35</span> tiles.</div></div>
-  </div>
-</section>
 
 <!-- ================= 1. Expanding and factoring ================= -->
 <section class="card" data-ink="s1" data-section="1. Expanding and Factoring">
@@ -102,7 +67,7 @@
     <div class="u4l1-efr"><span class="u4l1-efk">binomial × binomial → binomial</span><span class="tex">(x-7)(x+7)</span><span class="u4l1-efa"></span><span class="tex">x^2-49</span></div>
   </div>
   <div class="def"><b>Factoring</b> is the reverse: rewriting a sum or difference of terms as a <b>product of factors</b>. Every factoring can be <b>checked by expanding</b> it back.</div>
-  <div class="explainer" data-explainer="twoWay"></div>
+  <div data-extra><div class="explainer" data-explainer="twoWay"></div></div>
 </section>
 
 <section class="card" data-ink="s1b" data-section="1. The factoring toolbox">
@@ -133,7 +98,7 @@
     <div><span class="tex">12a^4=\underline{2}\times2\times\underline{3}\times\underline{a}\times\underline{a}\times a\times a</span><span class="tex">18a^2b=\underline{2}\times\underline{3}\times3\times\underline{a}\times\underline{a}\times b</span></div>
     <div class="u4l1-pfr">GCF <span class="tex">=2\times3\times a\times a=\boldsymbol{6a^2}</span></div>
   </div>
-  <div class="explainer" data-explainer="columns"></div>
+  <div data-extra><div class="explainer" data-explainer="columns"></div></div>
 </section>
 
 <section class="card" data-ink="s2b" data-section="2. The shortcut">
@@ -167,7 +132,7 @@
 <section class="card" data-ink="s3" data-section="3. Removing the GCF">
   <div class="sec-h"><span class="badge">3</span><h2>Factoring by Removing the Greatest Common Factor</h2></div>
   <p>Think of a polynomial as the <b>area of a rectangle</b>. Factoring it means finding the rectangle’s <b>side lengths</b>. With algebra tiles you can do it by hand: arrange the tiles into equal rows, and the <b>tallest</b> side you can make is the GCF.</p>
-  <div class="explainer" data-explainer="tileRect"></div>
+  <div data-extra><div class="explainer" data-explainer="tileRect"></div></div>
 </section>
 
 <section class="card" data-ink="s3b" data-section="3. Pull it out front">
@@ -200,7 +165,7 @@
 <section class="card" data-ink="s3c" data-section="3. Factor completely and check">
   <h3 class="sub">Factor completely, then check by expanding</h3>
   <p><b>Factor completely</b> means nothing common is left inside the bracket. Then <b>check</b>: expand your answer and you must get the original polynomial back.</p>
-  <div class="explainer" data-explainer="pullB"></div>
+  <div data-extra><div class="explainer" data-explainer="pullB"></div></div>
   <div class="explainer" data-explainer="findErr"></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
@@ -220,10 +185,19 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(d) <span class="tex">14p^3-7p^2+21p</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(14, 7, 21) = 7; lowest power <span class="tex">p^1</span>.<br><span class="tex">=\boldsymbol{7p(2p^2-p+3)}</span></div></div></div>
     <div class="part"><div class="pl">(e) <span class="tex">35xy^2z^3-28x^2y^4z^2+42x^3y^2z^5</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(35, 28, 42) = 7; lowest <span class="tex">x^1,y^2,z^2</span>: GCF <span class="tex">=7xy^2z^2</span>.<br>Quotients <span class="tex">5z</span>, <span class="tex">-4xy^2</span>, <span class="tex">6x^2z^3</span><br><span class="tex">=\boldsymbol{7xy^2z^2(5z-4xy^2+6x^2z^3)}</span></div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Lee factored (b) as <span class="tex">5x(4x^3+x)</span>. It expands back correctly. Is Lee finished?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4x^3</span> and <span class="tex">x</span> still share an <span class="tex">x</span>, so <span class="tex">5x</span> isn’t the <b>greatest</b> common factor. Take out the lowest power, <span class="tex">x^2</span>: <span class="tex">5x^2(4x^2+1)</span>. Expanding can’t catch this one: always look inside the bracket too.</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> Lee factored (b) as <span class="tex">5x(4x^3+x)</span>. It expands back correctly. Is Lee finished?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4x^3</span> and <span class="tex">x</span> still share an <span class="tex">x</span>, so <span class="tex">5x</span> isn’t the <b>greatest</b> common factor. Take out the lowest power, <span class="tex">x^2</span>: <span class="tex">5x^2(4x^2+1)</span>. Expanding can’t catch this one: always look inside the bracket too.</div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–8">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 1 · Questions 1–8</h2>
+  <p class="pr-t">Find the GCF and take it out.</p>
+  <div class="pr-chips n1"><span><b>1–8</b>Monomial common factors</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 6.</span><a class="pill" href="../../../#/lesson/u4l1">Open the Practice site</a></div>
 </section>
 
 <!-- ================= Stand Up Break! (whiteboard stations; lessons/js/standup.js) ================= -->
@@ -298,6 +272,53 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: Tile the Floor" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Tile the Floor</h2>
+  <p class="wf-rule">Cover a <b>240 cm by 180 cm</b> floor with identical <b>square</b> tiles. <b>No cutting</b> allowed! <span class="muted">Tap a tile size to try it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="u4l1-wu">
+    <div class="u4l1-fl" id="floor"></div>
+    <div class="u4l1-wqs">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">1</div><div>Using <b>20 cm</b> tiles: how many tiles?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div20=12</span> across, <span class="tex">180\div20=9</span> up: <span class="tex">12\times9=\boldsymbol{108}</span> tiles.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">2</div><div>Why won’t <b>50 cm</b> tiles work? Will <b>40 cm</b> tiles work?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div50=4.8</span>: the last tile in each row would be cut. 40 cm fails too: <span class="tex">240\div40=6</span> is fine, but <span class="tex">180\div40=4.5</span>. A size must fit <b>both</b> sides.</div></div>
+      </div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+
+    <div class="wq wq-side">
+        <div class="q-line"><div class="q-num">3</div><div>A size works if it divides exactly into <span class="u4l1-bl"></span> <em>and</em> into <span class="u4l1-bl"></span>.</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>240</b><span> and <b>180</b>: it must be a <b>common factor</b>. Sizes that work: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 and 60 cm.</span></div></div>
+    </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>biggest</b> square tile that fits with no cutting? And how many of them do you need? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b><span> 30 cm</span></div>
+      <div class="opt right"><b>B</b><span> 60 cm</span></div>
+      <div class="opt"><b>C</b> 90 cm</div>
+      <div class="opt"><b>D</b> 120 cm</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B, 60 cm: only 12 tiles</b> (<span class="tex">240\div60=4</span> across, <span class="tex">180\div60=3</span> up). 60 is the <b>greatest common factor</b> of 240 and 180.<br>
+      <span class="muted"><b>A</b> works, but 30 is only <em>a</em> common factor, not the greatest: <span class="tex">8\times6=48</span> tiles. <b>C</b> fits the 180 side, but <span class="tex">240\div90\approx2.67</span>. <b>D</b> fits across, but <span class="tex">180\div120=1.5</span>.</span><br>
+      Today, the same idea with algebra: <span class="tex">240x+180y=60(4x+3y)</span>. The 4 and 3 left in the bracket are the tiles <b>across</b> and <b>up</b>.</div>
+  </div>
+  </div></div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A hallway is <b>210 cm by 150 cm</b>. What is the biggest square tile, and how many does it take?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>30 cm, 35 tiles.</b> <span class="tex">210=2\times3\times5\times7</span> and <span class="tex">150=2\times3\times5\times5</span>, so the GCF is <span class="tex">2\times3\times5=30</span>; <span class="tex">7\times5=35</span> tiles.</div></div>
+  </div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -308,7 +329,7 @@
     <div><b>Factored completely?</b> Nothing common left in the bracket. <i>(Extension)</i> A fraction can come out front too: <span class="tex">\tfrac14x^2-2x=\tfrac14x(x-8)</span>, leaving whole numbers.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u4l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Common Factors: The GCF of Monomials and Polynomials</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 · Questions 9–23</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l2/">
     <div><div class="kicker">Next lesson</div><b>Lesson 2 — Common Factors: Binomial Common Factors and Grouping</b><div class="muted">When the common factor is a whole bracket</div></div><span class="arrow">→</span>
@@ -321,7 +342,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u4l1.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u4l1', homeHref: '../../', title: '4.1 Common Factors' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

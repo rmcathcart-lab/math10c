@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u4l8.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Two Truths and a Lie">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="90" y="46" font-size="40" text-anchor="middle">😇</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/><text x="170" y="46" font-size="40" text-anchor="middle">😇</text></g><g><animateTransform attributeName="transform" type="rotate" values="-12 250 46;12 250 46;-12 250 46" dur="2.2s" repeatCount="indefinite"/><text x="250" y="46" font-size="44" text-anchor="middle">🤥</text></g></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Two Truths and a Lie</h2>
+  <p class="wf-rule vw-rule">Two of these are true. One is a lie. Which one?</p></div>
+  <div class="vw-tiles" style="--n:3;--fs:27px"><div><b>A</b><span class="tex">x^2-9=(x-3)(x+3)</span></div><div><b>B</b><span class="tex">x^2+9=(x+3)^2</span></div><div><b>C</b><span class="tex">x^2+6x+9=(x+3)^2</span></div></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How could you prove it?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>B is the lie.</b> Expand it: <span class="tex">(x+3)^2=x^2+6x+9</span>, not <span class="tex">x^2+9</span>. A sum of squares doesn’t factor.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,71 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Memory Match">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Memory Match</h2>
-  <p class="wf-rule">All the cards are face up. Match each expression to its <b>factored form</b>. <span class="muted">Tap two cards to pair them.</span></p></div>
 
-  <div class="wf-grid">
-  <div class="u48-mm" id="mm">
-    <button class="u48-card" type="button" data-n="1"><i>1</i><span class="tex">x^2-6x+9</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="2"><i>2</i><span class="tex">(x-3)(x+2)</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="3"><i>3</i><span class="tex">3x^2+9x</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="4"><i>4</i><span class="tex">(x+3)^2</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="5"><i>5</i><span class="tex">x^2-9</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="6"><i>6</i><span class="tex">2(x-3)(x+3)</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="7"><i>7</i><span class="tex">x^2+x-6</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="8"><i>8</i><span class="tex">(2x-1)(x+3)</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="9"><i>9</i><span class="tex">x^2+6x+9</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="10"><i>10</i><span class="tex">(x-3)^2</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="11"><i>11</i><span class="tex">x^2-x-6</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="12"><i>12</i><span class="tex">3x(x+3)</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="13"><i>13</i><span class="tex">2x^2+5x-3</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="14"><i>14</i><span class="tex">(x-3)(x+3)</span><em></em><small></small></button>
-    <button class="u48-card" type="button" data-n="15"><i>15</i><span class="tex">2x^2-18</span><em></em><small></small></button>
-  </div>
-  <div class="u48-mm-bar">
-    <span class="u48-mm-count" id="mm-count">Pairs found: <b>0</b> / 7</span>
-    <span class="u48-mm-msg" id="mm-msg">Race a neighbour: call out pairs by card number. Who finds the most?</span>
-    <button class="pill small" data-mm="x2">Put x = 2</button>
-    <button class="pill small" data-mm="all">Show all pairs</button>
-    <button class="pill small" data-mm="reset">Reset</button>
-  </div>
-
-  <div class="u48-wq">
-    <div class="q-line"><div class="q-num">1</div><div>Find the partner of card 3. <button class="pill small" data-rv="wq1">Reveal</button>
-      <div class="rv" id="wq1">Card 12: <span class="tex">3x^2+9x=3x(x+3)</span> — take out the GCF <span class="tex">3x</span>.</div></div></div>
-    <div class="q-line"><div class="q-num">2</div><div>Do cards 2 and 11 match? <b>Expand!</b> <button class="pill small" data-rv="wq2">Reveal</button>
-      <div class="rv" id="wq2">Yes. <span class="tex">(x-3)(x+2)</span><br><span class="tex">=x^2+2x-3x-6</span><br><span class="tex">=x^2-x-6</span> ✓</div></div></div>
-    <div class="q-line"><div class="q-num">3</div><div>Cards 6 and 14 look alike. Which one goes with card 15? <button class="pill small" data-rv="wq3">Reveal</button>
-      <div class="rv" id="wq3">Card 6: <span class="tex">2x^2-18=2(x^2-9)</span> <span class="tex">=2(x-3)(x+3)</span>. Card 14 is missing the GCF 2 — it partners card 5, <span class="tex">x^2-9</span>.</div></div></div>
-  </div>
-
-  <div class="poll u48-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> There are 15 cards, so one card has <b>no partner</b>. Which one? And what should its missing partner say? <b>Guess first!</b></div></div>
-    <div class="poll-opts four">
-      <div class="opt"><b>A</b> card 1</div>
-      <div class="opt right"><b>B</b> card 7</div>
-      <div class="opt"><b>C</b> card 9</div>
-      <div class="opt"><b>D</b> card 13</div>
-    </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B — card 7, <span class="tex">x^2+x-6</span>.</b> Its partner should read <span class="tex">(x+3)(x-2)</span>: product <span class="tex">-6</span>, sum <span class="tex">+1</span>.
-      <ul class="u48-traps">
-        <li>The <b>decoy</b> is card 2, <span class="tex">(x-3)(x+2)</span>: the right numbers, but the signs are swapped, so it gives <span class="tex">x^2-x-6</span> (card 11).</li>
-        <li><b>A</b> and <b>C</b> are the perfect squares <span class="tex">(x-3)^2</span> and <span class="tex">(x+3)^2</span> — near-twins, but both have partners (cards 10 and 4).</li>
-        <li><b>D</b> has <span class="tex">a\neq1</span>, so it feels hard, but card 8 is its partner: <span class="tex">(2x-1)(x+3)=2x^2+6x-x-3</span>.</li>
-      </ul>
-    </div>
-  </div>
-  </div>
-
-  <div class="u48-bridge">
-    <div><b>Sort the pairs by tool.</b> Which tool made each pair? <button class="pill small" data-mm="tools">Show tools</button>
-      <div class="rv" id="wq-tools"><b>GCF:</b> <span class="u48-nw">3–12</span> and <span class="u48-nw">15–6</span> — then <b>keep going</b>: <span class="tex">2(x^2-9)</span> isn’t finished. <b>Inspection:</b> <span class="u48-nw">11–2,</span> <span class="u48-nw">1–10,</span> <span class="u48-nw">9–4.</span> <b>Decomposition:</b> <span class="u48-nw">13–8.</span> <b>Difference of squares:</b> <span class="u48-nw">5–14.</span></div></div>
-    <div><b>Follow-up:</b> make a 16th card that partners card 7 — then a <b>decoy</b> for it. <button class="pill small" data-rv="wq5">Reveal</button>
-      <div class="rv" id="wq5">Partner <span class="tex">(x+3)(x-2)</span>. A good decoy: <span class="tex">(x+6)(x-1)</span> — product <span class="tex">-6</span>, but the sum is 5.</div></div>
-  </div>
-</section>
 
 <!-- ================= 1. toolbox ================= -->
 <section class="card" data-ink="tools" data-section="1. The Factoring Toolbox">
@@ -141,14 +88,14 @@
   </div>
 </section>
 
-<section class="card" data-ink="tiles" data-section="1. Tiles into a rectangle">
+<section data-extra class="card" data-ink="tiles" data-section="1. Tiles into a rectangle">
   <h3 class="sub">Recap: arrange the tiles into a rectangle</h3>
   <div class="u48-legend"><span><i class="u48-t k2"></i><span class="tex">x^2</span></span><span><i class="u48-t k1"></i><span class="tex">x</span></span><span><i class="u48-t k0"></i><span class="tex">1</span></span><span class="u48-lg-neg"><i class="u48-t k1 neg"></i><i class="u48-t k0 neg"></i> white with a minus = <b>negative</b></span></div>
   <p>The tiles for a trinomial form a rectangle; its <b>side lengths are the factors</b>. When the <span class="tex">x</span>-tiles won’t fill the gaps, add <b>zero pairs</b>.</p>
   <div class="explainer" data-explainer="tiles"></div>
 </section>
 
-<section class="card" data-ink="box" data-section="1. The area box">
+<section data-extra class="card" data-ink="box" data-section="1. The area box">
   <h3 class="sub">Recap: decomposition and the area box for <span class="tex">ax^2+bx+c</span></h3>
   <p>Find two integers with product <span class="tex">ac</span> and sum <span class="tex">b</span>, split the middle term into a 2 × 2 box, and read the factors off the edges.</p>
   <div class="explainer" data-explainer="box"></div>
@@ -166,7 +113,7 @@
   </div>
 </section>
 
-<section class="card" data-ink="bvals" data-section="1. Which middle terms work?">
+<section data-extra class="card" data-ink="bvals" data-section="1. Which middle terms work?">
   <h3 class="sub">Recap: which middle terms work?</h3>
   <p><span class="tex">x^2+bx+c</span> factors over the integers <b>only</b> when <span class="tex">b</span> is the sum of a factor pair of <span class="tex">c</span>. List every pair and you have every <span class="tex">b</span> that works.</p>
   <div class="explainer" data-explainer="bvals"></div>
@@ -410,6 +357,72 @@
   <button class="more" data-more="q21-space">+ More space</button>
 </section>
 
+<section data-extra class="card warm wf wf-one" data-ink="warm" data-section="Extra: Memory Match">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>Memory Match</h2>
+  <p class="wf-rule">All the cards are face up. Match each expression to its <b>factored form</b>. <span class="muted">Tap two cards to pair them.</span></p></div>
+
+  <div class="wf-grid">
+  <div class="u48-mm" id="mm">
+    <button class="u48-card" type="button" data-n="1"><i>1</i><span class="tex">x^2-6x+9</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="2"><i>2</i><span class="tex">(x-3)(x+2)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="3"><i>3</i><span class="tex">3x^2+9x</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="4"><i>4</i><span class="tex">(x+3)^2</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="5"><i>5</i><span class="tex">x^2-9</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="6"><i>6</i><span class="tex">2(x-3)(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="7"><i>7</i><span class="tex">x^2+x-6</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="8"><i>8</i><span class="tex">(2x-1)(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="9"><i>9</i><span class="tex">x^2+6x+9</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="10"><i>10</i><span class="tex">(x-3)^2</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="11"><i>11</i><span class="tex">x^2-x-6</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="12"><i>12</i><span class="tex">3x(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="13"><i>13</i><span class="tex">2x^2+5x-3</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="14"><i>14</i><span class="tex">(x-3)(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="15"><i>15</i><span class="tex">2x^2-18</span><em></em><small></small></button>
+  </div>
+  <div class="u48-mm-bar">
+    <span class="u48-mm-count" id="mm-count">Pairs found: <b>0</b> / 7</span>
+    <span class="u48-mm-msg" id="mm-msg">Race a neighbour: call out pairs by card number. Who finds the most?</span>
+    <button class="pill small" data-mm="x2">Put x = 2</button>
+    <button class="pill small" data-mm="all">Show all pairs</button>
+    <button class="pill small" data-mm="reset">Reset</button>
+  </div>
+
+  <div class="u48-wq">
+    <div class="q-line"><div class="q-num">1</div><div>Find the partner of card 3. <button class="pill small" data-rv="wq1">Reveal</button>
+      <div class="rv" id="wq1">Card 12: <span class="tex">3x^2+9x=3x(x+3)</span> — take out the GCF <span class="tex">3x</span>.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div>Do cards 2 and 11 match? <b>Expand!</b> <button class="pill small" data-rv="wq2">Reveal</button>
+      <div class="rv" id="wq2">Yes. <span class="tex">(x-3)(x+2)</span><br><span class="tex">=x^2+2x-3x-6</span><br><span class="tex">=x^2-x-6</span> ✓</div></div></div>
+    <div class="q-line"><div class="q-num">3</div><div>Cards 6 and 14 look alike. Which one goes with card 15? <button class="pill small" data-rv="wq3">Reveal</button>
+      <div class="rv" id="wq3">Card 6: <span class="tex">2x^2-18=2(x^2-9)</span> <span class="tex">=2(x-3)(x+3)</span>. Card 14 is missing the GCF 2 — it partners card 5, <span class="tex">x^2-9</span>.</div></div></div>
+  </div>
+
+  <div class="poll u48-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> There are 15 cards, so one card has <b>no partner</b>. Which one? And what should its missing partner say? <b>Guess first!</b></div></div>
+    <div class="poll-opts four">
+      <div class="opt"><b>A</b> card 1</div>
+      <div class="opt right"><b>B</b> card 7</div>
+      <div class="opt"><b>C</b> card 9</div>
+      <div class="opt"><b>D</b> card 13</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B — card 7, <span class="tex">x^2+x-6</span>.</b> Its partner should read <span class="tex">(x+3)(x-2)</span>: product <span class="tex">-6</span>, sum <span class="tex">+1</span>.
+      <ul class="u48-traps">
+        <li>The <b>decoy</b> is card 2, <span class="tex">(x-3)(x+2)</span>: the right numbers, but the signs are swapped, so it gives <span class="tex">x^2-x-6</span> (card 11).</li>
+        <li><b>A</b> and <b>C</b> are the perfect squares <span class="tex">(x-3)^2</span> and <span class="tex">(x+3)^2</span> — near-twins, but both have partners (cards 10 and 4).</li>
+        <li><b>D</b> has <span class="tex">a\neq1</span>, so it feels hard, but card 8 is its partner: <span class="tex">(2x-1)(x+3)=2x^2+6x-x-3</span>.</li>
+      </ul>
+    </div>
+  </div>
+  </div>
+
+  <div class="u48-bridge">
+    <div><b>Sort the pairs by tool.</b> Which tool made each pair? <button class="pill small" data-mm="tools">Show tools</button>
+      <div class="rv" id="wq-tools"><b>GCF:</b> <span class="u48-nw">3–12</span> and <span class="u48-nw">15–6</span> — then <b>keep going</b>: <span class="tex">2(x^2-9)</span> isn’t finished. <b>Inspection:</b> <span class="u48-nw">11–2,</span> <span class="u48-nw">1–10,</span> <span class="u48-nw">9–4.</span> <b>Decomposition:</b> <span class="u48-nw">13–8.</span> <b>Difference of squares:</b> <span class="u48-nw">5–14.</span></div></div>
+    <div><b>Follow-up:</b> make a 16th card that partners card 7 — then a <b>decoy</b> for it. <button class="pill small" data-rv="wq5">Reveal</button>
+      <div class="rv" id="wq5">Partner <span class="tex">(x+3)(x-2)</span>. A good decoy: <span class="tex">(x+6)(x-1)</span> — product <span class="tex">-6</span>, but the sum is 5.</div></div>
+  </div>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
@@ -443,7 +456,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u4l8.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u4l8', homeHref: '../../', title: '4.8 Factoring Polynomial Expressions Unit Review' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

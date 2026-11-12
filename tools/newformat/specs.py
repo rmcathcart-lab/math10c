@@ -158,3 +158,61 @@ SPECS['u3l6'] = dict(
               reveal=f'<b>Everyone gets 1.</b> Start with {T("n")}: {T(r"n+3\to2n+6\to2n+2\to n+1")}, and taking away {T("n")} leaves 1.'),
     extra_expl=['classify', 'zeroPairs', 'tileMul', 'foil', 'audit', 'square', 'frame', 'groups', 'grid', 'three', 'complete', 'box'],
     practice=PR('ex7', '1–8', '9–13', 'Multiple choice from across the unit.', [('1–8', 'Multiple choice')], 6))
+
+# ======================= Unit 4 =======================
+SPECS['u4l1'] = dict(
+    warm=dict(title='Tile the Floor', rule='What is the <b>biggest square tile</b> that covers the floor with no cutting? How many do you need?', strip=strip(ssquares(12)),
+              body=BIG('A floor is <b>240 cm by 180 cm</b>.'),
+              nudge='The tile has to fit exactly along both walls.',
+              reveal='<b>60 cm tiles, and 12 of them.</b> 60 is the biggest number that divides both 240 and 180: 4 tiles along one wall, 3 along the other.'),
+    extra_expl=['twoWay', 'columns', 'tileRect', 'pullB'],
+    practice=PR('ex3', '1–8', '9–23', 'Find the GCF and take it out.', [('1–8', 'Monomial common factors')], 6))
+SPECS['u4l2'] = dict(
+    warm=dict(title='The Combo Receipt', rule='In your head. No calculator, no paper.', strip=strip(sb('🍔', 120, 0), sb('🍟', 180, .3), srock('🧾', 245, 7, 2.4, 38)),
+              body=BIG(T(r'7\times98+3\times98')), nudge='What do the two parts share?',
+              reveal=f'<b>980.</b> Both parts are “so many 98s”: 7 of them plus 3 of them is {T(r"10\times98")}.'),
+    extra_cards=['s1b'], extra_expl=['tileGroup', 'rearrange'],
+    practice=PR('ex2', '1–3', '4–9', 'Take out the common binomial factor.', [('1–3', 'Binomial common factors')], 2))
+SPECS['u4l3'] = dict(
+    warm=dict(title='The Census Taker’s Riddle', rule='How old are the three kids?', strip=strip(sb('🧒', 110, 0, 36), sb('👧', 160, .3, 36), sb('🧑', 210, .6, 40), srock('🎹', 275, 5, 2.4, 34)),
+              body=BIG('“My three kids’ ages <b>multiply to 36</b>, and they <b>add up to the house number</b> next door.”<small>The census taker checks the house number and says, “I still can’t tell.” The parent adds, “My oldest plays piano.” Now the census taker knows.</small>'),
+              nudge='Why wasn’t the house number enough?',
+              reveal='<b>2, 2 and 9.</b> Only two sets of ages share the same sum: 1, 6, 6 and 2, 2, 9 both add to 13. “My oldest” rules out the twins being oldest.'),
+    extra_cards=['s2b'], extra_expl=['inspectB', 'tileNeg', 'twoVar', 'inspectC'],
+    practice=PR('ex5', '1–8', '9–23', 'Sum and product pairs, then factoring.', [('1–4', 'Algebra tiles and sum–product pairs'), ('5–8', 'Factoring ' + T('x^2+bx+c'))], 5))
+SPECS['u4l4'] = dict(
+    warm=dict(title='The Prime Suspect', rule='It isn’t even, it doesn’t end in 5, and 3 doesn’t divide it. <b>Is it prime?</b> No calculator.', strip=strip(sdrive('🔍', 6, size=36, flip=False), sb('🕵️', 300, 0, 40)),
+              body=BIG('899'), nudge='What friendly number is it very close to?',
+              reveal=f'<b>No.</b> {T(r"899=900-1=30^2-1^2=29\times31")}.'),
+    extra_cards=['s1b', 's4c'], extra_expl=['zeroMiddle', 'cutMove', 'rink'],
+    practice=PR('ex2', '1–4', '5–13', 'Factor each difference of squares.', [('1–4', 'The pattern ' + T('A^2-B^2'))], 3))
+DOTS4 = strip(''.join(f'<circle cx="{95 + i*50}" cy="30" r="15" fill="{BLUE}">{blink(3.2, i * .8, .2)}</circle>' for i in range(4)))
+LIE = strip(sb('😇', 90, 0), sb('😇', 170, .3), srock('🤥', 250))
+SPECS['u4l5'] = dict(
+    warm=dict(title='Who Are We?', rule='A riddle from two whole numbers.', strip=strip(sb('❓', 130, 0, 36), sb('❓', 190, .5, 36), sblink('🤝', 250, 0, 34, 2.2, lo=.4)),
+              body=BIG('“We <b>multiply to 36</b> and <b>add to 13</b>.”<small>Who are we?</small>'),
+              nudge='How did you find them?',
+              reveal=f'<b>4 and 9.</b> {T(r"4\times9=36")} and {T("4+9=13")}. Listing the pairs that multiply to 36 finds them fast: 1 and 36, 2 and 18, 3 and 12, 4 and 9.'),
+    replace=[(' It’s the warm-up’s rectangle, without drawing it to scale.', '<span data-extra> It’s the rectangle from “The Area Box Mystery”, without drawing it to scale.</span>')],
+    extra_expl=['whyAC', 'fullRange'],
+    practice=PR('ex3', '1–4', '5–16', 'Tiles, area boxes and grouping.', [('1–4', 'Tiles, area boxes and grouping')], 3))
+SPECS['u4l6'] = dict(
+    warm=dict(title='In Your Head', rule='No calculator, no paper.', strip=strip(sb('🧠', 150, 0, 42), sblink('💭', 205, 0, 34, 1.8, lo=.3)),
+              body=BIG(T('31^2')), nudge='You know 30 squared.',
+              reveal=f'<b>961.</b> {T(r"31^2=(30+1)^2=900+60+1")}. The 60 is {T(r"2\times30\times1")}, the part people forget.'),
+    replace=[(' Like the warm-up dolls: keep opening until every doll is solid.', ' Like nesting dolls: keep opening until every doll is solid.')],
+    extra_expl=['squareTiles', 'gapFill', 'decomp', 'disguiseExt'],
+    practice=PR('ex4', '1–5', '6–16', 'Perfect squares and trinomials in disguise.', [('1–5', 'Perfect squares and disguised trinomials')], 4))
+SPECS['u4l7'] = dict(
+    warm=dict(title='Which One Doesn’t Belong?', rule='Which one is the odd one out? Pick one and be ready to say <b>why</b>.', strip=DOTS4,
+              body=TILES(4, [('A', T('x^2-16')), ('B', T('x^2+16')), ('C', T('2x^2-32')), ('D', T('x^2-8x+16'))]),
+              reveal=f'<b>Any of them can be right.</b> A is the only one that is a difference of squares straight away. B is the only one that can’t be factored. C is the only one with a number in front of {T("x^2")}. D is the only one with three terms.'),
+    replace=[('<p class="small muted">(b) is warm-up traveller D without its common factor: Lane 3, then Lane 2 twice.</p>', '<p class="small muted" data-extra>(b) is traveller D from “Factoring Airport” without its common factor: Lane 3, then Lane 2 twice.</p>')],
+    extra_cards=['s2c'], extra_expl=['expand'],
+    practice=PR('ex3', '1–4', '5–9', 'Choose a strategy, then factor completely.', [('1–4', 'Choosing and using a strategy')], 3))
+SPECS['u4l8'] = dict(
+    warm=dict(title='Two Truths and a Lie', rule='Two of these are true. One is a lie. Which one?', strip=LIE,
+              body=TILES(3, [('A', T('x^2-9=(x-3)(x+3)')), ('B', T('x^2+9=(x+3)^2')), ('C', T('x^2+6x+9=(x+3)^2'))], 27),
+              nudge='How could you prove it?',
+              reveal=f'<b>B is the lie.</b> Expand it: {T("(x+3)^2=x^2+6x+9")}, not {T("x^2+9")}. A sum of squares doesn’t factor.'),
+    extra_cards=['tiles', 'box', 'bvals'])

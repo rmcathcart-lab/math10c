@@ -17,12 +17,23 @@
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
 <link rel="stylesheet" href="../../css/lessons/u4l5.css">
+<link rel="stylesheet" href="../../css/views.css">
 <script src="../../../assets/katex/katex.min.js"></script>
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
 <main class="lesson screen">
+
+<!-- ================= warm-up: one clear question, first thing on the screen ================= -->
+<section class="card warm wf" data-ink="warmq" data-section="Warm-up: Who Are We?">
+  <div class="vw-strip"><svg viewBox="0 0 340 60" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0s" repeatCount="indefinite"/><text x="130" y="46" font-size="36" text-anchor="middle">❓</text></g><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><text x="190" y="46" font-size="36" text-anchor="middle">❓</text></g><text x="250" y="46" font-size="34" text-anchor="middle">🤝<animate attributeName="opacity" values="1;0.4;1" dur="2.2s" begin="0s" repeatCount="indefinite"/></text></svg></div>
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Who Are We?</h2>
+  <p class="wf-rule vw-rule">A riddle from two whole numbers.</p></div>
+  <div class="vw-q">“We <b>multiply to 36</b> and <b>add to 13</b>.”<small>Who are we?</small></div>
+  <div class="bk-wq vw-rev"><div class="q-line"><div class="q-num">?</div><div>How did you find them?</div><button class="pill small" type="button" data-bk-toggle>Reveal</button></div>
+    <div class="bk-ans"><b>4 and 9.</b> <span class="tex">4\times9=36</span> and <span class="tex">4+9=13</span>. Listing the pairs that multiply to 36 finds them fast: 1 and 36, 2 and 18, 3 and 12, 4 and 9.</div></div>
+</section>
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,57 +54,7 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Area Box Mystery" style="--wf-side: 290px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Area Box Mystery</h2>
-  <p class="wf-rule">Each rectangle is cut into <b>4 boxes</b>. Area of a box = (its width) × (its height). <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u4l5-wboxes">
-    <div class="u4l5-wb"><div class="u4l5-wbt">Box A</div><div class="u4l5-wfig" id="wbA"></div><div class="u4l5-wtot">total = <button class="u4l5-qm" type="button" data-a="6x^2+11x+3">?</button></div></div>
-    <div class="u4l5-wb"><div class="u4l5-wbt">Box B</div><div class="u4l5-wfig" id="wbB"></div><div class="u4l5-wtot">total = <span class="tex">4x^2+13x+3</span></div></div>
-    <div class="u4l5-wb"><div class="u4l5-wbt">Box C</div><div class="u4l5-wfig" id="wbC"></div><div class="u4l5-wtot">total = <span class="tex">6x^2+13x+6</span></div></div>
-  </div>
-
-  <div class="u4l5-wqs">
-    <div class="u4l5-wq">
-      <div class="q-line"><div class="q-num">1</div><div><b>Box A:</b> fill in the four areas.</div></div>
-      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="A">Answer</button><div class="u4l5-qa"><span class="tex">6x^2,\ 2x,\ 9x,\ 3</span>. Total <span class="tex">6x^2+11x+3=(2x+3)(3x+1)</span>.</div></div>
-    </div>
-    <div class="u4l5-wq">
-      <div class="q-line"><div class="q-num">2</div><div><b>Box B:</b> find the side lengths.</div></div>
-      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="B">Answer</button><div class="u4l5-qa">Top <span class="tex">x</span> and <span class="tex">+3</span>, side <span class="tex">4x</span> and <span class="tex">+1</span>: <span class="tex">4x^2+13x+3=(4x+1)(x+3)</span>. <span class="muted">(Sides <span class="tex">2x</span> and <span class="tex">2x</span> would need a half.)</span></div></div>
-    </div>
-    <div class="u4l5-wq">
-      <div class="q-line"><div class="q-num">3</div><div><b>Box A:</b> multiply along each <b>diagonal</b>. What do you notice?</div></div>
-      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="D">Answer</button><div class="u4l5-qa">Both give <span class="tex">18x^2</span>: <span class="tex">6x^2\cdot3</span> and <span class="tex">2x\cdot9x</span>. Always true: each diagonal uses all <b>four</b> side lengths once.</div></div>
-    </div>
-    <div class="u4l5-wq">
-      <div class="q-line"><div class="q-num">4</div><div><b>Box C:</b> the two blanks add up to <span class="tex">13x</span>. What are they?</div></div>
-      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="C">Answer</button><div class="u4l5-qa">They multiply to <span class="tex">6x^2\cdot6=36x^2</span> and add to <span class="tex">13x</span>: <b><span class="tex">4x</span> and <span class="tex">9x</span></b>. Sides <span class="tex">(2x+3)</span> and <span class="tex">(3x+2)</span>.</div></div>
-    </div>
-  </div>
-
-  </div><div class="wf-side">
-
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div class="u4l5-bigq"><div><b>The big one.</b> Four boxes, all with corners <span class="tex">6x^2</span> and <span class="tex">3</span>. The two blanks must add to… <b>One</b> of these can’t be done with whole numbers. <b>Guess first:</b> which?</div>
-      <div class="u4l5-mini"><div><span class="tex">6x^2</span></div><div class="m">?</div><div class="m">?</div><div><span class="tex">3</span></div></div></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> <span class="tex">19x</span></div>
-      <div class="opt"><b>B</b> <span class="tex">11x</span></div>
-      <div class="opt right"><b>C</b> <span class="tex">10x</span></div>
-      <div class="opt"><b>D</b> <span class="tex">9x</span></div>
-    </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C, <span class="tex">10x</span>, is impossible.</b> The blanks must multiply to <span class="tex">6x^2\cdot3=18x^2</span> (Question 3!). The pairs for 18 are <span class="tex">1\cdot18,\ 2\cdot9,\ 3\cdot6</span>, with sums 19, 11 and 9. No pair adds to 10. <span class="muted">Each table: test one option below.</span></div>
-  </div>
-  </div></div>
-
-  <div class="u4l5-test no-ink">
-      <div><b>Test an option:</b> <button class="pill small" type="button" data-t="19">A <span class="tex">19x</span></button> <button class="pill small" type="button" data-t="11">B <span class="tex">11x</span></button> <button class="pill small" type="button" data-t="10">C <span class="tex">10x</span></button> <button class="pill small" type="button" data-t="9">D <span class="tex">9x</span></button></div>
-      <div class="u4l5-tout" aria-live="polite"></div>
-    </div>
-</section>
 
 <!-- ================= 1. Expanding backwards ================= -->
 <section class="card" data-ink="s1" data-section="1. Multiplying Binomials, Backwards">
@@ -152,7 +113,7 @@
 <!-- ================= 4. The area (box) model ================= -->
 <section class="card" data-ink="s4" data-section="4. The Area (Box) Model">
   <div class="sec-h"><span class="badge">4</span><h2>The Area (Box) Model</h2></div>
-  <p>Tiles become tedious when <span class="tex">a</span>, <span class="tex">b</span> and <span class="tex">c</span> are large, and they need negative tiles when <span class="tex">b</span> or <span class="tex">c</span> is negative. An <b>area box</b> works in every case. It’s the warm-up’s rectangle, without drawing it to scale.</p>
+  <p>Tiles become tedious when <span class="tex">a</span>, <span class="tex">b</span> and <span class="tex">c</span> are large, and they need negative tiles when <span class="tex">b</span> or <span class="tex">c</span> is negative. An <b>area box</b> works in every case.<span data-extra> It’s the rectangle from “The Area Box Mystery”, without drawing it to scale.</span></p>
   <div class="def">Draw a <span class="tex">2\times2</span> grid. Put <span class="tex">ax^2</span> in the <b>top-left</b> cell and <span class="tex">c</span> in the <b>bottom-right</b> cell. The other two cells hold the middle term <span class="tex">bx</span>, split into two pieces whose <b>product is <span class="tex">ac\cdot x^2</span></b> and whose <b>sum is <span class="tex">bx</span></b>. Then take the common factor of each <b>row</b> and each <b>column</b>: those are the factors.</div>
   <div class="explainer" data-explainer="areaBox"></div>
   <p class="small muted">Each row of the box is one group in factoring by grouping: <span class="tex">6x^2-4x+3x-2=2x(3x-2)+1(3x-2)</span>.</p>
@@ -170,13 +131,22 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= practice break (one per lesson at most) ================= -->
+<section class="card practice" data-ink="p1" data-section="Practice: Questions 1–4">
+  <div class="pr-k">Your turn</div>
+  <h2>Assignment 5 · Questions 1–4</h2>
+  <p class="pr-t">Tiles, area boxes and grouping.</p>
+  <div class="pr-chips n1"><span><b>1–4</b>Tiles, area boxes and grouping</span></div>
+  <div class="pr-foot"><span>We carry on when most of the class has reached Question 3.</span><a class="pill" href="../../../#/lesson/u4l5">Open the Practice site</a></div>
+</section>
+
 <!-- ================= 5. Decomposition ================= -->
 <section class="card" data-ink="s5" data-section="5. Why the Pair Multiplies to ac">
   <div class="sec-h"><span class="badge">5</span><h2>The Method of Decomposition, and Why the Pair Multiplies to <span class="tex">ac</span></h2></div>
   <p><b>Why <span class="tex">ac</span>?</b> Expand two general binomials <b>without</b> collecting the middle terms:</p>
   <p class="display"><span class="tex">(px+q)(rx+s)=\underbrace{pr}_{a}\,x^2+\underbrace{ps\,x+qr\,x}_{\text{the two middle pieces}}+\underbrace{qs}_{c}</span></p>
   <p>The two middle coefficients <b>add</b> to <span class="tex">b=ps+qr</span>, and they <b>multiply</b> to <span class="tex">(ps)(qr)=(pr)(qs)=ac</span>. So the middle term of every factorable <span class="tex">ax^2+bx+c</span> splits into two pieces whose product is <span class="tex">ac</span> and whose sum is <span class="tex">b</span>. (When <span class="tex">a=1</span> this is exactly the Lesson 3 rule: the product is <span class="tex">1\cdot c=c</span>.)</p>
-  <div class="explainer" data-explainer="whyAC"></div>
+  <div data-extra><div class="explainer" data-explainer="whyAC"></div></div>
 </section>
 
 <section class="card" data-ink="s5b" data-section="5. The Method of Decomposition">
@@ -198,7 +168,7 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(a) <span class="tex">3x^2+8x+4</span></div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a=3,\ b=8,\ c=4</span>, so <span class="tex">ac=3(4)=12</span>. Pair with product 12 and sum 8: <span class="tex">2</span> and <span class="tex">6</span>.<br><span class="tex">3x^2+8x+4=3x^2+2x+6x+4</span><br><span class="tex">=x(3x+2)+2(3x+2)</span><br><span class="tex">=\boldsymbol{(3x+2)(x+2)}</span><br>This matches the rectangle in Example 1 ✓</div></div></div>
     <div class="part"><div class="pl">(b) <span class="tex">4x^2+13x+3</span></div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a=4,\ b=13,\ c=3</span>, so <span class="tex">ac=4(3)=12</span>. Pair with product 12 and sum 13: <span class="tex">1</span> and <span class="tex">12</span>.<br><span class="tex">4x^2+13x+3=4x^2+x+12x+3</span><br><span class="tex">=x(4x+1)+3(4x+1)</span><br><span class="tex">=\boldsymbol{(4x+1)(x+3)}</span><br>This matches the rectangle in Example 2 ✓</div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> In (a), <span class="tex">4+4</span> also adds to 8. Why can’t we split <span class="tex">8x</span> as <span class="tex">4x+4x</span>?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The pair must also <b>multiply to <span class="tex">ac=12</span></b>, and <span class="tex">4\times4=16</span>. Try it anyway: <span class="tex">3x^2+4x+4x+4=x(3x+4)+4(x+1)</span>. The brackets don’t match, so grouping gets stuck.</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> In (a), <span class="tex">4+4</span> also adds to 8. Why can’t we split <span class="tex">8x</span> as <span class="tex">4x+4x</span>?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The pair must also <b>multiply to <span class="tex">ac=12</span></b>, and <span class="tex">4\times4=16</span>. Try it anyway: <span class="tex">3x^2+4x+4x+4=x(3x+4)+4(x+1)</span>. The brackets don’t match, so grouping gets stuck.</div></div></div>
   </div>
   <div class="tip watch"><div class="tip-ic">!</div><div><b>Product <span class="tex">ac</span>, not <span class="tex">c</span>.</b> The Lesson 3 rule (product <span class="tex">c</span>) only works when <span class="tex">a=1</span>. For <span class="tex">3x^2+8x+4</span> a pair with product 4 and sum 8 doesn’t exist; a pair with product <span class="tex">ac=12</span> does.</div></div>
   <div class="space" id="ex4-space"></div>
@@ -249,7 +219,7 @@
   <div class="sec-h"><span class="badge">7</span><h2>Practice: Putting It All Together</h2></div>
   <p>Decomposition also handles a <b>negative leading term</b> (rearrange into descending order, then remove a negative common factor so the bracket starts with a positive term, as in Lesson 1), <b>perfect-square</b> trinomials, and two-variable trinomials <span class="tex">ax^2+bxy+cy^2</span>.</p>
   <div class="def"><b>Always look for a common factor first.</b> Removing it before decomposing leaves a much smaller <span class="tex">ac</span>: <span class="tex">10a^2+25a-15=5(2a^2+5a-3)</span>, and <span class="tex">6x^3+5x^2+x=x(6x^2+5x+1)</span> turns a cubic into a trinomial. A factorization is not finished until no bracket factors any further.</div>
-  <div class="explainer" data-explainer="fullRange"></div>
+  <div data-extra><div class="explainer" data-explainer="fullRange"></div></div>
   <div class="tip-row">
     <div class="tip watch"><div class="tip-ic">!</div><div><b>Not finished!</b> <span class="tex">6x^2+14x+4=(2x+4)(3x+1)</span> is true, but <span class="tex">2x+4=2(x+2)</span>. Fully factored: <span class="tex">2(x+2)(3x+1)</span>. Take the GCF out first and this can’t happen.</div></div>
     <div class="tip watch"><div class="tip-ic">!</div><div><b>Taking out <span class="tex">-1</span> flips every sign.</b> <span class="tex">-6x^2+x+2=-(6x^2-x-2)</span>, not <span class="tex">-(6x^2+x+2)</span>.</div></div>
@@ -267,10 +237,62 @@
   <div class="parts c2">
     <div class="part"><div class="pl">(d) <span class="tex">20-3y-2y^2</span></div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Descending order: <span class="tex">-2y^2-3y+20=-(2y^2+3y-20)</span>.<br><span class="tex">ac=2(-20)=-40</span>; pair: <span class="tex">8</span> and <span class="tex">-5</span>.<br><span class="tex">2y^2+8y-5y-20=2y(y+4)-5(y+4)=(y+4)(2y-5)</span><br>So <span class="tex">20-3y-2y^2=\boldsymbol{-(y+4)(2y-5)}</span>, or equivalently <span class="tex">\boldsymbol{(y+4)(5-2y)}</span>.<br>Check: <span class="tex">(y+4)(5-2y)=5y-2y^2+20-8y=-2y^2-3y+20</span> ✓</div></div></div>
     <div class="part"><div class="pl">(e) <span class="tex">3x^2-7xy+2y^2</span></div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two variables, same method: the split pieces carry an <span class="tex">xy</span>.<br><span class="tex">ac=3(2)=6</span>; pair: <span class="tex">-1</span> and <span class="tex">-6</span>.<br><span class="tex">3x^2-xy-6xy+2y^2</span><br><span class="tex">=x(3x-y)-2y(3x-y)</span><br><span class="tex">=\boldsymbol{(3x-y)(x-2y)}</span><br>Check: <span class="tex">3x^2-6xy-xy+2y^2=3x^2-7xy+2y^2</span> ✓</div></div></div>
-    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> In (c) the pair was <span class="tex">-6</span> and <span class="tex">-6</span>. What does a <b>repeated</b> pair tell you about the trinomial? What does its area box look like?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The two factors are the same, so the trinomial is a <b>perfect square</b>: <span class="tex">(3x-2)^2</span>. Its area box is a <b>square</b>: the rows and the columns have the same labels (<span class="tex">3x</span>, <span class="tex">-2</span>), and the two middle cells are equal. More in Lesson 6.</div></div></div>
+    <div data-extra class="part think span2"><div class="pl"><span class="think-tag">Think</span> In (c) the pair was <span class="tex">-6</span> and <span class="tex">-6</span>. What does a <b>repeated</b> pair tell you about the trinomial? What does its area box look like?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The two factors are the same, so the trinomial is a <b>perfect square</b>: <span class="tex">(3x-2)^2</span>. Its area box is a <b>square</b>: the rows and the columns have the same labels (<span class="tex">3x</span>, <span class="tex">-2</span>), and the two middle cells are equal. More in Lesson 6.</div></div></div>
   </div>
   <div class="space" id="ex6-space"></div>
   <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section data-extra class="card warm wf" data-ink="warm" data-section="Extra: The Area Box Mystery" style="--wf-side: 290px">
+  <div class="wf-head"><span class="badge warm-b">Extra</span><h2>The Area Box Mystery</h2>
+  <p class="wf-rule">Each rectangle is cut into <b>4 boxes</b>. Area of a box = (its width) × (its height). <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+
+  <div class="u4l5-wboxes">
+    <div class="u4l5-wb"><div class="u4l5-wbt">Box A</div><div class="u4l5-wfig" id="wbA"></div><div class="u4l5-wtot">total = <button class="u4l5-qm" type="button" data-a="6x^2+11x+3">?</button></div></div>
+    <div class="u4l5-wb"><div class="u4l5-wbt">Box B</div><div class="u4l5-wfig" id="wbB"></div><div class="u4l5-wtot">total = <span class="tex">4x^2+13x+3</span></div></div>
+    <div class="u4l5-wb"><div class="u4l5-wbt">Box C</div><div class="u4l5-wfig" id="wbC"></div><div class="u4l5-wtot">total = <span class="tex">6x^2+13x+6</span></div></div>
+  </div>
+
+  <div class="u4l5-wqs">
+    <div class="u4l5-wq">
+      <div class="q-line"><div class="q-num">1</div><div><b>Box A:</b> fill in the four areas.</div></div>
+      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="A">Answer</button><div class="u4l5-qa"><span class="tex">6x^2,\ 2x,\ 9x,\ 3</span>. Total <span class="tex">6x^2+11x+3=(2x+3)(3x+1)</span>.</div></div>
+    </div>
+    <div class="u4l5-wq">
+      <div class="q-line"><div class="q-num">2</div><div><b>Box B:</b> find the side lengths.</div></div>
+      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="B">Answer</button><div class="u4l5-qa">Top <span class="tex">x</span> and <span class="tex">+3</span>, side <span class="tex">4x</span> and <span class="tex">+1</span>: <span class="tex">4x^2+13x+3=(4x+1)(x+3)</span>. <span class="muted">(Sides <span class="tex">2x</span> and <span class="tex">2x</span> would need a half.)</span></div></div>
+    </div>
+    <div class="u4l5-wq">
+      <div class="q-line"><div class="q-num">3</div><div><b>Box A:</b> multiply along each <b>diagonal</b>. What do you notice?</div></div>
+      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="D">Answer</button><div class="u4l5-qa">Both give <span class="tex">18x^2</span>: <span class="tex">6x^2\cdot3</span> and <span class="tex">2x\cdot9x</span>. Always true: each diagonal uses all <b>four</b> side lengths once.</div></div>
+    </div>
+    <div class="u4l5-wq">
+      <div class="q-line"><div class="q-num">4</div><div><b>Box C:</b> the two blanks add up to <span class="tex">13x</span>. What are they?</div></div>
+      <div class="u4l5-wqa"><button class="pill small" type="button" data-wq="C">Answer</button><div class="u4l5-qa">They multiply to <span class="tex">6x^2\cdot6=36x^2</span> and add to <span class="tex">13x</span>: <b><span class="tex">4x</span> and <span class="tex">9x</span></b>. Sides <span class="tex">(2x+3)</span> and <span class="tex">(3x+2)</span>.</div></div>
+    </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div class="u4l5-bigq"><div><b>The big one.</b> Four boxes, all with corners <span class="tex">6x^2</span> and <span class="tex">3</span>. The two blanks must add to… <b>One</b> of these can’t be done with whole numbers. <b>Guess first:</b> which?</div>
+      <div class="u4l5-mini"><div><span class="tex">6x^2</span></div><div class="m">?</div><div class="m">?</div><div><span class="tex">3</span></div></div></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> <span class="tex">19x</span></div>
+      <div class="opt"><b>B</b> <span class="tex">11x</span></div>
+      <div class="opt right"><b>C</b> <span class="tex">10x</span></div>
+      <div class="opt"><b>D</b> <span class="tex">9x</span></div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C, <span class="tex">10x</span>, is impossible.</b> The blanks must multiply to <span class="tex">6x^2\cdot3=18x^2</span> (Question 3!). The pairs for 18 are <span class="tex">1\cdot18,\ 2\cdot9,\ 3\cdot6</span>, with sums 19, 11 and 9. No pair adds to 10. <span class="muted">Each table: test one option below.</span></div>
+  </div>
+  </div></div>
+
+  <div class="u4l5-test no-ink">
+      <div><b>Test an option:</b> <button class="pill small" type="button" data-t="19">A <span class="tex">19x</span></button> <button class="pill small" type="button" data-t="11">B <span class="tex">11x</span></button> <button class="pill small" type="button" data-t="10">C <span class="tex">10x</span></button> <button class="pill small" type="button" data-t="9">D <span class="tex">9x</span></button></div>
+      <div class="u4l5-tout" aria-live="polite"></div>
+    </div>
 </section>
 
 <!-- ================= summary ================= -->
@@ -283,7 +305,7 @@
     <div><b>Every time:</b> descending order, GCF (or <span class="tex">-1</span>) out first, list pairs up to <span class="tex">\sqrt{|ac|}</span> when <span class="tex">ac</span> is large, and <b>check by expanding</b>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u4l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — Factoring <span class="tex">ax^2+bx+c</span> (where <span class="tex">a\neq1</span>)</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 5 · Questions 5–16</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l6/">
     <div><div class="kicker">Next lesson</div><b>Lesson 6 — Further Factoring</b><div class="muted">Perfect square trinomials, trinomials in disguise, and extended differences of squares</div></div><span class="arrow">→</span>
@@ -296,7 +318,9 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u4l5.js';
+  import { views } from '../../js/views.js';
   boot({ key: 'u4l5', homeHref: '../../', title: '4.5 Factoring ax² + bx + c (a ≠ 1)' });
+  views();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>
