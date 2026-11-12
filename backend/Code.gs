@@ -132,6 +132,7 @@ function doGet(e) {
     if (a === 'setpin') return json_(setPin_(p['class'], p.name, p.pin, p.device), cb);
     if (a === 'signin') return json_(signIn_(p['class'], p.name, p.pin, p.device), cb);
     if (a === 'progress') return json_(progress_(p['class'], p.name, p.token), cb);
+    if (a === 'mystats') return json_(myStats_(p), cb);
     if (a === 'tcheck') return json_(tcheck_(p), cb);
     if (a === 'myresults') return json_(myResults_(p), cb);
     if (a === 'myretests') return json_(myRetests_(p), cb);
@@ -226,11 +227,51 @@ function signIn_(klass, name, pin, device) {
   return { ok: true, token: token_(klass, st.v[1], st.v[2]), name: st.v[1] };
 }
 function authed_(klass, name, token) { var st = findStudent_(klass, name); if (!st || !st.v[2]) return null; return token_(klass, st.v[1], st.v[2]) === token ? st : null; }
+/* A student's rows of a sheet whose first column is "class|name|…": reads the key column, then only the matching rows
+ * (in runs of neighbouring rows). Reading the whole Progress sheet (every student's saved state) got slow enough with a
+ * full class that a new device's progress download timed out (2026-11-12). */
+function rowsFor_(name, prefix) {
+  var sh = sheet_(name), n = sh.getLastRow() - 1, w = COLS[name].length, out = [];
+  if (n <= 0) return out;
+  var keys = sh.getRange(2, 1, n, 1).getValues(), i = 0;
+  while (i < n) {
+    if (String(keys[i][0]).indexOf(prefix) !== 0) { i++; continue; }
+    var j = i; while (j + 1 < n && String(keys[j + 1][0]).indexOf(prefix) === 0) j++;
+    sh.getRange(i + 2, 1, j - i + 1, w).getValues().forEach(function (r, k) { out.push({ row: i + 2 + k, v: r }); });
+    i = j + 1;
+  }
+  return out;
+}
 function progress_(klass, name, token) {
   if (!authed_(klass, name, token)) return { ok: false, error: 'badtoken' };
   var out = {}, k = norm_(klass) + '|' + norm_(name) + '|';
-  rows_('Progress').forEach(function (r) { if (String(r[0]).indexOf(k) === 0) { try { out[r[3]] = JSON.parse(r[11] || '{}'); } catch (e) {} } });
+  rowsFor_('Progress', k).forEach(function (x) { var r = x.v; try { out[r[3]] = mergeState_(out[r[3]], JSON.parse(r[11] || '{}')); } catch (e) {} });
   return { ok: true, lessons: out, times: { block: blockFor_(klass), noSchool: noSchool_() } };
+}
+/* Two copies of a lesson's saved state (one device's and another's, or the sheet's and a check-in's): per question keep the
+ * further-along record — the same rule as the student page's merge(), so work done on one device is never lost by
+ * another device saving a shorter copy. */
+function rankItem_(r) { return r ? ({ 'new': 0, open: 1, shown: 2, done: 3 }[r.s] || 0) * 1e6 + (Number(r.wrong) || 0) + (Number(r.v) || 0) * 10 : -1; }
+function mergeState_(a, b) {
+  if (!a || typeof a !== 'object') return b || {};
+  if (!b || typeof b !== 'object') return a;
+  var out = JSON.parse(JSON.stringify(b)); out.items = out.items || {}; out.qv = out.qv || {};
+  Object.keys(a.items || {}).forEach(function (id) { if (rankItem_(a.items[id]) > rankItem_(out.items[id])) out.items[id] = a.items[id]; });
+  Object.keys(a.qv || {}).forEach(function (q) { if ((Number(a.qv[q]) || 0) > (Number(out.qv[q]) || 0)) out.qv[q] = a.qv[q]; });
+  if ((Number(a.secs) || 0) > (Number(out.secs) || 0)) out.secs = a.secs;
+  if ((Number(a.updated) || 0) > (Number(out.updated) || 0)) out.updated = a.updated;
+  if (!out.cur && a.cur) out.cur = a.cur;
+  return out;
+}
+/* My stats (the student's name button): their practice days from the Days sheet (time, answers, right, first try). */
+function myStats_(p) {
+  if (!authed_(p['class'], p.name, p.token)) return { ok: false, error: 'badtoken' };
+  var k = norm_(p['class']) + '|' + norm_(p.name) + '|', days = [];
+  rowsFor_('Days', k).forEach(function (x) {
+    var r = x.v, d = r[1]; if (d instanceof Date) d = day_(d.getTime());
+    days.push([String(d).slice(0, 10), String(r[4]), Number(r[5]) || 0, Number(r[7]) || 0, Number(r[8]) || 0, Number(r[9]) || 0]);
+  });
+  return { ok: true, days: days, today: day_(Date.now()) }; // [date, lesson, secs, answers, right, firstTry]
 }
 
 /* ---------------- writes from the student site ---------------- */
@@ -319,9 +360,18 @@ function upsertProgress_(klass, name, prog, now) {
   var sh = sheet_('Progress'), last = sh.getLastRow(), keys = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues() : [], idx = {};
   keys.forEach(function (k, i) { idx[k[0]] = i + 2; });
   Object.keys(prog).slice(0, 20).forEach(function (lesson) {
-    var p = prog[lesson] || {}, s = p.summary || {}, key = norm_(klass) + '|' + norm_(name) + '|' + lesson;
-    var state = JSON.stringify(p.state || {}); if (state.length > 45000) state = state.slice(0, 45000);
-    var row = [key, klass, name, clean_(lesson, 20), Number(s.reqDone) || 0, Number(s.req) || 0, Number(s.reqFirst) || 0, Number(s.extraDone) || 0, Number(s.extra) || 0, Number(s.secs) || 0, new Date(now), state];
+    var p = prog[lesson] || {}, s = p.summary || {}, key = norm_(klass) + '|' + norm_(name) + '|' + lesson, st = p.state || {};
+    var cnt = [Number(s.reqDone) || 0, Number(s.req) || 0, Number(s.reqFirst) || 0, Number(s.extraDone) || 0, Number(s.extra) || 0, Number(s.secs) || 0];
+    if (idx[key]) { // merge with the saved copy, so a device that hasn't loaded the student's work can't shrink it (2026-11-12)
+      var old = sh.getRange(idx[key], 1, 1, 12).getValues()[0], os = null;
+      try { os = JSON.parse(old[11] || 'null'); } catch (e) { os = null; }
+      if (os) st = mergeState_(os, st);
+      [0, 2, 3, 5].forEach(function (c) { cnt[c] = Math.max(cnt[c], Number(old[4 + c]) || 0); });
+    }
+    var state = JSON.stringify(st);
+    if (state.length > 45000) { (function () { var t = JSON.parse(state); Object.keys(t.items || {}).forEach(function (id) { var r = t.items[id]; delete r.at; delete r.forms; delete r.steps; delete r.reveals; }); state = JSON.stringify(t); })(); }
+    if (state.length > 49000) return; // too big for one cell: keep the saved copy rather than store broken JSON
+    var row = [key, klass, name, clean_(lesson, 20), cnt[0], cnt[1], cnt[2], cnt[3], cnt[4], cnt[5], new Date(now), state];
     if (idx[key]) sh.getRange(idx[key], 1, 1, row.length).setValues([row]);
     else { sh.appendRow(row); idx[key] = sh.getLastRow(); }
   });

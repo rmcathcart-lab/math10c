@@ -37,7 +37,7 @@
     });
     return s;
   }
-  function pushProgress(lid) { var lesson = HW.lessons[lid]; if (!lesson || !L.enabled) return; L.setProgress(lid, summary(lesson), LS(lid)); }
+  function pushProgress(lid) { var lesson = HW.lessons[lid]; if (!lesson || !L.enabled) return; if (RS.state !== 'ok') { RS.pend[lid] = 1; return; } L.setProgress(lid, summary(lesson), LS(lid)); }
   function bar(lesson, big) {
     var s = summary(lesson), w = el('div', 'pbar' + (big ? ' big' : ''));
     var req = el('div', 'pb-track pb-req'); req.style.flexGrow = s.req;
@@ -67,31 +67,66 @@
       }
       right.appendChild(calcB);
       if (L.enabled) { var dot = el('span', 'sync-dot' + (L.ok === false ? ' bad' : L.ok ? ' good' : ''), ''); dot.title = L.ok === false ? 'Can’t reach your teacher’s ledger right now — your work is saved on this device and will be sent later.' : 'Your work is being saved for your teacher.'; right.appendChild(dot); }
-      var who = el('button', 'btn btn-ghost who', esc(session.name) + (session.klass ? ' <span class="muted">· ' + esc(session.klass) + '</span>' : '')); who.type = 'button'; who.title = 'Sign out';
-      who.addEventListener('click', function () { if (confirm('Sign out of ' + session.name + '?')) signOut(); });
+      var who = el('button', 'btn btn-ghost who', esc(session.name) + (session.klass ? ' <span class="muted">· ' + esc(session.klass) + '</span>' : '')); who.type = 'button'; who.title = 'Your stats (and sign out)'; who.setAttribute('aria-label', 'Your stats: ' + session.name);
+      who.addEventListener('click', function () { location.hash = '#/me'; });
       right.appendChild(who);
     }
     top.appendChild(right);
   }
 
   /* ---------------- sign in ---------------- */
-  function signOut(msg) { L.flush(true); session = null; ls(SESSION, null); L.session = null; S = null; location.hash = '#/'; renderSignIn(msg); }
+  function signOut(msg) { L.flush(true); clearTimeout(RS.timer); RS = { state: 'off', tries: 0, timer: null, pend: {}, at: 0, fresh: false }; ME = null; session = null; ls(SESSION, null); L.session = null; S = null; location.hash = '#/'; renderSignIn(msg); }
   function startSession(sess) {
     session = sess; ls(SESSION, JSON.stringify(sess)); L.session = { klass: sess.klass, name: sess.name, token: sess.token, device: deviceId() };
     loadState(); L.start();
-    if (L.enabled) {
-      L.call('progress', { 'class': sess.klass, name: sess.name, token: sess.token }).then(function (d) {
-        if (d && d.ok === false && d.error === 'badtoken') { signOut('Your PIN was reset by your teacher. Sign in again.'); return; }
-        if (d && d.ok && d.lessons) { var changed = merge(d.lessons); if (changed) { saveState(); route(); } }
-        if (d && d.ok) {
-          var blk = (d.times && d.times.block) || '';
-          if (blk !== (session.block || '')) { session.block = blk; ls(SESSION, JSON.stringify(session)); if (cur.lesson) drawNav(); }
-          drawTop(top.dataset.crumb);
-        }
-      }).catch(function () {});
-    }
+    RS = { state: 'off', tries: 0, timer: null, pend: {}, at: 0, fresh: false }; ME = null;
+    if (L.enabled) loadRemote();
     route();
   }
+  /* ---------------- the student's saved work (2026-11-12) ----------------
+   * Work lives on the device and is mirrored to the ledger. A new device (or cleared site data) starts empty, so at sign-in
+   * the saved work is downloaded and merged. Until that has worked, this device doesn't send its own copy of a lesson (a
+   * shorter copy would replace the saved one); the lessons worked on in the meantime go right after the merge. A download
+   * that fails or times out is tried again (10 s, 30 s, 1 min, then every 2 min), and the home page says so. */
+  var RS = { state: 'off', tries: 0, timer: null, pend: {}, at: 0, fresh: false };
+  function loadRemote() {
+    if (!L.enabled || !session || !session.token) { RS.state = 'off'; return; }
+    if (RS.state === 'loading') return;
+    clearTimeout(RS.timer); RS.state = 'loading'; RS.tries++; restoreNote();
+    var sess = session;
+    L.call('progress', { 'class': sess.klass, name: sess.name, token: sess.token }, { timeout: 40000, tries: 2 }).then(function (d) {
+      if (session !== sess) return;
+      if (d && d.ok === false && d.error === 'badtoken') { signOut('Your PIN was reset by your teacher. Sign in again.'); return; }
+      if (!d || !d.ok) throw new Error('not ok');
+      var changed = d.lessons ? merge(d.lessons) : false;
+      RS.state = 'ok'; RS.at = Date.now(); RS.tries = 0;
+      if (changed) { saveState(); RS.fresh = true; }
+      var pend = Object.keys(RS.pend); RS.pend = {}; pend.forEach(pushProgress);
+      var blk = (d.times && d.times.block) || '';
+      if (blk !== (session.block || '')) { session.block = blk; ls(SESSION, JSON.stringify(session)); if (cur.lesson) drawNav(); }
+      drawTop(top.dataset.crumb); restoreNote();
+      if (!cur.lesson && /^#\/?me/.test(location.hash)) renderMe();
+      else if (changed) {
+        if (cur.lesson) drawNav();
+        else if (document.body.className === 'home') { var y = scrollY; renderHome(); scrollTo(0, y); }
+      }
+    }).catch(function () {
+      if (session !== sess) return;
+      RS.state = 'failed'; restoreNote();
+      var waits = [10000, 30000, 60000, 120000];
+      RS.timer = setTimeout(loadRemote, waits[Math.min(RS.tries - 1, waits.length - 1)]);
+    });
+  }
+  /* the little note on the home page and the stats page while the saved work hasn't loaded */
+  function restoreNote() {
+    var box = document.getElementById('restore-note'); if (!box) return;
+    box.className = 'notice restore-note' + (RS.state === 'failed' ? ' warn' : '');
+    if (!L.enabled || RS.state === 'ok' || RS.state === 'off') { box.className = 'hidden'; box.innerHTML = ''; return; }
+    if (RS.state === 'loading') { box.innerHTML = '<span class="rn-spin" aria-hidden="true"></span> Loading your saved work…'; return; }
+    box.innerHTML = '<b>Your saved work hasn’t loaded yet.</b> Trying again in a moment — anything you do here is kept on this device and added to it. ';
+    var b = el('button', 'btn btn-small', 'Try now'); b.type = 'button'; b.addEventListener('click', function () { loadRemote(); }); box.appendChild(b);
+  }
+  function restoreBox() { var b = el('div', 'hidden'); b.id = 'restore-note'; b.setAttribute('role', 'status'); setTimeout(restoreNote, 0); return b; }
   /* server copy vs this device: per item keep the further-along record */
   function rank(r) { return r ? ({ 'new': 0, open: 1, shown: 2, done: 3 }[r.s] || 0) * 1e6 + (r.wrong || 0) + (r.v || 0) * 10 : -1; }
   function merge(remote) {
@@ -200,6 +235,7 @@
     if (h[0] === 'lesson' && HW.lessons[h[1]] && !HW.lessons[h[1]].test) return openLesson(HW.lessons[h[1]], h[2]); // unit tests are only written in test mode
     if (h[0] === 'results' && HW.TestMode) { leaveLesson(); return HW.TestMode.renderResults(view, h[1]); }
     if (h[0] === 'calendar') { renderHome(); return openCalendar(); }
+    if (h[0] === 'me') return renderMe();
     if (h[0] === 'drills' && HW.Drills) {
       leaveLesson(); document.body.className = 'drills';
       var dd = h[1] && HW.Drills.list.filter(function (x) { return x.id === h[1]; })[0];
@@ -284,7 +320,7 @@
     hl.appendChild(el('p', 'hh-date', esc(new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }))));
     head.appendChild(hl);
     var acts = el('div', 'hh-cal'); acts.id = 'home-cal'; homeCalendar(acts); head.appendChild(acts); // the next test + the class calendar, on the right
-    view.appendChild(head);
+    view.appendChild(head); view.appendChild(restoreBox());
     loadCal(); loadRetests();
     var td = homeToday(); if (td) view.appendChild(td);
     if (HW.TestMode) HW.TestMode.home(view);
@@ -384,6 +420,167 @@
     foot.appendChild(lb); view.appendChild(foot);
     L.setStatus({ view: 'home' }, false);
   }
+  /* ---------------- your stats (the name button, 2026-11-12) ----------------
+   * Counts come from this device's copy of the student's work (merged with the ledger's at sign-in); the day-by-day part
+   * comes from the ledger (action "mystats": the Days sheet). Signing out lives here now. */
+  var ME = null; // { at, days: [[date, lesson, secs, answers, right, first], …], today } from the ledger
+  function noLevel(o) { return HW.NO_LEVEL ? !!HW.NO_LEVEL[o] : o === 'EXT'; }
+  function fmtDur(sec) {
+    sec = Math.round(sec || 0); if (sec < 60) return sec + ' s';
+    var m = Math.floor(sec / 60), h = Math.floor(m / 60);
+    if (h) return h + ' h ' + (m % 60) + ' min';
+    return m + ' min' + (m < 10 && sec % 60 ? ' ' + (sec % 60) + ' s' : '');
+  }
+  function short(sec) { sec = Math.round(sec || 0); return sec < 100 ? sec + ' s' : (sec / 60).toFixed(sec < 600 ? 1 : 0) + ' min'; }
+  function pct(a, b) { return b ? Math.round(100 * a / b) + '%' : '–'; }
+  function myNumbers() {
+    var T = { done: 0, req: 0, reqDone: 0, extraDone: 0, first: 0, hint: 0, shown: 0, wrong: 0, steps: 0, secsQ: 0, nQ: 0, secs: 0, lessons: 0, lessonsDone: 0, units: [], outcomes: {}, fastest: null };
+    HW.CATALOG.forEach(function (u) {
+      var U = { unit: u.unit, title: u.title, req: 0, reqDone: 0, done: 0, first: 0, secs: 0, secsQ: 0, nQ: 0, lessons: 0, lessonsDone: 0 };
+      u.lessons.forEach(function (c) {
+        var lesson = HW.lessons[c.id]; if (!lesson || lesson.test) return;
+        var l = S.lessons[c.id] || { items: {}, secs: 0 }, sm = summary(lesson);
+        U.lessons++; U.req += sm.req; U.reqDone += sm.reqDone; U.secs += l.secs || 0;
+        if (sm.req && sm.reqDone === sm.req) U.lessonsDone++;
+        lesson.items.forEach(function (it) {
+          var r = l.items[it.id]; if (!r) return;
+          T.wrong += r.wrong || 0; T.steps += r.steps || 0;
+          if (r.s !== 'done') return;
+          U.done++; if (it.extra) T.extraDone++;
+          if (r.credit === 'first') U.first++; else if (r.credit === 'shown') T.shown++; else T.hint++;
+          if (r.secs > 0) { U.secsQ += r.secs; U.nQ++; }
+          var o = it.outcome;
+          if (o && !noLevel(o)) { var O = T.outcomes[o] || (T.outcomes[o] = { done: 0, first: 0 }); O.done++; if (r.credit === 'first') O.first++; }
+        });
+      });
+      ['req', 'reqDone', 'done', 'first', 'secs', 'secsQ', 'nQ', 'lessons', 'lessonsDone'].forEach(function (k) { T[k] += U[k]; });
+      if (U.lessons) T.units.push(U);
+    });
+    return T;
+  }
+  /* day-by-day numbers from the ledger: minutes and questions per day, school-day streaks, the best day */
+  function dayNumbers(rows) {
+    var by = {};
+    rows.forEach(function (r) { var d = by[r[0]] || (by[r[0]] = { secs: 0, answers: 0, right: 0, first: 0 }); d.secs += r[2]; d.answers += r[3]; d.right += r[4]; d.first += r[5]; });
+    function active(d) { var x = by[d]; return !!x && (x.secs >= 60 || x.answers > 0); }
+    function iso(t) { var d = new Date(t); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+    function weekday(t) { var w = new Date(t).getDay(); return w > 0 && w < 6; }
+    var now = new Date(); now.setHours(12, 0, 0, 0); var DAY = 864e5, t = now.getTime();
+    // current streak: school days in a row with practice (today counts once there's practice; weekends are skipped)
+    var streak = 0, k = t; if (!active(iso(k))) k -= DAY;
+    for (var guard = 0; guard < 400; guard++, k -= DAY) { if (!weekday(k)) continue; if (active(iso(k))) streak++; else break; }
+    // best streak over every day on record
+    var dates = Object.keys(by).sort(), best = 0;
+    if (dates.length) {
+      var run = 0, start = new Date(dates[0] + 'T12:00:00').getTime();
+      for (k = start; k <= t; k += DAY) { if (!weekday(k)) continue; if (active(iso(k))) { run++; if (run > best) best = run; } else run = 0; }
+    }
+    var top = null; dates.forEach(function (d) { if (!top || by[d].right > by[top].right) top = d; });
+    var weekSecs = 0, mon = t - ((new Date(t).getDay() + 6) % 7) * DAY;
+    for (k = mon; k <= t; k += DAY) { var x = by[iso(k)]; if (x) weekSecs += x.secs; }
+    var last = []; for (k = t - 27 * DAY; k <= t; k += DAY) { var dd = iso(k); last.push({ d: dd, t: k, secs: by[dd] ? by[dd].secs : 0, right: by[dd] ? by[dd].right : 0 }); }
+    return { streak: streak, best: Math.max(best, streak), top: top && by[top].right ? { d: top, n: by[top].right } : null, weekSecs: weekSecs, last: last, days: dates.filter(active).length };
+  }
+  function loadMyStats(force) {
+    if (!L.enabled || !session || !session.token) return Promise.resolve(null);
+    if (ME && !force && Date.now() - ME.at < 120000) return Promise.resolve(ME);
+    var sess = session;
+    return L.get('mystats', { 'class': sess.klass, name: sess.name, token: sess.token }, 20000).then(function (d) {
+      if (session !== sess || !d || !d.ok || !d.days) return null; // an older ledger without "mystats": the day-by-day part is left out
+      ME = { at: Date.now(), days: d.days, today: d.today }; return ME;
+    }, function () { return null; });
+  }
+  function dayChart(D) {
+    var max = 0; D.last.forEach(function (x) { if (x.secs > max) max = x.secs; });
+    var topS = Math.max(max, 900), h = '<div class="me-chart" role="img" aria-label="Minutes of practice on each of the last 28 days">';
+    D.last.forEach(function (x, i) {
+      var wd = new Date(x.t).getDay(), today = i === D.last.length - 1, pc = x.secs ? Math.max(3, 100 * x.secs / topS) : 0;
+      var tip = new Date(x.t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) + ': ' + (x.secs ? fmtDur(x.secs) + (x.right ? ', ' + x.right + ' right' : '') : 'no practice');
+      h += '<div class="mc-col' + (today ? ' mc-today' : wd === 0 || wd === 6 ? ' mc-wk' : '') + '" title="' + esc(tip) + '"><i style="height:' + pc.toFixed(1) + '%"></i>' +
+        '<span>' + (today ? 'Today' : wd === 1 ? esc(new Date(x.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })) : '') + '</span></div>';
+    });
+    return h + '</div>';
+  }
+  function renderMe() {
+    leaveLesson(); document.body.className = 'me';
+    var cr = '<a href="#/">Home</a><span class="sep">/</span>Your stats'; drawTop(cr); top.dataset.crumb = cr;
+    view.innerHTML = ''; window.scrollTo(0, 0);
+    var T = myNumbers();
+    var head = el('div', 'me-head');
+    var ini = session.name.split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+    head.appendChild(el('div', 'me-av', esc(ini)));
+    head.appendChild(el('div', 'me-who', '<h1>' + esc(session.name) + '</h1><p class="muted">' + esc(session.label || session.klass || 'Practice on this device') + '</p>'));
+    var so = el('button', 'btn', 'Sign out'); so.type = 'button';
+    so.addEventListener('click', function () { if (confirm('Sign out of ' + session.name + '?')) signOut(); });
+    head.appendChild(so); view.appendChild(head);
+    view.appendChild(restoreBox());
+    if (L.enabled && RS.state === 'ok') {
+      var sync = el('div', 'me-sync', '<span class="me-ok" aria-hidden="true">✓</span> Your work is saved to your account, so it’s here on any device you sign in on. ');
+      var rl = el('button', 'btn btn-ghost btn-small', 'Reload my saved work'); rl.type = 'button';
+      rl.addEventListener('click', function () { rl.disabled = true; rl.textContent = 'Loading…'; RS.state = 'idle'; loadRemote(); });
+      sync.appendChild(rl); view.appendChild(sync);
+    }
+    var tiles = el('div', 'me-tiles');
+    function tile(big, label, sub, cls) { tiles.appendChild(el('div', 'me-tile' + (cls ? ' ' + cls : ''), '<div class="mt-big">' + big + '</div><div class="mt-label">' + label + '</div>' + (sub ? '<div class="mt-sub">' + sub + '</div>' : ''))); }
+    tile(T.done, 'questions done', (T.done - T.extraDone) + ' assigned · ' + T.extraDone + ' extra practice');
+    tile(pct(T.first, T.done), 'right on the first try', T.done ? T.first + ' of ' + T.done + ' questions' : 'none yet', 'acc');
+    tile(T.nQ ? short(T.secsQ / T.nQ) : '–', 'average time per question', 'from opening a question to getting it right');
+    tile(fmtDur(T.secs), 'practice time', '<span id="me-week"></span>');
+    tile(T.lessonsDone, T.lessonsDone === 1 ? 'assignment finished' : 'assignments finished', 'of ' + T.lessons + ' online so far');
+    var stk = el('div', 'me-tile hidden', ''); stk.id = 'me-streak'; tiles.appendChild(stk);
+    view.appendChild(tiles);
+    // how the questions got done
+    if (T.done) {
+      var how = el('section', 'me-card');
+      how.appendChild(el('h2', '', 'How you got there'));
+      var seg = function (n, c, l) { return n ? '<span class="mh-seg ' + c + '" style="flex-grow:' + n + '" title="' + l + ': ' + n + '"></span>' : ''; };
+      how.appendChild(el('div', 'mh-bar', seg(T.first, 'first', 'First try') + seg(T.hint, 'hint', 'After a wrong try or a hint') + seg(T.shown, 'shown', 'After seeing the answer')));
+      how.appendChild(el('div', 'mh-legend',
+        '<span><i class="first"></i>First try <b>' + T.first + '</b></span><span><i class="hint"></i>After a wrong try or a hint <b>' + T.hint + '</b></span><span><i class="shown"></i>After seeing the answer <b>' + T.shown + '</b></span>'));
+      how.appendChild(el('p', 'muted small', 'Answer checks that were right: <b>' + pct(T.done, T.done + T.wrong) + '</b> (' + T.done + ' right, ' + T.wrong + ' not yet) · Hint steps used: <b>' + T.steps + '</b>'));
+      view.appendChild(how);
+    }
+    // day by day (from the ledger)
+    var daysCard = el('section', 'me-card hidden'); daysCard.id = 'me-days'; view.appendChild(daysCard);
+    // by unit
+    if (T.units.length) {
+      var uc = el('section', 'me-card'); uc.appendChild(el('h2', '', 'By unit'));
+      var tb = '<div class="me-table" role="table"><div class="mtr mth" role="row"><span role="columnheader">Unit</span><span role="columnheader">Assigned questions</span><span role="columnheader">First try</span><span role="columnheader">Time per question</span><span role="columnheader">Time</span></div>';
+      T.units.forEach(function (U) {
+        var w = U.req ? 100 * U.reqDone / U.req : 0, st = HW.unitStyle ? ' style="' + HW.unitStyle(U.unit) + '"' : '';
+        tb += '<div class="mtr' + (U.done ? '' : ' zero') + '" role="row"' + st + '><span role="cell" class="mu"><b class="mu-n">' + U.unit + '</b> ' + esc(U.title) + '</span>' +
+          '<span role="cell" class="mu-bar"><i><b style="width:' + w.toFixed(1) + '%"></b></i><em>' + U.reqDone + ' / ' + U.req + '</em></span>' +
+          '<span role="cell"><span class="mu-l">First try </span>' + pct(U.first, U.done) + '</span><span role="cell"><span class="mu-l">Per question </span>' + (U.nQ ? short(U.secsQ / U.nQ) : '–') + '</span><span role="cell"><span class="mu-l">Time </span>' + (U.secs ? fmtDur(U.secs) : '–') + '</span></div>';
+      });
+      uc.appendChild(el('div', '', tb + '</div>')); view.appendChild(uc);
+    }
+    // by outcome
+    var os = Object.keys(T.outcomes).filter(function (o) { return T.outcomes[o].done >= 3; });
+    if (os.length) {
+      var oc = el('section', 'me-card'); oc.appendChild(el('h2', '', 'By outcome <span class="muted small">— right on the first try</span>'));
+      var ranked = os.slice().sort(function (a, b) { return T.outcomes[b].first / T.outcomes[b].done - T.outcomes[a].first / T.outcomes[a].done; });
+      var strong = ranked[0], weak = ranked.length > 1 && T.outcomes[ranked[ranked.length - 1]].done >= 5 ? ranked[ranked.length - 1] : null;
+      var rows = '';
+      os.forEach(function (o) {
+        var O = T.outcomes[o], w = 100 * O.first / O.done, txt = HW.OUTCOME_TEXT && HW.OUTCOME_TEXT[o] ? HW.OUTCOME_TEXT[o].text.replace(/<[^>]+>/g, '').replace(/:$/, '') : '';
+        rows += '<div class="mo"><span class="mo-c" data-outcome="' + esc(o) + '">' + esc(o) + '</span><span class="mo-t">' + esc(txt) + (o === strong ? ' <em class="mo-tag good">Your strongest</em>' : '') + (o === weak && weak !== strong ? ' <em class="mo-tag">Worth more practice</em>' : '') +
+          '</span><span class="mo-bar"><i><b style="width:' + w.toFixed(1) + '%"></b></i></span><span class="mo-p">' + Math.round(w) + '%<small> of ' + O.done + '</small></span></div>';
+      });
+      oc.appendChild(el('div', 'me-out', rows)); view.appendChild(oc);
+      oc.querySelectorAll('[data-outcome]').forEach(function (x) { if (HW.showOutcome) x.addEventListener('click', function () { HW.showOutcome(x.getAttribute('data-outcome'), x); }); });
+    }
+    if (!T.done) view.appendChild(el('p', 'muted me-empty', 'Your numbers will show up here as you do questions.'));
+    var foot = el('div', 'me-foot'); var back = el('a', 'btn', '← Back to home'); back.href = '#/'; foot.appendChild(back); view.appendChild(foot);
+    loadMyStats().then(function (M) {
+      if (!M || !daysCard.isConnected) return;
+      var D = dayNumbers(M.days);
+      var wk = document.getElementById('me-week'); if (wk) wk.textContent = fmtDur(D.weekSecs) + ' this week';
+      var sk = document.getElementById('me-streak');
+      if (sk) { sk.className = 'me-tile streak'; sk.innerHTML = '<div class="mt-big">' + D.streak + '</div><div class="mt-label">' + (D.streak === 1 ? 'school day in a row' : 'school days in a row') + '</div><div class="mt-sub">' + (D.best ? 'Best: ' + D.best + (D.best === 1 ? ' day' : ' days') : 'Practise today to start one') + '</div>'; }
+      daysCard.className = 'me-card'; daysCard.innerHTML = '<h2>The last four weeks</h2>' + dayChart(D) +
+        '<p class="muted small">Minutes of practice each day (the top of the chart is ' + fmtDur(Math.max(900, D.last.reduce(function (m, x) { return Math.max(m, x.secs); }, 0))) + ')' + (D.top ? ' · Your best day: <b>' + D.top.n + ' questions right</b> on ' + esc(new Date(D.top.d + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })) : '') + ' · Days you’ve practised: <b>' + D.days + '</b></p>';
+    });
+  }
   /* ---------------- outcome medals (js/medals.js) ----------------
    * One medal per outcome beside "Hi, …", at the student's best level: the higher of their practice level (the hardest
    * question right on the first try, as in "Your level") and their level on released tests and exit slips.
@@ -448,6 +645,7 @@
       // new or higher since last time on this device: show them big (the first time, just remember what there is)
       var seen = null; try { seen = JSON.parse(ls(key) || 'null'); } catch (e) { seen = null; }
       var now = {}; list.forEach(function (x) { now[x.o] = x.tier; });
+      if (RS.fresh) { RS.fresh = false; ls(key, JSON.stringify(now)); return; } // they came back with the saved work: not new
       var fresh = seen ? list.filter(function (x) { return x.tier > 0 && (seen[x.o] == null || x.tier > seen[x.o]); }) : [];   // Rust doesn't pop up
       if (!fresh.length) { ls(key, JSON.stringify(now)); return; }
       if (document.querySelector('#testmode, .medal-pop, #cal-pop')) return;   // not over a test or another pop-up; next time
