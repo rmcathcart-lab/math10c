@@ -1,6 +1,6 @@
 """Stand Up Break! (lessons/js/standup.js) on Lesson 4.3 against the mock ledger: new questions keep the old ones, levels,
-answers, timer, random groups from the class list (away students left out, sizes within 1), and the ledger setting that
-turns the card off for a class. Needs 8811 + tests/restart_mock.sh."""
+answers, timer, random groups from the class list (away students left out, sizes within 1), and the on/off for the
+lesson in the … menu (off by default, kept after a reload). Needs 8811 + tests/restart_mock.sh."""
 import asyncio, json, urllib.request
 from playwright.async_api import async_playwright
 BASE = 'http://localhost:8811/'; MOCK = 'http://localhost:8765/'
@@ -10,7 +10,6 @@ NAMES = ['Ava Brown', 'Ben Lee', 'Cara Diaz', 'Dev Patel', 'Eli Moore', 'Fay Che
 async def main():
     get('action=setroster&key=testkey&class=10c-b&label=Block%20B&mode=add&names=' + urllib.request.quote('\n'.join(NAMES)))
     get('action=setblock&key=testkey&class=10c-b&block=B')
-    get('action=setlopts&key=testkey&class=10c-b&standup=1')
     errs = []
     async with async_playwright() as p:
         b = await p.chromium.launch(); ctx = await b.new_context(viewport={'width': 1180, 'height': 820}, service_workers='block')
@@ -18,7 +17,14 @@ async def main():
         await ctx.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await ctx.add_init_script("localStorage.setItem('ink:teacher', JSON.stringify('x'))")  # signed in with the teacher key
         pg = await ctx.new_page(); pg.on('pageerror', lambda e: errs.append(str(e)))
-        await pg.goto(BASE + 'lessons/u4/l3/?class=B'); await pg.wait_for_selector('.su-cur .su-q')
+        await pg.goto(BASE + 'lessons/u4/l3/?class=B'); await pg.wait_for_selector('.su-cur .su-q', state='attached'); await pg.wait_for_timeout(800)
+        # off by default: hidden and not in Jump to; the … menu turns it on for this lesson
+        assert not await pg.is_visible('section.standup'), 'should start hidden'
+        await pg.click('[data-act=menu]'); toc = await pg.inner_text('.mp-toc'); assert 'Stand Up' not in toc, toc
+        await pg.click('.mp-su'); await pg.wait_for_timeout(300); assert await pg.is_visible('section.standup')
+        await pg.reload(); await pg.wait_for_selector('.su-cur .su-q'); await pg.wait_for_timeout(500); assert await pg.is_visible('section.standup'), 'kept on after reload'
+        await pg.click('[data-act=menu]'); assert 'Stand Up' in await pg.inner_text('.mp-toc'); assert await pg.is_checked('[data-t=standup]'); await pg.click('[data-act=menu]')
+        print('menu toggle on: ok')
         for lv in ['PRG', 'MAS']: await pg.click('.su-lv.su-lv-' + lv); await pg.click('.su-new')
         n = await pg.locator('.su-old').count(); levels = await pg.evaluate("[...document.querySelectorAll('.su-chip')].map(e=>e.textContent)")
         print('earlier kept:', n, levels); assert n == 2 and levels[0] == 'Mastery'
@@ -35,11 +41,10 @@ async def main():
         await pg.wait_for_timeout(900); await pg.screenshot(path='/tmp/su_groups.png'); await pg.click('.su-mx')
         # a student viewing the lesson: questions, no timer or groups
         v = await b.new_context(service_workers='block'); vp = await v.new_page(); await v.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
-        await vp.goto(BASE + 'lessons/u4/l3/?class=B'); await vp.wait_for_selector('.su-cur .su-q'); print('viewer tools:', await vp.locator('.su-btn').count()); assert await vp.locator('.su-btn').count() == 0
-        # off in the ledger: the card goes away
-        print(get('action=setlopts&key=testkey&class=10c-b&standup=0'))
-        await vp.reload(); await vp.wait_for_timeout(2500); print('card after off:', await vp.locator('section.standup').count()); assert await vp.locator('section.standup').count() == 0
-        get('action=setlopts&key=testkey&class=10c-b&standup=1')
+        await vp.goto(BASE + 'lessons/u4/l3/?class=B'); await vp.wait_for_selector('.su-cur .su-q', state='attached'); print('viewer tools:', await vp.locator('.su-btn').count()); assert await vp.locator('.su-btn').count() == 0
+        # turned off again from the menu
+        await pg.click('[data-act=menu]'); await pg.click('.mp-su'); await pg.wait_for_timeout(300); assert not await pg.is_visible('section.standup')
+        await pg.reload(); await pg.wait_for_timeout(1500); assert not await pg.is_visible('section.standup'); print('menu toggle off: ok')
         await b.close()
     print('errors', errs); assert not errs; print('PASS')
 asyncio.run(main())

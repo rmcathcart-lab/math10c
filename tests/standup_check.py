@@ -37,6 +37,7 @@ async def main():
         for lid in ids:
             pg = await ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
             await pg.goto(BASE + lid + '/'); await pg.wait_for_timeout(1800)
+            await pg.evaluate("import('/lessons/js/standup.js').then((m) => m.setStandup('', true))")  # off unless turned on (… menu)
             if not await pg.locator('section.standup .su-cur').count(): print(lid, 'NO CARD', errs[:2]); bad += 1; await pg.close(); continue
             r = await pg.evaluate(JS)
             line = []

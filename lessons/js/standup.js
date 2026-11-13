@@ -13,7 +13,8 @@
  *   - Timer: 2–10 minute presets, pause, +1 min, a chime at zero;
  *   - Groups: the class list (from the practice site's ledger, by the lesson's ?class=), tap anyone who's away, choose
  *     how many whiteboard stations, and get random groups shown big, one card per station; Reshuffle any time;
- *   - the Teacher Ledger can turn Stand Up Breaks off for a class (Settings → Lessons): the card is then left out.
+ *   - off by default: the card stays hidden until the teacher turns it on for that lesson in the lesson's "…" menu
+ *     (Ryan, 2026-11-12; it used to be an on/off per class in the Teacher Ledger). The choice is kept on that device.
  * Students who open the lesson link see the questions but not the timer or groups. */
 import { tex } from './tex.js';
 import { CONFIG } from './config.js';
@@ -65,10 +66,21 @@ function classInfo(block) { // { code, label, standup } for a block letter
   if (block === BLOCK) classP = p;
   return p;
 }
+/* ---------- on/off for one lesson, from the lesson's "…" menu (off unless turned on) ---------- */
+const onKey = (id) => 'su:on:' + id;
+export function standupId() { const c = document.querySelector('[data-standup]'); return c ? c.dataset.standup : ''; }
+export function standupOn(id) { return lsGet(onKey(id || standupId()), false) === true; }
+export function setStandup(id, on) {
+  id = id || standupId(); if (!id) return;
+  if (on) lsSet(onKey(id), true); else { try { localStorage.removeItem(onKey(id)); } catch (e) { /* private mode */ } }
+  const card = document.querySelector(`[data-standup="${id}"]`);
+  if (card) { card.classList.toggle('su-off', !on); card.hidden = !on; }
+}
 /* ======================================================================================== */
 export function standup(id, def) {
   (window.__standups = window.__standups || {})[id] = def; // for tests/standup_check.py
   const card = document.querySelector(`[data-standup="${id}"]`); if (!card) return;
+  { const on = standupOn(id); card.classList.toggle('su-off', !on); card.hidden = !on; }
   // a student looking at the teacher's shared notes (the same rule as share.js): the questions, but no timer or class list
   // (only a device signed in with the teacher key for the lesson notes gets the timer and groups; view only doesn't — Ryan, 2026-10-24)
   const viewer = !!String(lsGet('ink:api', null) || CONFIG.inkApi || '').trim() && !lsGet('ink:teacher', null);
@@ -250,6 +262,4 @@ export function standup(id, def) {
     return out;
   }
 
-  /* ---------------- the class's setting: Stand Up Breaks can be turned off in the Teacher Ledger ---------------- */
-  if (BLOCK) classInfo(BLOCK).then((c) => { if (c && c.standup === false) card.remove(); });
 }

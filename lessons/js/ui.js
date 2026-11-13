@@ -2,6 +2,7 @@
 import * as Ink from './ink.js';
 import { h } from './explain.js';
 import * as Share from './share.js';
+import { standupId, standupOn, setStandup } from './standup.js';
 import { renderTex } from './tex.js';
 import { wireBlocks, showAllAnswers } from './blocks.js';
 
@@ -173,13 +174,15 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     if (!show) { menu.classList.add('hidden'); return; }
     if (lessons) lessons.hide();
     const s = Ink.state(), shareMenu = Share.menuSection(sh);
-    const secs = [...document.querySelectorAll('[data-section]')];
+    const secs = [...document.querySelectorAll('[data-section]')].filter((el) => !el.classList.contains('su-off'));
+    const suId = sh.readonly ? '' : standupId(); // Stand Up Break!: off unless turned on here for this lesson
     menu.innerHTML = `${shareMenu.bottom ? '' : shareMenu.html}
       <div class="mp-h">Jump to</div>
       <div class="mp-toc">${tocHTML(tocModel(secs.map((el) => el.dataset.section)))}</div>
       <div class="mp-sep"></div>
       ${sh.readonly ? '' : `<label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
       <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>`}
+      ${suId ? `<label class="mp-item tog mp-su"><span><b>Stand Up Break!</b> in this lesson</span><input type="checkbox" data-t="standup" ${standupOn(suId) ? 'checked' : ''}><i></i></label>` : ''}
       <div class="mp-item mp-zoom"><span>Page size</span><span class="mp-zbtns"><button type="button" data-z="-1" aria-label="Smaller">−</button><b>${Math.round(getPageZoom() * 100)}%</b><button type="button" data-z="1" aria-label="Bigger">+</button></span></div>
       <button class="mp-item" data-m="answers">Show all answers</button>
       <button class="mp-item" data-m="hideanswers">Hide all answers</button>
@@ -199,6 +202,11 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     const tf = menu.querySelector('[data-t=finger]'), th = menu.querySelector('[data-t=hover]');
     if (tf) tf.onchange = (e) => Ink.setFinger(e.target.checked);
     if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
+    const tsu = menu.querySelector('[data-t=standup]');
+    if (tsu) tsu.onchange = (e) => {
+      const on = e.target.checked; setStandup(suId, on); toggleMenu(false);
+      Ink.toast(on ? 'Stand Up Break! is on for this lesson (it’s in Jump to)' : 'Stand Up Break! is off for this lesson');
+    };
 
     shareMenu.wire(menu, () => toggleMenu(false));
     menu.querySelectorAll('[data-z]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setPageZoom(getPageZoom() + 0.1 * Number(b.dataset.z)); menu.querySelector('.mp-zbtns b').textContent = Math.round(getPageZoom() * 100) + '%'; });

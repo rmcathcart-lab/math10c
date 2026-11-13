@@ -648,6 +648,7 @@ a.lp-row:hover { background: #f4f2ec; }
 /* ================= Stand Up Break! (lessons/js/standup.js): a whiteboard-stations question mid-lesson ================= */
 .standup, .su-modal { --su: #d9480f; --su-soft: #fff1e8; --su-line: #f6cdb3; }
 .standup { border-top: 6px solid var(--su); }
+.standup.su-off { display: none !important; } /* off unless turned on in the lesson's … menu */
 .su-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
 .su-title { display: flex; align-items: center; gap: 14px; }
 .su-title h2 { margin: 0; font-size: 30px; line-height: 1.05; color: var(--su); letter-spacing: -.01em; }
