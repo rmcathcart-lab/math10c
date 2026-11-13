@@ -83,7 +83,7 @@
       /* Every signed-in student checks in with the server. Time-on-task ticks wait for the next check-in (at most every
        * 45 s while working, 60 s otherwise); answers, events and saved progress go right away. A whole class checking in
        * every 15 s kept the server too busy to sign students in (2026-10-29). */
-      var age = Date.now() - L.lastPost, live = L.status && L.status.view === 'lesson' && !L.status.away;
+      var age = Date.now() - L.lastPost, live = L.status && (L.status.view === 'lesson' || L.status.view === 'drill') && !L.status.away;
       var real = L.queue.some(function (ev) { return ev.t !== 'tick'; });
       if (real || Object.keys(L.progress).length || age > (live ? 45000 : 60000)) L.flush();
     }, 5000);

@@ -217,7 +217,7 @@
       stats.innerHTML = '<span><b>' + A.r + '</b> solved this time</span><span>Clean solves in a row <b>' + (A.clean || 0) + '</b></span><span>Best <b>' + (st.best || 0) + '</b></span>' +
         (st.lvl < LEVELS.length ? '<span class="dr-next">Next level: 4 of your last 5 with no slips or hints <span class="dr-dots">' + rec.map(function (x) { return '<i class="' + (x ? 'y' : 'n') + '"></i>'; }).join('') + Array(6 - rec.length).join('<i></i>') + '</span></span>' : '<span class="dr-next">Top level</span>');
     }
-    function fresh() { var g = LEVELS[st.lvl - 1].gen(); P = { eq: g.eq, x: g.x, hist: [{ tex: eqTex(g.eq), note: '' }], slips: 0, hints: 0, done: false }; sel = null; draw(); }
+    function fresh() { if (C.say) C.say(st.lvl); var g = LEVELS[st.lvl - 1].gen(); P = { eq: g.eq, x: g.x, hist: [{ tex: eqTex(g.eq), note: '' }], slips: 0, hints: 0, done: false }; sel = null; draw(); }
 
     function chip(cls, html, data) { var c = el('span', cls, html); Object.keys(data || {}).forEach(function (k) { c.dataset[k] = data[k]; }); return c; }
     function drawSide(s) {

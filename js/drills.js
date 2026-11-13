@@ -14,6 +14,18 @@
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc;
   var KEY = 'hw:drills';
+  /* The Teacher Ledger's Live tab shows which drill a student is on, at what level, and whether it's a sprint
+     (2026-11-13). Sent as the live status { view:'drill', lesson: drill id, item: 'L3' / 'L3 sprint', label: title };
+     the list of drills is { view:'drills' }. Only sent when it changes. */
+  function say(d, lvl, sprint) {
+    try {
+      var Lg = HW.Ledger; if (!Lg || !Lg.setStatus) return;
+      var s = d ? { view: 'drill', lesson: d.id, item: lvl ? 'L' + lvl + (sprint ? ' sprint' : '') : '', label: d.title, away: false } : { view: 'drills', lesson: '', item: '', label: 'Skill Drills', away: false };
+      var c = Lg.status || {};
+      if (c.view === s.view && (c.lesson || '') === s.lesson && (c.item || '') === s.item && !c.away) return;
+      Lg.setStatus(s, true);
+    } catch (e) { /* the ledger is optional */ }
+  }
   function K(l, d) { return HW.k(l, d); }
 
   /* ---------------- small math helpers ---------------- */
@@ -701,6 +713,7 @@
     function next() {
       done = false; st.count = (st.count || 0) + 1;
       q = d.levels[st.lvl - 1].gen(st);
+      say(d, st.lvl, A.mode === 'sprint');
       drawQuestion();
     }
     function drawQuestion(feedback) {
@@ -859,14 +872,14 @@
   // what a plug-in drill page gets: its saved state, saving, ledger logging and the shared page header
   function ctx(d) {
     var st = stOf(d.id);
-    return { st: st, save: save, log: function (mode, n, right) { logToLedger(d, st, mode, n, right); }, setActive: function (a) { active = a; a.d = d; a.st = st; a.n = a.n || 0; a.r = a.r || 0; a.sprintOnly = true; } };
+    return { st: st, save: save, say: function (lvl) { say(d, lvl || st.lvl); }, log: function (mode, n, right) { logToLedger(d, st, mode, n, right); }, setActive: function (a) { active = a; a.d = d; a.st = st; a.n = a.n || 0; a.r = a.r || 0; a.sprintOnly = true; } };
   }
   HW.Drills = {
     list: DRILLS,
     render: function (view, id) {
       var d = DRILLS.filter(function (x) { return x.id === id; })[0];
-      if (d && d.render) { stopActive(); d.render(view, ctx(d)); }
-      else if (d) renderDrill(view, d); else { stopActive(); renderList(view); }
+      if (d && d.render) { stopActive(); say(d, stOf(d.id).lvl || 1); d.render(view, ctx(d)); }
+      else if (d) renderDrill(view, d); else { stopActive(); say(null); renderList(view); }
     },
     // a drill with its own page (e.g. js/drills-move.js): { id, group, title, blurb, helps, levels:[{name}], render(view, ctx) }
     add: function (d, afterId) { var i = DRILLS.map(function (x) { return x.id; }).indexOf(afterId); if (i >= 0) DRILLS.splice(i + 1, 0, d); else DRILLS.push(d); },

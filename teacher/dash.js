@@ -366,7 +366,7 @@
     var age = now - rec.at;
     if (age > 150000) return { k: 'off', t: 'Offline' }; // students check in every 45–60 s
     if (rec.away) return { k: 'away', t: 'Left the page' };
-    if (rec.view === 'lesson') return { k: 'work', t: 'Working' };
+    if (rec.view === 'lesson' || rec.view === 'drill') return { k: 'work', t: 'Working' }; // a Skill Drill is working too
     if (rec.view === 'teach') return { k: 'teach', t: 'On the lesson page' };
     return { k: 'idle', t: 'On the assignment list' };
   }
@@ -384,6 +384,11 @@
     rows.forEach(function (x) {
       var rec = x.rec, where = '—', whereT = '';
       if (rec && rec.view === 'lesson') { var l = HW.lessons[rec.lesson]; where = (l ? 'L' + l.num + ' ' : '') + '<b>' + esc(rec.label || rec.item || '') + '</b>'; whereT = (l ? 'L' + l.num + ' ' : '') + (rec.label || rec.item || ''); }
+      else if (rec && rec.view === 'drill') { var dr = HW.Drills && HW.Drills.list.filter(function (x) { return x.id === rec.lesson; })[0], dt = dr ? dr.title : rec.label || 'Skill drill';
+        var dl = /^L(\d+)/.exec(rec.item || ''), dlv = dl ? 'Level ' + dl[1] + (dr && dr.levels && dr.levels[dl[1] - 1] && dr.levels[dl[1] - 1].name ? ': ' + dr.levels[dl[1] - 1].name : '') : '';
+        where = '<b>' + esc(dt) + '</b> <span class="tag">skill drill</span>' + (/sprint/.test(rec.item || '') ? ' <span class="tag">1-min sprint</span>' : '') + (dlv ? '<br><span class="small muted">' + esc(dlv) + '</span>' : '');
+        whereT = 'Skill drill: ' + dt + (dlv ? ' (' + dlv + ')' : ''); }
+      else if (rec && rec.view === 'drills') { where = '<span class="muted">Skill Drills list</span>'; whereT = 'Skill Drills list'; }
       else if (rec && rec.view === 'home') { where = '<span class="muted">Assignment list</span>'; whereT = 'Assignment list'; }
       else if (rec && rec.view === 'teach') { var tl = HW.Cal && HW.Cal.info(rec.lesson); where = '<b>' + esc(tl ? 'Lesson ' + tl.unit + '.' + tl.num : rec.label || 'Lesson') + '</b> <span class="tag">lesson page</span>'; whereT = tl ? 'Lesson ' + tl.unit + '.' + tl.num : rec.label || 'Lesson'; }
       var ts = todayStats[x.s.name] || null, onFor = rec && (x.ls.k === 'work' || x.ls.k === 'away' || x.ls.k === 'teach');

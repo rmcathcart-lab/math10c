@@ -1119,11 +1119,12 @@
   /* ---------------- leaving the page = new numbers ---------------- */
   var awayAt = 0, viaNotes = 0;
   function working() { if (!cur.lesson || !cur.item) return false; if (cur.practice) return true; var r = IR(cur.lesson.id, cur.item); return r.s === 'open'; }
-  function goneAway() { if (awayAt) return; awayAt = Date.now(); if (cur.lesson) L.setStatus(Object.assign({}, L.status || {}, { away: true }), true); }
+  function onDrill() { return !!(L.status && L.status.view === 'drill'); } // a Skill Drill (js/drills.js sets the status)
+  function goneAway() { if (awayAt) return; awayAt = Date.now(); if (cur.lesson || onDrill()) L.setStatus(Object.assign({}, L.status || {}, { away: true }), true); }
   function cameBack() {
     if (!awayAt) return; var gone = Date.now() - awayAt; awayAt = 0;
     var notes = viaNotes && Date.now() - viaNotes < gone + 5000; viaNotes = 0; // left by opening the lesson page
-    if (!cur.lesson) return;
+    if (!cur.lesson) { if (onDrill()) L.setStatus(Object.assign({}, L.status, { away: false }), true); return; }
     L.setStatus(Object.assign({}, L.status || {}, { away: false }), true);
     if (gone < AWAY_GRACE || !working()) { if (gone >= AWAY_GRACE) L.push({ t: 'event', type: 'away', lesson: cur.lesson.id, item: cur.item, secs: Math.round(gone / 1000) }); return; }
     var it = cur.lesson.byId[cur.item];
