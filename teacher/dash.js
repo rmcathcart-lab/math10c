@@ -140,6 +140,26 @@
   /* the tab bar sticks just under the header (whose height changes when it wraps on a narrow screen) */
   function topHeight() { document.documentElement.style.setProperty('--toph', top.offsetHeight + 'px'); }
   root.addEventListener('resize', topHeight);
+  /* Table headings stay in view while the page scrolls (Ryan, 2026-11-13). CSS sticky can't do it here (each table sits in
+     a sideways-scrolling wrapper, which would be what it sticks to), so each heading cell is moved down by however far
+     the table's top has gone under the sticky tab bar, and no further than the table's last row. Every .tbl on a tab;
+     not ones in pop-ups or boxes that scroll by themselves. Runs on scroll, resize and whenever the tab's content changes. */
+  var floatQ = false;
+  function floatHeads() {
+    floatQ = false;
+    var tabsEl = view.querySelector('.tabs'), lim = tabsEl ? tabsEl.getBoundingClientRect().bottom : 0;
+    view.querySelectorAll('table.tbl').forEach(function (t) {
+      var hd = t.tHead; if (!hd || t.closest('.kc-modal, .tt-dbox, .tt-parts, .tt-chosen, .lp-body, .eh-prev')) return;
+      var r = t.getBoundingClientRect(), off = r.height ? Math.max(0, Math.min(Math.round(lim - r.top), Math.round(r.height - hd.offsetHeight * 2))) : 0;
+      if (t._fo === off) return; t._fo = off;
+      var tf = off ? 'translateY(' + off + 'px)' : '';
+      hd.querySelectorAll('th').forEach(function (c) { c.style.transform = tf; });
+      t.classList.toggle('th-float', off > 0);
+    });
+  }
+  function queueFloat() { if (!floatQ) { floatQ = true; (root.requestAnimationFrame || setTimeout)(floatHeads); } }
+  root.addEventListener('scroll', queueFloat, { passive: true }); root.addEventListener('resize', queueFloat);
+  if (root.MutationObserver) new MutationObserver(queueFloat).observe(view, { childList: true, subtree: true });
   /* the tabs, in groups: right now · practice · exit slips and tests · the plan · reporting and setup */
   var TAB_GROUPS = [[['live', 'Live']], [['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student']], [['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests']], [['calendar', 'Calendar']], [['powerschool', 'PowerSchool'], ['settings', 'Settings']]];
   function tabLabel(id, name) { var n = id === 'retests' && HW.Dash && HW.Dash.retestCount; return name + (n ? ' <span class="tab-badge" title="Retest requests waiting">' + n + '</span>' : ''); }

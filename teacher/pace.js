@@ -14,8 +14,9 @@
  *   - Outcome levels are the ones the PowerSchool tab uses: the unit test (best attempt) when there is one, otherwise the
  *     higher of the exit slips and the practice.
  *   - The email is plain HTML with inline styles and tables (bars and level scales), so it keeps its look when pasted into
- *     Gmail or Outlook. "Copy and open Gmail" copies it and opens a new message from the school account with the subject
- *     (and the family's address, if typed — kept in this browser only, never sent anywhere else); paste it in.
+ *     Outlook or Gmail. "Copy and open email" copies it and opens a new message in the computer's default mail app (Ryan
+ *     uses Outlook) through a mailto: link with the subject and the family's address (if typed — kept in this browser
+ *     only); paste it into the body. (A mailto: link can't carry formatting, so the body goes by the clipboard.)
  *
  * Shared, unchanged, by math10c, math15, math20-1 and math10-3 (the course name comes from HW_CONFIG.siteName). */
 (function (root) {
@@ -120,21 +121,38 @@
     if (P.due.length) head.appendChild(el('div', 'kp-chips', '<span class="kp-chip ok"><b>' + cnt.ok + '</b> caught up</span><span class="kp-chip warn"><b>' + cnt.warn + '</b> with 1 lesson to finish</span><span class="kp-chip bad"><b>' + cnt.bad + '</b> with 2 or more</span>'));
     head.appendChild(el('p', 'small muted kp-note', 'Counts the required practice of the lessons before today (' + (st.scope === 'class' ? 'work done in class only' : 'all work, in class or at home') + '). Today’s lesson is shown but isn’t due yet. Click a name for the student’s page and the Email home button.'));
     body.appendChild(head);
-    // the sort
-    var sortK = ls('hw:tpsort') || 'behind', bar = el('div', 'opt-row kp-sortrow'), seg = el('div', 'seg');
-    [['behind', 'Most behind first'], ['name', 'A–Z']].forEach(function (x) { var b = el('button', sortK === x[0] ? 'on' : '', x[1]); b.type = 'button'; b.addEventListener('click', function () { ls('hw:tpsort', x[0]); D.render(); }); seg.appendChild(b); });
-    bar.appendChild(seg);
-    bar.appendChild(el('div', 'legend', '<span><i class="kp-key ok"></i>Finished</span><span><i class="kp-key part"></i>Started</span><span><i class="kp-key none"></i>Not started</span>'));
+    // click a heading to sort by it; click again to turn it round (kept in hw:tpsort). First click: A–Z for names,
+    // otherwise the students who are furthest behind first.
+    var SK = { k: 'status', d: 1 }; try { var sv = JSON.parse(ls('hw:tpsort') || 'null'); if (sv && sv.k) SK = sv; } catch (e) {}
+    var bar = el('div', 'opt-row kp-sortrow');
+    bar.appendChild(el('div', 'legend', '<span><i class="kp-key ok"></i>Finished</span><span><i class="kp-key part"></i>Started</span><span><i class="kp-key none"></i>Not started</span><span class="muted">Click a heading to sort.</span>'));
     body.appendChild(bar);
+    var cols = P.due.concat(P.today);
+    function frac(a, b) { return b ? a / b : 1; }
+    function val(s, k) {   // bigger = further along
+      var x = K[s.name];
+      if (k === 'status') return -x.behind * 1e6 - (x.req - x.done);
+      if (k === 'sum') return frac(x.done, x.req) * 1e4 + x.done;
+      if (k === 'earlier') return -x.earlierOpen * 1e6 - (x.earlierReq - x.earlierDone);
+      var l = HW.lessons[k]; return l ? frac(doneIn(s, l), req(l)) : 0;
+    }
+    if (SK.k !== 'name' && SK.k !== 'status' && SK.k !== 'sum' && SK.k !== 'earlier' && !cols.some(function (l) { return l.id === SK.k; })) SK = { k: 'status', d: 1 };
     ss.sort(function (a, b) {
-      if (sortK === 'name') return a.name.localeCompare(b.name);
-      var x = K[a.name], y = K[b.name];
-      return (y.behind - x.behind) || ((y.req - y.done) - (x.req - x.done)) || ((y.earlierReq - y.earlierDone) - (x.earlierReq - x.earlierDone)) || a.name.localeCompare(b.name);
+      var r = SK.k === 'name' ? a.name.localeCompare(b.name) : (val(a, SK.k) - val(b, SK.k));
+      return r * SK.d || (SK.k !== 'status' ? val(a, 'status') - val(b, 'status') : 0) || a.name.localeCompare(b.name);
     });
     // the table
-    var cols = P.due.concat(P.today), t = el('table', 'tbl kp-tbl'), h = '<thead><tr><th>Student</th><th>Keeping up</th><th>Unit ' + P.unit + ' so far</th>';
-    cols.forEach(function (l) { var td = P.today.indexOf(l) >= 0; h += '<th class="kp-lh' + (td ? ' kp-today' : '') + '" title="' + esc(l.title) + '">L' + l.unit + '.' + l.num + '<div class="th-sub">' + (td ? 'today' : nice(P.dates[l.id])) + '</div></th>'; });
-    h += '<th>Earlier units</th></tr></thead>'; t.innerHTML = h;
+    function th(k, html, cls, title) {
+      var on = SK.k === k;
+      return '<th class="sortable' + (on ? ' sorted' : '') + (cls ? ' ' + cls : '') + '" data-s="' + esc(k) + '" tabindex="0" aria-sort="' + (on ? (SK.d > 0 ? 'ascending' : 'descending') : 'none') + '"' + (title ? ' title="' + esc(title) + '"' : '') + '>' + html + (on ? '<span class="sarrow" aria-hidden="true">' + (SK.d > 0 ? '▲' : '▼') + '</span>' : '') + '</th>';
+    }
+    var t = el('table', 'tbl kp-tbl'), h = '<thead><tr>' + th('name', 'Student') + th('status', 'Keeping up', '', 'Furthest behind first; click again for the reverse') + th('sum', 'Unit ' + P.unit + ' so far');
+    cols.forEach(function (l) { var td = P.today.indexOf(l) >= 0; h += th(l.id, 'L' + l.unit + '.' + l.num + '<div class="th-sub">' + (td ? 'today' : nice(P.dates[l.id])) + '</div>', 'kp-lh' + (td ? ' kp-today' : ''), l.title); });
+    h += th('earlier', 'Earlier units') + '</tr></thead>'; t.innerHTML = h;
+    t.querySelectorAll('th.sortable').forEach(function (c) {
+      function go() { var k = c.dataset.s; ls('hw:tpsort', JSON.stringify(SK.k === k ? { k: k, d: -SK.d } : { k: k, d: 1 })); D.render(); }
+      c.addEventListener('click', go); c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
     var tb = el('tbody');
     ss.forEach(function (s) {
       var k = K[s.name], tr = el('tr');
@@ -350,12 +368,12 @@
     function said(ok, t) { status.innerHTML = ok ? '✓ ' + t : 'Couldn’t copy here: select the email on the right and copy it (Ctrl/⌘ C).'; status.className = 'small eh-status ' + (ok ? 'ok' : 'bad'); }
     acts.appendChild(status); acts.appendChild(el('span', 'kc-sp'));
     acts.appendChild(button('btn-ghost', 'Copy email', function () { copy().then(function (ok) { said(ok, 'Copied with its formatting. Paste it into a new email.'); }); }));
-    acts.appendChild(button('btn-primary', 'Copy and open Gmail', function () {
-      var w = root.open('about:blank', '_blank');   // opened now, while the click still counts, so it isn't blocked
+    acts.appendChild(button('btn-primary', 'Copy and open email', function () {
       copy().then(function (ok) {
-        var u = 'https://mail.google.com/mail/?authuser=' + encodeURIComponent(TEACHER_EMAIL) + '&view=cm&fs=1&to=' + encodeURIComponent(to.value.trim()) + '&su=' + encodeURIComponent(cur.subject);
-        if (w) w.location.href = u; else root.open(u, '_blank');
-        said(ok, 'Copied. In the new Gmail message, click in the body and paste (Ctrl/⌘ V).');
+        // the default mail app (Outlook): a new message with To and Subject; the formatted email is pasted into the body
+        var a = document.createElement('a'); a.href = 'mailto:' + encodeURIComponent(to.value.trim()).replace(/%40/g, '@').replace(/%2C/gi, ',') + '?subject=' + encodeURIComponent(cur.subject);
+        a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
+        said(ok, 'Copied. In the new message, click in the body and paste (Ctrl/⌘ V).');
       });
     }));
     box.appendChild(acts);

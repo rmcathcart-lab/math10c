@@ -657,3 +657,12 @@ body.dash .topbar .top-upd.is-saved { display: inline; color: #9a6700; font-weig
 .eh-prev { overflow: auto; border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; background: #fff; max-height: 64vh; }
 .eh-status.ok { color: #1f5e34; } .eh-status.bad { color: #a23b2f; }
 @media (max-width: 860px) { .eh-grid { grid-template-columns: 1fr; } .eh-prev { max-height: none; } }
+
+/* Table headings that follow the page down (dash.js floatHeads, 2026-11-13) */
+.tbl thead th { z-index: 3; }
+.tbl.th-float thead th { z-index: 4; box-shadow: 0 1px 0 var(--line), 0 7px 10px -7px rgba(28, 34, 48, .28); }
+.tbl.prog.th-float thead th:first-child { box-shadow: 1px 0 0 var(--line2), 0 1px 0 var(--line), 0 7px 10px -7px rgba(28, 34, 48, .28); }
+.tbl.kp-tbl th.sorted::after { content: none; }
+.tbl.kp-tbl th.sortable { user-select: none; }
+.tbl.kp-tbl th.sortable:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.tbl.kp-tbl .sarrow { font-size: 10px; margin-left: 4px; }
