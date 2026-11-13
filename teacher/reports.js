@@ -61,6 +61,7 @@
     return c.p;
   }
   RP.load = function () { return load(); };
+  RP.build = function () { return build(); }; // also used by Email home (pace.js)
   function updateProgress() { var n = document.getElementById('ps-progress'), c = RP.cache[st.klass]; if (n && c) n.textContent = 'Marking exit slips and tests… ' + c.done + ' of ' + c.total; }
 
   /* ---------------- the evidence, per student and outcome ---------------- */

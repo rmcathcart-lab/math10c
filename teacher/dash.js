@@ -268,6 +268,7 @@
     drawTop();
     if (HW.DashCal && HW.DashCal.seed) HW.DashCal.seed(k, d);
     if (first && (st.tab === 'exits' || st.tab === 'tests') && HW.DashTests && HW.DashTests.atHome()) render(); // the lists mark today's lesson from the calendar
+    else if (first && (st.tab === 'progress' || st.tab === 'student') && HW.DashPace) render(); // Keeping up is measured against the calendar
   }
   function loadCal() { var k = st.klass; api('cal', { 'class': k }).then(function (d) { useCal(k, d); }).catch(function () {}); }
   /* once a class is open, the other tabs' data loads in the background (one thing at a time), so opening a tab is quick:
@@ -467,7 +468,8 @@
    * click a lesson there → its questions one by one. What is open is kept in st.pOpen so a refresh doesn't close it. */
   function renderProgress(body) {
     var us = unitsBuilt(), ss = students(); st.pOpen = st.pOpen || {};
-    var bar = el('div', 'opt-row'); bar.appendChild(scopeSeg());
+    var bar = el('div', 'opt-row'); if (HW.DashPace) bar.appendChild(HW.DashPace.viewSeg()); bar.appendChild(scopeSeg());
+    if (HW.DashPace && HW.DashPace.paceOn()) { body.appendChild(bar); HW.DashPace.renderPace(body); return; } // Keeping up: the current unit, up to where the class is (pace.js)
     bar.appendChild(el('div', 'legend', '<span><i class="lg first"></i>Right first try</span><span><i class="lg help"></i>Right after a hint or reveal</span><span><i class="lg extra"></i>Extra practice</span>'));
     body.appendChild(bar);
     var t = el('table', 'tbl prog'), ncol = us.length + 5;
@@ -693,6 +695,7 @@
       body.appendChild(grid); return;
     }
     var s = derive().stu[st.student]; if (!s) return;
+    if (HW.DashPace) bar.appendChild(HW.DashPace.emailButton(s.name)); // Email home (pace.js)
     var tiles = el('div', 'tiles');
     function tile(k, v, sub) { tiles.appendChild(el('div', 'tile', '<div class="tk">' + k + '</div><div class="tv">' + v + '</div>' + (sub ? '<div class="ts">' + sub + '</div>' : ''))); }
     var lessonsList = builtLessons();
@@ -704,6 +707,7 @@
     tile('Answers shown', s.reveals, 'after 3 wrong tries');
     tile('Last seen', s.roster && s.roster.lastSeen ? ago(s.roster.lastSeen) : 'never', s.roster ? (s.roster.devices + ' device' + (s.roster.devices === 1 ? '' : 's')) : '');
     body.appendChild(tiles);
+    if (HW.DashPace) body.appendChild(HW.DashPace.studentPanel(s)); // Keeping up with the unit (pace.js)
     // outcomes
     var oc = el('div', 'panel'); oc.appendChild(el('h3', '', 'Outcome levels'));
     var orow = el('div', 'ochips');
