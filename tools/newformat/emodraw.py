@@ -202,6 +202,25 @@ DRAW['❤️'] = heart()
 DRAW['🃏'] = (f'<rect x="-13" y="-18" width="26" height="36" rx="4" fill="#fff" {W}/><path d="M-7 -6 L-4 -12 L0 -7 L4 -12 L7 -6 Q0 -2 -7 -6 Z" fill="{RED}" stroke="{INK}" stroke-width="1.4"/>'
               f'<circle cx="0" cy="2" r="5" fill="{SKIN}" stroke="{INK}" stroke-width="1.4"/><path d="M-6 9 H6 L4 14 H-4 Z" fill="{BLUE}"/><text x="-8" y="-9" font-size="7" font-weight="800" fill="{RED}" text-anchor="middle">J</text>')
 
+DRAW['📖'] = (f'<path d="M0 -10 Q-9 -16 -19 -13 V13 Q-9 10 0 15 Z" fill="#fff" {W} stroke-width="2"/><path d="M0 -10 Q9 -16 19 -13 V13 Q9 10 0 15 Z" fill="#fff" {W} stroke-width="2"/>'
+              + ''.join(f'<line x1="{a}" y1="{y}" x2="{b}" y2="{y - 1}" stroke="{GREY}" stroke-width="1.6"/>' for a, b in ((-15, -4), (4, 15)) for y in (-6, -1, 4)))
+DRAW['📅'] = DRAW['🗓️']
+DRAW['🏅'] = _medal(AMBER, '★')
+DRAW['📝'] = DRAW['📄'] + at(8, 6, pencil(), .5)
+DRAW['🔗'] = (f'<g fill="none" stroke="{GREY}" stroke-width="5" stroke-linecap="round"><rect x="-19" y="-6" width="20" height="12" rx="6" transform="rotate(-35 -9 0)"/>'
+              f'<rect x="-1" y="-6" width="20" height="12" rx="6" transform="rotate(-35 9 0)"/></g>')
+DRAW['📎'] = f'<path d="M6 -14 V8 Q6 16 0 16 Q-6 16 -6 8 V-10 Q-6 -18 1 -18 Q8 -18 8 -10 V6" fill="none" stroke="{GREY}" stroke-width="3" stroke-linecap="round" transform="rotate(25)"/>'
+DRAW['📣'] = (f'<path d="M-14 -6 L10 -16 V16 L-14 6 Z" fill="{RED}" {W} stroke-width="2"/><rect x="-18" y="-7" width="6" height="14" rx="2" fill="{GREY}" {W} stroke-width="2"/>'
+              f'<path d="M-10 6 L-6 16 H0 L-3 8" fill="{GREY}" stroke="{INK}" stroke-width="1.8"/><path d="M14 -6 Q18 0 14 6" fill="none" stroke="{INK}" stroke-width="2" stroke-linecap="round"/>')
+def _convert_main_placeholder(page):
+    """Convert every emoji in a page's <main> (an intro lesson: tile icons)."""
+    return re.sub(r'<main\b.*?</main>', lambda m: convert(m.group(0)), page, count=1, flags=re.S)
+
+DRAW['🪪'] = (f'<rect x="-19" y="-13" width="38" height="26" rx="3" fill="#fff" {W}/><circle cx="-9" cy="-2" r="5" fill="{SKY}" stroke="{INK}" stroke-width="1.5"/><path d="M-15 9 Q-9 2 -3 9" fill="{SKY}" stroke="{INK}" stroke-width="1.5"/>'
+              + ''.join(f'<line x1="2" y1="{y}" x2="{15 if y < 4 else 10}" y2="{y}" stroke="{GREY}" stroke-width="2.2" stroke-linecap="round"/>' for y in (-6, -1, 4)))
+DRAW['🧰'] = (f'<rect x="-18" y="-6" width="36" height="22" rx="3" fill="{RED}" {W}/><path d="M-7 -6 V-12 H7 V-6" fill="none" stroke="{INK}" stroke-width="2.5"/>'
+              f'<rect x="-18" y="1" width="36" height="4" fill="#9e2b25"/><rect x="-3" y="-1" width="6" height="8" rx="1" fill="{GREY}" stroke="{INK}" stroke-width="1.4"/>')
+
 # ---------------- the converter ----------------
 EMO = re.compile('(?:[\U0001F000-\U0001FAFF☀-➿⭐⬆⬇↔-↙⏰-⏺](?:️)?(?:‍[\U0001F300-\U0001FAFF☀-➿♀♂](?:️)?)*)')
 KEEP_TEXT = {'✓', '✕', '✗', '✔', '★', '☆', '♪'}       # plain text marks: left alone
@@ -266,3 +285,7 @@ def convert(html):
 def convert_page(page):
     """Convert only the warm-up card (data-ink="warmq") of a lesson page."""
     return re.sub(r'<section[^>]*data-ink="warmq".*?</section>', lambda m: convert(m.group(0)), page, count=1, flags=re.S)
+
+def convert_main(page):
+    """Convert every emoji in a page's <main> (an intro lesson: tile icons)."""
+    return re.sub(r'<main\b.*?</main>', lambda m: convert(m.group(0)), page, count=1, flags=re.S)

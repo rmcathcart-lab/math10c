@@ -258,3 +258,14 @@ button.medal-rung { appearance: none; border: 0; background: none; color: inheri
 .u1l0-dl svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .u1l0-dl span { font-size: 11px; font-weight: 800; color: #fff; background: var(--brand); border-radius: 4px; padding: 2px 5px; }
 @media print { .u1l0-dl { display: none; } }
+
+/* the course outline card (2026-11-12) */
+.u1l0-ol-grid { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 26px; align-items: start; }
+.u1l0-ol-thumb { display: block; border-radius: 8px; overflow: hidden; border: 1px solid var(--line, #e2ddd1); box-shadow: 0 6px 18px rgba(0, 0, 0, .12); transform: rotate(-1.5deg); transition: transform .2s; }
+.u1l0-ol-thumb:hover { transform: rotate(0) scale(1.02); }
+.u1l0-ol-thumb img { display: block; width: 100%; height: auto; }
+.u1l0-ol-list { margin: 8px 0 16px; padding-left: 1.2em; font-size: 18px; line-height: 1.5; }
+.u1l0-ol-list li { margin: 0 0 6px; }
+.u1l0-ol-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.u1l0-ol-btns .pill { font-size: 16px; padding: 8px 18px; text-decoration: none; }
+@media (max-width: 640px) { .u1l0-ol-grid { grid-template-columns: 1fr; } .u1l0-ol-thumb { max-width: 220px; } }

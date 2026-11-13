@@ -27,6 +27,7 @@ async def main():
     if errs: print('page errors:', errs); sys.exit(1)
     os.makedirs(SHOTS, exist_ok=True)
     os.system('pdftoppm -r 80 -png "%s" "%s/p" && pdfinfo "%s" | grep Pages' % (OUT, SHOTS, OUT))
+    os.system('pdftoppm -r 70 -png -f 1 -l 1 -singlefile "%s" "%s"' % (OUT, OUT[:-4] + '-p1'))  # thumbnail for the intro lesson's outline card
     print('wrote', OUT)
 
 asyncio.run(main())
