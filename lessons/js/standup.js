@@ -129,7 +129,7 @@ export function standup(id, def) {
   }
   function addQ(level) {
     const gen = def.levels[level]; if (!gen) return;
-    let q = null; for (let t = 0; t < 30 && !q; t++) { const x = gen(rnd()); if (x && !state.qs.some((o) => o.q === x.q && o.text === x.text)) q = x; }
+    let q = null; for (let t = 0; t < 30 && !q; t++) { const x = gen(rnd()); if (x && !state.qs.some((o) => o.q === x.q && o.text === x.text && (o.fig || '') === (x.fig || ''))) q = x; } // a figure counts too: ruler/graph questions share their words
     if (!q) q = gen(rnd());
     q.level = level; q.n = ++state.n; state.qs.push(q);
     render();
