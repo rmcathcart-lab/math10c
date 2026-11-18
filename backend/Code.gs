@@ -161,7 +161,7 @@ function doGet(e) {
     if (a === 'deltest') return json_(delTest_(p.id), cb);
     if (a === 'launch') return json_(launch_(p['class'], p.test), cb);
     if (a === 'tlive') return json_(tlive_(p['class'], p.who), cb);
-    if (a === 'tctl') return json_(tctl_(p['class'], p.op, p.name, p.mins, p.who), cb);
+    if (a === 'tctl') return json_(tctl_(p['class'], p.op, p.name, p.mins, p.who, p.names), cb);
     if (a === 'retests') return json_(retests_(p['class']), cb);
     if (a === 'retestset') return json_(retestSet_(p.id, p.status), cb);
     if (a === 'launchretest') return json_(launchRetest_(p.id, p.test), cb);
@@ -752,13 +752,21 @@ function tlive_(klass, who) {
   var recs = {}; names.forEach(function (n, i) { var v = got[keys[i]]; if (v) { try { recs[n] = JSON.parse(v); } catch (e) {} } });
   return { ok: true, live: live, def: sessionDef_(live.id), recs: recs, names: names, now: Date.now() };
 }
-/* op: unlock | time | submit | end | close | resume (cancel end) */
-function tctl_(klass, op, name, mins, who) {
-  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+/* op: unlock | time | submit | end | close | resume (cancel end)
+ * unlock takes one student (name) or several at once (names: a JSON list), so unlocking a whole group is one request and
+ * one write. When the lock stays busy the answer is { error: 'busy' } and the ledger tries again by itself. */
+function tctl_(klass, op, name, mins, who, names) {
+  var lock = LockService.getScriptLock(); if (!lock.tryLock(15000)) return { ok: false, error: 'busy' };
   try {
     var all = list_('TESTLIVE') || {}, k = liveKey_(klass, who), live = all[k]; if (!live) return { ok: false, error: 'no live test' };
     var n = norm_(name || ''); live.extra = live.extra || {}; live.unlock = live.unlock || {}; live.submit = live.submit || {};
-    if (op === 'unlock') { if (!n) return { ok: false, error: 'no student' }; live.unlock[n] = (live.unlock[n] || 0) + 1; if (Number(mins)) live.extra[n] = (live.extra[n] || 0) + Number(mins); }
+    if (op === 'unlock') {
+      var list = []; try { list = names ? JSON.parse(names) : []; } catch (e) { list = []; }
+      list = (Array.isArray(list) ? list : []).map(function (x) { return norm_(x); }).filter(function (x) { return x; }).slice(0, 80);
+      if (n && list.indexOf(n) < 0) list.push(n);
+      if (!list.length) return { ok: false, error: 'no student' };
+      list.forEach(function (m) { live.unlock[m] = (live.unlock[m] || 0) + 1; if (Number(mins)) live.extra[m] = (live.extra[m] || 0) + Number(mins); });
+    }
     else if (op === 'time') live.extra[n || '*'] = (live.extra[n || '*'] || 0) + (Number(mins) || 0);
     else if (op === 'submit') {
       if (!n) return { ok: false, error: 'no student' }; live.submit[n] = (live.submit[n] || 0) + 1;

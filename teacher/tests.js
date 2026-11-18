@@ -6,7 +6,7 @@
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc, TC = HW.TestCore, D = HW.Dash;
   var st = D.state, LVN = HW.LEVEL_NAMES;
-  var TS = { tests: null, liveAll: {}, sessions: null, view: 'home', edit: null, live: null, res: null, showMarks: false, timer: null, pick: { unit: 1, lesson: null, part: 'all' } };
+  var TS = { tests: null, liveAll: {}, sessions: null, view: 'home', edit: null, live: null, res: null, showMarks: false, timer: null, pick: { unit: 1, lesson: null, part: 'all' }, sel: {}, selFor: '', sending: {} };
   function api(a, p) { return D.api(a, p); }
   function cls() { return st.klass; }
   function klassLabel() { var c = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0]; return c ? c.label : st.klass; }
@@ -364,9 +364,18 @@
     if (!TS.live || !TS.live.live || TS.live.live.id !== live.id) { body.appendChild(el('div', 'loading', 'Loading the live test…')); TS.view = 'live'; pollLive(); return; }
     TS.view = 'live';
     var d = TS.live, def = d.def || {}, items = TC.items(def), now = d.now || Date.now(), names = d.names.slice().sort(function (a, b) { return a.localeCompare(b); });
-    var counts = { none: 0, writing: 0, quiet: 0, left: 0, done: 0 };
-    var rows = names.map(function (n) { var rec = d.recs[n], s = statusOf(rec, now); counts[s.k]++; return { name: n, rec: rec, s: s }; });
-    var ord = { left: 0, quiet: 1, writing: 2, none: 3, done: 4 };
+    var counts = { none: 0, writing: 0, quiet: 0, left: 0, unl: 0, done: 0 }, unl = live.unlock || {};
+    // unlocked (or reopened) but the student hasn't pressed Continue yet: the ledger has a newer unlock than their device used
+    var rows = names.map(function (n) {
+      var rec = d.recs[n], s = statusOf(rec, now);
+      if (TS.sending[n]) s = { k: 'unl', t: 'Unlocking…' };
+      else if (rec && rec.st !== 'writing' && (Number(unl[norm(n)]) || 0) > (Number(rec.unlockN) || 0)) s = { k: 'unl', t: (rec.st === 'left' ? 'Unlocked' : 'Reopened') + ': waiting for them to press Continue' };
+      counts[s.k]++; return { name: n, rec: rec, s: s };
+    });
+    var ord = { left: 0, unl: 1, quiet: 2, writing: 3, none: 4, done: 5 };
+    if (TS.selFor !== live.id) { TS.sel = {}; TS.selFor = live.id; }
+    var lockedNames = rows.filter(function (x) { return x.s.k === 'left'; }).map(function (x) { return x.name; });
+    Object.keys(TS.sel).forEach(function (n) { if (lockedNames.indexOf(n) < 0) delete TS.sel[n]; }); // ticked students who are no longer locked
     rows.sort(function (a, b) { return ord[a.s.k] - ord[b.s.k] || a.name.localeCompare(b.name); });
     if (!live.endsAt && d.live && d.live.endsAt) live.endsAt = d.live.endsAt;
     var timed = TC.timing(def) === 'minutes' ? !!def.minutes : TC.timing(def) === 'period' ? !!live.endsAt : false;
@@ -385,11 +394,32 @@
     }));
     head.appendChild(acts); body.appendChild(head);
     var bk = head.querySelector('.tt-back-rt'); if (bk) bk.addEventListener('click', function () { TS.who = ''; TS.live = null; st.tab = 'retests'; try { localStorage.setItem('hw:ttab', 'retests'); } catch (e) {} D.render(); });
-    body.appendChild(el('div', 'live-chips tt-chips', '<span class="lchip"><b>' + counts.none + '</b> not started</span><span class="lchip work"><b>' + (counts.writing + counts.quiet) + '</b> writing</span><span class="lchip away"><b>' + counts.left + '</b> locked (left the test)</span><span class="lchip"><b>' + counts.done + '</b> finished</span>' +
+    body.appendChild(el('div', 'live-chips tt-chips', '<span class="lchip"><b>' + counts.none + '</b> not started</span><span class="lchip work"><b>' + (counts.writing + counts.quiet) + '</b> writing</span><span class="lchip away"><b>' + counts.left + '</b> locked (left the test)</span>' + (counts.unl ? '<span class="lchip unl"><b>' + counts.unl + '</b> unlocked, waiting for Continue</span>' : '') + '<span class="lchip"><b>' + counts.done + '</b> finished</span>' +
       '<label class="tt-inline small"><input type="checkbox" class="tt-showmarks"' + (TS.showMarks ? ' checked' : '') + '> Show right/wrong as they write</label>'));
     body.querySelector('.tt-showmarks').addEventListener('change', function (e) { TS.showMarks = e.target.checked; rerender(); });
+    /* unlock several at once: tick the locked students (or all of them), then one Unlock sends them together */
+    var bulkBtn = null, allBox = null;
+    function selCount() { return Object.keys(TS.sel).length; }
+    function syncBulk() {
+      var k = selCount();
+      if (bulkBtn) { bulkBtn.disabled = !k; bulkBtn.textContent = k ? 'Unlock ' + k + ' selected' : 'Unlock selected'; }
+      if (allBox) { allBox.checked = !!k && k === lockedNames.length; allBox.indeterminate = !!k && k < lockedNames.length; }
+    }
+    if (lockedNames.length) {
+      var bulk = el('div', 'tt-bulk');
+      bulk.appendChild(el('span', 'tt-bulk-txt', '<b>' + lockedNames.length + '</b> locked. Tick the ones to let back in, then unlock them together.'));
+      bulk.appendChild(button('btn-small btn-ghost', lockedNames.length === 1 ? 'Select the locked student' : 'Select all ' + lockedNames.length + ' locked', function () { lockedNames.forEach(function (n) { TS.sel[n] = 1; }); syncCks(); syncBulk(); }));
+      bulkBtn = button('btn-small btn-primary tt-bulk-go', 'Unlock selected', function () {
+        var list = lockedNames.filter(function (n) { return TS.sel[n]; }); if (!list.length) return;
+        startUnlock(list.map(function (n) { return { name: n, mins: 0 }; }), '');
+      });
+      bulk.appendChild(bulkBtn); body.appendChild(bulk);
+    }
     var t = el('table', 'tbl tt-live');
-    t.innerHTML = '<thead><tr><th>Student</th><th>Status</th><th>Answered</th><th>Questions</th><th>On</th><th>Time left</th><th>Last check-in</th><th></th></tr></thead>';
+    t.innerHTML = '<thead><tr><th class="tt-ck">' + (lockedNames.length ? '<input type="checkbox" class="tt-ckall" title="Select every locked student" aria-label="Select every locked student">' : '') + '</th><th>Student</th><th>Status</th><th>Answered</th><th>Questions</th><th>On</th><th>Time left</th><th>Last check-in</th><th></th></tr></thead>';
+    allBox = t.querySelector('.tt-ckall');
+    if (allBox) allBox.addEventListener('change', function () { if (allBox.checked) lockedNames.forEach(function (n) { TS.sel[n] = 1; }); else TS.sel = {}; syncCks(); syncBulk(); });
+    function syncCks() { Array.prototype.forEach.call(t.querySelectorAll('.tt-ckone'), function (c) { c.checked = !!TS.sel[c.dataset.name]; }); }
     var tb = el('tbody');
     rows.forEach(function (x) {
       var rec = x.rec, tr = el('tr', 'tt-st-' + x.s.k), ans = rec ? rec.ans || {} : {}, order = rec && rec.order ? rec.order : items.map(function (y) { return y.key; });
@@ -399,14 +429,12 @@
       var ex = ((Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[x.name.toLowerCase().replace(/\s+/g, ' ').trim()]) || 0)) * 60000;
       if (rec && timed && TC.timing(def) === 'minutes') left = mmss(def.minutes * 60000 + ex - (rec.used || 0) - (rec.st === 'writing' ? Math.max(0, now - rec.at) : 0));
       else if (timed && TC.timing(def) === 'period' && (!rec || rec.st === 'writing' || rec.st === 'left')) left = mmss(TC.endsAt(def, live) + ex - now);
-      tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="dot ' + x.s.k + '"></span>' + esc(x.s.t) + (rec && rec.st === 'writing' && !rec.fs ? ' <span class="tag">not full screen</span>' : '') + (rec && rec.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + rec.leaves + '</span>' : '') + '</td>' +
+      tr.innerHTML = '<td class="tt-ck">' + (x.s.k === 'left' ? '<input type="checkbox" class="tt-ckone" aria-label="Select ' + esc(x.name) + '"' + (TS.sel[x.name] ? ' checked' : '') + '>' : '') + '</td><td><b>' + esc(x.name) + '</b></td><td><span class="dot ' + x.s.k + '"></span>' + esc(x.s.t) + (rec && rec.st === 'writing' && !rec.fs ? ' <span class="tag">not full screen</span>' : '') + (rec && rec.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + rec.leaves + '</span>' : '') + '</td>' +
         '<td>' + (rec ? (rec.n || 0) + ' / ' + items.length : '—') + '</td><td class="tt-dots">' + (rec ? dots : '') + '</td><td>' + (rec && rec.st === 'writing' ? 'Q' + esc(pageNum(def, order, rec.cur)) : '—') + '</td><td>' + left + '</td><td>' + (rec ? ago(rec.at) : '—') + '</td><td class="acts"></td>';
-      var a = tr.lastChild;
-      function reopen(msg) {
-        if (msg && !confirm(msg)) return;
-        var p0 = live.ending ? (confirm('“End for everyone” is on, so ' + x.name + ' would be ended again right away. Turn it off?') ? ctl('resume') : null) : null;
-        Promise.resolve(p0).then(function () { ctl('unlock', x.name, rec.st === 'time' ? 5 : 0); });
-      }
+      var a = tr.lastChild, ck = tr.querySelector('.tt-ckone');
+      if (ck) { ck.dataset.name = x.name; ck.addEventListener('change', function () { if (ck.checked) TS.sel[x.name] = 1; else delete TS.sel[x.name]; syncBulk(); }); }
+      function reopen(msg) { startUnlock([{ name: x.name, mins: rec.st === 'time' ? 5 : 0 }], msg); }
+      if (x.s.k === 'unl') { tb.appendChild(tr); return; } // on its way: no buttons until the student is back in (or the unlock fails)
       if (rec && rec.st === 'left') a.appendChild(button('btn-small btn-primary', 'Unlock', function () { reopen(''); }));
       if (rec && rec.st !== 'writing' && rec.st !== 'left') a.appendChild(button('btn-small btn-ghost', rec.st === 'time' ? 'Reopen +5 min' : 'Reopen', function () { reopen('Let ' + x.name + ' reopen their test and keep working?' + (rec.st === 'time' ? ' They get 5 more minutes.' : '')); }));
       if (rec && rec.st === 'writing' && x.s.k === 'quiet') a.appendChild(button('btn-small btn-primary', 'Move to another device', function () { reopen(x.name + '’s device has gone quiet. Let them carry on from another device (same answers and numbers)? Their first device stops.'); }));
@@ -414,12 +442,63 @@
       if (rec && rec.st === 'writing') a.appendChild(button('btn-small btn-ghost', 'Submit now', function () { if (confirm('Submit ' + x.name + '’s test now?')) ctl('submit', x.name); }));
       tb.appendChild(tr);
     });
-    t.appendChild(tb); var w = el('div', 'tbl-wrap'); w.appendChild(t); body.appendChild(w);
-    body.appendChild(el('p', 'small muted', 'Refreshes every 5 s. A student who leaves the window, switches tabs or leaves full screen is submitted and locked; <b>Unlock</b> lets them carry on with the same numbers and answers (the time they were locked doesn’t count). Dots: grey = not answered, blue = answered' + (TS.showMarks ? ', green = right, red = wrong, amber = not in the right form' : '') + '.'));
+    t.appendChild(tb); var w = el('div', 'tbl-wrap'); w.appendChild(t); body.appendChild(w); syncBulk();
+    body.appendChild(el('p', 'small muted', 'Refreshes every 5 s. A student who leaves the window, switches tabs or leaves full screen is submitted and locked; <b>Unlock</b> lets them carry on with the same numbers and answers (the time they were locked doesn’t count). To let several back in, tick them and press <b>Unlock selected</b>: they go in one request. An unlocked student shows “waiting for them to press Continue” until they do. Dots: grey = not answered, blue = answered' + (TS.showMarks ? ', green = right, red = wrong, amber = not in the right form' : '') + '.'));
   }
   function ctl(op, name, mins) {
     var who = TS.who || '';
-    return api('tctl', { 'class': cls(), op: op, name: name || '', mins: mins || 0, who: who }).then(function (d) { if (!d.ok) alert(d.error); else if (d.live) TS.liveAll[liveKey(who)] = d.live; pollLive(); });
+    return tctlTry({ 'class': cls(), op: op, name: name || '', mins: mins || 0, who: who }).then(function (d) { if (!d.ok) alert(d.error); else if (d.live) TS.liveAll[liveKey(who)] = d.live; pollLive(); });
+  }
+  function pause(ms) { return new Promise(function (res) { setTimeout(res, ms); }); }
+  /* a tctl request that tries again by itself: when the ledger is busy (another request holds its lock) or an answer is lost */
+  function tctlTry(params, n) {
+    n = n || 0;
+    return api('tctl', params).then(function (d) {
+      if (d && d.error === 'busy' && n < 4) return pause(1200 + Math.random() * 1600).then(function () { return tctlTry(params, n + 1); });
+      return d || { ok: false, error: 'no answer from the ledger' };
+    }, function (e) {
+      if (n < 1) return pause(1000).then(function () { return tctlTry(params, n + 1); });
+      return { ok: false, error: 'no answer from the ledger (' + ((e && e.message) || e) + ')' };
+    });
+  }
+  /* Unlocking. Every unlock goes through one queue: one request at a time, and students waiting together in the queue
+     (ticked together, or Unlock pressed on several rows in a row) go in the same request. Each shows "Unlocking…" at once. */
+  var UQ = [], uBusy = false;
+  function startUnlock(list, msg) { // list: [{ name, mins }]
+    if (!list.length || (msg && !confirm(msg))) return;
+    var live = liveHere(), who = list.length === 1 ? list[0].name + ' would' : 'they would';
+    var p0 = live && live.ending ? (confirm('“End for everyone” is on, so ' + who + ' be ended again right away. Turn it off?') ? ctl('resume') : null) : null;
+    Promise.resolve(p0).then(function () { queueUnlock(list); });
+  }
+  function queueUnlock(list) {
+    var who = TS.who || '', k = cls();
+    list.forEach(function (x) { if (TS.sending[x.name]) return; TS.sending[x.name] = 1; delete TS.sel[x.name]; UQ.push({ name: x.name, mins: Number(x.mins) || 0, who: who, klass: k }); });
+    rerender(); flushUnlocks();
+  }
+  function flushUnlocks() {
+    if (uBusy || !UQ.length) return;
+    var f = UQ[0], batch = UQ.filter(function (x) { return x.who === f.who && x.klass === f.klass && x.mins === f.mins; });
+    UQ = UQ.filter(function (x) { return batch.indexOf(x) < 0; });
+    var names = batch.map(function (x) { return x.name; });
+    uBusy = true;
+    sendUnlock(f.klass, f.who, names, f.mins).then(function (d) {
+      uBusy = false;
+      names.forEach(function (n) { delete TS.sending[n]; });
+      if (d.ok && d.live && f.klass === cls()) TS.liveAll[f.who ? norm(f.klass) + '|' + norm(f.who) : f.klass] = d.live;
+      if (!d.ok) alert('Couldn’t unlock ' + names.join(', ') + ': ' + d.error + '. Try again.');
+      rerender(); pollLive(); flushUnlocks();
+    });
+  }
+  function sendUnlock(klass, who, names, mins) {
+    var base = { 'class': klass, op: 'unlock', mins: mins, who: who };
+    if (names.length === 1) return tctlTry(Object.assign({ name: names[0] }, base));
+    return tctlTry(Object.assign({ name: '', names: JSON.stringify(names) }, base)).then(function (d) {
+      if (d.ok || d.error !== 'no student') return d;
+      // a ledger backend from before many-at-once unlocking: the same students, one request each, in turn
+      var out = d, bad = [];
+      return names.reduce(function (p, n) { return p.then(function () { return tctlTry(Object.assign({ name: n }, base)).then(function (r) { if (r.ok) out = r; else bad.push(n + ' (' + r.error + ')'); }); }); }, Promise.resolve())
+        .then(function () { return bad.length ? { ok: false, error: 'these didn’t go through: ' + bad.join(', '), live: out.live } : out; });
+    });
   }
 
   /* ================= results ================= */

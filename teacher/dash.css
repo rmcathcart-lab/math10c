@@ -666,3 +666,15 @@ body.dash .topbar .top-upd.is-saved { display: inline; color: #9a6700; font-weig
 .tbl.kp-tbl th.sortable { user-select: none; }
 .tbl.kp-tbl th.sortable:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
 .tbl.kp-tbl .sarrow { font-size: 10px; margin-left: 4px; }
+
+/* Live monitor: unlocking several at once (tick the locked students, then Unlock selected) */
+.tt-live th.tt-ck, .tt-live td.tt-ck { width: 34px; padding-left: 10px; padding-right: 0; text-align: center; }
+.tt-live .tt-ck input { width: 18px; height: 18px; cursor: pointer; accent-color: #d9534f; vertical-align: middle; }
+.tt-bulk { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; margin: 0 0 10px; border-radius: 12px; background: #fdeceb; border: 2px solid #f1b7b4; }
+.tt-bulk-txt { margin-right: auto; }
+.tt-bulk .btn[disabled] { opacity: .5; cursor: default; }
+.dot.unl { background: #7b5cc9; }
+.tt-st-unl td { background: #f2edfb; }
+.lchip.unl b { color: #6a4bc0; }
+.tt-live td.acts { display: table-cell; text-align: right; white-space: nowrap; } /* a flex <td> stopped the row's tint and lines short */
+.tt-live td.acts .btn + .btn { margin-left: 6px; }

@@ -460,7 +460,10 @@
   setInterval(function () {
     var s = session(); if (!s || !s.token || !URL) return;
     if (document.visibilityState !== 'visible') return;
-    var gap = T && T.rec && T.rec.st === 'writing' ? 8000 : Date.now() - lastAct > 300000 ? 30000 : POLL_MS; // quieter when nobody has touched the page for 5 min
+    // locked out and waiting for the teacher to unlock it: check often, so the unlock shows up within a few seconds (for
+    // 15 minutes; tcheck only reads the cache, so it's cheap). Otherwise quieter when nobody has touched the page for 5 min.
+    var waiting = T && T.rec && (T.rec.st === 'left' || T.rec.st === 'elsewhere') && T.ui && !T.closed;
+    var gap = T && T.rec && T.rec.st === 'writing' ? 8000 : waiting ? (Date.now() - lastAct > 900000 ? 30000 : 3000) : Date.now() - lastAct > 300000 ? 30000 : POLL_MS;
     if (Date.now() - lastCheck >= gap) check(false);
   }, 1000);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && session() && Date.now() - lastCheck > 3000) check(false); });

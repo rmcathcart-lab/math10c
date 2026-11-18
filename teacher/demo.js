@@ -256,7 +256,7 @@
     var ans = {}; P.A.list.slice(0, n).forEach(function (x) { ans[x.key] = x.a; });
     var pages = TC.pages(L.def, P.A.order), nextKey = P.A.order.filter(function (k) { return !ans[k]; })[0], cur = 0;
     pages.forEach(function (pg, pi) { if (pg.parts.some(function (q) { return q.key === nextKey; })) cur = pi; });
-    return { st: st, why: why, ans: ans, n: n, order: P.A.order, cur: cur, at: st === 'writing' ? now - (n * 7919 % 9000) : doneAt, used: Math.min(work, lim || work), leaves: P.leaveAt && el > P.leaveAt ? 1 : 0, fs: true, started: L.launched + P.start, done: doneAt };
+    return { st: st, why: why, unlockN: locked ? 0 : (L.unlock[key(name)] || 0), ans: ans, n: n, order: P.A.order, cur: cur, at: st === 'writing' ? now - (n * 7919 % 9000) : doneAt, used: Math.min(work, lim || work), leaves: P.leaveAt && el > P.leaveAt ? 1 : 0, fs: true, started: L.launched + P.start, done: doneAt };
   }
   function tlive(who) {
     var names = PEOPLE.map(function (p) { return p.name; }).filter(function (n) { return !who || n === who; }), now = Date.now();
@@ -264,10 +264,15 @@
     var recs = {}; names.forEach(function (n) { var r = recOf(n, now); if (r) recs[n] = r; });
     return { ok: true, live: liveInfo(), def: T.live.def, recs: recs, names: names, now: now };
   }
-  function tctl(op, name, mins, who) {
+  function tctl(op, name, mins, who, names) {
     var L = T.live; if (!L || !isMine(who)) return { ok: false, error: 'no live test' };
     var n = key(name || ''), now = Date.now();
-    if (op === 'unlock') { L.unlock[n] = now; delete L.submit[n]; if (Number(mins)) L.extra[n] = (L.extra[n] || 0) + Number(mins); }
+    if (op === 'unlock') {
+      var list = []; try { list = names ? JSON.parse(names) : []; } catch (e) { list = []; }
+      list = list.map(key).filter(function (x) { return x; }); if (n && list.indexOf(n) < 0) list.push(n);
+      if (!list.length) return { ok: false, error: 'no student' };
+      list.forEach(function (m) { L.unlock[m] = now; delete L.submit[m]; if (Number(mins)) L.extra[m] = (L.extra[m] || 0) + Number(mins); });
+    }
     else if (op === 'time') L.extra[n || '*'] = (L.extra[n || '*'] || 0) + (Number(mins) || 0);
     else if (op === 'submit') L.submit[n] = now;
     else if (op === 'end') L.ending = now;
@@ -326,7 +331,7 @@
       case 'cal': return ok({ ok: true, cal: calendar(), noSchool: [] });
       case 'calsync': return ok({ ok: true, sync: false });
       case 'setcal': try { T.cal = p.cal ? JSON.parse(p.cal) : null; } catch (e) { return ok({ ok: false, error: 'bad calendar' }); } T.calSet = true; return ok({ ok: true, cal: T.cal });
-      case 'tctl': return ok(tctl(p.op, p.name, p.mins, p.who));
+      case 'tctl': return ok(tctl(p.op, p.name, p.mins, p.who, p.names));
       case 'tests': return real('tests', p).then(function (d) { if (d && d.ok) { d.live = Object.assign({}, d.live || {}, liveMap()); } return d; });
       case 'retests': return ok(retests());
       case 'setstudent': return ok(setStudent(p));
