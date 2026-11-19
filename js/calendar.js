@@ -268,4 +268,47 @@
 
   /* what's on today (or the next class day) */
   C.on = function (cal, off, date) { return C.layout(cal, off).byDate[date] || []; };
+
+  /* ---------------- practice levels, capped by how much of the practice is done (Ryan, 2026-11-19) ----------------
+   * A practice level is the hardest question answered correctly on the first try, for each outcome. On its own, one
+   * Mastery question would give Mastery. So the level is capped by the share of the required practice for that outcome
+   * that the student has finished (hints and extra tries are fine; extra practice doesn't count either way):
+   *     75% or more → no cap · 50–74% → Progressing at most · 25–49% → Emerging at most · under 25% → Beginning at most
+   * The practice that counts is in the lessons taught before today on the class calendar (not skipped), plus any lesson
+   * the student has started (so jumping ahead to one question of a new lesson counts that whole lesson).
+   * Used by the student's "Your level" and badges, and by the Teacher Ledger (Outcomes, Student, PowerSchool, Email home),
+   * so students see the same level that is graded. Shared, unchanged, by math10c, math15, math20-1 and math10-3. */
+  C.CAPS = [[0.75, null], [0.5, 'PRG'], [0.25, 'EMG'], [0, 'BEG']];
+  C.CAP_FULL = 0.75;
+  /* lessons taught on a class day before today, not skipped: { lessonId: 1 } ({} with no calendar) */
+  C.taughtBefore = function (cal, off, today) {
+    var out = {}; if (!cal || !cal.items || !cal.items.length) return out;
+    var Ly = C.layout(cal, off), skip = cal.skipped || []; today = today || C.today();
+    cal.items.forEach(function (x) { var d = Ly.dateOf[x[0]]; if (d && d < today && skip.indexOf(x[0]) < 0) out[x[0]] = 1; });
+    return out;
+  };
+  /* best: { outcome: level }. o.taught: from C.taughtBefore; o.started(lessonId), o.done(lessonId, itemId): booleans.
+   * → { outcome: { level (capped), raw, capped, done, req, pct, cap, need (more questions to lift the cap) } } */
+  C.capLevels = function (best, o) {
+    var LV = HW.LEVELS, NOL = HW.NO_LEVEL || {}, req = {}, done = {}, out = {}, taught = o.taught || {};
+    (HW.CATALOG || []).forEach(function (u) {
+      (u.lessons || []).forEach(function (c) {
+        var L = HW.lessons && HW.lessons[c.id]; if (!L || L.test || c.intro) return;
+        if (!taught[c.id] && !o.started(c.id)) return;
+        L.items.forEach(function (it) {
+          if (it.extra || NOL[it.outcome]) return;
+          req[it.outcome] = (req[it.outcome] || 0) + 1;
+          if (o.done(c.id, it.id)) done[it.outcome] = (done[it.outcome] || 0) + 1;
+        });
+      });
+    });
+    Object.keys(best).forEach(function (oc) {
+      var lv = best[oc]; if (!lv) return;
+      var r = req[oc] || 0, d = Math.min(done[oc] || 0, r), pct = r ? d / r : 1, cap = null;
+      for (var i = 0; i < C.CAPS.length; i++) if (pct >= C.CAPS[i][0]) { cap = C.CAPS[i][1]; break; }
+      var capped = cap && LV.indexOf(lv) > LV.indexOf(cap);
+      out[oc] = { level: capped ? cap : lv, raw: lv, capped: !!capped, done: d, req: r, pct: pct, cap: cap, need: Math.max(0, Math.ceil(C.CAP_FULL * r - 1e-9) - d) };
+    });
+    return out;
+  };
 })(window);

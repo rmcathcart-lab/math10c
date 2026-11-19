@@ -1,7 +1,7 @@
 /* Teacher Ledger — the PowerSchool tab.
  * 1. Scores for PowerSchool: one file per PowerSchool assignment, in the same format as its scores template (see
  *    powerschool.js), so it can be imported straight into that assignment:
- *      <outcome> HW            practice level (the Outcomes tab's rule: highest level answered correctly)
+ *      <outcome> HW            practice level (the Outcomes tab's rule: highest level answered correctly, capped by the practice done)
  *      <outcome> <exit slip>   highest level right on that exit slip (wrote it but none right: NM; didn't write: blank)
  *      <outcome> Unit n Test   the indicator from the test's boxes, best attempt (class test or a retest)
  *      Unit n Test             the unit grade, best attempt
@@ -251,7 +251,7 @@
     }
     var A = assignments(B, h), checked = lsJ('hw:ps-off:' + st.klass, {});
     if (!A.length) { p.appendChild(el('p', 'muted', 'Nothing to send yet: no practice levels, exit slips or tests for this class.')); return p; }
-    var groups = [['hw', 'Homework (practice)', 'The highest level each student answered correctly in the practice for that outcome — ' + (st.scope === 'class' ? 'in class only' : 'all work') + ', counting ' + (st.rule === 'first' ? 'first-try answers' : st.rule === 'any' ? 'any right answer' : 'first-try answers and answers after a hint') + ' (change this on the Outcomes tab).'],
+    var groups = [['hw', 'Homework (practice)', 'The highest level each student answered correctly in the practice for that outcome, capped by how much of the practice is done (full level at 75%; Progressing at most from 50%, Emerging from 25%, Beginning under 25%) — ' + (st.scope === 'class' ? 'in class only' : 'all work') + ', counting ' + (st.rule === 'first' ? 'first-try answers' : st.rule === 'any' ? 'any right answer' : 'first-try answers and answers after a hint') + ' (change this on the Outcomes tab).'],
       ['exit', 'Exit slips', 'One grade per outcome, summing up every exit slip that had that outcome: ' + ({ avg: 'the average of the student’s levels on those slips', recent: 'the level on the most recent slip the student wrote' }[h.exitRule] || 'the highest level the student showed on any of them') + '. On each slip, a student who got nothing right on the outcome counts as NM; slips a student missed are left out.'],
       ['test', 'Unit tests', 'Each outcome’s indicator from its Beginning, Progressing and Mastery boxes, and the unit grade. A student’s best sitting counts (the class test or a retest).']];
     var t = el('table', 'tbl ps-list'), tb = el('tbody'); t.appendChild(tb);

@@ -251,6 +251,21 @@
   /* ---------------- home ---------------- */
   /* the student's level on each outcome of a unit: the highest question level answered correctly on the first try (no hint,
      no wrong try first; Ryan, 2026-10-25) */
+  /* practice levels capped by how much of the practice is done (js/calendar.js C.capLevels, Ryan 2026-11-19):
+     the same rule as the Teacher Ledger, so students see the level that is graded. → { outcome: info } or null */
+  function capInfo(best) {
+    if (!HW.Cal || !HW.Cal.capLevels) return null;
+    var cd = calData();
+    return HW.Cal.capLevels(best, {
+      taught: HW.Cal.taughtBefore(cd && cd.cal, (cd && cd.noSchool) || []),
+      started: function (lid) { var L = S.lessons[lid]; return !!(L && L.items && Object.keys(L.items).length); },
+      done: function (lid, id) { var r = S.lessons[lid] && S.lessons[lid].items && S.lessons[lid].items[id]; return !!(r && r.s === 'done'); }
+    });
+  }
+  function capText(o, c) {
+    var nm = HW.LEVEL_NAMES[c.raw];
+    return 'You have answered ' + (/^[AEIOU]/.test(nm) ? 'an ' : 'a ') + nm + ' question, but you have done ' + Math.round(c.pct * 100) + '% of the ' + o + ' practice so far (' + c.done + ' of ' + c.req + '), so it counts as ' + HW.LEVEL_NAMES[c.level] + ' for now. Finish ' + c.need + ' more practice question' + (c.need === 1 ? '' : 's') + ' to count your full level.';
+  }
   function unitLevels(u) {
     var LV = HW.LEVELS, best = {}, outs = String(u.outcomes || '').split(/\s*·\s*/).filter(Boolean);
     u.lessons.forEach(function (c) {
@@ -263,14 +278,18 @@
         if (best[it.outcome] == null || LV.indexOf(it.level) > LV.indexOf(best[it.outcome])) best[it.outcome] = it.level;
       });
     });
+    var caps = capInfo(best) || {};
     var wrap = el('span', 'unit-levels', '<span class="ulv-note">Your level:</span>');
-    wrap.title = 'Your level on each outcome: the hardest level of question you have answered correctly on the first try.';
+    wrap.title = 'Your level on each outcome: the hardest level of question you have answered correctly on the first try. It counts in full once you have done 75% of the practice for that outcome.';
     outs.forEach(function (o) {
-      var lv = best[o], i = lv ? LV.indexOf(lv) : -1, dots = '';
+      var c = caps[o], lv = c ? c.level : best[o], i = lv ? LV.indexOf(lv) : -1, dots = '';
       for (var k = 0; k < LV.length; k++) dots += '<i class="' + (k <= i ? 'on lvbg-' + lv : '') + '"></i>';
       var pill = el('button', 'ulv' + (lv ? '' : ' none'), '<b>' + esc(o) + '</b><span class="ulv-dots" aria-hidden="true">' + dots + '</span>' +
-        (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="ulv-none">No level yet</span>'));
-      pill.type = 'button'; pill.dataset.outcome = o; pill.title = 'What is ' + o + '?'; wrap.appendChild(pill);   // tap: the outcome's wording (js/outcomes.js)
+        (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="ulv-none">No level yet</span>') +
+        (c && c.capped ? '<span class="ulv-cap">' + Math.round(c.pct * 100) + '% done</span>' : ''));
+      pill.type = 'button'; pill.dataset.outcome = o; pill.title = c && c.capped ? capText(o, c) : 'What is ' + o + '?';
+      if (c && c.capped) { pill.classList.add('capped'); pill.dataset.capnote = capText(o, c); }
+      wrap.appendChild(pill);   // tap: the outcome's wording (js/outcomes.js), with why it's capped
     });
     return wrap;
   }
@@ -586,15 +605,17 @@
    * question right on the first try, as in "Your level") and their level on released tests and exit slips.
    * A medal that's new or higher since this device last showed them opens big, once. */
   function practiceTiers() {
-    var best = {};
+    var lv = {}, LV = HW.LEVELS, best = {};
     Object.keys(HW.lessons).forEach(function (lid) {
       var lesson = HW.lessons[lid]; if (lesson.test) return;
       var items = (S.lessons[lid] || { items: {} }).items;
       lesson.items.forEach(function (it) {
         var r = items[it.id]; if (!r || r.s !== 'done' || r.credit !== 'first' || it.outcome === 'EXT') return;
-        var t = HW.Medals.tierOf(it.level); if (best[it.outcome] == null || t > best[it.outcome].tier) best[it.outcome] = { tier: t, src: 'from practice' };
+        if (lv[it.outcome] == null || LV.indexOf(it.level) > LV.indexOf(lv[it.outcome])) lv[it.outcome] = it.level;
       });
     });
+    var caps = capInfo(lv) || {};   // capped by the practice done, like "Your level"
+    Object.keys(lv).forEach(function (o) { best[o] = { tier: HW.Medals.tierOf(caps[o] ? caps[o].level : lv[o]), src: 'from practice' }; });
     return best;
   }
   function medalList(results) {

@@ -678,3 +678,8 @@ body.dash .topbar .top-upd.is-saved { display: inline; color: #9a6700; font-weig
 .lchip.unl b { color: #6a4bc0; }
 .tt-live td.acts { display: table-cell; text-align: right; white-space: nowrap; } /* a flex <td> stopped the row's tint and lines short */
 .tt-live td.acts .btn + .btn { margin-left: 6px; }
+
+/* practice levels capped by how much practice is done (js/calendar.js C.capLevels) */
+.omx-l.capped { outline: 2px dashed rgba(0, 0, 0, .45); outline-offset: 1px; }
+.cap-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #7a5a00; background: #fff3cd; border: 1px solid #f0d68a; white-space: nowrap; vertical-align: middle; }
+.cap-note { margin: 4px 0 10px; }

@@ -326,7 +326,8 @@
 
   /* ---------------- derived data ---------------- */
   function derive() {
-    if (st.derived && st.derived.scope === st.scope && st.derived.rule === st.rule) return st.derived;
+    var calNow = st.calFor === st.klass ? st.cal : null, dayNow = HW.Cal ? HW.Cal.today() : '';
+    if (st.derived && st.derived.scope === st.scope && st.derived.rule === st.rule && st.derived.cal === calNow && st.derived.day === dayNow && st.derived.off === st.noSchool) return st.derived;
     var D = st.D, A = D.attempts.slice().sort(function (a, b) { return a[0] - b[0]; }), inOnly = st.scope === 'class';
     var reveals = {}; D.events.forEach(function (e) { if (e[4] === 'reveal') { var k = e[1] + '|' + e[2] + '|' + e[3]; (reveals[k] = reveals[k] || []).push(e[0]); } });
     var items = {}; // name|lesson|item -> record
@@ -357,9 +358,30 @@
     D.days.forEach(function (d) { var s = S(d[1]); s.secs += Number(d[3]) || 0; s.secsIn += Number(d[4]) || 0; });
     A.forEach(function (a) { if (a[7]) return; if (inOnly && !a[14]) return; if (a[9] === 'correct' || a[9] === 'wrong') { var s = S(a[1]); s.answers++; if (a[9] === 'correct') s.right++; } });
     D.events.forEach(function (e) { var s = S(e[1]); if (e[4] === 'leave') { s.leaves++; if (e[6]) s.leavesIn++; } if (e[4] === 'reveal') s.reveals++; });
-    st.derived = { scope: st.scope, rule: st.rule, items: items, stu: stu };
+    /* cap each practice level by how much of the required practice is done (js/calendar.js C.capLevels, Ryan 2026-11-19):
+       s.outcomes is the capped level everywhere in the ledger; s.outcomesRaw the hardest question right; s.capInfo why */
+    if (HW.Cal && HW.Cal.capLevels) {
+      var taught = HW.Cal.taughtBefore(calNow, st.noSchool || []);
+      Object.keys(stu).forEach(function (n) {
+        var s = stu[n];
+        var info = HW.Cal.capLevels(s.outcomes, {
+          taught: taught,
+          started: function (lid) { var L = s.lessons[lid]; return !!(L && Object.keys(L.items).some(function (k) { return L.items[k].attempts; })); },
+          done: function (lid, id) { var r = s.lessons[lid] && s.lessons[lid].items[id]; return !!(r && r.correctAt && (!inOnly || r.correctIn)); }
+        });
+        s.outcomesRaw = s.outcomes; s.capInfo = info; s.outcomes = {};
+        Object.keys(info).forEach(function (o) { s.outcomes[o] = info[o].level; });
+      });
+    }
+    st.derived = { scope: st.scope, rule: st.rule, items: items, stu: stu, cal: calNow, day: dayNow, off: st.noSchool };
     return st.derived;
   }
+  /* a capped practice level (C.capLevels): why, for tooltips, and a short tag */
+  function capWhy(s, o) {
+    var c = s && s.capInfo && s.capInfo[o]; if (!c || !c.capped) return '';
+    return 'Capped at ' + LVN[c.level] + ': hardest question right is ' + LVN[c.raw] + ', but only ' + Math.round(c.pct * 100) + '% of the practice so far is done (' + c.done + ' of ' + c.req + '; ' + c.need + ' more for 75%)';
+  }
+  function capTag(s, o) { var c = s && s.capInfo && s.capInfo[o]; return c && c.capped ? '<span class="cap-tag" title="' + esc(capWhy(s, o)) + '">' + Math.round(c.pct * 100) + '% done</span>' : ''; }
   function students() { var d = derive(); return Object.keys(d.stu).map(function (k) { return d.stu[k]; }).sort(function (a, b) { return a.name.localeCompare(b.name); }); }
   function builtLessons() { var out = []; HW.CATALOG.forEach(function (u) { u.lessons.forEach(function (c) { if (HW.lessons[c.id]) out.push(HW.lessons[c.id]); }); }); return out; }
   function outcomesBuilt() { var o = []; builtLessons().forEach(function (l) { l.items.forEach(function (it) { if (o.indexOf(it.outcome) < 0) o.push(it.outcome); }); }); return o; }
@@ -570,6 +592,7 @@
     bar.appendChild(el('span', 'small muted', 'A level counts when the student answered a question at that level correctly'));
     var seg = el('div', 'seg'); [['first', 'on the first try'], ['hint', 'first try or after a hint'], ['any', 'even after the answer was shown']].forEach(function (r) { var b = el('button', st.rule === r[0] ? 'on' : '', r[1]); b.type = 'button'; b.addEventListener('click', function () { st.rule = r[0]; ls('hw:trule2', r[0]); st.derived = null; render(); }); seg.appendChild(b); });
     bar.appendChild(seg); body.appendChild(bar);
+    body.appendChild(el('p', 'small muted cap-note', 'Capped by the practice done: a level counts in full once 75% of the required practice for the outcome is done (lessons taught before today, plus any lesson the student has started). Under that, it is held at Progressing (50–74% done), Emerging (25–49%) or Beginning (under 25%). Capped levels have a dashed outline; hover for why.'));
     if (!outs.length) { body.appendChild(el('p', 'muted', 'No lessons yet.')); return; }
     if (outs.indexOf(st.oSel) < 0) st.oSel = null;
     // the matrix
@@ -583,7 +606,7 @@
     var tb = el('tbody');
     ss.forEach(function (s2) {
       var row = '<td class="omx-name"><a href="#" class="slink">' + esc(s2.name) + '</a></td>';
-      outs.forEach(function (o) { var lv = s2.outcomes[o]; row += '<td class="omx-c' + (st.oSel === o ? ' sel' : '') + '" data-o="' + esc(o) + '">' + (lv ? '<span class="omx-l lvlbg-' + lv + '" title="' + esc(s2.name + ' · ' + o + ': ' + LVN[lv]) + '">' + lv + '</span>' : '<span class="omx-none" title="' + esc(s2.name + ' · ' + o + ': none yet') + '">·</span>') + '</td>'; });
+      outs.forEach(function (o) { var lv = s2.outcomes[o]; row += '<td class="omx-c' + (st.oSel === o ? ' sel' : '') + '" data-o="' + esc(o) + '">' + (lv ? '<span class="omx-l lvlbg-' + lv + (capWhy(s2, o) ? ' capped' : '') + '" title="' + esc(s2.name + ' · ' + o + ': ' + LVN[lv] + (capWhy(s2, o) ? '\n' + capWhy(s2, o) : '')) + '">' + lv + '</span>' : '<span class="omx-none" title="' + esc(s2.name + ' · ' + o + ': none yet') + '">·</span>') + '</td>'; });
       var tr = el('tr'); tr.innerHTML = row; tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(s2.name); }); tb.appendChild(tr);
     });
     t.appendChild(tb);
@@ -629,7 +652,7 @@
     var h = '<thead><tr><th>Student</th><th>Level reached</th>'; LV.forEach(function (l) { h += '<th class="c">' + l + '<div class="th-sub">' + sub + '</div></th>'; }); t.innerHTML = h + '</tr></thead>';
     var tb = el('tbody');
     ss.forEach(function (s) {
-      var lv = s.outcomes[o], row = '<td><a href="#" class="slink">' + esc(s.name) + '</a></td><td>' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted">—</span>') + '</td>';
+      var lv = s.outcomes[o], row = '<td><a href="#" class="slink">' + esc(s.name) + '</a></td><td>' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' + capTag(s, o) : '<span class="muted">—</span>') + '</td>';
       LV.forEach(function (l) { var a = s.levelAcc[o + '|' + l]; row += '<td class="c">' + (a && a.tried ? '<span class="acc" style="--a:' + (a.right / a.tried) + '" title="' + a.tried + ' tried: ' + a.first + ' first try, ' + a.hint + ' after a hint, ' + a.shown + ' after the answer was shown">' + a.right + '/' + a.tried + '</span>' : '<span class="muted">·</span>') + '</td>'; });
       var tr = el('tr'); tr.innerHTML = row; tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(s.name); }); tb.appendChild(tr);
     });
@@ -731,7 +754,7 @@
     // outcomes
     var oc = el('div', 'panel'); oc.appendChild(el('h3', '', 'Outcome levels'));
     var orow = el('div', 'ochips');
-    outcomesBuilt().forEach(function (o) { var lv = s.outcomes[o]; orow.appendChild(el('div', 'ochip', '<b>' + o + '</b> ' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted">none yet</span>'))); });
+    outcomesBuilt().forEach(function (o) { var lv = s.outcomes[o]; orow.appendChild(el('div', 'ochip', '<b>' + o + '</b> ' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' + capTag(s, o) : '<span class="muted">none yet</span>'))); });
     oc.appendChild(orow); body.appendChild(oc);
     // units: a heading with the unit's progress that opens to its lessons (what is open is kept in st.sOpen)
     st.sOpen = st.sOpen || (function () { try { return JSON.parse(ls('hw:tsopen') || '{}'); } catch (e) { return {}; } })();
