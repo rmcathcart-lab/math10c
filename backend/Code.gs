@@ -164,6 +164,7 @@ function doGet(e) {
     if (a === 'tctl') return json_(tctl_(p['class'], p.op, p.name, p.mins, p.who, p.names), cb);
     if (a === 'retests') return json_(retests_(p['class']), cb);
     if (a === 'retestset') return json_(retestSet_(p.id, p.status), cb);
+    if (a === 'retestopen') return json_(retestOpen_(p['class'], p.op, p.units, p.id, p.all === '1'), cb);
     if (a === 'launchretest') return json_(launchRetest_(p.id, p.test), cb);
     if (a === 'sessions') return json_(sessions_(p['class']), cb);
     if (a === 'tresults') return json_(tresults_(p.session), cb);
@@ -838,33 +839,55 @@ function release_(sid, on) {
  * Retests tab; the teacher launches a test for that one student (launch_ with who), and closing it marks the
  * request written.
  *   Retests   id, class, name, unit, requested, status (requested | open | done | dismissed | cancelled), session,
- *             updated, test, info (what the student's device reported: required / extra counts)
+ *             updated, test, info (what the student's device reported: required / extra counts),
+ *             grant (the id of the teacher's opening it came through, or '' for one unlocked by practice)
+ * A student has at most one request waiting or open at a time (any unit).
+ * OPENINGS (2026-11-19): the teacher can open units for retesting from the ledger, for one class or every class, so
+ * students can ask without finishing the practice (e.g. units taught before the site was used). Each opening gives each
+ * student ONE retest from its units; once they've used it (a request that wasn't cancelled or dismissed), the opening is
+ * closed for them. Script property RETESTOPEN: { classCode: [{ id, units: [1, 2, 3, 4], at }] }.
  * ============================================================ */
-COLS.Retests = ['id', 'class', 'name', 'unit', 'requested', 'status', 'session', 'updated', 'test', 'info'];
-function retestRows_() { return rows_('Retests').map(function (r, i) { return { row: i + 2, id: String(r[0]), klass: String(r[1]), name: String(r[2]), unit: Number(r[3]) || 0, requested: ms_(r[4]), status: String(r[5]), session: String(r[6] || ''), updated: ms_(r[7]), test: String(r[8] || ''), info: String(r[9] || '') }; }); }
-function retestOut_(x) { return { id: x.id, name: x.name, unit: x.unit, requested: x.requested, status: x.status, session: x.session, updated: x.updated, test: x.test, info: x.info }; }
+COLS.Retests = ['id', 'class', 'name', 'unit', 'requested', 'status', 'session', 'updated', 'test', 'info', 'grant'];
+function retestRows_() { return rows_('Retests').map(function (r, i) { return { row: i + 2, id: String(r[0]), klass: String(r[1]), name: String(r[2]), unit: Number(r[3]) || 0, requested: ms_(r[4]), status: String(r[5]), session: String(r[6] || ''), updated: ms_(r[7]), test: String(r[8] || ''), info: String(r[9] || ''), grant: String(r[10] || '') }; }); }
+function retestOut_(x) { return { id: x.id, name: x.name, unit: x.unit, requested: x.requested, status: x.status, session: x.session, updated: x.updated, test: x.test, info: x.info, grant: x.grant }; }
+function openings_() { var o = list_('RETESTOPEN'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; }
+function openFor_(klass) { var o = openings_()[norm_(klass)]; return Array.isArray(o) ? o : []; }
+function grantUsed_(x) { return !!x.grant && x.status !== 'cancelled' && x.status !== 'dismissed'; }
+function pending_(x) { return x.status === 'requested' || x.status === 'open'; }
 function myRetests_(p) {
   var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
   var k = norm_(who.klass), n = norm_(who.name);
-  return { ok: true, retests: retestRows_().filter(function (x) { return norm_(x.klass) === k && norm_(x.name) === n; }).map(retestOut_) };
+  return { ok: true, retests: retestRows_().filter(function (x) { return norm_(x.klass) === k && norm_(x.name) === n; }).map(retestOut_), openings: openFor_(who.klass) };
 }
-/* ?action=reqretest&class&name&token&unit[&cancel=1][&info=…] */
+/* ?action=reqretest&class&name&token&unit[&cancel=1][&info=…][&grant=opening id]
+   Errors: 'pending' (a request for another unit is already waiting or open: one at a time), 'closed' (that opening was
+   closed or doesn't have this unit), 'used' (this student already used that opening) */
 function reqRetest_(p) {
   var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
   var unit = Math.round(Number(p.unit) || 0); if (unit < 1 || unit > 20) return { ok: false, error: 'bad unit' };
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var k = norm_(who.klass), n = norm_(who.name), sh = sheet_('Retests'), now = new Date();
-    var mine = retestRows_().filter(function (x) { return norm_(x.klass) === k && norm_(x.name) === n && x.unit === unit; });
-    var active = mine.filter(function (x) { return x.status === 'requested' || x.status === 'open'; })[0];
+    var all = retestRows_().filter(function (x) { return norm_(x.klass) === k && norm_(x.name) === n; });
+    var pend = all.filter(pending_), active = pend.filter(function (x) { return x.unit === unit; })[0];
+    var out = function (o) { var m = myRetests_(p); o.retests = m.retests; o.openings = m.openings; return o; };
     if (p.cancel === '1') {
       if (!active || active.status !== 'requested') return { ok: false, error: 'nothing to cancel' };
       sh.getRange(active.row, 6, 1, 3).setValues([['cancelled', '', now]]);
     } else {
-      if (active) return { ok: true, already: true, retests: myRetests_(p).retests };
-      sh.appendRow(['R' + Date.now().toString(36), who.klass, who.name, unit, now, 'requested', '', now, '', clean_(p.info, 200)]);
+      if (active) return out({ ok: true, already: true });
+      if (pend.length) return out({ ok: false, error: 'pending', unit: pend[0].unit });
+      var grant = '';
+      if (p.grant) {
+        var g = openFor_(who.klass).filter(function (o) { return o.id === String(p.grant); })[0];
+        if (!g || (g.units || []).indexOf(unit) < 0) return out({ ok: false, error: 'closed' });
+        if (all.some(function (x) { return x.grant === g.id && grantUsed_(x); })) return out({ ok: false, error: 'used' });
+        grant = g.id;
+      }
+      header_('Retests');
+      sh.appendRow(['R' + Date.now().toString(36), who.klass, who.name, unit, now, 'requested', '', now, '', clean_(p.info, 200), grant]);
     }
-    return { ok: true, retests: myRetests_(p).retests };
+    return out({ ok: true });
   } finally { lock.releaseLock(); }
 }
 /* the Retests tab: every request for the class, and the finished tests of each requesting student (to show grades) */
@@ -879,13 +902,33 @@ function retests_(klass) {
     results.push({ session: s.id, name: String(r[3]), status: r[4], marks: String(r[11] || ''), score: r[12], total: r[13] });
   });
   var used = {}; results.forEach(function (x) { used[x.session] = 1; });
-  return { ok: true, retests: list.map(retestOut_), results: results, sessions: Object.keys(used).map(function (id) { return sess[id]; }), live: testLive_() };
+  return { ok: true, retests: list.map(retestOut_), results: results, sessions: Object.keys(used).map(function (id) { return sess[id]; }), live: testLive_(), openings: openFor_(c.code) };
+}
+/* ?action=retestopen&class&op=add&units=[1,2,3,4][&all=1]  or  op=remove&id=…[&all=1]  (all: every class) */
+function retestOpen_(klass, op, units, id, all) {
+  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var o = openings_(), codes = all ? classes_().map(function (x) { return x.code; }) : [c.code];
+    if (op === 'add') {
+      var u = []; try { (JSON.parse(units || '[]') || []).forEach(function (v) { v = Math.round(Number(v)); if (v >= 1 && v <= 20 && u.indexOf(v) < 0) u.push(v); }); } catch (e) {}
+      if (!u.length) return { ok: false, error: 'pick at least one unit' };
+      u.sort(function (a, b) { return a - b; });
+      var g = { id: 'O' + Date.now().toString(36), units: u, at: Date.now() };
+      codes.forEach(function (k) { o[k] = (Array.isArray(o[k]) ? o[k] : []).concat([g]); });
+    } else if (op === 'remove') {
+      codes.forEach(function (k) { if (!Array.isArray(o[k])) return; o[k] = o[k].filter(function (x) { return x.id !== String(id); }); if (!o[k].length) delete o[k]; });
+    } else return { ok: false, error: 'bad op' };
+    save_('RETESTOPEN', o);
+    return { ok: true, openings: o[c.code] || [] };
+  } finally { lock.releaseLock(); }
 }
 function retestSet_(id, status) {
   if (['dismissed', 'requested', 'done'].indexOf(status) < 0) return { ok: false, error: 'bad status' };
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
-    var x = retestRows_().filter(function (r) { return r.id === id; })[0]; if (!x) return { ok: false, error: 'unknown request' };
+    var rows = retestRows_(), x = rows.filter(function (r) { return r.id === id; })[0]; if (!x) return { ok: false, error: 'unknown request' };
+    if (status === 'requested' && rows.some(function (r) { return r.id !== x.id && norm_(r.klass) === norm_(x.klass) && norm_(r.name) === norm_(x.name) && pending_(r); })) return { ok: false, error: x.name + ' already has another retest request waiting or open.' };
     sheet_('Retests').getRange(x.row, 6, 1, 3).setValues([[status, status === 'requested' ? '' : x.session, new Date()]]);
     return { ok: true };
   } finally { lock.releaseLock(); }

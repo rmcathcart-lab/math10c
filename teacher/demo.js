@@ -310,7 +310,7 @@
     var names = {}; retestList().forEach(function (x) { names[key(x.name)] = 1; });
     var res = [], used = {};
     sessions().forEach(function (s) { if (s.kind === 'exit') return; s.rows.forEach(function (r) { if (!names[key(r.name)]) return; res.push({ session: s.id, name: r.name, status: r.status, marks: r.marks || '', score: r.score, total: r.total }); used[s.id] = 1; }); });
-    return { ok: true, retests: retestList().map(function (x) { return Object.assign({}, x); }), results: res, live: liveMap(),
+    return { ok: true, retests: retestList().map(function (x) { return Object.assign({}, x); }), results: res, live: liveMap(), openings: (T.rto || []).slice(),
       sessions: sessions().filter(function (s) { return used[s.id]; }).map(function (s) { return { id: s.id, test: s.test, title: s.title, launched: s.launched, closed: s.closed, released: s.released, def: s.def, student: s.student || '' }; }) };
   }
   function retestSet(id, status) { var x = retestList().filter(function (r) { return r.id === id; })[0]; if (!x) return { ok: false, error: 'unknown request' }; x.status = status; x.updated = Date.now(); if (status === 'requested') x.session = ''; return { ok: true }; }
@@ -336,6 +336,12 @@
       case 'retests': return ok(retests());
       case 'setstudent': return ok(setStudent(p));
       case 'retestset': return ok(retestSet(p.id, p.status));
+      case 'retestopen': { // the demo's openings live in memory only
+        T.rto = T.rto || [];
+        if (p.op === 'add') { var us = []; try { us = JSON.parse(p.units || '[]'); } catch (e) {} if (!us.length) return ok({ ok: false, error: 'pick at least one unit' }); T.rto.push({ id: 'O' + Date.now().toString(36), units: us, at: Date.now() }); }
+        else if (p.op === 'remove') T.rto = T.rto.filter(function (o) { return o.id !== p.id; });
+        return ok({ ok: true, openings: T.rto.slice() });
+      }
       case 'launchretest': return real('tests', {}).then(function (d) {
         var x = retestList().filter(function (r) { return r.id === p.id; })[0]; if (!x || x.status !== 'requested') return { ok: false, error: 'not requested' };
         var t = d && d.ok ? (d.tests || []).filter(function (q) { return q.id === p.test; })[0] : null;

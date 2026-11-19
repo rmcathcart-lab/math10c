@@ -4,11 +4,13 @@
  * student's practice looks like now, the tests they've written for that unit (with the best grade, which is the one that
  * counts), and buttons to open a retest for that one student (a test of the unit, with new numbers, live alongside
  * whatever the class is doing), dismiss the request, or watch / see the results of a retest already opened.
- * Backend: backend/Code.gs RETESTS (retests, retestset, launchretest) and the one-student launches in TEST MODE. */
+ * Openings (2026-11-19): "Open units for retesting" lets every student in the class (or every class) ask for ONE retest
+ * from the units picked, practice or not; a student has one request waiting or open at a time.
+ * Backend: backend/Code.gs RETESTS (retests, retestset, launchretest, retestopen) and the one-student launches in TEST MODE. */
 (function (root) {
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc, TC = HW.TestCore, D = HW.Dash, st = D.state;
-  var R = { klass: '', data: null, tests: null, pick: {}, busy: null, at: 0, showOld: false };
+  var R = { klass: '', data: null, tests: null, pick: {}, busy: null, at: 0, showOld: false, oPick: {}, oAll: false, oBusy: false };
   function api(a, p) { return D.api(a, p); }
   function cls() { return st.klass; }
   function button(c, html, fn) { var b = el('button', 'btn ' + c, html); b.type = 'button'; b.addEventListener('click', fn); return b; }
@@ -82,10 +84,11 @@
     var waiting = all.filter(function (x) { return x.status === 'requested'; }), open = all.filter(function (x) { return x.status === 'open'; });
     var old = all.filter(function (x) { return x.status !== 'requested' && x.status !== 'open'; });
     var top = el('div', 'tt-top');
-    top.appendChild(el('div', '', '<h2 class="tt-h">Retests</h2><div class="small muted">A student can ask for a retest once every required question in a unit is done <b>without seeing the solution</b> (after a retest, the extra practice too). Opening one launches a test of that unit for just that student, with new numbers; it runs alongside anything the class is doing. When a student has more than one test for a unit, the <b>best</b> grade counts.</div>'));
+    top.appendChild(el('div', '', '<h2 class="tt-h">Retests</h2><div class="small muted">A student can ask for a retest once every required question in a unit is done <b>without seeing the solution</b> (after a retest, the extra practice too), or when you open the unit for retesting (below). A student can have one request waiting at a time. Opening one launches a test of that unit for just that student, with new numbers; it runs alongside anything the class is doing. When a student has more than one test for a unit, the <b>best</b> grade counts.</div>'));
     body.appendChild(top);
     if (open.length) body.appendChild(section('Open now', open, 'open'));
     body.appendChild(section('Waiting', waiting, 'waiting'));
+    body.appendChild(openPanel());
     if (old.length) {
       var p = el('div', 'panel rt-old');
       var h = el('h3', '', 'Written or closed <span class="muted small">(' + old.length + ')</span> ');
@@ -113,7 +116,7 @@
         return '<button type="button" class="rt-test' + (q.best ? ' best' : '') + (q.grade == null ? ' unmarked' : '') + '" data-sid="' + esc(q.session) + '" title="' + esc(q.title) + ' · ' + day(q.launched) + (q.best ? ' · the best grade: this one counts' : '') + (q.grade == null ? ' · open the results and press Save marks to see the grade here' : ' · open the results') + '">' + (q.retest ? 'Retest' : 'Test') + ' ' + day(q.launched) + ' <b>' + (q.grade == null ? 'not marked yet' : q.grade + '%') + '</b>' + (q.best ? ' ★' : '') + '</button>';
       }).join(' ') : '<span class="muted small">None written yet</span>';
       var stTxt = { done: 'Retest written', dismissed: 'Dismissed', cancelled: 'Cancelled by the student' }[x.status] || '';
-      tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="rt-unit">Unit ' + x.unit + '</span>' + (cat ? '<div class="small muted">' + esc(cat.title) + '</div>' : '') + '</td><td>' + day(x.requested) + '<div class="small muted">' + ago(x.requested) + '</div></td>' +
+      tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="rt-unit">Unit ' + x.unit + '</span>' + (cat ? '<div class="small muted">' + esc(cat.title) + '</div>' : '') + '</td><td>' + day(x.requested) + '<div class="small muted">' + ago(x.requested) + '</div>' + (x.grant ? '<div class="rt-granted" title="Asked through a unit you opened for retesting, so the practice didn’t have to be done">Opened unit</div>' : '') + '</td>' +
         '<td>' + prHtml + '</td><td class="rt-tests">' + tHtml + '</td><td>' + (kind === 'old' ? '<span class="tag">' + stTxt + '</span>' + (x.updated ? '<div class="small muted">' + day(x.updated) + '</div>' : '') : '') + '</td><td class="rt-acts"></td>';
       tr.querySelectorAll('.rt-test[data-sid]').forEach(function (b) { b.addEventListener('click', function () { HW.DashTests.openResults(b.getAttribute('data-sid')); }); });
       var a = tr.lastChild;
@@ -149,6 +152,69 @@
       if (!d.ok) { btn.disabled = false; alert(d.error === 'live' ? x.name + ' already has a retest open.' : 'Couldn’t open it: ' + d.error); return; }
       return load().then(function () { HW.DashTests.watch(x.name); });
     });
+  }
+  /* ---- opening units for retesting ---- */
+  function unitsTxt(us) {
+    us = (us || []).slice().sort(function (a, b) { return a - b; });
+    if (us.length === 1) return 'Unit ' + us[0];
+    var run = us.every(function (v, i) { return !i || v === us[i - 1] + 1; });
+    return 'Units ' + (run ? us[0] + '–' + us[us.length - 1] : us.slice(0, -1).join(', ') + ' and ' + us[us.length - 1]);
+  }
+  function realClasses() { return (st.classes || []).filter(function (c) { return !(HW.DashDemo && c.code === HW.DashDemo.CODE); }); }
+  function openPanel() {
+    var ops = R.data.openings || [], p = el('div', 'panel rt-openings'), nCls = realClasses().length;
+    p.appendChild(el('h3', '', 'Open units for retesting'));
+    p.appendChild(el('p', 'small muted', 'Retests stay locked until a student finishes a unit’s practice. Open units here to let every student ask for <b>one retest</b> from them, practice or not (units taught before the class used the site, say). Once a student has asked, those units close for them again; a request you dismiss, or one they cancel, gives it back.'));
+    if (ops.length) {
+      var ul = el('div', 'rt-oplist');
+      ops.forEach(function (o) {
+        var who = {}; (R.data.retests || []).forEach(function (x) { if (x.grant === o.id && x.status !== 'cancelled' && x.status !== 'dismissed') who[norm(x.name)] = 1; });
+        var n = Object.keys(who).length, row = el('div', 'rt-op');
+        row.appendChild(el('span', 'rt-op-u', '<b>' + esc(unitsTxt(o.units)) + '</b> <span class="small muted">· opened ' + day(o.at) + ' · ' + (n ? 'used by ' + n + ' student' + (n === 1 ? '' : 's') : 'not used yet') + '</span>'));
+        row.appendChild(button('btn-ghost btn-small rt-op-close', 'Close', function (e) {
+          var every = R.oAll && nCls > 1;
+          if (!confirm('Close ' + unitsTxt(o.units) + ' for retesting ' + (every ? 'in every class' : 'in this class') + '?\n\nRequests already made stay in the list.')) return;
+          setOpening({ op: 'remove', id: o.id }, e.target);
+        }));
+        ul.appendChild(row);
+      });
+      p.appendChild(ul);
+    }
+    var units = []; HW.CATALOG.forEach(function (c) { if (c.unit && units.indexOf(c.unit) < 0) units.push(c.unit); }); units.sort(function (a, b) { return a - b; });
+    var f = el('div', 'rt-opform');
+    units.forEach(function (u) {
+      var lab = el('label', 'rt-opu'), cb = el('input'); cb.type = 'checkbox'; cb.checked = !!R.oPick[u];
+      cb.addEventListener('change', function () { R.oPick[u] = cb.checked; });
+      var cat = unitCat(u); lab.appendChild(cb); lab.appendChild(el('span', '', 'Unit ' + u)); if (cat) lab.title = cat.title;
+      if (cat && HW.unitStyle) lab.setAttribute('style', HW.unitStyle(u));
+      f.appendChild(lab);
+    });
+    p.appendChild(f);
+    var acts = el('div', 'rt-opacts');
+    if (nCls > 1 && !(HW.DashDemo && cls() === HW.DashDemo.CODE)) {
+      var al = el('label', 'rt-opall small'), ac = el('input'); ac.type = 'checkbox'; ac.checked = R.oAll;
+      ac.addEventListener('change', function () { R.oAll = ac.checked; });
+      al.appendChild(ac); al.appendChild(el('span', '', 'Every class (all ' + nCls + '), not just this one'));
+      acts.appendChild(al);
+    }
+    acts.appendChild(button('btn-primary btn-small rt-op-open', 'Open for retesting', function (e) {
+      var us = units.filter(function (u) { return R.oPick[u]; });
+      if (!us.length) { alert('Tick the units to open first.'); return; }
+      var every = R.oAll && nCls > 1;
+      if (!confirm('Open ' + unitsTxt(us) + ' for retesting ' + (every ? 'in every class' : 'in this class') + '?\n\nEach student can then ask for one retest from ' + (us.length > 1 ? 'these units' : 'this unit') + ', whether or not they’ve done the practice.')) return;
+      setOpening({ op: 'add', units: JSON.stringify(us) }, e.target, function () { R.oPick = {}; });
+    }));
+    p.appendChild(acts);
+    return p;
+  }
+  function setOpening(q, btn, done) {
+    if (R.oBusy) return; R.oBusy = true; if (btn) btn.disabled = true;
+    q['class'] = cls(); if (R.oAll && realClasses().length > 1) q.all = 1;
+    api('retestopen', q).then(function (d) {
+      R.oBusy = false;
+      if (!d.ok) { if (btn) btn.disabled = false; alert(d.error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for opening units: paste backend/Code.gs into the Apps Script project and deploy a new version.' : 'Couldn’t do that: ' + d.error); return; }
+      R.data.openings = d.openings || []; if (done) done(); rerender();
+    }, function (e) { R.oBusy = false; if (btn) btn.disabled = false; alert('Couldn’t reach the ledger: ' + e.message); });
   }
   function setStatus(x, status) { api('retestset', { 'class': cls(), id: x.id, status: status }).then(function (d) { if (!d.ok) alert(d.error); return load(); }).then(rerender); }
 
