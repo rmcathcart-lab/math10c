@@ -681,16 +681,16 @@
    * solution was shown counts once a new version is done without it: r.redo) — and, once the student has written a
    * retest for that unit, every extra practice question is done too. The request goes to the Teacher Ledger's Retests
    * tab; the teacher launches the retest, and it pops up like any test (testmode.js).
-   * The teacher can also open units for retesting (RTO: openings from the ledger): each opening gives one retest from its
-   * units, practice or not. One request waiting or open at a time, across all units. */
-  var RT = null, RTO = [], rtAt = 0, rtBusy = false; // my requests from the ledger (null = not loaded yet), the openings for my class
+   * The teacher can also open a unit for retesting (RTO: the class's open units, from the ledger): the request button
+   * shows whether or not the practice is done. One request waiting or open at a time, across all units. */
+  var RT = null, RTO = [], rtAt = 0, rtBusy = false; // my requests from the ledger (null = not loaded yet), my class's open units
   function loadRetests(force) {
     if (!L.enabled || !session || !session.token || rtBusy) return;
     if (!force && RT && Date.now() - rtAt < 60000) return;
     rtBusy = true;
     L.get('myretests', { 'class': session.klass, name: session.name, token: session.token }, 15000).then(function (d) {
       rtBusy = false; if (!d || !d.ok) return;
-      var was = JSON.stringify([RT, RTO]); RT = d.retests || []; RTO = d.openings || []; rtAt = Date.now();
+      var was = JSON.stringify([RT, RTO]); RT = d.retests || []; RTO = d.open || []; rtAt = Date.now();
       if (was !== JSON.stringify([RT, RTO]) && !cur.lesson && document.body.className === 'home') { var y = scrollY; renderHome(); scrollTo(0, y); }
     }).catch(function () { rtBusy = false; });
   }
@@ -710,19 +710,11 @@
     return n;
   }
   function pendingRt(x) { return x.status === 'requested' || x.status === 'open'; }
-  function grantUsed(o) { return (RT || []).filter(function (x) { return x.grant === o.id && x.status !== 'cancelled' && x.status !== 'dismissed'; })[0] || null; }
-  function unitsTxt(us) { // [1, 2, 3, 4] → "Units 1–4"; [2, 5] → "Units 2 and 5"
-    us = (us || []).slice().sort(function (a, b) { return a - b; });
-    if (us.length === 1) return 'Unit ' + us[0];
-    var run = us.every(function (v, i) { return !i || v === us[i - 1] + 1; });
-    return 'Units ' + (run ? us[0] + '–' + us[us.length - 1] : us.slice(0, -1).join(', ') + ' and ' + us[us.length - 1]);
-  }
-  /* an opening from the teacher that covers this unit and that I haven't used yet */
-  function openingFor(u) { return (RTO || []).filter(function (o) { return (o.units || []).indexOf(u.unit) >= 0 && !grantUsed(o); })[0] || null; }
-  function oneAtATime(box, other) {
-    box.classList.add('rt-wait');
-    box.innerHTML = '<span class="rt-ic" aria-hidden="true">⏳</span><span class="small">Retest ready to request. You can have <b>one request at a time</b>: your Unit ' + other.unit + ' retest is ' + (other.status === 'open' ? 'open' : 'waiting') + '.</span>';
-    return box;
+  /* one retest request at a time: a small note instead of a second request */
+  function rtToast(msg) {
+    var t = document.querySelector('.rt-toast'); if (t) t.remove();
+    t = el('div', 'rt-toast', msg); t.setAttribute('role', 'status'); document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('gone'); setTimeout(function () { t.remove(); }, 400); }, 4000);
   }
   function retestCtl(u) {
     if (!L.enabled || !session || !session.token || !RT) return null;
@@ -739,26 +731,16 @@
       box.appendChild(cx); return box;
     }
     var left = n.reqLeft + n.redo + (written ? n.extraLeft : 0);
-    var other = RT.filter(function (x) { return pendingRt(x) && x.unit !== u.unit; })[0];
-    if (!left && other) return oneAtATime(box, other);
-    var og = left ? openingFor(u) : null;
-    if (og) { // the teacher opened this unit for retesting: no practice needed, one retest from the opening's units
-      if (other) return oneAtATime(box, other);
-      box.classList.add('rt-opened');
-      var ob = el('button', 'btn btn-primary btn-small rt-ask rt-ask-open', 'Request retest'); ob.type = 'button';
-      ob.title = 'Your teacher opened ' + unitsTxt(og.units) + ' for retesting. You get one retest from ' + (og.units.length > 1 ? 'these units' : 'this unit') + '.';
-      ob.addEventListener('click', function () {
-        if (og.units.length > 1 && !confirm('Use your one retest from ' + unitsTxt(og.units) + ' on Unit ' + u.unit + '?')) return;
-        askRetest(u, false, ob, n, og.id);
+    var opened = left && (RTO || []).indexOf(u.unit) >= 0; // the teacher opened this unit: no practice needed
+    if (!left || opened) {
+      if (opened) box.classList.add('rt-opened');
+      var b = el('button', 'btn btn-primary btn-small rt-ask' + (opened ? ' rt-ask-open' : ''), '<span aria-hidden="true">🔓</span> ' + (written ? 'Request another retest' : 'Request retest')); b.type = 'button';
+      b.title = opened ? 'Your teacher opened Unit ' + u.unit + ' for retesting.' : 'All the ' + (written ? 'practice' : 'required practice') + ' for Unit ' + u.unit + ' is done. Ask for a retest.';
+      b.addEventListener('click', function () {
+        var other = RT.filter(function (x) { return pendingRt(x) && x.unit !== u.unit; })[0];
+        if (other) { rtToast('You get one retest at a time. Your Unit ' + other.unit + ' retest is ' + (other.status === 'open' ? 'open now' : 'still waiting') + '.'); return; }
+        askRetest(u, false, b, n, opened);
       });
-      box.appendChild(ob);
-      box.appendChild(el('span', 'small muted rt-opened-note', 'Opened by your teacher · one retest from ' + unitsTxt(og.units)));
-      return box;
-    }
-    if (!left) {
-      var b = el('button', 'btn btn-primary btn-small rt-ask', written ? 'Request another retest' : 'Request retest'); b.type = 'button';
-      b.title = 'All the ' + (written ? 'practice' : 'required practice') + ' for Unit ' + u.unit + ' is done. Ask for a retest.';
-      b.addEventListener('click', function () { askRetest(u, false, b, n); });
       box.appendChild(b); return box;
     }
     // locked: say what's left, and jump to the first question that still needs doing
@@ -773,23 +755,21 @@
     if (!first && written) u.lessons.some(function (c) { var lesson = HW.lessons[c.id]; if (!lesson || lesson.test) return false; var items = (S.lessons[lesson.id] || { items: {} }).items; return lesson.items.some(function (it) { var r = items[it.id]; if (it.extra && !(r && r.s === 'done')) { first = [lesson.id, it.id]; return true; } return false; }); });
     if (first) go.addEventListener('click', function () { location.hash = '#/lesson/' + first[0] + '/' + first[1]; });
     box.appendChild(go);
-    var usedOn = (RTO || []).map(function (o) { return (o.units || []).indexOf(u.unit) >= 0 ? grantUsed(o) : null; }).filter(Boolean)[0];
-    if (usedOn) box.appendChild(el('span', 'small muted rt-opened-note', 'You used the retest your teacher opened on Unit ' + usedOn.unit + '.'));
     return box;
   }
-  function askRetest(u, cancel, btn, n, grant) {
-    btn.disabled = true; var t0 = btn.textContent; btn.textContent = cancel ? 'Cancelling…' : 'Sending…';
+  function askRetest(u, cancel, btn, n, opened) {
+    btn.disabled = true; var t0 = btn.innerHTML; btn.textContent = cancel ? 'Cancelling…' : 'Sending…';
     var p = { 'class': session.klass, name: session.name, token: session.token, unit: u.unit };
     if (cancel) p.cancel = 1;
-    else if (grant) { p.grant = grant; if (n) p.info = 'opened by the teacher; required ' + (n.req - n.reqLeft) + '/' + n.req + ', extra ' + (n.extra - n.extraLeft) + '/' + n.extra; }
+    else if (opened) { p.open = 1; if (n) p.info = 'unit opened by the teacher; required ' + (n.req - n.reqLeft) + '/' + n.req + ', extra ' + (n.extra - n.extraLeft) + '/' + n.extra; }
     else if (n) p.info = 'required ' + n.req + '/' + n.req + ', extra ' + (n.extra - n.extraLeft) + '/' + n.extra;
     L.get('reqretest', p, 15000).then(function (d) {
-      var why = d && { pending: 'You already have a retest request (Unit ' + d.unit + '). You can have one at a time.', closed: 'Your teacher has closed retests for this unit.', used: 'You’ve already used that retest.' }[d.error];
-      if (d && d.retests) { RT = d.retests; RTO = d.openings || RTO; rtAt = Date.now(); }
-      if (why) { alert(why); var y0 = scrollY; renderHome(); scrollTo(0, y0); return; }
-      if (!d || !d.ok) { btn.disabled = false; btn.textContent = t0; alert('That didn’t go through. Check your connection and try again.'); return; }
+      var why = d && { pending: 'You get one retest at a time. Your Unit ' + d.unit + ' retest is still waiting.', closed: 'Your teacher has closed retests for Unit ' + u.unit + '.' }[d.error];
+      if (d && d.retests) { RT = d.retests; RTO = d.open || RTO; rtAt = Date.now(); }
+      if (why) { var y0 = scrollY; renderHome(); scrollTo(0, y0); rtToast(why); return; }
+      if (!d || !d.ok) { btn.disabled = false; btn.innerHTML = t0; alert('That didn’t go through. Check your connection and try again.'); return; }
       var y = scrollY; renderHome(); scrollTo(0, y);
-    }, function () { btn.disabled = false; btn.textContent = t0; alert('That didn’t go through. Check your connection and try again.'); });
+    }, function () { btn.disabled = false; btn.innerHTML = t0; alert('That didn’t go through. Check your connection and try again.'); });
   }
 
   /* ---------------- class calendar ----------------
