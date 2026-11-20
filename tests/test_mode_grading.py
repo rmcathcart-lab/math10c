@@ -42,9 +42,9 @@ async def main():
         await tp.click('.tt-top .btn-primary:has-text("Release")'); await tp.wait_for_timeout(1500)
         rows = get('action=tresults&key=testkey&session=' + sid)['rows']
         print('saved marks:', [(r['name'], r['marks'][-12:], r['score'], r['total']) for r in rows])
-        await bn.goto(BASE + '?class=10c-b'); await bn.wait_for_selector('.tm-res-card', timeout=15000)
-        print('home card:', (await bn.inner_text('.tm-res-card')).replace('\n', ' | '))
-        await bn.click('.tm-res-card'); await bn.wait_for_selector('.tm-res-big')
+        await bn.goto(BASE + '?class=10c-b'); await bn.wait_for_selector('.latest-res', timeout=15000)
+        print('home card:', (await bn.inner_text('.latest-res')).replace('\n', ' | '))
+        await bn.click('.latest-res'); await bn.wait_for_selector('.tm-res-big')
         print('student sees:', (await bn.inner_text('.tm-res-head')).replace('\n', ' | '))
         await bn.screenshot(path='/tmp/tm_g_student.png')
         await b.close()

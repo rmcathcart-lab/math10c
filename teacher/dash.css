@@ -695,3 +695,20 @@ body.dash .topbar .top-upd.is-saved { display: inline; color: #9a6700; font-weig
 .omx-l.capped { outline: 2px dashed rgba(0, 0, 0, .45); outline-offset: 1px; }
 .cap-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #7a5a00; background: #fff3cd; border: 1px solid #f0d68a; white-space: nowrap; vertical-align: middle; }
 .cap-note { margin: 4px 0 10px; }
+
+/* Test / exit slip results (2026-11-19): sortable headings, the first columns frozen when scrolling sideways, and a
+   hovered row that deepens its colours instead of going grey */
+.tbl.tt-res th.sortable { user-select: none; }
+.tbl.tt-res th.sortable:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.tbl.tt-res th.is-sorted { color: var(--ink); }
+.tbl.tt-res .sarrow { font-size: 10px; margin-left: 4px; }
+.tbl.tt-res thead th { z-index: 2; }
+.tbl.tt-res .tt-stk { position: sticky; z-index: 1; background: #fff; }
+.tbl.tt-res thead th.tt-stk { z-index: 3; background: #faf9f6; }
+.tbl.tt-res .tt-stk-last { box-shadow: 6px 0 8px -6px rgba(40, 32, 20, .22); }
+.tbl.tt-res tr.tt-foot td.tt-stk { background: #fff; }
+.tbl.tt-res tbody tr:hover td { background: #f1ede4; }
+.tbl.tt-res tbody tr:hover td.tt-m.m-c, .tbl.tt-res tbody tr:hover td.tt-m.m-C { background: #cdebd8; }
+.tbl.tt-res tbody tr:hover td.tt-m.m-w, .tbl.tt-res tbody tr:hover td.tt-m.m-W { background: #f7d2cd; }
+.tbl.tt-res tbody tr:hover td.tt-m.m-f, .tbl.tt-res tbody tr:hover td.tt-m.m-T, .tbl.tt-res tbody tr:hover td.tt-m.m-s { background: #ffe6a3; }
+.tbl.tt-res tbody tr:hover td.tt-m.m-g, .tbl.tt-res tbody tr:hover td.tt-m.m-O { background: #facdb4; }

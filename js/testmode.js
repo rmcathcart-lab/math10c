@@ -475,18 +475,45 @@
     return L.get('myresults', { 'class': s.klass, name: s.name, token: s.token }, 15000).then(function (d) { results = d && d.ok ? d.results : []; resultsAt = Date.now(); return results; }, function () { return results || []; });
   }
   TM.loadResults = loadResults;
-  TM.home = function (view) {
-    var box = el('section', 'tm-home hidden'); view.appendChild(box);
+  /* (Ryan, 2026-11-19) Results live on their own pages, "Your tests" (#/tests) and "Your exit slips" (#/exits), reached
+     from the menu under the student's name. The home page shows only the newest one, as a chip beside "Next test"
+     (marked New until it's opened). */
+  function seenKey() { var s = session(); return 'hw:resseen:' + (s ? s.klass + '|' + s.name : ''); }
+  function seen() { try { return JSON.parse(localStorage.getItem(seenKey()) || '{}') || {}; } catch (e) { return {}; } }
+  function markSeen(id) { var o = seen(); if (o[id]) return; o[id] = Date.now(); try { localStorage.setItem(seenKey(), JSON.stringify(o)); } catch (e) {} }
+  function scoreText(r) { return !r.marks ? 'not marked yet' : r.kind === 'exit' ? r.score + ' / ' + r.total : TC.outcomeGrades(r.def, r.marks).unit + '%'; }
+  function day(ms, long) { return new Date(ms).toLocaleDateString([], long ? { weekday: 'short', month: 'short', day: 'numeric' } : { month: 'short', day: 'numeric' }); }
+  TM.home = function () {
     loadResults().then(function (list) {
-      if (!list.length) return;
-      box.classList.remove('hidden');
-      box.innerHTML = '<h2 class="tm-home-title">Your tests and exit slips</h2>';
-      var grid = el('div', 'tm-home-list');
+      var box = document.getElementById('home-cal'); if (!box || !list.length) return;
+      var r = list[0], old = box.querySelector('.hh-latest'); if (old) old.remove();
+      var fresh = !seen()[r.id], ex = r.kind === 'exit';
+      var a = el('a', 'hh-latest latest-res ' + (ex ? 'is-exit' : 'is-test') + (fresh ? ' fresh' : ''), '<span aria-hidden="true">' + (ex ? '📋' : '✅') + '</span> <span class="tt-l">' + (fresh ? 'New result: ' : 'Latest result: ') + '</span><b>' + esc(r.title) + '</b><span class="tt-w"> · ' + esc(scoreText(r)) + '</span>');
+      a.href = '#/results/' + r.id; a.title = 'Your ' + (ex ? 'exit slip' : 'test') + ' from ' + day(r.launched, true) + ': see your answers and the solutions';
+      box.insertBefore(a, box.firstChild);
+    });
+  };
+  /* "Your tests" / "Your exit slips": every released one, newest first */
+  TM.renderList = function (view, kind) {
+    var ex = kind === 'exit', name = ex ? 'Your exit slips' : 'Your tests';
+    document.body.className = 'home'; if (HW.App.drawTop) HW.App.drawTop('<a href="#/">Home</a><span class="sep">/</span>' + name);
+    view.innerHTML = '<div class="loading">Loading…</div>'; window.scrollTo(0, 0);
+    results = null;
+    loadResults().then(function (all) {
+      var list = all.filter(function (r) { return (r.kind === 'exit') === ex; }), sn = seen();
+      view.innerHTML = '';
+      var head = el('div', 'rl-head', '<h1>' + name + '</h1>');
+      var sw = el('a', 'btn btn-ghost btn-small rl-switch', ex ? '✅ Your tests' : '📋 Your exit slips'); sw.href = ex ? '#/tests' : '#/exits'; head.appendChild(sw);
+      view.appendChild(head);
+      if (!list.length) { view.appendChild(el('div', 'panel rl-empty', '<p>No ' + (ex ? 'exit slips' : 'tests') + ' to show yet. They appear here once your teacher has marked them and released the results.</p>')); return; }
+      var box = el('div', 'rl-list');
       list.forEach(function (r) {
-        var a = el('a', 'tm-res-card tm-res-' + (r.kind === 'exit' ? 'exit' : 'test'), '<span class="tm-kind">' + (r.kind === 'exit' ? 'Exit slip' : 'Test') + '</span><b>' + esc(r.title) + '</b><span class="tm-res-score">' + (!r.marks ? 'Not marked yet' : r.kind === 'exit' ? r.score + ' / ' + r.total : TC.outcomeGrades(r.def, r.marks).unit + '%') + '</span><span class="muted small">' + new Date(r.launched).toLocaleDateString([], { month: 'short', day: 'numeric' }) + '</span>');
-        a.href = '#/results/' + r.id; grid.appendChild(a);
+        var u = r.def && r.def.unit, a = el('a', 'rl-row ' + (ex ? 'is-exit' : 'is-test') + (sn[r.id] ? '' : ' fresh'));
+        if (u && HW.unitStyle) a.setAttribute('style', HW.unitStyle(Number(u)));
+        a.innerHTML = '<span class="rl-main"><b>' + esc(r.title) + '</b>' + (sn[r.id] ? '' : ' <span class="rl-new">New</span>') + '<span class="rl-date">' + esc(day(r.launched, true)) + '</span></span><span class="rl-score">' + esc(scoreText(r)) + '</span><span class="rl-go" aria-hidden="true">›</span>';
+        a.href = '#/results/' + r.id; box.appendChild(a);
       });
-      box.appendChild(grid);
+      view.appendChild(box);
     });
   };
   TM.renderResults = function (view, sid) {
@@ -497,6 +524,8 @@
       var r = list.filter(function (x) { return x.id === sid; })[0];
       view.innerHTML = '';
       if (!r) { view.appendChild(el('div', 'panel', '<p>These results aren’t available. <a href="#/">Back</a></p>')); return; }
+      markSeen(r.id);
+      if (HW.App.drawTop) HW.App.drawTop('<a href="#/">Home</a><span class="sep">/</span><a href="#/' + (r.kind === 'exit' ? 'exits">Your exit slips' : 'tests">Your tests') + '</a><span class="sep">/</span>' + esc(r.title));
       var s = session(), k = TC.skey(s.klass, s.name), items = TC.items(r.def), order = TC.order(r.def, k, r.id), idx = {};
       items.forEach(function (x, i) { idx[x.key] = i; });  // index into items; marks are read at items[i].pos
       var sum = TC.summary(r.def, r.marks || '');

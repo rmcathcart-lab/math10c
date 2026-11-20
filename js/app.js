@@ -67,9 +67,25 @@
       }
       right.appendChild(calcB);
       if (L.enabled) { var dot = el('span', 'sync-dot' + (L.ok === false ? ' bad' : L.ok ? ' good' : ''), ''); dot.title = L.ok === false ? 'Can’t reach your teacher’s ledger right now — your work is saved on this device and will be sent later.' : 'Your work is being saved for your teacher.'; right.appendChild(dot); }
-      var who = el('button', 'btn btn-ghost who', esc(session.name) + (session.klass ? ' <span class="muted">· ' + esc(session.klass) + '</span>' : '')); who.type = 'button'; who.title = 'Your stats (and sign out)'; who.setAttribute('aria-label', 'Your stats: ' + session.name);
-      who.addEventListener('click', function () { location.hash = '#/me'; });
-      right.appendChild(who);
+      // the student's name opens a little menu: their tests, their exit slips, their stats (Ryan, 2026-11-19)
+      var wrap = el('div', 'who-wrap');
+      var who = el('button', 'btn btn-ghost who', esc(session.name) + (session.klass ? ' <span class="muted">· ' + esc(session.klass) + '</span>' : '') + ' <span class="who-car" aria-hidden="true">▾</span>'); who.type = 'button'; who.title = 'Your tests, exit slips and stats';
+      who.setAttribute('aria-haspopup', 'menu'); who.setAttribute('aria-expanded', 'false');
+      var menu = el('div', 'who-menu'); menu.setAttribute('role', 'menu'); menu.hidden = true;
+      [['#/tests', '✅', 'Your tests'], ['#/exits', '📋', 'Your exit slips'], ['#/me', '📊', 'Your stats']].forEach(function (m) {
+        var a = el('a', 'who-item', '<span aria-hidden="true">' + m[1] + '</span> ' + m[2]); a.href = m[0]; a.setAttribute('role', 'menuitem');
+        a.addEventListener('click', function () { shut(); }); menu.appendChild(a);
+      });
+      function shut() { menu.hidden = true; who.setAttribute('aria-expanded', 'false'); document.removeEventListener('click', outside, true); document.removeEventListener('keydown', esck); }
+      function outside(e) { if (!wrap.contains(e.target)) shut(); }
+      function esck(e) { if (e.key === 'Escape') { shut(); who.focus(); } }
+      who.addEventListener('click', function () {
+        if (!menu.hidden) return shut();
+        menu.hidden = false; who.setAttribute('aria-expanded', 'true');
+        document.addEventListener('click', outside, true); document.addEventListener('keydown', esck);
+        var first = menu.querySelector('a'); if (first) first.focus();
+      });
+      wrap.appendChild(who); wrap.appendChild(menu); right.appendChild(wrap);
     }
     top.appendChild(right);
   }
@@ -236,6 +252,7 @@
     if (h[0] === 'results' && HW.TestMode) { leaveLesson(); return HW.TestMode.renderResults(view, h[1]); }
     if (h[0] === 'calendar') { renderHome(); return openCalendar(); }
     if (h[0] === 'me') return renderMe();
+    if ((h[0] === 'tests' || h[0] === 'exits') && HW.TestMode) { leaveLesson(); return HW.TestMode.renderList(view, h[0] === 'tests' ? 'test' : 'exit'); }
     if (h[0] === 'drills' && HW.Drills) {
       leaveLesson(); document.body.className = 'drills';
       var dd = h[1] && HW.Drills.list.filter(function (x) { return x.id === h[1]; })[0];
@@ -342,7 +359,6 @@
     view.appendChild(head); view.appendChild(restoreBox());
     loadCal(); loadRetests();
     var td = homeToday(); if (td) view.appendChild(td);
-    if (HW.TestMode) HW.TestMode.home(view);
     var uhead = el('div', 'units-head', '<h2>Units</h2>');
     uhead.appendChild(el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>'));
     view.appendChild(uhead);
@@ -791,6 +807,7 @@
   /* beside "Hi, …" on the home page: "📝 Next test: Unit 4 Test · Wed, Oct 21" and a Calendar button (opens a pop-up) */
   function homeCalendar(right) {
     right.innerHTML = '';
+    if (HW.TestMode && HW.TestMode.home) HW.TestMode.home(); // the newest result, as a chip beside "Next test" (testmode.js)
     var C = HW.Cal, D = calData(); if (!C || !D) return;
     var nt = C.nextTest(D.cal, D.noSchool, C.today());
     if (nt) {

@@ -389,7 +389,7 @@
   }
   function escKey(e) { if (e.key === 'Escape') closeEmail(); }
   function closeEmail() { var o = document.getElementById('eh-modal'); if (o) o.remove(); document.removeEventListener('keydown', escKey); }
-  function emailButton(name) { var b = button('btn-small eh-btn', '✉ Email home', function () { openEmail(name); }); b.title = 'Prepare an email to the family about this unit, an earlier unit or the whole course'; return b; }
+  function emailButton(name) { var b = button('btn-small eh-btn', '📧 Email home', function () { openEmail(name); }); b.title = 'Prepare an email to the family about this unit, an earlier unit or the whole course'; return b; }
 
   HW.DashPace = { pace: pace, keep: keep, paceOn: paceOn, viewSeg: viewSeg, renderPace: renderPace, studentPanel: studentPanel, emailButton: emailButton, openEmail: openEmail, build: build };
 })(window);

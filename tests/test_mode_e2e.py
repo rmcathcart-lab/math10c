@@ -119,8 +119,8 @@ async def main():
         await a.wait_for_selector('#testmode button:has-text("See how you did")', timeout=30000)
         await a.click('#testmode button:has-text("See how you did")'); await a.wait_for_selector('.tm-res-big')
         big = await a.inner_text('.tm-res-big'); assert big.strip() == '1 / 3', big
-        await a.goto(BASE + '?class=10c-b'); await a.wait_for_selector('.tm-res-card', timeout=15000)
-        await a.click('.tm-res-card'); await a.wait_for_selector('.tm-res-big')
+        await a.goto(BASE + '?class=10c-b'); await a.wait_for_selector('.latest-res', timeout=15000)
+        await a.click('.latest-res'); await a.wait_for_selector('.tm-res-big')
         big = await a.inner_text('.tm-res-big'); assert big.strip() == '1 / 3', big
         await a.screenshot(path=SHOTS + 'tm_s_results.png', full_page=True)
         # ---- a no-calculator test (orange) for the picture ----

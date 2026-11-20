@@ -1137,3 +1137,27 @@ button.ulv:hover { border-color: var(--brand); }
 /* "Your level" held down until 75% of the practice is done (js/calendar.js C.capLevels) */
 .ulv-cap { padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #7a5a00; background: #fff3cd; border: 1px solid #f0d68a; white-space: nowrap; }
 .oc-cap { margin: 8px 0 0; padding: 8px 10px; border-radius: 10px; background: #fff8e1; border: 1px solid #f0d68a; font-size: 13px; line-height: 1.45; }
+
+/* the student's name menu and the results pages (Ryan, 2026-11-19) */
+.who-wrap { position: relative; }
+.who-car { font-size: 11px; opacity: .6; margin-left: 2px; }
+.who-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 60; min-width: 210px; padding: 6px; border-radius: 14px; background: #fff; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(30, 25, 15, .16); }
+.who-menu[hidden] { display: none; }
+.who-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; }
+.who-item:hover, .who-item:focus-visible { background: #f3efe6; outline: none; }
+.latest-res { display: inline-block; line-height: 1.4; padding: 6px 13px; border-radius: 10px; font-size: 14px; white-space: nowrap; text-decoration: none; color: #23462f; background: #e3f4e8; border: 1px solid #9fd3b4; }
+.latest-res.is-exit { color: #5c4a00; background: #fff6d6; border-color: #e9cf6b; }
+.latest-res.fresh { box-shadow: 0 0 0 3px rgba(47, 158, 98, .18); }
+.latest-res.is-exit.fresh { box-shadow: 0 0 0 3px rgba(224, 168, 0, .2); }
+.latest-res:hover { filter: brightness(.97); }
+@media (max-width: 720px) { .latest-res .tt-l { display: none; } }
+.rl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 6px 0 16px; }
+.rl-head h1 { margin: 0; font-size: 28px; letter-spacing: -.02em; }
+.rl-list { display: flex; flex-direction: column; gap: 8px; }
+.rl-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px; background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--uc, #f0ad6e); text-decoration: none; color: var(--ink); box-shadow: var(--shadow); }
+.rl-row:hover { border-color: #d5cdbd; border-left-color: var(--uc, #f0ad6e); }
+.rl-main { flex: 1; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 16px; }
+.rl-date { color: var(--muted); font-size: 14px; }
+.rl-new { font-size: 12px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: #2f9e62; color: #fff; }
+.rl-score { font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+.rl-go { color: var(--muted); font-size: 22px; line-height: 1; }
